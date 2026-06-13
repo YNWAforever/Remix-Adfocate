@@ -30,11 +30,13 @@ function Redemption() {
       {!gifts.isLoading && !gifts.isError && gifts.data?.length === 0 && (
         <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無獎賞</p>
       )}
-      <div className="grid grid-cols-2 gap-3">
-        {gifts.data?.map((g) => (
-          <RewardCard key={g.id} name={g.name} pointsCost={g.points_cost} stockRemaining={g.stock_remaining} imageUrl={g.image_url} />
-        ))}
-      </div>
+      {!gifts.isLoading && !gifts.isError && (gifts.data?.length ?? 0) > 0 && (
+        <div className="grid grid-cols-2 gap-3">
+          {gifts.data!.map((g) => (
+            <RewardCard key={g.id} name={g.name} pointsCost={g.points_cost} stockRemaining={g.stock_remaining} imageUrl={g.image_url} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
