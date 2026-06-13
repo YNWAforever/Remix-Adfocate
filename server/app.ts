@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { workspaceAuth } from "./middleware/workspace";
-import { workspaceRoutes } from "./routes/workspace";
-import { meBootstrap, meRoutes } from "./routes/me";
-import { walletRoutes } from "./routes/wallet";
-import { missionRoutes } from "./routes/missions";
-import { redemptionRoutes } from "./routes/redemption";
+import { workspaceAuth } from "./middleware/workspace.js";
+import { workspaceRoutes } from "./routes/workspace.js";
+import { meBootstrap, meRoutes } from "./routes/me.js";
+import { walletRoutes } from "./routes/wallet.js";
+import { missionRoutes } from "./routes/missions.js";
+import { redemptionRoutes } from "./routes/redemption.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };

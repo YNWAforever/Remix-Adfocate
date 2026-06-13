@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
-import type { Env } from "../app";
-import { makeUserClient } from "../lib/supabase";
+import type { Env } from "../app.js";
+import { makeUserClient } from "../lib/supabase.js";
 
 export const workspaceAuth: MiddlewareHandler<Env> = async (c, next) => {
   const auth = c.req.header("Authorization");

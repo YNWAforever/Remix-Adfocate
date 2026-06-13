@@ -1,23 +1,28 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { makeCreator, cleanup } from "./helpers";
+import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
 
 const { app } = createApp();
-let alice: { userId: string; jwt: string };
-let bob: { userId: string; jwt: string };
 
 function call(path: string, jwt: string) {
   return app.request(path, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
 }
 
-beforeAll(async () => {
-  await cleanup();
-  alice = await makeCreator("alice@test.local", 1250);
-  bob = await makeCreator("bob@test.local", 99);
-});
-afterAll(cleanup);
+// Integration test — requires a live Supabase (local `supabase start` stack or cloud)
+// with SUPABASE_URL/SERVICE_KEY/ANON_KEY set. Skips cleanly when that env is absent.
+const suite = hasSupabaseEnv ? describe : describe.skip;
 
-describe("RLS isolation", () => {
+suite("RLS isolation", () => {
+  let alice: { userId: string; jwt: string };
+  let bob: { userId: string; jwt: string };
+
+  beforeAll(async () => {
+    await cleanup();
+    alice = await makeCreator("alice@test.local", 1250);
+    bob = await makeCreator("bob@test.local", 99);
+  });
+  afterAll(cleanup);
+
   it("a creator reads only their own balance", async () => {
     const res = await call("/api/wallet/points", alice.jwt);
     expect(res.status).toBe(200);
