@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { workspaceAuth } from "./middleware/workspace";
+import { workspaceRoutes } from "./routes/workspace";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -11,6 +12,7 @@ export function createApp() {
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
+  guarded.route("/workspace", workspaceRoutes);
   app.route("/", guarded);
 
   return { app, guarded };

@@ -1,5 +1,8 @@
 import { createFileRoute, Outlet, Link, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useWorkspace } from "@/lib/queries/kocmax";
+import { applyTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/kocmax/$slug")({
   beforeLoad: async ({ params, location }) => {
@@ -14,6 +17,8 @@ export const Route = createFileRoute("/kocmax/$slug")({
 
 function Layout() {
   const { slug } = Route.useParams();
+  const ws = useWorkspace();
+  useEffect(() => { if (ws.data?.theme) applyTheme(ws.data.theme); }, [ws.data]);
   const tabs = [
     { to: "/kocmax/$slug", label: "主頁", exact: true },
     { to: "/kocmax/$slug/mission", label: "任務", exact: false },

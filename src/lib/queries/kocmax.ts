@@ -43,3 +43,8 @@ export function usePointHistory() {
 export function useMe() {
   return useQuery({ queryKey: ["me"], queryFn: () => apiFetch<Me>("/me") });
 }
+
+export type Workspace = { slug: string; name: string; theme: Record<string, string> };
+export function useWorkspace() {
+  return useQuery({ queryKey: ["workspace"], queryFn: () => apiFetch<Workspace>("/workspace") });
+}
