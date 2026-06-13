@@ -23,6 +23,10 @@ function Missions() {
           <SkeletonCard className="h-24" />
         </div>
       )}
+      {missions.isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
+      {!missions.isLoading && !missions.isError && missions.data?.length === 0 && (
+        <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無任務</p>
+      )}
       <div className="space-y-2">
         {missions.data?.map((m) => (
           <Link key={m.id} to="/kocmax/$slug/mission/$missionSlug" params={{ slug, missionSlug: m.slug }}>

@@ -2,12 +2,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Star, Clock } from "lucide-react";
 import { useMission } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
+import { SkeletonCard } from "@/components/SkeletonCard";
 
 export const Route = createFileRoute("/kocmax/$slug/mission/$missionSlug")({ component: MissionDetail });
 
 function MissionDetail() {
   const { slug, missionSlug } = Route.useParams();
   const m = useMission(missionSlug);
+  if (m.isLoading) return <div className="p-4"><SkeletonCard className="h-96" /></div>;
+  if (m.isError || !m.data) return (
+    <div className="flex flex-col items-center gap-4 p-8 text-center">
+      <p className="text-sm text-[var(--color-magenta)]">無法載入任務</p>
+      <Link to="/kocmax/$slug/mission" params={{ slug }} className="text-sm underline">返回列表</Link>
+    </div>
+  );
   return (
     <div className="mx-auto max-w-lg pb-6">
       <header className="glass-panel sticky top-0 z-30 flex items-center gap-3 border-b-2 border-[var(--color-ink)] p-3">
@@ -31,6 +39,7 @@ function MissionDetail() {
             <div><p className="font-heading font-bold">截止日期</p><p>{m.data.deadline.slice(0, 10)}</p></div>
           </section>
         )}
+        {/* TODO Slice 3: link to mission submission/proof upload route once built */}
         <Link to="/kocmax/$slug/login" params={{ slug }} className="btn-primary block rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">開始任務</Link>
       </div>
     </div>
