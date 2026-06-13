@@ -4,10 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsr generate && tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsr generate && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "RUN_INTEGRATION=1 vitest run api/test/rls.test.ts"
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",
+    "@tanstack/router-cli": "^1.167.17",
     "@tanstack/router-plugin": "^1.168.0",
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^16.0.0",
