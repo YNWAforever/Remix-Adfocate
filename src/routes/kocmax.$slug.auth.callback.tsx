@@ -12,7 +12,11 @@ function Callback() {
   useEffect(() => {
     (async () => {
       try {
-        await supabase.auth.getSession(); // Supabase parses the OAuth result
+        // Magic-link landing: supabase-js (detectSessionInUrl) parses the access token from
+        // the URL hash as it initialises, so the session is present by the time getSession
+        // resolves. Bail if none arrived (e.g. the route was opened without a token).
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("no session in callback URL");
         await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug: WORKSPACE_SLUG }) });
         // refresh so the token carries workspace_id; a failed refresh is fatal (reported via
         // a returned { error }, not a throw), so re-throw it into the catch below.
