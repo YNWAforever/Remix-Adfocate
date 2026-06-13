@@ -1,31 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useGifts } from "@/lib/queries/kocmax";
+import { useGifts, useBalance } from "@/lib/queries/kocmax";
+import { PointsBalanceCard } from "@/components/PointsBalanceCard";
+import { FilterPills } from "@/components/FilterPills";
+import { RewardCard } from "@/components/RewardCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 
 export const Route = createFileRoute("/kocmax/$slug/redemption")({ component: Redemption });
 
-const CATS = ["全部", "現金券", "美容", "餐飲", "寵物", "體驗", "數碼"] as const;
+const CATEGORIES = ["全部", "美容", "餐飲", "娛樂", "生活", "電子", "健康", "時尚"] as const;
 
 function Redemption() {
-  const [cat, setCat] = useState<string>("全部");
-  const { data, isLoading, isError } = useGifts(cat);
+  const [category, setCategory] = useState<string>("全部");
+  const balance = useBalance();
+  const gifts = useGifts(category === "全部" ? undefined : category);
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex gap-2 overflow-x-auto">
-        {CATS.map((c) => (
-          <button key={c} onClick={() => setCat(c)}
-            className={`px-3 py-1 rounded-full text-sm ${cat === c ? "bg-[var(--color-ink)] text-white" : "bg-white border"}`}>{c}</button>
-        ))}
-      </div>
-      {isLoading && <div className="skeleton-card h-24" />}
-      {isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
+    <div className="mx-auto max-w-lg space-y-4 p-4">
+      <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
+      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
+      <h1 className="font-display text-2xl font-bold">積分兌換</h1>
+      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
+      {gifts.isLoading && (
+        <div className="grid grid-cols-2 gap-3">
+          <SkeletonCard className="h-48" />
+          <SkeletonCard className="h-48" />
+        </div>
+      )}
+      {gifts.isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
+      {!gifts.isLoading && !gifts.isError && gifts.data?.length === 0 && (
+        <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無獎賞</p>
+      )}
       <div className="grid grid-cols-2 gap-3">
-        {data?.map((g) => (
-          <div key={g.id} className="rounded border p-3 bg-white relative">
-            {g.stock_remaining === 0 && <span className="absolute top-2 right-2 text-xs bg-[var(--color-ink)] text-white px-2 py-0.5 rounded">已換罄</span>}
-            <p className="font-medium">{g.name}</p>
-            <p className="text-sm">{g.points_cost} 積分</p>
-          </div>
+        {gifts.data?.map((g) => (
+          <RewardCard key={g.id} name={g.name} pointsCost={g.points_cost} stockRemaining={g.stock_remaining} imageUrl={g.image_url} />
         ))}
       </div>
     </div>
