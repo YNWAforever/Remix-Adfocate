@@ -10,7 +10,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
     "skipLibCheck": true,
-    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom", "node"],
     "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src", "api", "vite.config.ts", "vitest.config.ts"]
