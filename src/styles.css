@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Acid Y2K tokens are ported in Task 10. Minimal base for scaffolding: */
+@theme {
+  --color-paper: #efefef;
+  --color-ink: #0a0a0a;
+}
+body { background: var(--color-paper); color: var(--color-ink); }
