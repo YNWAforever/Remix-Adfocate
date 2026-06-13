@@ -81,7 +81,7 @@ function Explore() {
                 <ChevronDown size={18} className={open === i ? "rotate-180 transition" : "transition"} aria-hidden />
               </button>
               {open === i && (
-                <p id={`faq-panel-${i}`} className="px-4 pb-4 text-sm text-[var(--color-soft-ink)]">
+                <p id={`faq-panel-${i}`} role="region" aria-label={f.q} className="px-4 pb-4 text-sm text-[var(--color-soft-ink)]">
                   {f.a}
                 </p>
               )}
