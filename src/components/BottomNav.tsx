@@ -2,16 +2,16 @@ import { Link } from "@tanstack/react-router";
 import { Home, Target, Gift, Wallet, Compass } from "lucide-react";
 
 const TABS = [
-  { to: "/kocmax/$slug" as string, label: "主頁", icon: Home, exact: true },
-  { to: "/kocmax/$slug/mission" as string, label: "任務", icon: Target, exact: false },
-  { to: "/kocmax/$slug/redemption" as string, label: "積分兌換", icon: Gift, exact: false },
-  { to: "/kocmax/$slug/wallet" as string, label: "錢包", icon: Wallet, exact: false },
-  { to: "/kocmax/$slug/explore" as string, label: "探索", icon: Compass, exact: false },
-];
+  { to: "/kocmax/$slug", label: "主頁", icon: Home, exact: true as const },
+  { to: "/kocmax/$slug/mission", label: "任務", icon: Target, exact: false as const },
+  { to: "/kocmax/$slug/redemption", label: "積分兌換", icon: Gift, exact: false as const },
+  { to: "/kocmax/$slug/wallet", label: "錢包", icon: Wallet, exact: false as const },
+  { to: "/kocmax/$slug/explore" as string, label: "探索", icon: Compass, exact: false as const }, // route added in Task 8
+] as const;
 
 export function BottomNav({ slug }: { slug: string }) {
   return (
-    <nav className="glass-panel fixed bottom-0 inset-x-0 z-40 flex border-t-2 border-[var(--color-ink)] pb-[env(safe-area-inset-bottom)]">
+    <nav aria-label="主要導航" className="glass-panel fixed bottom-0 inset-x-0 z-40 flex border-t-2 border-[var(--color-ink)] pb-[env(safe-area-inset-bottom)]">
       {TABS.map((t) => {
         const Icon = t.icon;
         return (
