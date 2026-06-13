@@ -5,6 +5,8 @@ import { FilterPills } from "./FilterPills";
 import { PointsBalanceCard } from "./PointsBalanceCard";
 import { MissionCard } from "./MissionCard";
 import { RewardCard } from "./RewardCard";
+import { ProgressBar } from "./ProgressBar";
+import { SkeletonCard } from "./SkeletonCard";
 
 describe("presentational components", () => {
   it("BadgePill shows its label", () => {
@@ -29,5 +31,17 @@ describe("presentational components", () => {
     render(<RewardCard name="HK$50 現金券" pointsCost={500} stockRemaining={0} />);
     expect(screen.getByText("HK$50 現金券")).toBeInTheDocument();
     expect(screen.getByText("已換罄")).toBeInTheDocument();
+  });
+  it("ProgressBar renders with correct aria attributes", () => {
+    render(<ProgressBar value={50} max={100} />);
+    const bar = screen.getByRole("progressbar");
+    expect(bar).toHaveAttribute("aria-valuenow", "50");
+    expect(bar).toHaveAttribute("aria-valuemin", "0");
+    expect(bar).toHaveAttribute("aria-valuemax", "100");
+  });
+  it("ProgressBar clamps at 100% when value exceeds max", () => {
+    render(<ProgressBar value={150} max={100} />);
+    const fill = document.querySelector('[style*="width"]') as HTMLElement;
+    expect(fill?.style.width).toBe("100%");
   });
 });
