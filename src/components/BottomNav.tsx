@@ -6,7 +6,7 @@ const TABS = [
   { to: "/kocmax/$slug/mission", label: "任務", icon: Target, exact: false as const },
   { to: "/kocmax/$slug/redemption", label: "積分兌換", icon: Gift, exact: false as const },
   { to: "/kocmax/$slug/wallet", label: "錢包", icon: Wallet, exact: false as const },
-  { to: "/kocmax/$slug/explore" as string, label: "探索", icon: Compass, exact: false as const }, // route added in Task 8
+  { to: "/kocmax/$slug/explore", label: "探索", icon: Compass, exact: false as const },
 ] as const;
 
 export function BottomNav({ slug }: { slug: string }) {
