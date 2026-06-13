@@ -1,38 +1,35 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMissions } from "@/lib/queries/kocmax";
+import { FilterPills } from "@/components/FilterPills";
+import { MissionCard } from "@/components/MissionCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/mission")({ component: MissionList });
+export const Route = createFileRoute("/kocmax/$slug/mission")({ component: Missions });
 
-const CATS = ["全部", "美容", "餐飲", "寵物", "旅遊"] as const;
+const CATEGORIES = ["全部", "社交", "美容", "餐飲", "生活"] as const;
 
-function MissionList() {
+function Missions() {
   const { slug } = Route.useParams();
-  const [cat, setCat] = useState<string>("全部");
-  const { data, isLoading, isError } = useMissions(cat);
+  const [category, setCategory] = useState<string>("全部");
+  const missions = useMissions(category === "全部" ? undefined : category);
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex gap-2 overflow-x-auto">
-        {CATS.map((c) => (
-          <button key={c} onClick={() => setCat(c)}
-            className={`px-3 py-1 rounded-full text-sm ${cat === c ? "bg-[var(--color-ink)] text-white" : "bg-white border"}`}>
-            {c}
-          </button>
+    <div className="mx-auto max-w-lg space-y-4 p-4">
+      <h1 className="font-display text-2xl font-bold">限時任務</h1>
+      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
+      {missions.isLoading && (
+        <div className="space-y-2">
+          <SkeletonCard className="h-24" />
+          <SkeletonCard className="h-24" />
+        </div>
+      )}
+      <div className="space-y-2">
+        {missions.data?.map((m) => (
+          <Link key={m.id} to="/kocmax/$slug/mission/$missionSlug" params={{ slug, missionSlug: m.slug }}>
+            <MissionCard title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
+          </Link>
         ))}
       </div>
-      {isLoading && <div className="skeleton-card h-24" />}
-      {isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
-      <ul className="space-y-2">
-        {data?.map((m) => (
-          <li key={m.id}>
-            <Link to="/kocmax/$slug/mission/$missionSlug" params={{ slug, missionSlug: m.slug }}
-                  className="block rounded border p-3 bg-white">
-              <p className="font-medium">{m.title}</p>
-              <p className="text-sm">{m.points_reward} 積分 · {m.filled}/{m.quota}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
