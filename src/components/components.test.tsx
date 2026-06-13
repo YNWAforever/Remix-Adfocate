@@ -6,7 +6,6 @@ import { PointsBalanceCard } from "./PointsBalanceCard";
 import { MissionCard } from "./MissionCard";
 import { RewardCard } from "./RewardCard";
 import { ProgressBar } from "./ProgressBar";
-import { SkeletonCard } from "./SkeletonCard";
 
 describe("presentational components", () => {
   it("BadgePill shows its label", () => {
