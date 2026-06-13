@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import type { Env } from "../app";
-import { makeUserClient } from "../lib/supabase";
+import type { Env } from "../app.js";
+import { makeUserClient } from "../lib/supabase.js";
 
 export const redemptionRoutes = new Hono<Env>();
 

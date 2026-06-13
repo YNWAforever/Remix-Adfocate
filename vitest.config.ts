@@ -9,8 +9,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["src/test/setup.ts"],
-    include: ["api/**/*.test.ts", "src/**/*.test.ts?(x)"],
-    exclude: integration ? [] : ["api/_server/test/rls.test.ts"],
+    include: ["server/**/*.test.ts", "src/**/*.test.ts?(x)"],
+    exclude: integration ? [] : ["server/test/rls.test.ts"],
     env: {
       VITE_SUPABASE_URL: "https://placeholder.supabase.co",
       VITE_SUPABASE_ANON_KEY: "placeholder-anon-key",

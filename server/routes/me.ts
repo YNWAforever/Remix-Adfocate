@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import type { Env } from "../app";
-import { serviceClient, makeUserClient } from "../lib/supabase";
+import type { Env } from "../app.js";
+import { serviceClient, makeUserClient } from "../lib/supabase.js";
 
 /** Unguarded: runs before a creator row exists. Resolves workspace from body slug. */
 export const meBootstrap = new Hono<Env>();
