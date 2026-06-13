@@ -26,7 +26,7 @@ function Login() {
   async function verify(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
+    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code, type: "email" });
     if (error) { setBusy(false); setError(error.message); return; }
     // First-login bootstrap (creates creator + balance if absent). Requires SUPABASE_SERVICE_KEY on the server.
     try { await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug }) }); } catch { /* already bootstrapped */ }
