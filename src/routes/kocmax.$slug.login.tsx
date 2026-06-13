@@ -17,7 +17,7 @@ function Login() {
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim() });
     setBusy(false);
     if (error) { setError(error.message); return; }
     setStage("code");
@@ -30,6 +30,7 @@ function Login() {
     if (error) { setBusy(false); setError(error.message); return; }
     // First-login bootstrap (creates creator + balance if absent). Requires SUPABASE_SERVICE_KEY on the server.
     try { await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug }) }); } catch { /* already bootstrapped */ }
+    await supabase.auth.refreshSession(); // flush session before beforeLoad reads it
     setBusy(false);
     navigate({ to: "/kocmax/$slug", params: { slug } });
   }
@@ -49,7 +50,7 @@ function Login() {
         </form>
       ) : (
         <form onSubmit={verify} className="space-y-3">
-          <input inputMode="numeric" required value={code} onChange={(e) => setCode(e.target.value)} placeholder="6 位數驗證碼"
+          <input inputMode="numeric" required maxLength={6} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6 位數驗證碼"
             className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 tracking-[0.4em]" aria-label="驗證碼" />
           <button type="submit" disabled={busy} className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50">
             {busy ? "驗證中…" : "登入"}
