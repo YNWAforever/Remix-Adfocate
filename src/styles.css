@@ -16,7 +16,7 @@
 
   /* Brand accents — Acid Y2K (a11y-tuned) */
   --color-acid:    #D4FF00;
-  --color-magenta: #D81B60;   /* darkened from #FF3D7F for AA on light bg */
+  --color-magenta: #CE1A5C;   /* darkened to clear WCAG AA 4.5:1 on paper #EFEFEF (4.65:1) — was #D81B60 (4.30:1, failed) */
   --color-magenta-pop: #FF3D7F; /* decorative-only, never as text on light */
   --color-violet:  #7C5CFF;
   --color-cyan:    #00E5FF;
@@ -182,7 +182,7 @@ a {
 /* Global keyboard focus ring — applies to native interactive elements
    that don't define their own focus-visible style above. */
 :where(button, a, [role="button"], summary):focus-visible {
-  outline: 2px solid #D4FF00;
+  outline: 2px solid #0A0A0A;
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -215,7 +215,7 @@ a {
   [data-state][aria-haspopup],
   [role="combobox"]
 ):focus-visible {
-  outline: 2px solid #D4FF00;
+  outline: 2px solid #0A0A0A;
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -225,7 +225,7 @@ a {
   [role="dialog"],
   [role="alertdialog"]
 ):focus-visible {
-  outline: 3px solid #D4FF00;
+  outline: 3px solid #0A0A0A;
   outline-offset: -3px;
   border-radius: 12px;
 }
@@ -233,7 +233,7 @@ a {
 /* Close buttons inside overlays — make the ring obvious on any bg */
 :where([role="dialog"], [role="alertdialog"]) [aria-label*="lose" i]:focus-visible,
 :where([role="dialog"], [role="alertdialog"]) [data-radix-dialog-close]:focus-visible {
-  outline: 2px solid #D4FF00;
+  outline: 2px solid #0A0A0A;
   outline-offset: 2px;
   box-shadow: 0 0 0 4px #0A0A0A;
   border-radius: 9999px;
@@ -295,7 +295,7 @@ a {
 .pastel-card:focus-visible,
 .game-card:focus-visible {
   outline: none;
-  box-shadow: 6px 6px 0 0 #0A0A0A, 0 0 0 3px #D4FF00;
+  box-shadow: 6px 6px 0 0 #0A0A0A, 0 0 0 3px #0A0A0A;
 }
 .game-card-mint:hover   { box-shadow: 6px 6px 0 0 #00E5FF; }
 .game-card-yellow:hover { box-shadow: 6px 6px 0 0 #D4FF00; }
@@ -318,7 +318,7 @@ a {
 }
 .pill-btn:focus-visible {
   outline: none;
-  box-shadow: 4px 4px 0 0 #0A0A0A, 0 0 0 3px #D4FF00;
+  box-shadow: 4px 4px 0 0 #0A0A0A, 0 0 0 3px #0A0A0A;
 }
 
 /* ─── BUTTONS — Acid + Ink ─── */
@@ -429,7 +429,7 @@ a {
 .platform-tag:active { transform: translateY(0); box-shadow: none; }
 .platform-tag:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px #D4FF00;
+  box-shadow: 0 0 0 3px #0A0A0A;
 }
 
 /* ─── FILTER PILLS ─── */
@@ -746,7 +746,7 @@ button[data-loading="true"] .btn-spinner svg { color: currentColor; }
 
 /* ─── FOCUS VISIBLE ─── */
 *:focus-visible {
-  outline: 3px solid #D4FF00;
+  outline: 3px solid #0A0A0A;
   outline-offset: 2px;
   border-radius: 6px;
 }
