@@ -11,5 +11,9 @@ export default defineConfig({
     setupFiles: ["src/test/setup.ts"],
     include: ["api/**/*.test.ts", "src/**/*.test.ts?(x)"],
     exclude: integration ? [] : ["api/test/rls.test.ts"],
+    env: {
+      VITE_SUPABASE_URL: "https://placeholder.supabase.co",
+      VITE_SUPABASE_ANON_KEY: "placeholder-anon-key",
+    },
   },
 });
