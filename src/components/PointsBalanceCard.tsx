@@ -5,7 +5,7 @@ export function PointsBalanceCard({ balance, availableTo, loading = false }: { b
     <section className="wallet-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] p-6 text-[var(--color-paper)]">
       <p className="font-mono text-xs uppercase tracking-wide opacity-80">你的積分餘額</p>
       {loading ? (
-        <div className="skeleton-text mt-2 h-9 w-28" />
+        <div className="skeleton-acid skeleton-text mt-2 h-9 w-28" />
       ) : (
         <p className="mt-1 font-display text-4xl font-bold text-[var(--color-acid)]">{balance.toLocaleString("en-US")}</p>
       )}
