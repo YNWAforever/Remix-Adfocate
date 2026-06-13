@@ -22,6 +22,9 @@ function Home() {
         <p className="mt-2 text-sm">購物賺積分 · 完成任務 · 兌換獎賞</p>
       </section>
 
+      {balance.isError && (
+        <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>
+      )}
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
 
       <section className="grid grid-cols-2 gap-3">
@@ -33,7 +36,7 @@ function Home() {
         ].map((a) => {
           const Icon = a.icon;
           return (
-            <Link key={a.label} to={a.to as string} params={{ slug }} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
+            <Link key={a.label} to={a.to as string} params={{ slug }} aria-label={a.label} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
               <Icon size={20} aria-hidden /> {a.label}
             </Link>
           );
