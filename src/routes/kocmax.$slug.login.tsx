@@ -28,9 +28,22 @@ function Login() {
     setBusy(true); setError(null);
     const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code, type: "email" });
     if (error) { setBusy(false); setError(error.message); return; }
-    // First-login bootstrap (creates creator + balance if absent). Requires SUPABASE_SERVICE_KEY on the server.
-    try { await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug }) }); } catch { /* already bootstrapped */ }
-    await supabase.auth.refreshSession(); // flush session before beforeLoad reads it
+    // First-login bootstrap creates the creator + balance if absent. It is idempotent:
+    // an already-bootstrapped user still gets 200, so ANY error here is a real failure
+    // (missing SUPABASE_SERVICE_KEY, a 5xx, or a network error) — not "already bootstrapped".
+    // The session refresh below is what makes the token carry workspace_id, so a failed
+    // refresh is equally fatal. Surface either failure and stop, because navigating would
+    // land the session on a workspace-less, broken Home with no recovery path. refreshSession
+    // reports failure via a returned { error } (not a throw), so re-throw it into this catch.
+    try {
+      await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug }) });
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) throw refreshError;
+    } catch {
+      setBusy(false);
+      setError("登入未能完成，請稍後再試");
+      return;
+    }
     setBusy(false);
     navigate({ to: "/kocmax/$slug", params: { slug } });
   }
