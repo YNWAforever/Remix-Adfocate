@@ -26,7 +26,10 @@ jobs:
       - run: npm ci
       - name: Export local Supabase keys
         run: |
-          echo "SUPABASE_URL=$(supabase status -o env | grep '^API_URL=' | cut -d= -f2-)" >> $GITHUB_ENV
-          echo "SUPABASE_ANON_KEY=$(supabase status -o env | grep '^ANON_KEY=' | cut -d= -f2-)" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_KEY=$(supabase status -o env | grep '^SERVICE_ROLE_KEY=' | cut -d= -f2-)" >> $GITHUB_ENV
+          # `supabase status -o env` (latest CLI) quotes values, e.g. API_URL="http://..." —
+          # eval to let the shell unquote them, then re-export under the names the tests read.
+          eval "$(supabase status -o env)"
+          echo "SUPABASE_URL=${API_URL}" >> $GITHUB_ENV
+          echo "SUPABASE_ANON_KEY=${ANON_KEY}" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_KEY=${SERVICE_ROLE_KEY}" >> $GITHUB_ENV
       - run: npm run test:integration
