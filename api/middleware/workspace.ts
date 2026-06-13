@@ -1,0 +1,34 @@
+import type { MiddlewareHandler } from "hono";
+import type { Env } from "../app";
+import { makeUserClient } from "../lib/supabase";
+
+export const workspaceAuth: MiddlewareHandler<Env> = async (c, next) => {
+  const auth = c.req.header("Authorization");
+  const jwt = auth?.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!jwt) return c.json({ error: "Missing bearer token", code: "no_auth" }, 401);
+
+  const slug = c.req.header("X-Workspace-Slug");
+  if (!slug) return c.json({ error: "Missing workspace", code: "no_workspace" }, 400);
+
+  const supabase = makeUserClient(jwt);
+  const { data: userData, error: userErr } = await supabase.auth.getUser();
+  if (userErr || !userData.user) {
+    return c.json({ error: "Invalid token", code: "bad_token" }, 401);
+  }
+
+  // Resolve workspace by slug and verify the creator belongs to it.
+  const { data: creator } = await supabase
+    .from("creators")
+    .select("id, workspace_id, workspaces!inner(slug)")
+    .eq("workspaces.slug", slug)
+    .single();
+
+  if (!creator) {
+    return c.json({ error: "Creator not in workspace", code: "forbidden" }, 403);
+  }
+
+  c.set("jwt", jwt);
+  c.set("userId", userData.user.id);
+  c.set("workspaceId", creator.workspace_id as string);
+  await next();
+};
