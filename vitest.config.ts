@@ -18,6 +18,9 @@ export default defineConfig({
     env: {
       VITE_SUPABASE_URL: "https://placeholder.supabase.co",
       VITE_SUPABASE_ANON_KEY: "placeholder-anon-key",
+      // Component tests exercise the full login UI (WhatsApp + Google + email).
+      VITE_ENABLE_WHATSAPP: "true",
+      VITE_ENABLE_GOOGLE: "true",
     },
   },
 });

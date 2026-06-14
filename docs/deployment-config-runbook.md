@@ -17,6 +17,13 @@ The code is deployed; these are the **dashboard / env steps a human must do** (t
 | 6 | Replace `public/og.png` placeholder | branded WhatsApp/social preview | 🟡 nice-to-have |
 | 7 | Disable Vercel **preview** Deployment Protection | headless preview testing | ⚪ optional |
 
+### Login-method flags (staged rollout)
+The login page only shows a method once its provider is live, via Vercel env flags (default **off**). **Email magic-link is always shown** (it only needs item 1). As you finish items 2/3, flip the matching flag and redeploy:
+- `VITE_ENABLE_GOOGLE = "true"` → shows "用 Google 登入" (needs item 2)
+- `VITE_ENABLE_WHATSAPP = "true"` → makes WhatsApp the primary method + landing CTA (needs item 3)
+
+So **stage 1 = item 1 only → email magic-link works, no broken buttons**. Set the flags in **Vercel → Settings → Environment Variables** (Production), then redeploy.
+
 ---
 
 ## 1. 🔴 Supabase — Site URL + redirect allow-list

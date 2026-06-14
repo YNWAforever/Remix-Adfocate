@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
+import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
 
 export const Route = createFileRoute("/_app/login")({ component: Login });
 
@@ -15,12 +16,14 @@ function toHkE164(raw: string): string {
 function Login() {
   const navigate = useNavigate();
 
+  const [showSecondary, setShowSecondary] = useState(false);
+
+  // WhatsApp-OTP state (only exercised when WHATSAPP_LOGIN is enabled).
   const [stage, setStage] = useState<"phone" | "code">("phone");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSecondary, setShowSecondary] = useState(false);
 
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
@@ -45,6 +48,17 @@ function Login() {
       setBusy(false);
       setError("登入未能完成，請重試");
     }
+  }
+
+  // Until WhatsApp OTP is live, email magic-link is the primary (working) method.
+  if (!WHATSAPP_LOGIN) {
+    return (
+      <div className="mx-auto max-w-sm space-y-4 p-8">
+        <h1 className="font-display text-2xl font-bold">登入 KOCmax</h1>
+        <p className="text-sm text-[var(--color-soft-ink)]">用電郵連結登入或註冊</p>
+        <EmailAndGoogle />
+      </div>
+    );
   }
 
   return (
@@ -118,13 +132,14 @@ function Login() {
         >
           其他登入方式
         </button>
-        {showSecondary && <SecondaryMethods />}
+        {showSecondary && <EmailAndGoogle />}
       </div>
     </div>
   );
 }
 
-function SecondaryMethods() {
+/** Email magic-link (always available) + Google (only when GOOGLE_LOGIN is on). */
+function EmailAndGoogle() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -177,13 +192,15 @@ function SecondaryMethods() {
           </button>
         </form>
       )}
-      <button
-        type="button"
-        onClick={google}
-        className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)]"
-      >
-        用 Google 登入
-      </button>
+      {GOOGLE_LOGIN && (
+        <button
+          type="button"
+          onClick={google}
+          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)]"
+        >
+          用 Google 登入
+        </button>
+      )}
     </div>
   );
 }
