@@ -63,6 +63,10 @@ meBootstrap.post("/bootstrap", async (c) => {
     { creator_id: u.user.id, workspace_id: ws.id, balance: 0 },
     { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
   );
+  await svc.from("earnings_balances").upsert(
+    { creator_id: u.user.id, workspace_id: ws.id, available: 0 },
+    { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
+  );
 
   return c.json({ created });
 });

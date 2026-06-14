@@ -22,3 +22,24 @@ insert into public.redemption_gifts (workspace_id, name, category, points_cost, 
   ('00000000-0000-0000-0000-0000000000aa','寵物零食','寵物',250,60,21,'physical','available'),
   ('00000000-0000-0000-0000-0000000000aa','SPA體驗','體驗',1200,10,2,'experience','available'),
   ('00000000-0000-0000-0000-0000000000aa','HK$100 現金券','現金券',1000,30,5,'voucher','available');
+
+-- Slice 5 demo: make the 咖啡券 gift redeemable by loading a small code pool,
+-- and keep its stock in lockstep with the pool size.
+insert into public.redemption_codes (gift_id, workspace_id, code)
+  select g.id, g.workspace_id, c.code
+  from public.redemption_gifts g
+  cross join (values ('DEMO-CAFE-001'),('DEMO-CAFE-002'),('DEMO-CAFE-003')) as c(code)
+  where g.workspace_id = '00000000-0000-0000-0000-0000000000aa' and g.name = '咖啡券';
+
+update public.redemption_gifts g
+  set stock_remaining = (select count(*) from public.redemption_codes rc where rc.gift_id = g.id and rc.status = 'available')
+  where g.workspace_id = '00000000-0000-0000-0000-0000000000aa' and g.name = '咖啡券';
+
+-- Slice 5 demo: give the first demo mission a HK$ cash reward so approval credits
+-- the earnings wallet (points still award as before).
+update public.missions
+  set cash_reward = 80.00
+  where workspace_id = '00000000-0000-0000-0000-0000000000aa'
+    and slug = (select slug from public.missions
+                where workspace_id = '00000000-0000-0000-0000-0000000000aa'
+                order by slug limit 1);

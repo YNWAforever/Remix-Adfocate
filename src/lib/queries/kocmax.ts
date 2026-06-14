@@ -148,3 +148,63 @@ export function useSubmitMission(slug: string) {
     },
   });
 }
+
+/** The raw redeem_gift RPC result (the redemptions row, incl. the issued code). */
+export type RedeemResult = {
+  id: string;
+  gift_id: string;
+  code: string | null;
+  points_spent: number;
+  status: string;
+  created_at: string;
+};
+/** A redemption history row (gift name embedded). */
+export type RedemptionHistoryItem = {
+  id: string;
+  code: string | null;
+  points_spent: number;
+  status: string;
+  created_at: string;
+  redemption_gifts: { name: string } | null;
+};
+
+export function useRedeemGift() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (giftId: string) =>
+      apiFetch<RedeemResult>("/redemption/redeem", { method: "POST", body: JSON.stringify({ gift_id: giftId }) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["gifts"] });
+      qc.invalidateQueries({ queryKey: ["balance"] });
+      qc.invalidateQueries({ queryKey: ["redemptions"] });
+      qc.invalidateQueries({ queryKey: ["history"] }); // points ledger gains a 'redeem' row
+    },
+  });
+}
+
+export function useRedemptions() {
+  return useQuery({
+    queryKey: ["redemptions"],
+    queryFn: async () => (await apiFetch<{ redemptions: RedemptionHistoryItem[] }>("/redemption/history")).redemptions,
+  });
+}
+
+export type Earnings = { available: number; pending: number };
+export type EarningsTxn = {
+  id: string;
+  type: string;
+  amount: number;
+  balance_after: number;
+  description?: string;
+  created_at: string;
+};
+
+export function useEarnings() {
+  return useQuery({ queryKey: ["earnings"], queryFn: () => apiFetch<Earnings>("/wallet/earnings") });
+}
+export function useEarningsHistory() {
+  return useQuery({
+    queryKey: ["earnings-history"],
+    queryFn: async () => (await apiFetch<{ transactions: EarningsTxn[] }>("/wallet/earnings/history")).transactions,
+  });
+}
