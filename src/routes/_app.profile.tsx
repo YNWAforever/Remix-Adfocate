@@ -163,10 +163,10 @@ function Profile() {
               我的任務
             </Link>
             <Link
-              to="/wallet"
+              to="/redemption/history"
               className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
             >
-              積分記錄
+              兌換記錄
             </Link>
           </section>
 
