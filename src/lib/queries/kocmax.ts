@@ -176,3 +176,23 @@ export function useRedemptions() {
     queryFn: async () => (await apiFetch<{ redemptions: RedemptionHistoryItem[] }>("/redemption/history")).redemptions,
   });
 }
+
+export type Earnings = { available: number; pending: number };
+export type EarningsTxn = {
+  id: string;
+  type: string;
+  amount: number;
+  balance_after: number;
+  description?: string;
+  created_at: string;
+};
+
+export function useEarnings() {
+  return useQuery({ queryKey: ["earnings"], queryFn: () => apiFetch<Earnings>("/wallet/earnings") });
+}
+export function useEarningsHistory() {
+  return useQuery({
+    queryKey: ["earnings-history"],
+    queryFn: async () => (await apiFetch<{ transactions: EarningsTxn[] }>("/wallet/earnings/history")).transactions,
+  });
+}
