@@ -18,9 +18,13 @@ function Home() {
     <div className="mx-auto max-w-lg space-y-6 p-4">
       <div className="flex items-center justify-end gap-2">
         {me.data?.level && (
-          <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold">
+          <Link
+            to="/passport"
+            aria-label="創作者護照"
+            className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
+          >
             {LEVELS[levelIndex(me.data.level)].emoji} {me.data.level}
-          </span>
+          </Link>
         )}
         <Link
           to="/profile"

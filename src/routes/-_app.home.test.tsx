@@ -44,4 +44,9 @@ describe("Home", () => {
     renderHome();
     expect(screen.getByText("🌟 L1")).toBeInTheDocument();
   });
+
+  it("links the level chip to the creator passport", () => {
+    renderHome();
+    expect(screen.getByLabelText("創作者護照")).toHaveAttribute("href", "/passport");
+  });
 });

@@ -29,6 +29,12 @@ export type Me = {
   onboarding_completed: boolean;
   referral_code?: string;
 };
+export type Passport = {
+  level: string;
+  xp: number;
+  scores: { influence: number | null; reliability: number | null; content: null; brandSafety: null };
+  badges: string[];
+};
 export type OnboardingStatus = { onboarding_step: number; onboarding_completed: boolean; completion_pct: number };
 export type RecommendedMission = { id: string; slug: string; title: string; category?: string; points_reward: number; deadline?: string };
 export type CompleteResult = { referral_code: string; onboarding_completed: boolean; onboarding_step: number };
@@ -78,6 +84,10 @@ export function useMarkLevelSeen() {
     mutationFn: () => apiFetch<Me>("/me/level-seen", { method: "POST" }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
   });
+}
+
+export function useMyPassport() {
+  return useQuery({ queryKey: ["passport"], queryFn: () => apiFetch<Passport>("/me/passport") });
 }
 
 export type Workspace = { slug: string; name: string; theme: Record<string, string> };

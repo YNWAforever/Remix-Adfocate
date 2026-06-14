@@ -152,11 +152,32 @@ export async function setXp(userId: string, xp: number) {
   if (error) throw error;
 }
 
+/** Insert a mission_submissions row in a terminal status (service-role, bypassing the
+ *  join→submit→review RPC chain). Creates a throwaway "test-" mission per call so the
+ *  (mission_id, creator_id) unique constraint never collides. */
+export async function seedSubmission(creatorId: string, status: string, slug: string) {
+  const m = await makeMission({ slug });
+  const { error } = await service()
+    .from("mission_submissions")
+    .insert({ mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status });
+  if (error) throw error;
+}
+
+/** Point one creator's referred_by at another (service-role; set only at bootstrap in
+ *  prod). Used to exercise the passport 'referrer' badge. */
+export async function setReferredBy(childId: string, parentId: string) {
+  const { error } = await service().from("creators").update({ referred_by: parentId }).eq("id", childId);
+  if (error) throw error;
+}
+
 export async function cleanup() {
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
+  // Null any inbound referral inside the test set so deleting a referred creator never
+  // trips the referred_by FK (creators.referred_by → creators.id, no ON DELETE clause).
+  if (ids.length) await service().from("creators").update({ referred_by: null }).in("id", ids);
   for (const id of ids) {
     await service().from("redemptions").delete().eq("creator_id", id);
     await service().from("earnings_transactions").delete().eq("creator_id", id);

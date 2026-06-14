@@ -90,6 +90,11 @@ describe("Profile page", () => {
     );
   });
 
+  it("links to the creator passport", () => {
+    renderProfile();
+    expect(screen.getByText("創作者護照").closest("a")).toHaveAttribute("href", "/passport");
+  });
+
   it("signs out and redirects to /login", async () => {
     renderProfile();
     fireEvent.click(screen.getByText("登出"));
