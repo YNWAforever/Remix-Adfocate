@@ -18,6 +18,7 @@ export type SocialHandle = { platform: string; handle: string; followers?: numbe
 export type Me = {
   id: string;
   display_name?: string;
+  avatar_url?: string | null;
   level: string;
   xp: number;
   phone?: string | null;
