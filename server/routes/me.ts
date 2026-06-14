@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { serviceClient, makeUserClient } from "../lib/supabase.js";
+import { buildPassport } from "../lib/passport.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -122,6 +123,45 @@ meRoutes.put("/profile", async (c) => {
     .single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   return c.json(data);
+});
+
+/** GET /api/me/passport — the Creator Passport: live level + XP, four score rings, and
+ *  data-derived badges, all computed on read (no migration). Reliability + Influence come
+ *  from the caller's own submissions / social handles via the user client (RLS self-scoped);
+ *  Content + Brand Safety are locked (null) until 6C. The referrer badge needs a count of
+ *  OTHER creators' rows (referred_by = me) which RLS hides from the user client, so that one
+ *  count uses the service client — it exposes a number, not other creators' data. */
+meRoutes.get("/passport", async (c) => {
+  const userId = c.get("userId");
+  const supabase = makeUserClient(c.get("jwt"));
+
+  const { data: creator, error: cErr } = await supabase
+    .from("creators")
+    .select("level, xp, social_handles")
+    .eq("id", userId)
+    .single();
+  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+
+  const { data: subs, error: sErr } = await supabase
+    .from("mission_submissions")
+    .select("status")
+    .eq("creator_id", userId);
+  if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
+
+  const { count: referredCount, error: rErr } = await serviceClient()
+    .from("creators")
+    .select("id", { count: "exact", head: true })
+    .eq("referred_by", userId);
+  if (rErr) return c.json({ error: rErr.message, code: "db_error" }, 500);
+
+  const passport = buildPassport({
+    level: creator.level,
+    xp: creator.xp,
+    socialHandles: creator.social_handles as { followers?: number | null }[] | null,
+    statuses: (subs ?? []).map((s) => s.status as string),
+    referredCount: referredCount ?? 0,
+  });
+  return c.json(passport);
 });
 
 /** POST /api/me/level-seen — acknowledge the level-up celebration. Reads the caller's
