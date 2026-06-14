@@ -15,6 +15,19 @@ function Home() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6 p-4">
+      <div className="flex justify-end">
+        <Link
+          to="/profile"
+          aria-label="個人檔案"
+          className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
+        >
+          {me.data?.avatar_url ? (
+            <img src={me.data.avatar_url} alt="" className="h-full w-full object-cover" />
+          ) : (
+            (me.data?.display_name?.[0] ?? "?").toUpperCase()
+          )}
+        </Link>
+      </div>
       <section className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-6 text-[var(--color-ink)] shadow-[4px_4px_0_0_var(--color-ink)]">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em]">ADFOCATE · KOCMAX</span>
         <h1 className="mt-2 font-display text-3xl font-bold leading-[1.05]">賺取積分<br/>兌換心儀獎賞</h1>
