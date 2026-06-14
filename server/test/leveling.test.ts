@@ -48,4 +48,28 @@ suite("leveling engine", () => {
     const ok = await req(`/missions/${m.slug}/join`, g.jwt, { method: "POST" });
     expect(ok.status).toBe(200);
   });
+
+  it("tracks level_seen and clears the pending celebration on acknowledge", async () => {
+    const d = await makeCreator("leveling-seen@test.local", 0);
+
+    // Fresh creator: level L0, level_seen L0 → nothing pending.
+    let me = await (await req("/me", d.jwt)).json();
+    expect(me.level).toBe("L0");
+    expect(me.level_seen).toBe("L0");
+
+    // Cross to L1: level advances, level_seen lags → pending.
+    await setXp(d.userId, 500);
+    me = await (await req("/me", d.jwt)).json();
+    expect(me.level).toBe("L1");
+    expect(me.level_seen).toBe("L0");
+
+    // Acknowledge: level_seen catches up to the current level.
+    const ack = await req("/me/level-seen", d.jwt, { method: "POST" });
+    expect(ack.status).toBe(200);
+    expect((await ack.json()).level_seen).toBe("L1");
+
+    // Idempotent: a second acknowledge is a no-op.
+    const ack2 = await req("/me/level-seen", d.jwt, { method: "POST" });
+    expect((await ack2.json()).level_seen).toBe("L1");
+  });
 });
