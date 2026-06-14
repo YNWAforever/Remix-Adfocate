@@ -40,12 +40,39 @@ export async function makeCreator(email: string, balance = 0) {
   return { userId, jwt: session.session!.access_token };
 }
 
+/** Create a confirmed auth user (email or phone) with NO creator row yet.
+ *  Returns a signed-in JWT — used to test first-login bootstrap. */
+export async function makeUser(opts: { email?: string; phone?: string }) {
+  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  if (opts.email) {
+    const password = "test-pw-123456";
+    const { data: created, error } = await service().auth.admin.createUser({
+      email: opts.email, password, email_confirm: true,
+    });
+    if (error) throw error;
+    const { data: session, error: signErr } = await anon.auth.signInWithPassword({ email: opts.email, password });
+    if (signErr) throw signErr;
+    return { userId: created.user.id, jwt: session.session!.access_token };
+  }
+  // Phone-primary: sign in via the test OTP (config.toml [auth.sms.test_otp]) — no SMS
+  // provider needed. Creates the user if absent, or signs into an existing one, so a
+  // leftover auth user from a prior failed run never collides.
+  const phone = opts.phone!;
+  const { error: otpErr } = await anon.auth.signInWithOtp({ phone });
+  if (otpErr) throw otpErr;
+  const { data: session, error: vErr } = await anon.auth.verifyOtp({ phone, token: "654321", type: "sms" });
+  if (vErr) throw vErr;
+  return { userId: session.user!.id, jwt: session.session!.access_token };
+}
+
 export async function cleanup() {
-  const { data } = await service().from("creators").select("id").like("display_name", "%@test.local");
-  for (const row of data ?? []) {
-    await service().from("point_transactions").delete().eq("creator_id", row.id);
-    await service().from("point_balances").delete().eq("creator_id", row.id);
-    await service().from("creators").delete().eq("id", row.id);
-    await service().auth.admin.deleteUser(row.id);
+  const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
+  const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
+  const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
+  for (const id of ids) {
+    await service().from("point_transactions").delete().eq("creator_id", id);
+    await service().from("point_balances").delete().eq("creator_id", id);
+    await service().from("creators").delete().eq("id", id);
+    await service().auth.admin.deleteUser(id);
   }
 }

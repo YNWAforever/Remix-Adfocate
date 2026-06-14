@@ -10,7 +10,7 @@
     "type-check": "tsr generate && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:integration": "RUN_INTEGRATION=1 vitest run server/test/rls.test.ts"
+    "test:integration": "RUN_INTEGRATION=1 vitest run --no-file-parallelism server/test/rls.test.ts server/test/bootstrap.test.ts server/test/onboarding.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

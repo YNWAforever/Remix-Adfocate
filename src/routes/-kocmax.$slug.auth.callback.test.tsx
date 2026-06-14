@@ -1,28 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 
-// Stable navigate spy (hoisted so the vi.mock factory can close over it).
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 
-// Partial-mock the router: real everything, but a controllable useNavigate and a Link that
-// renders its children without needing router context.
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-    Link: ({ children }: { children: React.ReactNode }) => children,
-  };
+  return { ...actual, useNavigate: () => mockNavigate, Link: ({ children }: { children: React.ReactNode }) => children };
 });
 
 vi.mock("@/lib/supabase", () => ({
-  supabase: { auth: { getSession: vi.fn(), refreshSession: vi.fn() } },
+  supabase: { auth: { exchangeCodeForSession: vi.fn() } },
 }));
-
-vi.mock("@/lib/api", () => ({ apiFetch: vi.fn(), WORKSPACE_SLUG: "demo" }));
+const { mockFinishAuth } = vi.hoisted(() => ({ mockFinishAuth: vi.fn() }));
+vi.mock("@/lib/auth-flow", () => ({ finishAuth: mockFinishAuth }));
 
 import { supabase } from "@/lib/supabase";
-import { apiFetch } from "@/lib/api";
 import { Route } from "./kocmax.$slug.auth.callback";
 
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
@@ -32,42 +24,38 @@ function renderCallback() {
   return render(<Callback />);
 }
 
-describe("Auth callback (magic-link landing)", () => {
+describe("Auth callback (PKCE landing)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: { access_token: "t" } } } as never);
-    vi.mocked(supabase.auth.refreshSession).mockResolvedValue({ data: {}, error: null } as never);
-    vi.mocked(apiFetch).mockResolvedValue({} as never);
+    window.history.replaceState({}, "", "/kocmax/demo/auth/callback?code=abc123");
+    vi.mocked(supabase.auth.exchangeCodeForSession).mockResolvedValue({ data: {}, error: null } as never);
+    mockFinishAuth.mockResolvedValue(undefined);
   });
 
-  it("bootstraps, refreshes and navigates home on a valid session", async () => {
+  it("exchanges the code then delegates to finishAuth", async () => {
     renderCallback();
-    await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith({ to: "/kocmax/$slug", params: { slug: "demo" } }),
-    );
-    expect(apiFetch).toHaveBeenCalledWith("/me/bootstrap", expect.objectContaining({ method: "POST" }));
-    expect(supabase.auth.refreshSession).toHaveBeenCalled();
+    await waitFor(() => expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledWith("abc123"));
+    expect(mockFinishAuth).toHaveBeenCalledWith("demo", mockNavigate);
   });
 
-  it("shows the recovery state and does NOT navigate when no session arrived", async () => {
-    vi.mocked(supabase.auth.getSession).mockResolvedValue({ data: { session: null } } as never);
+  it("shows the recovery state when no code is present", async () => {
+    window.history.replaceState({}, "", "/kocmax/demo/auth/callback");
     renderCallback();
     await waitFor(() => expect(screen.getByText(/登入未能完成/)).toBeInTheDocument());
-    expect(apiFetch).not.toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(mockFinishAuth).not.toHaveBeenCalled();
   });
 
-  it("shows the recovery state and does NOT navigate when bootstrap fails", async () => {
-    vi.mocked(apiFetch).mockRejectedValue(new Error("boom"));
+  it("shows the recovery state when the exchange fails", async () => {
+    vi.mocked(supabase.auth.exchangeCodeForSession).mockResolvedValue({ data: {}, error: { message: "bad code" } } as never);
     renderCallback();
     await waitFor(() => expect(screen.getByText(/登入未能完成/)).toBeInTheDocument());
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockFinishAuth).not.toHaveBeenCalled();
   });
 
-  it("shows the recovery state and does NOT navigate when the session refresh fails", async () => {
-    vi.mocked(supabase.auth.refreshSession).mockResolvedValue({ data: {}, error: { message: "refresh failed" } } as never);
+  it("shows the recovery state when finishAuth throws", async () => {
+    mockFinishAuth.mockRejectedValue(new Error("boom"));
     renderCallback();
     await waitFor(() => expect(screen.getByText(/登入未能完成/)).toBeInTheDocument());
-    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

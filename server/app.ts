@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { workspaceAuth } from "./middleware/workspace.js";
 import { workspaceRoutes } from "./routes/workspace.js";
 import { meBootstrap, meRoutes } from "./routes/me.js";
+import { onboardingRoutes } from "./routes/onboarding.js";
 import { walletRoutes } from "./routes/wallet.js";
 import { missionRoutes } from "./routes/missions.js";
 import { redemptionRoutes } from "./routes/redemption.js";
@@ -20,6 +21,7 @@ export function createApp() {
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
   guarded.route("/me", meRoutes);
+  guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
   guarded.route("/redemption", redemptionRoutes);
