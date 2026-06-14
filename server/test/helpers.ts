@@ -102,12 +102,53 @@ export async function makeMission(opts: {
   return data as { id: string; slug: string };
 }
 
+/** Seed a redeemable gift in DEMO_WS. Name MUST start with "test-" so cleanup()
+ *  removes it. Stock starts at 0; load codes with addCodes() (which bumps stock). */
+export async function makeGift(opts: {
+  name: string;
+  points_cost?: number;
+  status?: string;
+  valid_from?: string | null;
+  valid_to?: string | null;
+}) {
+  const { data, error } = await service()
+    .from("redemption_gifts")
+    .insert({
+      workspace_id: DEMO_WS,
+      name: opts.name,
+      points_cost: opts.points_cost ?? 100,
+      stock_qty: 0,
+      stock_remaining: 0,
+      gift_type: "voucher",
+      status: opts.status ?? "available",
+      valid_from: opts.valid_from ?? null,
+      valid_to: opts.valid_to ?? null,
+    })
+    .select("id, name")
+    .single();
+  if (error) throw error;
+  return data as { id: string; name: string };
+}
+
+/** Load a code pool for a gift and bump its stock_remaining in lockstep. */
+export async function addCodes(giftId: string, codes: string[]) {
+  const rows = codes.map((code) => ({ gift_id: giftId, workspace_id: DEMO_WS, code }));
+  const { error } = await service().from("redemption_codes").insert(rows);
+  if (error) throw error;
+  const { data: g } = await service().from("redemption_gifts").select("stock_remaining").eq("id", giftId).single();
+  await service()
+    .from("redemption_gifts")
+    .update({ stock_remaining: (g?.stock_remaining ?? 0) + codes.length })
+    .eq("id", giftId);
+}
+
 export async function cleanup() {
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
   for (const id of ids) {
+    await service().from("redemptions").delete().eq("creator_id", id);
     await service().from("point_transactions").delete().eq("creator_id", id);
     await service().from("point_balances").delete().eq("creator_id", id);
     await service().from("creators").delete().eq("id", id);
@@ -118,5 +159,12 @@ export async function cleanup() {
   for (const m of testMissions.data ?? []) {
     await service().from("mission_submissions").delete().eq("mission_id", m.id);
     await service().from("missions").delete().eq("id", m.id);
+  }
+  // Test gifts (name "test-%") with their codes + redemptions.
+  const testGifts = await service().from("redemption_gifts").select("id").like("name", "test-%");
+  for (const g of testGifts.data ?? []) {
+    await service().from("redemptions").delete().eq("gift_id", g.id);
+    await service().from("redemption_codes").delete().eq("gift_id", g.id);
+    await service().from("redemption_gifts").delete().eq("id", g.id);
   }
 }
