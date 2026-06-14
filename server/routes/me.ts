@@ -26,9 +26,10 @@ meBootstrap.post("/bootstrap", async (c) => {
   const { data: ws } = await svc.from("workspaces").select("id").eq("slug", slug).single();
   if (!ws) return c.json({ error: "Unknown workspace", code: "no_workspace" }, 404);
 
-  // Identity may be phone-primary (no email) or email — derive a non-null display name.
+  // Identity may be phone-primary or email — derive a non-empty display name.
+  // Phone-OTP users carry email === "" (empty string, not null), so use || not ??.
   const e164 = toE164(u.user.phone);
-  const displayName = u.user.email ?? e164 ?? "KOC";
+  const displayName = u.user.email || e164 || "KOC";
 
   // Resolve an optional referral code from the signup link (reject self-referral).
   let referredBy: string | null = null;
@@ -60,9 +61,10 @@ meBootstrap.post("/bootstrap", async (c) => {
   return c.json({ created });
 });
 
-/** Guarded: current creator profile (includes onboarding state for the gate). */
+/** Guarded: current creator profile (includes onboarding state for the gate).
+ *  Mounted at `/me`, so the handler path is "/" → final route is GET /api/me. */
 export const meRoutes = new Hono<Env>();
-meRoutes.get("/me", async (c) => {
+meRoutes.get("/", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data, error } = await supabase
     .from("creators")
