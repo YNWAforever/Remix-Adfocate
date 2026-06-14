@@ -31,6 +31,7 @@ export async function makeCreator(email: string, balance = 0) {
 
   await service().from("creators").insert({ id: userId, workspace_id: DEMO_WS, display_name: email });
   await service().from("point_balances").insert({ creator_id: userId, workspace_id: DEMO_WS, balance });
+  await service().from("earnings_balances").insert({ creator_id: userId, workspace_id: DEMO_WS, available: 0 });
 
   const anon = createClient(url, anonKey, { auth: { persistSession: false } });
   const { data: session, error: signErr } = await anon.auth.signInWithPassword({
@@ -73,6 +74,7 @@ export async function makeMission(opts: {
   mission_type?: string;
   access_type?: "open" | "application";
   points_reward?: number;
+  cash_reward?: number;
   quota?: number;
   filled?: number;
   status?: string;
@@ -89,6 +91,7 @@ export async function makeMission(opts: {
       mission_type: opts.mission_type ?? "ugc",
       access_type: opts.access_type ?? "open",
       points_reward: opts.points_reward ?? 100,
+      cash_reward: opts.cash_reward ?? null,
       quota: opts.quota ?? 10,
       filled: opts.filled ?? 0,
       status: opts.status ?? "active",
@@ -149,6 +152,8 @@ export async function cleanup() {
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
   for (const id of ids) {
     await service().from("redemptions").delete().eq("creator_id", id);
+    await service().from("earnings_transactions").delete().eq("creator_id", id);
+    await service().from("earnings_balances").delete().eq("creator_id", id);
     await service().from("point_transactions").delete().eq("creator_id", id);
     await service().from("point_balances").delete().eq("creator_id", id);
     await service().from("creators").delete().eq("id", id);
