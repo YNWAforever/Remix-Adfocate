@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { apiFetch, setWorkspaceSlug } from "@/lib/api";
+import { apiFetch, setWorkspaceSlug, ApiError } from "@/lib/api";
 import { resolveWorkspace } from "@/lib/workspace";
 import { useWorkspace, type Me } from "@/lib/queries/kocmax";
 import { applyTheme } from "@/lib/theme";
@@ -22,10 +22,23 @@ export const Route = createFileRoute("/_app")({
 
     // Onboarding gate (defence in depth). Cached read → no per-navigation round-trip.
     if (data.session && !isAuthRoute && !isOnboardingRoute) {
-      const me = await context.queryClient.ensureQueryData({
-        queryKey: ["me"],
-        queryFn: () => apiFetch<Me>("/me"),
-      });
+      let me: Me | undefined;
+      try {
+        me = await context.queryClient.ensureQueryData({
+          queryKey: ["me"],
+          queryFn: () => apiFetch<Me>("/me"),
+        });
+      } catch (err) {
+        // A stale / expired session makes /me return 401 — sign the dead session
+        // out and send the user to login, rather than letting the error crash the
+        // route into the default "Something went wrong" boundary.
+        if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
+          await supabase.auth.signOut({ scope: "local" });
+          context.queryClient.removeQueries({ queryKey: ["me"] });
+          throw redirect({ to: "/login" });
+        }
+        throw err;
+      }
       if (me && me.onboarding_completed === false) {
         throw redirect({ to: "/onboarding" });
       }
