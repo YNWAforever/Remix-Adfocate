@@ -54,7 +54,7 @@ function Profile() {
 
   async function signOut() {
     await supabase.auth.signOut();
-    qc.removeQueries({ queryKey: ["me"] });
+    qc.clear();
     navigate({ to: "/login" });
   }
 
@@ -146,6 +146,7 @@ function Profile() {
                 type="button"
                 onClick={copyReferral}
                 disabled={!d.referral_code}
+                aria-label="複製邀請碼"
                 className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
               >
                 {copied ? "已複製" : "複製"}
@@ -162,10 +163,10 @@ function Profile() {
               我的任務
             </Link>
             <Link
-              to="/redemption"
+              to="/wallet"
               className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
             >
-              兌換記錄
+              積分記錄
             </Link>
           </section>
 

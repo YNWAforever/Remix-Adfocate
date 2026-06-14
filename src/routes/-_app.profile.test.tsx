@@ -42,7 +42,6 @@ vi.mock("@/lib/queries/kocmax", () => ({
 vi.mock("@/lib/supabase", () => ({ supabase: { auth: { signOut: hoisted.signOut } } }));
 
 import { Route } from "./_app.profile";
-vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 
 function renderProfile() {
   const C = Route.options.component as React.ComponentType;
@@ -94,5 +93,15 @@ describe("Profile page", () => {
     fireEvent.click(screen.getByText("登出"));
     await waitFor(() => expect(hoisted.signOut).toHaveBeenCalled());
     expect(mockNavigate).toHaveBeenCalledWith({ to: "/login" });
+  });
+
+  it("shows an error and stays in edit mode when save fails", async () => {
+    hoisted.update.mockRejectedValueOnce(new Error("network"));
+    renderProfile();
+    fireEvent.click(screen.getByText("編輯"));
+    fireEvent.click(screen.getByText("儲存"));
+    expect(await screen.findByText("儲存失敗，請重試")).toBeInTheDocument();
+    // still in edit mode → the display-name input is still present
+    expect(screen.getByLabelText("顯示名稱")).toBeInTheDocument();
   });
 });
