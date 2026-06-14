@@ -6,6 +6,7 @@ import { resolveWorkspace } from "@/lib/workspace";
 import { useWorkspace, type Me } from "@/lib/queries/kocmax";
 import { applyTheme } from "@/lib/theme";
 import { BottomNav } from "@/components/BottomNav";
+import { LevelUpModal } from "@/components/LevelUpModal";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location, context }) => {
@@ -53,6 +54,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)] pb-20">
       <main><Outlet /></main>
+      <LevelUpModal />
       <BottomNav />
     </div>
   );
