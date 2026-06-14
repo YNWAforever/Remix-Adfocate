@@ -27,7 +27,7 @@ adminRoutes.get("/submissions", async (c) => {
 });
 
 adminRoutes.post("/submissions/:id/approve", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}))).notes ?? null;
+  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({} as { notes?: string }))).notes ?? null;
   const svc = serviceClient();
   const { data, error } = await svc.rpc("approve_submission", { p_submission: c.req.param("id"), p_notes: notes });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
@@ -35,7 +35,7 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
 });
 
 adminRoutes.post("/submissions/:id/reject", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}))).notes ?? null;
+  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({} as { notes?: string }))).notes ?? null;
   const svc = serviceClient();
   const { data, error } = await svc.rpc("reject_submission", { p_submission: c.req.param("id"), p_notes: notes });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
