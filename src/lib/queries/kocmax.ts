@@ -20,6 +20,7 @@ export type Me = {
   display_name?: string;
   avatar_url?: string | null;
   level: string;
+  level_seen?: string;
   xp: number;
   phone?: string | null;
   categories?: string[];
@@ -67,6 +68,14 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (body: { display_name?: string; categories?: string[]; social_handles?: SocialHandle[] }) =>
       apiFetch<Me>("/me/profile", { method: "PUT", body: JSON.stringify(body) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+  });
+}
+
+export function useMarkLevelSeen() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<Me>("/me/level-seen", { method: "POST" }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
   });
 }
