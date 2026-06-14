@@ -40,12 +40,33 @@ export async function makeCreator(email: string, balance = 0) {
   return { userId, jwt: session.session!.access_token };
 }
 
+/** Create a confirmed auth user (email or phone) with NO creator row yet.
+ *  Returns a signed-in JWT — used to test first-login bootstrap. */
+export async function makeUser(opts: { email?: string; phone?: string }) {
+  const password = "test-pw-123456";
+  const { data: created, error } = await service().auth.admin.createUser(
+    opts.email
+      ? { email: opts.email, password, email_confirm: true }
+      : { phone: opts.phone, password, phone_confirm: true },
+  );
+  if (error) throw error;
+
+  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  const { data: session, error: signErr } = await anon.auth.signInWithPassword(
+    opts.email ? { email: opts.email, password } : { phone: opts.phone!, password },
+  );
+  if (signErr) throw signErr;
+  return { userId: created.user.id, jwt: session.session!.access_token };
+}
+
 export async function cleanup() {
-  const { data } = await service().from("creators").select("id").like("display_name", "%@test.local");
-  for (const row of data ?? []) {
-    await service().from("point_transactions").delete().eq("creator_id", row.id);
-    await service().from("point_balances").delete().eq("creator_id", row.id);
-    await service().from("creators").delete().eq("id", row.id);
-    await service().auth.admin.deleteUser(row.id);
+  const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
+  const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
+  const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
+  for (const id of ids) {
+    await service().from("point_transactions").delete().eq("creator_id", id);
+    await service().from("point_balances").delete().eq("creator_id", id);
+    await service().from("creators").delete().eq("id", id);
+    await service().auth.admin.deleteUser(id);
   }
 }
