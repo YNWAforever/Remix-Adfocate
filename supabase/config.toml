@@ -256,7 +256,10 @@ otp_expiry = 3600
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
-enable_signup = false
+# Enabled so the local/CI stack can exercise phone-primary auth (Slice 3 WhatsApp
+# login + the phone bootstrap integration test). Real OTP delivery is configured in
+# the cloud dashboard (Twilio Verify); password sign-in needs no provider locally.
+enable_signup = true
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
@@ -264,9 +267,10 @@ template = "Your code is {{ .Code }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 
-# Use pre-defined map of phone number to OTP for testing.
-# [auth.sms.test_otp]
-# 4152127777 = "123456"
+# Use pre-defined map of phone number to OTP for testing. Enables phone login on the
+# local/CI stack without a real SMS provider (the integration test signs in with this code).
+[auth.sms.test_otp]
+15555550100 = "654321"
 
 # Configure logged in session timeouts.
 # [auth.sessions]
@@ -287,9 +291,13 @@ max_frequency = "5s"
 
 # Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
 [auth.sms.twilio]
-enabled = false
-account_sid = ""
-message_service_sid = ""
+# Enabled with placeholder credentials so phone login is active on the local/CI stack.
+# Real numbers are never messaged here: [auth.sms.test_otp] above intercepts the test
+# number and returns its fixed code. Production Twilio Verify is configured in the cloud
+# dashboard, not here.
+enabled = true
+account_sid = "ACtest"
+message_service_sid = "MGtest"
 # DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
 auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 

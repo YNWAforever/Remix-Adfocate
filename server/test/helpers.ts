@@ -43,20 +43,26 @@ export async function makeCreator(email: string, balance = 0) {
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
-  const password = "test-pw-123456";
-  const { data: created, error } = await service().auth.admin.createUser(
-    opts.email
-      ? { email: opts.email, password, email_confirm: true }
-      : { phone: opts.phone, password, phone_confirm: true },
-  );
-  if (error) throw error;
-
   const anon = createClient(url, anonKey, { auth: { persistSession: false } });
-  const { data: session, error: signErr } = await anon.auth.signInWithPassword(
-    opts.email ? { email: opts.email, password } : { phone: opts.phone!, password },
-  );
-  if (signErr) throw signErr;
-  return { userId: created.user.id, jwt: session.session!.access_token };
+  if (opts.email) {
+    const password = "test-pw-123456";
+    const { data: created, error } = await service().auth.admin.createUser({
+      email: opts.email, password, email_confirm: true,
+    });
+    if (error) throw error;
+    const { data: session, error: signErr } = await anon.auth.signInWithPassword({ email: opts.email, password });
+    if (signErr) throw signErr;
+    return { userId: created.user.id, jwt: session.session!.access_token };
+  }
+  // Phone-primary: sign in via the test OTP (config.toml [auth.sms.test_otp]) — no SMS
+  // provider needed. Creates the user if absent, or signs into an existing one, so a
+  // leftover auth user from a prior failed run never collides.
+  const phone = opts.phone!;
+  const { error: otpErr } = await anon.auth.signInWithOtp({ phone });
+  if (otpErr) throw otpErr;
+  const { data: session, error: vErr } = await anon.auth.verifyOtp({ phone, token: "654321", type: "sms" });
+  if (vErr) throw vErr;
+  return { userId: session.user!.id, jwt: session.session!.access_token };
 }
 
 export async function cleanup() {
