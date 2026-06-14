@@ -44,3 +44,30 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
   return c.json(data);
 });
+
+adminRoutes.post("/gifts/:id/codes", async (c) => {
+  const body = await c.req.json<{ codes?: string[] }>().catch(() => ({} as { codes?: string[] }));
+  const codes = (body.codes ?? []).map((s) => s.trim()).filter(Boolean);
+  if (codes.length === 0) return c.json({ error: "no codes", code: "empty_codes" }, 400);
+  const giftId = c.req.param("id");
+  const svc = serviceClient();
+
+  const { data: g, error: gErr } = await svc
+    .from("redemption_gifts")
+    .select("id, workspace_id, stock_remaining")
+    .eq("id", giftId)
+    .maybeSingle();
+  if (gErr) return c.json({ error: gErr.message, code: "db_error" }, 500);
+  if (!g) return c.json({ error: "not_found", code: "not_found" }, 404);
+
+  const rows = codes.map((code) => ({ gift_id: giftId, workspace_id: g.workspace_id, code }));
+  const { error: insErr } = await svc.from("redemption_codes").insert(rows);
+  if (insErr) return c.json({ error: insErr.message, code: "db_error" }, 500);
+
+  // Bump stock by the batch size (single operator → no contention on this read-modify-write).
+  await svc
+    .from("redemption_gifts")
+    .update({ stock_remaining: (g.stock_remaining ?? 0) + codes.length })
+    .eq("id", giftId);
+  return c.json({ added: codes.length });
+});
