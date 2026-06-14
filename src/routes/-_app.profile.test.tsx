@@ -24,7 +24,8 @@ const hoisted = vi.hoisted(() => ({
       id: "u1",
       display_name: "阿明",
       level: "L1",
-      xp: 120,
+      level_seen: "L1",
+      xp: 600,
       categories: ["美容", "科技"],
       social_handles: [{ platform: "Instagram", handle: "@ming", followers: 500, verified: true }],
       onboarding_step: 5,
@@ -62,7 +63,8 @@ describe("Profile page", () => {
   it("renders name, level, categories and referral code", () => {
     renderProfile();
     expect(screen.getByText("阿明")).toBeInTheDocument();
-    expect(screen.getByText("L1")).toBeInTheDocument();
+    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText("還需 1400 XP 升至 Creator")).toBeInTheDocument();
     expect(screen.getByText("美容")).toBeInTheDocument();
     expect(screen.getByText("ABCD1234")).toBeInTheDocument();
   });
