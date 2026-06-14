@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { BadgePill } from "./BadgePill";
-import { FilterPills } from "./FilterPills";
+import { FilterPills, FilterPillsMulti } from "./FilterPills";
 import { PointsBalanceCard } from "./PointsBalanceCard";
 import { MissionCard } from "./MissionCard";
 import { RewardCard } from "./RewardCard";
@@ -42,5 +42,22 @@ describe("presentational components", () => {
     render(<ProgressBar value={150} max={100} />);
     const fill = document.querySelector('[style*="width"]') as HTMLElement;
     expect(fill?.style.width).toBe("100%");
+  });
+});
+
+describe("FilterPillsMulti", () => {
+  it("toggles a value in and out of the selection", () => {
+    const seen: string[][] = [];
+    const onChange = (v: string[]) => seen.push(v);
+    const { rerender } = render(
+      <FilterPillsMulti options={["美容", "餐飲", "寵物"]} value={[]} onChange={onChange} />,
+    );
+    fireEvent.click(screen.getByText("美容"));
+    expect(seen.at(-1)).toEqual(["美容"]);
+
+    rerender(<FilterPillsMulti options={["美容", "餐飲", "寵物"]} value={["美容"]} onChange={onChange} />);
+    expect(screen.getByText("美容")).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByText("美容"));
+    expect(seen.at(-1)).toEqual([]);
   });
 });
