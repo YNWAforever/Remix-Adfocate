@@ -5,7 +5,7 @@ import { useMission, useMyMissions, useJoinMission, useSubmitMission } from "@/l
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/mission/$missionSlug")({ component: MissionDetail });
+export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 
 const STATUS_LABEL: Record<string, string> = {
   joined: "進行中", submitted: "審批中", under_review: "審批中",
@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 function MissionDetail() {
-  const { slug, missionSlug } = Route.useParams();
+  const { missionSlug } = Route.useParams();
   const m = useMission(missionSlug);
   const mine = useMyMissions();
   const join = useJoinMission(missionSlug);
@@ -24,7 +24,7 @@ function MissionDetail() {
   if (m.isError || !m.data) return (
     <div className="flex flex-col items-center gap-4 p-8 text-center">
       <p className="text-sm text-[var(--color-magenta)]">無法載入任務</p>
-      <Link to="/kocmax/$slug/mission" params={{ slug }} className="text-sm underline">返回列表</Link>
+      <Link to="/mission" className="text-sm underline">返回列表</Link>
     </div>
   );
 
@@ -41,7 +41,7 @@ function MissionDetail() {
   return (
     <div className="mx-auto max-w-lg pb-6">
       <header className="glass-panel sticky top-0 z-30 flex items-center gap-3 border-b-2 border-[var(--color-ink)] p-3">
-        <Link to="/kocmax/$slug/mission" params={{ slug }} aria-label="返回" className="grid h-9 w-9 place-items-center rounded-full border-2 border-[var(--color-ink)] bg-white"><ArrowLeft size={18} /></Link>
+        <Link to="/mission" aria-label="返回" className="grid h-9 w-9 place-items-center rounded-full border-2 border-[var(--color-ink)] bg-white"><ArrowLeft size={18} /></Link>
         <h1 className="truncate font-heading font-semibold">{m.data.title}</h1>
       </header>
       <div className="space-y-4 p-4">

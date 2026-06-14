@@ -21,7 +21,7 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useCompleteOnboarding: () => ({ mutateAsync: hoisted.complete, isPending: false }),
 }));
 
-import { Route } from "./kocmax.$slug.onboarding";
+import { Route } from "./_app.onboarding";
 
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 

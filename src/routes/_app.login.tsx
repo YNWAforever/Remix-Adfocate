@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 
-export const Route = createFileRoute("/kocmax/$slug/login")({ component: Login });
+export const Route = createFileRoute("/_app/login")({ component: Login });
 
 /** Normalise a HK number to E.164. Accepts "9123 4567", "+85291234567", etc. */
 function toHkE164(raw: string): string {
@@ -13,7 +13,6 @@ function toHkE164(raw: string): string {
 }
 
 function Login() {
-  const { slug } = Route.useParams();
   const navigate = useNavigate();
 
   const [stage, setStage] = useState<"phone" | "code">("phone");
@@ -41,7 +40,7 @@ function Login() {
     const { error } = await supabase.auth.verifyOtp({ phone: toHkE164(phone), token: code.trim(), type: "sms" });
     if (error) { setBusy(false); setError(error.message); return; }
     try {
-      await finishAuth(slug, navigate);
+      await finishAuth(navigate);
     } catch {
       setBusy(false);
       setError("登入未能完成，請重試");
@@ -119,13 +118,13 @@ function Login() {
         >
           其他登入方式
         </button>
-        {showSecondary && <SecondaryMethods slug={slug} />}
+        {showSecondary && <SecondaryMethods />}
       </div>
     </div>
   );
 }
 
-function SecondaryMethods({ slug }: { slug: string }) {
+function SecondaryMethods() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -136,7 +135,7 @@ function SecondaryMethods({ slug }: { slug: string }) {
     setBusy(true); setError(null);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/kocmax/${slug}/auth/callback` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setBusy(false);
     if (error) { setError(error.message); return; }
@@ -146,7 +145,7 @@ function SecondaryMethods({ slug }: { slug: string }) {
   async function google() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/kocmax/${slug}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   }
 

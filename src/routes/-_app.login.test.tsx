@@ -14,7 +14,7 @@ const { mockFinishAuth } = vi.hoisted(() => ({ mockFinishAuth: vi.fn() }));
 vi.mock("@/lib/auth-flow", () => ({ finishAuth: mockFinishAuth }));
 
 import { supabase } from "@/lib/supabase";
-import { Route } from "./kocmax.$slug.login";
+import { Route } from "./_app.login";
 
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 
@@ -51,7 +51,7 @@ describe("Login (WhatsApp primary)", () => {
     await waitFor(() =>
       expect(supabase.auth.verifyOtp).toHaveBeenCalledWith({ phone: "+85291234567", token: "123456", type: "sms" }),
     );
-    expect(mockFinishAuth).toHaveBeenCalledWith("demo", mockNavigate);
+    expect(mockFinishAuth).toHaveBeenCalledWith(mockNavigate);
   });
 
   it("shows an error when sending the OTP fails", async () => {
@@ -78,7 +78,7 @@ describe("Login (WhatsApp primary)", () => {
     await waitFor(() =>
       expect(supabase.auth.signInWithOtp).toHaveBeenCalledWith({
         email: "user@example.com",
-        options: { emailRedirectTo: expect.stringContaining("/kocmax/demo/auth/callback") },
+        options: { emailRedirectTo: expect.stringContaining("/auth/callback") },
       }),
     );
     expect(await screen.findByText(/登入連結已傳送/)).toBeInTheDocument();

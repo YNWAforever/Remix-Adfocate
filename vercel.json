@@ -1,4 +1,9 @@
 {
+  "redirects": [
+    { "source": "/kocmax/demo", "destination": "/home" },
+    { "source": "/kocmax/demo/", "destination": "/home" },
+    { "source": "/kocmax/demo/:path*", "destination": "/:path*" }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }

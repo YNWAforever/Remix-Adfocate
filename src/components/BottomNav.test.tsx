@@ -4,7 +4,7 @@ import { RouterProvider, createRouter, createRootRoute, createRoute, createMemor
 import { BottomNav } from "./BottomNav";
 
 function renderNav() {
-  const root = createRootRoute({ component: () => <BottomNav slug="demo" /> });
+  const root = createRootRoute({ component: () => <BottomNav /> });
   const index = createRoute({ getParentRoute: () => root, path: "/", component: () => null });
   const router = createRouter({ routeTree: root.addChildren([index]), history: createMemoryHistory({ initialEntries: ["/"] }) });
   return render(<RouterProvider router={router as never} />);

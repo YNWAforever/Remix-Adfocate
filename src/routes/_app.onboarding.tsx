@@ -12,13 +12,12 @@ import {
   useCompleteOnboarding,
 } from "@/lib/queries/kocmax";
 
-export const Route = createFileRoute("/kocmax/$slug/onboarding")({ component: Wizard });
+export const Route = createFileRoute("/_app/onboarding")({ component: Wizard });
 
 const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", "寵物"] as const;
 const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
 
 function Wizard() {
-  const { slug } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const status = useOnboardingStatus();
@@ -148,7 +147,7 @@ function Wizard() {
               <p className="text-sm text-[var(--color-soft-ink)]">邀請朋友，各得 200 分</p>
               <button
                 type="button"
-                onClick={() => navigate({ to: "/kocmax/$slug", params: { slug } })}
+                onClick={() => navigate({ to: "/home" })}
                 className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
               >
                 開始賺取積分

@@ -5,10 +5,9 @@ import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { MissionCard } from "@/components/MissionCard";
 
-export const Route = createFileRoute("/kocmax/$slug/")({ component: Home });
+export const Route = createFileRoute("/_app/home")({ component: Home });
 
 function Home() {
-  const { slug } = Route.useParams();
   const me = useMe();
   const balance = useBalance();
   const missions = useMissions();
@@ -22,21 +21,19 @@ function Home() {
         <p className="mt-2 text-sm">購物賺積分 · 完成任務 · 兌換獎賞</p>
       </section>
 
-      {balance.isError && (
-        <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>
-      )}
+      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
 
       <section className="grid grid-cols-2 gap-3">
         {[
-          { to: "/kocmax/$slug/mission", label: "限時任務", icon: Target },
-          { to: "/kocmax/$slug/redemption", label: "積分兌換", icon: Gift },
-          { to: "/kocmax/$slug/wallet", label: "積分記錄", icon: Receipt },
-          { to: "/kocmax/$slug/explore", label: "探索獎賞", icon: CalendarCheck },
+          { to: "/mission", label: "限時任務", icon: Target },
+          { to: "/redemption", label: "積分兌換", icon: Gift },
+          { to: "/wallet", label: "積分記錄", icon: Receipt },
+          { to: "/explore", label: "探索獎賞", icon: CalendarCheck },
         ].map((a) => {
           const Icon = a.icon;
           return (
-            <Link key={a.label} to={a.to as string} params={{ slug }} aria-label={a.label} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
+            <Link key={a.label} to={a.to} aria-label={a.label} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
               <Icon size={20} aria-hidden /> {a.label}
             </Link>
           );
@@ -48,7 +45,7 @@ function Home() {
         {missions.isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
         <div className="space-y-2">
           {missions.data?.slice(0, 3).map((m) => (
-            <Link key={m.id} to="/kocmax/$slug/mission/$missionSlug" params={{ slug, missionSlug: m.slug }}>
+            <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>
               <MissionCard title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
             </Link>
           ))}
