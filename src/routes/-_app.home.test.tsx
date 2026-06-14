@@ -15,7 +15,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 });
 
 vi.mock("@/lib/queries/kocmax", () => ({
-  useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null }, isLoading: false }),
+  useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null, level: "L1" }, isLoading: false }),
   useBalance: () => ({ data: { balance: 0, available_to: null }, isLoading: false, isError: false }),
   useMissions: () => ({ data: [], isLoading: false, isError: false }),
 }));
@@ -38,5 +38,10 @@ describe("Home", () => {
     renderHome();
     const link = screen.getByLabelText("個人檔案");
     expect(link).toHaveAttribute("href", "/profile");
+  });
+
+  it("shows a level chip with the current level", () => {
+    renderHome();
+    expect(screen.getByText("🌟 L1")).toBeInTheDocument();
   });
 });
