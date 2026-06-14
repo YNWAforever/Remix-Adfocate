@@ -2,7 +2,7 @@
 
 The code is deployed; these are the **dashboard / env steps a human must do** (the agent can't). Do the 🔴 items before relying on the feature they gate.
 
-> 🔴🔴 **Most urgent — item 0:** the cloud DB is missing migrations **0003–0007**. Until they're applied, the production API 500s on onboarding / missions / redemption / earnings. Do this first.
+> 🟢 **Item 0 done (2026-06-14):** migrations 0003–0007 applied to cloud via the SQL editor; all tables/functions/grants/RLS verified present and `redemption_codes` confirmed secret (RLS default-deny). The migration *tracker* still reads 0001+0002 — see the item 0 note about a future `supabase db push`.
 
 **Constants**
 - Production origin: `https://adfocate-2.vercel.app`
@@ -11,7 +11,7 @@ The code is deployed; these are the **dashboard / env steps a human must do** (t
 
 | # | Item | Gates | Status |
 |---|------|-------|--------|
-| 0 | Apply migrations **0003 → 0007** to the cloud DB | all backend features (onboarding, missions, redemption, earnings) | 🔴 pending |
+| 0 | Apply migrations **0003 → 0007** to the cloud DB | all backend features (onboarding, missions, redemption, earnings) | 🟢 done (2026-06-14, SQL editor) |
 | 1 | Supabase Site URL + redirect allow-list → `/auth/callback` | Google + email-magic-link login | 🔴 pending |
 | 2 | Google OAuth client + redirect → `/auth/callback` | "Sign in with Google" | 🔴 pending |
 | 3 | Twilio + Meta WABA → Supabase Phone provider | WhatsApp OTP (primary login) | 🔴 pending |
@@ -39,6 +39,11 @@ The cloud project `mhkoayftiuojxlrkollf` has only migrations **0001 + 0002** app
 > ⚠️ Order matters: 0004 grants reference tables from 0003/0005, and 0007 redefines the `approve_submission` function from 0005. After applying, confirm via **Supabase → Database → Migrations** (or `supabase migration list`) showing 0001–0007.
 
 **Slice 5 follow-on:** before any gift is redeemable in prod, load its code pool via `POST /api/admin/gifts/:id/codes` with the `x-admin-secret` header (item 4). Seed `stock_remaining` to equal the loaded code count.
+
+> **✅ Done 2026-06-14** (applied via SQL editor). Verified on cloud: all five migrations' tables/columns/functions exist; grants correct (`authenticated` self-reads, `service_role` writes, `redeem_gift` executable, `approve_submission` service-only); RLS enabled everywhere; `redemption_codes` has RLS on + 0 policies → codes secret.
+> **Two caveats from the SQL-editor route:**
+> 1. The `supabase_migrations.schema_migrations` tracker still lists only 0001+0002 (the editor doesn't write tracker rows). If you ever `supabase link` + `supabase db push`, it'll try to re-apply 0003–0007 and fail on "already exists" — first reconcile by inserting tracker rows, or apply future migrations via the editor too.
+> 2. Optional hardening: the cloud project's legacy `auto_expose_new_tables=true` auto-granted `authenticated` SELECT on `redemption_codes` (RLS still blocks all rows, so it's not a leak). To match intent: `revoke select on public.redemption_codes from authenticated;`.
 
 ## 1. 🔴 Supabase — Site URL + redirect allow-list
 The entry redesign moved the auth callback to a single `/auth/callback` (was `/kocmax/$slug/auth/callback`). Until this matches, Google/magic-link login fails after the redirect.
