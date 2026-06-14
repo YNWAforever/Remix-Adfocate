@@ -37,3 +37,5 @@ jobs:
           echo "SUPABASE_ANON_KEY=${ANON_KEY}" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_KEY=${SERVICE_ROLE_KEY}" >> $GITHUB_ENV
       - run: npm run test:integration
+        env:
+          ADMIN_SECRET: test-admin-secret

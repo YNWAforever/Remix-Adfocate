@@ -65,7 +65,45 @@ export async function makeUser(opts: { email?: string; phone?: string }) {
   return { userId: session.user!.id, jwt: session.session!.access_token };
 }
 
+/** Seed a mission in DEMO_WS. Use slug prefix "test-" so cleanup() removes it
+ *  (and never mutate seed missions — join/submit increment filled permanently). */
+export async function makeMission(opts: {
+  slug: string;
+  title?: string;
+  mission_type?: string;
+  access_type?: "open" | "application";
+  points_reward?: number;
+  quota?: number;
+  filled?: number;
+  status?: string;
+  required_level?: string;
+  deadline?: string | null;
+  category?: string;
+}) {
+  const { data, error } = await service()
+    .from("missions")
+    .insert({
+      workspace_id: DEMO_WS,
+      slug: opts.slug,
+      title: opts.title ?? opts.slug,
+      mission_type: opts.mission_type ?? "ugc",
+      access_type: opts.access_type ?? "open",
+      points_reward: opts.points_reward ?? 100,
+      quota: opts.quota ?? 10,
+      filled: opts.filled ?? 0,
+      status: opts.status ?? "active",
+      required_level: opts.required_level ?? "L0",
+      deadline: opts.deadline ?? null,
+      category: opts.category ?? "美容",
+    })
+    .select("id, slug")
+    .single();
+  if (error) throw error;
+  return data as { id: string; slug: string };
+}
+
 export async function cleanup() {
+  // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
@@ -74,5 +112,11 @@ export async function cleanup() {
     await service().from("point_balances").delete().eq("creator_id", id);
     await service().from("creators").delete().eq("id", id);
     await service().auth.admin.deleteUser(id);
+  }
+  // Test missions (slug "test-%") and any leftover submissions on them.
+  const testMissions = await service().from("missions").select("id").like("slug", "test-%");
+  for (const m of testMissions.data ?? []) {
+    await service().from("mission_submissions").delete().eq("mission_id", m.id);
+    await service().from("missions").delete().eq("id", m.id);
   }
 }

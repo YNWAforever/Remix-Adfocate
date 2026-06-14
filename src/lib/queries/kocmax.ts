@@ -1,10 +1,12 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 
+export type SubmissionStatus = "joined" | "submitted" | "under_review" | "approved" | "rejected" | "expired";
 export type Mission = {
   id: string; slug: string; title: string; description?: string;
-  category?: string; mission_type: string; points_reward: number;
+  category?: string; mission_type: string; access_type?: string; points_reward: number;
   deadline?: string; quota: number; filled: number; status: string;
+  my_status?: SubmissionStatus | null;
 };
 export type Gift = {
   id: string; name: string; category?: string; points_cost: number;
@@ -86,5 +88,51 @@ export function useConnectSocial() {
 export function useCompleteOnboarding() {
   return useMutation({
     mutationFn: () => apiFetch<CompleteResult>("/onboarding/complete", { method: "POST" }),
+  });
+}
+
+export type MyMission = {
+  id: string;
+  status: SubmissionStatus;
+  content_urls: string[];
+  points_awarded: number;
+  submitted_at?: string | null;
+  reviewed_at?: string | null;
+  created_at: string;
+  missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string };
+};
+
+export function useMyMissions(status?: SubmissionStatus) {
+  const qs = status ? `?status=${status}` : "";
+  return useQuery({
+    queryKey: ["my-missions", status ?? "all"],
+    queryFn: async () => (await apiFetch<{ submissions: MyMission[] }>(`/missions/my${qs}`)).submissions,
+  });
+}
+
+export function useJoinMission(slug: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<MyMission>(`/missions/${slug}/join`, { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mission", slug] });
+      qc.invalidateQueries({ queryKey: ["missions"] });
+      qc.invalidateQueries({ queryKey: ["my-missions"] });
+      qc.invalidateQueries({ queryKey: ["me"] }); // join awards +10 XP on creators.xp
+    },
+  });
+}
+
+export function useSubmitMission(slug: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { content_urls: string[]; submission_data?: Record<string, unknown> }) =>
+      apiFetch<MyMission>(`/missions/${slug}/submit`, { method: "PUT", body: JSON.stringify(body) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mission", slug] });
+      qc.invalidateQueries({ queryKey: ["missions"] }); // my_status badge flips joined→submitted
+      qc.invalidateQueries({ queryKey: ["my-missions"] });
+      qc.invalidateQueries({ queryKey: ["me"] }); // submit awards +25 XP on creators.xp
+    },
   });
 }

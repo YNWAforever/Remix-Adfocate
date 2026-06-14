@@ -6,6 +6,7 @@ import { onboardingRoutes } from "./routes/onboarding.js";
 import { walletRoutes } from "./routes/wallet.js";
 import { missionRoutes } from "./routes/missions.js";
 import { redemptionRoutes } from "./routes/redemption.js";
+import { adminRoutes } from "./routes/admin.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -17,6 +18,9 @@ export function createApp() {
 
   // Unguarded: first-login creator bootstrap (runs before a creator row exists).
   app.route("/me", meBootstrap);
+
+  // Unguarded operator endpoints (own shared-secret middleware, not workspaceAuth).
+  app.route("/admin", adminRoutes);
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
