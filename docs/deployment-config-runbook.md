@@ -2,6 +2,8 @@
 
 The code is deployed; these are the **dashboard / env steps a human must do** (the agent can't). Do the 🔴 items before relying on the feature they gate.
 
+> 🔴🔴 **Most urgent — item 0:** the cloud DB is missing migrations **0003–0007**. Until they're applied, the production API 500s on onboarding / missions / redemption / earnings. Do this first.
+
 **Constants**
 - Production origin: `https://adfocate-2.vercel.app`
 - Supabase project ref: `mhkoayftiuojxlrkollf`
@@ -9,6 +11,7 @@ The code is deployed; these are the **dashboard / env steps a human must do** (t
 
 | # | Item | Gates | Status |
 |---|------|-------|--------|
+| 0 | Apply migrations **0003 → 0007** to the cloud DB | all backend features (onboarding, missions, redemption, earnings) | 🔴 pending |
 | 1 | Supabase Site URL + redirect allow-list → `/auth/callback` | Google + email-magic-link login | 🔴 pending |
 | 2 | Google OAuth client + redirect → `/auth/callback` | "Sign in with Google" | 🔴 pending |
 | 3 | Twilio + Meta WABA → Supabase Phone provider | WhatsApp OTP (primary login) | 🔴 pending |
@@ -25,6 +28,17 @@ The login page only shows a method once its provider is live, via Vercel env fla
 So **stage 1 = item 1 only → email magic-link works, no broken buttons**. Set the flags in **Vercel → Settings → Environment Variables** (Production), then redeploy.
 
 ---
+
+## 0. 🔴🔴 Supabase cloud — apply migrations 0003 → 0007
+The cloud project `mhkoayftiuojxlrkollf` has only migrations **0001 + 0002** applied. **0003** (onboarding), **0004** (grants), **0005** (mission_submissions), **0006** (redemption), **0007** (earnings) were only ever applied locally and in CI (CI spins up its own throwaway Supabase), **never pushed to cloud** — the CLI isn't linked to the project. Until applied, the production API 500s on onboarding / missions / redemption / earnings routes.
+
+**Apply strictly in numeric order** (0003 → 0004 → 0005 → 0006 → 0007). Either:
+- **Supabase SQL editor** — paste each `supabase/migrations/000X_*.sql` in order and run; **or**
+- **CLI** — `supabase link --project-ref mhkoayftiuojxlrkollf` then `supabase db push` (pushes all pending local migrations).
+
+> ⚠️ Order matters: 0004 grants reference tables from 0003/0005, and 0007 redefines the `approve_submission` function from 0005. After applying, confirm via **Supabase → Database → Migrations** (or `supabase migration list`) showing 0001–0007.
+
+**Slice 5 follow-on:** before any gift is redeemable in prod, load its code pool via `POST /api/admin/gifts/:id/codes` with the `x-admin-secret` header (item 4). Seed `stock_remaining` to equal the loaded code count.
 
 ## 1. 🔴 Supabase — Site URL + redirect allow-list
 The entry redesign moved the auth callback to a single `/auth/callback` (was `/kocmax/$slug/auth/callback`). Until this matches, Google/magic-link login fails after the redirect.
