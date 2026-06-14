@@ -6,7 +6,7 @@ import { FilterPills } from "@/components/FilterPills";
 import { RewardCard } from "@/components/RewardCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/redemption")({ component: Redemption });
+export const Route = createFileRoute("/_app/redemption")({ component: Redemption });
 
 const CATEGORIES = ["全部", "美容", "餐飲", "娛樂", "生活", "電子", "健康", "時尚"] as const;
 

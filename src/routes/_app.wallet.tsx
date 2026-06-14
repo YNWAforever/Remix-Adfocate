@@ -4,7 +4,7 @@ import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/wallet")({ component: Wallet });
+export const Route = createFileRoute("/_app/wallet")({ component: Wallet });
 
 function Wallet() {
   const me = useMe();

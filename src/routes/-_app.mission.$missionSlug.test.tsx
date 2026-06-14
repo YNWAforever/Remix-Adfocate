@@ -20,7 +20,7 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useSubmitMission: () => ({ mutateAsync: hoisted.submit, isPending: false }),
 }));
 
-import { Route } from "./kocmax.$slug.mission.$missionSlug";
+import { Route } from "./_app.mission.$missionSlug";
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo", missionSlug: "m1" } as never);
 
 function renderDetail() {

@@ -5,12 +5,11 @@ import { FilterPills } from "@/components/FilterPills";
 import { MissionCard } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/mission")({ component: Missions });
+export const Route = createFileRoute("/_app/mission")({ component: Missions });
 
 const CATEGORIES = ["全部", "社交", "美容", "餐飲", "生活"] as const;
 
 function Missions() {
-  const { slug } = Route.useParams();
   const [category, setCategory] = useState<string>("全部");
   const missions = useMissions(category === "全部" ? undefined : category);
   return (
@@ -29,7 +28,7 @@ function Missions() {
       )}
       <div className="space-y-2">
         {missions.data?.map((m) => (
-          <Link key={m.id} to="/kocmax/$slug/mission/$missionSlug" params={{ slug, missionSlug: m.slug }}>
+          <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>
             <MissionCard title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
           </Link>
         ))}

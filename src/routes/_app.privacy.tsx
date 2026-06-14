@@ -1,13 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
-export const Route = createFileRoute("/kocmax/$slug/privacy")({ component: Privacy });
+export const Route = createFileRoute("/_app/privacy")({ component: Privacy });
 
 function Privacy() {
-  const { slug } = Route.useParams();
   return (
     <div className="mx-auto max-w-lg space-y-4 p-4">
-      <Link to="/kocmax/$slug" params={{ slug }} className="inline-flex items-center gap-1 text-sm"><ArrowLeft size={16} aria-hidden /> 返回</Link>
+      <Link to="/home" className="inline-flex items-center gap-1 text-sm"><ArrowLeft size={16} aria-hidden /> 返回</Link>
       <h1 className="font-display text-2xl font-bold">私隱政策</h1>
       <article className="pastel-card space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-sm leading-[1.65] text-[var(--color-soft-ink)]">
         <p>我們重視您的私隱。本政策說明我們如何收集、使用及保護您的個人資料。</p>

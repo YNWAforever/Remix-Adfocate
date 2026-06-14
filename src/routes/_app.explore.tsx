@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 
-export const Route = createFileRoute("/kocmax/$slug/explore")({ component: Explore });
+export const Route = createFileRoute("/_app/explore")({ component: Explore });
 
 const BENEFITS = [
   { t: "購物賺積分", d: "於合作商戶消費，每消費HK$1即可賺取1積分" },

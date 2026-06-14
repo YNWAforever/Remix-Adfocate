@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMyMissions, type MyMission, type SubmissionStatus } from "@/lib/queries/kocmax";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
-export const Route = createFileRoute("/kocmax/$slug/my")({ component: MyMissions });
+export const Route = createFileRoute("/_app/my")({ component: MyMissions });
 
 const GROUPS: { label: string; statuses: SubmissionStatus[] }[] = [
   { label: "進行中", statuses: ["joined"] },
@@ -12,7 +12,6 @@ const GROUPS: { label: string; statuses: SubmissionStatus[] }[] = [
 ];
 
 function MyMissions() {
-  const { slug } = Route.useParams();
   const mine = useMyMissions();
   if (mine.isLoading) return <div className="p-4"><SkeletonCard className="h-40" /></div>;
   const subs: MyMission[] = mine.data ?? [];
@@ -30,8 +29,8 @@ function MyMissions() {
             {items.map((s) => (
               <Link
                 key={s.id}
-                to="/kocmax/$slug/mission/$missionSlug"
-                params={{ slug, missionSlug: s.missions.slug }}
+                to="/mission/$missionSlug"
+                params={{ missionSlug: s.missions.slug }}
                 className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
               >
                 <span className="font-heading">{s.missions.title}</span>

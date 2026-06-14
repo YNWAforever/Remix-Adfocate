@@ -15,7 +15,7 @@ const { mockFinishAuth } = vi.hoisted(() => ({ mockFinishAuth: vi.fn() }));
 vi.mock("@/lib/auth-flow", () => ({ finishAuth: mockFinishAuth }));
 
 import { supabase } from "@/lib/supabase";
-import { Route } from "./kocmax.$slug.auth.callback";
+import { Route } from "./_app.auth.callback";
 
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 
@@ -35,7 +35,7 @@ describe("Auth callback (PKCE landing)", () => {
   it("exchanges the code then delegates to finishAuth", async () => {
     renderCallback();
     await waitFor(() => expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledWith("abc123"));
-    expect(mockFinishAuth).toHaveBeenCalledWith("demo", mockNavigate);
+    expect(mockFinishAuth).toHaveBeenCalledWith(mockNavigate);
   });
 
   it("shows the recovery state when no code is present", async () => {
