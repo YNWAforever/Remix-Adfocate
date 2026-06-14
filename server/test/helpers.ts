@@ -145,6 +145,13 @@ export async function addCodes(giftId: string, codes: string[]) {
     .eq("id", giftId);
 }
 
+/** Service-role set of a creator's xp (the user grant intentionally forbids self-update of
+ *  xp/level). Used by tests to drive the level trigger across thresholds. */
+export async function setXp(userId: string, xp: number) {
+  const { error } = await service().from("creators").update({ xp }).eq("id", userId);
+  if (error) throw error;
+}
+
 export async function cleanup() {
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");

@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { FilterPillsMulti } from "@/components/FilterPills";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
+import { progressToNext } from "@/lib/levels";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/_app/profile")({ component: Profile });
@@ -91,14 +92,34 @@ function Profile() {
         </div>
         <div className="min-w-0">
           <h1 className="truncate font-display text-2xl font-bold">{d.display_name ?? "KOC"}</h1>
-          <div className="mt-1 flex items-center gap-2">
-            <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 font-mono text-xs font-bold">
-              {d.level}
-            </span>
-            <span className="text-sm text-[var(--color-soft-ink)]">{d.xp} XP</span>
-          </div>
         </div>
       </section>
+
+      {(() => {
+        const p = progressToNext(d.xp);
+        return (
+          <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl" aria-hidden>{p.current.emoji}</span>
+              <span className="font-heading font-bold">{p.current.label}</span>
+              <span className="ml-auto text-sm text-[var(--color-soft-ink)]">{d.xp} XP</span>
+            </div>
+            {p.next ? (
+              <>
+                <div className="h-3 overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white">
+                  <div className="h-full bg-[var(--color-acid)]" style={{ width: `${p.pct}%` }} />
+                </div>
+                <p className="text-sm text-[var(--color-soft-ink)]">
+                  還需 {p.xpForNext! - p.xpIntoCurrent} XP 升至 {p.next.label}
+                </p>
+                <p className="text-xs text-[var(--color-soft-ink)]">解鎖：{p.next.unlock}</p>
+              </>
+            ) : (
+              <p className="text-sm font-heading font-bold">最高等級</p>
+            )}
+          </section>
+        );
+      })()}
 
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
 

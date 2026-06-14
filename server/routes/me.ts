@@ -10,7 +10,7 @@ function toE164(phone: string | null | undefined): string | null {
 
 /** The column set returned to the client for the current creator (GET /me and PUT /me/profile). */
 const ME_PROJECTION =
-  "id, display_name, avatar_url, level, xp, categories, scores, phone, onboarding_step, onboarding_completed, referral_code, social_handles";
+  "id, display_name, avatar_url, level, level_seen, xp, categories, scores, phone, onboarding_step, onboarding_completed, referral_code, social_handles";
 
 type SocialHandle = { platform: string; handle: string; followers?: number | null; verified?: boolean };
 
@@ -117,6 +117,29 @@ meRoutes.put("/profile", async (c) => {
   const { data, error } = await supabase
     .from("creators")
     .update(patch)
+    .eq("id", c.get("userId"))
+    .select(ME_PROJECTION)
+    .single();
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json(data);
+});
+
+/** POST /api/me/level-seen — acknowledge the level-up celebration. Reads the caller's
+ *  current level server-side (so the value can't be forged) and stores it as level_seen,
+ *  clearing the pending celebration. Idempotent; RLS scopes the write to id = auth.uid(). */
+meRoutes.post("/level-seen", async (c) => {
+  const supabase = makeUserClient(c.get("jwt"));
+
+  const { data: current, error: readErr } = await supabase
+    .from("creators")
+    .select("level")
+    .eq("id", c.get("userId"))
+    .single();
+  if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
+
+  const { data, error } = await supabase
+    .from("creators")
+    .update({ level_seen: current.level })
     .eq("id", c.get("userId"))
     .select(ME_PROJECTION)
     .single();

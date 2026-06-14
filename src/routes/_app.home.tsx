@@ -4,6 +4,7 @@ import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { MissionCard } from "@/components/MissionCard";
+import { LEVELS, levelIndex } from "@/lib/levels";
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -15,7 +16,12 @@ function Home() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6 p-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-2">
+        {me.data?.level && (
+          <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold">
+            {LEVELS[levelIndex(me.data.level)].emoji} {me.data.level}
+          </span>
+        )}
         <Link
           to="/profile"
           aria-label="個人檔案"
