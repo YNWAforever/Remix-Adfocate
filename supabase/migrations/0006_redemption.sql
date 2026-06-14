@@ -16,6 +16,9 @@ create table public.redemption_codes (
   created_at timestamptz not null default now()
 );
 create index redemption_codes_pool_idx on public.redemption_codes (gift_id, status);
+-- A code string is unique within its gift's pool — guards against an operator
+-- double-loading the same cash-equivalent voucher (which would issue it twice).
+create unique index redemption_codes_code_uniq on public.redemption_codes (gift_id, code);
 
 -- 2. One row per redemption.
 create table public.redemptions (

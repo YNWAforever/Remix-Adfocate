@@ -124,6 +124,21 @@ suite("admin add-codes", () => {
     expect(r.status).toBe(200);
   });
 
+  it("rejects loading a duplicate code into the same gift pool (409)", async () => {
+    const g = await makeGift({ name: "test-gift-dup", points_cost: 100 });
+    const first = await adminreq(`/admin/gifts/${g.id}/codes`, {
+      method: "POST",
+      body: JSON.stringify({ codes: ["DUP-1"] }),
+    });
+    expect(first.status).toBe(200);
+    const second = await adminreq(`/admin/gifts/${g.id}/codes`, {
+      method: "POST",
+      body: JSON.stringify({ codes: ["DUP-1"] }),
+    });
+    expect(second.status).toBe(409);
+    expect((await second.json()).code).toBe("duplicate_codes");
+  });
+
   it("rejects add-codes without the admin secret", async () => {
     const res = await adminreq(`/admin/gifts/${gift.id}/codes`, {
       method: "POST",

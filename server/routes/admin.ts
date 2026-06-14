@@ -62,12 +62,17 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
 
   const rows = codes.map((code) => ({ gift_id: giftId, workspace_id: g.workspace_id, code }));
   const { error: insErr } = await svc.from("redemption_codes").insert(rows);
-  if (insErr) return c.json({ error: insErr.message, code: "db_error" }, 500);
+  if (insErr) {
+    // 23505 = unique_violation: a code already exists in this gift's pool.
+    if (insErr.code === "23505") return c.json({ error: "duplicate codes", code: "duplicate_codes" }, 409);
+    return c.json({ error: insErr.message, code: "db_error" }, 500);
+  }
 
   // Bump stock by the batch size (single operator → no contention on this read-modify-write).
-  await svc
+  const { error: updErr } = await svc
     .from("redemption_gifts")
     .update({ stock_remaining: (g.stock_remaining ?? 0) + codes.length })
     .eq("id", giftId);
+  if (updErr) return c.json({ error: updErr.message, code: "db_error" }, 500);
   return c.json({ added: codes.length });
 });
