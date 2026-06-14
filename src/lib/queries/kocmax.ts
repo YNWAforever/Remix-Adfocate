@@ -14,6 +14,7 @@ export type Gift = {
 };
 export type Balance = { balance: number; available_to: string | null };
 export type Txn = { id: string; type: string; delta: number; balance_after: number; description?: string; created_at: string };
+export type SocialHandle = { platform: string; handle: string; followers?: number | null; verified?: boolean };
 export type Me = {
   id: string;
   display_name?: string;
@@ -21,6 +22,7 @@ export type Me = {
   xp: number;
   phone?: string | null;
   categories?: string[];
+  social_handles?: SocialHandle[];
   onboarding_step: number;
   onboarding_completed: boolean;
   referral_code?: string;
@@ -57,6 +59,15 @@ export function usePointHistory() {
 }
 export function useMe() {
   return useQuery({ queryKey: ["me"], queryFn: () => apiFetch<Me>("/me") });
+}
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { display_name?: string; categories?: string[]; social_handles?: SocialHandle[] }) =>
+      apiFetch<Me>("/me/profile", { method: "PUT", body: JSON.stringify(body) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+  });
 }
 
 export type Workspace = { slug: string; name: string; theme: Record<string, string> };
