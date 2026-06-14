@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as api from "@/lib/api";
-import { useMissions, useUpdateProfile } from "./kocmax";
+import { useMissions, useUpdateProfile, useMyPassport } from "./kocmax";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -32,5 +32,20 @@ describe("useUpdateProfile", () => {
       method: "PUT",
       body: JSON.stringify({ display_name: "X", categories: ["美容"] }),
     });
+  });
+});
+
+describe("useMyPassport", () => {
+  it("fetches the passport from /me/passport", async () => {
+    vi.spyOn(api, "apiFetch").mockResolvedValue({
+      level: "L1",
+      xp: 600,
+      scores: { influence: 50, reliability: null, content: null, brandSafety: null },
+      badges: ["level_l1"],
+    });
+    const { result } = renderHook(() => useMyPassport(), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(api.apiFetch).toHaveBeenCalledWith("/me/passport");
+    expect(result.current.data?.badges).toContain("level_l1");
   });
 });
