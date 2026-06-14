@@ -118,6 +118,7 @@ export function useJoinMission(slug: string) {
       qc.invalidateQueries({ queryKey: ["mission", slug] });
       qc.invalidateQueries({ queryKey: ["missions"] });
       qc.invalidateQueries({ queryKey: ["my-missions"] });
+      qc.invalidateQueries({ queryKey: ["me"] }); // join awards +10 XP on creators.xp
     },
   });
 }
@@ -129,7 +130,9 @@ export function useSubmitMission(slug: string) {
       apiFetch<MyMission>(`/missions/${slug}/submit`, { method: "PUT", body: JSON.stringify(body) }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["mission", slug] });
+      qc.invalidateQueries({ queryKey: ["missions"] }); // my_status badge flips joined→submitted
       qc.invalidateQueries({ queryKey: ["my-missions"] });
+      qc.invalidateQueries({ queryKey: ["me"] }); // submit awards +25 XP on creators.xp
     },
   });
 }

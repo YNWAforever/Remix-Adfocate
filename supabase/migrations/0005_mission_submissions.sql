@@ -77,10 +77,18 @@ begin
   get diagnostics v_rows = row_count;
   if v_rows = 0 then raise exception 'mission_full'; end if;
 
-  insert into public.mission_submissions
-    (mission_id, creator_id, workspace_id, status, xp_awarded)
-    values (p_mission, v_creator, v_ws, 'joined', 10)
-    returning * into v_sub;
+  -- The exists() check above is a snapshot read; under a race (e.g. a double-click
+  -- firing two joins) both can pass it. The unique(mission_id,creator_id) constraint
+  -- is the real guard — translate its violation into the friendly 'already_joined'.
+  -- Re-raising rolls back the whole tx, including the filled++ above (no orphan fill).
+  begin
+    insert into public.mission_submissions
+      (mission_id, creator_id, workspace_id, status, xp_awarded)
+      values (p_mission, v_creator, v_ws, 'joined', 10)
+      returning * into v_sub;
+  exception when unique_violation then
+    raise exception 'already_joined';
+  end;
   update public.creators set xp = xp + 10 where id = v_creator;
   return v_sub;
 end;

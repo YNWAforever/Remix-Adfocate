@@ -156,4 +156,12 @@ suite("mission list + my + apply", () => {
     expect(res.status).toBe(409);
     expect((await res.json()).code).toBe("not_available");
   });
+
+  it("does not leak another creator's submissions via /my (RLS isolation)", async () => {
+    // koc joined test-list-joined above; a different creator must see none of it.
+    const other = await makeCreator("list-other@test.local", 0);
+    const res = await req("/missions/my", other.jwt);
+    expect(res.status).toBe(200);
+    expect((await res.json()).submissions).toHaveLength(0);
+  });
 });

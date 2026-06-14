@@ -43,8 +43,16 @@ suite("admin submission review", () => {
   });
   afterAll(cleanup);
 
-  it("rejects admin calls without the secret header", async () => {
+  it("rejects admin calls with an empty secret header", async () => {
     const res = await adminreq(`/admin/submissions/${submissionId}/approve`, { method: "POST" }, "");
+    expect(res.status).toBe(401);
+    expect((await res.json()).code).toBe("no_admin");
+  });
+
+  it("rejects admin calls with no secret header at all", async () => {
+    const res = await app.request("/api/admin/submissions?status=submitted", {
+      headers: { "Content-Type": "application/json" },
+    });
     expect(res.status).toBe(401);
     expect((await res.json()).code).toBe("no_admin");
   });

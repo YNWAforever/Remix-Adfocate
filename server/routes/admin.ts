@@ -14,6 +14,9 @@ adminRoutes.use("*", async (c, next) => {
   await next();
 });
 
+// NOTE: interim — this lists submissions across ALL workspaces (filtered only by
+// status). Fine while there is a single operator + one live workspace; the Brand
+// Dashboard (Slice 8) replaces this with per-workspace, role-scoped review.
 adminRoutes.get("/submissions", async (c) => {
   const status = c.req.query("status") ?? "submitted";
   const svc = serviceClient();
