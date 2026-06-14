@@ -8,6 +8,12 @@ function toE164(phone: string | null | undefined): string | null {
   return phone.startsWith("+") ? phone : `+${phone}`;
 }
 
+/** The column set returned to the client for the current creator (GET /me and PUT /me/profile). */
+const ME_PROJECTION =
+  "id, display_name, avatar_url, level, xp, categories, scores, phone, onboarding_step, onboarding_completed, referral_code, social_handles";
+
+type SocialHandle = { platform: string; handle: string; followers?: number | null; verified?: boolean };
+
 /** Unguarded: runs before a creator row exists. Resolves workspace from body slug. */
 export const meBootstrap = new Hono<Env>();
 meBootstrap.post("/bootstrap", async (c) => {
@@ -68,10 +74,46 @@ meRoutes.get("/", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data, error } = await supabase
     .from("creators")
-    .select(
-      "id, display_name, avatar_url, level, xp, categories, scores, phone, onboarding_step, onboarding_completed, referral_code",
-    )
+    .select(ME_PROJECTION)
     .eq("id", c.get("userId"))
+    .single();
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json(data);
+});
+
+/** PUT /api/me/profile — edit own profile. Replace semantics, no onboarding-step coupling.
+ *  Uses the user client so RLS (creators_self_update from migration 0003 + the column
+ *  grants in 0004) scopes the write to id = auth.uid(): a creator can only edit their own row. */
+meRoutes.put("/profile", async (c) => {
+  const body = await c.req.json<{
+    display_name?: string;
+    categories?: string[];
+    social_handles?: SocialHandle[];
+  }>();
+  const supabase = makeUserClient(c.get("jwt"));
+
+  const patch: Record<string, unknown> = {};
+  if (body.display_name !== undefined) patch.display_name = body.display_name;
+  if (body.categories !== undefined) patch.categories = body.categories;
+  // social_handles is written WHOLE (full replace) so the editor controls the exact set.
+  if (body.social_handles !== undefined) patch.social_handles = body.social_handles;
+
+  // No fields provided → return the current row unchanged (PostgREST rejects empty updates).
+  if (Object.keys(patch).length === 0) {
+    const { data, error } = await supabase
+      .from("creators")
+      .select(ME_PROJECTION)
+      .eq("id", c.get("userId"))
+      .single();
+    if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+    return c.json(data);
+  }
+
+  const { data, error } = await supabase
+    .from("creators")
+    .update(patch)
+    .eq("id", c.get("userId"))
+    .select(ME_PROJECTION)
     .single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   return c.json(data);
