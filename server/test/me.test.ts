@@ -57,9 +57,11 @@ suite("me/profile endpoint", () => {
     const me = await (await req("/me", c1.jwt)).json();
     expect(me.social_handles).toHaveLength(1);
     expect(me.social_handles[0].platform).toBe("TikTok");
+    expect(me.social_handles[0].handle).toBe("@tt");
   });
 
   it("a creator's edit never touches another creator's row (self-scope)", async () => {
+    // c1's display_name is still "updated.meprofile1@test.local" from the first test; test 2 only touched c1's social_handles.
     const before = await (await req("/me", c1.jwt)).json();
     // Keep the '@test.local' suffix so cleanup() still matches c2 after the rename.
     await req("/me/profile", c2.jwt, {

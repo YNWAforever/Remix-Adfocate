@@ -85,11 +85,12 @@ meRoutes.get("/", async (c) => {
  *  Uses the user client so RLS (creators_self_update from migration 0003 + the column
  *  grants in 0004) scopes the write to id = auth.uid(): a creator can only edit their own row. */
 meRoutes.put("/profile", async (c) => {
-  const body = await c.req.json<{
-    display_name?: string;
-    categories?: string[];
-    social_handles?: SocialHandle[];
-  }>();
+  let body: { display_name?: string; categories?: string[]; social_handles?: SocialHandle[] } = {};
+  try {
+    body = await c.req.json();
+  } catch {
+    // Empty or non-JSON body → treat as a no-op (the empty-patch guard below returns the current row).
+  }
   const supabase = makeUserClient(c.get("jwt"));
 
   const patch: Record<string, unknown> = {};
