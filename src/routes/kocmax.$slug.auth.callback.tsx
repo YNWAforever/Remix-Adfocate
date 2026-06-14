@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { apiFetch, WORKSPACE_SLUG } from "@/lib/api";
+import { finishAuth } from "@/lib/auth-flow";
 
 export const Route = createFileRoute("/kocmax/$slug/auth/callback")({ component: Callback });
 
@@ -12,20 +12,13 @@ function Callback() {
   useEffect(() => {
     (async () => {
       try {
-        // Magic-link landing: supabase-js (detectSessionInUrl) parses the access token from
-        // the URL hash as it initialises, so the session is present by the time getSession
-        // resolves. Bail if none arrived (e.g. the route was opened without a token).
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error("no session in callback URL");
-        await apiFetch("/me/bootstrap", { method: "POST", body: JSON.stringify({ slug: WORKSPACE_SLUG }) });
-        // refresh so the token carries workspace_id; a failed refresh is fatal (reported via
-        // a returned { error }, not a throw), so re-throw it into the catch below.
-        const { error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError) throw refreshError;
-        navigate({ to: "/kocmax/$slug", params: { slug } });
+        // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
+        const code = new URLSearchParams(window.location.search).get("code");
+        if (!code) throw new Error("no auth code in callback URL");
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) throw error;
+        await finishAuth(slug, navigate);
       } catch {
-        // Bootstrap/network failure — don't leave an unhandled rejection that strands
-        // the user on a blank "登入中…"; show a recoverable error instead.
         setFailed(true);
       }
     })();
