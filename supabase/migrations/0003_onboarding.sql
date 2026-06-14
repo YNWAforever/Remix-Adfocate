@@ -59,6 +59,13 @@ begin
     where creator_id = p_creator and workspace_id = v_ws
     returning balance into v_bal;
 
+  if v_bal is null then
+    -- bootstrap always seeds a balance row; a missing one is an invariant breach.
+    -- Fail loudly (leaving onboarding_completed=false for retry) rather than
+    -- recording a NULL balance_after and locking the creator out of the award.
+    raise exception 'point_balances row missing for creator %', p_creator;
+  end if;
+
   insert into public.point_transactions
     (creator_id, workspace_id, type, delta, balance_after, source_ref, description)
     values (p_creator, v_ws, 'bonus', 100, v_bal, 'welcome', '迎新獎賞 100 積分');

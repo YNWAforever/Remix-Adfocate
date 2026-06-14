@@ -13,7 +13,9 @@ export const Route = createFileRoute("/kocmax/$slug")({
     const isAuthRoute = location.pathname.endsWith("/login") || location.pathname.includes("/auth/");
     const isOnboardingRoute = location.pathname.includes("/onboarding");
 
-    if (!data.session && !isAuthRoute && !isOnboardingRoute) {
+    // Onboarding requires a session too — only the login/callback routes are
+    // reachable unauthenticated (else a typed /onboarding URL bypasses auth).
+    if (!data.session && !isAuthRoute) {
       throw redirect({ to: "/kocmax/$slug/login", params: { slug: params.slug } });
     }
 
