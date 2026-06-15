@@ -49,6 +49,21 @@ export function useMissions(category?: string) {
 export function useMission(slug: string) {
   return useQuery({ queryKey: ["mission", slug], queryFn: () => apiFetch<Mission>(`/missions/${slug}`) });
 }
+export type MissionMatch = {
+  id: string; slug: string; title: string;
+  category?: string | null; mission_type: string;
+  required_level: string;
+  points_reward: number; cash_reward?: number | null;
+  deadline?: string | null; quota: number; filled: number;
+  fit_score: number; reasons: string[]; rationale: string; locked: boolean;
+};
+export function useMissionMatch() {
+  return useQuery({
+    queryKey: ["mission-match"],
+    queryFn: async () => (await apiFetch<{ matches: MissionMatch[] }>("/match")).matches,
+    staleTime: 60_000, // recommendations are stable within a session; avoid refetch-on-focus re-hitting the LLM
+  });
+}
 export function useGifts(category?: string) {
   const qs = category && category !== "全部" ? `?category=${encodeURIComponent(category)}` : "";
   return useQuery({

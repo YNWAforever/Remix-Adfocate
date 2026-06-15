@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Target, Gift, Receipt, CalendarCheck } from "lucide-react";
+import { Target, Gift, Receipt, CalendarCheck, Sparkles } from "lucide-react";
 import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
@@ -46,6 +46,14 @@ function Home() {
 
       {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
+
+      <Link
+        to="/match"
+        aria-label="今日整乜好"
+        className="flex items-center justify-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] p-4 font-heading text-lg font-bold text-white shadow-[4px_4px_0_0_var(--color-ink)]"
+      >
+        <Sparkles size={20} aria-hidden /> 今日整乜好？
+      </Link>
 
       <section className="grid grid-cols-2 gap-3">
         {[

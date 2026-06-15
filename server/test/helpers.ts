@@ -152,6 +152,12 @@ export async function setXp(userId: string, xp: number) {
   if (error) throw error;
 }
 
+/** Service-role patch of a creator's matcher inputs (categories bypass the user grant). */
+export async function setCreatorProfile(userId: string, patch: { categories?: string[]; level?: string }) {
+  const { error } = await service().from("creators").update(patch).eq("id", userId);
+  if (error) throw error;
+}
+
 /** Insert a mission_submissions row in a terminal status (service-role, bypassing the
  *  join→submit→review RPC chain). Creates a throwaway "test-" mission per call so the
  *  (mission_id, creator_id) unique constraint never collides. An optional 1-5
