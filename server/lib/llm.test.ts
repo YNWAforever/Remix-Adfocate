@@ -22,8 +22,11 @@ describe("enhanceRationales", () => {
     expect(f).not.toHaveBeenCalled();
   });
 
-  it("returns null on an empty item list", async () => {
+  it("returns null on an empty item list without calling fetch", async () => {
+    const f = vi.fn();
+    vi.stubGlobal("fetch", f);
     expect(await enhanceRationales([])).toBeNull();
+    expect(f).not.toHaveBeenCalled();
   });
 
   it("parses a JSON map from the model content", async () => {

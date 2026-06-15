@@ -46,7 +46,10 @@ export function rewardTerm(mission: MatchMission, maxPoints: number, maxCash: nu
 /** Bucketed days-to-deadline; no deadline → 0.4 neutral; past → 0 (defensive, filtered upstream). */
 export function urgencyTerm(mission: MatchMission, now: Date): number {
   if (!mission.deadline) return 0.4;
-  const days = Math.ceil((new Date(mission.deadline).getTime() - now.getTime()) / DAY_MS);
+  // A bare "yyyy-mm-dd" deadline parses as UTC midnight, so compare it to a UTC-normalised
+  // "today" — keeps the bucket timezone-stable (server may run in HK/UTC+8, tests anywhere).
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const days = Math.ceil((new Date(mission.deadline).getTime() - todayUtc) / DAY_MS);
   if (days < 0) return 0;
   if (days <= 3) return 1;
   if (days <= 7) return 0.7;
