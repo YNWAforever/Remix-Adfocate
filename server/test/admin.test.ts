@@ -148,6 +148,12 @@ suite("admin submission review", () => {
     });
     expect(res.status).toBe(400);
     expect((await res.json()).code).toBe("bad_rating");
+    const resLow = await adminreq(`/admin/submissions/${id}/approve`, {
+      method: "POST",
+      body: JSON.stringify({ quality_rating: 0 }),
+    });
+    expect(resLow.status).toBe(400);
+    expect((await resLow.json()).code).toBe("bad_rating");
   });
 
   it("rejection snapshots scores (brand safety reflects the rejection)", async () => {
@@ -166,5 +172,8 @@ suite("admin submission review", () => {
     const scores = await getCreatorScores(koc5.userId);
     expect(scores.brandSafety).toBe(0); // 0 approved / 1 reviewed
     expect(scores.reliability).toBe(0);
+    // influence/content move from the DB default 0 to null → proves persistScores wrote the snapshot.
+    expect(scores.influence).toBeNull();
+    expect(scores.content).toBeNull();
   });
 });
