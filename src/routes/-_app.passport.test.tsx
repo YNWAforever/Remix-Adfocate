@@ -7,8 +7,8 @@ const hoisted = vi.hoisted(() => ({
     data: {
       level: "L1",
       xp: 600,
-      scores: { influence: 50, reliability: null, content: null, brandSafety: null },
-      badges: ["level_l1", "social_linked"],
+      scores: { influence: 50, reliability: 70, content: 80, brandSafety: 90 },
+      badges: ["level_l1", "content_pro"],
     },
     isLoading: false,
     isError: false,
@@ -27,23 +27,25 @@ function renderPassport() {
 }
 
 describe("Passport page", () => {
-  it("renders the four score labels and a computed value", () => {
+  it("renders the four score labels and their computed values", () => {
     renderPassport();
     expect(screen.getByText("影響力")).toBeInTheDocument();
     expect(screen.getByText("內容")).toBeInTheDocument();
     expect(screen.getByText("可靠度")).toBeInTheDocument();
     expect(screen.getByText("品牌安全")).toBeInTheDocument();
     expect(screen.getByText("50")).toBeInTheDocument();
+    expect(screen.getByText("80")).toBeInTheDocument();
+    expect(screen.getByText("90")).toBeInTheDocument();
   });
 
-  it("renders locked rings as 敬請期待 (content + brand safety + null reliability)", () => {
+  it("shows the provisional brand-safety note", () => {
     renderPassport();
-    expect(screen.getAllByText("敬請期待").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText("品牌安全為暫定代理指標")).toBeInTheDocument();
   });
 
   it("renders earned badge labels", () => {
     renderPassport();
     expect(screen.getByText("升級者")).toBeInTheDocument();
-    expect(screen.getByText("已連結社交")).toBeInTheDocument();
+    expect(screen.getByText("內容達人")).toBeInTheDocument();
   });
 });

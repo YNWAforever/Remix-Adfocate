@@ -32,7 +32,7 @@ export type Me = {
 export type Passport = {
   level: string;
   xp: number;
-  scores: { influence: number | null; reliability: number | null; content: null; brandSafety: null };
+  scores: { influence: number | null; reliability: number | null; content: number | null; brandSafety: number | null };
   badges: string[];
 };
 export type OnboardingStatus = { onboarding_step: number; onboarding_completed: boolean; completion_pct: number };
