@@ -154,12 +154,13 @@ export async function setXp(userId: string, xp: number) {
 
 /** Insert a mission_submissions row in a terminal status (service-role, bypassing the
  *  join→submit→review RPC chain). Creates a throwaway "test-" mission per call so the
- *  (mission_id, creator_id) unique constraint never collides. */
-export async function seedSubmission(creatorId: string, status: string, slug: string) {
+ *  (mission_id, creator_id) unique constraint never collides. An optional 1-5
+ *  qualityRating seeds the Content-score source (only meaningful on approved rows). */
+export async function seedSubmission(creatorId: string, status: string, slug: string, qualityRating?: number) {
   const m = await makeMission({ slug });
-  const { error } = await service()
-    .from("mission_submissions")
-    .insert({ mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status });
+  const row: Record<string, unknown> = { mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status };
+  if (qualityRating != null) row.quality_rating = qualityRating;
+  const { error } = await service().from("mission_submissions").insert(row);
   if (error) throw error;
 }
 
@@ -168,6 +169,13 @@ export async function seedSubmission(creatorId: string, status: string, slug: st
 export async function setReferredBy(childId: string, parentId: string) {
   const { error } = await service().from("creators").update({ referred_by: parentId }).eq("id", childId);
   if (error) throw error;
+}
+
+/** Read a creator's persisted passport-score snapshot (creators.scores) for assertions. */
+export async function getCreatorScores(userId: string) {
+  const { data, error } = await service().from("creators").select("scores").eq("id", userId).single();
+  if (error) throw error;
+  return data.scores as { influence: number | null; content: number | null; reliability: number | null; brandSafety: number | null };
 }
 
 export async function cleanup() {

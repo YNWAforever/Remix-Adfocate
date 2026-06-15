@@ -20,4 +20,10 @@ describe("ScoreRing", () => {
     expect(screen.getByText("0")).toBeInTheDocument();
     expect(screen.queryByText("敬請期待")).not.toBeInTheDocument();
   });
+
+  it("renders a numeric brand-safety value (no longer always locked in 6C)", () => {
+    render(<ScoreRing value={90} label="品牌安全" accent="var(--color-ink)" />);
+    expect(screen.getByText("90")).toBeInTheDocument();
+    expect(screen.queryByText("敬請期待")).not.toBeInTheDocument();
+  });
 });

@@ -63,10 +63,14 @@ function Passport() {
         <h2 className="font-heading font-bold">創作者評分</h2>
         <div className="grid grid-cols-2 gap-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
           {SCORE_ORDER.map((k) => (
-            <ScoreRing key={k} value={p.scores[k]} label={SCORE_META[k].label} accent={SCORE_META[k].accent} />
+            <div key={k} className="flex flex-col items-center gap-1">
+              <ScoreRing value={p.scores[k]} label={SCORE_META[k].label} accent={SCORE_META[k].accent} />
+              {SCORE_META[k].note && (
+                <p className="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]">{SCORE_META[k].note}</p>
+              )}
+            </div>
           ))}
         </div>
-        <p className="text-xs text-[var(--color-soft-ink)]">影響力為自填數據，未驗證。</p>
       </section>
 
       <section className="space-y-3">

@@ -10,9 +10,18 @@ describe("passport metadata", () => {
     expect(SCORE_ORDER).toHaveLength(4);
     for (const k of SCORE_ORDER) expect(SCORE_META[k]).toBeDefined();
   });
-  it("defines the five data-derived badges", () => {
-    for (const id of ["level_l1", "first_approval", "reliable", "social_linked", "referrer"]) {
+  it("defines all eight passport badges (5 data-derived + 3 quality-derived)", () => {
+    for (const id of [
+      "level_l1", "first_approval", "reliable", "social_linked", "referrer",
+      "perfect_rating", "content_pro", "spotless",
+    ]) {
       expect(BADGES[id]).toBeDefined();
     }
+  });
+  it("carries provisional notes on the self-reported / proxy scores", () => {
+    expect(SCORE_META.influence.note).toBeTruthy();
+    expect(SCORE_META.brandSafety.note).toBeTruthy();
+    expect(SCORE_META.content.note).toBeUndefined();
+    expect(SCORE_META.reliability.note).toBeUndefined();
   });
 });

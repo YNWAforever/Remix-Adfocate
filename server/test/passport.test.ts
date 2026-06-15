@@ -59,11 +59,41 @@ suite("creator passport", () => {
     expect(p.badges).toContain("social_linked");
   });
 
-  it("content and brand safety are always locked (null)", async () => {
-    const c = await makeCreator("passport-locked@test.local");
+  it("computes content from quality ratings (unrated approvals excluded)", async () => {
+    const c = await makeCreator("passport-content@test.local");
+    await seedSubmission(c.userId, "approved", "test-pp-con-1", 5);
+    await seedSubmission(c.userId, "approved", "test-pp-con-2", 3);
+    await seedSubmission(c.userId, "approved", "test-pp-con-3"); // unrated → excluded from content
+    const p = await (await req("/me/passport", c.jwt)).json();
+    expect(p.scores.content).toBe(80); // round(20 * avg(5,3)) = round(20*4)
+    expect(p.badges).toContain("perfect_rating"); // a 5★ is present
+  });
+
+  it("computes brand safety as the non-rejection rate (expired excluded)", async () => {
+    const c = await makeCreator("passport-bs@test.local");
+    await seedSubmission(c.userId, "approved", "test-pp-bs-1");
+    await seedSubmission(c.userId, "rejected", "test-pp-bs-2");
+    await seedSubmission(c.userId, "expired", "test-pp-bs-3"); // never reviewed → excluded
+    const p = await (await req("/me/passport", c.jwt)).json();
+    expect(p.scores.brandSafety).toBe(50); // round(100 * 1/(1+1))
+  });
+
+  it("content and brand safety are null for a creator with no rated/reviewed work", async () => {
+    const c = await makeCreator("passport-noscore@test.local");
+    await seedSubmission(c.userId, "joined", "test-pp-noscore-1"); // in-flight only
     const p = await (await req("/me/passport", c.jwt)).json();
     expect(p.scores.content).toBeNull();
     expect(p.scores.brandSafety).toBeNull();
+  });
+
+  it("earns content_pro and spotless from 3+ high-quality reviewed submissions", async () => {
+    const c = await makeCreator("passport-pro@test.local");
+    await seedSubmission(c.userId, "approved", "test-pp-pro-1", 5);
+    await seedSubmission(c.userId, "approved", "test-pp-pro-2", 4);
+    await seedSubmission(c.userId, "approved", "test-pp-pro-3", 5);
+    const p = await (await req("/me/passport", c.jwt)).json();
+    expect(p.badges).toContain("content_pro"); // content round(20*avg(5,4,5))=93 ≥ 80, 3 ratings
+    expect(p.badges).toContain("spotless"); // brand safety 100 over 3 reviewed
   });
 
   it("earns level_l1 once xp crosses L1 and referrer with a referred creator", async () => {
