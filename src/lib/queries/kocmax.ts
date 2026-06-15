@@ -64,6 +64,14 @@ export function useMissionMatch() {
     staleTime: 60_000, // recommendations are stable within a session; avoid refetch-on-focus re-hitting the LLM
   });
 }
+export type Hook = { angle: string; text: string };
+export type HookResult = { hooks: Hook[]; source: "ai" | "template" };
+export function useGenerateHooks() {
+  return useMutation({
+    mutationFn: (body: { mission_slug: string; platform: string }) =>
+      apiFetch<HookResult>("/copilot/hook-generator", { method: "POST", body: JSON.stringify(body) }),
+  });
+}
 export function useGifts(category?: string) {
   const qs = category && category !== "全部" ? `?category=${encodeURIComponent(category)}` : "";
   return useQuery({
