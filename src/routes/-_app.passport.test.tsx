@@ -38,9 +38,10 @@ describe("Passport page", () => {
     expect(screen.getByText("90")).toBeInTheDocument();
   });
 
-  it("shows the provisional brand-safety note", () => {
+  it("shows the provisional notes on self-reported / proxy scores", () => {
     renderPassport();
     expect(screen.getByText("品牌安全為暫定代理指標")).toBeInTheDocument();
+    expect(screen.getByText("影響力為自填數據，未驗證")).toBeInTheDocument();
   });
 
   it("renders earned badge labels", () => {

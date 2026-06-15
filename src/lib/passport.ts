@@ -20,7 +20,7 @@ export const BADGES: Record<string, { emoji: string; label: string; desc: string
   reliable: { emoji: "🛡️", label: "可靠創作者", desc: "3+ 個已結算任務，可靠度 ≥ 80" },
   social_linked: { emoji: "🔗", label: "已連結社交", desc: "已連結社交帳號" },
   referrer: { emoji: "🤝", label: "推薦大使", desc: "成功推薦朋友加入" },
-  perfect_rating: { emoji: "🌟", label: "完美評分", desc: "獲得 5★ 內容評分" },
+  perfect_rating: { emoji: "💯", label: "完美評分", desc: "獲得 5★ 內容評分" },
   content_pro: { emoji: "🎯", label: "內容達人", desc: "3+ 個評分任務，內容分 ≥ 80" },
   spotless: { emoji: "💎", label: "零違規", desc: "3+ 個已審任務，品牌安全分 100" },
 };
