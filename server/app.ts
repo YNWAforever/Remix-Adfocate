@@ -8,6 +8,7 @@ import { missionRoutes } from "./routes/missions.js";
 import { redemptionRoutes } from "./routes/redemption.js";
 import { adminRoutes } from "./routes/admin.js";
 import { matchRoutes } from "./routes/match.js";
+import { copilotRoutes } from "./routes/copilot.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -30,6 +31,7 @@ export function createApp() {
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
   guarded.route("/match", matchRoutes);
+  guarded.route("/copilot", copilotRoutes);
   guarded.route("/redemption", redemptionRoutes);
   guarded.route("/workspace", workspaceRoutes);
   app.route("/", guarded);
