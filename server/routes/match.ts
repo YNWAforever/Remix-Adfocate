@@ -13,22 +13,28 @@ export const matchRoutes = new Hono<Env>();
  *  every read to the caller. */
 matchRoutes.get("/", async (c) => {
   const userId = c.get("userId");
+  const workspaceId = c.get("workspaceId");
   const supabase = makeUserClient(c.get("jwt"));
+  const now = new Date();
 
-  const { data: creator, error: cErr } = await supabase
-    .from("creators").select("level, categories").eq("id", userId).single();
+  // Independent reads — fire concurrently to trim request latency (the LLM polish below adds its own).
+  const [{ data: creator, error: cErr }, { data: subs, error: sErr }, { data: missions, error: mErr }] =
+    await Promise.all([
+      supabase.from("creators").select("level, categories").eq("id", userId).single(),
+      supabase
+        .from("mission_submissions")
+        .select("mission_id, status, quality_rating")
+        .eq("creator_id", userId)
+        .eq("workspace_id", workspaceId),
+      supabase
+        .from("missions")
+        .select("id, slug, title, category, mission_type, required_level, points_reward, cash_reward, deadline, quota, filled")
+        .eq("workspace_id", workspaceId)
+        .eq("status", "active")
+        .eq("access_type", "open"),
+    ]);
   if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
-
-  const { data: subs, error: sErr } = await supabase
-    .from("mission_submissions").select("mission_id, status, quality_rating").eq("creator_id", userId);
   if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
-
-  const { data: missions, error: mErr } = await supabase
-    .from("missions")
-    .select("id, slug, title, category, mission_type, required_level, points_reward, cash_reward, deadline, quota, filled")
-    .eq("workspace_id", c.get("workspaceId"))
-    .eq("status", "active")
-    .eq("access_type", "open");
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
 
   // Live readiness from the caller's own submissions (single source of truth — reuse passport fns).
@@ -46,11 +52,12 @@ matchRoutes.get("/", async (c) => {
   };
 
   const engaged = new Set((subs ?? []).map((s) => s.mission_id as string));
-  const today = new Date().toISOString().slice(0, 10);
+  const today = now.toISOString().slice(0, 10);
   const candidates = filterCandidates((missions ?? []) as MatchMission[], engaged, today);
-  const ranked = rankMissions(scoreMissions(creatorInput, candidates, new Date()));
+  const ranked = rankMissions(scoreMissions(creatorInput, candidates, now));
 
-  // Best-effort LLM polish of the top rationales; any failure keeps the template.
+  // Best-effort LLM polish of the top rationales (cap at 8 to bound latency/cost; positions 9+
+  // keep their template). Any failure → templates kept.
   const enhanced = await enhanceRationales(
     ranked.slice(0, 8).map((m) => ({ id: m.id, title: m.title, category: m.category, rationale: m.rationale, locked: m.locked })),
   );

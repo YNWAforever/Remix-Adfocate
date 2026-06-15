@@ -61,6 +61,7 @@ export function useMissionMatch() {
   return useQuery({
     queryKey: ["mission-match"],
     queryFn: async () => (await apiFetch<{ matches: MissionMatch[] }>("/match")).matches,
+    staleTime: 60_000, // recommendations are stable within a session; avoid refetch-on-focus re-hitting the LLM
   });
 }
 export function useGifts(category?: string) {
