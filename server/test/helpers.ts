@@ -154,12 +154,13 @@ export async function setXp(userId: string, xp: number) {
 
 /** Insert a mission_submissions row in a terminal status (service-role, bypassing the
  *  join→submit→review RPC chain). Creates a throwaway "test-" mission per call so the
- *  (mission_id, creator_id) unique constraint never collides. */
-export async function seedSubmission(creatorId: string, status: string, slug: string) {
+ *  (mission_id, creator_id) unique constraint never collides. An optional 1-5
+ *  qualityRating seeds the Content-score source (only meaningful on approved rows). */
+export async function seedSubmission(creatorId: string, status: string, slug: string, qualityRating?: number) {
   const m = await makeMission({ slug });
-  const { error } = await service()
-    .from("mission_submissions")
-    .insert({ mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status });
+  const row: Record<string, unknown> = { mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status };
+  if (qualityRating != null) row.quality_rating = qualityRating;
+  const { error } = await service().from("mission_submissions").insert(row);
   if (error) throw error;
 }
 
