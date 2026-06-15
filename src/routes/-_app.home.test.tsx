@@ -49,4 +49,9 @@ describe("Home", () => {
     renderHome();
     expect(screen.getByLabelText("創作者護照")).toHaveAttribute("href", "/passport");
   });
+
+  it("shows a '今日整乜好' CTA linking to /match", () => {
+    renderHome();
+    expect(screen.getByLabelText("今日整乜好")).toHaveAttribute("href", "/match");
+  });
 });
