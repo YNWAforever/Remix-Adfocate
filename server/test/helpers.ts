@@ -171,6 +171,13 @@ export async function setReferredBy(childId: string, parentId: string) {
   if (error) throw error;
 }
 
+/** Read a creator's persisted passport-score snapshot (creators.scores) for assertions. */
+export async function getCreatorScores(userId: string) {
+  const { data, error } = await service().from("creators").select("scores").eq("id", userId).single();
+  if (error) throw error;
+  return data.scores as { influence: number | null; content: number | null; reliability: number | null; brandSafety: number | null };
+}
+
 export async function cleanup() {
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");

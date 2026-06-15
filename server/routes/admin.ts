@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
+import { persistScores } from "../lib/persistScores.js";
 
 /** Operator-only review endpoints. Interim shared-secret auth (replaced by real
  *  admin-auth / the Brand Dashboard in Slice 8). Uses the service client. */
@@ -30,18 +31,32 @@ adminRoutes.get("/submissions", async (c) => {
 });
 
 adminRoutes.post("/submissions/:id/approve", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({} as { notes?: string }))).notes ?? null;
+  const body = await c.req
+    .json<{ notes?: string; quality_rating?: number }>()
+    .catch(() => ({}) as { notes?: string; quality_rating?: number });
+  const notes = body.notes ?? null;
+  const raw = body.quality_rating;
+  if (raw !== undefined && raw !== null && (!Number.isInteger(raw) || raw < 1 || raw > 5)) {
+    return c.json({ error: "quality_rating must be an integer 1-5", code: "bad_rating" }, 400);
+  }
+  const rating = raw ?? null;
   const svc = serviceClient();
-  const { data, error } = await svc.rpc("approve_submission", { p_submission: c.req.param("id"), p_notes: notes });
+  const { data, error } = await svc.rpc("approve_submission", {
+    p_submission: c.req.param("id"),
+    p_notes: notes,
+    p_quality_rating: rating,
+  });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
 
 adminRoutes.post("/submissions/:id/reject", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({} as { notes?: string }))).notes ?? null;
+  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}) as { notes?: string })).notes ?? null;
   const svc = serviceClient();
   const { data, error } = await svc.rpc("reject_submission", { p_submission: c.req.param("id"), p_notes: notes });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
 

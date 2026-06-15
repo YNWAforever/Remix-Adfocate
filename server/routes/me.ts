@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { serviceClient, makeUserClient } from "../lib/supabase.js";
+import { persistScores } from "../lib/persistScores.js";
 import { buildPassport } from "../lib/passport.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
@@ -122,6 +123,7 @@ meRoutes.put("/profile", async (c) => {
     .select(ME_PROJECTION)
     .single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (body.social_handles !== undefined) await persistScores(c.get("userId"));
   return c.json(data);
 });
 

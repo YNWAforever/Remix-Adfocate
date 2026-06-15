@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import { makeCreator, makeMission, getCreatorScores, cleanup, hasSupabaseEnv } from "./helpers";
 
 // Make the in-process admin middleware and the test agree on the secret.
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
@@ -102,5 +102,69 @@ suite("admin submission review", () => {
     expect((await res.json()).status).toBe("rejected");
     const bal = await koreq("/wallet/points", koc2.jwt);
     expect((await bal.json()).balance).toBe(0);
+  });
+
+  it("approves with a 5★ rating: stores the rating, awards +50 bonus XP, snapshots scores", async () => {
+    const koc3 = await makeCreator("admin-rate@test.local", 0);
+    await makeMission({ slug: "test-admin-rate", points_reward: 100, quota: 5 });
+    await koreq("/missions/test-admin-rate/join", koc3.jwt, { method: "POST" });
+    const sub = await koreq("/missions/test-admin-rate/submit", koc3.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://ig.com/p/rate"] }),
+    });
+    const id = (await sub.json()).id;
+
+    const res = await adminreq(`/admin/submissions/${id}/approve`, {
+      method: "POST",
+      body: JSON.stringify({ notes: "great", quality_rating: 5 }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.quality_rating).toBe(5);
+
+    // 10 join + 25 submit + 100 approve + 50 bonus = 185.
+    const me = await koreq("/me", koc3.jwt);
+    expect((await me.json()).xp).toBe(185);
+
+    // persistScores wrote the snapshot: 1 approved + rated 5 → content 100, brand safety 100.
+    const scores = await getCreatorScores(koc3.userId);
+    expect(scores.content).toBe(100);
+    expect(scores.brandSafety).toBe(100);
+    expect(scores.reliability).toBe(100);
+  });
+
+  it("rejects an out-of-range rating with 400 bad_rating", async () => {
+    const koc4 = await makeCreator("admin-badrate@test.local", 0);
+    await makeMission({ slug: "test-admin-badrate", points_reward: 100, quota: 5 });
+    await koreq("/missions/test-admin-badrate/join", koc4.jwt, { method: "POST" });
+    const sub = await koreq("/missions/test-admin-badrate/submit", koc4.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://ig.com/p/bad"] }),
+    });
+    const id = (await sub.json()).id;
+    const res = await adminreq(`/admin/submissions/${id}/approve`, {
+      method: "POST",
+      body: JSON.stringify({ quality_rating: 7 }),
+    });
+    expect(res.status).toBe(400);
+    expect((await res.json()).code).toBe("bad_rating");
+  });
+
+  it("rejection snapshots scores (brand safety reflects the rejection)", async () => {
+    const koc5 = await makeCreator("admin-rej-snap@test.local", 0);
+    await makeMission({ slug: "test-admin-rej-snap", points_reward: 100, quota: 5 });
+    await koreq("/missions/test-admin-rej-snap/join", koc5.jwt, { method: "POST" });
+    const sub = await koreq("/missions/test-admin-rej-snap/submit", koc5.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://ig.com/p/rej"] }),
+    });
+    const id = (await sub.json()).id;
+    await adminreq(`/admin/submissions/${id}/reject`, {
+      method: "POST",
+      body: JSON.stringify({ notes: "off-brief" }),
+    });
+    const scores = await getCreatorScores(koc5.userId);
+    expect(scores.brandSafety).toBe(0); // 0 approved / 1 reviewed
+    expect(scores.reliability).toBe(0);
   });
 });
