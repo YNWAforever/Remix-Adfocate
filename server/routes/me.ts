@@ -126,11 +126,12 @@ meRoutes.put("/profile", async (c) => {
 });
 
 /** GET /api/me/passport — the Creator Passport: live level + XP, four score rings, and
- *  data-derived badges, all computed on read (no migration). Reliability + Influence come
- *  from the caller's own submissions / social handles via the user client (RLS self-scoped);
- *  Content + Brand Safety are locked (null) until 6C. The referrer badge needs a count of
- *  OTHER creators' rows (referred_by = me) which RLS hides from the user client, so that one
- *  count uses the service client — it exposes a number, not other creators' data. */
+ *  data-derived badges, all computed on read. Reliability + Influence come from the caller's
+ *  own submissions / social handles via the user client (RLS self-scoped); Content is the
+ *  average quality_rating across approved submissions scaled to 0-100; Brand Safety is the
+ *  non-rejection rate over reviewed submissions. The referrer badge needs a count of OTHER
+ *  creators' rows (referred_by = me) which RLS hides from the user client, so that one count
+ *  uses the service client — it exposes a number, not other creators' data. */
 meRoutes.get("/passport", async (c) => {
   const userId = c.get("userId");
   const supabase = makeUserClient(c.get("jwt"));
@@ -159,8 +160,14 @@ meRoutes.get("/passport", async (c) => {
     xp: creator.xp,
     socialHandles: creator.social_handles as { followers?: number | null }[] | null,
     statuses: (subs ?? []).map((s) => s.status as string),
+    // Only approved submissions carry a quality_rating (set by approve_submission); the
+    // status guard makes that invariant explicit and keeps Content honest if a rating on
+    // any other status is ever introduced.
     ratings: (subs ?? [])
-      .filter((s) => (s as { quality_rating?: number | null }).quality_rating != null)
+      .filter((s) => {
+        const row = s as { status: string; quality_rating?: number | null };
+        return row.status === "approved" && row.quality_rating != null;
+      })
       .map((s) => (s as { quality_rating: number }).quality_rating),
     referredCount: referredCount ?? 0,
   });

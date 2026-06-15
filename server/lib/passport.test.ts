@@ -109,6 +109,12 @@ describe("buildPassport", () => {
     expect(buildPassport({ ...base, statuses: ["approved", "approved", "approved"], ratings: [5, 4, 5] }).badges).toContain("content_pro"); // avg 4.67 → 93
     expect(buildPassport({ ...base, statuses: ["approved", "approved"], ratings: [5, 5] }).badges).not.toContain("content_pro"); // only 2 ratings
   });
+  it("content_pro treats content exactly 80 as earned (>= boundary)", () => {
+    // avg(4,4,4)=4 → content 80, 3 ratings → earns (proves >= not >)
+    expect(buildPassport({ ...base, statuses: ["approved", "approved", "approved"], ratings: [4, 4, 4] }).badges).toContain("content_pro");
+    // avg(4,4,3)=3.67 → content 73 → below threshold
+    expect(buildPassport({ ...base, statuses: ["approved", "approved", "approved"], ratings: [4, 4, 3] }).badges).not.toContain("content_pro");
+  });
   it("earns spotless at 3+ reviewed AND brand safety 100", () => {
     expect(buildPassport({ ...base, statuses: ["approved", "approved", "approved"] }).badges).toContain("spotless");
     expect(buildPassport({ ...base, statuses: ["approved", "approved", "rejected"] }).badges).not.toContain("spotless"); // 67
