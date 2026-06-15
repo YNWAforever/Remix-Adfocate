@@ -144,7 +144,7 @@ meRoutes.get("/passport", async (c) => {
 
   const { data: subs, error: sErr } = await supabase
     .from("mission_submissions")
-    .select("status")
+    .select("status, quality_rating")
     .eq("creator_id", userId);
   if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
 
@@ -159,6 +159,9 @@ meRoutes.get("/passport", async (c) => {
     xp: creator.xp,
     socialHandles: creator.social_handles as { followers?: number | null }[] | null,
     statuses: (subs ?? []).map((s) => s.status as string),
+    ratings: (subs ?? [])
+      .filter((s) => (s as { quality_rating?: number | null }).quality_rating != null)
+      .map((s) => (s as { quality_rating: number }).quality_rating),
     referredCount: referredCount ?? 0,
   });
   return c.json(passport);

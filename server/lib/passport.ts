@@ -6,8 +6,8 @@ export type PassportSocialHandle = { followers?: number | null };
 export type PassportScores = {
   influence: number | null; // computed; null = no social handles yet
   reliability: number | null; // computed; null = no concluded submissions yet
-  content: null; // locked until 6C
-  brandSafety: null; // locked until 6C
+  content: number | null; // 6C: round(20 * avg rating); null = nothing rated
+  brandSafety: number | null; // 6C: non-rejection rate; null = nothing reviewed
 };
 
 export type Passport = {
@@ -58,17 +58,36 @@ export function reliabilityFor(counts: SubmissionCounts): number | null {
   return Math.round((100 * counts.approved) / concluded);
 }
 
+/** Average of the 1-5 quality ratings, scaled to 0-100. null when nothing is rated. */
+export function contentFor(ratings: number[]): number | null {
+  if (ratings.length === 0) return null;
+  const avg = ratings.reduce((sum, r) => sum + r, 0) / ratings.length;
+  return Math.round(20 * avg);
+}
+
+/** Non-rejection rate over REVIEWED submissions (approved + rejected; expired excluded).
+ *  null when nothing has been reviewed. A proxy for compliance pass-rate. */
+export function brandSafetyFor(counts: SubmissionCounts): number | null {
+  const reviewed = counts.approved + counts.rejected;
+  if (reviewed === 0) return null;
+  return Math.round((100 * counts.approved) / reviewed);
+}
+
 export function buildPassport(input: {
   level: string;
   xp: number;
   socialHandles: PassportSocialHandle[] | null | undefined;
   statuses: string[];
+  ratings: number[];
   referredCount: number;
 }): Passport {
   const counts = countTerminal(input.statuses);
   const concluded = counts.approved + counts.rejected + counts.expired;
+  const reviewed = counts.approved + counts.rejected;
   const reliability = reliabilityFor(counts);
   const influence = influenceFor(input.socialHandles);
+  const content = contentFor(input.ratings);
+  const brandSafety = brandSafetyFor(counts);
   const handleCount = input.socialHandles?.length ?? 0;
 
   const badges: string[] = [];
@@ -77,11 +96,14 @@ export function buildPassport(input: {
   if (concluded >= 3 && (reliability ?? 0) >= 80) badges.push("reliable");
   if (handleCount >= 1) badges.push("social_linked");
   if (input.referredCount >= 1) badges.push("referrer");
+  if (input.ratings.some((r) => r === 5)) badges.push("perfect_rating");
+  if (input.ratings.length >= 3 && (content ?? 0) >= 80) badges.push("content_pro");
+  if (reviewed >= 3 && brandSafety === 100) badges.push("spotless");
 
   return {
     level: input.level,
     xp: input.xp,
-    scores: { influence, reliability, content: null, brandSafety: null },
+    scores: { influence, reliability, content, brandSafety },
     badges,
   };
 }
