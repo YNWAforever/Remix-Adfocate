@@ -6,6 +6,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return { ...actual, Link: (p: { children: React.ReactNode }) => <a>{p.children}</a> };
 });
+vi.mock("@/components/HookPanel", () => ({ HookPanel: () => <div>HOOK_PANEL</div> }));
 
 const hoisted = vi.hoisted(() => ({
   mission: { data: { slug: "m1", title: "美容試用", description: "d", category: "美容", access_type: "open", points_reward: 300, mission_type: "ugc", quota: 5, filled: 1, status: "active" }, isLoading: false, isError: false },
@@ -66,5 +67,12 @@ describe("Mission detail writes", () => {
     hoisted.mission.data.access_type = "application";
     renderDetail();
     expect(screen.getByText(/需要申請/)).toBeInTheDocument();
+  });
+
+  it("reveals the hook generator panel when the CTA is clicked", () => {
+    renderDetail();
+    expect(screen.queryByText("HOOK_PANEL")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "生成內容靈感" }));
+    expect(screen.getByText("HOOK_PANEL")).toBeInTheDocument();
   });
 });

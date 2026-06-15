@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Star, Clock } from "lucide-react";
+import { ArrowLeft, Star, Clock, Lightbulb } from "lucide-react";
 import { useMission, useMyMissions, useJoinMission, useSubmitMission } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
+import { HookPanel } from "@/components/HookPanel";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 
@@ -19,6 +20,7 @@ function MissionDetail() {
   const join = useJoinMission(missionSlug);
   const submit = useSubmitMission(missionSlug);
   const [urls, setUrls] = useState("");
+  const [showHooks, setShowHooks] = useState(false);
 
   if (m.isLoading) return <div className="p-4"><SkeletonCard className="h-96" /></div>;
   if (m.isError || !m.data) return (
@@ -78,6 +80,19 @@ function MissionDetail() {
             <span className="font-heading font-bold">狀態</span>
             <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · +${sub.points_awarded} 積分` : ""}</span>
           </section>
+        )}
+
+        {!isApplication && (
+          <>
+            <button
+              onClick={() => setShowHooks((v) => !v)}
+              aria-label="生成內容靈感"
+              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] py-3 text-center font-heading font-bold text-white"
+            >
+              <Lightbulb size={18} aria-hidden /> 生成內容靈感
+            </button>
+            {showHooks && <HookPanel missionSlug={missionSlug} />}
+          </>
         )}
       </div>
     </div>
