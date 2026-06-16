@@ -13,12 +13,14 @@ const hoisted = vi.hoisted(() => ({
   my: { data: [] as unknown[], isLoading: false },
   join: vi.fn(),
   submit: vi.fn(),
+  apply: vi.fn(),
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
   useMission: () => hoisted.mission,
   useMyMissions: () => hoisted.my,
   useJoinMission: () => ({ mutateAsync: hoisted.join, isPending: false }),
   useSubmitMission: () => ({ mutateAsync: hoisted.submit, isPending: false }),
+  useApplyMission: () => ({ mutateAsync: hoisted.apply, isPending: false }),
 }));
 
 import { Route } from "./_app.mission.$missionSlug";
@@ -36,6 +38,7 @@ describe("Mission detail writes", () => {
     hoisted.mission.data.access_type = "open";
     hoisted.join.mockResolvedValue({ id: "s1", status: "joined" });
     hoisted.submit.mockResolvedValue({ id: "s1", status: "submitted" });
+    hoisted.apply.mockResolvedValue({ id: "s1", status: "applied" });
   });
 
   it("shows the Join CTA for an open, un-joined mission", () => {
@@ -63,10 +66,25 @@ describe("Mission detail writes", () => {
     await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/a"] }));
   });
 
-  it("disables the CTA for an application mission", () => {
+  it("shows the apply CTA for an application mission and applies", async () => {
     hoisted.mission.data.access_type = "application";
     renderDetail();
-    expect(screen.getByText(/需要申請/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("申請任務"));
+    await waitFor(() => expect(hoisted.apply).toHaveBeenCalled());
+  });
+
+  it("shows 審批中 once an application is pending", () => {
+    hoisted.mission.data.access_type = "application";
+    hoisted.my.data = [{ id: "s1", status: "applied", content_urls: [], points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
+    renderDetail();
+    expect(screen.getByText("審批中")).toBeInTheDocument();
+  });
+
+  it("shows 未獲接受 for a declined application", () => {
+    hoisted.mission.data.access_type = "application";
+    hoisted.my.data = [{ id: "s1", status: "declined", content_urls: [], points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
+    renderDetail();
+    expect(screen.getByText("未獲接受")).toBeInTheDocument();
   });
 
   it("reveals the hook generator panel when the CTA is clicked", () => {

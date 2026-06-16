@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Star, Clock, Lightbulb } from "lucide-react";
-import { useMission, useMyMissions, useJoinMission, useSubmitMission } from "@/lib/queries/kocmax";
+import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { HookPanel } from "@/components/HookPanel";
@@ -9,8 +9,9 @@ import { HookPanel } from "@/components/HookPanel";
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 
 const STATUS_LABEL: Record<string, string> = {
+  applied: "審批中",
   joined: "進行中", submitted: "審批中", under_review: "審批中",
-  approved: "已通過", rejected: "未通過", expired: "已過期",
+  approved: "已通過", rejected: "未通過", expired: "已過期", declined: "未獲接受",
 };
 
 function MissionDetail() {
@@ -19,6 +20,7 @@ function MissionDetail() {
   const mine = useMyMissions();
   const join = useJoinMission(missionSlug);
   const submit = useSubmitMission(missionSlug);
+  const apply = useApplyMission(missionSlug);
   const [urls, setUrls] = useState("");
   const [showHooks, setShowHooks] = useState(false);
 
@@ -65,10 +67,12 @@ function MissionDetail() {
         )}
 
         {/* Action zone */}
-        {isApplication ? (
-          <button disabled className="block w-full cursor-not-allowed rounded-full border-2 border-[var(--color-ink)] bg-gray-200 py-3 text-center font-heading font-bold text-[var(--color-soft-ink)]">需要申請 · 即將推出</button>
-        ) : !sub ? (
-          <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? "處理中…" : "加入任務"}</button>
+        {!sub ? (
+          isApplication ? (
+            <button onClick={() => apply.mutateAsync()} disabled={apply.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{apply.isPending ? "處理中…" : "申請任務"}</button>
+          ) : (
+            <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? "處理中…" : "加入任務"}</button>
+          )
         ) : sub.status === "joined" ? (
           <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
             <h3 className="font-heading font-bold">提交內容</h3>
