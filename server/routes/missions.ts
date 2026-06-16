@@ -10,6 +10,7 @@ export const missionRoutes = new Hono<Env>();
 const RPC_409 = new Set([
   "mission_full", "already_joined", "not_open", "closed",
   "level_locked", "wrong_state", "empty_urls", "not_authenticated",
+  "not_application", "already_applied",
 ]);
 function rpcError(c: Context<Env>, error: PostgrestError) {
   const msg = error.message ?? "";
@@ -109,5 +110,19 @@ missionRoutes.put("/:slug/submit", async (c) => {
   return c.json(data);
 });
 
-/** Gated 'application' missions: vetting arrives with the Brand Dashboard (Slice 8). */
-missionRoutes.post("/:slug/apply", (c) => c.json({ error: "not_available", code: "not_available" }, 409));
+/** Apply to an application-gated mission (one-tap). Operator vets via /admin/applications. */
+missionRoutes.post("/:slug/apply", async (c) => {
+  const supabase = makeUserClient(c.get("jwt"));
+  const { data: m, error: mErr } = await supabase
+    .from("missions")
+    .select("id")
+    .eq("workspace_id", c.get("workspaceId"))
+    .eq("slug", c.req.param("slug"))
+    .maybeSingle();
+  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
+  if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
+
+  const { data, error } = await supabase.rpc("apply_mission", { p_mission: m.id });
+  if (error) return rpcError(c, error);
+  return c.json(data);
+});

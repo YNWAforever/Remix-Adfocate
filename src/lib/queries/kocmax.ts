@@ -191,6 +191,18 @@ export function useSubmitMission(slug: string) {
   });
 }
 
+export function useApplyMission(slug: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<MyMission>(`/missions/${slug}/apply`, { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mission", slug] });
+      qc.invalidateQueries({ queryKey: ["missions"] }); // my_status badge → 審批中
+      qc.invalidateQueries({ queryKey: ["my-missions"] });
+    },
+  });
+}
+
 /** The raw redeem_gift RPC result (the redemptions row, incl. the issued code). */
 export type RedeemResult = {
   id: string;

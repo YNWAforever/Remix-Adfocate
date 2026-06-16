@@ -60,6 +60,34 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
   return c.json(data);
 });
 
+// Pending applications (status='applied') across workspaces — interim single-operator
+// scope, same caveat as /submissions above (Brand Dashboard replaces with role-scoped review).
+adminRoutes.get("/applications", async (c) => {
+  const svc = serviceClient();
+  const { data, error } = await svc
+    .from("mission_submissions")
+    .select("id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+    .eq("status", "applied")
+    .order("created_at", { ascending: true });
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ applications: data ?? [] });
+});
+
+adminRoutes.post("/applications/:id/accept", async (c) => {
+  const svc = serviceClient();
+  const { data, error } = await svc.rpc("accept_application", { p_submission: c.req.param("id") });
+  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  return c.json(data);
+});
+
+adminRoutes.post("/applications/:id/decline", async (c) => {
+  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}) as { notes?: string })).notes ?? null;
+  const svc = serviceClient();
+  const { data, error } = await svc.rpc("decline_application", { p_submission: c.req.param("id"), p_notes: notes });
+  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  return c.json(data);
+});
+
 adminRoutes.post("/gifts/:id/codes", async (c) => {
   const body = await c.req.json<{ codes?: string[] }>().catch(() => ({} as { codes?: string[] }));
   const codes = (body.codes ?? []).map((s) => s.trim()).filter(Boolean);

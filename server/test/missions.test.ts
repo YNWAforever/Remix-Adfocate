@@ -150,11 +150,11 @@ suite("mission list + my + apply", () => {
     expect((await res.json()).submissions).toHaveLength(0);
   });
 
-  it("POST /:slug/apply is a not_available stub", async () => {
+  it("POST /:slug/apply applies to an application mission (→ applied)", async () => {
     await makeMission({ slug: "test-apply-gated", access_type: "application" });
     const res = await req("/missions/test-apply-gated/apply", koc.jwt, { method: "POST" });
-    expect(res.status).toBe(409);
-    expect((await res.json()).code).toBe("not_available");
+    expect(res.status).toBe(200);
+    expect((await res.json()).status).toBe("applied");
   });
 
   it("does not leak another creator's submissions via /my (RLS isolation)", async () => {
