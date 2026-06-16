@@ -12,6 +12,23 @@ insert into public.missions (workspace_id, slug, title, category, mission_type, 
   ('00000000-0000-0000-0000-0000000000aa','koc-trial-mask','面膜試用','美容','koc_trial',250,10,7),
   ('00000000-0000-0000-0000-0000000000aa','ugc-travel','旅遊分享','旅遊','ugc',180,20,5);
 
+-- Brief content for two demo missions (so the detail page renders a real brief locally)
+update public.missions set
+  description  = '幫品牌試用全新美容精華，分享你的真實體驗。',
+  deliverables = array['1 條 Reel（≥30 秒）開箱試用','3 個限時動態（含產品標註）'],
+  requirements = array['標註 @demo_brand 及 #DemoSerum','勿提及任何競品','發佈後保留貼文 ≥30 日'],
+  platforms    = array['instagram','tiktok'],
+  effort       = 'medium'
+where slug = 'koc-trial-serum';
+
+update public.missions set
+  description  = '到指定咖啡店打卡，影低你最鍾意嘅一杯。',
+  deliverables = array['1 篇圖文帖（≥3 張相）'],
+  requirements = array['標註店舖位置','日光時段拍攝'],
+  platforms    = array['instagram'],
+  effort       = 'low'
+where slug = 'ugc-cafe';
+
 -- Demo gifts (8)
 insert into public.redemption_gifts (workspace_id, name, category, points_cost, stock_qty, stock_remaining, gift_type, status) values
   ('00000000-0000-0000-0000-0000000000aa','HK$50 現金券','現金券',500,100,42,'voucher','available'),
