@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Star, Clock, Lightbulb } from "lucide-react";
-import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission } from "@/lib/queries/kocmax";
+import { ArrowLeft, Lightbulb } from "lucide-react";
+import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { HookPanel } from "@/components/HookPanel";
+import { MissionFacts } from "@/components/MissionFacts";
+import { MissionBrief } from "@/components/MissionBrief";
+import { missionTypeLabel } from "@/lib/missionMeta";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 
@@ -21,6 +24,7 @@ function MissionDetail() {
   const join = useJoinMission(missionSlug);
   const submit = useSubmitMission(missionSlug);
   const apply = useApplyMission(missionSlug);
+  const me = useMe();
   const [urls, setUrls] = useState("");
   const [showHooks, setShowHooks] = useState(false);
 
@@ -49,22 +53,13 @@ function MissionDetail() {
         <h1 className="truncate font-heading font-semibold">{m.data.title}</h1>
       </header>
       <div className="space-y-4 p-4">
-        {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
+        <div className="flex flex-wrap items-center gap-2">
+          {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
+          <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{missionTypeLabel(m.data.mission_type)}</span>
+        </div>
         <h2 className="font-display text-xl font-bold">{m.data.title}</h2>
-        <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-          <h3 className="mb-1 font-heading font-bold">任務詳情</h3>
-          <p className="text-sm text-[var(--color-soft-ink)]">{m.data.description}</p>
-        </section>
-        <section className="pastel-card flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-          <Star className="text-[var(--color-magenta)]" aria-hidden />
-          <div><p className="font-heading font-bold">獎勵積分</p><p className="font-display text-lg">{m.data.points_reward} 積分</p></div>
-        </section>
-        {m.data.deadline && (
-          <section className="pastel-card flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-            <Clock aria-hidden />
-            <div><p className="font-heading font-bold">截止日期</p><p>{m.data.deadline.slice(0, 10)}</p></div>
-          </section>
-        )}
+        <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
+        <MissionBrief mission={m.data} />
 
         {/* Action zone */}
         {!sub ? (
