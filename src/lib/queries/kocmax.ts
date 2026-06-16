@@ -5,6 +5,9 @@ export type SubmissionStatus = "joined" | "submitted" | "under_review" | "approv
 export type Mission = {
   id: string; slug: string; title: string; description?: string;
   category?: string; mission_type: string; access_type?: string; points_reward: number;
+  cash_reward?: number | null; required_level?: string;
+  deliverables?: string[]; requirements?: string[]; platforms?: string[];
+  effort?: "low" | "medium" | "high" | null; brand?: string | null;
   deadline?: string; quota: number; filled: number; status: string;
   my_status?: SubmissionStatus | null;
 };
