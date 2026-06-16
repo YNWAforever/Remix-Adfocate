@@ -62,13 +62,15 @@ missionRoutes.get("/:slug", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data, error } = await supabase
     .from("missions")
-    .select("*")
+    .select("*, workspaces(name)")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .maybeSingle();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   if (!data) return c.json({ error: "Not found", code: "not_found" }, 404);
-  return c.json(data);
+  // Flatten the joined brand name to a top-level `brand`; drop the nested object.
+  const { workspaces, ...rest } = data as Record<string, unknown> & { workspaces?: { name?: string } | null };
+  return c.json({ ...rest, brand: workspaces?.name ?? null });
 });
 
 /** Join an open mission. */

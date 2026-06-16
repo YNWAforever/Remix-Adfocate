@@ -157,6 +157,18 @@ suite("mission list + my + apply", () => {
     expect((await res.json()).status).toBe("applied");
   });
 
+  it("GET /:slug returns the brief fields + brand", async () => {
+    await makeMission({ slug: "test-brief-fields", access_type: "open" });
+    const res = await req("/missions/test-brief-fields", koc.jwt);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.brand).toBe("Demo Brand");          // joined from workspaces.name
+    expect(Array.isArray(body.deliverables)).toBe(true);
+    expect(Array.isArray(body.requirements)).toBe(true);
+    expect(Array.isArray(body.platforms)).toBe(true);
+    expect(body).not.toHaveProperty("workspaces");   // nested join flattened away
+  });
+
   it("does not leak another creator's submissions via /my (RLS isolation)", async () => {
     // koc joined test-list-joined above; a different creator must see none of it.
     const other = await makeCreator("list-other@test.local", 0);
