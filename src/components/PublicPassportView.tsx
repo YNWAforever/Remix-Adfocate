@@ -45,11 +45,16 @@ export function PublicPassportView({ passport }: { passport: PublicPassport }) {
       <section className="space-y-3">
         <h2 className="font-heading font-bold">Trust badges</h2>
         <div className="grid grid-cols-2 gap-3">
-          {passport.socialTrustBadges.map((id) => (
-            <div key={id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-bold">
-              {TRUST_BADGES[id] ?? id}
-            </div>
-          ))}
+          {passport.socialTrustBadges.flatMap((id) => {
+            const label = TRUST_BADGES[id];
+            if (!label) return [];
+
+            return (
+              <div key={id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-bold">
+                {label}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>
