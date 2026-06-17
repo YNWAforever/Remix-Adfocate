@@ -1,4 +1,7 @@
 {
+  "crons": [
+    { "path": "/api/cron/social-refresh", "schedule": "0 3 * * 1" }
+  ],
   "redirects": [
     { "source": "/kocmax/demo", "destination": "/home" },
     { "source": "/kocmax/demo/", "destination": "/home" },

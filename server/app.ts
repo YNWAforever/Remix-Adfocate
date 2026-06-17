@@ -11,6 +11,7 @@ import { matchRoutes } from "./routes/match.js";
 import { copilotRoutes } from "./routes/copilot.js";
 import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
+import { cronRoutes } from "./routes/cron.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -26,6 +27,7 @@ export function createApp() {
   // Unguarded operator endpoints (own shared-secret middleware, not workspaceAuth).
   app.route("/admin", adminRoutes);
   app.route("/public", publicRoutes);
+  app.route("/cron", cronRoutes);
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
