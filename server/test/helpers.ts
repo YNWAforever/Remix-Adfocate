@@ -19,6 +19,17 @@ function service(): SupabaseClient {
   return _service;
 }
 
+export function serviceForTests(): SupabaseClient {
+  return service();
+}
+
+export function userForJwt(jwt: string): SupabaseClient {
+  return createClient(url, anonKey, {
+    auth: { persistSession: false },
+    global: { headers: { Authorization: `Bearer ${jwt}` } },
+  });
+}
+
 export const DEMO_WS = "00000000-0000-0000-0000-0000000000aa";
 
 /** Create a confirmed user + creator (in DEMO_WS) + balance. Returns a signed-in JWT. */
@@ -189,6 +200,10 @@ export async function cleanup() {
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
+  if (ids.length) {
+    await service().from("creator_public_passports").delete().in("creator_id", ids);
+    await service().from("creator_social_accounts").delete().in("creator_id", ids);
+  }
   // Null any inbound referral inside the test set so deleting a referred creator never
   // trips the referred_by FK (creators.referred_by → creators.id, no ON DELETE clause).
   if (ids.length) await service().from("creators").update({ referred_by: null }).in("id", ids);
