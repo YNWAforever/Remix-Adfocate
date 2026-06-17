@@ -201,6 +201,10 @@ export async function cleanup() {
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
   if (ids.length) {
+    await service().from("operator_audit_events").delete().in("creator_id", ids);
+    await service().from("creator_review_notes").delete().in("creator_id", ids);
+    await service().from("creator_review_statuses").delete().in("creator_id", ids);
+    await service().from("mission_shortlists").delete().in("creator_id", ids);
     await service().from("creator_public_passports").delete().in("creator_id", ids);
     await service().from("creator_social_accounts").delete().in("creator_id", ids);
   }
@@ -219,6 +223,8 @@ export async function cleanup() {
   // Test missions (slug "test-%") and any leftover submissions on them.
   const testMissions = await service().from("missions").select("id").like("slug", "test-%");
   for (const m of testMissions.data ?? []) {
+    await service().from("operator_audit_events").delete().eq("mission_id", m.id);
+    await service().from("mission_shortlists").delete().eq("mission_id", m.id);
     await service().from("mission_submissions").delete().eq("mission_id", m.id);
     await service().from("missions").delete().eq("id", m.id);
   }
