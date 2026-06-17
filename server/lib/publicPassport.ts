@@ -36,7 +36,7 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
 
   const { data: creator, error: creatorErr } = await svc
     .from("creators")
-    .select("id, display_name, avatar_url, level, xp, social_handles")
+    .select("id, display_name, avatar_url, level, xp")
     .eq("id", share.creator_id)
     .single();
   if (creatorErr) throw creatorErr;
@@ -56,7 +56,7 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
   const syncedAccounts = await listSocialAccounts(svc, share.creator_id as string);
   const socialHandles = effectiveSocialHandles({
     syncedAccounts,
-    selfReportedHandles: creator.social_handles as { followers?: number | null }[] | null,
+    selfReportedHandles: null,
   });
   const passport = buildPassport({
     level: creator.level,
