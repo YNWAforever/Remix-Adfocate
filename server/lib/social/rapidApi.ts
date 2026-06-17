@@ -1,5 +1,11 @@
 import { normalizeHandle, profileUrlFor } from "./normalize";
-import { SocialProviderError, type RecentPostSummary, type SocialPlatform, type SocialScanResult } from "./types";
+import {
+  SocialProviderError,
+  type RecentPostSummary,
+  type SocialPlatform,
+  type SocialScanResult,
+  type SocialScanSummary,
+} from "./types";
 
 type ScanEnv = Partial<Record<string, string | undefined>>;
 type ParsedPost = RecentPostSummary & { themeSourceText: string | null };
@@ -164,6 +170,17 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
   const followerCount = numberFrom(profile.follower_count ?? profile.followers ?? profile.followerCount);
   const avgLikes = average(posts.map((p) => p.likeCount));
   const avgComments = average(posts.map((p) => p.commentCount));
+  const bio = stringFrom(profile.biography) ?? stringFrom(profile.bio);
+  const externalAvatarUrl =
+    stringFrom(profile.profile_pic_url) ??
+    stringFrom(profile.profile_pic_url_hd) ??
+    stringFrom(recordFrom(profile.hd_profile_pic_url_info).url);
+  const summary: SocialScanSummary = {
+    postSampleSize: posts.length,
+    hasRecentPosts: posts.length > 0,
+    hasAvatar: Boolean(externalAvatarUrl),
+    hasBio: Boolean(bio),
+  };
   const engagementRate =
     followerCount && followerCount > 0 && avgLikes != null
       ? Math.round((((avgLikes + (avgComments ?? 0)) / followerCount) * 100) * 100) / 100
@@ -176,11 +193,8 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
     followerCount,
     followingCount: numberFrom(profile.following_count ?? profile.following ?? profile.followingCount),
     postCount: numberFrom(profile.media_count ?? profile.posts_count ?? profile.post_count),
-    bio: stringFrom(profile.biography) ?? stringFrom(profile.bio),
-    externalAvatarUrl:
-      stringFrom(profile.profile_pic_url) ??
-      stringFrom(profile.profile_pic_url_hd) ??
-      stringFrom(recordFrom(profile.hd_profile_pic_url_info).url),
+    bio,
+    externalAvatarUrl,
     engagementRate,
     avgLikes,
     avgComments,
@@ -193,9 +207,6 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
       likeCount,
       commentCount,
     })),
-    summary: {
-      rawUsername: stringFrom(profile.username),
-      providerShape: Object.keys(profile).slice(0, 20),
-    },
+    summary,
   };
 }

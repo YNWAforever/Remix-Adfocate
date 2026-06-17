@@ -68,6 +68,14 @@ describe("social RapidAPI adapter", () => {
         commentCount: 20,
       },
     ]);
+    expect(result.summary).toEqual({
+      postSampleSize: 2,
+      hasRecentPosts: true,
+      hasAvatar: true,
+      hasBio: true,
+    });
+    expect(result.summary).not.toHaveProperty("rawUsername");
+    expect(result.summary).not.toHaveProperty("providerShape");
     expect(fetchImpl).toHaveBeenCalledWith(
       "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php?username_or_url=ming",
       expect.objectContaining({

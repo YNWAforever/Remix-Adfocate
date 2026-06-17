@@ -28,6 +28,13 @@ export type RecentPostSummary = {
   commentCount: number | null;
 };
 
+export type SocialScanSummary = {
+  postSampleSize: number;
+  hasRecentPosts: boolean;
+  hasAvatar: boolean;
+  hasBio: boolean;
+};
+
 export type SocialScanResult = {
   platform: SocialPlatform;
   handle: string;
@@ -44,7 +51,7 @@ export type SocialScanResult = {
   freshnessScore: number | null;
   contentThemes: string[];
   recentPostsSummary: RecentPostSummary[];
-  summary: Record<string, unknown>;
+  summary: SocialScanSummary;
 };
 
 export type SocialAccountRecord = {
