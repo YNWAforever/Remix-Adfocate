@@ -4,7 +4,27 @@ import { cleanup, hasSupabaseEnv, makeCreator } from "./helpers";
 
 vi.mock("../lib/social/rapidApi.js", () => ({
   scanRapidApiProfile: vi.fn(
-    async ({ platform, handle }: { platform: "instagram" | "threads"; handle: string }) => ({
+    async ({ platform, handle }: { platform: "instagram" | "threads"; handle: string }) => {
+      if (handle === "no-provider") {
+        throw Object.assign(new Error("RapidAPI social scan is not configured"), {
+          code: "provider_not_configured",
+          status: "failed",
+        });
+      }
+      if (handle === "private") {
+        throw Object.assign(new Error("Profile is private or unavailable"), {
+          code: "private_or_unavailable",
+          status: "failed",
+        });
+      }
+      if (handle === "rate-limit") {
+        throw Object.assign(new Error("RapidAPI rate limit reached"), {
+          code: "rate_limited",
+          status: "rate_limited",
+        });
+      }
+
+      return {
       platform,
       handle,
       profileUrl:
@@ -24,7 +44,8 @@ vi.mock("../lib/social/rapidApi.js", () => ({
       contentThemes: ["beauty"],
       recentPostsSummary: [],
       summary: { mocked: true },
-    }),
+      };
+    },
   ),
 }));
 
@@ -55,13 +76,17 @@ suite("social account endpoints", () => {
 
   beforeEach(() => vi.clearAllMocks());
 
-  it("adds and lists an Instagram account", async () => {
+  async function createAccount(platform: "instagram" | "threads", handle: string) {
     const res = await req("/social/accounts", c.jwt, {
       method: "POST",
-      body: JSON.stringify({ platform: "instagram", handle: "@Ming" }),
+      body: JSON.stringify({ platform, handle }),
     });
     expect(res.status).toBe(200);
-    const account = await res.json();
+    return res.json();
+  }
+
+  it("adds and lists an Instagram account", async () => {
+    const account = await createAccount("instagram", "@Ming");
     expect(account).toMatchObject({
       platform: "instagram",
       handle: "ming",
@@ -75,12 +100,7 @@ suite("social account endpoints", () => {
   });
 
   it("scans an account and returns API-synced metrics", async () => {
-    const created = await (
-      await req("/social/accounts", c.jwt, {
-        method: "POST",
-        body: JSON.stringify({ platform: "threads", handle: "ming" }),
-      })
-    ).json();
+    const created = await createAccount("threads", "ming");
 
     const scan = await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
     expect(scan.status).toBe(200);
@@ -92,6 +112,55 @@ suite("social account endpoints", () => {
       engagement_rate: 4.5,
     });
     expect(body.labels).toEqual(["API-synced", "Ownership not verified"]);
+  });
+
+  it("returns 503 with a stable code when the provider is not configured", async () => {
+    const created = await createAccount("threads", "no-provider");
+
+    const scan = await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
+    expect(scan.status).toBe(503);
+    expect(await scan.json()).toMatchObject({
+      error: "Social scan provider is unavailable",
+      code: "provider_not_configured",
+    });
+
+    const list = await (await req("/social/accounts", c.jwt)).json();
+    const account = list.accounts.find((entry: { id: string }) => entry.id === created.id);
+    expect(account).toMatchObject({
+      id: created.id,
+      sync_status: "pending",
+      last_error_code: null,
+    });
+  });
+
+  it("returns 422 for failed scans without ownership verification labels", async () => {
+    const created = await createAccount("threads", "private");
+
+    const scan = await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
+    expect(scan.status).toBe(422);
+    expect(await scan.json()).toMatchObject({
+      account: {
+        id: created.id,
+        sync_status: "failed",
+        last_error_code: "private_or_unavailable",
+      },
+      labels: [],
+    });
+  });
+
+  it("returns 429 for rate-limited scans without ownership verification labels", async () => {
+    const created = await createAccount("threads", "rate-limit");
+
+    const scan = await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
+    expect(scan.status).toBe(429);
+    expect(await scan.json()).toMatchObject({
+      account: {
+        id: created.id,
+        sync_status: "rate_limited",
+        last_error_code: "rate_limited",
+      },
+      labels: [],
+    });
   });
 
   it("rejects unsupported platforms", async () => {

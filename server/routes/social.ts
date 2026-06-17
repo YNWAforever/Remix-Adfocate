@@ -11,9 +11,9 @@ function isPlatform(value: unknown): value is SocialPlatform {
   return value === "instagram" || value === "threads";
 }
 
-function trustLabels(account: { api_synced_at: string | null; owner_verified: boolean }) {
+function trustLabels(account: { api_synced_at: string | null }) {
   if (!account.api_synced_at) return [];
-  return ["API-synced", account.owner_verified ? "Ownership verified" : "Ownership not verified"];
+  return ["API-synced", "Ownership not verified"];
 }
 
 socialRoutes.get("/accounts", async (c) => {
@@ -22,9 +22,8 @@ socialRoutes.get("/accounts", async (c) => {
   try {
     const accounts = await listSocialAccounts(supabase, c.get("userId"));
     return c.json({ accounts });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to list social accounts";
-    return c.json({ error: message, code: "db_error" }, 500);
+  } catch {
+    return c.json({ error: "Failed to list social accounts", code: "db_error" }, 500);
   }
 });
 
@@ -47,9 +46,8 @@ socialRoutes.post("/accounts", async (c) => {
       handle: body.handle,
     });
     return c.json(account);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to save social account";
-    return c.json({ error: message, code: "db_error" }, 500);
+  } catch {
+    return c.json({ error: "Failed to save social account", code: "db_error" }, 500);
   }
 });
 
@@ -70,15 +68,13 @@ socialRoutes.post("/accounts/:id/scan", async (c) => {
     return c.json({ account, labels: trustLabels(account) });
   } catch (error) {
     const code = typeof error === "object" && error && "code" in error ? error.code : null;
-    const message = error instanceof Error ? error.message : "Social scan failed";
-
     if (code === "provider_not_configured") {
-      return c.json({ error: message, code }, 503);
+      return c.json({ error: "Social scan provider is unavailable", code }, 503);
     }
     if (code === "not_found") {
-      return c.json({ error: message, code }, 404);
+      return c.json({ error: "Social account not found", code }, 404);
     }
 
-    return c.json({ error: message, code: "db_error" }, 500);
+    return c.json({ error: "Social scan failed", code: "db_error" }, 500);
   }
 });
