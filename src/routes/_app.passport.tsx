@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMe, useMyPassport } from "@/lib/queries/kocmax";
+import { PassportTrustSummary } from "@/components/PassportTrustSummary";
+import { ScoreRing } from "@/components/ScoreRing";
+import { useCreatePassportShare, useMe, useMyPassport, useRevokePassportShare } from "@/lib/queries/kocmax";
 import { progressToNext, LEVELS, levelIndex } from "@/lib/levels";
 import { SCORE_META, SCORE_ORDER, BADGES } from "@/lib/passport";
-import { ScoreRing } from "@/components/ScoreRing";
 
 export const Route = createFileRoute("/_app/passport")({ component: Passport });
 
 function Passport() {
   const me = useMe();
   const passport = useMyPassport();
+  const share = useCreatePassportShare();
+  const revoke = useRevokePassportShare();
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   if (passport.isLoading) {
     return (
@@ -99,6 +104,36 @@ function Passport() {
         ) : (
           <p className="text-sm text-[var(--color-soft-ink)]">完成任務與連結社交帳號即可解鎖徽章。</p>
         )}
+      </section>
+
+      <PassportTrustSummary socialTrust={p.socialTrust} />
+
+      <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+        <h2 className="font-heading font-bold">Public passport</h2>
+        {shareUrl && <p className="break-all text-sm text-[var(--color-soft-ink)]">{shareUrl}</p>}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={async () => {
+              const result = await share.mutateAsync();
+              setShareUrl(result.publicUrl);
+              await globalThis.navigator?.clipboard?.writeText?.(result.publicUrl);
+            }}
+            className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 text-sm font-bold"
+          >
+            Create link
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              await revoke.mutateAsync();
+              setShareUrl(null);
+            }}
+            className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-sm font-bold"
+          >
+            Revoke link
+          </button>
+        </div>
       </section>
     </div>
   );

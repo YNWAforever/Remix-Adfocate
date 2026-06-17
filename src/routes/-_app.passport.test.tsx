@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
   me: { data: { id: "u1", display_name: "阿明", avatar_url: null } },
@@ -9,6 +10,10 @@ const hoisted = vi.hoisted(() => ({
       xp: 600,
       scores: { influence: 50, reliability: 70, content: 80, brandSafety: 90 },
       badges: ["level_l1", "content_pro"],
+      socialTrust: {
+        badges: ["social_scan_connected"],
+        accounts: [],
+      },
     },
     isLoading: false,
     isError: false,
@@ -17,6 +22,8 @@ const hoisted = vi.hoisted(() => ({
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => hoisted.me,
   useMyPassport: () => hoisted.passport,
+  useCreatePassportShare: () => ({ mutateAsync: vi.fn().mockResolvedValue({ token: "token", publicUrl: "/passport/token" }) }),
+  useRevokePassportShare: () => ({ mutateAsync: vi.fn().mockResolvedValue({ revoked: true }) }),
 }));
 
 import { Route } from "./_app.passport";
