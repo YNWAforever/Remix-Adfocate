@@ -4,6 +4,7 @@ import {
   RISK_LEVELS,
   SHORTLIST_SOURCES,
   SHORTLIST_STATUSES,
+  SOCIAL_SYNC_STATUSES,
   type CreatorReviewNoteCategory,
   type CreatorReviewStatus,
   type CreatorRiskLevel,
@@ -11,6 +12,7 @@ import {
   type MissionShortlistStatus,
   type ReviewProjection,
   type SocialSummaryProjection,
+  type SocialSyncStatus,
 } from "./types.js";
 
 export const DEFAULT_REVIEW_STATUS: ReviewProjection = {
@@ -44,6 +46,10 @@ export function parseShortlistStatus(value: unknown): MissionShortlistStatus | n
 
 export function parseShortlistSource(value: unknown): MissionShortlistSource | null {
   return enumValue(SHORTLIST_SOURCES, value);
+}
+
+export function parseSocialSyncStatus(value: unknown): SocialSyncStatus | null {
+  return enumValue(SOCIAL_SYNC_STATUSES, value);
 }
 
 export function nonEmptyText(value: unknown): string | null {
@@ -83,11 +89,11 @@ export function summarizeSocialAccounts(
     .filter((account) => account.sync_status === "synced")
     .sort((a, b) => (b.api_synced_at ?? "").localeCompare(a.api_synced_at ?? ""));
   const best = synced[0] ?? null;
-  const status = best ? "synced" : accounts[0]?.sync_status ?? null;
+  const status = best ? "synced" : parseSocialSyncStatus(accounts[0]?.sync_status ?? null);
 
   return {
     platforms: accounts.map((account) => account.platform),
-    syncStatus: status as SocialSummaryProjection["syncStatus"],
+    syncStatus: status,
     followerCount: best?.follower_count ?? null,
     engagementRate: best?.engagement_rate ?? null,
     apiSyncedAt: best?.api_synced_at ?? null,

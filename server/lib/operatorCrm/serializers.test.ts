@@ -4,6 +4,7 @@ import {
   lastActivityAt,
   parseReviewStatus,
   parseRiskLevel,
+  parseSocialSyncStatus,
   projectReviewStatus,
   summarizeSocialAccounts,
 } from "./serializers";
@@ -65,6 +66,29 @@ describe("operator CRM serializers", () => {
       engagementRate: 3.2,
       apiSyncedAt: "2026-06-18T02:00:00.000Z",
       label: "API-synced",
+      ownershipLabel: "Ownership not verified",
+    });
+  });
+
+  it("normalizes an unknown social sync status to null", () => {
+    expect(parseSocialSyncStatus("glitched")).toBeNull();
+    expect(
+      summarizeSocialAccounts([
+        {
+          platform: "instagram",
+          sync_status: "glitched",
+          follower_count: 12,
+          engagement_rate: 1.2,
+          api_synced_at: null,
+        },
+      ]),
+    ).toEqual({
+      platforms: ["instagram"],
+      syncStatus: null,
+      followerCount: null,
+      engagementRate: null,
+      apiSyncedAt: null,
+      label: "Not synced",
       ownershipLabel: "Ownership not verified",
     });
   });

@@ -3,12 +3,14 @@ export const RISK_LEVELS = ["low", "medium", "high", "unknown"] as const;
 export const NOTE_CATEGORIES = ["quality", "brand_safety", "fit", "social", "other"] as const;
 export const SHORTLIST_STATUSES = ["shortlisted", "invited", "dismissed", "accepted", "declined"] as const;
 export const SHORTLIST_SOURCES = ["manual", "applicant", "match", "review_queue"] as const;
+export const SOCIAL_SYNC_STATUSES = ["pending", "synced", "stale", "failed", "rate_limited"] as const;
 
 export type CreatorReviewStatus = (typeof REVIEW_STATUSES)[number];
 export type CreatorRiskLevel = (typeof RISK_LEVELS)[number];
 export type CreatorReviewNoteCategory = (typeof NOTE_CATEGORIES)[number];
 export type MissionShortlistStatus = (typeof SHORTLIST_STATUSES)[number];
 export type MissionShortlistSource = (typeof SHORTLIST_SOURCES)[number];
+export type SocialSyncStatus = (typeof SOCIAL_SYNC_STATUSES)[number];
 
 export type OperatorContext = {
   operatorId: string;
@@ -26,7 +28,7 @@ export type ReviewProjection = {
 
 export type SocialSummaryProjection = {
   platforms: string[];
-  syncStatus: "pending" | "synced" | "stale" | "failed" | "rate_limited" | null;
+  syncStatus: SocialSyncStatus | null;
   followerCount: number | null;
   engagementRate: number | null;
   apiSyncedAt: string | null;
