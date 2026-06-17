@@ -3,6 +3,8 @@ import type { Env } from "../app.js";
 import { serviceClient, makeUserClient } from "../lib/supabase.js";
 import { persistScores } from "../lib/persistScores.js";
 import { buildPassport } from "../lib/passport.js";
+import { listSocialAccounts } from "../lib/social/repo.js";
+import { effectiveSocialHandles, privateSocialTrustSummary } from "../lib/social/passportSocial.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -157,10 +159,16 @@ meRoutes.get("/passport", async (c) => {
     .eq("referred_by", userId);
   if (rErr) return c.json({ error: rErr.message, code: "db_error" }, 500);
 
+  const syncedAccounts = await listSocialAccounts(serviceClient(), userId);
+  const socialHandles = effectiveSocialHandles({
+    syncedAccounts,
+    selfReportedHandles: creator.social_handles as { followers?: number | null }[] | null,
+  });
+
   const passport = buildPassport({
     level: creator.level,
     xp: creator.xp,
-    socialHandles: creator.social_handles as { followers?: number | null }[] | null,
+    socialHandles,
     statuses: (subs ?? []).map((s) => s.status as string),
     // Only approved submissions carry a quality_rating (set by approve_submission); the
     // status guard makes that invariant explicit and keeps Content honest if a rating on
@@ -173,7 +181,7 @@ meRoutes.get("/passport", async (c) => {
       .map((s) => (s as { quality_rating: number }).quality_rating),
     referredCount: referredCount ?? 0,
   });
-  return c.json(passport);
+  return c.json({ ...passport, socialTrust: privateSocialTrustSummary(syncedAccounts) });
 });
 
 /** POST /api/me/level-seen — acknowledge the level-up celebration. Reads the caller's
