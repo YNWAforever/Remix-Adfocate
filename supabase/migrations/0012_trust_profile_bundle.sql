@@ -37,6 +37,22 @@ create index creator_social_accounts_creator_idx
 create index creator_social_accounts_refresh_idx
   on public.creator_social_accounts (sync_status, api_synced_at);
 
+create or replace function private.touch_creator_social_accounts_updated_at()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+create trigger creator_social_accounts_set_updated_at
+  before update on public.creator_social_accounts
+  for each row
+  execute function private.touch_creator_social_accounts_updated_at();
+
 create table public.creator_social_scan_snapshots (
   id uuid primary key default gen_random_uuid(),
   account_id uuid not null references public.creator_social_accounts(id) on delete cascade,
@@ -122,6 +138,10 @@ grant all on public.creator_social_accounts to service_role;
 grant all on public.creator_social_scan_snapshots to service_role;
 grant all on public.creator_public_passports to service_role;
 
-grant select, insert, update, delete on public.creator_social_accounts to authenticated;
+grant select, delete on public.creator_social_accounts to authenticated;
+grant insert (creator_id, workspace_id, platform, handle, profile_url)
+  on public.creator_social_accounts to authenticated;
+grant update (handle, profile_url)
+  on public.creator_social_accounts to authenticated;
 grant select on public.creator_social_scan_snapshots to authenticated;
-grant select, insert, update, delete on public.creator_public_passports to authenticated;
+grant select, delete on public.creator_public_passports to authenticated;
