@@ -39,6 +39,10 @@ const hoisted = vi.hoisted(() => ({
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => hoisted.me,
   useUpdateProfile: () => ({ mutateAsync: hoisted.update, isPending: false }),
+  useSocialAccounts: () => ({ data: [], isLoading: false, isError: false }),
+  useAddSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useScanSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useUseSocialAvatar: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 vi.mock("@/lib/supabase", () => ({ supabase: { auth: { signOut: hoisted.signOut } } }));
 
@@ -66,6 +70,7 @@ describe("Profile page", () => {
     expect(screen.getByText("Explorer")).toBeInTheDocument();
     expect(screen.getByText("還需 1400 XP 升至 Creator")).toBeInTheDocument();
     expect(screen.getByText("美容")).toBeInTheDocument();
+    expect(screen.getByText("Social trust")).toBeInTheDocument();
     expect(screen.getByText("ABCD1234")).toBeInTheDocument();
   });
 
