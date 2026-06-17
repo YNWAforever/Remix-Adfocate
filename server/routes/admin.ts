@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { serviceClient } from "../lib/supabase.js";
 import { persistScores } from "../lib/persistScores.js";
 
@@ -14,6 +15,8 @@ adminRoutes.use("*", async (c, next) => {
   }
   await next();
 });
+
+adminRoutes.route("/", adminOperatorCrmRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand
