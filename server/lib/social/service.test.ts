@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { scanSocialAccountWithDeps } from "./service";
 import { SocialProviderError, type SocialAccountRecord, type SocialScanResult } from "./types";
 
@@ -53,6 +53,10 @@ const scanResult: SocialScanResult = {
 };
 
 describe("social scan service", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("stores latest metrics and a snapshot after a successful scan", async () => {
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
@@ -75,6 +79,52 @@ describe("social scan service", () => {
     expect(provider).toHaveBeenCalledWith({ platform: "instagram", handle: "ming" });
     expect(repo.updateAccountFromScan).toHaveBeenCalledWith("acc-1", scanResult);
     expect(repo.insertSnapshot).toHaveBeenCalledWith("acc-1", "rapidapi", "synced", scanResult);
+  });
+
+  it("skips provider calls during the manual scan cooldown and keeps prior metrics", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T10:00:00.000Z"));
+
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue({
+        ...baseAccount,
+        api_synced_at: "2026-06-18T09:30:00.000Z",
+        sync_status: "synced",
+        follower_count: 1000,
+      }),
+      updateAccountFromScan: vi.fn(),
+      insertSnapshot: vi.fn().mockResolvedValue(undefined),
+      markAccountScanFailed: vi
+        .fn()
+        .mockResolvedValue({ ...baseAccount, sync_status: "rate_limited", follower_count: 1000 }),
+    };
+    const provider = vi.fn();
+
+    const account = await scanSocialAccountWithDeps({
+      creatorId: "creator-1",
+      accountId: "acc-1",
+      repo,
+      provider,
+    });
+
+    expect(account.sync_status).toBe("rate_limited");
+    expect(account.follower_count).toBe(1000);
+    expect(provider).not.toHaveBeenCalled();
+    expect(repo.updateAccountFromScan).not.toHaveBeenCalled();
+    expect(repo.markAccountScanFailed).toHaveBeenCalledWith("acc-1", {
+      status: "rate_limited",
+      errorCode: "rate_limited",
+      errorMessage: "Social scan cooldown active",
+    });
+    expect(repo.insertSnapshot).toHaveBeenCalledWith(
+      "acc-1",
+      "rapidapi",
+      "rate_limited",
+      expect.objectContaining({
+        errorCode: "rate_limited",
+        errorMessage: "Social scan cooldown active",
+      }),
+    );
   });
 
   it("records failed status without erasing prior metrics", async () => {
@@ -133,6 +183,41 @@ describe("social scan service", () => {
     expect(repo.updateAccountFromScan).not.toHaveBeenCalled();
     expect(repo.markAccountScanFailed).not.toHaveBeenCalled();
     expect(repo.insertSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("normalizes unexpected provider throws into failed provider_error snapshots", async () => {
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      updateAccountFromScan: vi.fn(),
+      insertSnapshot: vi.fn().mockResolvedValue(undefined),
+      markAccountScanFailed: vi
+        .fn()
+        .mockResolvedValue({ ...baseAccount, sync_status: "failed", last_error_code: "provider_error" }),
+    };
+    const provider = vi.fn().mockRejectedValue(new Error("socket hang up"));
+
+    const account = await scanSocialAccountWithDeps({
+      creatorId: "creator-1",
+      accountId: "acc-1",
+      repo,
+      provider,
+    });
+
+    expect(account.sync_status).toBe("failed");
+    expect(repo.markAccountScanFailed).toHaveBeenCalledWith("acc-1", {
+      status: "failed",
+      errorCode: "provider_error",
+      errorMessage: "Social scan provider failed",
+    });
+    expect(repo.insertSnapshot).toHaveBeenCalledWith(
+      "acc-1",
+      "rapidapi",
+      "failed",
+      expect.objectContaining({
+        errorCode: "provider_error",
+        errorMessage: "Social scan provider failed",
+      }),
+    );
   });
 
   it("propagates account update write failures without rewriting them as provider errors", async () => {
@@ -204,5 +289,76 @@ describe("social scan service", () => {
     ).rejects.toBe(repoError);
 
     expect(repo.markAccountScanFailed).not.toHaveBeenCalled();
+  });
+
+  it("continues refreshing other due accounts when one scan fails", async () => {
+    vi.resetModules();
+
+    const accounts = [
+      { ...baseAccount, id: "acc-ok", handle: "good", sync_status: "stale" as const },
+      { ...baseAccount, id: "acc-boom", handle: "boom", sync_status: "stale" as const },
+      { ...baseAccount, id: "acc-config", handle: "no-provider", sync_status: "stale" as const },
+    ];
+
+    const repo = {
+      listDueSocialAccounts: vi.fn().mockResolvedValue(accounts),
+      getAccountForCreator: vi.fn(async (_supabase: unknown, input: { creatorId: string; accountId: string }) => {
+        return accounts.find((account) => account.id === input.accountId) ?? null;
+      }),
+      updateAccountFromScan: vi.fn(async (_supabase: unknown, accountId: string, result: SocialScanResult) => ({
+        ...baseAccount,
+        id: accountId,
+        handle: result.handle,
+        sync_status: "synced" as const,
+        follower_count: result.followerCount,
+      })),
+      markAccountScanFailed: vi.fn(
+        async (_supabase: unknown, accountId: string, failure: { errorCode: string }) => ({
+        ...baseAccount,
+        id: accountId,
+        sync_status: "failed" as const,
+        last_error_code: failure.errorCode,
+        }),
+      ),
+      insertSnapshot: vi.fn().mockResolvedValue(undefined),
+    };
+    const persistScores = vi.fn().mockResolvedValue(undefined);
+    const scanRapidApiProfile = vi.fn(async ({ platform, handle }: { platform: "instagram" | "threads"; handle: string }) => {
+      if (handle === "boom") throw new Error("socket hang up");
+      if (handle === "no-provider") {
+        throw new SocialProviderError("provider_not_configured", "RapidAPI social scan is not configured");
+      }
+
+      return {
+        ...scanResult,
+        platform,
+        handle,
+        profileUrl:
+          platform === "instagram"
+            ? `https://www.instagram.com/${handle}/`
+            : `https://www.threads.net/@${handle}`,
+      };
+    });
+
+    vi.doMock("../supabase", () => ({
+      serviceClient: vi.fn(() => ({})),
+    }));
+    vi.doMock("./repo", () => repo);
+    vi.doMock("../persistScores", () => ({ persistScores }));
+    vi.doMock("./rapidApi", () => ({ scanRapidApiProfile }));
+
+    const { refreshDueSocialAccounts } = await import("./service");
+    const result = await refreshDueSocialAccounts(25);
+
+    expect(result).toEqual({ scanned: 1, failed: 2 });
+    expect(scanRapidApiProfile).toHaveBeenCalledTimes(3);
+    expect(repo.markAccountScanFailed).toHaveBeenCalledTimes(1);
+    expect(repo.markAccountScanFailed).toHaveBeenCalledWith(
+      {},
+      "acc-boom",
+      expect.objectContaining({ errorCode: "provider_error" }),
+    );
+    expect(repo.insertSnapshot).toHaveBeenCalledTimes(2);
+    expect(persistScores).toHaveBeenCalledTimes(2);
   });
 });

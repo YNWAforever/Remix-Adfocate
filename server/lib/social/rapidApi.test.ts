@@ -157,4 +157,44 @@ describe("social RapidAPI adapter", () => {
       }),
     ).rejects.toMatchObject({ code: "private_or_unavailable" });
   });
+
+  it("normalizes network failures to provider_error", async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(new Error("socket hang up"));
+    await expect(
+      scanRapidApiProfile({
+        platform: "instagram",
+        handle: "ming",
+        env: {
+          RAPIDAPI_KEY: "test-key",
+          RAPIDAPI_INSTAGRAM_PROFILE_URL: "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php",
+        },
+        fetchImpl,
+      }),
+    ).rejects.toMatchObject({
+      code: "provider_error",
+      message: "RapidAPI request failed",
+    });
+  });
+
+  it("normalizes invalid JSON payloads to provider_error", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: vi.fn().mockRejectedValue(new Error("Unexpected token <")),
+    });
+    await expect(
+      scanRapidApiProfile({
+        platform: "instagram",
+        handle: "ming",
+        env: {
+          RAPIDAPI_KEY: "test-key",
+          RAPIDAPI_INSTAGRAM_PROFILE_URL: "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php",
+        },
+        fetchImpl: fetchImpl as never,
+      }),
+    ).rejects.toMatchObject({
+      code: "provider_error",
+      message: "RapidAPI returned invalid JSON",
+    });
+  });
 });

@@ -28,6 +28,10 @@ type ScanRepo = {
   ) => Promise<SocialAccountRecord>;
 };
 
+export const MANUAL_SOCIAL_SCAN_COOLDOWN_MS = 60 * 60 * 1000;
+export const MANUAL_SOCIAL_SCAN_COOLDOWN_MESSAGE = "Social scan cooldown active";
+export const UNEXPECTED_PROVIDER_ERROR_MESSAGE = "Social scan provider failed";
+
 const PROVIDER_ERROR_CODES = new Set<SocialProviderErrorCode>([
   "provider_not_configured",
   "not_found",
@@ -45,12 +49,27 @@ function isProviderFailure(err: unknown): err is SocialProviderError {
 function errorStatus(
   err: unknown,
 ): { status: SocialSyncStatus; code: SocialProviderErrorCode | "provider_error"; message: string } {
+  if (!isProviderFailure(err)) {
+    return {
+      status: "failed",
+      code: "provider_error",
+      message: UNEXPECTED_PROVIDER_ERROR_MESSAGE,
+    };
+  }
+
   const e = err as { code?: SocialProviderErrorCode; status?: SocialSyncStatus; message?: string };
   return {
     status: e.status ?? (e.code === "rate_limited" ? "rate_limited" : "failed"),
     code: e.code ?? "provider_error",
-    message: e.message ?? "Social scan failed",
+    message: e.message ?? UNEXPECTED_PROVIDER_ERROR_MESSAGE,
   };
+}
+
+function hasRecentSync(apiSyncedAt: string | null, now = Date.now()): boolean {
+  if (!apiSyncedAt) return false;
+  const syncedAt = Date.parse(apiSyncedAt);
+  if (!Number.isFinite(syncedAt)) return false;
+  return now - syncedAt < MANUAL_SOCIAL_SCAN_COOLDOWN_MS;
 }
 
 export async function scanSocialAccountWithDeps(input: {
@@ -62,13 +81,25 @@ export async function scanSocialAccountWithDeps(input: {
   const account = await input.repo.getAccountForCreator(input.creatorId, input.accountId);
   if (!account) throw Object.assign(new Error("Social account not found"), { code: "not_found" });
 
+  if (hasRecentSync(account.api_synced_at)) {
+    const updated = await input.repo.markAccountScanFailed(account.id, {
+      status: "rate_limited",
+      errorCode: "rate_limited",
+      errorMessage: MANUAL_SOCIAL_SCAN_COOLDOWN_MESSAGE,
+    });
+    await input.repo.insertSnapshot(account.id, "rapidapi", "rate_limited", {
+      errorCode: "rate_limited",
+      errorMessage: MANUAL_SOCIAL_SCAN_COOLDOWN_MESSAGE,
+    });
+    return updated;
+  }
+
   let result: SocialScanResult;
   try {
     result = await input.provider({ platform: account.platform, handle: account.handle });
   } catch (err) {
-    if (!isProviderFailure(err)) throw err;
+    if (isProviderFailure(err) && err.code === "provider_not_configured") throw err;
     const failure = errorStatus(err);
-    if (failure.code === "provider_not_configured") throw err;
     const updated = await input.repo.markAccountScanFailed(account.id, {
       status: failure.status,
       errorCode: failure.code,
@@ -132,9 +163,13 @@ export async function refreshDueSocialAccounts(limit = 25): Promise<{ scanned: n
   let failed = 0;
 
   for (const account of accounts) {
-    const updated = await scanSocialAccount({ creatorId: account.creator_id, accountId: account.id });
-    if (updated.sync_status === "synced") scanned += 1;
-    else failed += 1;
+    try {
+      const updated = await scanSocialAccount({ creatorId: account.creator_id, accountId: account.id });
+      if (updated.sync_status === "synced") scanned += 1;
+      else failed += 1;
+    } catch {
+      failed += 1;
+    }
   }
 
   return { scanned, failed };

@@ -17,6 +17,9 @@ export type RapidApiScanInput = {
   fetchImpl?: typeof fetch;
 };
 
+const RAPIDAPI_NETWORK_ERROR_MESSAGE = "RapidAPI request failed";
+const RAPIDAPI_INVALID_JSON_ERROR_MESSAGE = "RapidAPI returned invalid JSON";
+
 function numberFrom(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value === "string") {
@@ -144,19 +147,29 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
 
   const handle = normalizeHandle(input.platform, input.handle);
   const url = appendHandleParam(baseUrl, input.platform, handle);
-  const res = await (input.fetchImpl ?? fetch)(url, {
-    method: "GET",
-    headers: {
-      "X-RapidAPI-Key": key,
-      "X-RapidAPI-Host": providerHost(baseUrl),
-    },
-  });
+  let res: Response;
+  try {
+    res = await (input.fetchImpl ?? fetch)(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": key,
+        "X-RapidAPI-Host": providerHost(baseUrl),
+      },
+    });
+  } catch {
+    throw new SocialProviderError("provider_error", RAPIDAPI_NETWORK_ERROR_MESSAGE, "failed");
+  }
 
   if (res.status === 429) throw new SocialProviderError("rate_limited", "RapidAPI rate limit reached", "rate_limited");
   if (res.status === 404) throw new SocialProviderError("not_found", "Social profile not found", "failed");
   if (!res.ok) throw new SocialProviderError("provider_error", `RapidAPI returned ${res.status}`, "failed");
 
-  const raw = await res.json();
+  let raw: unknown;
+  try {
+    raw = await res.json();
+  } catch {
+    throw new SocialProviderError("provider_error", RAPIDAPI_INVALID_JSON_ERROR_MESSAGE, "failed");
+  }
   const profile = firstRecord(raw, ["user_data", "data", "user", "profile"]);
   if (looksPrivateOrUnavailable(raw, profile)) {
     throw new SocialProviderError(

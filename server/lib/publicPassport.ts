@@ -21,6 +21,20 @@ export type PublicPassportPayload = {
   socialTrustBadges: string[];
 };
 
+const PUBLIC_BADGE_ALLOWLIST = new Set([
+  "level_l1",
+  "first_approval",
+  "reliable",
+  "referrer",
+  "perfect_rating",
+  "content_pro",
+  "spotless",
+]);
+
+function publicBadges(badges: string[]): string[] {
+  return badges.filter((badge) => PUBLIC_BADGE_ALLOWLIST.has(badge));
+}
+
 export async function getPublicPassportByToken(token: string): Promise<PublicPassportPayload | null> {
   const svc = serviceClient();
   const tokenHash = hashPublicToken(token);
@@ -86,7 +100,7 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
       xp: passport.xp,
     },
     scores: passport.scores,
-    badges: passport.badges,
+    badges: publicBadges(passport.badges),
     socialTrustBadges: publicSocialTrustBadges(syncedAccounts),
   };
 }

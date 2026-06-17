@@ -4,7 +4,7 @@ export type ScoreKey = "influence" | "content" | "reliability" | "brandSafety";
  *  (Influence 40 / Content 30 / Reliability 20 / Brand Safety 10); `accent` is the ring
  *  stroke colour; `note` is an optional provisional caveat shown below the ring. */
 export const SCORE_META: Record<ScoreKey, { label: string; weight: number; accent: string; note?: string }> = {
-  influence: { label: "影響力", weight: 40, accent: "var(--color-acid)", note: "影響力為自填數據，未驗證" },
+  influence: { label: "影響力", weight: 40, accent: "var(--color-acid)", note: "影響力包含自填或 API 同步數據，帳號擁有權未驗證" },
   content: { label: "內容", weight: 30, accent: "var(--color-ink)" },
   reliability: { label: "可靠度", weight: 20, accent: "var(--color-magenta)" },
   brandSafety: { label: "品牌安全", weight: 10, accent: "var(--color-ink)", note: "品牌安全為暫定代理指標" },

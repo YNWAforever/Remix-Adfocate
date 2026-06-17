@@ -97,6 +97,7 @@ suite("public passport privacy", () => {
     expect(publicRes.status).toBe(200);
     const body = await publicRes.json();
     expect(body.creator.displayName).toBe("public-passport@test.local");
+    expect(body.badges).not.toContain("social_linked");
     expect(body.socialTrustBadges).toContain("social_scan_connected");
     expect(JSON.stringify(body)).not.toContain("secretcreator");
     expect(JSON.stringify(body)).not.toContain("12000");

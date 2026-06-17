@@ -7,6 +7,8 @@ import type {
   SocialSyncStatus,
 } from "./types";
 
+export const SOCIAL_SCAN_SNAPSHOT_RETENTION = 12;
+
 export async function listSocialAccounts(
   supabase: SupabaseClient,
   creatorId: string,
@@ -150,6 +152,20 @@ export async function insertSnapshot(
   });
 
   if (error) throw error;
+
+  const { data: snapshots, error: listError } = await supabase
+    .from("creator_social_scan_snapshots")
+    .select("id")
+    .eq("account_id", accountId)
+    .order("scanned_at", { ascending: false });
+
+  if (listError) throw listError;
+
+  const staleIds = (snapshots ?? []).slice(SOCIAL_SCAN_SNAPSHOT_RETENTION).map((snapshot) => snapshot.id as string);
+  if (staleIds.length === 0) return;
+
+  const { error: pruneError } = await supabase.from("creator_social_scan_snapshots").delete().in("id", staleIds);
+  if (pruneError) throw pruneError;
 }
 
 export async function listDueSocialAccounts(
