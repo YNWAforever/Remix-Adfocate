@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { scanSocialAccountWithDeps } from "./service";
-import type { SocialAccountRecord, SocialScanResult } from "./types";
+import { SocialProviderError, type SocialAccountRecord, type SocialScanResult } from "./types";
 
 const baseAccount: SocialAccountRecord = {
   id: "acc-1",
@@ -106,5 +106,103 @@ describe("social scan service", () => {
       "rate_limited",
       expect.objectContaining({ errorCode: "rate_limited" }),
     );
+  });
+
+  it("rethrows provider_not_configured without mutating account state", async () => {
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      updateAccountFromScan: vi.fn(),
+      insertSnapshot: vi.fn(),
+      markAccountScanFailed: vi.fn(),
+    };
+    const provider = vi
+      .fn()
+      .mockRejectedValue(
+        new SocialProviderError("provider_not_configured", "RapidAPI social scan is not configured"),
+      );
+
+    await expect(
+      scanSocialAccountWithDeps({
+        creatorId: "creator-1",
+        accountId: "acc-1",
+        repo,
+        provider,
+      }),
+    ).rejects.toMatchObject({ code: "provider_not_configured" });
+
+    expect(repo.updateAccountFromScan).not.toHaveBeenCalled();
+    expect(repo.markAccountScanFailed).not.toHaveBeenCalled();
+    expect(repo.insertSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("propagates account update write failures without rewriting them as provider errors", async () => {
+    const repoError = new Error("write failed");
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      updateAccountFromScan: vi.fn().mockRejectedValue(repoError),
+      insertSnapshot: vi.fn(),
+      markAccountScanFailed: vi.fn(),
+    };
+    const provider = vi.fn().mockResolvedValue(scanResult);
+
+    await expect(
+      scanSocialAccountWithDeps({
+        creatorId: "creator-1",
+        accountId: "acc-1",
+        repo,
+        provider,
+      }),
+    ).rejects.toBe(repoError);
+
+    expect(repo.markAccountScanFailed).not.toHaveBeenCalled();
+    expect(repo.insertSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("propagates failure-status write errors without inserting a failure snapshot", async () => {
+    const repoError = new Error("failure write failed");
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      updateAccountFromScan: vi.fn(),
+      insertSnapshot: vi.fn(),
+      markAccountScanFailed: vi.fn().mockRejectedValue(repoError),
+    };
+    const provider = vi
+      .fn()
+      .mockRejectedValue(new SocialProviderError("rate_limited", "RapidAPI rate limit reached", "rate_limited"));
+
+    await expect(
+      scanSocialAccountWithDeps({
+        creatorId: "creator-1",
+        accountId: "acc-1",
+        repo,
+        provider,
+      }),
+    ).rejects.toBe(repoError);
+
+    expect(repo.insertSnapshot).not.toHaveBeenCalled();
+  });
+
+  it("propagates snapshot write failures after a successful scan", async () => {
+    const repoError = new Error("snapshot failed");
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      updateAccountFromScan: vi
+        .fn()
+        .mockResolvedValue({ ...baseAccount, sync_status: "synced", follower_count: 12000 }),
+      insertSnapshot: vi.fn().mockRejectedValue(repoError),
+      markAccountScanFailed: vi.fn(),
+    };
+    const provider = vi.fn().mockResolvedValue(scanResult);
+
+    await expect(
+      scanSocialAccountWithDeps({
+        creatorId: "creator-1",
+        accountId: "acc-1",
+        repo,
+        provider,
+      }),
+    ).rejects.toBe(repoError);
+
+    expect(repo.markAccountScanFailed).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,7 @@ import * as repo from "./repo";
 import type {
   SocialAccountRecord,
   SocialPlatform,
+  SocialProviderError,
   SocialProviderErrorCode,
   SocialScanResult,
   SocialSyncStatus,
@@ -27,6 +28,20 @@ type ScanRepo = {
   ) => Promise<SocialAccountRecord>;
 };
 
+const PROVIDER_ERROR_CODES = new Set<SocialProviderErrorCode>([
+  "provider_not_configured",
+  "not_found",
+  "private_or_unavailable",
+  "rate_limited",
+  "provider_error",
+]);
+
+function isProviderFailure(err: unknown): err is SocialProviderError {
+  if (!err || typeof err !== "object") return false;
+  const maybeError = err as { code?: unknown };
+  return typeof maybeError.code === "string" && PROVIDER_ERROR_CODES.has(maybeError.code as SocialProviderErrorCode);
+}
+
 function errorStatus(
   err: unknown,
 ): { status: SocialSyncStatus; code: SocialProviderErrorCode | "provider_error"; message: string } {
@@ -47,13 +62,13 @@ export async function scanSocialAccountWithDeps(input: {
   const account = await input.repo.getAccountForCreator(input.creatorId, input.accountId);
   if (!account) throw Object.assign(new Error("Social account not found"), { code: "not_found" });
 
+  let result: SocialScanResult;
   try {
-    const result = await input.provider({ platform: account.platform, handle: account.handle });
-    const updated = await input.repo.updateAccountFromScan(account.id, result);
-    await input.repo.insertSnapshot(account.id, "rapidapi", "synced", result);
-    return updated;
+    result = await input.provider({ platform: account.platform, handle: account.handle });
   } catch (err) {
+    if (!isProviderFailure(err)) throw err;
     const failure = errorStatus(err);
+    if (failure.code === "provider_not_configured") throw err;
     const updated = await input.repo.markAccountScanFailed(account.id, {
       status: failure.status,
       errorCode: failure.code,
@@ -65,6 +80,10 @@ export async function scanSocialAccountWithDeps(input: {
     });
     return updated;
   }
+
+  const updated = await input.repo.updateAccountFromScan(account.id, result);
+  await input.repo.insertSnapshot(account.id, "rapidapi", "synced", result);
+  return updated;
 }
 
 export async function scanSocialAccount(input: {
