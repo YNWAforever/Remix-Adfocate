@@ -1,0 +1,26 @@
+{
+  "user_data": {
+    "username": "ming",
+    "biography": "Beauty creator in HK",
+    "follower_count": 12000,
+    "following_count": 321,
+    "media_count": 42,
+    "profile_pic_url": "https://cdn.example.com/ig/ming.jpg",
+    "recent_posts": [
+      {
+        "id": "ig-1",
+        "like_count": 600,
+        "comment_count": 30,
+        "taken_at": "2026-06-16T08:00:00.000Z",
+        "caption": "serum routine beauty skincare"
+      },
+      {
+        "id": "ig-2",
+        "like_count": 400,
+        "comment_count": 20,
+        "taken_at": "2026-06-15T08:00:00.000Z",
+        "caption": "daily makeup review"
+      }
+    ]
+  }
+}
