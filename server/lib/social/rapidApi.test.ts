@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import instagramFixture from "./fixtures/instagram-profile.json";
 import threadsFixture from "./fixtures/threads-profile.json";
 import { normalizeHandle, profileUrlFor } from "./normalize";
@@ -12,14 +12,23 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 describe("social RapidAPI adapter", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("normalizes handles and profile URLs", () => {
     expect(normalizeHandle("instagram", "@Ming.KOC ")).toBe("ming.koc");
     expect(normalizeHandle("threads", " @Creator ")).toBe("creator");
     expect(profileUrlFor("instagram", "ming")).toBe("https://www.instagram.com/ming/");
     expect(profileUrlFor("threads", "ming")).toBe("https://www.threads.net/@ming");
+    expect(() => normalizeHandle("instagram", "https://www.threads.net/@ming")).toThrow("mismatched_instagram_handle");
+    expect(() => normalizeHandle("threads", "https://www.instagram.com/ming/")).toThrow("mismatched_threads_handle");
   });
 
   it("normalizes an Instagram profile response", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T08:00:00.000Z"));
+
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(instagramFixture));
     const result = await scanRapidApiProfile({
       platform: "instagram",
@@ -45,7 +54,20 @@ describe("social RapidAPI adapter", () => {
       avgComments: 25,
       freshnessScore: 100,
     });
-    expect(result.recentPostsSummary).toHaveLength(2);
+    expect(result.recentPostsSummary).toEqual([
+      {
+        id: "ig-1",
+        postedAt: "2026-06-16T08:00:00.000Z",
+        likeCount: 600,
+        commentCount: 30,
+      },
+      {
+        id: "ig-2",
+        postedAt: "2026-06-15T08:00:00.000Z",
+        likeCount: 400,
+        commentCount: 20,
+      },
+    ]);
     expect(fetchImpl).toHaveBeenCalledWith(
       "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php?username_or_url=ming",
       expect.objectContaining({
@@ -59,6 +81,9 @@ describe("social RapidAPI adapter", () => {
   });
 
   it("normalizes a Threads profile response", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T09:00:00.000Z"));
+
     const fetchImpl = vi.fn().mockResolvedValue(jsonResponse(threadsFixture));
     const result = await scanRapidApiProfile({
       platform: "threads",
@@ -81,6 +106,7 @@ describe("social RapidAPI adapter", () => {
       avgLikes: 160,
       avgComments: 20,
     });
+    expect(result.recentPostsSummary[0]).not.toHaveProperty("text");
   });
 
   it("returns provider_not_configured when the key or provider URL is missing", async () => {
@@ -107,5 +133,20 @@ describe("social RapidAPI adapter", () => {
         fetchImpl,
       }),
     ).rejects.toMatchObject({ code: "rate_limited" });
+  });
+
+  it("maps private or unusable success payloads to private_or_unavailable", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ message: "This profile is private" }));
+    await expect(
+      scanRapidApiProfile({
+        platform: "instagram",
+        handle: "ming",
+        env: {
+          RAPIDAPI_KEY: "test-key",
+          RAPIDAPI_INSTAGRAM_PROFILE_URL: "https://instagram-scraper-stable-api.p.rapidapi.com/ig_get_fb_profile_hover.php",
+        },
+        fetchImpl,
+      }),
+    ).rejects.toMatchObject({ code: "private_or_unavailable" });
   });
 });

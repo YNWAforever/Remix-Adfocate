@@ -2,6 +2,7 @@ import { normalizeHandle, profileUrlFor } from "./normalize";
 import { SocialProviderError, type RecentPostSummary, type SocialPlatform, type SocialScanResult } from "./types";
 
 type ScanEnv = Partial<Record<string, string | undefined>>;
+type ParsedPost = RecentPostSummary & { themeSourceText: string | null };
 
 export type RapidApiScanInput = {
   platform: SocialPlatform;
@@ -36,7 +37,7 @@ function firstRecord(raw: unknown, keys: string[]): Record<string, unknown> {
   return root;
 }
 
-function postsFrom(profile: Record<string, unknown>): RecentPostSummary[] {
+function postsFrom(profile: Record<string, unknown>): ParsedPost[] {
   const rawPosts = profile.recent_posts ?? profile.posts ?? profile.threads ?? profile.items;
   if (!Array.isArray(rawPosts)) return [];
   return rawPosts.slice(0, 12).map((item, index) => {
@@ -46,7 +47,7 @@ function postsFrom(profile: Record<string, unknown>): RecentPostSummary[] {
       postedAt: stringFrom(post.taken_at) ?? stringFrom(post.posted_at) ?? stringFrom(post.timestamp),
       likeCount: numberFrom(post.like_count ?? post.likes),
       commentCount: numberFrom(post.comment_count ?? post.reply_count ?? post.comments ?? post.replies),
-      text: stringFrom(post.caption) ?? stringFrom(post.text) ?? stringFrom(post.title),
+      themeSourceText: stringFrom(post.caption) ?? stringFrom(post.text) ?? stringFrom(post.title),
     };
   });
 }
@@ -57,29 +58,59 @@ function average(values: Array<number | null>): number | null {
   return Math.round((nums.reduce((sum, v) => sum + v, 0) / nums.length) * 100) / 100;
 }
 
-function freshnessScore(posts: RecentPostSummary[]): number | null {
+function freshnessScore(posts: RecentPostSummary[], now = Date.now()): number | null {
   const latest = posts
     .map((p) => (p.postedAt ? Date.parse(p.postedAt) : NaN))
     .filter((t) => Number.isFinite(t))
     .sort((a, b) => b - a)[0];
   if (!latest) return null;
-  const days = (Date.now() - latest) / 86_400_000;
+  const days = (now - latest) / 86_400_000;
   if (days <= 7) return 100;
   if (days <= 30) return 70;
   if (days <= 90) return 40;
   return 10;
 }
 
-function contentThemes(posts: RecentPostSummary[]): string[] {
+function contentThemes(posts: ParsedPost[]): string[] {
   const counts = new Map<string, number>();
   for (const post of posts) {
-    const words = (post.text ?? "").toLowerCase().match(/[a-z0-9\u4e00-\u9fff]{3,}/g) ?? [];
+    const words = (post.themeSourceText ?? "").toLowerCase().match(/[a-z0-9\u4e00-\u9fff]{3,}/g) ?? [];
     for (const word of words) counts.set(word, (counts.get(word) ?? 0) + 1);
   }
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([word]) => word);
+}
+
+function usableIdentity(profile: Record<string, unknown>): boolean {
+  return Boolean(
+    stringFrom(profile.username) ??
+      stringFrom(profile.full_name) ??
+      numberFrom(profile.follower_count ?? profile.followers ?? profile.followerCount) ??
+      numberFrom(profile.following_count ?? profile.following ?? profile.followingCount) ??
+      numberFrom(profile.media_count ?? profile.posts_count ?? profile.post_count),
+  );
+}
+
+function looksPrivateOrUnavailable(raw: unknown, profile: Record<string, unknown>): boolean {
+  if (usableIdentity(profile)) return false;
+
+  const rawRecord = recordFrom(raw);
+  const message = [
+    stringFrom(rawRecord.message),
+    stringFrom(rawRecord.error),
+    stringFrom(rawRecord.detail),
+    stringFrom(profile.message),
+    stringFrom(profile.error),
+  ]
+    .filter((value): value is string => Boolean(value))
+    .join(" ")
+    .toLowerCase();
+
+  if (/(private|unavailable|not available|login|restricted)/.test(message)) return true;
+
+  return Object.keys(profile).length === 0 || !Array.isArray(profile.recent_posts ?? profile.posts ?? profile.threads ?? profile.items);
 }
 
 function providerUrl(platform: SocialPlatform, env: ScanEnv): string {
@@ -121,6 +152,14 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
 
   const raw = await res.json();
   const profile = firstRecord(raw, ["user_data", "data", "user", "profile"]);
+  if (looksPrivateOrUnavailable(raw, profile)) {
+    throw new SocialProviderError(
+      "private_or_unavailable",
+      "Social profile is private or unavailable",
+      "failed",
+    );
+  }
+
   const posts = postsFrom(profile);
   const followerCount = numberFrom(profile.follower_count ?? profile.followers ?? profile.followerCount);
   const avgLikes = average(posts.map((p) => p.likeCount));
@@ -148,7 +187,12 @@ export async function scanRapidApiProfile(input: RapidApiScanInput): Promise<Soc
     postingFrequency: posts.length,
     freshnessScore: freshnessScore(posts),
     contentThemes: contentThemes(posts),
-    recentPostsSummary: posts,
+    recentPostsSummary: posts.map(({ id, postedAt, likeCount, commentCount }) => ({
+      id,
+      postedAt,
+      likeCount,
+      commentCount,
+    })),
     summary: {
       rawUsername: stringFrom(profile.username),
       providerShape: Object.keys(profile).slice(0, 20),

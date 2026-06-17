@@ -26,7 +26,6 @@ export type RecentPostSummary = {
   postedAt: string | null;
   likeCount: number | null;
   commentCount: number | null;
-  text: string | null;
 };
 
 export type SocialScanResult = {
