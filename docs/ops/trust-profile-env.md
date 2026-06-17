@@ -16,4 +16,5 @@ Operational checks:
 
 - Manual scan path: `POST /api/social/accounts/:id/scan`.
 - Weekly scan path: `GET /api/cron/social-refresh`.
+- If any required RapidAPI scan config is missing, weekly refresh returns a skipped `provider_not_configured` response and does not run scans.
 - Cron schedule: Mondays at 03:00 UTC.
