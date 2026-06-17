@@ -9,6 +9,7 @@ import { redemptionRoutes } from "./routes/redemption.js";
 import { adminRoutes } from "./routes/admin.js";
 import { matchRoutes } from "./routes/match.js";
 import { copilotRoutes } from "./routes/copilot.js";
+import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
 
 export type Env = {
@@ -24,6 +25,7 @@ export function createApp() {
 
   // Unguarded operator endpoints (own shared-secret middleware, not workspaceAuth).
   app.route("/admin", adminRoutes);
+  app.route("/public", publicRoutes);
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);

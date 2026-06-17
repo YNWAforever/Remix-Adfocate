@@ -4,7 +4,9 @@ import { serviceClient, makeUserClient } from "../lib/supabase.js";
 import { persistScores } from "../lib/persistScores.js";
 import { buildPassport } from "../lib/passport.js";
 import { listSocialAccounts } from "../lib/social/repo.js";
+import { selectSocialAvatar } from "../lib/social/service.js";
 import { effectiveSocialHandles, privateSocialTrustSummary } from "../lib/social/passportSocial.js";
+import { createPublicToken, hashPublicToken } from "../lib/tokens.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -129,6 +131,33 @@ meRoutes.put("/profile", async (c) => {
   return c.json(data);
 });
 
+meRoutes.post("/avatar/from-social", async (c) => {
+  const body = await c.req.json<{ accountId?: string }>().catch(() => ({}));
+  if (!body.accountId) return c.json({ error: "Missing accountId", code: "bad_account" }, 400);
+
+  try {
+    const avatarUrl = await selectSocialAvatar({
+      creatorId: c.get("userId"),
+      accountId: body.accountId,
+    });
+
+    const { data, error } = await serviceClient()
+      .from("creators")
+      .select(ME_PROJECTION)
+      .eq("id", c.get("userId"))
+      .single();
+    if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+
+    return c.json({ ...data, avatar_url: avatarUrl });
+  } catch (error) {
+    const code = typeof error === "object" && error && "code" in error ? error.code : null;
+    if (code === "not_found") return c.json({ error: "Social account not found", code }, 404);
+    if (code === "no_avatar") return c.json({ error: "No scanned avatar available", code }, 422);
+    const message = error instanceof Error ? error.message : "Failed to select avatar";
+    return c.json({ error: message, code: "db_error" }, 500);
+  }
+});
+
 /** GET /api/me/passport — the Creator Passport: live level + XP, four score rings, and
  *  data-derived badges, all computed on read. Reliability + Influence come from the caller's
  *  own submissions / social handles via the user client (RLS self-scoped); Content is the
@@ -188,6 +217,33 @@ meRoutes.get("/passport", async (c) => {
     referredCount: referredCount ?? 0,
   });
   return c.json({ ...passport, socialTrust: privateSocialTrustSummary(syncedAccounts) });
+});
+
+meRoutes.post("/passport/share", async (c) => {
+  const token = createPublicToken();
+  const tokenHash = hashPublicToken(token);
+  const { error } = await serviceClient()
+    .from("creator_public_passports")
+    .upsert(
+      {
+        creator_id: c.get("userId"),
+        public_token_hash: tokenHash,
+        enabled: true,
+        revoked_at: null,
+      },
+      { onConflict: "creator_id" },
+    );
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ token, publicUrl: `/passport/${token}` });
+});
+
+meRoutes.delete("/passport/share", async (c) => {
+  const { error } = await serviceClient()
+    .from("creator_public_passports")
+    .update({ enabled: false, revoked_at: new Date().toISOString() })
+    .eq("creator_id", c.get("userId"));
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ revoked: true });
 });
 
 /** POST /api/me/level-seen — acknowledge the level-up celebration. Reads the caller's
