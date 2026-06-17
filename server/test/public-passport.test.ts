@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createApp } from "../app";
-import { cleanup, hasSupabaseEnv, makeCreator, serviceForTests } from "./helpers";
+import { hasSupabaseEnv, makeCreator, serviceForTests } from "./helpers";
 
 vi.mock("../lib/social/rapidApi.js", () => ({
   scanRapidApiProfile: vi.fn(
