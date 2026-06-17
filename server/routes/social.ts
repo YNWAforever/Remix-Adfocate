@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { addOrUpdateSocialAccount, listSocialAccounts } from "../lib/social/repo.js";
 import { scanSocialAccount } from "../lib/social/service.js";
-import { makeUserClient } from "../lib/supabase.js";
+import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import type { SocialPlatform } from "../lib/social/types.js";
 
 export const socialRoutes = new Hono<Env>();
@@ -39,10 +39,8 @@ socialRoutes.post("/accounts", async (c) => {
     return c.json({ error: "Missing handle", code: "bad_handle" }, 400);
   }
 
-  const supabase = makeUserClient(c.get("jwt"));
-
   try {
-    const account = await addOrUpdateSocialAccount(supabase, {
+    const account = await addOrUpdateSocialAccount(serviceClient(), {
       creatorId: c.get("userId"),
       workspaceId: c.get("workspaceId"),
       platform: body.platform,
