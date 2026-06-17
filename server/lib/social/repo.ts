@@ -63,6 +63,22 @@ export async function getAccountForCreator(
   return (data as SocialAccountRecord | null) ?? null;
 }
 
+export async function latestScanSnapshotAt(
+  supabase: SupabaseClient,
+  accountId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("creator_social_scan_snapshots")
+    .select("scanned_at")
+    .eq("account_id", accountId)
+    .order("scanned_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data?.scanned_at as string | null | undefined) ?? null;
+}
+
 export async function updateAccountFromScan(
   supabase: SupabaseClient,
   accountId: string,

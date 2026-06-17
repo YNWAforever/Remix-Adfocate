@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectiveSocialHandles, privateSocialTrustSummary } from "./passportSocial";
+import { effectiveSocialHandles, privateSocialTrustSummary, publicSocialTrustBadges } from "./passportSocial";
 import type { SocialAccountRecord } from "./types";
 
 function account(partial: Partial<SocialAccountRecord>): SocialAccountRecord {
@@ -70,5 +70,13 @@ describe("passport social inputs", () => {
       accounts: [],
       badges: [],
     });
+  });
+
+  it("returns only public-safe social trust badges", () => {
+    expect(publicSocialTrustBadges([account({})])).toEqual([
+      "social_scan_connected",
+      "fresh_profile_activity",
+      "active_creator",
+    ]);
   });
 });

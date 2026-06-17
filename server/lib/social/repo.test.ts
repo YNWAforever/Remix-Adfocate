@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { insertSnapshot, SOCIAL_SCAN_SNAPSHOT_RETENTION } from "./repo";
+import { insertSnapshot, latestScanSnapshotAt, SOCIAL_SCAN_SNAPSHOT_RETENTION } from "./repo";
 import type { SocialScanResult } from "./types";
 
 const scanResult: SocialScanResult = {
@@ -86,5 +86,46 @@ describe("social repo snapshot retention", () => {
     expect(snapshots.map((snapshot) => snapshot.id)).toEqual(
       Array.from({ length: SOCIAL_SCAN_SNAPSHOT_RETENTION }, (_, index) => `snap-${index + 3}`),
     );
+  });
+});
+
+describe("social repo latest snapshot lookup", () => {
+  it("returns the latest snapshot scanned_at for an account", async () => {
+    const supabase = {
+      from(table: string) {
+        expect(table).toBe("creator_social_scan_snapshots");
+        return {
+          select(columns: string) {
+            expect(columns).toBe("scanned_at");
+            return {
+              eq(_column: string, accountId: string) {
+                expect(accountId).toBe("acc-1");
+                return {
+                  order(column: string, input: { ascending: boolean }) {
+                    expect(column).toBe("scanned_at");
+                    expect(input).toEqual({ ascending: false });
+                    return {
+                      limit(count: number) {
+                        expect(count).toBe(1);
+                        return {
+                          maybeSingle() {
+                            return Promise.resolve({
+                              data: { scanned_at: "2026-06-18T09:30:00.000Z" },
+                              error: null,
+                            });
+                          },
+                        };
+                      },
+                    };
+                  },
+                };
+              },
+            };
+          },
+        };
+      },
+    };
+
+    await expect(latestScanSnapshotAt(supabase as never, "acc-1")).resolves.toBe("2026-06-18T09:30:00.000Z");
   });
 });

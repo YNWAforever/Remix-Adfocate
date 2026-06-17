@@ -20,6 +20,12 @@ export type PrivateSocialTrustSummary = {
   badges: string[];
 };
 
+const PUBLIC_SOCIAL_TRUST_BADGE_ALLOWLIST = new Set([
+  "social_scan_connected",
+  "fresh_profile_activity",
+  "active_creator",
+]);
+
 function isUsableSyncedAccount(account: SocialAccountRecord): boolean {
   return (account.sync_status === "synced" || account.sync_status === "stale") && account.follower_count != null;
 }
@@ -60,5 +66,5 @@ export function privateSocialTrustSummary(accounts: SocialAccountRecord[]): Priv
 }
 
 export function publicSocialTrustBadges(accounts: SocialAccountRecord[]): string[] {
-  return privateSocialTrustSummary(accounts).badges;
+  return privateSocialTrustSummary(accounts).badges.filter((badge) => PUBLIC_SOCIAL_TRUST_BADGE_ALLOWLIST.has(badge));
 }

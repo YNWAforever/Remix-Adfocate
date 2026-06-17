@@ -60,6 +60,7 @@ describe("social scan service", () => {
   it("stores latest metrics and a snapshot after a successful scan", async () => {
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi
         .fn()
         .mockResolvedValue({ ...baseAccount, sync_status: "synced", follower_count: 12000 }),
@@ -92,6 +93,7 @@ describe("social scan service", () => {
         sync_status: "synced",
         follower_count: 1000,
       }),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn(),
       insertSnapshot: vi.fn().mockResolvedValue(undefined),
       markAccountScanFailed: vi
@@ -127,9 +129,79 @@ describe("social scan service", () => {
     );
   });
 
+  it("skips provider calls when a recent scan snapshot exists without a successful sync yet", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T10:00:00.000Z"));
+
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue({
+        ...baseAccount,
+        api_synced_at: null,
+        sync_status: "failed",
+        follower_count: 1000,
+      }),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue("2026-06-18T09:30:00.000Z"),
+      updateAccountFromScan: vi.fn(),
+      insertSnapshot: vi.fn().mockResolvedValue(undefined),
+      markAccountScanFailed: vi
+        .fn()
+        .mockResolvedValue({ ...baseAccount, sync_status: "rate_limited", follower_count: 1000 }),
+    };
+    const provider = vi.fn();
+
+    const account = await scanSocialAccountWithDeps({
+      creatorId: "creator-1",
+      accountId: "acc-1",
+      repo,
+      provider,
+    });
+
+    expect(account.sync_status).toBe("rate_limited");
+    expect(provider).not.toHaveBeenCalled();
+    expect(repo.markAccountScanFailed).toHaveBeenCalledWith("acc-1", {
+      status: "rate_limited",
+      errorCode: "rate_limited",
+      errorMessage: "Social scan cooldown active",
+    });
+    expect(repo.insertSnapshot).toHaveBeenCalledWith(
+      "acc-1",
+      "rapidapi",
+      "rate_limited",
+      expect.objectContaining({
+        errorCode: "rate_limited",
+        errorMessage: "Social scan cooldown active",
+      }),
+    );
+  });
+
+  it("still performs a first scan when there is no successful sync and no snapshot history", async () => {
+    const repo = {
+      getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
+      updateAccountFromScan: vi
+        .fn()
+        .mockResolvedValue({ ...baseAccount, sync_status: "synced", follower_count: 12000 }),
+      insertSnapshot: vi.fn().mockResolvedValue(undefined),
+      markAccountScanFailed: vi.fn(),
+    };
+    const provider = vi.fn().mockResolvedValue(scanResult);
+
+    const account = await scanSocialAccountWithDeps({
+      creatorId: "creator-1",
+      accountId: "acc-1",
+      repo,
+      provider,
+    });
+
+    expect(account.sync_status).toBe("synced");
+    expect(provider).toHaveBeenCalledWith({ platform: "instagram", handle: "ming" });
+    expect(repo.updateAccountFromScan).toHaveBeenCalledWith("acc-1", scanResult);
+  });
+
   it("records failed status without erasing prior metrics", async () => {
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue({ ...baseAccount, follower_count: 1000 }),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn(),
       insertSnapshot: vi.fn().mockResolvedValue(undefined),
       markAccountScanFailed: vi
@@ -161,6 +233,7 @@ describe("social scan service", () => {
   it("rethrows provider_not_configured without mutating account state", async () => {
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn(),
       insertSnapshot: vi.fn(),
       markAccountScanFailed: vi.fn(),
@@ -188,6 +261,7 @@ describe("social scan service", () => {
   it("normalizes unexpected provider throws into failed provider_error snapshots", async () => {
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn(),
       insertSnapshot: vi.fn().mockResolvedValue(undefined),
       markAccountScanFailed: vi
@@ -224,6 +298,7 @@ describe("social scan service", () => {
     const repoError = new Error("write failed");
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn().mockRejectedValue(repoError),
       insertSnapshot: vi.fn(),
       markAccountScanFailed: vi.fn(),
@@ -247,6 +322,7 @@ describe("social scan service", () => {
     const repoError = new Error("failure write failed");
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi.fn(),
       insertSnapshot: vi.fn(),
       markAccountScanFailed: vi.fn().mockRejectedValue(repoError),
@@ -271,6 +347,7 @@ describe("social scan service", () => {
     const repoError = new Error("snapshot failed");
     const repo = {
       getAccountForCreator: vi.fn().mockResolvedValue(baseAccount),
+      latestScanSnapshotAt: vi.fn().mockResolvedValue(null),
       updateAccountFromScan: vi
         .fn()
         .mockResolvedValue({ ...baseAccount, sync_status: "synced", follower_count: 12000 }),
@@ -305,6 +382,7 @@ describe("social scan service", () => {
       getAccountForCreator: vi.fn(async (_supabase: unknown, input: { creatorId: string; accountId: string }) => {
         return accounts.find((account) => account.id === input.accountId) ?? null;
       }),
+      latestScanSnapshotAt: vi.fn(async () => null),
       updateAccountFromScan: vi.fn(async (_supabase: unknown, accountId: string, result: SocialScanResult) => ({
         ...baseAccount,
         id: accountId,

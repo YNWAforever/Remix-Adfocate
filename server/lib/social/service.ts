@@ -15,6 +15,7 @@ type Provider = (input: { platform: SocialPlatform; handle: string }) => Promise
 
 type ScanRepo = {
   getAccountForCreator: (creatorId: string, accountId: string) => Promise<SocialAccountRecord | null>;
+  latestScanSnapshotAt: (accountId: string) => Promise<string | null>;
   updateAccountFromScan: (accountId: string, result: SocialScanResult) => Promise<SocialAccountRecord>;
   insertSnapshot: (
     accountId: string,
@@ -65,11 +66,28 @@ function errorStatus(
   };
 }
 
-function hasRecentSync(apiSyncedAt: string | null, now = Date.now()): boolean {
-  if (!apiSyncedAt) return false;
-  const syncedAt = Date.parse(apiSyncedAt);
-  if (!Number.isFinite(syncedAt)) return false;
-  return now - syncedAt < MANUAL_SOCIAL_SCAN_COOLDOWN_MS;
+function parsedTimestamp(value: string | null): number | null {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function latestScanAttemptAt(input: { apiSyncedAt: string | null; latestSnapshotAt: string | null }): number | null {
+  const timestamps = [parsedTimestamp(input.apiSyncedAt), parsedTimestamp(input.latestSnapshotAt)].filter(
+    (value): value is number => value != null,
+  );
+  if (timestamps.length === 0) return null;
+  return Math.max(...timestamps);
+}
+
+function hasRecentScanAttempt(input: {
+  apiSyncedAt: string | null;
+  latestSnapshotAt: string | null;
+  now?: number;
+}): boolean {
+  const attemptAt = latestScanAttemptAt(input);
+  if (attemptAt == null) return false;
+  return (input.now ?? Date.now()) - attemptAt < MANUAL_SOCIAL_SCAN_COOLDOWN_MS;
 }
 
 export async function scanSocialAccountWithDeps(input: {
@@ -80,8 +98,9 @@ export async function scanSocialAccountWithDeps(input: {
 }): Promise<SocialAccountRecord> {
   const account = await input.repo.getAccountForCreator(input.creatorId, input.accountId);
   if (!account) throw Object.assign(new Error("Social account not found"), { code: "not_found" });
+  const latestSnapshotAt = await input.repo.latestScanSnapshotAt(account.id);
 
-  if (hasRecentSync(account.api_synced_at)) {
+  if (hasRecentScanAttempt({ apiSyncedAt: account.api_synced_at, latestSnapshotAt })) {
     const updated = await input.repo.markAccountScanFailed(account.id, {
       status: "rate_limited",
       errorCode: "rate_limited",
@@ -127,6 +146,7 @@ export async function scanSocialAccount(input: {
     accountId: input.accountId,
     repo: {
       getAccountForCreator: (creatorId, accountId) => repo.getAccountForCreator(svc, { creatorId, accountId }),
+      latestScanSnapshotAt: (accountId) => repo.latestScanSnapshotAt(svc, accountId),
       updateAccountFromScan: (accountId, result) => repo.updateAccountFromScan(svc, accountId, result),
       insertSnapshot: (accountId, provider, status, result) =>
         repo.insertSnapshot(svc, accountId, provider, status, result),
