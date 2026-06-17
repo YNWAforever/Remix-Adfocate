@@ -148,7 +148,7 @@ suite("operator CRM schema and RLS", () => {
     expect(audit.error).toBeNull();
   });
 
-  it("does not let authenticated creators read operator CRM tables", async () => {
+  it("denies authenticated creators direct read access to operator CRM tables", async () => {
     const svc = serviceForTests();
     const creator = await makeCreator("operator-crm-hidden@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-hidden" });
@@ -192,8 +192,8 @@ suite("operator CRM schema and RLS", () => {
     const user = userForJwt(creator.jwt);
     for (const table of ["creator_review_statuses", "creator_review_notes", "mission_shortlists", "operator_audit_events"]) {
       const { data, error } = await user.from(table).select("*");
-      expect(error).toBeNull();
-      expect(data).toEqual([]);
+      expect(error).not.toBeNull();
+      expect(data).toBeNull();
     }
   });
 
@@ -1688,6 +1688,7 @@ describe("operator creator review queue", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     hoisted.secret = "s";
+    vi.spyOn(Route, "useSearch").mockReturnValue({} as never);
     hoisted.fetchCreatorReviewQueue.mockResolvedValue({
       creators: [
         {
@@ -1983,11 +1984,6 @@ vi.mock("@/lib/admin", async () => ({
   AdminAuthError: class AdminAuthError extends Error {},
 }));
 
-vi.mock("@tanstack/react-router", async () => {
-  const actual = await vi.importActual<object>("@tanstack/react-router");
-  return { ...actual, useParams: () => ({ creatorId: "creator-1" }) };
-});
-
 import { Route } from "./operator.creators.$creatorId";
 
 function renderRoute() {
@@ -1999,6 +1995,7 @@ describe("operator creator detail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     hoisted.secret = "s";
+    vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-1" } as never);
     hoisted.fetchCreatorDetail.mockResolvedValue({
       creator: {
         id: "creator-1",
@@ -2179,6 +2176,7 @@ function renderRoute() {
 describe("operator mission shortlist page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(Route, "useParams").mockReturnValue({ missionId: "mission-1" } as never);
     hoisted.fetchMissionShortlist.mockResolvedValue({
       mission: { id: "mission-1", slug: "test-mission", title: "夏日面膜" },
       shortlist: [{ creator_id: "creator-1", status: "shortlisted", source: "manual", notes: "Good fit.", creators: { display_name: "Amy Chan" } }],
