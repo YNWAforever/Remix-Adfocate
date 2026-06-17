@@ -132,7 +132,7 @@ meRoutes.put("/profile", async (c) => {
 });
 
 meRoutes.post("/avatar/from-social", async (c) => {
-  const body = await c.req.json<{ accountId?: string }>().catch(() => ({}));
+  const body = await c.req.json<{ accountId?: string }>().catch((): { accountId?: string } => ({}));
   if (!body.accountId) return c.json({ error: "Missing accountId", code: "bad_account" }, 400);
 
   try {

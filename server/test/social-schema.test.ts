@@ -107,6 +107,7 @@ suite("social trust schema and RLS", () => {
       sync_status: "pending",
       api_synced_at: null,
     });
+    if (!created) throw new Error("Expected created social account row");
 
     const firstUpdatedAt = created.updated_at;
     const { error: updateErr } = await user
@@ -150,6 +151,7 @@ suite("social trust schema and RLS", () => {
       handle: "realhandle.renamed",
       profile_url: "https://www.instagram.com/realhandle.renamed/",
     });
+    if (!renamed) throw new Error("Expected renamed social account row");
     expect(new Date(renamed.updated_at).getTime()).toBeGreaterThanOrEqual(new Date(firstUpdatedAt).getTime());
   });
 

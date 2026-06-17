@@ -1,5 +1,5 @@
 import { LEVELS, levelIndex } from "@/lib/levels";
-import { BADGES, SCORE_META, SCORE_ORDER } from "@/lib/passport";
+import { SCORE_META, SCORE_ORDER } from "@/lib/passport";
 import type { PublicPassport } from "@/lib/queries/kocmax";
 import { ScoreRing } from "./ScoreRing";
 
@@ -50,16 +50,6 @@ export function PublicPassportView({ passport }: { passport: PublicPassport }) {
               {TRUST_BADGES[id] ?? id}
             </div>
           ))}
-          {passport.badges.map((id) => {
-            const badge = BADGES[id];
-            if (!badge) return null;
-
-            return (
-              <div key={id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-bold">
-                {badge.label}
-              </div>
-            );
-          })}
         </div>
       </section>
     </div>

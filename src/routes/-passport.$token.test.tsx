@@ -35,11 +35,12 @@ function renderRoute() {
 }
 
 describe("public passport route", () => {
-  it("renders public-safe creator passport badges", () => {
+  it("renders only public-safe trust badges", () => {
     renderRoute();
     expect(screen.getByText("阿明")).toBeInTheDocument();
     expect(screen.getByText("Social scan connected")).toBeInTheDocument();
     expect(screen.getByText("Active creator")).toBeInTheDocument();
+    expect(screen.queryByText("已連結社交")).not.toBeInTheDocument();
     expect(screen.queryByText(/followers/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/engagement/i)).not.toBeInTheDocument();
   });
