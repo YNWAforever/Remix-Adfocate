@@ -87,9 +87,13 @@ adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
     .catch(() => ({}) as { status?: unknown; risk_level?: unknown; summary?: unknown; note?: unknown });
   const status = parseReviewStatus(body.status);
   const riskLevel = parseRiskLevel(body.risk_level);
+  const note = nonEmptyText(body.note);
 
   if (!status) return c.json({ error: "Invalid review status", code: "bad_review_status" }, 400);
   if (!riskLevel) return c.json({ error: "Invalid risk level", code: "bad_risk_level" }, 400);
+  if (status === "flagged" && !note) {
+    return c.json({ error: "Flagged reviews require a note", code: "flagged_review_note_required" }, 400);
+  }
 
   try {
     const review = await updateCreatorReview(serviceClient(), {
@@ -97,7 +101,7 @@ adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
       status,
       riskLevel,
       summary: nonEmptyText(body.summary),
-      note: nonEmptyText(body.note),
+      note,
       context: operatorContext(c),
     });
     return c.json({ review });

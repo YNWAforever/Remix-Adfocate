@@ -97,12 +97,28 @@ suite("operator CRM admin API", () => {
     expect(body.audit.some((event: { event_type: string }) => event.event_type === "mission_shortlist.created")).toBe(true);
   });
 
+  it("requires a note when flagging a creator review", async () => {
+    const creator = await makeCreator("operator-crm-flag-review@test.local");
+    const res = await adminreq(`/admin/creators/${creator.userId}/review`, {
+      method: "POST",
+      body: JSON.stringify({ status: "flagged", risk_level: "high", summary: "Needs senior review." }),
+    });
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).code).toBe("flagged_review_note_required");
+  });
+
   it("requires a note when shortlisting a flagged creator", async () => {
     const creator = await makeCreator("operator-crm-flag-note@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-flag-note" });
     await adminreq(`/admin/creators/${creator.userId}/review`, {
       method: "POST",
-      body: JSON.stringify({ status: "flagged", risk_level: "high", summary: "Needs senior review." }),
+      body: JSON.stringify({
+        status: "flagged",
+        risk_level: "high",
+        summary: "Needs senior review.",
+        note: "Escalated for brand safety review.",
+      }),
     });
 
     const res = await adminreq(`/admin/missions/${mission.id}/shortlist`, {
@@ -118,7 +134,12 @@ suite("operator CRM admin API", () => {
     const mission = await makeMission({ slug: "test-operator-crm-flag-invite" });
     await adminreq(`/admin/creators/${creator.userId}/review`, {
       method: "POST",
-      body: JSON.stringify({ status: "flagged", risk_level: "high", summary: "Needs senior review." }),
+      body: JSON.stringify({
+        status: "flagged",
+        risk_level: "high",
+        summary: "Needs senior review.",
+        note: "Escalated for brand safety review.",
+      }),
     });
 
     const created = await adminreq(`/admin/missions/${mission.id}/shortlist`, {
@@ -145,7 +166,12 @@ suite("operator CRM admin API", () => {
     });
     await adminreq(`/admin/creators/${flagged.userId}/review`, {
       method: "POST",
-      body: JSON.stringify({ status: "flagged", risk_level: "high", summary: "Hidden by default." }),
+      body: JSON.stringify({
+        status: "flagged",
+        risk_level: "high",
+        summary: "Hidden by default.",
+        note: "Hold for operator review.",
+      }),
     });
 
     const res = await adminreq(`/admin/creators/review?mission_id=${mission.id}`);
