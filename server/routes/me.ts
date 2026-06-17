@@ -159,7 +159,13 @@ meRoutes.get("/passport", async (c) => {
     .eq("referred_by", userId);
   if (rErr) return c.json({ error: rErr.message, code: "db_error" }, 500);
 
-  const syncedAccounts = await listSocialAccounts(serviceClient(), userId);
+  let syncedAccounts;
+  try {
+    syncedAccounts = await listSocialAccounts(serviceClient(), userId);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to load social accounts";
+    return c.json({ error: message, code: "db_error" }, 500);
+  }
   const socialHandles = effectiveSocialHandles({
     syncedAccounts,
     selfReportedHandles: creator.social_handles as { followers?: number | null }[] | null,

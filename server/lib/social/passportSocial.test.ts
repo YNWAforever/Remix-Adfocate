@@ -64,4 +64,11 @@ describe("passport social inputs", () => {
     expect(summary.badges).toContain("social_scan_connected");
     expect(summary.badges).toContain("fresh_profile_activity");
   });
+
+  it("returns an empty private social trust summary when no synced accounts exist", () => {
+    expect(privateSocialTrustSummary([])).toEqual({
+      accounts: [],
+      badges: [],
+    });
+  });
 });
