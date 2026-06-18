@@ -121,6 +121,26 @@ describe("admin client helpers", () => {
             label: "API-synced",
             ownershipLabel: "Ownership not verified",
           },
+          socialAccounts: [
+            {
+              id: "social-1",
+              platform: "instagram",
+              handle: "@ada",
+              sync_status: "synced",
+              follower_count: 1000,
+              engagement_rate: 0.12,
+              api_synced_at: "2025-01-01T00:00:00.000Z",
+              external_avatar_url: null,
+              bio: "Creative director",
+              post_count: 120,
+              following_count: 80,
+              avg_likes: 500,
+              avg_comments: 12,
+              posting_frequency: 4,
+              freshness_score: 0.9,
+              content_themes: ["fashion", "lifestyle"],
+            },
+          ],
           review: {
             status: "approved",
             riskLevel: "low",
@@ -155,6 +175,14 @@ describe("admin client helpers", () => {
     expect(creator.workspace_id).toBe("workspace-1");
     expect(creator.display_name).toBe("Ada");
     expect(creator.social_handles).toEqual([{ platform: "instagram", handle: "@ada" }]);
+    expect(detail.socialAccounts).toHaveLength(1);
+    expect(detail.socialAccounts[0]).toMatchObject({
+      id: "social-1",
+      platform: "instagram",
+      sync_status: "synced",
+      external_avatar_url: null,
+      content_themes: ["fashion", "lifestyle"],
+    });
     expect(detail.shortlists).toEqual([]);
   });
 });

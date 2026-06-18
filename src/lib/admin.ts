@@ -61,6 +61,24 @@ type AdminCreatorDetailResponse = {
     social_handles: unknown;
     created_at: string;
   };
+  socialAccounts: Array<{
+    id: string;
+    platform: string;
+    handle: string | null;
+    sync_status: string | null;
+    follower_count: number | null;
+    engagement_rate: number | null;
+    api_synced_at: string | null;
+    external_avatar_url: string | null;
+    bio: string | null;
+    post_count: number | null;
+    following_count: number | null;
+    avg_likes: number | null;
+    avg_comments: number | null;
+    posting_frequency: number | null;
+    freshness_score: number | null;
+    content_themes: string[] | null;
+  }>;
   social: AdminCreatorReviewRow["social"];
   review: AdminReviewProjection;
   notes: Array<{ id: string; creator_id: string; workspace_id: string; operator_id: string; category: AdminNoteCategory; body: string; created_at: string }>;
