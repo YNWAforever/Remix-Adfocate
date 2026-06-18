@@ -49,6 +49,37 @@ export type CreatorReviewQueueFilters = {
   sort?: "last_activity" | "trust_score" | "level" | "social_freshness";
 };
 
+type AdminCreatorDetailResponse = {
+  creator: {
+    id: string;
+    workspace_id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    level: string;
+    categories: string[];
+    scores: Record<string, number | null>;
+    social_handles: unknown;
+    created_at: string;
+  };
+  social: AdminCreatorReviewRow["social"];
+  review: AdminReviewProjection;
+  notes: Array<{ id: string; creator_id: string; workspace_id: string; operator_id: string; category: AdminNoteCategory; body: string; created_at: string }>;
+  shortlists: Array<{
+    mission_id: string;
+    creator_id: string;
+    workspace_id: string;
+    status: AdminShortlistStatus;
+    source: AdminShortlistSource;
+    notes: string | null;
+    created_by: string;
+    updated_by: string;
+    created_at: string;
+    updated_at: string;
+  }>;
+  audit: Array<Record<string, unknown>>;
+  missionHistory: Array<Record<string, unknown>>;
+};
+
 export function getAdminSecret(): string | null {
   return sessionStorage.getItem(KEY);
 }
@@ -82,7 +113,7 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
   return res.json() as Promise<T>;
 }
 
-function queryString(filters: CreatorReviewQueueFilters) {
+function queryString(filters: CreatorReviewQueueFilters): string {
   const qs = new URLSearchParams();
   if (filters.status) qs.set("status", filters.status);
   if (filters.riskLevel) qs.set("risk_level", filters.riskLevel);
@@ -101,15 +132,7 @@ export function fetchCreatorReviewQueue(filters: CreatorReviewQueueFilters = {})
 }
 
 export function fetchCreatorDetail(creatorId: string) {
-  return adminFetch<{
-    creator: AdminCreatorReviewRow;
-    social: AdminCreatorReviewRow["social"];
-    review: AdminReviewProjection;
-    notes: Array<{ id: string; category: AdminNoteCategory; body: string; operator_id: string; created_at: string }>;
-    missionHistory: Array<Record<string, unknown>>;
-    shortlists: Array<Record<string, unknown>>;
-    audit: Array<Record<string, unknown>>;
-  }>(`/admin/creators/${creatorId}`);
+  return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`);
 }
 
 export function postCreatorReview(
@@ -137,7 +160,7 @@ export function postCreatorNote(creatorId: string, body: { category: AdminNoteCa
 export function fetchMissionShortlist(missionId: string) {
   return adminFetch<{
     mission: { id: string; slug: string; title: string };
-    shortlist: Array<{ creator_id: string; status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null }>;
+    shortlists: Array<{ creator_id: string; status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null }>;
   }>(`/admin/missions/${missionId}/shortlist`);
 }
 
