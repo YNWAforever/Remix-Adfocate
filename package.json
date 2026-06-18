@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsr generate && tsc --noEmit && vite build",
+    "check:esm": "node scripts/check-esm-extensions.mjs",
+    "build": "npm run check:esm && tsr generate && tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "type-check": "tsr generate && tsc --noEmit",
