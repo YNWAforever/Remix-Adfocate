@@ -206,6 +206,8 @@ export async function cleanup() {
     await service().from("creator_review_statuses").delete().in("creator_id", ids);
     await service().from("mission_shortlists").delete().in("creator_id", ids);
     await service().from("creator_public_passports").delete().in("creator_id", ids);
+    await service().from("creator_public_profile_snapshots").delete().in("creator_id", ids);
+    await service().from("creator_portfolio_links").delete().in("creator_id", ids);
     await service().from("creator_social_accounts").delete().in("creator_id", ids);
   }
   // Null any inbound referral inside the test set so deleting a referred creator never
