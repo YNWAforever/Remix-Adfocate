@@ -1,19 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ListFilter, Search, UserRound } from "lucide-react";
+import { ListFilter, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
-import {
-  RiskBadge,
-  ReviewBadge,
-  ShortlistBadge,
-  SocialSyncBadge,
-} from "@/components/operator/OperatorBadges";
-import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
+import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
 import {
   fetchCreatorReviewQueue,
   getAdminSecret,
-  type AdminCreatorReviewRow,
   type AdminReviewStatus,
   type AdminRiskLevel,
   type CreatorReviewQueueFilters,
@@ -23,39 +16,15 @@ export const Route = createFileRoute("/operator/creators")({
   component: OperatorCreatorsRoute,
 });
 
-function formatTrustSummary(scores: AdminCreatorReviewRow["scores"]) {
-  const entries = Object.entries(scores).filter(([, value]) => typeof value === "number") as Array<[string, number]>;
-  if (entries.length === 0) {
-    return "No trust scores";
-  }
-  const average = Math.round(entries.reduce((sum, [, value]) => sum + value, 0) / entries.length);
-  return `Trust ${average} · ${entries.map(([key, value]) => `${key} ${value}`).join(" · ")}`;
-}
-
-function formatLastActivity(lastActivityAt: string | null) {
-  if (!lastActivityAt) {
-    return "No recent activity";
-  }
-  return new Date(lastActivityAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 function OperatorCreatorsRoute() {
   const [secret, setSecret] = useState<string | null>(getAdminSecret());
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
   const [risk, setRisk] = useState<AdminRiskLevel | "all">("all");
   const [sort, setSort] = useState<CreatorReviewQueueFilters["sort"]>("last_activity");
-  const routeMissionId = Route.useSearch({
-    select: (search) => {
-      const missionSearch = search as { mission_id?: unknown };
-      return typeof missionSearch.mission_id === "string" ? missionSearch.mission_id : undefined;
-    },
-  });
-  const missionId = typeof routeMissionId === "string" ? routeMissionId : undefined;
+  const routeSearch = Route.useSearch();
+  const missionSearch = routeSearch as { mission_id?: unknown };
+  const missionId = typeof missionSearch.mission_id === "string" ? missionSearch.mission_id : undefined;
 
   const creators = useQuery({
     queryKey: ["admin-creators-review", { q, status, risk, sort, missionId }],
@@ -177,55 +146,7 @@ function OperatorCreatorsRoute() {
 
         <div className="space-y-3">
           {creators.data?.creators.map((creator) => (
-            <div
-              key={creator.id}
-              className="grid min-h-[88px] gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
-            >
-              <div className="flex min-w-0 gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)]">
-                  {creator.avatarUrl ? (
-                    <img src={creator.avatarUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <UserRound className="h-5 w-5" />
-                  )}
-                </div>
-                <div className="min-w-0 space-y-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate font-heading font-bold">{creator.displayName}</p>
-                    <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
-                      {creator.level}
-                    </span>
-                  </div>
-                  <p className="truncate text-sm text-[var(--color-soft-ink)]">{creator.categories.join(", ") || "No categories"}</p>
-                  <p className="text-xs text-[var(--color-soft-ink)]">{formatTrustSummary(creator.scores)}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  <SocialSyncBadge label={creator.social.label} />
-                  <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
-                    {creator.social.ownershipLabel}
-                  </span>
-                </div>
-                <p className="text-xs text-[var(--color-soft-ink)]">
-                  {creator.social.platforms.join(", ") || "No platforms"} · {creator.social.followerCount?.toLocaleString() ?? "0"}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2">
-                  <ReviewBadge status={creator.review.status} />
-                  <RiskBadge risk={creator.review.riskLevel} />
-                  {creator.shortlist ? <ShortlistBadge status={creator.shortlist.status} /> : null}
-                </div>
-                <p className="text-xs text-[var(--color-soft-ink)]">Last activity: {formatLastActivity(creator.lastActivityAt)}</p>
-              </div>
-
-              <div className="flex items-center justify-end">
-                <ReviewActionPanel creator={creator} />
-              </div>
-            </div>
+            <CreatorReviewRow key={creator.id} creator={creator} missionId={missionId} />
           ))}
         </div>
       </div>

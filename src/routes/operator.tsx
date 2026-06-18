@@ -74,6 +74,11 @@ function OperatorApplications() {
                   )}
                 </div>
                 <p className="text-sm text-[var(--color-soft-ink)]">{a.missions.title}</p>
+                {a.mission_id ? (
+                  <a href={`/operator/missions/${a.mission_id}`} className="text-xs font-bold underline">
+                    Mission selection
+                  </a>
+                ) : null}
               </div>
               <div className="flex shrink-0 gap-2">
                 <button aria-label="接受" disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">接受</button>

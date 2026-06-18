@@ -63,6 +63,7 @@ describe("operator applications page", () => {
     expect(screen.getByText("needs_review")).toBeInTheDocument();
     expect(screen.getByText("not shortlisted")).toBeInTheDocument();
     expect(screen.getByText("shortlisted")).toBeInTheDocument();
+    expect(screen.getAllByText("Mission selection")).toHaveLength(2);
     hoisted.adminFetch.mockResolvedValueOnce({});
     hoisted.adminFetch.mockResolvedValueOnce({ applications: [] });
     fireEvent.click(screen.getAllByLabelText("接受")[0]!);
