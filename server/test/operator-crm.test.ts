@@ -384,6 +384,29 @@ suite("operator CRM admin API", () => {
     const approved = await makeCreator("operator-crm-approved@test.local");
     const flagged = await makeCreator("operator-crm-hidden-flagged@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-mission-filter" });
+    const svc = serviceForTests();
+    await svc.from("creator_portfolio_links").insert([
+      {
+        creator_id: flagged.userId,
+        workspace_id: DEMO_WS,
+        url: "https://example.com/flagged-work-1",
+        title: "Flagged work 1",
+        platform_type: "website",
+        caption: null,
+        sort_order: 1,
+        public_highlight: true,
+      },
+      {
+        creator_id: flagged.userId,
+        workspace_id: DEMO_WS,
+        url: "https://example.com/flagged-work-2",
+        title: "Flagged work 2",
+        platform_type: "instagram",
+        caption: null,
+        sort_order: 2,
+        public_highlight: false,
+      },
+    ]);
     await adminreq(`/admin/creators/${approved.userId}/review`, {
       method: "POST",
       body: JSON.stringify({ status: "approved", risk_level: "low", summary: "Ready." }),
@@ -410,10 +433,11 @@ suite("operator CRM admin API", () => {
     const flaggedIds = flaggedBody.creators.map((row: { id: string }) => row.id);
     expect(flaggedIds).toContain(flagged.userId);
     expect(flaggedBody.creators[0].profileMedia).toMatchObject({
-      portfolioCount: expect.any(Number),
-      publicHighlightCount: expect.any(Number),
+      portfolioCount: 2,
+      publicHighlightCount: 1,
       completenessScore: expect.any(Number),
     });
+    expect(flaggedBody.creators[0].profileMedia.completenessScore).toBeGreaterThan(0);
   });
 
   it("keeps approved creators first in mission queues before applying the secondary sort", async () => {

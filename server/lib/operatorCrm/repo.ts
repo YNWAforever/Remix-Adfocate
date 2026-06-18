@@ -183,19 +183,78 @@ async function getShortlistMap(supabase: SupabaseClient, creatorIds: string[], m
   return map;
 }
 
-async function getProfileMediaSummaryMap(supabase: SupabaseClient, creatorIds: string[]) {
+type ProfileMediaSummaryRow = {
+  creator_id: string;
+  public_highlight: boolean;
+};
+
+type SyncedSocialSummaryRow = {
+  creator_id: string;
+};
+
+function calculateProfileMediaCompletenessScore(input: {
+  avatarUrl: string | null;
+  displayName: string | null;
+  categories: string[];
+  portfolioCount: number;
+  publicHighlightCount: number;
+  hasSocialScan: boolean;
+}) {
+  const completed = [
+    Boolean(input.avatarUrl),
+    Boolean(input.displayName?.trim()),
+    false,
+    input.categories.length > 0,
+    input.portfolioCount > 0,
+    input.publicHighlightCount > 0,
+    input.hasSocialScan,
+  ].filter(Boolean).length;
+  return Math.round((completed / 7) * 100);
+}
+
+function buildProfileMediaSummary(creator: CreatorRow, rows: ProfileMediaSummaryRow[], hasSocialScan: boolean) {
+  const portfolioCount = rows.length;
+  const publicHighlightCount = rows.filter((row) => row.public_highlight).length;
+  const completenessScore = calculateProfileMediaCompletenessScore({
+    avatarUrl: creator.avatar_url ?? null,
+    displayName: creator.display_name ?? null,
+    categories: creator.categories ?? [],
+    portfolioCount,
+    publicHighlightCount,
+    hasSocialScan,
+  });
+
+  return {
+    avatarUrl: creator.avatar_url ?? null,
+    portfolioCount,
+    publicHighlightCount,
+    completenessScore,
+  } satisfies CreatorReviewRow["profileMedia"];
+}
+
+async function getProfileMediaSummaryMap(supabase: SupabaseClient, creators: CreatorRow[]) {
   const map = new Map<string, CreatorReviewRow["profileMedia"]>();
-  await Promise.all(
-    creatorIds.map(async (creatorId) => {
-      const media = await getProfileMedia(supabase, creatorId);
-      map.set(creatorId, {
-        avatarUrl: media.avatarUrl,
-        portfolioCount: media.portfolioLinks.length,
-        publicHighlightCount: media.publicHighlights.length,
-        completenessScore: media.completeness.score,
-      });
-    }),
-  );
+  const creatorIds = creators.map((creator) => creator.id);
+  if (creatorIds.length === 0) return map;
+
+  const [portfolioRes, socialRes] = await Promise.all([
+    supabase.from("creator_portfolio_links").select("creator_id, public_highlight").in("creator_id", creatorIds),
+    supabase.from("creator_social_accounts").select("creator_id").in("creator_id", creatorIds).eq("sync_status", "synced"),
+  ]);
+  if (portfolioRes.error) failDb(portfolioRes.error);
+  if (socialRes.error) failDb(socialRes.error);
+
+  const portfolioByCreator = new Map<string, ProfileMediaSummaryRow[]>();
+  for (const row of (portfolioRes.data ?? []) as ProfileMediaSummaryRow[]) {
+    const bucket = portfolioByCreator.get(row.creator_id) ?? [];
+    bucket.push(row);
+    portfolioByCreator.set(row.creator_id, bucket);
+  }
+
+  const socialByCreator = new Set(((socialRes.data ?? []) as SyncedSocialSummaryRow[]).map((row) => row.creator_id));
+  for (const creator of creators) {
+    map.set(creator.id, buildProfileMediaSummary(creator, portfolioByCreator.get(creator.id) ?? [], socialByCreator.has(creator.id)));
+  }
   return map;
 }
 
@@ -348,7 +407,7 @@ export async function listCreatorReviewQueue(
     getReviewMap(supabase, creatorIds),
     getSocialMap(supabase, creatorIds),
     getShortlistMap(supabase, creatorIds, filters.missionId),
-    getProfileMediaSummaryMap(supabase, creatorIds),
+    getProfileMediaSummaryMap(supabase, creators),
   ]);
 
   const rows = creators

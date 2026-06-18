@@ -87,7 +87,8 @@ function OperatorCreatorDetailRoute() {
   const detailData = detail.data;
   const review = detail.data?.review;
   const selectedSocial = detail.data?.socialAccounts[0] ?? null;
-  const selectedAvatar = creator?.avatar_url ?? selectedSocial?.external_avatar_url ?? null;
+  const selectedAvatar = detailData?.profileMedia.avatarUrl ?? null;
+  const unselectedSocialAvatar = selectedSocial?.external_avatar_url ?? null;
 
   const scoreEntries = useMemo(() => {
     if (!creator) {
@@ -126,7 +127,7 @@ function OperatorCreatorDetailRoute() {
                 <div className="flex min-w-0 gap-4">
                   <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)]">
                     {selectedAvatar ? (
-                      <img src={selectedAvatar} alt="" className="h-full w-full object-cover" />
+                      <img src={selectedAvatar} alt="Selected profile avatar" className="h-full w-full object-cover" />
                     ) : (
                       <UserRound className="h-8 w-8" />
                     )}
@@ -199,6 +200,23 @@ function OperatorCreatorDetailRoute() {
                 </div>
                 {selectedSocial ? (
                   <div className="space-y-2">
+                    {unselectedSocialAvatar ? (
+                      <div className="space-y-2 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] bg-white px-3 py-2">
+                        <p className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">
+                          Unselected social-source avatar
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={unselectedSocialAvatar}
+                            alt={`Unselected social avatar from ${selectedSocial.platform}`}
+                            className="h-12 w-12 rounded-full border-2 border-[var(--color-ink)] object-cover"
+                          />
+                          <p className="text-sm text-[var(--color-soft-ink)]">
+                            Review separately from the selected profile avatar.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
                     <p className="font-bold">{selectedSocial.platform}</p>
                     <p className="text-sm text-[var(--color-soft-ink)]">{selectedSocial.handle ?? "No handle"}</p>
                     <p className="text-sm">{selectedSocial.bio ?? "No bio synced"}</p>

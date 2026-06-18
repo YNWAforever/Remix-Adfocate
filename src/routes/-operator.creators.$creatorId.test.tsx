@@ -49,7 +49,7 @@ describe("operator creator detail", () => {
         id: "creator-1",
         workspace_id: "workspace-1",
         display_name: "Amy Chan",
-        avatar_url: "https://cdn.example.com/avatar.jpg",
+        avatar_url: "https://cdn.example.com/creator-avatar.jpg",
         level: "L2",
         categories: ["beauty"],
         scores: { influence: 80, content: 90, reliability: 70, brandSafety: 100 },
@@ -94,7 +94,7 @@ describe("operator creator detail", () => {
         updatedAt: "2026-06-18T05:30:00.000Z",
       },
       profileMedia: {
-        avatarUrl: "https://cdn.example.com/avatar.jpg",
+        avatarUrl: "https://cdn.example.com/reviewed-avatar.jpg",
         portfolioLinks: [
           {
             id: "portfolio-1",
@@ -148,6 +148,14 @@ describe("operator creator detail", () => {
   it("renders profile, review metadata, social metrics, notes, mission history, and audit", async () => {
     renderRoute();
     expect(await screen.findByText("Amy Chan")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Selected profile avatar" })).toHaveAttribute(
+      "src",
+      "https://cdn.example.com/reviewed-avatar.jpg",
+    );
+    expect(screen.getByRole("img", { name: "Unselected social avatar from instagram" })).toHaveAttribute(
+      "src",
+      "https://cdn.example.com/social-avatar.jpg",
+    );
     expect(screen.getByRole("heading", { name: "Review status" })).toBeInTheDocument();
     expect(screen.getByText("Strong fit for skincare launch.", { selector: "p" })).toBeInTheDocument();
     expect(screen.getByText("operator@adfocate.test")).toBeInTheDocument();
