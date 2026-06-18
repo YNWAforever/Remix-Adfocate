@@ -6,6 +6,13 @@ const hoisted = vi.hoisted(() => ({
   secret: null as string | null,
   adminFetch: vi.fn(),
 }));
+vi.mock("@tanstack/react-router", async () => {
+  const actual = await vi.importActual<object>("@tanstack/react-router");
+  return {
+    ...actual,
+    Link: ({ children }: { children?: React.ReactNode }) => <a>{children}</a>,
+  };
+});
 vi.mock("@/lib/admin", () => ({
   adminFetch: hoisted.adminFetch,
   getAdminSecret: () => hoisted.secret,
@@ -32,11 +39,21 @@ describe("operator applications page", () => {
   it("lists pending applications and accepts one", async () => {
     hoisted.secret = "s";
     hoisted.adminFetch.mockResolvedValueOnce({ applications: [
-      { id: "a1", creators: { display_name: "Amy" }, missions: { slug: "m1", title: "夏日面膜", points_reward: 100 } },
+      {
+        id: "a1",
+        mission_id: "m1",
+        creator_id: "creator-1",
+        creator_review: { status: "needs_review", risk_level: "unknown" },
+        mission_shortlist: null,
+        creators: { display_name: "Amy" },
+        missions: { slug: "m1", title: "夏日面膜", points_reward: 100 },
+      },
     ] });
     renderOp();
     await screen.findByText("Amy");
+    expect(screen.getByText("needs_review")).toBeInTheDocument();
     hoisted.adminFetch.mockResolvedValueOnce({});
+    hoisted.adminFetch.mockResolvedValueOnce({ applications: [] });
     fireEvent.click(screen.getByLabelText("接受"));
     await waitFor(() => expect(hoisted.adminFetch).toHaveBeenCalledWith("/admin/applications/a1/accept", expect.objectContaining({ method: "POST" })));
   });
