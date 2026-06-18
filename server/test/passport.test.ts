@@ -1,6 +1,45 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+const failingSocialAccountReads = new Set<string>();
+
+vi.mock("../lib/social/repo.js", async () => {
+  const actual = await vi.importActual<typeof import("../lib/social/repo.js")>("../lib/social/repo.js");
+  return {
+    ...actual,
+    listSocialAccounts: vi.fn(async (supabase, creatorId: string) => {
+      if (failingSocialAccountReads.has(creatorId)) throw new Error("social accounts exploded");
+      return actual.listSocialAccounts(supabase, creatorId);
+    }),
+  };
+});
+
 import { createApp } from "../app";
 import { makeCreator, seedSubmission, setReferredBy, setXp, cleanup, hasSupabaseEnv } from "./helpers";
+
+vi.mock("../lib/social/rapidApi.js", () => ({
+  scanRapidApiProfile: vi.fn(
+    async ({ platform, handle }: { platform: "instagram" | "threads"; handle: string }) => ({
+      platform,
+      handle,
+      profileUrl:
+        platform === "instagram"
+          ? `https://www.instagram.com/${handle}/`
+          : `https://www.threads.net/@${handle}`,
+      followerCount: 12000,
+      followingCount: 321,
+      postCount: 42,
+      bio: "Mock scanned creator",
+      externalAvatarUrl: "https://cdn.example.com/avatar.jpg",
+      engagementRate: 4.5,
+      avgLikes: 500,
+      avgComments: 40,
+      postingFrequency: 2,
+      freshnessScore: 100,
+      contentThemes: ["beauty"],
+      recentPostsSummary: [],
+      summary: { mocked: true },
+    }),
+  ),
+}));
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -105,5 +144,44 @@ suite("creator passport", () => {
     expect(p.level).toBe("L1");
     expect(p.badges).toContain("level_l1");
     expect(p.badges).toContain("referrer");
+  });
+
+  it("prefers API-synced follower counts over self-reported followers", async () => {
+    const c = await makeCreator("passport-api-synced@test.local");
+    await req("/me/profile", c.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ social_handles: [{ platform: "Instagram", handle: "@x", followers: 999999 }] }),
+    });
+    await req("/social/accounts", c.jwt, {
+      method: "POST",
+      body: JSON.stringify({ platform: "instagram", handle: "@x" }),
+    });
+    const accounts = await (await req("/social/accounts", c.jwt)).json();
+    const id = accounts.accounts[0].id;
+    await req(`/social/accounts/${id}/scan`, c.jwt, { method: "POST" });
+
+    const p = await (await req("/me/passport", c.jwt)).json();
+    expect(p.scores.influence).toBe(50);
+    expect(p.socialTrust.accounts[0]).toMatchObject({
+      handle: "x",
+      followerCount: 12000,
+      labels: ["API-synced", "Ownership not verified"],
+    });
+  });
+
+  it("returns db_error when synced social accounts cannot be loaded", async () => {
+    const c = await makeCreator("passport-social-db-error@test.local");
+    failingSocialAccountReads.add(c.userId);
+
+    try {
+      const res = await req("/me/passport", c.jwt);
+      expect(res.status).toBe(500);
+      expect(await res.json()).toMatchObject({
+        error: "social accounts exploded",
+        code: "db_error",
+      });
+    } finally {
+      failingSocialAccountReads.delete(c.userId);
+    }
   });
 });

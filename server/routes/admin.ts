@@ -1,5 +1,7 @@
 import { Hono } from "hono";
+import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { serviceClient } from "../lib/supabase.js";
+import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
 import { persistScores } from "../lib/persistScores.js";
 
 /** Operator-only review endpoints. Interim shared-secret auth (replaced by real
@@ -15,6 +17,8 @@ adminRoutes.use("*", async (c, next) => {
   await next();
 });
 
+adminRoutes.route("/", adminOperatorCrmRoutes);
+
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand
 // Dashboard (Slice 8) replaces this with per-workspace, role-scoped review.
@@ -23,11 +27,18 @@ adminRoutes.get("/submissions", async (c) => {
   const svc = serviceClient();
   const { data, error } = await svc
     .from("mission_submissions")
-    .select("id, status, content_urls, submitted_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+    .select(
+      "id, mission_id, status, content_urls, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
+    )
     .eq("status", status)
     .order("submitted_at", { ascending: true });
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ submissions: data ?? [] });
+  try {
+    return c.json({ submissions: await enrichAdminMissionRows(svc, data ?? []) });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to enrich submissions";
+    return c.json({ error: message, code: "db_error" }, 500);
+  }
 });
 
 adminRoutes.post("/submissions/:id/approve", async (c) => {
@@ -66,11 +77,16 @@ adminRoutes.get("/applications", async (c) => {
   const svc = serviceClient();
   const { data, error } = await svc
     .from("mission_submissions")
-    .select("id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+    .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
     .eq("status", "applied")
     .order("created_at", { ascending: true });
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ applications: data ?? [] });
+  try {
+    return c.json({ applications: await enrichAdminMissionRows(svc, data ?? []) });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to enrich applications";
+    return c.json({ error: message, code: "db_error" }, 500);
+  }
 });
 
 adminRoutes.post("/applications/:id/accept", async (c) => {

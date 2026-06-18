@@ -32,11 +32,102 @@ export type Me = {
   onboarding_completed: boolean;
   referral_code?: string;
 };
+export type SocialPlatform = "instagram" | "threads";
+export type SocialSyncStatus = "pending" | "synced" | "stale" | "failed" | "rate_limited";
+export type SocialAccount = {
+  id: string;
+  platform: SocialPlatform;
+  handle: string;
+  profile_url?: string | null;
+  owner_verified: boolean;
+  api_synced_at?: string | null;
+  sync_status: SocialSyncStatus;
+  follower_count?: number | null;
+  following_count?: number | null;
+  post_count?: number | null;
+  bio?: string | null;
+  external_avatar_url?: string | null;
+  engagement_rate?: number | null;
+  avg_likes?: number | null;
+  avg_comments?: number | null;
+  posting_frequency?: number | null;
+  freshness_score?: number | null;
+  content_themes?: string[];
+  last_error_code?: string | null;
+  last_error_message?: string | null;
+};
+export type SocialTrust = {
+  accounts: Array<{
+    id: string;
+    platform: SocialPlatform;
+    handle: string;
+    followerCount: number | null;
+    engagementRate: number | null;
+    avgLikes: number | null;
+    avgComments: number | null;
+    freshnessScore: number | null;
+    apiSyncedAt: string | null;
+    ownerVerified: boolean;
+    labels: string[];
+  }>;
+  badges: string[];
+};
 export type Passport = {
   level: string;
   xp: number;
   scores: { influence: number | null; reliability: number | null; content: number | null; brandSafety: number | null };
   badges: string[];
+  socialTrust?: SocialTrust;
+};
+export type PassportShare = { token: string; publicUrl: string };
+export type PublicProfileHighlight = {
+  url: string;
+  title: string;
+  platform_type: string;
+  caption: string | null;
+  sort_order: number;
+};
+export type PortfolioPlatformType = "instagram" | "threads" | "tiktok" | "youtube" | "website" | "case_study" | "other";
+export type ProfileMediaLink = {
+  id: string;
+  creatorId: string;
+  workspaceId: string;
+  url: string;
+  title: string;
+  platformType: PortfolioPlatformType;
+  caption: string | null;
+  sortOrder: number;
+  publicHighlight: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+export type ProfileCompleteness = {
+  score: number;
+  items: Array<{ key: string; label: string; complete: boolean }>;
+};
+export type CreatorProfileMedia = {
+  avatarUrl: string | null;
+  portfolioLinks: ProfileMediaLink[];
+  publicHighlights: PublicProfileHighlight[];
+  published: { avatarUrl: string | null; highlights: PublicProfileHighlight[]; publishedAt: string | null };
+  completeness: ProfileCompleteness;
+};
+export type AvatarUploadMetadata = {
+  bucket: "creator-avatars";
+  path: string;
+  publicUrl: string;
+  contentType: "image/jpeg" | "image/png" | "image/webp";
+  maxSizeBytes: number;
+};
+export type PublicPassport = {
+  creator: { displayName: string; avatarUrl: string | null; level: string; xp: number };
+  scores: Passport["scores"];
+  badges: string[];
+  socialTrustBadges: string[];
+  profileMedia: {
+    highlights: PublicProfileHighlight[];
+    publishedAt: string | null;
+  };
 };
 export type OnboardingStatus = { onboarding_step: number; onboarding_completed: boolean; completion_pct: number };
 export type RecommendedMission = { id: string; slug: string; title: string; category?: string; points_reward: number; deadline?: string };
@@ -114,6 +205,139 @@ export function useMarkLevelSeen() {
 
 export function useMyPassport() {
   return useQuery({ queryKey: ["passport"], queryFn: () => apiFetch<Passport>("/me/passport") });
+}
+
+export function useSocialAccounts() {
+  return useQuery({
+    queryKey: ["social-accounts"],
+    queryFn: async () => (await apiFetch<{ accounts: SocialAccount[] }>("/social/accounts")).accounts,
+  });
+}
+
+export function useAddSocialAccount() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { platform: SocialPlatform; handle: string }) =>
+      apiFetch<SocialAccount>("/social/accounts", { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["social-accounts"] }),
+  });
+}
+
+export function useScanSocialAccount() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<{ account: SocialAccount; labels: string[] }>(`/social/accounts/${id}/scan`, { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["social-accounts"] });
+      qc.invalidateQueries({ queryKey: ["passport"] });
+    },
+  });
+}
+
+export function useUseSocialAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (accountId: string) =>
+      apiFetch<Me>("/me/avatar/from-social", { method: "POST", body: JSON.stringify({ accountId }) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["passport"] });
+    },
+  });
+}
+
+export function useCreatePassportShare() {
+  return useMutation({
+    mutationFn: () => apiFetch<PassportShare>("/me/passport/share", { method: "POST" }),
+  });
+}
+
+export function useRevokePassportShare() {
+  return useMutation({
+    mutationFn: () => apiFetch<{ revoked: boolean }>("/me/passport/share", { method: "DELETE" }),
+  });
+}
+
+export function usePublicPassport(token: string) {
+  return useQuery({
+    queryKey: ["public-passport", token],
+    queryFn: () => apiFetch<PublicPassport>(`/public/passports/${token}`),
+    enabled: Boolean(token),
+  });
+}
+
+export function useProfileMedia() {
+  return useQuery({ queryKey: ["profile-media"], queryFn: () => apiFetch<CreatorProfileMedia>("/me/profile-media") });
+}
+
+export function useCreateAvatarUpload() {
+  return useMutation({
+    mutationFn: (body: { fileName: string; contentType: string; sizeBytes: number }) =>
+      apiFetch<AvatarUploadMetadata>("/me/profile-media/avatar-upload", { method: "POST", body: JSON.stringify(body) }),
+  });
+}
+
+export function useSelectUploadedAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (storagePath: string) =>
+      apiFetch<{ avatarUrl: string }>("/me/profile-media/avatar-select", {
+        method: "POST",
+        body: JSON.stringify({ storagePath }),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["profile-media"] });
+      qc.invalidateQueries({ queryKey: ["passport"] });
+    },
+  });
+}
+
+export function useCreatePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: {
+      url: string;
+      title: string;
+      platform_type: PortfolioPlatformType;
+      caption?: string;
+      sort_order?: number;
+      public_highlight?: boolean;
+    }) => apiFetch<{ link: ProfileMediaLink }>("/me/profile-media/portfolio", { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function useUpdatePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: Record<string, unknown> }) =>
+      apiFetch<{ link: ProfileMediaLink }>(`/me/profile-media/portfolio/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(patch),
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function useDeletePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiFetch<{ deleted: boolean }>(`/me/profile-media/portfolio/${id}`, { method: "DELETE" }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function usePublishProfileMedia() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<{ published: CreatorProfileMedia["published"] }>("/me/profile-media/publish", { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["profile-media"] });
+      qc.invalidateQueries({ queryKey: ["public-passport"] });
+    },
+  });
 }
 
 export type Workspace = { slug: string; name: string; theme: Record<string, string> };

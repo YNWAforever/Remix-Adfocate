@@ -1,5 +1,7 @@
 import { serviceClient } from "./supabase.js";
 import { buildPassport } from "./passport.js";
+import { listSocialAccounts } from "./social/repo.js";
+import { effectiveSocialHandles } from "./social/passportSocial.js";
 
 /** Recompute a creator's passport scores and snapshot them into creators.scores.
  *  Best-effort: logs and returns on any failure (never throws) so a snapshot error
@@ -39,10 +41,16 @@ export async function persistScores(creatorId: string): Promise<void> {
       return;
     }
 
+    const syncedAccounts = await listSocialAccounts(svc, creatorId);
+    const socialHandles = effectiveSocialHandles({
+      syncedAccounts,
+      selfReportedHandles: creator.social_handles as { followers?: number | null }[] | null,
+    });
+
     const { scores } = buildPassport({
       level: creator.level,
       xp: creator.xp,
-      socialHandles: creator.social_handles as { followers?: number | null }[] | null,
+      socialHandles,
       statuses: (subs ?? []).map((s) => s.status as string),
       ratings: (subs ?? [])
         .filter((s) => {

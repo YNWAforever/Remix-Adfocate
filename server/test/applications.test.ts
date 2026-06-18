@@ -2,6 +2,9 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
 
+process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
+
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 
@@ -14,7 +17,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
 function adminReq(path: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {
     ...init,
-    headers: { "x-admin-secret": process.env.ADMIN_SECRET ?? "test-admin-secret", "Content-Type": "application/json", ...(init.headers ?? {}) },
+    headers: { "x-admin-secret": ADMIN_SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
 

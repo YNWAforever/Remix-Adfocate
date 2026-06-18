@@ -19,7 +19,7 @@ export const workspaceAuth: MiddlewareHandler<Env> = async (c, next) => {
   // Resolve workspace by slug and verify the creator belongs to it.
   const { data: creator } = await supabase
     .from("creators")
-    .select("id, workspace_id, workspaces!inner(slug)")
+    .select("id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)")
     .eq("workspaces.slug", slug)
     .single();
 

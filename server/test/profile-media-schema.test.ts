@@ -1,0 +1,310 @@
+import { execFileSync } from "node:child_process";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, serviceForTests, userForJwt } from "./helpers";
+
+const suite = hasSupabaseEnv ? describe : describe.skip;
+
+function dbFunctionDefinition(signature: string) {
+  const output = execFileSync(
+    "supabase",
+    [
+      "db",
+      "query",
+      "--local",
+      "--output",
+      "json",
+      `select pg_get_functiondef('${signature}'::regprocedure) as definition;`,
+    ],
+    { encoding: "utf8" },
+  );
+  const parsed = JSON.parse(output) as { rows?: Array<{ definition: string }> };
+  return parsed.rows?.[0]?.definition ?? "";
+}
+
+suite("creator profile media schema and RLS", () => {
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  it("lets a creator CRUD only their own portfolio links", async () => {
+    const c1 = await makeCreator("profile-media-rls-1@test.local");
+    const c2 = await makeCreator("profile-media-rls-2@test.local");
+    const user1 = userForJwt(c1.jwt);
+    const user2 = userForJwt(c2.jwt);
+
+    const { data: own, error: insertErr } = await user1
+      .from("creator_portfolio_links")
+      .insert({
+        creator_id: c1.userId,
+        workspace_id: DEMO_WS,
+        url: "https://example.com/work",
+        title: "Launch reel",
+        platform_type: "instagram",
+        caption: "Beauty launch",
+        sort_order: 10,
+        public_highlight: true,
+      })
+      .select("id, creator_id, title, public_highlight")
+      .single();
+
+    expect(insertErr).toBeNull();
+    expect(own).toMatchObject({ creator_id: c1.userId, title: "Launch reel", public_highlight: true });
+
+    const { data: visibleToOwner, error: ownerReadErr } = await user1
+      .from("creator_portfolio_links")
+      .select("id, title");
+    expect(ownerReadErr).toBeNull();
+    expect(visibleToOwner).toHaveLength(1);
+
+    const { data: visibleToOther, error: otherReadErr } = await user2
+      .from("creator_portfolio_links")
+      .select("id, title");
+    expect(otherReadErr).toBeNull();
+    expect(visibleToOther).toEqual([]);
+
+    const { error: otherUpdateErr } = await user2
+      .from("creator_portfolio_links")
+      .update({ title: "Cross-tenant edit" })
+      .eq("id", own!.id);
+    expect(otherUpdateErr).toBeNull();
+
+    const { data: afterBlockedUpdate, error: reloadErr } = await user1
+      .from("creator_portfolio_links")
+      .select("title")
+      .eq("id", own!.id)
+      .single();
+    expect(reloadErr).toBeNull();
+    expect(afterBlockedUpdate).toEqual({ title: "Launch reel" });
+  });
+
+  it("enforces at most three public highlights per creator", async () => {
+    const creator = await makeCreator("profile-media-highlight-cap@test.local");
+    const svc = serviceForTests();
+
+    const rows = [1, 2, 3].map((n) => ({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: `https://example.com/work-${n}`,
+      title: `Work ${n}`,
+      platform_type: "website",
+      sort_order: n,
+      public_highlight: true,
+    }));
+
+    const { error: firstErr } = await svc.from("creator_portfolio_links").insert(rows);
+    expect(firstErr).toBeNull();
+
+    const { error: fourthErr } = await svc.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://example.com/work-4",
+      title: "Work 4",
+      platform_type: "website",
+      sort_order: 4,
+      public_highlight: true,
+    });
+
+    expect(fourthErr).not.toBeNull();
+    expect(fourthErr?.message).toContain("creator_portfolio_links highlight limit exceeded");
+  });
+
+  it("rejects malformed portfolio URLs on direct writes", async () => {
+    const creator = await makeCreator("profile-media-bad-url@test.local");
+    const user = userForJwt(creator.jwt);
+
+    const { error: malformedErr } = await user.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://",
+      title: "Broken URL",
+      platform_type: "website",
+      public_highlight: false,
+    });
+    expect(malformedErr).not.toBeNull();
+
+    const { error: validErr } = await user.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://example.com/path",
+      title: "Valid URL",
+      platform_type: "website",
+      public_highlight: false,
+    });
+    expect(validErr).toBeNull();
+  });
+
+  it("serializes highlight-cap checks behind an advisory transaction lock", () => {
+    const definition = dbFunctionDefinition("private.enforce_creator_portfolio_highlight_limit()");
+
+    expect(definition).toContain("pg_advisory_xact_lock");
+    expect(definition).toContain("private.uuid_lock_key");
+  });
+
+  it("keeps public profile snapshots service-owned and public-safe", async () => {
+    const creator = await makeCreator("profile-media-snapshot@test.local");
+    const svc = serviceForTests();
+    const user = userForJwt(creator.jwt);
+
+    const { error: directInsertErr } = await user.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [],
+      published_by: creator.userId,
+    });
+    expect(directInsertErr).not.toBeNull();
+
+    const { error: serviceInsertErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        { url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1 },
+        { url: "https://example.com/2", title: "Two", platform_type: "website", caption: null, sort_order: 2 },
+        { url: "https://example.com/3", title: "Three", platform_type: "website", caption: null, sort_order: 3 },
+      ],
+      published_by: creator.userId,
+    });
+    expect(serviceInsertErr).toBeNull();
+
+    const { error: privateKeyErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        {
+          url: "https://example.com/private",
+          title: "Private metrics leak",
+          platform_type: "website",
+          caption: null,
+          sort_order: 1,
+          follower_count: 999999,
+        },
+      ],
+      published_by: creator.userId,
+    });
+    expect(privateKeyErr).not.toBeNull();
+
+    const { error: invalidShapeErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        {
+          url: "ftp://example.com/not-public-safe",
+          title: " ",
+          platform_type: "myspace",
+          caption: { nested: true },
+          sort_order: "first",
+        },
+      ],
+      published_by: creator.userId,
+    });
+    expect(invalidShapeErr).not.toBeNull();
+
+    const { error: tooManyErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        { url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1 },
+        { url: "https://example.com/2", title: "Two", platform_type: "website", caption: null, sort_order: 2 },
+        { url: "https://example.com/3", title: "Three", platform_type: "website", caption: null, sort_order: 3 },
+        { url: "https://example.com/4", title: "Four", platform_type: "website", caption: null, sort_order: 4 },
+      ],
+      published_by: creator.userId,
+    });
+    expect(tooManyErr).not.toBeNull();
+  });
+
+  it("rejects non-integer sort_order values in public snapshots", async () => {
+    const creator = await makeCreator("profile-media-snapshot-sort-order@test.local");
+    const svc = serviceForTests();
+
+    const { error: decimalInsertErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [{ url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1.5 }],
+      published_by: creator.userId,
+    });
+    expect(decimalInsertErr).not.toBeNull();
+
+    const { error: validInsertErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [{ url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(validInsertErr).toBeNull();
+
+    const { error: decimalUpsertErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [
+        { url: "https://example.com/2", title: "Two", platform_type: "website", caption: null, sort_order: 2 },
+        { url: "https://example.com/3", title: "Three", platform_type: "website", caption: null, sort_order: 1.5 },
+      ],
+      published_by: creator.userId,
+    });
+    expect(decimalUpsertErr).not.toBeNull();
+  });
+
+  it("rejects malformed snapshot highlight URLs", async () => {
+    const creator = await makeCreator("profile-media-snapshot-bad-url@test.local");
+    const svc = serviceForTests();
+
+    const { error: malformedErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [{ url: "https://", title: "Broken", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(malformedErr).not.toBeNull();
+
+    const { error: validErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [{ url: "https://example.com/work", title: "Valid", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(validErr).toBeNull();
+  });
+
+  it("creates the public creator avatar storage bucket with upload limits", async () => {
+    const svc = serviceForTests();
+    const { data, error } = await svc.storage.getBucket("creator-avatars");
+
+    expect(error).toBeNull();
+    expect(data).toMatchObject({
+      id: "creator-avatars",
+      public: true,
+      file_size_limit: 5_242_880,
+      allowed_mime_types: ["image/jpeg", "image/png", "image/webp"],
+    });
+  });
+
+  it("allows uploads only inside the creator's own avatar prefix", async () => {
+    const creator = await makeCreator("profile-media-storage-1@test.local");
+    const otherCreator = await makeCreator("profile-media-storage-2@test.local");
+    const user = userForJwt(creator.jwt);
+    const pngBytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+    const ownPath = `${creator.userId}/own-prefix-${Date.now()}.png`;
+    const crossPath = `${otherCreator.userId}/cross-prefix-${Date.now()}.png`;
+
+    const { error: ownUploadErr } = await user.storage.from("creator-avatars").upload(ownPath, pngBytes, {
+      contentType: "image/png",
+      upsert: false,
+    });
+    expect(ownUploadErr).toBeNull();
+
+    const { error: crossUploadErr } = await user.storage.from("creator-avatars").upload(crossPath, pngBytes, {
+      contentType: "image/png",
+      upsert: false,
+    });
+    expect(crossUploadErr).not.toBeNull();
+  });
+});

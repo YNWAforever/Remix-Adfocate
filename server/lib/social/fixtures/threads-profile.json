@@ -1,0 +1,26 @@
+{
+  "data": {
+    "username": "ming",
+    "bio": "Threads-first creator",
+    "followers": 8800,
+    "following": 155,
+    "posts_count": 28,
+    "profile_pic_url": "https://cdn.example.com/threads/ming.jpg",
+    "threads": [
+      {
+        "id": "th-1",
+        "like_count": 180,
+        "reply_count": 25,
+        "posted_at": "2026-06-16T09:00:00.000Z",
+        "text": "fresh skincare launch"
+      },
+      {
+        "id": "th-2",
+        "like_count": 140,
+        "reply_count": 15,
+        "posted_at": "2026-06-13T09:00:00.000Z",
+        "text": "creator notes on engagement"
+      }
+    ]
+  }
+}

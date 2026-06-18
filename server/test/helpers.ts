@@ -14,9 +14,32 @@ export const hasSupabaseEnv =
 
 // Lazy so merely importing this module never constructs a client with an invalid URL.
 let _service: SupabaseClient | null = null;
+let clientSequence = 0;
+
+function nextClientOptions(jwt?: string) {
+  clientSequence += 1;
+  return {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      storageKey: `test-auth-${clientSequence}`,
+    },
+    global: jwt ? { headers: { Authorization: `Bearer ${jwt}` } } : undefined,
+  };
+}
+
 function service(): SupabaseClient {
-  if (!_service) _service = createClient(url, serviceKey, { auth: { persistSession: false } });
+  if (!_service) _service = createClient(url, serviceKey, nextClientOptions());
   return _service;
+}
+
+export function serviceForTests(): SupabaseClient {
+  return service();
+}
+
+export function userForJwt(jwt: string): SupabaseClient {
+  return createClient(url, anonKey, nextClientOptions(jwt));
 }
 
 export const DEMO_WS = "00000000-0000-0000-0000-0000000000aa";
@@ -33,7 +56,7 @@ export async function makeCreator(email: string, balance = 0) {
   await service().from("point_balances").insert({ creator_id: userId, workspace_id: DEMO_WS, balance });
   await service().from("earnings_balances").insert({ creator_id: userId, workspace_id: DEMO_WS, available: 0 });
 
-  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  const anon = createClient(url, anonKey, nextClientOptions());
   const { data: session, error: signErr } = await anon.auth.signInWithPassword({
     email, password: "test-pw-123456",
   });
@@ -44,7 +67,7 @@ export async function makeCreator(email: string, balance = 0) {
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
-  const anon = createClient(url, anonKey, { auth: { persistSession: false } });
+  const anon = createClient(url, anonKey, nextClientOptions());
   if (opts.email) {
     const password = "test-pw-123456";
     const { data: created, error } = await service().auth.admin.createUser({
@@ -189,6 +212,25 @@ export async function cleanup() {
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
+  if (ids.length) {
+    await service().from("operator_audit_events").delete().in("creator_id", ids);
+    await service().from("creator_review_notes").delete().in("creator_id", ids);
+    await service().from("creator_review_statuses").delete().in("creator_id", ids);
+    await service().from("mission_shortlists").delete().in("creator_id", ids);
+    await service().from("creator_public_passports").delete().in("creator_id", ids);
+    await service().from("creator_public_profile_snapshots").delete().in("creator_id", ids);
+    await service().from("creator_portfolio_links").delete().in("creator_id", ids);
+    await service().from("creator_social_accounts").delete().in("creator_id", ids);
+    for (const id of ids) {
+      const { data: objects } = await service().storage.from("creator-avatars").list(id, { limit: 100 });
+      if (objects?.length) {
+        await service()
+          .storage
+          .from("creator-avatars")
+          .remove(objects.map((object) => `${id}/${object.name}`));
+      }
+    }
+  }
   // Null any inbound referral inside the test set so deleting a referred creator never
   // trips the referred_by FK (creators.referred_by → creators.id, no ON DELETE clause).
   if (ids.length) await service().from("creators").update({ referred_by: null }).in("id", ids);
@@ -204,6 +246,8 @@ export async function cleanup() {
   // Test missions (slug "test-%") and any leftover submissions on them.
   const testMissions = await service().from("missions").select("id").like("slug", "test-%");
   for (const m of testMissions.data ?? []) {
+    await service().from("operator_audit_events").delete().eq("mission_id", m.id);
+    await service().from("mission_shortlists").delete().eq("mission_id", m.id);
     await service().from("mission_submissions").delete().eq("mission_id", m.id);
     await service().from("missions").delete().eq("id", m.id);
   }
