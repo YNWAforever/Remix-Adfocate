@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MissionShortlistPanel } from "@/components/operator/MissionShortlistPanel";
 import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
@@ -16,17 +16,12 @@ export const Route = createFileRoute("/operator/missions/$missionId")({
   component: OperatorMissionShortlistRoute,
 });
 
-const reviewOrder: Record<AdminReviewStatus, number> = {
-  approved: 0,
-  needs_review: 1,
-  flagged: 2,
-};
-
 function OperatorMissionShortlistRoute() {
   const { missionId } = Route.useParams();
   const [secret, setSecret] = useState<string | null>(getAdminSecret());
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
   const queryClient = useQueryClient();
+  const selectedStatus = status === "all" ? undefined : status;
 
   const shortlist = useQuery({
     queryKey: ["admin-mission-shortlist", missionId],
@@ -36,19 +31,18 @@ function OperatorMissionShortlistRoute() {
   });
 
   const queue = useQuery({
-    queryKey: ["admin-creators-review", { missionId }],
+    queryKey: ["admin-creators-review", { missionId, status: selectedStatus }],
     enabled: !!secret,
     retry: false,
-    queryFn: () => fetchCreatorReviewQueue({ missionId, page: 1, pageSize: 25, sort: "last_activity" }),
+    queryFn: () =>
+      fetchCreatorReviewQueue({
+        missionId,
+        status: selectedStatus,
+        page: 1,
+        pageSize: 25,
+        sort: "last_activity",
+      }),
   });
-
-  const visibleCreators = useMemo(() => {
-    const rows = [...(queue.data?.creators ?? [])].sort((a, b) => reviewOrder[a.review.status] - reviewOrder[b.review.status]);
-    if (status === "all") {
-      return rows.filter((creator) => creator.review.status !== "flagged");
-    }
-    return rows.filter((creator) => creator.review.status === status);
-  }, [queue.data?.creators, status]);
 
   return (
     <OperatorAuthGate error={shortlist.error ?? queue.error} onSecretChange={setSecret}>
@@ -103,12 +97,12 @@ function OperatorMissionShortlistRoute() {
           </div>
 
           {queue.isLoading ? <p className="text-sm">載入中…</p> : null}
-          {!queue.isLoading && visibleCreators.length === 0 ? (
+          {!queue.isLoading && (queue.data?.creators.length ?? 0) === 0 ? (
             <p className="text-sm text-[var(--color-soft-ink)]">No creators match this mission queue view.</p>
           ) : null}
 
           <div className="space-y-3">
-            {visibleCreators.map((creator) => (
+            {queue.data?.creators.map((creator) => (
               <CreatorReviewRow
                 key={creator.id}
                 creator={creator}

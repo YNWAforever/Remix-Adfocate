@@ -77,87 +77,106 @@ describe("operator mission shortlist page", () => {
     );
   });
 
-  it("shows approved creators first and hides flagged creators unless flagged is selected", async () => {
-    hoisted.fetchCreatorReviewQueue.mockResolvedValue({
-      creators: [
-        {
-          id: "approved-1",
-          displayName: "Approved Ada",
-          avatarUrl: null,
-          level: "L3",
-          categories: ["beauty"],
-          scores: { influence: 90, content: 88, reliability: 86, brandSafety: 92 },
-          social: {
-            platforms: ["instagram"],
-            syncStatus: "synced",
-            followerCount: 50000,
-            engagementRate: 4.2,
-            apiSyncedAt: "2026-06-18T02:00:00.000Z",
-            label: "API-synced",
-            ownershipLabel: "Ownership not verified",
+  it("uses backend mission status filtering when flagged is selected", async () => {
+    hoisted.fetchCreatorReviewQueue
+      .mockResolvedValueOnce({
+        creators: [
+          {
+            id: "approved-1",
+            displayName: "Approved Ada",
+            avatarUrl: null,
+            level: "L3",
+            categories: ["beauty"],
+            scores: { influence: 90, content: 88, reliability: 86, brandSafety: 92 },
+            social: {
+              platforms: ["instagram"],
+              syncStatus: "synced",
+              followerCount: 50000,
+              engagementRate: 4.2,
+              apiSyncedAt: "2026-06-18T02:00:00.000Z",
+              label: "API-synced",
+              ownershipLabel: "Ownership not verified",
+            },
+            review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
+            shortlist: null,
+            lastActivityAt: "2026-06-18T02:00:00.000Z",
           },
-          review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
-          shortlist: null,
-          lastActivityAt: "2026-06-18T02:00:00.000Z",
-        },
-        {
-          id: "needs-1",
-          displayName: "Needs Nora",
-          avatarUrl: null,
-          level: "L2",
-          categories: ["ugc"],
-          scores: { influence: 72, content: 81, reliability: 75, brandSafety: 95 },
-          social: {
-            platforms: ["instagram"],
-            syncStatus: "synced",
-            followerCount: 22000,
-            engagementRate: 3.6,
-            apiSyncedAt: "2026-06-18T02:00:00.000Z",
-            label: "API-synced",
-            ownershipLabel: "Ownership not verified",
+          {
+            id: "needs-1",
+            displayName: "Needs Nora",
+            avatarUrl: null,
+            level: "L2",
+            categories: ["ugc"],
+            scores: { influence: 72, content: 81, reliability: 75, brandSafety: 95 },
+            social: {
+              platforms: ["instagram"],
+              syncStatus: "synced",
+              followerCount: 22000,
+              engagementRate: 3.6,
+              apiSyncedAt: "2026-06-18T02:00:00.000Z",
+              label: "API-synced",
+              ownershipLabel: "Ownership not verified",
+            },
+            review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
+            shortlist: null,
+            lastActivityAt: "2026-06-18T01:00:00.000Z",
           },
-          review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
-          shortlist: null,
-          lastActivityAt: "2026-06-18T01:00:00.000Z",
-        },
-        {
-          id: "flagged-1",
-          displayName: "Flagged Finn",
-          avatarUrl: null,
-          level: "L1",
-          categories: ["beauty"],
-          scores: { influence: 40, content: 42, reliability: 35, brandSafety: 22 },
-          social: {
-            platforms: ["instagram"],
-            syncStatus: "synced",
-            followerCount: 9000,
-            engagementRate: 1.1,
-            apiSyncedAt: "2026-06-18T02:00:00.000Z",
-            label: "API-synced",
-            ownershipLabel: "Ownership not verified",
+        ],
+        page: 1,
+        pageSize: 25,
+        total: 2,
+      })
+      .mockResolvedValueOnce({
+        creators: [
+          {
+            id: "flagged-1",
+            displayName: "Flagged Finn",
+            avatarUrl: null,
+            level: "L1",
+            categories: ["beauty"],
+            scores: { influence: 40, content: 42, reliability: 35, brandSafety: 22 },
+            social: {
+              platforms: ["instagram"],
+              syncStatus: "synced",
+              followerCount: 9000,
+              engagementRate: 1.1,
+              apiSyncedAt: "2026-06-18T02:00:00.000Z",
+              label: "API-synced",
+              ownershipLabel: "Ownership not verified",
+            },
+            review: { status: "flagged", riskLevel: "high", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
+            shortlist: null,
+            lastActivityAt: "2026-06-18T03:00:00.000Z",
           },
-          review: { status: "flagged", riskLevel: "high", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
-          shortlist: null,
-          lastActivityAt: "2026-06-18T03:00:00.000Z",
-        },
-      ],
-      page: 1,
-      pageSize: 25,
-      total: 3,
-    });
+        ],
+        page: 1,
+        pageSize: 25,
+        total: 1,
+      });
 
     renderRoute();
 
     expect(await screen.findByText("Approved Ada")).toBeInTheDocument();
     expect(screen.getByText("Needs Nora")).toBeInTheDocument();
     expect(screen.queryByText("Flagged Finn")).not.toBeInTheDocument();
-    expect(screen.getAllByLabelText(/Shortlist /).map((button) => button.getAttribute("aria-label"))).toEqual([
-      "Shortlist Approved Ada",
-      "Shortlist Needs Nora",
-    ]);
+    expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(1, {
+      missionId: "mission-1",
+      page: 1,
+      pageSize: 25,
+      sort: "last_activity",
+    });
 
     fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "flagged" } });
 
+    await waitFor(() =>
+      expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(2, {
+        missionId: "mission-1",
+        status: "flagged",
+        page: 1,
+        pageSize: 25,
+        sort: "last_activity",
+      }),
+    );
     expect(await screen.findByText("Flagged Finn")).toBeInTheDocument();
     expect(screen.queryByText("Approved Ada")).not.toBeInTheDocument();
   });

@@ -178,7 +178,13 @@ export function postCreatorNote(creatorId: string, body: { category: AdminNoteCa
 export function fetchMissionShortlist(missionId: string) {
   return adminFetch<{
     mission: { id: string; slug: string; title: string };
-    shortlists: Array<{ creator_id: string; status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null }>;
+    shortlists: Array<{
+      creator_id: string;
+      status: AdminShortlistStatus;
+      source: AdminShortlistSource;
+      notes: string | null;
+      creators?: { display_name?: string | null };
+    }>;
   }>(`/admin/missions/${missionId}/shortlist`);
 }
 
