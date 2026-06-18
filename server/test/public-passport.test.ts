@@ -86,6 +86,22 @@ suite("public passport privacy", () => {
       })
     ).json();
     await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
+    const svc = serviceForTests();
+    await svc.from("creator_review_statuses").insert({
+      creator_id: c.userId,
+      workspace_id: "00000000-0000-0000-0000-0000000000aa",
+      status: "flagged",
+      risk_level: "high",
+      summary: "Internal-only summary.",
+      reviewed_by: "privacy-test",
+    });
+    await svc.from("creator_review_notes").insert({
+      creator_id: c.userId,
+      workspace_id: "00000000-0000-0000-0000-0000000000aa",
+      operator_id: "privacy-test",
+      category: "brand_safety",
+      body: "Internal-only note.",
+    });
 
     const share = await req("/me/passport/share", c.jwt, { method: "POST" });
     expect(share.status).toBe(200);
@@ -104,6 +120,13 @@ suite("public passport privacy", () => {
     expect(JSON.stringify(body)).not.toContain("4.5");
     expect(JSON.stringify(body)).not.toContain("secret-post");
     expect(JSON.stringify(body)).not.toContain("private-social-avatar");
+    expect(JSON.stringify(body)).not.toContain("flagged");
+    expect(JSON.stringify(body)).not.toContain("high");
+    expect(JSON.stringify(body)).not.toContain("Internal-only summary");
+    expect(JSON.stringify(body)).not.toContain("Internal-only note");
+    expect(JSON.stringify(body)).not.toContain("creator_review");
+    expect(JSON.stringify(body)).not.toContain("mission_shortlist");
+    expect(JSON.stringify(body)).not.toContain("audit");
 
     const revoke = await req("/me/passport/share", c.jwt, { method: "DELETE" });
     expect(revoke.status).toBe(200);
