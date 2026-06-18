@@ -1,4 +1,4 @@
-import type { SocialPlatform } from "./types";
+import type { SocialPlatform } from "./types.js";
 
 export function normalizeHandle(platform: SocialPlatform, handle: string): string {
   const trimmed = handle.trim();

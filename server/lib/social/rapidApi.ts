@@ -1,4 +1,4 @@
-import { normalizeHandle, profileUrlFor } from "./normalize";
+import { normalizeHandle, profileUrlFor } from "./normalize.js";
 import {
   SocialProviderError,
   type RecentPostSummary,
