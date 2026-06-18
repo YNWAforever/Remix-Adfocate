@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AdminAuthError } from "@/lib/admin";
 
 const hoisted = vi.hoisted(() => ({
   secret: "s" as string | null,
@@ -78,7 +79,7 @@ describe("operator creator review queue", () => {
     expect(screen.getByText("needs_review")).toBeInTheDocument();
   });
 
-  it("quick-approves a creator and refetches the queue", async () => {
+  it("quick-approves a creator with the queue payload", async () => {
     hoisted.postCreatorReview.mockResolvedValue({ review: { status: "approved", riskLevel: "low" } });
     hoisted.fetchCreatorReviewQueue.mockReset();
     hoisted.fetchCreatorReviewQueue
@@ -99,5 +100,31 @@ describe("operator creator review queue", () => {
         summary: "Approved from creator review queue.",
       }),
     );
+  });
+
+  it("quick-flags a creator with a review note", async () => {
+    hoisted.postCreatorReview.mockResolvedValue({ review: { status: "flagged", riskLevel: "high" } });
+    renderRoute();
+    await screen.findByText("Amy Chan");
+    fireEvent.click(screen.getByLabelText("Flag Amy Chan"));
+    await waitFor(() =>
+      expect(hoisted.postCreatorReview).toHaveBeenCalledWith(
+        "creator-1",
+        expect.objectContaining({
+          status: "flagged",
+          riskLevel: "high",
+          note: expect.any(String),
+        }),
+      ),
+    );
+    const payload = hoisted.postCreatorReview.mock.calls[0]?.[1];
+    expect(payload.note).not.toHaveLength(0);
+  });
+
+  it("clears the stored secret and returns to the auth prompt on auth error", async () => {
+    hoisted.fetchCreatorReviewQueue.mockRejectedValueOnce(new AdminAuthError("unauthorized"));
+    renderRoute();
+    await waitFor(() => expect(hoisted.secret).toBeNull());
+    expect(await screen.findByPlaceholderText("ADMIN_SECRET")).toBeInTheDocument();
   });
 });

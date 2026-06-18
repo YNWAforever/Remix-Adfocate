@@ -36,7 +36,7 @@ describe("operator applications page", () => {
     expect(screen.getByPlaceholderText("ADMIN_SECRET")).toBeInTheDocument();
   });
 
-  it("lists pending applications and accepts one", async () => {
+  it("shows review and shortlist metadata and accepts an application", async () => {
     hoisted.secret = "s";
     hoisted.adminFetch.mockResolvedValueOnce({ applications: [
       {
@@ -48,13 +48,24 @@ describe("operator applications page", () => {
         creators: { display_name: "Amy" },
         missions: { slug: "m1", title: "夏日面膜", points_reward: 100 },
       },
+      {
+        id: "a2",
+        mission_id: "m2",
+        creator_id: "creator-2",
+        creator_review: { status: "approved", risk_level: "low" },
+        mission_shortlist: { status: "shortlisted" },
+        creators: { display_name: "Benny" },
+        missions: { slug: "m2", title: "防曬精華", points_reward: 120 },
+      },
     ] });
     renderOp();
     await screen.findByText("Amy");
     expect(screen.getByText("needs_review")).toBeInTheDocument();
+    expect(screen.getByText("not shortlisted")).toBeInTheDocument();
+    expect(screen.getByText("shortlisted")).toBeInTheDocument();
     hoisted.adminFetch.mockResolvedValueOnce({});
     hoisted.adminFetch.mockResolvedValueOnce({ applications: [] });
-    fireEvent.click(screen.getByLabelText("接受"));
+    fireEvent.click(screen.getAllByLabelText("接受")[0]!);
     await waitFor(() => expect(hoisted.adminFetch).toHaveBeenCalledWith("/admin/applications/a1/accept", expect.objectContaining({ method: "POST" })));
   });
 });

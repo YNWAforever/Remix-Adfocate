@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ListFilter } from "lucide-react";
 import { adminFetch, getAdminSecret } from "@/lib/admin";
 import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
-import { ReviewBadge } from "@/components/operator/OperatorBadges";
+import { ReviewBadge, ShortlistBadge } from "@/components/operator/OperatorBadges";
 
 export const Route = createFileRoute("/operator")({ component: OperatorApplications });
 
@@ -65,6 +65,13 @@ function OperatorApplications() {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-heading font-bold">{a.creators.display_name}</p>
                   {a.creator_review?.status ? <ReviewBadge status={a.creator_review.status} /> : null}
+                  {a.mission_shortlist?.status ? (
+                    <ShortlistBadge status={a.mission_shortlist.status as "shortlisted" | "invited" | "dismissed" | "accepted" | "declined"} />
+                  ) : (
+                    <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
+                      not shortlisted
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm text-[var(--color-soft-ink)]">{a.missions.title}</p>
               </div>
