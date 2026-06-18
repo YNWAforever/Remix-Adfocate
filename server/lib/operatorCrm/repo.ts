@@ -31,6 +31,7 @@ export class OperatorCrmError extends Error {
       | "creator_not_found"
       | "mission_not_found"
       | "shortlist_not_found"
+      | "workspace_mismatch"
       | "flagged_note_required"
       | "flagged_invite_blocked"
       | "db_error",
@@ -252,10 +253,21 @@ function compareNullableDesc(left: string | number | null, right: string | numbe
   return 0;
 }
 
+function compareMissionQueuePriority(left: CreatorReviewRow, right: CreatorReviewRow) {
+  const rank = (status: CreatorReviewStatus) => (status === "approved" ? 0 : 1);
+  return rank(left.review.status) - rank(right.review.status);
+}
+
 function reviewMatchesFilter(review: ReviewProjection, filters: CreatorQueueFilters) {
   if (filters.status && review.status !== filters.status) return false;
   if (filters.riskLevel && review.riskLevel !== filters.riskLevel) return false;
   return true;
+}
+
+function assertMatchingWorkspace(mission: MissionRow, creator: CreatorRow) {
+  if (mission.workspace_id !== creator.workspace_id) {
+    throw new OperatorCrmError("workspace_mismatch");
+  }
 }
 
 function normalizeShortlistRow(row: ShortlistRow) {
@@ -359,6 +371,11 @@ export async function listCreatorReviewQueue(
     .filter((row) => !(filters.missionId && !filters.status && row.review.status === "flagged"));
 
   rows.sort((left, right) => {
+    if (filters.missionId) {
+      const priority = compareMissionQueuePriority(left, right);
+      if (priority !== 0) return priority;
+    }
+
     switch (filters.sort) {
       case "trust_score":
         return compareNullableDesc(trustScore(left.scores), trustScore(right.scores));
@@ -561,6 +578,7 @@ export async function upsertMissionShortlist(
     mustGetMission(supabase, input.missionId),
     mustGetCreator(supabase, input.creatorId),
   ]);
+  assertMatchingWorkspace(mission, creator);
   const { data: review, error: reviewError } = await supabase
     .from("creator_review_statuses")
     .select(REVIEW_PROJECTION)
@@ -630,7 +648,7 @@ export async function updateMissionShortlistStatus(
     missionId: string;
     creatorId: string;
     status: MissionShortlistStatus;
-    notes: string | null;
+    notes?: string | null;
     context: OperatorContext;
   },
 ) {
@@ -654,11 +672,12 @@ export async function updateMissionShortlistStatus(
   }
 
   const existing = shortlist as ShortlistRow;
+  const notes = input.notes === undefined ? existing.notes : input.notes;
   const { data, error } = await supabase
     .from("mission_shortlists")
     .update({
       status: input.status,
-      notes: input.notes,
+      notes,
       updated_by: input.context.operatorId,
     })
     .eq("mission_id", input.missionId)

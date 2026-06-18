@@ -299,6 +299,72 @@ suite("operator CRM admin API", () => {
     });
   });
 
+  it("preserves an existing shortlist note when updating only the shortlist status", async () => {
+    const creator = await makeCreator("operator-crm-shortlist-note-preserve@test.local");
+    const mission = await makeMission({ slug: "test-operator-crm-shortlist-note-preserve" });
+
+    const created = await adminreq(`/admin/missions/${mission.id}/shortlist`, {
+      method: "POST",
+      body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "Keep this operator note." }),
+    });
+    expect(created.status).toBe(200);
+
+    const updated = await adminreq(`/admin/missions/${mission.id}/shortlist/${creator.userId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "invited" }),
+    });
+    expect(updated.status).toBe(200);
+    expect((await updated.json()).shortlist).toMatchObject({
+      mission_id: mission.id,
+      creator_id: creator.userId,
+      status: "invited",
+      notes: "Keep this operator note.",
+    });
+  });
+
+  it("rejects shortlists when the mission and creator belong to different workspaces", async () => {
+    const svc = serviceForTests();
+    const creator = await makeCreator("operator-crm-workspace-mismatch@test.local");
+    const workspaceId = "00000000-0000-0000-0000-0000000000bb";
+    const missionId = "00000000-0000-0000-0000-000000000013";
+
+    try {
+      await svc.from("workspaces").upsert({
+        id: workspaceId,
+        slug: "test-operator-crm-workspace-mismatch",
+        name: "Workspace mismatch test",
+        theme: {},
+      });
+      await svc.from("missions").insert({
+        id: missionId,
+        workspace_id: workspaceId,
+        slug: "test-operator-crm-workspace-mismatch",
+        title: "Workspace mismatch mission",
+        mission_type: "ugc",
+        access_type: "open",
+        points_reward: 100,
+        quota: 5,
+        filled: 0,
+        status: "active",
+        required_level: "L0",
+        category: "美容",
+      });
+
+      const res = await adminreq(`/admin/missions/${missionId}/shortlist`, {
+        method: "POST",
+        body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "This should be rejected." }),
+      });
+      expect(res.status).toBe(400);
+      expect((await res.json()).code).toBe("workspace_mismatch");
+    } finally {
+      await svc.from("mission_shortlists").delete().eq("mission_id", missionId);
+      await svc.from("operator_audit_events").delete().eq("mission_id", missionId);
+      await svc.from("mission_submissions").delete().eq("mission_id", missionId);
+      await svc.from("missions").delete().eq("id", missionId);
+      await svc.from("workspaces").delete().eq("id", workspaceId);
+    }
+  });
+
   it("hides flagged creators by default in a mission-scoped queue", async () => {
     const approved = await makeCreator("operator-crm-approved@test.local");
     const flagged = await makeCreator("operator-crm-hidden-flagged@test.local");
@@ -327,5 +393,51 @@ suite("operator CRM admin API", () => {
     expect(flaggedRes.status).toBe(200);
     const flaggedIds = (await flaggedRes.json()).creators.map((row: { id: string }) => row.id);
     expect(flaggedIds).toContain(flagged.userId);
+  });
+
+  it("keeps approved creators first in mission queues before applying the secondary sort", async () => {
+    const approved = await makeCreator("operator-crm-queue-approved-first@test.local");
+    const needsReview = await makeCreator("operator-crm-queue-needs-review@test.local");
+    const mission = await makeMission({ slug: "test-operator-crm-approved-first" });
+    const svc = serviceForTests();
+
+    await adminreq(`/admin/creators/${approved.userId}/review`, {
+      method: "POST",
+      body: JSON.stringify({ status: "approved", risk_level: "low", summary: "Approved for mission queue ordering." }),
+    });
+
+    await svc.from("creator_social_accounts").insert([
+      {
+        creator_id: approved.userId,
+        workspace_id: DEMO_WS,
+        platform: "instagram",
+        handle: "approvedfirst",
+        sync_status: "synced",
+        follower_count: 20000,
+        engagement_rate: 4.1,
+        api_synced_at: "2026-06-18T01:00:00.000Z",
+      },
+      {
+        creator_id: needsReview.userId,
+        workspace_id: DEMO_WS,
+        platform: "instagram",
+        handle: "needsfirst",
+        sync_status: "synced",
+        follower_count: 18000,
+        engagement_rate: 3.9,
+        api_synced_at: "2026-06-18T03:00:00.000Z",
+      },
+    ]);
+
+    const res = await adminreq(`/admin/creators/review?mission_id=${mission.id}&sort=social_freshness`);
+    expect(res.status).toBe(200);
+
+    const ids = (await res.json()).creators.map((row: { id: string }) => row.id);
+    const approvedIndex = ids.indexOf(approved.userId);
+    const needsReviewIndex = ids.indexOf(needsReview.userId);
+
+    expect(approvedIndex).toBeGreaterThanOrEqual(0);
+    expect(needsReviewIndex).toBeGreaterThanOrEqual(0);
+    expect(approvedIndex).toBeLessThan(needsReviewIndex);
   });
 });

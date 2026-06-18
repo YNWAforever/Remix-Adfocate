@@ -172,6 +172,7 @@ adminOperatorCrmRoutes.patch("/missions/:missionId/shortlist/:creatorId", async 
     .json<{ status?: unknown; notes?: unknown }>()
     .catch(() => ({}) as { status?: unknown; notes?: unknown });
   const status = parseShortlistStatus(body.status);
+  const hasNotes = Object.prototype.hasOwnProperty.call(body, "notes");
 
   if (!status) return c.json({ error: "Invalid shortlist status", code: "bad_shortlist_status" }, 400);
 
@@ -181,7 +182,7 @@ adminOperatorCrmRoutes.patch("/missions/:missionId/shortlist/:creatorId", async 
         missionId: c.req.param("missionId"),
         creatorId: c.req.param("creatorId"),
         status,
-        notes: nonEmptyText(body.notes),
+        ...(hasNotes ? { notes: nonEmptyText(body.notes) } : {}),
         context: operatorContext(c),
       }),
     });
