@@ -1,7 +1,25 @@
+import { execFileSync } from "node:child_process";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, serviceForTests, userForJwt } from "./helpers";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
+
+function dbFunctionDefinition(signature: string) {
+  const output = execFileSync(
+    "supabase",
+    [
+      "db",
+      "query",
+      "--local",
+      "--output",
+      "json",
+      `select pg_get_functiondef('${signature}'::regprocedure) as definition;`,
+    ],
+    { encoding: "utf8" },
+  );
+  const parsed = JSON.parse(output) as { rows?: Array<{ definition: string }> };
+  return parsed.rows?.[0]?.definition ?? "";
+}
 
 suite("creator profile media schema and RLS", () => {
   beforeAll(cleanup);
@@ -89,7 +107,14 @@ suite("creator profile media schema and RLS", () => {
     expect(fourthErr?.message).toContain("creator_portfolio_links highlight limit exceeded");
   });
 
-  it("keeps public profile snapshots service-owned and bounded", async () => {
+  it("serializes highlight-cap checks behind an advisory transaction lock", () => {
+    const definition = dbFunctionDefinition("private.enforce_creator_portfolio_highlight_limit()");
+
+    expect(definition).toContain("pg_advisory_xact_lock");
+    expect(definition).toContain("private.uuid_lock_key");
+  });
+
+  it("keeps public profile snapshots service-owned and public-safe", async () => {
     const creator = await makeCreator("profile-media-snapshot@test.local");
     const svc = serviceForTests();
     const user = userForJwt(creator.jwt);
@@ -115,6 +140,41 @@ suite("creator profile media schema and RLS", () => {
       published_by: creator.userId,
     });
     expect(serviceInsertErr).toBeNull();
+
+    const { error: privateKeyErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        {
+          url: "https://example.com/private",
+          title: "Private metrics leak",
+          platform_type: "website",
+          caption: null,
+          sort_order: 1,
+          follower_count: 999999,
+        },
+      ],
+      published_by: creator.userId,
+    });
+    expect(privateKeyErr).not.toBeNull();
+
+    const { error: invalidShapeErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [
+        {
+          url: "ftp://example.com/not-public-safe",
+          title: " ",
+          platform_type: "myspace",
+          caption: { nested: true },
+          sort_order: "first",
+        },
+      ],
+      published_by: creator.userId,
+    });
+    expect(invalidShapeErr).not.toBeNull();
 
     const { error: tooManyErr } = await svc.from("creator_public_profile_snapshots").upsert({
       creator_id: creator.userId,
@@ -142,5 +202,26 @@ suite("creator profile media schema and RLS", () => {
       file_size_limit: 5_242_880,
       allowed_mime_types: ["image/jpeg", "image/png", "image/webp"],
     });
+  });
+
+  it("allows uploads only inside the creator's own avatar prefix", async () => {
+    const creator = await makeCreator("profile-media-storage-1@test.local");
+    const otherCreator = await makeCreator("profile-media-storage-2@test.local");
+    const user = userForJwt(creator.jwt);
+    const pngBytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+    const ownPath = `${creator.userId}/own-prefix-${Date.now()}.png`;
+    const crossPath = `${otherCreator.userId}/cross-prefix-${Date.now()}.png`;
+
+    const { error: ownUploadErr } = await user.storage.from("creator-avatars").upload(ownPath, pngBytes, {
+      contentType: "image/png",
+      upsert: false,
+    });
+    expect(ownUploadErr).toBeNull();
+
+    const { error: crossUploadErr } = await user.storage.from("creator-avatars").upload(crossPath, pngBytes, {
+      contentType: "image/png",
+      upsert: false,
+    });
+    expect(crossUploadErr).not.toBeNull();
   });
 });

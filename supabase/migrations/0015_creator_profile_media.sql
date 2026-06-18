@@ -62,6 +62,81 @@ begin
 end;
 $$;
 
+create or replace function private.uuid_lock_key(value uuid)
+returns integer
+language sql
+immutable
+strict
+set search_path = pg_catalog
+as $$
+  select
+    ((get_byte(uuid_send(value), 0)::int << 24)
+      | (get_byte(uuid_send(value), 1)::int << 16)
+      | (get_byte(uuid_send(value), 2)::int << 8)
+      | get_byte(uuid_send(value), 3)::int)
+    # ((get_byte(uuid_send(value), 4)::int << 24)
+      | (get_byte(uuid_send(value), 5)::int << 16)
+      | (get_byte(uuid_send(value), 6)::int << 8)
+      | get_byte(uuid_send(value), 7)::int)
+    # ((get_byte(uuid_send(value), 8)::int << 24)
+      | (get_byte(uuid_send(value), 9)::int << 16)
+      | (get_byte(uuid_send(value), 10)::int << 8)
+      | get_byte(uuid_send(value), 11)::int)
+    # ((get_byte(uuid_send(value), 12)::int << 24)
+      | (get_byte(uuid_send(value), 13)::int << 16)
+      | (get_byte(uuid_send(value), 14)::int << 8)
+      | get_byte(uuid_send(value), 15)::int);
+$$;
+
+create or replace function private.is_valid_public_profile_highlights(value jsonb)
+returns boolean
+language sql
+immutable
+strict
+set search_path = pg_catalog
+as $$
+  select
+    jsonb_typeof(value) = 'array'
+    and jsonb_array_length(value) <= 3
+    and not exists (
+      select 1
+      from jsonb_array_elements(value) as elem
+      where jsonb_typeof(elem) <> 'object'
+        or not (
+          elem ? 'url'
+          and elem ? 'title'
+          and elem ? 'platform_type'
+          and elem ? 'caption'
+          and elem ? 'sort_order'
+        )
+        or exists (
+          select 1
+          from jsonb_object_keys(elem) as key_name
+          where key_name not in ('url', 'title', 'platform_type', 'caption', 'sort_order')
+        )
+        or jsonb_typeof(elem -> 'url') <> 'string'
+        or (elem ->> 'url') !~* '^https?://'
+        or jsonb_typeof(elem -> 'title') <> 'string'
+        or btrim(elem ->> 'title') = ''
+        or jsonb_typeof(elem -> 'platform_type') <> 'string'
+        or (elem ->> 'platform_type') not in (
+          'instagram',
+          'threads',
+          'tiktok',
+          'youtube',
+          'website',
+          'case_study',
+          'other'
+        )
+        or coalesce(jsonb_typeof(elem -> 'caption'), 'null') not in ('string', 'null')
+        or jsonb_typeof(elem -> 'sort_order') <> 'number'
+    );
+$$;
+
+alter table public.creator_public_profile_snapshots
+  add constraint creator_public_profile_snapshots_highlights_public_shape_check
+  check (private.is_valid_public_profile_highlights(highlights));
+
 create trigger creator_portfolio_links_set_updated_at
   before update on public.creator_portfolio_links
   for each row execute function private.touch_creator_profile_media_updated_at();
@@ -79,6 +154,11 @@ declare
   v_count integer;
 begin
   if new.public_highlight then
+    perform pg_advisory_xact_lock(
+      private.uuid_lock_key(new.workspace_id),
+      private.uuid_lock_key(new.creator_id)
+    );
+
     select count(*)
       into v_count
       from public.creator_portfolio_links
