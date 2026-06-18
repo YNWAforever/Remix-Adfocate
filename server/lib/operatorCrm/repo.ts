@@ -512,14 +512,6 @@ export async function upsertMissionShortlist(
     mustGetMission(supabase, input.missionId),
     mustGetCreator(supabase, input.creatorId),
   ]);
-  const { data: existing, error: existingError } = await supabase
-    .from("mission_shortlists")
-    .select(SHORTLIST_PROJECTION)
-    .eq("mission_id", input.missionId)
-    .eq("creator_id", input.creatorId)
-    .maybeSingle();
-  if (existingError) failDb(existingError);
-
   const { data: review, error: reviewError } = await supabase
     .from("creator_review_statuses")
     .select(REVIEW_PROJECTION)
@@ -531,40 +523,48 @@ export async function upsertMissionShortlist(
     throw new OperatorCrmError("flagged_note_required");
   }
 
-  const shortlistWrite = existing
-    ? supabase
-        .from("mission_shortlists")
-        .update({
-          status: "shortlisted",
-          source: input.source,
-          notes: input.notes,
-          updated_by: input.context.operatorId,
-        })
-        .eq("mission_id", input.missionId)
-        .eq("creator_id", input.creatorId)
-        .select(SHORTLIST_PROJECTION)
-        .single()
-    : supabase
-        .from("mission_shortlists")
-        .insert({
-          mission_id: input.missionId,
-          creator_id: input.creatorId,
-          workspace_id: mission.workspace_id,
-          status: "shortlisted",
-          source: input.source,
-          notes: input.notes,
-          created_by: input.context.operatorId,
-          updated_by: input.context.operatorId,
-        })
-        .select(SHORTLIST_PROJECTION)
-        .single();
-  const { data, error } = await shortlistWrite;
-  if (error) failDb(error);
+  const insertAttempt = await supabase
+    .from("mission_shortlists")
+    .insert({
+      mission_id: input.missionId,
+      creator_id: input.creatorId,
+      workspace_id: mission.workspace_id,
+      status: "shortlisted",
+      source: input.source,
+      notes: input.notes,
+      created_by: input.context.operatorId,
+      updated_by: input.context.operatorId,
+    })
+    .select(SHORTLIST_PROJECTION)
+    .single();
+
+  let data = insertAttempt.data as ShortlistRow | null;
+  let eventType: "mission_shortlist.created" | "mission_shortlist.updated" = "mission_shortlist.created";
+
+  if (insertAttempt.error) {
+    if (insertAttempt.error.code !== "23505") failDb(insertAttempt.error);
+
+    const updateAttempt = await supabase
+      .from("mission_shortlists")
+      .update({
+        status: "shortlisted",
+        source: input.source,
+        notes: input.notes,
+        updated_by: input.context.operatorId,
+      })
+      .eq("mission_id", input.missionId)
+      .eq("creator_id", input.creatorId)
+      .select(SHORTLIST_PROJECTION)
+      .single();
+    if (updateAttempt.error) failDb(updateAttempt.error);
+    data = updateAttempt.data as ShortlistRow;
+    eventType = "mission_shortlist.updated";
+  }
 
   await insertAuditEvent(supabase, {
     workspaceId: mission.workspace_id,
     context: input.context,
-    eventType: existing ? "mission_shortlist.updated" : "mission_shortlist.created",
+    eventType,
     targetType: "mission_shortlist",
     targetId: `${input.missionId}:${input.creatorId}`,
     creatorId: creator.id,

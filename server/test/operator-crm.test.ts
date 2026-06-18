@@ -223,6 +223,43 @@ suite("operator CRM admin API", () => {
     });
   });
 
+  it("treats concurrent first-time shortlist posts as an idempotent upsert", async () => {
+    const creator = await makeCreator("operator-crm-shortlist-race@test.local");
+    const mission = await makeMission({ slug: "test-operator-crm-shortlist-race" });
+
+    const [first, second] = await Promise.all([
+      adminreqAs(
+        `/admin/missions/${mission.id}/shortlist`,
+        { id: "operator-a", label: "Operator A" },
+        {
+          method: "POST",
+          body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "Initial shortlist." }),
+        },
+      ),
+      adminreqAs(
+        `/admin/missions/${mission.id}/shortlist`,
+        { id: "operator-b", label: "Operator B" },
+        {
+          method: "POST",
+          body: JSON.stringify({ creator_id: creator.userId, source: "match", notes: "Duplicate shortlist." }),
+        },
+      ),
+    ]);
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+
+    const svc = serviceForTests();
+    const rows = await svc
+      .from("mission_shortlists")
+      .select("created_by, updated_by, source, notes")
+      .eq("mission_id", mission.id)
+      .eq("creator_id", creator.userId);
+    expect(rows.error).toBeNull();
+    expect(rows.data).toHaveLength(1);
+    expect([rows.data?.[0].created_by, rows.data?.[0].updated_by].sort()).toEqual(["operator-a", "operator-b"]);
+  });
+
   it("creates creator notes through the admin note endpoint", async () => {
     const creator = await makeCreator("operator-crm-note-endpoint@test.local");
     const res = await adminreq(`/admin/creators/${creator.userId}/notes`, {
