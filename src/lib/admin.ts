@@ -3,6 +3,52 @@
 // the Brand Dashboard. Mirrors the x-admin-secret check in server/routes/admin.ts.
 const KEY = "adfocate_admin_secret";
 
+export type AdminReviewStatus = "needs_review" | "approved" | "flagged";
+export type AdminRiskLevel = "low" | "medium" | "high" | "unknown";
+export type AdminNoteCategory = "quality" | "brand_safety" | "fit" | "social" | "other";
+export type AdminShortlistStatus = "shortlisted" | "invited" | "dismissed" | "accepted" | "declined";
+export type AdminShortlistSource = "manual" | "applicant" | "match" | "review_queue";
+
+export type AdminReviewProjection = {
+  status: AdminReviewStatus;
+  riskLevel: AdminRiskLevel;
+  summary: string | null;
+  reviewedBy: string | null;
+  lastReviewedAt: string | null;
+  updatedAt: string | null;
+};
+
+export type AdminCreatorReviewRow = {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  level: string;
+  categories: string[];
+  scores: Record<string, number | null>;
+  social: {
+    platforms: string[];
+    syncStatus: string | null;
+    followerCount: number | null;
+    engagementRate: number | null;
+    apiSyncedAt: string | null;
+    label: "API-synced" | "Not synced";
+    ownershipLabel: "Ownership not verified";
+  };
+  review: AdminReviewProjection;
+  shortlist: { status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null; updatedAt: string } | null;
+  lastActivityAt: string | null;
+};
+
+export type CreatorReviewQueueFilters = {
+  status?: AdminReviewStatus;
+  riskLevel?: AdminRiskLevel;
+  missionId?: string;
+  q?: string;
+  page?: number;
+  pageSize?: number;
+  sort?: "last_activity" | "trust_score" | "level" | "social_freshness";
+};
+
 export function getAdminSecret(): string | null {
   return sessionStorage.getItem(KEY);
 }
@@ -34,4 +80,87 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
     throw new Error(body.error ?? res.statusText);
   }
   return res.json() as Promise<T>;
+}
+
+function queryString(filters: CreatorReviewQueueFilters) {
+  const qs = new URLSearchParams();
+  if (filters.status) qs.set("status", filters.status);
+  if (filters.riskLevel) qs.set("risk_level", filters.riskLevel);
+  if (filters.missionId) qs.set("mission_id", filters.missionId);
+  if (filters.q) qs.set("q", filters.q);
+  qs.set("page", String(filters.page ?? 1));
+  qs.set("page_size", String(filters.pageSize ?? 25));
+  qs.set("sort", filters.sort ?? "last_activity");
+  return qs.toString();
+}
+
+export function fetchCreatorReviewQueue(filters: CreatorReviewQueueFilters = {}) {
+  return adminFetch<{ creators: AdminCreatorReviewRow[]; page: number; pageSize: number; total: number }>(
+    `/admin/creators/review?${queryString(filters)}`,
+  );
+}
+
+export function fetchCreatorDetail(creatorId: string) {
+  return adminFetch<{
+    creator: AdminCreatorReviewRow;
+    social: AdminCreatorReviewRow["social"];
+    review: AdminReviewProjection;
+    notes: Array<{ id: string; category: AdminNoteCategory; body: string; operator_id: string; created_at: string }>;
+    missionHistory: Array<Record<string, unknown>>;
+    shortlists: Array<Record<string, unknown>>;
+    audit: Array<Record<string, unknown>>;
+  }>(`/admin/creators/${creatorId}`);
+}
+
+export function postCreatorReview(
+  creatorId: string,
+  body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string },
+) {
+  return adminFetch<{ review: AdminReviewProjection }>(`/admin/creators/${creatorId}/review`, {
+    method: "POST",
+    body: JSON.stringify({
+      status: body.status,
+      risk_level: body.riskLevel,
+      summary: body.summary,
+      note: body.note,
+    }),
+  });
+}
+
+export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string }) {
+  return adminFetch<{ note: { id: string; category: AdminNoteCategory; body: string; created_at: string } }>(
+    `/admin/creators/${creatorId}/notes`,
+    { method: "POST", body: JSON.stringify(body) },
+  );
+}
+
+export function fetchMissionShortlist(missionId: string) {
+  return adminFetch<{
+    mission: { id: string; slug: string; title: string };
+    shortlist: Array<{ creator_id: string; status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null }>;
+  }>(`/admin/missions/${missionId}/shortlist`);
+}
+
+export function postMissionShortlist(
+  missionId: string,
+  body: { creatorId: string; source: AdminShortlistSource; notes?: string },
+) {
+  return adminFetch<{ shortlist: { creator_id: string; status: AdminShortlistStatus } }>(
+    `/admin/missions/${missionId}/shortlist`,
+    {
+      method: "POST",
+      body: JSON.stringify({ creator_id: body.creatorId, source: body.source, notes: body.notes }),
+    },
+  );
+}
+
+export function patchMissionShortlist(
+  missionId: string,
+  creatorId: string,
+  body: { status: AdminShortlistStatus; notes?: string },
+) {
+  return adminFetch<{ shortlist: { creator_id: string; status: AdminShortlistStatus } }>(
+    `/admin/missions/${missionId}/shortlist/${creatorId}`,
+    { method: "PATCH", body: JSON.stringify(body) },
+  );
 }
