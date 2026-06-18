@@ -87,6 +87,38 @@ export type PublicProfileHighlight = {
   caption: string | null;
   sort_order: number;
 };
+export type PortfolioPlatformType = "instagram" | "threads" | "tiktok" | "youtube" | "website" | "case_study" | "other";
+export type ProfileMediaLink = {
+  id: string;
+  creatorId: string;
+  workspaceId: string;
+  url: string;
+  title: string;
+  platformType: PortfolioPlatformType;
+  caption: string | null;
+  sortOrder: number;
+  publicHighlight: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+export type ProfileCompleteness = {
+  score: number;
+  items: Array<{ key: string; label: string; complete: boolean }>;
+};
+export type CreatorProfileMedia = {
+  avatarUrl: string | null;
+  portfolioLinks: ProfileMediaLink[];
+  publicHighlights: PublicProfileHighlight[];
+  published: { avatarUrl: string | null; highlights: PublicProfileHighlight[]; publishedAt: string | null };
+  completeness: ProfileCompleteness;
+};
+export type AvatarUploadMetadata = {
+  bucket: "creator-avatars";
+  path: string;
+  publicUrl: string;
+  contentType: "image/jpeg" | "image/png" | "image/webp";
+  maxSizeBytes: number;
+};
 export type PublicPassport = {
   creator: { displayName: string; avatarUrl: string | null; level: string; xp: number };
   scores: Passport["scores"];
@@ -232,6 +264,79 @@ export function usePublicPassport(token: string) {
     queryKey: ["public-passport", token],
     queryFn: () => apiFetch<PublicPassport>(`/public/passports/${token}`),
     enabled: Boolean(token),
+  });
+}
+
+export function useProfileMedia() {
+  return useQuery({ queryKey: ["profile-media"], queryFn: () => apiFetch<CreatorProfileMedia>("/me/profile-media") });
+}
+
+export function useCreateAvatarUpload() {
+  return useMutation({
+    mutationFn: (body: { fileName: string; contentType: string; sizeBytes: number }) =>
+      apiFetch<AvatarUploadMetadata>("/me/profile-media/avatar-upload", { method: "POST", body: JSON.stringify(body) }),
+  });
+}
+
+export function useSelectUploadedAvatar() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (storagePath: string) =>
+      apiFetch<{ avatarUrl: string }>("/me/profile-media/avatar-select", {
+        method: "POST",
+        body: JSON.stringify({ storagePath }),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["profile-media"] });
+      qc.invalidateQueries({ queryKey: ["passport"] });
+    },
+  });
+}
+
+export function useCreatePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: {
+      url: string;
+      title: string;
+      platform_type: PortfolioPlatformType;
+      caption?: string;
+      sort_order?: number;
+      public_highlight?: boolean;
+    }) => apiFetch<{ link: ProfileMediaLink }>("/me/profile-media/portfolio", { method: "POST", body: JSON.stringify(body) }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function useUpdatePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, patch }: { id: string; patch: Record<string, unknown> }) =>
+      apiFetch<{ link: ProfileMediaLink }>(`/me/profile-media/portfolio/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(patch),
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function useDeletePortfolioLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => apiFetch<{ deleted: boolean }>(`/me/profile-media/portfolio/${id}`, { method: "DELETE" }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["profile-media"] }),
+  });
+}
+
+export function usePublishProfileMedia() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<{ published: CreatorProfileMedia["published"] }>("/me/profile-media/publish", { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["profile-media"] });
+      qc.invalidateQueries({ queryKey: ["public-passport"] });
+    },
   });
 }
 

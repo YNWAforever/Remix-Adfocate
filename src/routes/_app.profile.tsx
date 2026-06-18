@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { CreatorProfileMediaPanel } from "@/components/CreatorProfileMediaPanel";
 import { FilterPillsMulti } from "@/components/FilterPills";
 import { SocialTrustPanel } from "@/components/SocialTrustPanel";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
@@ -161,6 +162,7 @@ function Profile() {
           </section>
 
           <SocialTrustPanel />
+          <CreatorProfileMediaPanel />
 
           <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
             <h2 className="font-heading font-bold">我的邀請碼</h2>
