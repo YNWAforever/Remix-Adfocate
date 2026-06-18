@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ExternalLink, Star, Trash2, Upload } from "lucide-react";
+import { ExternalLink, Pencil, Star, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
   type PortfolioPlatformType,
@@ -35,6 +35,15 @@ export function CreatorProfileMediaPanel() {
   const [platformType, setPlatformType] = useState<PortfolioPlatformType>("website");
   const [caption, setCaption] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editUrl, setEditUrl] = useState("");
+  const [editPlatformType, setEditPlatformType] = useState<PortfolioPlatformType>("website");
+  const [editCaption, setEditCaption] = useState("");
+  const [editSortOrder, setEditSortOrder] = useState("0");
+  const [pendingHighlightIds, setPendingHighlightIds] = useState<string[]>([]);
+  const [savingLinkId, setSavingLinkId] = useState<string | null>(null);
+  const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
 
   async function uploadAvatar(file: File) {
     setMessage(null);
@@ -63,6 +72,80 @@ export function CreatorProfileMediaPanel() {
     setTitle("");
     setUrl("");
     setCaption("");
+  }
+
+  function beginEdit(link: (typeof media.data.portfolioLinks)[number]) {
+    setEditingId(link.id);
+    setEditTitle(link.title);
+    setEditUrl(link.url);
+    setEditPlatformType(link.platformType);
+    setEditCaption(link.caption ?? "");
+    setEditSortOrder(String(link.sortOrder));
+    setMessage(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditTitle("");
+    setEditUrl("");
+    setEditPlatformType("website");
+    setEditCaption("");
+    setEditSortOrder("0");
+  }
+
+  async function saveEdit(linkId: string) {
+    setMessage(null);
+    setSavingLinkId(linkId);
+    try {
+      await updateLink.mutateAsync({
+        id: linkId,
+        patch: {
+          title: editTitle.trim(),
+          url: editUrl.trim(),
+          platform_type: editPlatformType,
+          caption: editCaption.trim(),
+          sort_order: Number.parseInt(editSortOrder, 10) || 0,
+        },
+      });
+      cancelEdit();
+    } finally {
+      setSavingLinkId(null);
+    }
+  }
+
+  async function toggleHighlight(link: (typeof media.data.portfolioLinks)[number]) {
+    const isEnabling = !link.publicHighlight;
+    if (isEnabling && selectedHighlights + pendingHighlightIds.length >= 3) {
+      setMessage("公開精選最多 3 個");
+      return;
+    }
+
+    if (isEnabling) {
+      setPendingHighlightIds((current) => (current.includes(link.id) ? current : [...current, link.id]));
+    }
+
+    try {
+      await updateLink.mutateAsync({ id: link.id, patch: { public_highlight: !link.publicHighlight } });
+      setMessage(null);
+    } catch {
+      setMessage("公開精選更新失敗");
+    } finally {
+      if (isEnabling) {
+        setPendingHighlightIds((current) => current.filter((id) => id !== link.id));
+      }
+    }
+  }
+
+  async function removeLink(linkId: string) {
+    setMessage(null);
+    setDeletingLinkId(linkId);
+    try {
+      await deleteLink.mutateAsync(linkId);
+    } catch {
+      setMessage("作品刪除失敗");
+    } finally {
+      setDeletingLinkId(null);
+    }
   }
 
   if (media.isLoading) {
@@ -158,7 +241,10 @@ export function CreatorProfileMediaPanel() {
 
       <div className="space-y-2">
         {media.data.portfolioLinks.map((link) => {
-          const highlightDisabled = !link.publicHighlight && selectedHighlights >= 3;
+          const pendingEnable = pendingHighlightIds.includes(link.id);
+          const effectivePublicHighlight = link.publicHighlight || pendingEnable;
+          const highlightDisabled = !link.publicHighlight && selectedHighlights + pendingHighlightIds.length >= 3 && !pendingEnable;
+          const isEditing = editingId === link.id;
           return (
             <div key={link.id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -174,29 +260,100 @@ export function CreatorProfileMediaPanel() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
+                  aria-label={`編輯作品 ${link.title}`}
+                  disabled={isEditing && savingLinkId === link.id}
+                  onClick={() => beginEdit(link)}
+                  className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
+                >
+                  <Pencil className="h-4 w-4" />
+                  編輯
+                </button>
+                <button
+                  type="button"
                   aria-label={`切換公開精選 ${link.title}`}
-                  disabled={highlightDisabled || updateLink.isPending}
-                  onClick={() =>
-                    void updateLink
-                      .mutateAsync({ id: link.id, patch: { public_highlight: !link.publicHighlight } })
-                      .catch(() => setMessage("公開精選更新失敗"))
-                  }
+                  aria-pressed={effectivePublicHighlight}
+                  disabled={highlightDisabled}
+                  onClick={() => void toggleHighlight(link)}
                   className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
                 >
                   <Star className="h-4 w-4" />
-                  {link.publicHighlight ? "公開精選" : "設為公開"}
+                  {effectivePublicHighlight ? "公開精選" : "設為公開"}
                 </button>
                 <button
                   type="button"
                   aria-label={`刪除作品 ${link.title}`}
-                  disabled={deleteLink.isPending}
-                  onClick={() => void deleteLink.mutateAsync(link.id).catch(() => setMessage("作品刪除失敗"))}
+                  disabled={deletingLinkId === link.id}
+                  onClick={() => void removeLink(link.id)}
                   className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold text-[var(--color-magenta)] disabled:opacity-50"
                 >
                   <Trash2 className="h-4 w-4" />
                   刪除
                 </button>
               </div>
+              {isEditing ? (
+                <div className="mt-3 grid gap-2 border-t-2 border-[var(--color-ink)] pt-3">
+                  <input
+                    value={editTitle}
+                    onChange={(event) => setEditTitle(event.target.value)}
+                    aria-label={`編輯作品標題 ${link.title}`}
+                    className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
+                  />
+                  <input
+                    value={editUrl}
+                    onChange={(event) => setEditUrl(event.target.value)}
+                    aria-label={`編輯作品連結 ${link.title}`}
+                    className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
+                  />
+                  <select
+                    value={editPlatformType}
+                    onChange={(event) => setEditPlatformType(event.target.value as PortfolioPlatformType)}
+                    aria-label={`編輯作品類型 ${link.title}`}
+                    className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
+                  >
+                    {PLATFORM_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    value={editCaption}
+                    onChange={(event) => setEditCaption(event.target.value)}
+                    aria-label={`編輯作品說明 ${link.title}`}
+                    className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
+                  />
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    value={editSortOrder}
+                    onChange={(event) => setEditSortOrder(event.target.value)}
+                    aria-label={`編輯排序 ${link.title}`}
+                    className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      aria-label={`儲存作品 ${link.title}`}
+                      disabled={!editTitle.trim() || !editUrl.trim() || savingLinkId === link.id}
+                      onClick={() => void saveEdit(link.id).catch(() => setMessage("作品更新失敗"))}
+                      className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 text-sm font-heading font-bold disabled:opacity-50"
+                    >
+                      儲存
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`取消編輯 ${link.title}`}
+                      disabled={savingLinkId === link.id}
+                      onClick={cancelEdit}
+                      className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
+                    >
+                      <X className="h-4 w-4" />
+                      取消
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
           );
         })}
