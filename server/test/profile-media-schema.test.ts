@@ -191,6 +191,41 @@ suite("creator profile media schema and RLS", () => {
     expect(tooManyErr).not.toBeNull();
   });
 
+  it("rejects non-integer sort_order values in public snapshots", async () => {
+    const creator = await makeCreator("profile-media-snapshot-sort-order@test.local");
+    const svc = serviceForTests();
+
+    const { error: decimalInsertErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [{ url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1.5 }],
+      published_by: creator.userId,
+    });
+    expect(decimalInsertErr).not.toBeNull();
+
+    const { error: validInsertErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [{ url: "https://example.com/1", title: "One", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(validInsertErr).toBeNull();
+
+    const { error: decimalUpsertErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar-decimal.jpg",
+      highlights: [
+        { url: "https://example.com/2", title: "Two", platform_type: "website", caption: null, sort_order: 2 },
+        { url: "https://example.com/3", title: "Three", platform_type: "website", caption: null, sort_order: 1.5 },
+      ],
+      published_by: creator.userId,
+    });
+    expect(decimalUpsertErr).not.toBeNull();
+  });
+
   it("creates the public creator avatar storage bucket with upload limits", async () => {
     const svc = serviceForTests();
     const { data, error } = await svc.storage.getBucket("creator-avatars");

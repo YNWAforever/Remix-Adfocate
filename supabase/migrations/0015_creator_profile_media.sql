@@ -130,6 +130,7 @@ as $$
         )
         or coalesce(jsonb_typeof(elem -> 'caption'), 'null') not in ('string', 'null')
         or jsonb_typeof(elem -> 'sort_order') <> 'number'
+        or ((elem ->> 'sort_order')::numeric % 1) <> 0
     );
 $$;
 
