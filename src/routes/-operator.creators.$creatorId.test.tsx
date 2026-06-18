@@ -93,6 +93,41 @@ describe("operator creator detail", () => {
         lastReviewedAt: "2026-06-18T05:00:00.000Z",
         updatedAt: "2026-06-18T05:30:00.000Z",
       },
+      profileMedia: {
+        avatarUrl: "https://cdn.example.com/avatar.jpg",
+        portfolioLinks: [
+          {
+            id: "portfolio-1",
+            creatorId: "creator-1",
+            workspaceId: "workspace-1",
+            url: "https://example.com/operator-portfolio",
+            title: "Operator-visible work",
+            platformType: "website",
+            caption: "Private review caption",
+            sortOrder: 1,
+            publicHighlight: true,
+            createdAt: "2026-06-18T01:00:00.000Z",
+            updatedAt: "2026-06-18T01:00:00.000Z",
+          },
+        ],
+        publicHighlights: [
+          {
+            url: "https://example.com/operator-portfolio",
+            title: "Operator-visible work",
+            platform_type: "website",
+            caption: "Private review caption",
+            sort_order: 1,
+          },
+        ],
+        published: { avatarUrl: null, highlights: [], publishedAt: null },
+        completeness: {
+          score: 71,
+          items: [
+            { key: "avatar", label: "Avatar selected", complete: true },
+            { key: "portfolio", label: "Portfolio link added", complete: true },
+          ],
+        },
+      },
       notes: [
         {
           id: "note-1",
@@ -123,6 +158,10 @@ describe("operator creator detail", () => {
     expect(screen.getByText("Good samples.")).toBeInTheDocument();
     expect(screen.getByText("creator_review.updated")).toBeInTheDocument();
     expect(screen.getByText("夏日面膜")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Profile media" })).toBeInTheDocument();
+    expect(screen.getByText("71% complete")).toBeInTheDocument();
+    expect(screen.getByText("Operator-visible work")).toBeInTheDocument();
+    expect(screen.getByText("Public highlight")).toBeInTheDocument();
   });
 
   it("adds an internal note", async () => {

@@ -36,6 +36,13 @@ export type SocialSummaryProjection = {
   ownershipLabel: "Ownership not verified";
 };
 
+export type OperatorProfileMediaSummary = {
+  avatarUrl: string | null;
+  portfolioCount: number;
+  publicHighlightCount: number;
+  completenessScore: number;
+};
+
 export type CreatorQueueFilters = {
   status?: CreatorReviewStatus;
   riskLevel?: CreatorRiskLevel;
@@ -54,6 +61,7 @@ export type CreatorReviewRow = {
   categories: string[];
   scores: Record<string, number | null>;
   social: SocialSummaryProjection;
+  profileMedia: OperatorProfileMediaSummary;
   review: ReviewProjection;
   shortlist: {
     status: MissionShortlistStatus;

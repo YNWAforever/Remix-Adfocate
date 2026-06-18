@@ -92,8 +92,18 @@ suite("operator CRM admin API", () => {
       handle: "detailcreator",
       sync_status: "synced",
       follower_count: 22000,
-      engagement_rate: 4.1,
-      api_synced_at: "2026-06-18T03:00:00.000Z",
+        engagement_rate: 4.1,
+        api_synced_at: "2026-06-18T03:00:00.000Z",
+      });
+    await svc.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://example.com/operator-portfolio",
+      title: "Operator-visible work",
+      platform_type: "website",
+      caption: "Private review caption",
+      sort_order: 1,
+      public_highlight: true,
     });
     await adminreq(`/admin/creators/${creator.userId}/review`, {
       method: "POST",
@@ -110,6 +120,11 @@ suite("operator CRM admin API", () => {
     expect(body.creator.id).toBe(creator.userId);
     expect(body.social.followerCount).toBe(22000);
     expect(body.review.status).toBe("approved");
+    expect(body.profileMedia.portfolioLinks[0]).toMatchObject({
+      title: "Operator-visible work",
+      publicHighlight: true,
+    });
+    expect(body.profileMedia.completeness.score).toBeGreaterThan(0);
     expect(body.shortlists[0]).toMatchObject({ mission_id: mission.id, status: "shortlisted" });
     expect(body.audit.some((event: { event_type: string }) => event.event_type === "mission_shortlist.created")).toBe(true);
   });
@@ -391,8 +406,14 @@ suite("operator CRM admin API", () => {
 
     const flaggedRes = await adminreq(`/admin/creators/review?mission_id=${mission.id}&status=flagged`);
     expect(flaggedRes.status).toBe(200);
-    const flaggedIds = (await flaggedRes.json()).creators.map((row: { id: string }) => row.id);
+    const flaggedBody = await flaggedRes.json();
+    const flaggedIds = flaggedBody.creators.map((row: { id: string }) => row.id);
     expect(flaggedIds).toContain(flagged.userId);
+    expect(flaggedBody.creators[0].profileMedia).toMatchObject({
+      portfolioCount: expect.any(Number),
+      publicHighlightCount: expect.any(Number),
+      completenessScore: expect.any(Number),
+    });
   });
 
   it("keeps approved creators first in mission queues before applying the secondary sort", async () => {

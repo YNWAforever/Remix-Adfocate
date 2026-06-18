@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getProfileMedia } from "../profileMedia/repo.js";
 import { lastActivityAt, nonEmptyText, projectReviewStatus, summarizeSocialAccounts } from "./serializers.js";
 import type {
   CreatorQueueFilters,
@@ -182,6 +183,22 @@ async function getShortlistMap(supabase: SupabaseClient, creatorIds: string[], m
   return map;
 }
 
+async function getProfileMediaSummaryMap(supabase: SupabaseClient, creatorIds: string[]) {
+  const map = new Map<string, CreatorReviewRow["profileMedia"]>();
+  await Promise.all(
+    creatorIds.map(async (creatorId) => {
+      const media = await getProfileMedia(supabase, creatorId);
+      map.set(creatorId, {
+        avatarUrl: media.avatarUrl,
+        portfolioCount: media.portfolioLinks.length,
+        publicHighlightCount: media.publicHighlights.length,
+        completenessScore: media.completeness.score,
+      });
+    }),
+  );
+  return map;
+}
+
 export async function enrichAdminMissionRows<
   T extends { creator_id: string; mission_id: string },
 >(
@@ -327,10 +344,11 @@ export async function listCreatorReviewQueue(
 
   const creators = (creatorsData ?? []) as CreatorRow[];
   const creatorIds = creators.map((creator) => creator.id);
-  const [reviews, socials, shortlists] = await Promise.all([
+  const [reviews, socials, shortlists, profileMedia] = await Promise.all([
     getReviewMap(supabase, creatorIds),
     getSocialMap(supabase, creatorIds),
     getShortlistMap(supabase, creatorIds, filters.missionId),
+    getProfileMediaSummaryMap(supabase, creatorIds),
   ]);
 
   const rows = creators
@@ -355,6 +373,12 @@ export async function listCreatorReviewQueue(
         categories: creator.categories ?? [],
         scores: creator.scores ?? {},
         social,
+        profileMedia: profileMedia.get(creator.id) ?? {
+          avatarUrl: creator.avatar_url ?? null,
+          portfolioCount: 0,
+          publicHighlightCount: 0,
+          completenessScore: 0,
+        },
         review,
         shortlist: shortlist
           ? {
@@ -404,7 +428,7 @@ export async function listCreatorReviewQueue(
 
 export async function getCreatorOperatorDetail(supabase: SupabaseClient, creatorId: string) {
   const creator = await mustGetCreator(supabase, creatorId);
-  const [reviewRes, notesRes, socialRes, shortlistRes, auditRes, missionHistoryRes] = await Promise.all([
+  const [reviewRes, notesRes, socialRes, shortlistRes, auditRes, missionHistoryRes, profileMedia] = await Promise.all([
     supabase.from("creator_review_statuses").select(REVIEW_PROJECTION).eq("creator_id", creatorId).maybeSingle(),
     supabase.from("creator_review_notes").select(NOTE_PROJECTION).eq("creator_id", creatorId).order("created_at", { ascending: false }),
     supabase.from("creator_social_accounts").select(SOCIAL_PROJECTION).eq("creator_id", creatorId).order("api_synced_at", { ascending: false }),
@@ -415,6 +439,7 @@ export async function getCreatorOperatorDetail(supabase: SupabaseClient, creator
       .select("id, mission_id, status, content_urls, reviewer_notes, submitted_at, reviewed_at, created_at, missions(id, slug, title)")
       .eq("creator_id", creatorId)
       .order("created_at", { ascending: false }),
+    getProfileMedia(supabase, creatorId),
   ]);
 
   if (reviewRes.error) failDb(reviewRes.error);
@@ -440,6 +465,7 @@ export async function getCreatorOperatorDetail(supabase: SupabaseClient, creator
     },
     social: summarizeSocialAccounts(socialAccounts),
     socialAccounts,
+    profileMedia,
     review: projectReviewStatus((reviewRes.data as ReviewRow | null) ?? null),
     notes: (notesRes.data ?? []) as NoteRow[],
     shortlists: ((shortlistRes.data ?? []) as ShortlistRow[]).map(normalizeShortlistRow),

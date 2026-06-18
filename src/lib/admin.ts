@@ -18,6 +18,47 @@ export type AdminReviewProjection = {
   updatedAt: string | null;
 };
 
+export type AdminProfileMediaLink = {
+  id: string;
+  creatorId: string;
+  workspaceId: string;
+  url: string;
+  title: string;
+  platformType: string;
+  caption: string | null;
+  sortOrder: number;
+  publicHighlight: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminProfileMedia = {
+  avatarUrl: string | null;
+  portfolioLinks: AdminProfileMediaLink[];
+  publicHighlights: Array<{
+    url: string;
+    title: string;
+    platform_type: string;
+    caption: string | null;
+    sort_order: number;
+  }>;
+  published: {
+    avatarUrl: string | null;
+    highlights: Array<{
+      url: string;
+      title: string;
+      platform_type: string;
+      caption: string | null;
+      sort_order: number;
+    }>;
+    publishedAt: string | null;
+  };
+  completeness: {
+    score: number;
+    items: Array<{ key: string; label: string; complete: boolean }>;
+  };
+};
+
 export type AdminCreatorReviewRow = {
   id: string;
   displayName: string;
@@ -33,6 +74,12 @@ export type AdminCreatorReviewRow = {
     apiSyncedAt: string | null;
     label: "API-synced" | "Not synced";
     ownershipLabel: "Ownership not verified";
+  };
+  profileMedia: {
+    avatarUrl: string | null;
+    portfolioCount: number;
+    publicHighlightCount: number;
+    completenessScore: number;
   };
   review: AdminReviewProjection;
   shortlist: { status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null; updatedAt: string } | null;
@@ -80,6 +127,7 @@ type AdminCreatorDetailResponse = {
     content_themes: string[] | null;
   }>;
   social: AdminCreatorReviewRow["social"];
+  profileMedia: AdminProfileMedia;
   review: AdminReviewProjection;
   notes: Array<{ id: string; creator_id: string; workspace_id: string; operator_id: string; category: AdminNoteCategory; body: string; created_at: string }>;
   shortlists: Array<{

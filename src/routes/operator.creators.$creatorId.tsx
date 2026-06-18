@@ -250,6 +250,46 @@ function OperatorCreatorDetailRoute() {
                 </section>
 
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+                  <h3 className="font-heading font-bold">Profile media</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold">
+                      {detailData.profileMedia.completeness.score}% complete
+                    </span>
+                    <span className="text-sm text-[var(--color-soft-ink)]">
+                      {detailData.profileMedia.portfolioLinks.length} portfolio links
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {detailData.profileMedia.portfolioLinks.length > 0 ? (
+                      detailData.profileMedia.portfolioLinks.map((item) => (
+                        <a
+                          key={item.id}
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="block rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm"
+                        >
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold">{item.title}</span>
+                            <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
+                              {item.platformType}
+                            </span>
+                            {item.publicHighlight ? (
+                              <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-2 py-0.5 text-xs font-bold">
+                                Public highlight
+                              </span>
+                            ) : null}
+                          </div>
+                          {item.caption ? <p className="mt-2 text-[var(--color-soft-ink)]">{item.caption}</p> : null}
+                        </a>
+                      ))
+                    ) : (
+                      <p className="text-sm text-[var(--color-soft-ink)]">No portfolio links</p>
+                    )}
+                  </div>
+                </section>
+
+                <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Mission history</h3>
                   <div className="space-y-2">
                     {detailData.missionHistory.length > 0 ? (
