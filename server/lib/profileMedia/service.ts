@@ -9,7 +9,7 @@ import {
   type ProfileCompleteness,
   type ProfileMediaLink,
   type PublicProfileHighlight,
-} from "./types";
+} from "./types.js";
 
 export class ProfileMediaError extends Error {
   constructor(

@@ -9,7 +9,7 @@ import type {
   SocialProviderErrorCode,
   SocialScanResult,
   SocialSyncStatus,
-} from "./types";
+} from "./types.js";
 
 type Provider = (input: { platform: SocialPlatform; handle: string }) => Promise<SocialScanResult>;
 
