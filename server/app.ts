@@ -12,6 +12,7 @@ import { copilotRoutes } from "./routes/copilot.js";
 import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
+import { profileMediaRoutes } from "./routes/profileMedia.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -32,6 +33,7 @@ export function createApp() {
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
   guarded.route("/me", meRoutes);
+  guarded.route("/me/profile-media", profileMediaRoutes);
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
