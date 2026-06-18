@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { CreatorProfileMedia } from "@/lib/queries/kocmax";
 
 const hoisted = vi.hoisted(() => ({
-  defaultProfileMedia: () => ({
+  defaultProfileMedia: (): CreatorProfileMedia => ({
     avatarUrl: null,
     portfolioLinks: [
       {
@@ -36,7 +37,7 @@ const hoisted = vi.hoisted(() => ({
     },
   }),
   profileMedia: {
-    data: null,
+    data: null as CreatorProfileMedia | null,
     isLoading: false,
     isError: false,
   },
@@ -248,7 +249,7 @@ describe("CreatorProfileMediaPanel", () => {
         },
       ],
       publicHighlights: [],
-    };
+    } satisfies CreatorProfileMedia;
 
     renderPanel();
 

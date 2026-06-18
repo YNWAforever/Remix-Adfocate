@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ExternalLink, Pencil, Star, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
+  type ProfileMediaLink,
   type PortfolioPlatformType,
   useCreateAvatarUpload,
   useCreatePortfolioLink,
@@ -74,7 +75,7 @@ export function CreatorProfileMediaPanel() {
     setCaption("");
   }
 
-  function beginEdit(link: (typeof media.data.portfolioLinks)[number]) {
+  function beginEdit(link: ProfileMediaLink) {
     setEditingId(link.id);
     setEditTitle(link.title);
     setEditUrl(link.url);
@@ -113,7 +114,7 @@ export function CreatorProfileMediaPanel() {
     }
   }
 
-  async function toggleHighlight(link: (typeof media.data.portfolioLinks)[number]) {
+  async function toggleHighlight(link: ProfileMediaLink) {
     const isEnabling = !link.publicHighlight;
     if (isEnabling && selectedHighlights + pendingHighlightIds.length >= 3) {
       setMessage("公開精選最多 3 個");
