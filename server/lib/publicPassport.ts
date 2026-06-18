@@ -1,4 +1,5 @@
 import { buildPassport } from "./passport.js";
+import type { PublicProfileHighlight } from "./profileMedia/types.js";
 import { effectiveSocialHandles, publicSocialTrustBadges } from "./social/passportSocial.js";
 import { listSocialAccounts } from "./social/repo.js";
 import { serviceClient } from "./supabase.js";
@@ -17,8 +18,25 @@ export type PublicPassportPayload = {
     content: number | null;
     brandSafety: number | null;
   };
+  profileMedia: {
+    highlights: PublicProfileHighlight[];
+    publishedAt: string | null;
+  };
   badges: string[];
   socialTrustBadges: string[];
+};
+
+type PublicPassportCreatorRow = {
+  id: string;
+  display_name: string | null;
+  level: string;
+  xp: number;
+};
+
+type PublicProfileSnapshotRow = {
+  avatar_url: string | null;
+  highlights: unknown;
+  published_at: string | null;
 };
 
 const PUBLIC_BADGE_ALLOWLIST = new Set([
@@ -50,10 +68,19 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
 
   const { data: creator, error: creatorErr } = await svc
     .from("creators")
-    .select("id, display_name, avatar_url, level, xp")
+    .select("id, display_name, level, xp")
     .eq("id", share.creator_id)
     .single();
   if (creatorErr) throw creatorErr;
+  const creatorRow = creator as PublicPassportCreatorRow;
+
+  const { data: snapshot, error: snapshotErr } = await svc
+    .from("creator_public_profile_snapshots")
+    .select("avatar_url, highlights, published_at")
+    .eq("creator_id", share.creator_id)
+    .maybeSingle();
+  if (snapshotErr) throw snapshotErr;
+  const snapshotRow = snapshot as PublicProfileSnapshotRow | null;
 
   const { data: subs, error: subsErr } = await svc
     .from("mission_submissions")
@@ -73,8 +100,8 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
     selfReportedHandles: null,
   });
   const passport = buildPassport({
-    level: creator.level,
-    xp: creator.xp,
+    level: creatorRow.level,
+    xp: creatorRow.xp,
     socialHandles,
     statuses: (subs ?? []).map((s) => s.status as string),
     ratings: (subs ?? [])
@@ -94,12 +121,18 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
 
   return {
     creator: {
-      displayName: creator.display_name ?? "KOC",
-      avatarUrl: creator.avatar_url ?? null,
+      displayName: creatorRow.display_name ?? "KOC",
+      avatarUrl: snapshotRow?.avatar_url ?? null,
       level: passport.level,
       xp: passport.xp,
     },
     scores: passport.scores,
+    profileMedia: {
+      highlights: Array.isArray(snapshotRow?.highlights)
+        ? ((snapshotRow?.highlights ?? []) as PublicProfileHighlight[])
+        : [],
+      publishedAt: snapshotRow?.published_at ?? null,
+    },
     badges: publicBadges(passport.badges),
     socialTrustBadges: publicSocialTrustBadges(syncedAccounts),
   };

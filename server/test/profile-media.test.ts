@@ -108,6 +108,27 @@ suite("creator profile media API", () => {
     expect((await selected.json()).avatarUrl).toBe(uploadBody.publicUrl);
   }, 120_000);
 
+  it("rejects selecting another creator's path and selecting a missing upload", async () => {
+    const creator = await makeCreator("profile-media-avatar-reject@test.local");
+    const otherCreator = await makeCreator("profile-media-avatar-other@test.local");
+
+    const foreignStoragePath = `${otherCreator.userId}/foreign.png`;
+    const foreignPath = await req("/me/profile-media/avatar-select", creator.jwt, {
+      method: "POST",
+      body: JSON.stringify({ storagePath: foreignStoragePath }),
+    });
+    expect(foreignPath.status).toBe(400);
+    expect(await foreignPath.json()).toMatchObject({ code: "bad_avatar_path" });
+
+    const missingPath = `${creator.userId}/missing.png`;
+    const missing = await req("/me/profile-media/avatar-select", creator.jwt, {
+      method: "POST",
+      body: JSON.stringify({ storagePath: missingPath }),
+    });
+    expect(missing.status).toBe(404);
+    expect(await missing.json()).toMatchObject({ code: "not_found" });
+  }, 120_000);
+
   it("publishes only public-safe avatar and selected highlights", async () => {
     const creator = await makeCreator("profile-media-publish@test.local");
     const svc = serviceForTests();

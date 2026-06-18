@@ -121,7 +121,7 @@ suite("public passport privacy", () => {
     expect(JSON.stringify(body)).not.toContain("secret-post");
     expect(JSON.stringify(body)).not.toContain("private-social-avatar");
     expect(JSON.stringify(body)).not.toContain("flagged");
-    expect(JSON.stringify(body)).not.toContain("high");
+    expect(JSON.stringify(body)).not.toContain("\"high\"");
     expect(JSON.stringify(body)).not.toContain("Internal-only summary");
     expect(JSON.stringify(body)).not.toContain("Internal-only note");
     expect(JSON.stringify(body)).not.toContain("creator_review");
@@ -134,7 +134,7 @@ suite("public passport privacy", () => {
     expect(afterRevoke.status).toBe(404);
   }, 120_000);
 
-  it("uses a scanned avatar publicly only after explicit avatar selection", async () => {
+  it("keeps selected avatar and highlights private until profile media is published", async () => {
     const c = await makeCreator("public-avatar@test.local");
     const created = await (
       await req("/social/accounts", c.jwt, {
@@ -147,6 +147,7 @@ suite("public passport privacy", () => {
     const firstShare = await (await req("/me/passport/share", c.jwt, { method: "POST" })).json();
     const before = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
     expect(before.creator.avatarUrl).toBeNull();
+    expect(before.profileMedia).toEqual({ highlights: [], publishedAt: null });
 
     const avatar = await req("/me/avatar/from-social", c.jwt, {
       method: "POST",
@@ -154,8 +155,38 @@ suite("public passport privacy", () => {
     });
     expect(avatar.status).toBe(200);
 
-    const after = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
-    expect(after.creator.avatarUrl).toBe("https://cdn.example.com/private-social-avatar.jpg");
+    const highlight = await req("/me/profile-media/portfolio", c.jwt, {
+      method: "POST",
+      body: JSON.stringify({
+        url: "https://example.com/published-highlight",
+        title: "Published highlight",
+        platform_type: "website",
+        caption: "Visible after publish",
+        sort_order: 1,
+        public_highlight: true,
+      }),
+    });
+    expect(highlight.status).toBe(200);
+
+    const selectedOnly = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
+    expect(selectedOnly.creator.avatarUrl).toBeNull();
+    expect(selectedOnly.profileMedia).toEqual({ highlights: [], publishedAt: null });
+
+    const published = await req("/me/profile-media/publish", c.jwt, { method: "POST" });
+    expect(published.status).toBe(200);
+
+    const afterPublish = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
+    expect(afterPublish.creator.avatarUrl).toBe("https://cdn.example.com/private-social-avatar.jpg");
+    expect(afterPublish.profileMedia.highlights).toEqual([
+      {
+        url: "https://example.com/published-highlight",
+        title: "Published highlight",
+        platform_type: "website",
+        caption: "Visible after publish",
+        sort_order: 1,
+      },
+    ]);
+    expect(typeof afterPublish.profileMedia.publishedAt).toBe("string");
   }, 120_000);
 
   it("does not derive public social badges or influence from self-reported handles alone", async () => {
