@@ -181,6 +181,55 @@ async function getShortlistMap(supabase: SupabaseClient, creatorIds: string[], m
   return map;
 }
 
+export async function enrichAdminMissionRows<
+  T extends { creator_id: string; mission_id: string },
+>(
+  supabase: SupabaseClient,
+  rows: T[],
+): Promise<
+  Array<
+    T & {
+      creator_review: { status: string; risk_level: string };
+      mission_shortlist: { status: string } | null;
+    }
+  >
+> {
+  if (rows.length === 0) return [];
+
+  const creatorIds = [...new Set(rows.map((row) => row.creator_id))];
+  const missionIds = [...new Set(rows.map((row) => row.mission_id))];
+
+  const { data: reviews, error: reviewError } = await supabase
+    .from("creator_review_statuses")
+    .select("creator_id, status, risk_level")
+    .in("creator_id", creatorIds);
+  if (reviewError) throw new OperatorCrmError("db_error", reviewError.message);
+
+  const { data: shortlists, error: shortlistError } = await supabase
+    .from("mission_shortlists")
+    .select("creator_id, mission_id, status")
+    .in("creator_id", creatorIds)
+    .in("mission_id", missionIds);
+  if (shortlistError) throw new OperatorCrmError("db_error", shortlistError.message);
+
+  const reviewByCreator = new Map((reviews ?? []).map((row) => [row.creator_id as string, row]));
+  const shortlistByPair = new Map((shortlists ?? []).map((row) => [`${row.mission_id}:${row.creator_id}`, row]));
+
+  return rows.map((row) => {
+    const review = reviewByCreator.get(row.creator_id);
+    const shortlist = shortlistByPair.get(`${row.mission_id}:${row.creator_id}`);
+
+    return {
+      ...row,
+      creator_review: {
+        status: (review?.status as string | undefined) ?? "needs_review",
+        risk_level: (review?.risk_level as string | undefined) ?? "unknown",
+      },
+      mission_shortlist: shortlist ? { status: shortlist.status as string } : null,
+    };
+  });
+}
+
 function levelRank(level: string | null | undefined) {
   const raw = typeof level === "string" ? level : "";
   const numeric = Number(raw.replace(/^L/i, ""));

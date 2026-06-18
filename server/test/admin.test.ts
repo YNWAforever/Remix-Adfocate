@@ -61,7 +61,24 @@ suite("admin submission review", () => {
     const res = await adminreq("/admin/submissions?status=submitted");
     expect(res.status).toBe(200);
     const { submissions } = await res.json();
-    expect(submissions.some((s: { id: string }) => s.id === submissionId)).toBe(true);
+    const row = submissions.find((s: { id: string }) => s.id === submissionId);
+    expect(row).toBeTruthy();
+    expect(row.creator_review).toEqual({ status: "needs_review", risk_level: "unknown" });
+    expect(row.mission_shortlist).toBeNull();
+  });
+
+  it("lists pending applications with creator review and shortlist metadata", async () => {
+    const applicant = await makeCreator("admin-app-meta@test.local", 0);
+    await makeMission({ slug: "test-admin-app-meta", access_type: "application", points_reward: 100, quota: 5 });
+    await koreq("/missions/test-admin-app-meta/apply", applicant.jwt, { method: "POST" });
+
+    const res = await adminreq("/admin/applications");
+    expect(res.status).toBe(200);
+    const { applications } = await res.json();
+    const row = applications.find((item: { creator_id: string }) => item.creator_id === applicant.userId);
+    expect(row.mission_id).toMatch(/[0-9a-f-]{36}/);
+    expect(row.creator_review).toEqual({ status: "needs_review", risk_level: "unknown" });
+    expect(row.mission_shortlist).toBeNull();
   });
 
   it("approves once: awards 250 points + 100 XP, and is idempotent", async () => {
