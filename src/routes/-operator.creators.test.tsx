@@ -81,6 +81,12 @@ describe("operator creator review queue", () => {
     expect(screen.getByText("needs_review")).toBeInTheDocument();
   });
 
+  it("does not render a selected-avatar thumbnail when the queue row has no avatarUrl", async () => {
+    renderRoute();
+    await screen.findByText("Amy Chan");
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
   it("quick-approves a creator with the queue payload", async () => {
     hoisted.postCreatorReview.mockResolvedValue({ review: { status: "approved", riskLevel: "low" } });
     hoisted.fetchCreatorReviewQueue.mockReset();

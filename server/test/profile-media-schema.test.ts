@@ -107,6 +107,31 @@ suite("creator profile media schema and RLS", () => {
     expect(fourthErr?.message).toContain("creator_portfolio_links highlight limit exceeded");
   });
 
+  it("rejects malformed portfolio URLs on direct writes", async () => {
+    const creator = await makeCreator("profile-media-bad-url@test.local");
+    const user = userForJwt(creator.jwt);
+
+    const { error: malformedErr } = await user.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://",
+      title: "Broken URL",
+      platform_type: "website",
+      public_highlight: false,
+    });
+    expect(malformedErr).not.toBeNull();
+
+    const { error: validErr } = await user.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://example.com/path",
+      title: "Valid URL",
+      platform_type: "website",
+      public_highlight: false,
+    });
+    expect(validErr).toBeNull();
+  });
+
   it("serializes highlight-cap checks behind an advisory transaction lock", () => {
     const definition = dbFunctionDefinition("private.enforce_creator_portfolio_highlight_limit()");
 
@@ -224,6 +249,29 @@ suite("creator profile media schema and RLS", () => {
       published_by: creator.userId,
     });
     expect(decimalUpsertErr).not.toBeNull();
+  });
+
+  it("rejects malformed snapshot highlight URLs", async () => {
+    const creator = await makeCreator("profile-media-snapshot-bad-url@test.local");
+    const svc = serviceForTests();
+
+    const { error: malformedErr } = await svc.from("creator_public_profile_snapshots").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [{ url: "https://", title: "Broken", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(malformedErr).not.toBeNull();
+
+    const { error: validErr } = await svc.from("creator_public_profile_snapshots").upsert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      avatar_url: "https://cdn.example.com/avatar.jpg",
+      highlights: [{ url: "https://example.com/work", title: "Valid", platform_type: "website", caption: null, sort_order: 1 }],
+      published_by: creator.userId,
+    });
+    expect(validErr).toBeNull();
   });
 
   it("creates the public creator avatar storage bucket with upload limits", async () => {

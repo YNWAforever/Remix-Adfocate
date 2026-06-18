@@ -440,6 +440,28 @@ suite("operator CRM admin API", () => {
     expect(flaggedBody.creators[0].profileMedia.completenessScore).toBeGreaterThan(0);
   });
 
+  it("does not use social-source avatars as queue avatars", async () => {
+    const creator = await makeCreator("operator-crm-social-avatar@test.local");
+    const svc = serviceForTests();
+    await svc.from("creator_social_accounts").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      platform: "instagram",
+      handle: "socialavataronly",
+      sync_status: "synced",
+      external_avatar_url: "https://cdn.example.com/social-only-avatar.jpg",
+      api_synced_at: "2026-06-18T02:00:00.000Z",
+    });
+
+    const res = await adminreq("/admin/creators/review?q=operator-crm-social-avatar");
+    expect(res.status).toBe(200);
+
+    const row = (await res.json()).creators.find((item: { id: string }) => item.id === creator.userId);
+    expect(row).toBeTruthy();
+    expect(row.avatarUrl).toBeNull();
+    expect(row.social.label).toBe("API-synced");
+  });
+
   it("keeps approved creators first in mission queues before applying the secondary sort", async () => {
     const approved = await makeCreator("operator-crm-queue-approved-first@test.local");
     const needsReview = await makeCreator("operator-crm-queue-needs-review@test.local");

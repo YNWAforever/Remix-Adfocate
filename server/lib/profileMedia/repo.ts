@@ -203,12 +203,15 @@ export async function updateProfileMediaLink(
 }
 
 export async function deleteProfileMediaLink(supabase: SupabaseClient, creatorId: string, linkId: string) {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("creator_portfolio_links")
     .delete()
     .eq("id", linkId)
-    .eq("creator_id", creatorId);
+    .eq("creator_id", creatorId)
+    .select("id")
+    .maybeSingle();
   if (error) failDb(error);
+  if (!data) throw new ProfileMediaError("not_found", "Portfolio link not found");
 }
 
 export async function selectUploadedAvatar(

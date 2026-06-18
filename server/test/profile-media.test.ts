@@ -81,6 +81,36 @@ suite("creator profile media API", () => {
     expect((await deleted.json()).deleted).toBe(true);
   }, 120_000);
 
+  it("rejects deleting another creator's portfolio link", async () => {
+    const creator = await makeCreator("profile-media-delete-owner@test.local");
+    const otherCreator = await makeCreator("profile-media-delete-other@test.local");
+
+    const created = await req("/me/profile-media/portfolio", otherCreator.jwt, {
+      method: "POST",
+      body: JSON.stringify({
+        url: "https://example.com/other-work",
+        title: "Other work",
+        platform_type: "website",
+      }),
+    });
+    expect(created.status).toBe(200);
+    const { link } = await created.json();
+
+    const deleted = await req(`/me/profile-media/portfolio/${link.id}`, creator.jwt, { method: "DELETE" });
+    expect(deleted.status).toBe(404);
+    expect(await deleted.json()).toMatchObject({ code: "not_found" });
+  }, 120_000);
+
+  it("rejects deleting a missing portfolio link", async () => {
+    const creator = await makeCreator("profile-media-delete-missing@test.local");
+
+    const deleted = await req("/me/profile-media/portfolio/00000000-0000-0000-0000-000000000123", creator.jwt, {
+      method: "DELETE",
+    });
+    expect(deleted.status).toBe(404);
+    expect(await deleted.json()).toMatchObject({ code: "not_found" });
+  }, 120_000);
+
   it("returns upload metadata and selects an owned uploaded avatar", async () => {
     const creator = await makeCreator("profile-media-avatar@test.local");
     const upload = await req("/me/profile-media/avatar-upload", creator.jwt, {

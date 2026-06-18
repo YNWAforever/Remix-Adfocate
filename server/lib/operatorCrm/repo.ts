@@ -427,7 +427,7 @@ export async function listCreatorReviewQueue(
       return {
         id: creator.id,
         displayName: creator.display_name ?? creator.id,
-        avatarUrl: creator.avatar_url ?? socialAccounts[0]?.external_avatar_url ?? null,
+        avatarUrl: creator.avatar_url ?? null,
         level: creator.level ?? "L0",
         categories: creator.categories ?? [],
         scores: creator.scores ?? {},
