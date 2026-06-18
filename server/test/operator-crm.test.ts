@@ -20,6 +20,23 @@ function adminreq(path: string, init: RequestInit = {}) {
   });
 }
 
+function adminreqAs(
+  path: string,
+  operator: { id: string; label: string },
+  init: RequestInit = {},
+) {
+  return app.request(`/api${path}`, {
+    ...init,
+    headers: {
+      "x-admin-secret": ADMIN_SECRET,
+      "x-operator-id": operator.id,
+      "x-operator-label": operator.label,
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+}
+
 suite("operator CRM admin API", () => {
   beforeAll(cleanup);
   afterAll(cleanup);
@@ -60,8 +77,8 @@ suite("operator CRM admin API", () => {
       .select("event_type, operator_id, actor_label")
       .eq("creator_id", creator.userId)
       .order("created_at");
-    expect(audits.data?.map((event) => event.event_type)).toEqual(["creator_review.updated", "creator_note.created"]);
-    expect(audits.data?.[0]).toMatchObject({ operator_id: "crm-test", actor_label: "CRM Test" });
+    expect(audits.data?.map((event) => event.event_type).sort()).toEqual(["creator_note.created", "creator_review.updated"]);
+    expect(audits.data?.every((event) => event.operator_id === "crm-test" && event.actor_label === "CRM Test")).toBe(true);
   });
 
   it("returns creator detail with notes, shortlists, social summary, mission history, and audit timeline", async () => {
@@ -154,6 +171,95 @@ suite("operator CRM admin API", () => {
     });
     expect(invite.status).toBe(409);
     expect((await invite.json()).code).toBe("flagged_invite_blocked");
+  });
+
+  it("preserves created_by while updating updated_by when re-shortlisting an existing row", async () => {
+    const creator = await makeCreator("operator-crm-reshortlist@test.local");
+    const mission = await makeMission({ slug: "test-operator-crm-reshortlist" });
+
+    const first = await adminreqAs(
+      `/admin/missions/${mission.id}/shortlist`,
+      { id: "operator-a", label: "Operator A" },
+      {
+        method: "POST",
+        body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "Initial shortlist." }),
+      },
+    );
+    expect(first.status).toBe(200);
+
+    const second = await adminreqAs(
+      `/admin/missions/${mission.id}/shortlist`,
+      { id: "operator-b", label: "Operator B" },
+      {
+        method: "POST",
+        body: JSON.stringify({ creator_id: creator.userId, source: "review_queue", notes: "Restore to shortlist." }),
+      },
+    );
+    expect(second.status).toBe(200);
+
+    const body = await second.json();
+    expect(body.shortlist).toMatchObject({
+      mission_id: mission.id,
+      creator_id: creator.userId,
+      created_by: "operator-a",
+      updated_by: "operator-b",
+      source: "review_queue",
+      notes: "Restore to shortlist.",
+    });
+
+    const svc = serviceForTests();
+    const row = await svc
+      .from("mission_shortlists")
+      .select("created_by, updated_by, source, notes")
+      .eq("mission_id", mission.id)
+      .eq("creator_id", creator.userId)
+      .single();
+    expect(row.error).toBeNull();
+    expect(row.data).toMatchObject({
+      created_by: "operator-a",
+      updated_by: "operator-b",
+      source: "review_queue",
+      notes: "Restore to shortlist.",
+    });
+  });
+
+  it("creates creator notes through the admin note endpoint", async () => {
+    const creator = await makeCreator("operator-crm-note-endpoint@test.local");
+    const res = await adminreq(`/admin/creators/${creator.userId}/notes`, {
+      method: "POST",
+      body: JSON.stringify({ category: "fit", body: "Great match for wellness launches." }),
+    });
+
+    expect(res.status).toBe(200);
+    expect((await res.json()).note).toMatchObject({
+      creator_id: creator.userId,
+      category: "fit",
+      body: "Great match for wellness launches.",
+      operator_id: "crm-test",
+    });
+  });
+
+  it("lists mission shortlist rows through the admin shortlist endpoint", async () => {
+    const creator = await makeCreator("operator-crm-shortlist-list@test.local");
+    const mission = await makeMission({ slug: "test-operator-crm-shortlist-list" });
+    await adminreq(`/admin/missions/${mission.id}/shortlist`, {
+      method: "POST",
+      body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "List endpoint coverage." }),
+    });
+
+    const res = await adminreq(`/admin/missions/${mission.id}/shortlist`);
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.mission).toMatchObject({ id: mission.id, slug: "test-operator-crm-shortlist-list" });
+    expect(body.shortlists).toHaveLength(1);
+    expect(body.shortlists[0]).toMatchObject({
+      mission_id: mission.id,
+      creator_id: creator.userId,
+      created_by: "crm-test",
+      updated_by: "crm-test",
+      status: "shortlisted",
+    });
   });
 
   it("hides flagged creators by default in a mission-scoped queue", async () => {

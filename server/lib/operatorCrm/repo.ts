@@ -514,7 +514,7 @@ export async function upsertMissionShortlist(
   ]);
   const { data: existing, error: existingError } = await supabase
     .from("mission_shortlists")
-    .select("mission_id, creator_id")
+    .select(SHORTLIST_PROJECTION)
     .eq("mission_id", input.missionId)
     .eq("creator_id", input.creatorId)
     .maybeSingle();
@@ -531,23 +531,34 @@ export async function upsertMissionShortlist(
     throw new OperatorCrmError("flagged_note_required");
   }
 
-  const { data, error } = await supabase
-    .from("mission_shortlists")
-    .upsert(
-      {
-        mission_id: input.missionId,
-        creator_id: input.creatorId,
-        workspace_id: mission.workspace_id,
-        status: "shortlisted",
-        source: input.source,
-        notes: input.notes,
-        created_by: input.context.operatorId,
-        updated_by: input.context.operatorId,
-      },
-      { onConflict: "mission_id,creator_id" },
-    )
-    .select(SHORTLIST_PROJECTION)
-    .single();
+  const shortlistWrite = existing
+    ? supabase
+        .from("mission_shortlists")
+        .update({
+          status: "shortlisted",
+          source: input.source,
+          notes: input.notes,
+          updated_by: input.context.operatorId,
+        })
+        .eq("mission_id", input.missionId)
+        .eq("creator_id", input.creatorId)
+        .select(SHORTLIST_PROJECTION)
+        .single()
+    : supabase
+        .from("mission_shortlists")
+        .insert({
+          mission_id: input.missionId,
+          creator_id: input.creatorId,
+          workspace_id: mission.workspace_id,
+          status: "shortlisted",
+          source: input.source,
+          notes: input.notes,
+          created_by: input.context.operatorId,
+          updated_by: input.context.operatorId,
+        })
+        .select(SHORTLIST_PROJECTION)
+        .single();
+  const { data, error } = await shortlistWrite;
   if (error) failDb(error);
 
   await insertAuditEvent(supabase, {
