@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { randomUUID } from "node:crypto";
 import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, makeMission, serviceForTests, userForJwt } from "./helpers";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -134,5 +135,55 @@ suite("operator CRM schema and RLS", () => {
 
     const second = await svc.from("mission_shortlists").insert(row);
     expect(second.error?.code).toBe("23505");
+  });
+
+  it("rejects shortlist rows when mission and creator workspaces differ", async () => {
+    const svc = serviceForTests();
+    const creator = await makeCreator("operator-crm-workspace-guard@test.local");
+    const workspaceId = randomUUID();
+    const missionId = randomUUID();
+
+    try {
+      await svc.from("workspaces").insert({
+        id: workspaceId,
+        slug: `test-operator-crm-guard-${workspaceId.slice(0, 8)}`,
+        name: "Operator CRM guard test",
+        theme: {},
+      });
+      await svc.from("missions").insert({
+        id: missionId,
+        workspace_id: workspaceId,
+        slug: `test-operator-crm-guard-${missionId.slice(0, 8)}`,
+        title: "Operator CRM guard mission",
+        mission_type: "ugc",
+        access_type: "open",
+        points_reward: 100,
+        quota: 5,
+        filled: 0,
+        status: "active",
+        required_level: "L0",
+        category: "美容",
+      });
+
+      const result = await svc.from("mission_shortlists").insert({
+        mission_id: missionId,
+        creator_id: creator.userId,
+        workspace_id: workspaceId,
+        status: "shortlisted",
+        source: "manual",
+        notes: "Cross-workspace rows must be blocked.",
+        created_by: "schema-test",
+        updated_by: "schema-test",
+      });
+
+      expect(result.error?.code).toBe("23514");
+      expect(result.error?.message).toContain("workspace mismatch");
+    } finally {
+      await svc.from("mission_shortlists").delete().eq("mission_id", missionId);
+      await svc.from("operator_audit_events").delete().eq("mission_id", missionId);
+      await svc.from("mission_submissions").delete().eq("mission_id", missionId);
+      await svc.from("missions").delete().eq("id", missionId);
+      await svc.from("workspaces").delete().eq("id", workspaceId);
+    }
   });
 });
