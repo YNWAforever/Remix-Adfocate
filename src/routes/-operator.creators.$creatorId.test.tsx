@@ -86,12 +86,12 @@ describe("operator creator detail", () => {
         ownershipLabel: "Ownership not verified",
       },
       review: {
-        status: "needs_review",
-        riskLevel: "unknown",
-        summary: null,
-        reviewedBy: null,
-        lastReviewedAt: null,
-        updatedAt: null,
+        status: "approved",
+        riskLevel: "low",
+        summary: "Strong fit for skincare launch.",
+        reviewedBy: "operator@adfocate.test",
+        lastReviewedAt: "2026-06-18T05:00:00.000Z",
+        updatedAt: "2026-06-18T05:30:00.000Z",
       },
       notes: [
         {
@@ -110,9 +110,14 @@ describe("operator creator detail", () => {
     });
   });
 
-  it("renders profile, social metrics, notes, mission history, and audit", async () => {
+  it("renders profile, review metadata, social metrics, notes, mission history, and audit", async () => {
     renderRoute();
     expect(await screen.findByText("Amy Chan")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Review status" })).toBeInTheDocument();
+    expect(screen.getByText("Strong fit for skincare launch.", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getByText("operator@adfocate.test")).toBeInTheDocument();
+    expect(screen.getAllByText("approved").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("risk: low").length).toBeGreaterThan(0);
     expect(screen.getByText("45,000 followers")).toBeInTheDocument();
     expect(screen.getByText("Ownership not verified")).toBeInTheDocument();
     expect(screen.getByText("Good samples.")).toBeInTheDocument();

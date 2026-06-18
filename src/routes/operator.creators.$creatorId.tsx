@@ -55,6 +55,13 @@ function readString(record: Record<string, unknown>, key: string) {
   return typeof value === "string" ? value : null;
 }
 
+function maybeRecord(value: unknown) {
+  if (value && typeof value === "object") {
+    return value as Record<string, unknown>;
+  }
+  return null;
+}
+
 function OperatorCreatorDetailRoute() {
   const { creatorId } = Route.useParams();
   const queryClient = useQueryClient();
@@ -220,6 +227,29 @@ function OperatorCreatorDetailRoute() {
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
               <div className="space-y-4">
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+                  <h3 className="font-heading font-bold">Review status</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <ReviewBadge status={review.status} />
+                    <RiskBadge risk={review.riskLevel} />
+                  </div>
+                  <p className="text-sm">{review.summary?.trim() ? review.summary : "No review summary yet."}</p>
+                  <dl className="grid gap-2 text-sm sm:grid-cols-3">
+                    <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2">
+                      <dt className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">Reviewed by</dt>
+                      <dd className="mt-1">{review.reviewedBy ?? "No reviewer recorded"}</dd>
+                    </div>
+                    <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2">
+                      <dt className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">Last reviewed</dt>
+                      <dd className="mt-1">{formatDateTime(review.lastReviewedAt)}</dd>
+                    </div>
+                    <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2">
+                      <dt className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">Updated</dt>
+                      <dd className="mt-1">{formatDateTime(review.updatedAt)}</dd>
+                    </div>
+                  </dl>
+                </section>
+
+                <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Mission history</h3>
                   <div className="space-y-2">
                     {detailData.missionHistory.length > 0 ? (
@@ -228,7 +258,7 @@ function OperatorCreatorDetailRoute() {
                           key={readString(entry, "id") ?? `mission-${index}`}
                           className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm"
                         >
-                          <span>{readString(entry.missions as Record<string, unknown>, "title") ?? "Untitled mission"}</span>
+                          <span>{readString(maybeRecord(entry.missions) ?? {}, "title") ?? "Untitled mission"}</span>
                           <span className="font-bold text-[var(--color-soft-ink)]">{readString(entry, "status") ?? "unknown"}</span>
                         </div>
                       ))
