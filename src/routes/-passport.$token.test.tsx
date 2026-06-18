@@ -19,6 +19,18 @@ vi.mock("@/lib/queries/kocmax", () => ({
       scores: { influence: 50, reliability: null, content: null, brandSafety: null },
       badges: ["social_linked"],
       socialTrustBadges: ["social_scan_connected", "active_creator", "internal_only_flag"],
+      profileMedia: {
+        publishedAt: "2026-06-18T00:00:00.000Z",
+        highlights: [
+          {
+            url: "https://example.com/public",
+            title: "Public campaign",
+            platform_type: "website",
+            caption: "Launch recap",
+            sort_order: 1,
+          },
+        ],
+      },
     },
   }),
 }));
@@ -40,6 +52,9 @@ describe("public passport route", () => {
     expect(screen.getByText("阿明")).toBeInTheDocument();
     expect(screen.getByText("Social scan connected")).toBeInTheDocument();
     expect(screen.getByText("Active creator")).toBeInTheDocument();
+    expect(screen.getByText("Creator highlights")).toBeInTheDocument();
+    expect(screen.getByText("Public campaign")).toBeInTheDocument();
+    expect(screen.getByText("Launch recap")).toBeInTheDocument();
     expect(screen.queryByText("internal_only_flag")).not.toBeInTheDocument();
     expect(screen.queryByText("已連結社交")).not.toBeInTheDocument();
     expect(screen.queryByText(/followers/i)).not.toBeInTheDocument();

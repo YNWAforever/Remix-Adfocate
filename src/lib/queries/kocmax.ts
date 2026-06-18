@@ -80,11 +80,22 @@ export type Passport = {
   socialTrust?: SocialTrust;
 };
 export type PassportShare = { token: string; publicUrl: string };
+export type PublicProfileHighlight = {
+  url: string;
+  title: string;
+  platform_type: string;
+  caption: string | null;
+  sort_order: number;
+};
 export type PublicPassport = {
   creator: { displayName: string; avatarUrl: string | null; level: string; xp: number };
   scores: Passport["scores"];
   badges: string[];
   socialTrustBadges: string[];
+  profileMedia: {
+    highlights: PublicProfileHighlight[];
+    publishedAt: string | null;
+  };
 };
 export type OnboardingStatus = { onboarding_step: number; onboarding_completed: boolean; completion_pct: number };
 export type RecommendedMission = { id: string; slug: string; title: string; category?: string; points_reward: number; deadline?: string };

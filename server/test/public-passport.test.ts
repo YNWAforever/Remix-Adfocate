@@ -40,7 +40,7 @@ const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const PUBLIC_PASSPORT_EMAILS = [
   "public-passport@test.local",
-  "public-avatar@test.local",
+  "public-profile-media@test.local",
   "public-self-report@test.local",
 ];
 
@@ -127,6 +127,7 @@ suite("public passport privacy", () => {
     expect(JSON.stringify(body)).not.toContain("creator_review");
     expect(JSON.stringify(body)).not.toContain("mission_shortlist");
     expect(JSON.stringify(body)).not.toContain("audit");
+    expect(body.profileMedia.highlights).toEqual([]);
 
     const revoke = await req("/me/passport/share", c.jwt, { method: "DELETE" });
     expect(revoke.status).toBe(200);
@@ -134,59 +135,55 @@ suite("public passport privacy", () => {
     expect(afterRevoke.status).toBe(404);
   }, 120_000);
 
-  it("keeps selected avatar and highlights private until profile media is published", async () => {
-    const c = await makeCreator("public-avatar@test.local");
-    const created = await (
-      await req("/social/accounts", c.jwt, {
-        method: "POST",
-        body: JSON.stringify({ platform: "instagram", handle: "avatarcreator" }),
-      })
-    ).json();
-    await req(`/social/accounts/${created.id}/scan`, c.jwt, { method: "POST" });
+  it("shows selected avatar and highlights publicly only after explicit profile media publish", async () => {
+    const c = await makeCreator("public-profile-media@test.local");
+    const svc = serviceForTests();
 
-    const firstShare = await (await req("/me/passport/share", c.jwt, { method: "POST" })).json();
-    const before = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
-    expect(before.creator.avatarUrl).toBeNull();
-    expect(before.profileMedia).toEqual({ highlights: [], publishedAt: null });
-
-    const avatar = await req("/me/avatar/from-social", c.jwt, {
-      method: "POST",
-      body: JSON.stringify({ accountId: created.id }),
-    });
-    expect(avatar.status).toBe(200);
-
-    const highlight = await req("/me/profile-media/portfolio", c.jwt, {
-      method: "POST",
-      body: JSON.stringify({
-        url: "https://example.com/published-highlight",
-        title: "Published highlight",
+    await svc.from("creators").update({ avatar_url: "https://cdn.example.com/draft-avatar.jpg" }).eq("id", c.userId);
+    await svc.from("creator_portfolio_links").insert([
+      {
+        creator_id: c.userId,
+        workspace_id: "00000000-0000-0000-0000-0000000000aa",
+        url: "https://example.com/public-highlight",
+        title: "Public campaign",
         platform_type: "website",
-        caption: "Visible after publish",
+        caption: "Launch recap",
         sort_order: 1,
         public_highlight: true,
-      }),
-    });
-    expect(highlight.status).toBe(200);
-
-    const selectedOnly = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
-    expect(selectedOnly.creator.avatarUrl).toBeNull();
-    expect(selectedOnly.profileMedia).toEqual({ highlights: [], publishedAt: null });
-
-    const published = await req("/me/profile-media/publish", c.jwt, { method: "POST" });
-    expect(published.status).toBe(200);
-
-    const afterPublish = await (await app.request(`/api/public/passports/${firstShare.token}`)).json();
-    expect(afterPublish.creator.avatarUrl).toBe("https://cdn.example.com/private-social-avatar.jpg");
-    expect(afterPublish.profileMedia.highlights).toEqual([
+      },
       {
-        url: "https://example.com/published-highlight",
-        title: "Published highlight",
+        creator_id: c.userId,
+        workspace_id: "00000000-0000-0000-0000-0000000000aa",
+        url: "https://example.com/private-link",
+        title: "Private campaign",
         platform_type: "website",
-        caption: "Visible after publish",
+        caption: "Internal review only",
+        sort_order: 2,
+        public_highlight: false,
+      },
+    ]);
+
+    const share = await (await req("/me/passport/share", c.jwt, { method: "POST" })).json();
+    const before = await (await app.request(`/api/public/passports/${share.token}`)).json();
+    expect(before.creator.avatarUrl).toBeNull();
+    expect(before.profileMedia.highlights).toEqual([]);
+
+    const publish = await req("/me/profile-media/publish", c.jwt, { method: "POST" });
+    expect(publish.status).toBe(200);
+
+    const after = await (await app.request(`/api/public/passports/${share.token}`)).json();
+    expect(after.creator.avatarUrl).toBe("https://cdn.example.com/draft-avatar.jpg");
+    expect(after.profileMedia.highlights).toEqual([
+      {
+        url: "https://example.com/public-highlight",
+        title: "Public campaign",
+        platform_type: "website",
+        caption: "Launch recap",
         sort_order: 1,
       },
     ]);
-    expect(typeof afterPublish.profileMedia.publishedAt).toBe("string");
+    expect(JSON.stringify(after)).not.toContain("private-link");
+    expect(JSON.stringify(after)).not.toContain("Internal review only");
   }, 120_000);
 
   it("does not derive public social badges or influence from self-reported handles alone", async () => {

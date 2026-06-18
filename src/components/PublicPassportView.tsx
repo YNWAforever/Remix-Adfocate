@@ -57,6 +57,31 @@ export function PublicPassportView({ passport }: { passport: PublicPassport }) {
           })}
         </div>
       </section>
+
+      {passport.profileMedia.highlights.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="font-heading font-bold">Creator highlights</h2>
+          <div className="space-y-3">
+            {passport.profileMedia.highlights.map((highlight) => (
+              <a
+                key={`${highlight.url}-${highlight.sort_order}`}
+                href={highlight.url}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 shadow-[4px_4px_0_0_var(--color-ink)]"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-heading font-bold">{highlight.title}</span>
+                  <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold">
+                    {highlight.platform_type}
+                  </span>
+                </div>
+                {highlight.caption ? <p className="mt-2 text-sm text-[var(--color-soft-ink)]">{highlight.caption}</p> : null}
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
