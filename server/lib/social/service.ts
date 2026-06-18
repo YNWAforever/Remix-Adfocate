@@ -1,7 +1,7 @@
-import { serviceClient } from "../supabase";
-import { persistScores } from "../persistScores";
-import { scanRapidApiProfile } from "./rapidApi";
-import * as repo from "./repo";
+import { serviceClient } from "../supabase.js";
+import { persistScores } from "../persistScores.js";
+import { scanRapidApiProfile } from "./rapidApi.js";
+import * as repo from "./repo.js";
 import type {
   SocialAccountRecord,
   SocialPlatform,

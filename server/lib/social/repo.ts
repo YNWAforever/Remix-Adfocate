@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { normalizeHandle, profileUrlFor } from "./normalize";
+import { normalizeHandle, profileUrlFor } from "./normalize.js";
 import type {
   SocialAccountRecord,
   SocialPlatform,
