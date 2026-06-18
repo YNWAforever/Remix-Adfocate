@@ -5,7 +5,7 @@ import type {
   SocialPlatform,
   SocialScanResult,
   SocialSyncStatus,
-} from "./types";
+} from "./types.js";
 
 export const SOCIAL_SCAN_SNAPSHOT_RETENTION = 12;
 

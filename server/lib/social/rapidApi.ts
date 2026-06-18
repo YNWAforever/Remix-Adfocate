@@ -5,7 +5,7 @@ import {
   type SocialPlatform,
   type SocialScanResult,
   type SocialScanSummary,
-} from "./types";
+} from "./types.js";
 
 type ScanEnv = Partial<Record<string, string | undefined>>;
 type ParsedPost = RecentPostSummary & { themeSourceText: string | null };
