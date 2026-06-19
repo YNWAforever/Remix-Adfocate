@@ -28,7 +28,7 @@ function MissionDetail() {
   const [urls, setUrls] = useState("");
   const [showHooks, setShowHooks] = useState(false);
 
-  if (m.isLoading) return <div className="p-4"><SkeletonCard className="h-96" /></div>;
+  if (m.isLoading) return <div className="mx-auto max-w-lg p-4 lg:max-w-5xl"><SkeletonCard className="h-96" /></div>;
   if (m.isError || !m.data) return (
     <div className="flex flex-col items-center gap-4 p-8 text-center">
       <p className="text-sm text-[var(--color-magenta)]">無法載入任務</p>
@@ -47,52 +47,60 @@ function MissionDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-lg pb-6">
+    <div className="mx-auto max-w-lg pb-6 lg:max-w-5xl">
       <header className="glass-panel sticky top-0 z-30 flex items-center gap-3 border-b-2 border-[var(--color-ink)] p-3">
         <Link to="/mission" aria-label="返回" className="grid h-9 w-9 place-items-center rounded-full border-2 border-[var(--color-ink)] bg-white"><ArrowLeft size={18} /></Link>
         <h1 className="truncate font-heading font-semibold">{m.data.title}</h1>
       </header>
-      <div className="space-y-4 p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
-          <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{missionTypeLabel(m.data.mission_type)}</span>
+
+      <div className="p-4 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6">
+        {/* Left column: title + brief */}
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
+            <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{missionTypeLabel(m.data.mission_type)}</span>
+          </div>
+          <h2 className="font-display text-xl font-bold">{m.data.title}</h2>
+          <MissionBrief mission={m.data} />
         </div>
-        <h2 className="font-display text-xl font-bold">{m.data.title}</h2>
-        <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
-        <MissionBrief mission={m.data} />
 
-        {/* Action zone */}
-        {!sub ? (
-          isApplication ? (
-            <button onClick={() => apply.mutateAsync()} disabled={apply.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{apply.isPending ? "處理中…" : "申請任務"}</button>
+        {/* Right column (desktop): facts + action zone + hooks; stacks below on mobile */}
+        <div className="mt-4 space-y-4 lg:mt-0">
+          <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
+
+          {/* Action zone */}
+          {!sub ? (
+            isApplication ? (
+              <button onClick={() => apply.mutateAsync()} disabled={apply.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{apply.isPending ? "處理中…" : "申請任務"}</button>
+            ) : (
+              <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? "處理中…" : "加入任務"}</button>
+            )
+          ) : sub.status === "joined" ? (
+            <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+              <h3 className="font-heading font-bold">提交內容</h3>
+              <textarea value={urls} onChange={(e) => setUrls(e.target.value)} rows={3} placeholder="貼上你的內容連結（每行一條）" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
+              <button onClick={onSubmit} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? "提交中…" : "提交內容"}</button>
+            </section>
           ) : (
-            <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? "處理中…" : "加入任務"}</button>
-          )
-        ) : sub.status === "joined" ? (
-          <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-            <h3 className="font-heading font-bold">提交內容</h3>
-            <textarea value={urls} onChange={(e) => setUrls(e.target.value)} rows={3} placeholder="貼上你的內容連結（每行一條）" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
-            <button onClick={onSubmit} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? "提交中…" : "提交內容"}</button>
-          </section>
-        ) : (
-          <section className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-            <span className="font-heading font-bold">狀態</span>
-            <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · +${sub.points_awarded} 積分` : ""}</span>
-          </section>
-        )}
+            <section className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+              <span className="font-heading font-bold">狀態</span>
+              <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · +${sub.points_awarded} 積分` : ""}</span>
+            </section>
+          )}
 
-        {!isApplication && (
-          <>
-            <button
-              onClick={() => setShowHooks((v) => !v)}
-              aria-label="生成內容靈感"
-              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] py-3 text-center font-heading font-bold text-white"
-            >
-              <Lightbulb size={18} aria-hidden /> 生成內容靈感
-            </button>
-            {showHooks && <HookPanel missionSlug={missionSlug} />}
-          </>
-        )}
+          {!isApplication && (
+            <>
+              <button
+                onClick={() => setShowHooks((v) => !v)}
+                aria-label="生成內容靈感"
+                className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] py-3 text-center font-heading font-bold text-white"
+              >
+                <Lightbulb size={18} aria-hidden /> 生成內容靈感
+              </button>
+              {showHooks && <HookPanel missionSlug={missionSlug} />}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

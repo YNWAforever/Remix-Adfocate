@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { apiFetch, setWorkspaceSlug, ApiError } from "@/lib/api";
@@ -6,6 +6,7 @@ import { resolveWorkspace } from "@/lib/workspace";
 import { useWorkspace, type Me } from "@/lib/queries/kocmax";
 import { applyTheme } from "@/lib/theme";
 import { BottomNav } from "@/components/BottomNav";
+import { SideNav } from "@/components/SideNav";
 import { LevelUpModal } from "@/components/LevelUpModal";
 
 export const Route = createFileRoute("/_app")({
@@ -50,12 +51,15 @@ export const Route = createFileRoute("/_app")({
 
 function Layout() {
   const ws = useWorkspace();
+  const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { if (ws.data?.theme) applyTheme(ws.data.theme); }, [ws.data]);
+  const showNav = !(path === "/login" || path.startsWith("/auth/") || path.startsWith("/onboarding"));
   return (
-    <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)] pb-20">
+    <div className={`min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]${showNav ? " pb-20 lg:pb-0 lg:pl-60" : ""}`}>
+      {showNav && <SideNav />}
       <main><Outlet /></main>
       <LevelUpModal />
-      <BottomNav />
+      {showNav && <BottomNav />}
     </div>
   );
 }

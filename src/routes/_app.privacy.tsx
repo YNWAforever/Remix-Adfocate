@@ -5,7 +5,7 @@ export const Route = createFileRoute("/_app/privacy")({ component: Privacy });
 
 function Privacy() {
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-2xl">
       <Link to="/home" className="inline-flex items-center gap-1 text-sm"><ArrowLeft size={16} aria-hidden /> 返回</Link>
       <h1 className="font-display text-2xl font-bold">私隱政策</h1>
       <article className="pastel-card space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-sm leading-[1.65] text-[var(--color-soft-ink)]">

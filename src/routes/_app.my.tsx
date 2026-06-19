@@ -13,11 +13,11 @@ const GROUPS: { label: string; statuses: SubmissionStatus[] }[] = [
 
 function MyMissions() {
   const mine = useMyMissions();
-  if (mine.isLoading) return <div className="p-4"><SkeletonCard className="h-40" /></div>;
+  if (mine.isLoading) return <div className="mx-auto w-full max-w-lg p-4 lg:max-w-5xl"><SkeletonCard className="h-40" /></div>;
   const subs: MyMission[] = mine.data ?? [];
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 p-4 pb-6">
+    <div className="mx-auto w-full max-w-lg space-y-6 p-4 pb-6 lg:max-w-5xl">
       <h1 className="font-display text-xl font-bold">我的任務</h1>
       {subs.length === 0 && <p className="text-sm text-[var(--color-soft-ink)]">尚未加入任何任務。</p>}
       {GROUPS.map((g) => {
@@ -26,6 +26,7 @@ function MyMissions() {
         return (
           <section key={g.label} className="space-y-2">
             <h2 className="font-heading font-bold">{g.label}</h2>
+            <div className="grid gap-2 lg:grid-cols-2">
             {items.map((s) => (
               <Link
                 key={s.id}
@@ -39,6 +40,7 @@ function MyMissions() {
                 </span>
               </Link>
             ))}
+            </div>
           </section>
         );
       })}

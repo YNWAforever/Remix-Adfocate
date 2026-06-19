@@ -10,7 +10,7 @@ function PublicPassportRoute() {
 
   if (passport.isLoading) {
     return (
-      <div className="mx-auto max-w-lg p-4">
+      <div className="mx-auto w-full max-w-lg p-4 lg:max-w-5xl">
         <p className="text-sm text-[var(--color-soft-ink)]">Loading passport...</p>
       </div>
     );
@@ -18,7 +18,7 @@ function PublicPassportRoute() {
 
   if (passport.isError || !passport.data) {
     return (
-      <div className="mx-auto max-w-lg p-4">
+      <div className="mx-auto w-full max-w-lg p-4 lg:max-w-5xl">
         <p className="text-sm text-[var(--color-magenta)]">Passport unavailable</p>
       </div>
     );
