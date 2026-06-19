@@ -9,6 +9,7 @@ import { redemptionRoutes } from "./routes/redemption.js";
 import { adminRoutes } from "./routes/admin.js";
 import { matchRoutes } from "./routes/match.js";
 import { copilotRoutes } from "./routes/copilot.js";
+import { assistantRoutes } from "./routes/assistant.js";
 import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
@@ -39,6 +40,7 @@ export function createApp() {
   guarded.route("/missions", missionRoutes);
   guarded.route("/match", matchRoutes);
   guarded.route("/copilot", copilotRoutes);
+  guarded.route("/assistant", assistantRoutes());
   guarded.route("/redemption", redemptionRoutes);
   guarded.route("/social", socialRoutes);
   guarded.route("/workspace", workspaceRoutes);
