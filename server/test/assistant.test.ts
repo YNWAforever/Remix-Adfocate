@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createApp } from "../app";
 import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
 import { assistantRoutes } from "../routes/assistant";
 import type { AssistantProvider } from "../lib/assistant/chat";

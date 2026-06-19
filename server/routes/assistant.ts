@@ -25,7 +25,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     if (!conversationId) {
       const { data, error } = await supabase
         .from("assistant_conversations")
-        .insert({ creator_id: creatorId, workspace_id: workspaceId })
+        .insert({ creator_id: creatorId, workspace: workspaceId })
         .select("id")
         .single();
       if (error || !data) {
