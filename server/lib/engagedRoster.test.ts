@@ -35,6 +35,12 @@ describe("shapeEngagedRoster", () => {
     expect(a.activeMissions.every((m) => m.status !== "approved")).toBe(true);
   });
 
+  it("nests under_review rows as active", () => {
+    const roster = shapeEngagedRoster([row({ creator_id: "u", status: "under_review" })]);
+    expect(roster[0]!.activeCount).toBe(1);
+    expect(roster[0]!.activeMissions[0]!.status).toBe("under_review");
+  });
+
   it("excludes creators whose every participation is terminal (no active)", () => {
     const roster = shapeEngagedRoster([row({ creator_id: "done", status: "approved", points_awarded: 100 })]);
     expect(roster).toEqual([]);

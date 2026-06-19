@@ -110,7 +110,7 @@ function OperatorCreatorDetailRoute() {
             <p className="text-sm text-[var(--color-soft-ink)]">營運用創作者檔案、審核紀錄與內部備註。</p>
           </div>
           <Link
-            to="/operator/creators"
+            to="/admin/creators"
             className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold"
           >
             <ArrowLeft className="h-4 w-4" />

@@ -284,6 +284,8 @@ export type Submission = Application & {
   submitted_at: string | null;
 };
 
+// NOTE: these mirror the server-side shapes in server/lib/engagedRoster.ts
+// (the source of truth, returned by GET /admin/engaged). Keep them in sync.
 export type EngagedActiveMission = {
   submissionId: string;
   missionId: string;
