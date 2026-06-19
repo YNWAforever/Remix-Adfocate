@@ -56,8 +56,16 @@ function Layout() {
   const showNav = !(path === "/login" || path.startsWith("/auth/") || path.startsWith("/onboarding"));
   return (
     <div className={`min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]${showNav ? " pb-20 lg:pb-0 lg:pl-60" : ""}`}>
+      {showNav && (
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-full focus:border-2 focus:border-[var(--color-ink)] focus:bg-[var(--color-acid)] focus:px-4 focus:py-2 focus:font-heading focus:font-bold"
+        >
+          跳至主要內容
+        </a>
+      )}
       {showNav && <SideNav />}
-      <main><Outlet /></main>
+      <main id="main"><Outlet /></main>
       <LevelUpModal />
       {showNav && <BottomNav />}
     </div>

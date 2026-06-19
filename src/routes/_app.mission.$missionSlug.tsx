@@ -54,8 +54,14 @@ function MissionDetail() {
       </header>
 
       <div className="p-4 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6">
-        {/* Left column: title + brief */}
-        <div className="space-y-4">
+        {/* Facts — first on mobile (reward/quota/deadline/eligibility before the long brief, as on
+            the pre-redesign single column); top of the right column on desktop. */}
+        <div className="lg:col-start-2 lg:row-start-1">
+          <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
+        </div>
+
+        {/* Title + brief — left column on desktop, spanning both rows so the action zone tucks beside it. */}
+        <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
           <div className="flex flex-wrap items-center gap-2">
             {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
             <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{missionTypeLabel(m.data.mission_type)}</span>
@@ -64,10 +70,8 @@ function MissionDetail() {
           <MissionBrief mission={m.data} />
         </div>
 
-        {/* Right column (desktop): facts + action zone + hooks; stacks below on mobile */}
-        <div className="mt-4 space-y-4 lg:mt-0">
-          <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
-
+        {/* Action zone + hooks — below Facts in the right column on desktop, after the brief on mobile */}
+        <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-2 lg:row-start-2">
           {/* Action zone */}
           {!sub ? (
             isApplication ? (
