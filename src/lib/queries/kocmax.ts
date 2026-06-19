@@ -489,3 +489,13 @@ export function useEarningsHistory() {
     queryFn: async () => (await apiFetch<{ transactions: EarningsTxn[] }>("/wallet/earnings/history")).transactions,
   });
 }
+
+export type AssistantCitation = { title: string; sourceType: string; sourceRef: string };
+export type AssistantReply = { conversation_id: string; answer: string; citations: AssistantCitation[] };
+
+export function useAssistantChat() {
+  return useMutation({
+    mutationFn: (body: { message: string; conversation_id?: string; locale?: string }) =>
+      apiFetch<AssistantReply>("/assistant/chat", { method: "POST", body: JSON.stringify(body) }),
+  });
+}

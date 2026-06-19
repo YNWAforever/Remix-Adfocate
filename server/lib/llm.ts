@@ -127,3 +127,66 @@ export async function enhanceHooks(input: {
     clearTimeout(timer);
   }
 }
+
+// --- assistant additions -------------------------------------------------
+const GATEWAY = "https://ai-gateway.vercel.sh/v1";
+
+export interface ChatMessage {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string;
+  tool_call_id?: string;
+  tool_calls?: Array<{ id: string; type: "function"; function: { name: string; arguments: string } }>;
+}
+export interface ToolDef {
+  type: "function";
+  function: { name: string; description: string; parameters: Record<string, unknown> };
+}
+export interface ToolCall { id: string; name: string; arguments: string; }
+
+function gatewayKey(): string {
+  const key = process.env.AI_GATEWAY_API_KEY;
+  if (!key) throw new Error("AI_GATEWAY_API_KEY is not set");
+  return key;
+}
+
+/** Embed texts via the gateway. Throws on failure (callers decide how to degrade). */
+export async function embedTexts(texts: string[]): Promise<number[][]> {
+  const model = process.env.AI_GATEWAY_EMBED_MODEL ?? "openai/text-embedding-3-small";
+  const res = await fetch(`${GATEWAY}/embeddings`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model, input: texts }),
+  });
+  if (!res.ok) throw new Error(`embeddings failed: ${res.status}`);
+  const json = (await res.json()) as { data: Array<{ embedding: number[] }> };
+  return json.data.map((d) => d.embedding);
+}
+
+/** Non-streaming chat completion with optional tools. Throws on failure. */
+export async function chatComplete(opts: {
+  messages: ChatMessage[];
+  tools?: ToolDef[];
+  temperature?: number;
+}): Promise<{ content: string | null; toolCalls: ToolCall[] }> {
+  const model = process.env.AI_GATEWAY_MODEL ?? "deepseek/deepseek-v4-flash";
+  const res = await fetch(`${GATEWAY}/chat/completions`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: opts.messages,
+      tools: opts.tools,
+      temperature: opts.temperature ?? 0.3,
+      stream: false,
+    }),
+  });
+  if (!res.ok) throw new Error(`chat failed: ${res.status}`);
+  const json = (await res.json()) as {
+    choices: Array<{ message: { content: string | null; tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> } }>;
+  };
+  const msg = json.choices[0]?.message;
+  return {
+    content: msg?.content ?? null,
+    toolCalls: (msg?.tool_calls ?? []).map((t) => ({ id: t.id, name: t.function.name, arguments: t.function.arguments })),
+  };
+}

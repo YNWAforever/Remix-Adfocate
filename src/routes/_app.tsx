@@ -7,6 +7,7 @@ import { useWorkspace, type Me } from "@/lib/queries/kocmax";
 import { applyTheme } from "@/lib/theme";
 import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
+import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { LevelUpModal } from "@/components/LevelUpModal";
 
 export const Route = createFileRoute("/_app")({
@@ -68,6 +69,7 @@ function Layout() {
       <main id="main"><Outlet /></main>
       <LevelUpModal />
       {showNav && <BottomNav />}
+      {showNav && <AssistantLauncher />}
     </div>
   );
 }
