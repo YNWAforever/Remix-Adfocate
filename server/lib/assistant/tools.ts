@@ -17,7 +17,7 @@ export const TOOL_DEFS: ToolDef[] = [
       description: "List the creator's missions and their statuses. Optionally filter by status.",
       parameters: {
         type: "object",
-        properties: { status: { type: "string", enum: ["joined", "submitted", "under_review", "approved", "rejected", "expired"] } },
+        properties: { status: { type: "string", enum: ["applied", "joined", "submitted", "under_review", "approved", "rejected", "declined", "expired"] } },
         additionalProperties: false,
       },
     },
@@ -39,9 +39,11 @@ export async function runTool(name: string, argsJson: string, client: Client): P
   }
 
   if (name === "get_my_missions") {
+    const VALID_STATUSES = new Set(["applied", "joined", "submitted", "under_review", "approved", "rejected", "declined", "expired"]);
     const base = client.from("mission_submissions")
       .select("status, points_awarded, submitted_at, missions(slug, title, mission_type)");
-    const q = typeof args.status === "string" ? base.eq("status", args.status) : base;
+    const status = typeof args.status === "string" && VALID_STATUSES.has(args.status) ? args.status : undefined;
+    const q = status ? base.eq("status", status) : base;
     const { data, error } = await q;
     if (error) return `error: ${error.message}`;
     return JSON.stringify({ missions: data ?? [] });

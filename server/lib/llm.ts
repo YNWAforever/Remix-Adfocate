@@ -130,8 +130,6 @@ export async function enhanceHooks(input: {
 
 // --- assistant additions -------------------------------------------------
 const GATEWAY = "https://ai-gateway.vercel.sh/v1";
-const CHAT_MODEL = process.env.AI_GATEWAY_MODEL ?? "deepseek/deepseek-v4-flash";
-const EMBED_MODEL = process.env.AI_GATEWAY_EMBED_MODEL ?? "openai/text-embedding-3-small";
 
 export interface ChatMessage {
   role: "system" | "user" | "assistant" | "tool";
@@ -153,10 +151,11 @@ function gatewayKey(): string {
 
 /** Embed texts via the gateway. Throws on failure (callers decide how to degrade). */
 export async function embedTexts(texts: string[]): Promise<number[][]> {
+  const model = process.env.AI_GATEWAY_EMBED_MODEL ?? "openai/text-embedding-3-small";
   const res = await fetch(`${GATEWAY}/embeddings`, {
     method: "POST",
     headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: EMBED_MODEL, input: texts }),
+    body: JSON.stringify({ model, input: texts }),
   });
   if (!res.ok) throw new Error(`embeddings failed: ${res.status}`);
   const json = (await res.json()) as { data: Array<{ embedding: number[] }> };
@@ -169,11 +168,12 @@ export async function chatComplete(opts: {
   tools?: ToolDef[];
   temperature?: number;
 }): Promise<{ content: string | null; toolCalls: ToolCall[] }> {
+  const model = process.env.AI_GATEWAY_MODEL ?? "deepseek/deepseek-v4-flash";
   const res = await fetch(`${GATEWAY}/chat/completions`, {
     method: "POST",
     headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: CHAT_MODEL,
+      model,
       messages: opts.messages,
       tools: opts.tools,
       temperature: opts.temperature ?? 0.3,

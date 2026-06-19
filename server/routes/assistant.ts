@@ -32,17 +32,30 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
         return c.json({ error: "could not start conversation", code: "db_error" }, 500);
       }
       conversationId = data.id as string;
+    } else {
+      // Verify the supplied conversation belongs to this creator (RLS scopes the read);
+      // 404 on miss avoids leaking the existence of another creator's conversation.
+      const { data: owned } = await supabase
+        .from("assistant_conversations")
+        .select("id")
+        .eq("id", conversationId)
+        .maybeSingle();
+      if (!owned) return c.json({ error: "conversation not found", code: "not_found" }, 404);
     }
 
-    // Load prior turns as history (oldest first).
+    // Load the most recent turns as history (cap to bound the LLM context). Fetched
+    // newest-first then reversed to chronological order. An empty history on a DB
+    // error is acceptable degradation — the answer just lacks prior context.
     const { data: prior } = await supabase
       .from("assistant_messages")
       .select("role, content")
       .eq("conversation_id", conversationId)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: false })
+      .limit(20);
 
     const history: ChatMessage[] = (prior ?? [])
       .filter((m: { role: string; content: string }) => m.role === "user" || m.role === "assistant")
+      .reverse()
       .map((m: { role: string; content: string }) => ({ role: m.role as "user" | "assistant", content: m.content }));
 
     let result;
