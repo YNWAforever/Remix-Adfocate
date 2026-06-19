@@ -15,7 +15,7 @@ function Redemption() {
   const balance = useBalance();
   const gifts = useGifts(category === "全部" ? undefined : category);
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
       {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
       <div className="flex items-center justify-between">
@@ -24,7 +24,7 @@ function Redemption() {
       </div>
       <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
       {gifts.isLoading && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           <SkeletonCard className="h-48" />
           <SkeletonCard className="h-48" />
         </div>
@@ -34,7 +34,7 @@ function Redemption() {
         <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無獎賞</p>
       )}
       {!gifts.isLoading && !gifts.isError && (gifts.data?.length ?? 0) > 0 && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {gifts.data!.map((g) => (
             <RedeemGiftCard key={g.id} gift={g} balance={balance.data?.balance ?? 0} />
           ))}

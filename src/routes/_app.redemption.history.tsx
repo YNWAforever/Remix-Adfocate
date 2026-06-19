@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_app/redemption/history")({ component: Re
 function RedemptionHistory() {
   const q = useRedemptions();
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-3xl">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">兌換記錄</h1>
         <Link to="/redemption" className="text-sm font-bold text-[var(--color-magenta)]">返回兌換</Link>
