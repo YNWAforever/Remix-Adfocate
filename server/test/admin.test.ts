@@ -194,3 +194,42 @@ suite("admin submission review", () => {
     expect(scores.content).toBeNull();
   });
 });
+
+suite("admin engaged roster", () => {
+  afterAll(cleanup);
+
+  it("requires the admin secret", async () => {
+    const res = await app.request("/api/admin/engaged", { headers: { "Content-Type": "application/json" } });
+    expect(res.status).toBe(401);
+    expect((await res.json()).code).toBe("no_admin");
+  });
+
+  it("lists creators with active participations and excludes fully-completed ones", async () => {
+    await cleanup();
+    const active = await makeCreator("engaged-active@test.local", 0);
+    await makeMission({ slug: "engaged-active-mission", points_reward: 100, quota: 5 });
+    await koreq("/missions/engaged-active-mission/join", active.jwt, { method: "POST" });
+
+    const done = await makeCreator("engaged-done@test.local", 0);
+    await makeMission({ slug: "engaged-done-mission", points_reward: 100, quota: 5 });
+    await koreq("/missions/engaged-done-mission/join", done.jwt, { method: "POST" });
+    const sub = await koreq("/missions/engaged-done-mission/submit", done.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://ig.com/p/done"] }),
+    });
+    await adminreq(`/admin/submissions/${(await sub.json()).id}/approve`, { method: "POST" });
+
+    const res = await adminreq("/admin/engaged");
+    expect(res.status).toBe(200);
+    const { creators } = await res.json();
+
+    const activeRow = creators.find((c: { id: string }) => c.id === active.userId);
+    expect(activeRow).toBeTruthy();
+    expect(activeRow.activeCount).toBe(1);
+    expect(activeRow.completedCount).toBe(0);
+    expect(activeRow.activeMissions[0].missionSlug).toBe("engaged-active-mission");
+    expect(activeRow.activeMissions[0].status).toBe("joined");
+
+    expect(creators.find((c: { id: string }) => c.id === done.userId)).toBeUndefined();
+  });
+});
