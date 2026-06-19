@@ -1,17 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
 import { TOOL_DEFS, runTool } from "./tools.js";
 
+interface ChainMock {
+  select: () => ChainMock;
+  eq: () => ChainMock;
+  order: () => ChainMock;
+  then: (res: (value: { data: unknown; error: null }) => unknown) => Promise<unknown>;
+}
+
 function clientReturning(table: string, rows: unknown) {
   return {
     from: vi.fn((t: string) => {
       expect(t).toBe(table);
-      const chain: any = {
+      const chain: ChainMock = {
         select: () => chain, eq: () => chain, order: () => chain,
-        then: (res: any) => Promise.resolve({ data: rows, error: null }).then(res),
+        then: (res) => Promise.resolve({ data: rows, error: null }).then(res),
       };
       return chain;
     }),
-  } as any;
+  } as unknown as Parameters<typeof runTool>[2];
 }
 
 describe("assistant tools", () => {
@@ -28,7 +35,7 @@ describe("assistant tools", () => {
   });
 
   it("returns an error string for an unknown tool", async () => {
-    const out = await runTool("definitely_not_a_tool", "{}", {} as any);
+    const out = await runTool("definitely_not_a_tool", "{}", {} as unknown as Parameters<typeof runTool>[2]);
     expect(out.toLowerCase()).toContain("unknown tool");
   });
 });

@@ -28,8 +28,8 @@ export async function retrieveContext(
     filter_workspace: input.workspace,
   });
   if (error || !data) return [];
-  return (data as RetrievedChunk[] | Array<Record<string, unknown>>)
-    .map((r: any) => ({
+  return (data as Array<{ chunk_id: string; document_id: string; title: string; source_type: string; source_ref: string; content: string; similarity: number }>)
+    .map((r) => ({
       chunkId: r.chunk_id, documentId: r.document_id, title: r.title,
       sourceType: r.source_type, sourceRef: r.source_ref, content: r.content,
       similarity: r.similarity,

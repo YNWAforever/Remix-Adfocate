@@ -18,7 +18,7 @@ export interface AssistantResult { answer: string; citations: Citation[]; }
 
 interface Deps {
   provider?: AssistantProvider;
-  runToolFn?: (name: string, args: string, client: any) => Promise<string>;
+  runToolFn?: (name: string, args: string, client: Pick<SupabaseClient, "rpc" | "from">) => Promise<string>;
   maxIterations?: number;
 }
 

@@ -39,9 +39,9 @@ export async function runTool(name: string, argsJson: string, client: Client): P
   }
 
   if (name === "get_my_missions") {
-    let q = client.from("mission_submissions")
+    const base = client.from("mission_submissions")
       .select("status, points_awarded, submitted_at, missions(slug, title, mission_type)");
-    if (typeof args.status === "string") q = (q as any).eq("status", args.status);
+    const q = typeof args.status === "string" ? base.eq("status", args.status) : base;
     const { data, error } = await q;
     if (error) return `error: ${error.message}`;
     return JSON.stringify({ missions: data ?? [] });

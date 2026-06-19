@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 const mutate = vi.fn();
-let state: any = { mutate, isPending: false, data: undefined };
+type MockChat = {
+  mutate: typeof mutate;
+  isPending: boolean;
+  data?: { conversation_id: string; answer: string; citations: { title: string; sourceType: string; sourceRef: string }[] };
+};
+let state: MockChat = { mutate, isPending: false, data: undefined };
 vi.mock("@/lib/queries/kocmax", () => ({ useAssistantChat: () => state }));
 
 import { AssistantPanel } from "./AssistantPanel";
