@@ -13,11 +13,11 @@ function Missions() {
   const [category, setCategory] = useState<string>("全部");
   const missions = useMissions(category === "全部" ? undefined : category);
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4">
+    <div className="mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <h1 className="font-display text-2xl font-bold">限時任務</h1>
       <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
       {missions.isLoading && (
-        <div className="space-y-2">
+        <div className="grid gap-2 lg:grid-cols-2">
           <SkeletonCard className="h-24" />
           <SkeletonCard className="h-24" />
         </div>
@@ -26,7 +26,7 @@ function Missions() {
       {!missions.isLoading && !missions.isError && missions.data?.length === 0 && (
         <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無任務</p>
       )}
-      <div className="space-y-2">
+      <div className="grid gap-2 lg:grid-cols-2">
         {missions.data?.map((m) => (
           <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>
             <MissionCard title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
