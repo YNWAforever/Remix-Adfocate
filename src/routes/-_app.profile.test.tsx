@@ -85,7 +85,7 @@ describe("Profile page", () => {
     renderProfile();
     expect(screen.getByText("阿明")).toBeInTheDocument();
     expect(screen.getByText("Explorer")).toBeInTheDocument();
-    expect(screen.getByText("還需 1400 XP 升至 Creator")).toBeInTheDocument();
+    expect(screen.getByText(/看護照/).closest("a")).toHaveAttribute("href", "/passport");
     expect(screen.getByText("美容")).toBeInTheDocument();
     expect(screen.getByText("Social trust")).toBeInTheDocument();
     expect(screen.getByText("ABCD1234")).toBeInTheDocument();
@@ -113,9 +113,9 @@ describe("Profile page", () => {
     );
   });
 
-  it("links to the creator passport", () => {
+  it("links to the creator passport via the level chip", () => {
     renderProfile();
-    expect(screen.getByText("創作者護照").closest("a")).toHaveAttribute("href", "/passport");
+    expect(screen.getByText(/看護照/).closest("a")).toHaveAttribute("href", "/passport");
   });
 
   it("signs out and redirects to /login", async () => {
