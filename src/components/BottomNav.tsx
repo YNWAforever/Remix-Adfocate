@@ -1,18 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Target, Gift, Wallet, Compass } from "lucide-react";
-
-const TABS = [
-  { to: "/home", label: "主頁", icon: Home, exact: true as const },
-  { to: "/mission", label: "任務", icon: Target, exact: false as const },
-  { to: "/redemption", label: "積分兌換", icon: Gift, exact: false as const },
-  { to: "/wallet", label: "錢包", icon: Wallet, exact: false as const },
-  { to: "/explore", label: "探索", icon: Compass, exact: false as const },
-] as const;
+import { NAV_ITEMS } from "./navItems";
 
 export function BottomNav() {
   return (
-    <nav aria-label="主要導航" className="glass-panel fixed bottom-0 inset-x-0 z-40 flex border-t-2 border-[var(--color-ink)] pb-[env(safe-area-inset-bottom)]">
-      {TABS.map((t) => {
+    <nav aria-label="主要導航" className="glass-panel fixed bottom-0 inset-x-0 z-40 flex border-t-2 border-[var(--color-ink)] pb-[env(safe-area-inset-bottom)] lg:hidden">
+      {NAV_ITEMS.map((t) => {
         const Icon = t.icon;
         return (
           <Link
