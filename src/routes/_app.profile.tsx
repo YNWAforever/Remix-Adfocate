@@ -3,15 +3,17 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreatorProfileMediaPanel } from "@/components/CreatorProfileMediaPanel";
 import { FilterPillsMulti } from "@/components/FilterPills";
+import { IdentityHeader } from "@/components/IdentityHeader";
+import { LevelChip } from "@/components/LevelChip";
 import { SocialTrustPanel } from "@/components/SocialTrustPanel";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
-import { progressToNext } from "@/lib/levels";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/_app/profile")({ component: Profile });
 
 const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", "寵物"] as const;
 const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
+const CARD = "rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]";
 
 function Profile() {
   const navigate = useNavigate();
@@ -40,7 +42,6 @@ function Profile() {
   async function save() {
     setError(null);
     const existing = me.data?.social_handles ?? [];
-    // Rebuild from the non-empty handle inputs, preserving followers/verified per platform.
     const social_handles: SocialHandle[] = PLATFORMS.flatMap((p) => {
       const handle = (handles[p] ?? "").trim();
       if (!handle) return [];
@@ -84,143 +85,117 @@ function Profile() {
   }
 
   const d = me.data;
-  const initial = (d.display_name?.[0] ?? "?").toUpperCase();
 
   return (
-    <div className="mx-auto max-w-lg space-y-6 p-4">
-      <section className="flex items-center gap-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5 shadow-[4px_4px_0_0_var(--color-ink)]">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold">
-          {d.avatar_url ? <img src={d.avatar_url} alt="" className="h-full w-full object-cover" /> : initial}
-        </div>
-        <div className="min-w-0">
-          <h1 className="truncate font-display text-2xl font-bold">{d.display_name ?? "KOC"}</h1>
-        </div>
-      </section>
-
-      {(() => {
-        const p = progressToNext(d.xp);
-        return (
-          <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl" aria-hidden>{p.current.emoji}</span>
-              <span className="font-heading font-bold">{p.current.label}</span>
-              <span className="ml-auto text-sm text-[var(--color-soft-ink)]">{d.xp} XP</span>
-            </div>
-            {p.next ? (
+    <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
+      <section className={`${CARD} p-5`}>
+        <IdentityHeader
+          name={d.display_name ?? "KOC"}
+          avatarUrl={d.avatar_url}
+          actions={
+            !editing && (
               <>
-                <div className="h-3 overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white">
-                  <div className="h-full bg-[var(--color-acid)]" style={{ width: `${p.pct}%` }} />
-                </div>
-                <p className="text-sm text-[var(--color-soft-ink)]">
-                  還需 {p.xpForNext! - p.xpIntoCurrent} XP 升至 {p.next.label}
-                </p>
-                <p className="text-xs text-[var(--color-soft-ink)]">解鎖：{p.next.unlock}</p>
+                <button
+                  type="button"
+                  onClick={startEdit}
+                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-1.5 text-sm font-heading font-bold"
+                >
+                  編輯
+                </button>
+                <button
+                  type="button"
+                  onClick={signOut}
+                  className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-1.5 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                >
+                  登出
+                </button>
               </>
-            ) : (
-              <p className="text-sm font-heading font-bold">最高等級</p>
-            )}
-          </section>
-        );
-      })()}
+            )
+          }
+        >
+          <LevelChip xp={d.xp} />
+        </IdentityHeader>
+      </section>
 
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
 
       {!editing ? (
-        <>
-          <section className="space-y-2">
-            <h2 className="font-heading font-bold">內容範疇</h2>
-            {d.categories?.length ? (
-              <div className="flex flex-wrap gap-2">
-                {d.categories.map((c) => (
-                  <span key={c} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm">
-                    {c}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
-            )}
-          </section>
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-6">
+            <section className="space-y-2">
+              <h2 className="font-heading font-bold">內容範疇</h2>
+              {d.categories?.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {d.categories.map((c) => (
+                    <span key={c} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
+              )}
+            </section>
 
-          <section className="space-y-2">
-            <h2 className="font-heading font-bold">社交帳號</h2>
-            {d.social_handles?.length ? (
-              <ul className="space-y-1">
-                {d.social_handles.map((s) => (
-                  <li
-                    key={s.platform}
-                    className="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
-                  >
-                    <span className="font-heading font-semibold">{s.platform}</span>
-                    <span className="text-[var(--color-soft-ink)]">{s.handle}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
-            )}
-          </section>
-
-          <SocialTrustPanel />
-          <CreatorProfileMediaPanel />
-
-          <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
-            <h2 className="font-heading font-bold">我的邀請碼</h2>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-lg font-bold tracking-widest">{d.referral_code ?? "—"}</span>
-              <button
-                type="button"
-                onClick={copyReferral}
-                disabled={!d.referral_code}
-                aria-label="複製邀請碼"
-                className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
-              >
-                {copied ? "已複製" : "複製"}
-              </button>
-            </div>
-            <p className="text-sm text-[var(--color-soft-ink)]">邀請朋友，各得 200 分</p>
-          </section>
-
-          <section className="grid grid-cols-2 gap-3">
-            <Link
-              to="/passport"
-              className="col-span-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-4 text-center font-heading font-semibold"
-            >
-              創作者護照
-            </Link>
-            <Link
-              to="/my"
-              className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
-            >
-              我的任務
-            </Link>
-            <Link
-              to="/redemption/history"
-              className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
-            >
-              兌換記錄
-            </Link>
-          </section>
-
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={startEdit}
-              className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-            >
-              編輯
-            </button>
-            <button
-              type="button"
-              onClick={signOut}
-              className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold text-[var(--color-magenta)]"
-            >
-              登出
-            </button>
+            <section className="space-y-3">
+              <h2 className="font-heading font-bold">社交帳號</h2>
+              {d.social_handles?.length ? (
+                <ul className="space-y-1">
+                  {d.social_handles.map((s) => (
+                    <li
+                      key={s.platform}
+                      className="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                    >
+                      <span className="font-heading font-semibold">{s.platform}</span>
+                      <span className="text-[var(--color-soft-ink)]">{s.handle}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
+              )}
+              <SocialTrustPanel />
+            </section>
           </div>
-        </>
+
+          <div className="space-y-6">
+            <CreatorProfileMediaPanel />
+
+            <section className={`space-y-2 ${CARD}`}>
+              <h2 className="font-heading font-bold">我的邀請碼</h2>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg font-bold tracking-widest">{d.referral_code ?? "—"}</span>
+                <button
+                  type="button"
+                  onClick={copyReferral}
+                  disabled={!d.referral_code}
+                  aria-label="複製邀請碼"
+                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+                >
+                  {copied ? "已複製" : "複製"}
+                </button>
+              </div>
+              <p className="text-sm text-[var(--color-soft-ink)]">邀請朋友，各得 200 分</p>
+            </section>
+
+            <section className="grid grid-cols-2 gap-3">
+              <Link
+                to="/my"
+                className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+              >
+                我的任務
+              </Link>
+              <Link
+                to="/redemption/history"
+                className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+              >
+                兌換記錄
+              </Link>
+            </section>
+          </div>
+        </div>
       ) : (
-        <>
+        <div className="mx-auto w-full max-w-lg space-y-6">
           <section className="space-y-2">
             <h2 className="font-heading font-bold">顯示名稱</h2>
             <input
@@ -272,7 +247,7 @@ function Profile() {
               {update.isPending ? "儲存中…" : "儲存"}
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

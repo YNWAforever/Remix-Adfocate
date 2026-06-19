@@ -82,6 +82,13 @@ describe("Passport page", () => {
     expect(screen.getByText("內容達人")).toBeInTheDocument();
   });
 
+  it("renders the identity hero with name and level progress", () => {
+    renderPassport();
+    expect(screen.getByRole("heading", { name: "阿明" })).toBeInTheDocument();
+    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText("還需 1400 XP 升至 Creator")).toBeInTheDocument();
+  });
+
   it("creates and revokes a public passport link", async () => {
     hoisted.createShare.mockClear();
     hoisted.revokeShare.mockClear();
