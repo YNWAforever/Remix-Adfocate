@@ -98,14 +98,14 @@ function Profile() {
                 <button
                   type="button"
                   onClick={startEdit}
-                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-1.5 text-sm font-heading font-bold"
+                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
                 >
                   編輯
                 </button>
                 <button
                   type="button"
                   onClick={signOut}
-                  className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-1.5 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
                 >
                   登出
                 </button>
