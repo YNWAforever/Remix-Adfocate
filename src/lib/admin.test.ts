@@ -1,10 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   AdminAuthError,
+  approveSubmission,
   clearAdminSecret,
   fetchCreatorDetail,
   fetchCreatorReviewQueue,
+  fetchEngagedUsers,
   fetchMissionShortlist,
+  fetchSubmissions,
   getAdminSecret,
   postCreatorReview,
   setAdminSecret,
@@ -184,5 +187,38 @@ describe("admin client helpers", () => {
       content_themes: ["fashion", "lifestyle"],
     });
     expect(detail.shortlists).toEqual([]);
+  });
+
+  it("approveSubmission posts notes + quality_rating", async () => {
+    setAdminSecret("secret");
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ status: "approved" }), { status: 200 }),
+    );
+    await approveSubmission("sub-1", { notes: "great", rating: 5 });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/admin/submissions/sub-1/approve",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ notes: "great", quality_rating: 5 }),
+      }),
+    );
+  });
+
+  it("fetchSubmissions encodes the status query", async () => {
+    setAdminSecret("secret");
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ submissions: [] }), { status: 200 }),
+    );
+    await fetchSubmissions("submitted");
+    expect(fetchMock).toHaveBeenCalledWith("/api/admin/submissions?status=submitted", expect.any(Object));
+  });
+
+  it("fetchEngagedUsers hits the engaged endpoint", async () => {
+    setAdminSecret("secret");
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ creators: [] }), { status: 200 }),
+    );
+    await fetchEngagedUsers();
+    expect(fetchMock).toHaveBeenCalledWith("/api/admin/engaged", expect.any(Object));
   });
 });

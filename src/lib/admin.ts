@@ -259,3 +259,90 @@ export function patchMissionShortlist(
     { method: "PATCH", body: JSON.stringify(body) },
   );
 }
+
+// ---- Unified /admin dashboard: shared query keys, types, fetchers ----------
+
+export const adminKeys = {
+  applications: ["admin-applications"] as const,
+  submissions: (status: string) => ["admin-submissions", status] as const,
+  engaged: ["admin-engaged"] as const,
+};
+
+export type Application = {
+  id: string;
+  mission_id?: string;
+  creator_id?: string;
+  creator_review?: { status: AdminReviewStatus; risk_level: AdminRiskLevel } | null;
+  mission_shortlist?: { status: string } | null;
+  creators: { display_name: string };
+  missions: { slug: string; title: string; points_reward: number };
+};
+
+export type Submission = Application & {
+  status: string;
+  content_urls: string[];
+  submitted_at: string | null;
+};
+
+// NOTE: these mirror the server-side shapes in server/lib/engagedRoster.ts
+// (the source of truth, returned by GET /admin/engaged). Keep them in sync.
+export type EngagedActiveMission = {
+  submissionId: string;
+  missionId: string;
+  missionSlug: string;
+  missionTitle: string;
+  status: string;
+  joinedAt: string;
+  submittedAt: string | null;
+  reviewDeadline: string | null;
+};
+
+export type EngagedCreator = {
+  id: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  level: string;
+  xp: number;
+  activeCount: number;
+  completedCount: number;
+  pointsEarned: number;
+  lastActivityAt: string | null;
+  activeMissions: EngagedActiveMission[];
+};
+
+export function fetchApplications() {
+  return adminFetch<{ applications: Application[] }>("/admin/applications");
+}
+
+export function acceptApplication(id: string) {
+  return adminFetch(`/admin/applications/${id}/accept`, { method: "POST", body: JSON.stringify({}) });
+}
+
+export function declineApplication(id: string, notes?: string) {
+  return adminFetch(`/admin/applications/${id}/decline`, {
+    method: "POST",
+    body: JSON.stringify(notes ? { notes } : {}),
+  });
+}
+
+export function fetchSubmissions(status = "submitted") {
+  return adminFetch<{ submissions: Submission[] }>(`/admin/submissions?status=${encodeURIComponent(status)}`);
+}
+
+export function approveSubmission(id: string, body: { notes?: string; rating?: number }) {
+  return adminFetch(`/admin/submissions/${id}/approve`, {
+    method: "POST",
+    body: JSON.stringify({ notes: body.notes, quality_rating: body.rating }),
+  });
+}
+
+export function rejectSubmission(id: string, notes?: string) {
+  return adminFetch(`/admin/submissions/${id}/reject`, {
+    method: "POST",
+    body: JSON.stringify(notes ? { notes } : {}),
+  });
+}
+
+export function fetchEngagedUsers() {
+  return adminFetch<{ creators: EngagedCreator[] }>("/admin/engaged");
+}

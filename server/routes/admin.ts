@@ -3,6 +3,7 @@ import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
 import { persistScores } from "../lib/persistScores.js";
+import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 
 /** Operator-only review endpoints. Interim shared-secret auth (replaced by real
  *  admin-auth / the Brand Dashboard in Slice 8). Uses the service client. */
@@ -87,6 +88,23 @@ adminRoutes.get("/applications", async (c) => {
     const message = err instanceof Error ? err.message : "Failed to enrich applications";
     return c.json({ error: message, code: "db_error" }, 500);
   }
+});
+
+// Engaged users: creators with >=1 active participation (joined/submitted/under_review),
+// each expandable to their active missions. Approved rows are pulled only for the
+// completed/points rollups. Interim single-operator/single-workspace scope (same
+// caveat as /submissions and /applications above; the Brand Dashboard replaces this).
+adminRoutes.get("/engaged", async (c) => {
+  const svc = serviceClient();
+  const { data, error } = await svc
+    .from("mission_submissions")
+    .select(
+      "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
+    )
+    .in("status", ["joined", "submitted", "under_review", "approved"])
+    .order("created_at", { ascending: true });
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });
 
 adminRoutes.post("/applications/:id/accept", async (c) => {

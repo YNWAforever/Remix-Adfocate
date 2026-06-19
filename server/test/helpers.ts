@@ -105,6 +105,10 @@ export async function makeMission(opts: {
   deadline?: string | null;
   category?: string;
 }) {
+  if (!opts.slug.startsWith("test-")) {
+    throw new Error('test missions must use a slug starting with "test-" so cleanup() can remove them');
+  }
+
   const { data, error } = await service()
     .from("missions")
     .insert({

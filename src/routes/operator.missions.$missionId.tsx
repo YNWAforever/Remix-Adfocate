@@ -54,14 +54,14 @@ function OperatorMissionShortlistRoute() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
-              to="/operator"
+              to="/admin/applications"
               className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold"
             >
               <ArrowLeft className="h-4 w-4" />
               Applications
             </Link>
             <Link
-              to="/operator/creators"
+              to="/admin/creators"
               search={{ mission_id: missionId } as never}
               className="inline-flex h-9 items-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-3 text-sm font-heading font-bold"
             >
