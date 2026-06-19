@@ -10,7 +10,7 @@ function Match() {
   const empty = !match.isLoading && !match.isError && (match.data?.length ?? 0) === 0;
 
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4">
+    <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <header>
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">ADFOCATE · KOCMAX</span>
         <h1 className="mt-1 flex items-center gap-2 font-display text-2xl font-bold leading-tight">
@@ -27,7 +27,7 @@ function Match() {
         </p>
       )}
 
-      <div className="space-y-3">
+      <div className="grid gap-3 lg:grid-cols-2">
         {match.data?.map((m) => (
           <Link
             key={m.id}
