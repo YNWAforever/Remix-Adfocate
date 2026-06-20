@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AdminAuthError, clearAdminSecret, getAdminSecret, setAdminSecret } from "@/lib/admin";
+import { useI18n } from "@/lib/i18n";
 
 type OperatorAuthGateProps = {
   children: ReactNode;
@@ -11,9 +12,11 @@ type OperatorAuthGateProps = {
 export function OperatorAuthGate({
   children,
   error,
-  prompt = "輸入管理密碼以檢視營運工具",
+  prompt,
   onSecretChange,
 }: OperatorAuthGateProps) {
+  const { t } = useI18n();
+  const resolvedPrompt = prompt ?? t("app.admin.authPromptDefault");
   const [secret, setSecretState] = useState<string | null>(getAdminSecret());
   const [input, setInput] = useState("");
 
@@ -28,8 +31,8 @@ export function OperatorAuthGate({
   if (!secret) {
     return (
       <div className="mx-auto max-w-sm space-y-3 p-6">
-        <h1 className="font-display text-xl font-bold">營運後台</h1>
-        <p className="text-sm text-[var(--color-soft-ink)]">{prompt}</p>
+        <h1 className="font-display text-xl font-bold">{t("app.admin.title")}</h1>
+        <p className="text-sm text-[var(--color-soft-ink)]">{resolvedPrompt}</p>
         <input
           type="password"
           value={input}
@@ -46,7 +49,7 @@ export function OperatorAuthGate({
           }}
           className="block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 font-heading font-bold"
         >
-          進入
+          {t("app.admin.enter")}
         </button>
       </div>
     );

@@ -10,10 +10,12 @@ import {
   type Submission,
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsTab });
 
 function SubmissionsTab() {
+  const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
   const qc = useQueryClient();
   const subs = useQuery({
@@ -26,8 +28,8 @@ function SubmissionsTab() {
     if (subs.error instanceof AdminAuthError) reportAuthError(subs.error);
   }, [subs.error, reportAuthError]);
 
-  if (subs.isLoading) return <p className="text-sm">載入中…</p>;
-  if (subs.data?.submissions.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">暫無待審批作品</p>;
+  if (subs.isLoading) return <p className="text-sm">{t("common.loading")}</p>;
+  if (subs.data?.submissions.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.submissionsEmpty")}</p>;
 
   return (
     <div className="space-y-3">
@@ -43,6 +45,7 @@ function SubmissionsTab() {
 }
 
 function SubmissionCard({ submission, onDone }: { submission: Submission; onDone: () => void }) {
+  const { t } = useI18n();
   const [rating, setRating] = useState("");
   const [notes, setNotes] = useState("");
   const approve = useMutation({
@@ -66,17 +69,17 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
         ))}
       </ul>
       <div className="flex flex-wrap items-center gap-2">
-        <select aria-label="品質評分" value={rating} onChange={(e) => setRating(e.target.value)} className="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm">
-          <option value="">評分（選填）</option>
+        <select aria-label={t("app.admin.submissionsRatingLabel")} value={rating} onChange={(e) => setRating(e.target.value)} className="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm">
+          <option value="">{t("app.admin.submissionsRatingPlaceholder")}</option>
           <option value="1">1★</option>
           <option value="2">2★</option>
           <option value="3">3★</option>
           <option value="4">4★</option>
           <option value="5">5★</option>
         </select>
-        <input aria-label="審批備註" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="備註" className="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm" />
-        <button aria-label="批准" disabled={busy} onClick={() => approve.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">批准</button>
-        <button aria-label="拒絕" disabled={busy} onClick={() => reject.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">拒絕</button>
+        <input aria-label={t("app.admin.submissionsNotesLabel")} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("app.admin.submissionsNotesPlaceholder")} className="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm" />
+        <button aria-label={t("app.admin.submissionsApprove")} disabled={busy} onClick={() => approve.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.submissionsApprove")}</button>
+        <button aria-label={t("app.admin.submissionsDecline")} disabled={busy} onClick={() => reject.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.submissionsDecline")}</button>
       </div>
     </div>
   );

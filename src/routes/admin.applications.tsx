@@ -11,10 +11,12 @@ import {
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { ReviewBadge, ShortlistBadge } from "@/components/operator/OperatorBadges";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/applications")({ component: ApplicationsTab });
 
 function ApplicationsTab() {
+  const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
   const qc = useQueryClient();
   const apps = useQuery({ queryKey: adminKeys.applications, queryFn: fetchApplications, enabled: !!secret, retry: false });
@@ -28,8 +30,8 @@ function ApplicationsTab() {
     onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.applications }),
   });
 
-  if (apps.isLoading) return <p className="text-sm">載入中…</p>;
-  if (apps.data?.applications.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">暫無待審批申請</p>;
+  if (apps.isLoading) return <p className="text-sm">{t("common.loading")}</p>;
+  if (apps.data?.applications.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.applicationsEmpty")}</p>;
 
   return (
     <div className="space-y-3">
@@ -54,8 +56,8 @@ function ApplicationsTab() {
             ) : null}
           </div>
           <div className="flex shrink-0 gap-2">
-            <button aria-label="接受" disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">接受</button>
-            <button aria-label="拒絕" disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "decline" })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">拒絕</button>
+            <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
+            <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "decline" })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
           </div>
         </div>
       ))}
