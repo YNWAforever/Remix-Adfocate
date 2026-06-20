@@ -62,6 +62,9 @@ export type SocialAccountRecord = {
   handle: string;
   profile_url: string | null;
   owner_verified: boolean;
+  verification_code: string | null;
+  verification_code_expires_at: string | null;
+  verified_at: string | null;
   api_synced_at: string | null;
   sync_status: SocialSyncStatus;
   follower_count: number | null;
