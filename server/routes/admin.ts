@@ -4,6 +4,7 @@ import { serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
 import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
+import { markVerified } from "../lib/social/repo.js";
 
 /** Operator-only review endpoints. Interim shared-secret auth (replaced by real
  *  admin-auth / the Brand Dashboard in Slice 8). Uses the service client. */
@@ -120,6 +121,17 @@ adminRoutes.post("/applications/:id/decline", async (c) => {
   const { data, error } = await svc.rpc("decline_application", { p_submission: c.req.param("id"), p_notes: notes });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
   return c.json(data);
+});
+
+adminRoutes.post("/social/:accountId/verify", async (c) => {
+  try {
+    const account = await markVerified(serviceClient(), c.req.param("accountId"));
+    return c.json({ account });
+  } catch (error) {
+    const ecode = typeof error === "object" && error && "code" in error ? (error.code as string) : null;
+    if (ecode === "handle_taken") return c.json({ error: "Handle already verified by another creator", code: ecode }, 409);
+    return c.json({ error: "Manual verify failed", code: "db_error" }, 500);
+  }
 });
 
 adminRoutes.post("/gifts/:id/codes", async (c) => {
