@@ -96,7 +96,8 @@ function Login() {
       ) : (
         <form onSubmit={verify} className="space-y-3">
           <p className="text-sm text-[var(--color-soft-ink)]">
-            {t("app.login.otpSentTo", { phone: toHkE164(phone) })}
+            {t("app.login.otpSentTo")}
+            <span className="font-bold text-[var(--color-ink)]">{toHkE164(phone)}</span>
           </p>
           <input
             type="text"
@@ -172,7 +173,9 @@ function EmailAndGoogle() {
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
       {sent ? (
         <p className="text-sm text-[var(--color-soft-ink)]">
-          {t("app.login.magicLinkSent", { email: email.trim() })}
+          {t("app.login.magicLinkSent")}
+          <span className="font-bold text-[var(--color-ink)]">{email.trim()}</span>
+          {t("app.login.magicLinkSentSuffix")}
         </p>
       ) : (
         <form onSubmit={sendLink} className="space-y-2">
