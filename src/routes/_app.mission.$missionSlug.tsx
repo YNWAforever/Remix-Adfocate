@@ -70,7 +70,7 @@ function MissionDetail() {
         {/* Facts — first on mobile (reward/quota/deadline/eligibility before the long brief, as on
             the pre-redesign single column); top of the right column on desktop. */}
         <div className="lg:col-start-2 lg:row-start-1">
-          <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
+          <MissionFacts mission={m.data} creatorLevel={me.data?.effective_level ?? me.data?.level} isTrusted={me.data?.is_trusted ?? true} />
         </div>
 
         {/* Title + brief — left column on desktop, spanning both rows so the action zone tucks beside it. */}

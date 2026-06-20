@@ -70,10 +70,13 @@ export type Eligibility = {
 };
 
 /** Display-only. The real gate is server-side (join/apply return `level_locked` 409).
- *  Returns a key + params for t() interpolation. */
+ *  Returns a key + params for t() interpolation.
+ *  Pass creatorLevel = the EFFECTIVE level (already capped at L1 for unverified creators).
+ *  Pass isTrusted = me.data.is_trusted so the verify-to-unlock branch can fire. */
 export function eligibility(
   requiredLevel: string | undefined | null,
   creatorLevel: string | undefined | null,
+  isTrusted = true,
 ): Eligibility {
   const need = levelIndex(requiredLevel);
   const have = levelIndex(creatorLevel);
@@ -85,6 +88,16 @@ export function eligibility(
     return {
       qualified: true,
       labelKey: "app.eligibility.qualified",
+      params: { req: reqId },
+    };
+  }
+  // The creator's XP would qualify them (raw level ≥ need) but verification is the gate.
+  // Specifically: effective level is capped at L1 for untrusted, so if need ≥ 2 and
+  // the creator's effective level is at least L1, they need to verify — not earn more XP.
+  if (need >= 2 && !isTrusted && have >= 1) {
+    return {
+      qualified: false,
+      labelKey: "app.eligibility.verifyToUnlock",
       params: { req: reqId },
     };
   }

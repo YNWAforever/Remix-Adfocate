@@ -10,7 +10,10 @@ export function LevelUpModal() {
   const me = useMe();
   const mark = useMarkLevelSeen();
 
-  const level = me.data?.level;
+  // Use the EFFECTIVE level (capped at L1 for unverified creators) so that raw XP
+  // crossing into L2 territory does NOT fire the "Trusted KOC" celebration —
+  // it only fires once the creator actually verifies (effective_level jumps L1→L2+).
+  const level = me.data?.effective_level ?? me.data?.level;
   const seen = me.data?.level_seen;
   // No data, or level_seen not present yet → no celebration (avoid a false fire).
   if (!level || seen === undefined) return null;

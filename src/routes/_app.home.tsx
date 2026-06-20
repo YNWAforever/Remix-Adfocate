@@ -34,7 +34,11 @@ function Home() {
             aria-label={t("app.home.passportAriaLabel")}
             className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
           >
-            {LEVELS[levelIndex(me.data.level)].emoji} {me.data.level}
+            {(() => {
+              const eff = me.data.effective_level ?? me.data.level;
+              const def = LEVELS[levelIndex(eff)];
+              return <>{def.emoji} {t(def.labelKey)}</>;
+            })()}
           </Link>
         )}
         <Link

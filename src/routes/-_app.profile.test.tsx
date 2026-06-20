@@ -42,6 +42,8 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useSocialAccounts: () => ({ data: [], isLoading: false, isError: false }),
   useAddSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useScanSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useIssueVerification: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useConfirmVerification: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUseSocialAvatar: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useProfileMedia: () => ({
     data: {
