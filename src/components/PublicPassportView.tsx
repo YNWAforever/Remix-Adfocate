@@ -1,4 +1,5 @@
 import { LEVELS, levelIndex } from "@/lib/levels";
+import { useI18n } from "@/lib/i18n";
 import { SCORE_META, SCORE_ORDER } from "@/lib/passport";
 import type { PublicPassport } from "@/lib/queries/kocmax";
 import { ScoreRing } from "./ScoreRing";
@@ -10,6 +11,7 @@ const TRUST_BADGES: Record<string, string> = {
 };
 
 export function PublicPassportView({ passport }: { passport: PublicPassport }) {
+  const { t } = useI18n();
   const lvl = LEVELS[levelIndex(passport.creator.level)];
   const initial = (passport.creator.displayName[0] ?? "?").toUpperCase();
 
@@ -41,7 +43,7 @@ export function PublicPassportView({ passport }: { passport: PublicPassport }) {
             <h2 className="font-heading font-bold">Creator scores</h2>
             <div className="grid grid-cols-2 gap-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] lg:grid-cols-4">
               {SCORE_ORDER.map((key) => (
-                <ScoreRing key={key} value={passport.scores[key]} label={SCORE_META[key].label} accent={SCORE_META[key].accent} />
+                <ScoreRing key={key} value={passport.scores[key]} label={t(SCORE_META[key].labelKey)} accent={SCORE_META[key].accent} />
               ))}
             </div>
           </section>

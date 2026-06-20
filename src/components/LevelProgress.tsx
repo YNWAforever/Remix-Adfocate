@@ -23,7 +23,7 @@ export function LevelProgress({ xp }: { xp: number }) {
           <p className="text-sm text-[var(--color-soft-ink)]">
             {t("app.level.toNext", { n: (p.xpForNext ?? 0) - p.xpIntoCurrent, level: p.next.label })}
           </p>
-          <p className="text-xs text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: p.next.unlock })}</p>
+          <p className="text-xs text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: p.next.unlockKey ? t(p.next.unlockKey) : "" })}</p>
         </>
       ) : (
         <p className="text-sm font-heading font-bold">{t("app.level.max")}</p>

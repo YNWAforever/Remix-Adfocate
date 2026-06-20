@@ -149,6 +149,40 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.passport.revokeLink": "Revoke link",
     "app.passport.scoreLocked": "Coming Soon",
 
+    // ── app: score labels + notes ──────────────────────────────
+    "app.score.influence": "Influence",
+    "app.score.content": "Content",
+    "app.score.reliability": "Reliability",
+    "app.score.brandSafety": "Brand Safety",
+    "app.score.influenceNote": "Influence includes self-reported or API-synced data; account ownership is not verified.",
+    "app.score.brandSafetyNote": "Brand Safety is a provisional proxy metric.",
+
+    // ── app: badge labels + descs ──────────────────────────────
+    "app.badge.level_l1": "Level Up",
+    "app.badge.level_l1Desc": "Reached L1",
+    "app.badge.first_approval": "First Win",
+    "app.badge.first_approvalDesc": "First mission approved",
+    "app.badge.reliable": "Reliable Creator",
+    "app.badge.reliableDesc": "3+ settled missions, reliability ≥ 80",
+    "app.badge.social_linked": "Social Linked",
+    "app.badge.social_linkedDesc": "Linked a social account",
+    "app.badge.referrer": "Ambassador",
+    "app.badge.referrerDesc": "Successfully referred a friend",
+    "app.badge.perfect_rating": "Perfect Rating",
+    "app.badge.perfect_ratingDesc": "Received a 5★ content rating",
+    "app.badge.content_pro": "Content Pro",
+    "app.badge.content_proDesc": "3+ rated missions, content score ≥ 80",
+    "app.badge.spotless": "Spotless",
+    "app.badge.spotlessDesc": "3+ reviewed missions, brand safety score 100",
+
+    // ── app: level unlock perks ────────────────────────────────
+    "app.levelUnlock.l1": "Affiliate links, review missions, point redemption",
+    "app.levelUnlock.l2": "Paid UGC work, CPM track, Studio",
+    "app.levelUnlock.l3": "Event fees, full Copilot tools",
+    "app.levelUnlock.l4": "Live commerce, priority mission matching",
+    "app.levelUnlock.l5": "Brand ambassador, Finance Readiness",
+    "app.levelUnlock.l6": "Custom brand partnerships, Creator Capital",
+
     // ── app: match ────────────────────────────────────────────
     "app.match.pageTitle": "What to do today?",
     "app.match.subTitle": "Missions picked for you",
@@ -491,6 +525,40 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.passport.createLink": "建立連結",
     "app.passport.revokeLink": "撤銷連結",
     "app.passport.scoreLocked": "敬請期待",
+
+    // ── app: score labels + notes ──────────────────────────────
+    "app.score.influence": "影響力",
+    "app.score.content": "內容",
+    "app.score.reliability": "可靠度",
+    "app.score.brandSafety": "品牌安全",
+    "app.score.influenceNote": "影響力包含自填或 API 同步數據，帳號擁有權未驗證",
+    "app.score.brandSafetyNote": "品牌安全為暫定代理指標",
+
+    // ── app: badge labels + descs ──────────────────────────────
+    "app.badge.level_l1": "升級者",
+    "app.badge.level_l1Desc": "達到 L1 等級",
+    "app.badge.first_approval": "首單達成",
+    "app.badge.first_approvalDesc": "首個任務獲批核",
+    "app.badge.reliable": "可靠創作者",
+    "app.badge.reliableDesc": "3+ 個已結算任務，可靠度 ≥ 80",
+    "app.badge.social_linked": "已連結社交",
+    "app.badge.social_linkedDesc": "已連結社交帳號",
+    "app.badge.referrer": "推薦大使",
+    "app.badge.referrerDesc": "成功推薦朋友加入",
+    "app.badge.perfect_rating": "完美評分",
+    "app.badge.perfect_ratingDesc": "獲得 5★ 內容評分",
+    "app.badge.content_pro": "內容達人",
+    "app.badge.content_proDesc": "3+ 個評分任務，內容分 ≥ 80",
+    "app.badge.spotless": "零違規",
+    "app.badge.spotlessDesc": "3+ 個已審任務，品牌安全分 100",
+
+    // ── app: level unlock perks ────────────────────────────────
+    "app.levelUnlock.l1": "聯盟連結、評測任務、積分兌換",
+    "app.levelUnlock.l2": "UGC 有薪工作、CPM 軌道、工作室",
+    "app.levelUnlock.l3": "活動費用、完整 Copilot 工具",
+    "app.levelUnlock.l4": "直播帶貨、優先任務配對",
+    "app.levelUnlock.l5": "品牌大使、Finance Readiness",
+    "app.levelUnlock.l6": "客製品牌合作、創作者資本",
 
     // ── app: match ────────────────────────────────────────────
     "app.match.pageTitle": "今日整乜好？",

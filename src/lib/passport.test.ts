@@ -18,10 +18,10 @@ describe("passport metadata", () => {
       expect(BADGES[id]).toBeDefined();
     }
   });
-  it("carries provisional notes on the self-reported / proxy scores", () => {
-    expect(SCORE_META.influence.note).toBeTruthy();
-    expect(SCORE_META.brandSafety.note).toBeTruthy();
-    expect(SCORE_META.content.note).toBeUndefined();
-    expect(SCORE_META.reliability.note).toBeUndefined();
+  it("carries provisional note keys on the self-reported / proxy scores", () => {
+    expect(SCORE_META.influence.noteKey).toBeTruthy();
+    expect(SCORE_META.brandSafety.noteKey).toBeTruthy();
+    expect(SCORE_META.content.noteKey).toBeUndefined();
+    expect(SCORE_META.reliability.noteKey).toBeUndefined();
   });
 });

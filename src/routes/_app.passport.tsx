@@ -54,10 +54,10 @@ function Passport() {
             <div className={`grid grid-cols-2 gap-4 lg:grid-cols-4 ${CARD}`}>
               {SCORE_ORDER.map((k) => (
                 <div key={k} className="flex flex-col items-center gap-1">
-                  <ScoreRing value={p.scores[k]} label={SCORE_META[k].label} accent={SCORE_META[k].accent} />
-                  {SCORE_META[k].note && (
+                  <ScoreRing value={p.scores[k]} label={t(SCORE_META[k].labelKey)} accent={SCORE_META[k].accent} />
+                  {SCORE_META[k].noteKey && (
                     <p className="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]">
-                      {SCORE_META[k].note}
+                      {t(SCORE_META[k].noteKey!)}
                     </p>
                   )}
                 </div>
@@ -78,8 +78,8 @@ function Passport() {
                         {b.emoji}
                       </span>
                       <div className="min-w-0">
-                        <p className="font-heading text-sm font-bold">{b.label}</p>
-                        <p className="truncate text-xs text-[var(--color-soft-ink)]">{b.desc}</p>
+                        <p className="font-heading text-sm font-bold">{t(b.labelKey)}</p>
+                        <p className="truncate text-xs text-[var(--color-soft-ink)]">{t(b.descKey)}</p>
                       </div>
                     </div>
                   );
