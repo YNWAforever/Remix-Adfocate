@@ -10,7 +10,7 @@ export const missionRoutes = new Hono<Env>();
 const RPC_409 = new Set([
   "mission_full", "already_joined", "not_open", "closed",
   "level_locked", "wrong_state", "empty_urls", "not_authenticated",
-  "not_application", "already_applied",
+  "not_application", "already_applied", "verification_required",
 ]);
 function rpcError(c: Context<Env>, error: PostgrestError) {
   const msg = error.message ?? "";

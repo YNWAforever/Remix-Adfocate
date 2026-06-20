@@ -31,6 +31,8 @@ export type Me = {
   onboarding_step: number;
   onboarding_completed: boolean;
   referral_code?: string;
+  is_trusted?: boolean;
+  effective_level?: string;
 };
 export type SocialPlatform = "instagram" | "threads";
 export type SocialSyncStatus = "pending" | "synced" | "stale" | "failed" | "rate_limited";
