@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useI18n } from "@/lib/i18n";
 import { progressToNext } from "@/lib/levels";
 
 /** Compact level pill for the Profile page that links to the full Passport. */
 export function LevelChip({ xp }: { xp: number }) {
+  const { t } = useI18n();
   const { current } = progressToNext(xp);
   return (
     <Link
@@ -11,10 +13,10 @@ export function LevelChip({ xp }: { xp: number }) {
     >
       <span aria-hidden className="shrink-0">{current.emoji}</span>
       {/* Truncate only the label (English level names run long, e.g. "Micro-Influencer");
-          the emoji and the "看護照" call-to-action stay visible so the chip never overflows
-          a cramped mobile header. */}
+          the emoji and the view-passport call-to-action stay visible so the chip never
+          overflows a cramped mobile header. */}
       <span className="min-w-0 truncate">{current.label}</span>
-      <span className="shrink-0">· 看護照 →</span>
+      <span className="shrink-0">{t("app.level.viewPassport")}</span>
     </Link>
   );
 }

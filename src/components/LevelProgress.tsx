@@ -1,8 +1,10 @@
 import { progressToNext } from "@/lib/levels";
+import { useI18n } from "@/lib/i18n";
 
 /** Level emoji + label, XP, progress bar and the "next level" hint, derived from xp.
  *  De-duplicates the block previously inlined in both /profile and /passport. */
 export function LevelProgress({ xp }: { xp: number }) {
+  const { t } = useI18n();
   const p = progressToNext(xp);
   return (
     <div className="space-y-2">
@@ -19,12 +21,12 @@ export function LevelProgress({ xp }: { xp: number }) {
             <div className="h-full bg-[var(--color-acid)]" style={{ width: `${p.pct}%` }} />
           </div>
           <p className="text-sm text-[var(--color-soft-ink)]">
-            還需 {(p.xpForNext ?? 0) - p.xpIntoCurrent} XP 升至 {p.next.label}
+            {t("app.level.toNext", { n: (p.xpForNext ?? 0) - p.xpIntoCurrent, level: p.next.label })}
           </p>
-          <p className="text-xs text-[var(--color-soft-ink)]">解鎖：{p.next.unlock}</p>
+          <p className="text-xs text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: p.next.unlock })}</p>
         </>
       ) : (
-        <p className="text-sm font-heading font-bold">最高等級</p>
+        <p className="text-sm font-heading font-bold">{t("app.level.max")}</p>
       )}
     </div>
   );

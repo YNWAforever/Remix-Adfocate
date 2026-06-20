@@ -122,6 +122,49 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app: points balance card ──────────────────────────────
     "app.wallet.balanceLabel": "Your Points Balance",
     "app.wallet.expiry": "Expires: {date}",
+
+    // ── app: profile ──────────────────────────────────────────
+    "app.profile.edit": "Edit",
+    "app.profile.signOut": "Sign Out",
+    "app.profile.categories": "Content Categories",
+    "app.profile.notSet": "Not set",
+    "app.profile.socialAccounts": "Social Accounts",
+    "app.profile.referralCode": "My Referral Code",
+    "app.profile.copyCode": "Copy",
+    "app.profile.copied": "Copied",
+    "app.profile.referralNote": "Invite friends and both get 200 pts",
+    "app.profile.myMissions": "My Missions",
+    "app.profile.redemptionHistory": "Redemption History",
+    "app.profile.displayName": "Display Name",
+    "app.profile.cancel": "Cancel",
+    "app.profile.saving": "Saving…",
+    "app.profile.save": "Save",
+    "app.profile.saveError": "Save failed. Please try again.",
+    "app.profile.handlePlaceholder": "{platform} handle",
+
+    // ── app: passport ─────────────────────────────────────────
+    "app.passport.scores": "Creator Scores",
+    "app.passport.badges": "Badges",
+    "app.passport.badgesEmpty": "Complete missions and link social accounts to unlock badges.",
+    "app.passport.shareTitle": "Public passport",
+    "app.passport.createLink": "Create link",
+    "app.passport.revokeLink": "Revoke link",
+    "app.passport.scoreLocked": "Coming Soon",
+
+    // ── app: match ────────────────────────────────────────────
+    "app.match.pageTitle": "What to do today?",
+    "app.match.subTitle": "Missions picked for you",
+    "app.match.empty": "No matching missions right now. Check back later.",
+    "app.match.fitScore": "{score}% fit",
+
+    // ── app: level ────────────────────────────────────────────
+    "app.level.toNext": "{n} XP to reach {level}",
+    "app.level.unlock": "Unlock: {unlock}",
+    "app.level.max": "Max level",
+    "app.level.viewPassport": "· View Passport →",
+    "app.level.levelUp": "You levelled up!",
+    "app.level.levelUpUnlock": "Unlock: {unlock}",
+    "app.level.levelUpCta": "Awesome!",
   },
   zh: {
     // ── common ──────────────────────────────────────────────
@@ -236,5 +279,48 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app: points balance card ──────────────────────────────
     "app.wallet.balanceLabel": "你的積分餘額",
     "app.wallet.expiry": "到期：{date}",
+
+    // ── app: profile ──────────────────────────────────────────
+    "app.profile.edit": "編輯",
+    "app.profile.signOut": "登出",
+    "app.profile.categories": "內容範疇",
+    "app.profile.notSet": "尚未設定",
+    "app.profile.socialAccounts": "社交帳號",
+    "app.profile.referralCode": "我的邀請碼",
+    "app.profile.copyCode": "複製",
+    "app.profile.copied": "已複製",
+    "app.profile.referralNote": "邀請朋友，各得 200 分",
+    "app.profile.myMissions": "我的任務",
+    "app.profile.redemptionHistory": "兌換記錄",
+    "app.profile.displayName": "顯示名稱",
+    "app.profile.cancel": "取消",
+    "app.profile.saving": "儲存中…",
+    "app.profile.save": "儲存",
+    "app.profile.saveError": "儲存失敗，請重試",
+    "app.profile.handlePlaceholder": "{platform} 帳號",
+
+    // ── app: passport ─────────────────────────────────────────
+    "app.passport.scores": "創作者評分",
+    "app.passport.badges": "徽章",
+    "app.passport.badgesEmpty": "完成任務與連結社交帳號即可解鎖徽章。",
+    "app.passport.shareTitle": "Public passport",
+    "app.passport.createLink": "Create link",
+    "app.passport.revokeLink": "Revoke link",
+    "app.passport.scoreLocked": "敬請期待",
+
+    // ── app: match ────────────────────────────────────────────
+    "app.match.pageTitle": "今日整乜好？",
+    "app.match.subTitle": "為你揀選最啱嘅任務",
+    "app.match.empty": "暫時冇啱你嘅任務，遲啲再嚟睇睇",
+    "app.match.fitScore": "{score}% 啱你",
+
+    // ── app: level ────────────────────────────────────────────
+    "app.level.toNext": "還需 {n} XP 升至 {level}",
+    "app.level.unlock": "解鎖：{unlock}",
+    "app.level.max": "最高等級",
+    "app.level.viewPassport": "· 看護照 →",
+    "app.level.levelUp": "🎉 你升級了！",
+    "app.level.levelUpUnlock": "解鎖：{unlock}",
+    "app.level.levelUpCta": "太好了",
   },
 };
