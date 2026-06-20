@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app/login")({ component: Login });
 
@@ -14,6 +15,7 @@ function toHkE164(raw: string): string {
 }
 
 function Login() {
+  const { t } = useI18n();
   const navigate = useNavigate();
 
   const [showSecondary, setShowSecondary] = useState(false);
@@ -46,7 +48,7 @@ function Login() {
       await finishAuth(navigate);
     } catch {
       setBusy(false);
-      setError("登入未能完成，請重試");
+      setError(t("app.login.authError"));
     }
   }
 
@@ -54,8 +56,8 @@ function Login() {
   if (!WHATSAPP_LOGIN) {
     return (
       <div className="mx-auto max-w-sm space-y-4 p-8">
-        <h1 className="font-display text-2xl font-bold">登入 KOCmax</h1>
-        <p className="text-sm text-[var(--color-soft-ink)]">用電郵連結登入或註冊</p>
+        <h1 className="font-display text-2xl font-bold">{t("app.login.title")}</h1>
+        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHint")}</p>
         <EmailAndGoogle />
       </div>
     );
@@ -63,12 +65,12 @@ function Login() {
 
   return (
     <div className="mx-auto max-w-sm space-y-4 p-8">
-      <h1 className="font-display text-2xl font-bold">登入 KOCmax</h1>
+      <h1 className="font-display text-2xl font-bold">{t("app.login.title")}</h1>
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
 
       {stage === "phone" ? (
         <form onSubmit={sendOtp} className="space-y-3">
-          <p className="text-sm text-[var(--color-soft-ink)]">輸入你的 WhatsApp 電話號碼以接收驗證碼登入或註冊</p>
+          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.login.whatsappHint")}</p>
           <div className="flex items-center gap-2">
             <span className="rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 font-mono text-sm">+852</span>
             <input
@@ -80,7 +82,7 @@ function Login() {
               onChange={(e) => setPhone(e.target.value)}
               placeholder="9123 4567"
               className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-              aria-label="WhatsApp 電話號碼"
+              aria-label={t("app.login.phoneAriaLabel")}
             />
           </div>
           <button
@@ -88,13 +90,13 @@ function Login() {
             disabled={busy}
             className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
           >
-            {busy ? "傳送中…" : "用 WhatsApp 收驗證碼"}
+            {busy ? t("app.login.sending") : t("app.login.sendOtpCta")}
           </button>
         </form>
       ) : (
         <form onSubmit={verify} className="space-y-3">
           <p className="text-sm text-[var(--color-soft-ink)]">
-            驗證碼已透過 WhatsApp 傳送至 <span className="font-bold text-[var(--color-ink)]">{toHkE164(phone)}</span>
+            {t("app.login.otpSentTo", { phone: toHkE164(phone) })}
           </p>
           <input
             type="text"
@@ -103,23 +105,23 @@ function Login() {
             inputMode="numeric"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder="6 位數驗證碼"
+            placeholder={t("app.login.codePlaceholder")}
             className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 text-center font-mono text-lg tracking-widest"
-            aria-label="驗證碼"
+            aria-label={t("app.login.codeAriaLabel")}
           />
           <button
             type="submit"
             disabled={busy}
             className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
           >
-            {busy ? "登入中…" : "驗證並登入"}
+            {busy ? t("app.login.verifying") : t("app.login.verifyCta")}
           </button>
           <button
             type="button"
             onClick={() => { setStage("phone"); setCode(""); setError(null); }}
             className="w-full text-center text-sm text-[var(--color-soft-ink)]"
           >
-            更改電話號碼
+            {t("app.login.changePhone")}
           </button>
         </form>
       )}
@@ -130,7 +132,7 @@ function Login() {
           onClick={() => setShowSecondary((s) => !s)}
           className="w-full text-center text-sm text-[var(--color-soft-ink)] underline"
         >
-          其他登入方式
+          {t("app.login.otherMethods")}
         </button>
         {showSecondary && <EmailAndGoogle />}
       </div>
@@ -140,6 +142,7 @@ function Login() {
 
 /** Email magic-link (always available) + Google (only when GOOGLE_LOGIN is on). */
 function EmailAndGoogle() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -169,7 +172,7 @@ function EmailAndGoogle() {
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
       {sent ? (
         <p className="text-sm text-[var(--color-soft-ink)]">
-          登入連結已傳送至 <span className="font-bold text-[var(--color-ink)]">{email.trim()}</span>，請查看電郵。
+          {t("app.login.magicLinkSent", { email: email.trim() })}
         </p>
       ) : (
         <form onSubmit={sendLink} className="space-y-2">
@@ -181,14 +184,14 @@ function EmailAndGoogle() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-            aria-label="電郵地址"
+            aria-label={t("app.login.emailAriaLabel")}
           />
           <button
             type="submit"
             disabled={busy}
             className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
           >
-            {busy ? "傳送中…" : "用電郵連結登入"}
+            {busy ? t("app.login.sending") : t("app.login.emailCta")}
           </button>
         </form>
       )}
@@ -198,7 +201,7 @@ function EmailAndGoogle() {
           onClick={google}
           className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)]"
         >
-          用 Google 登入
+          {t("app.login.googleCta")}
         </button>
       )}
     </div>

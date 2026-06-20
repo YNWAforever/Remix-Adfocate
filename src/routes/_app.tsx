@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { LevelUpModal } from "@/components/LevelUpModal";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location, context }) => {
@@ -51,6 +52,7 @@ export const Route = createFileRoute("/_app")({
 });
 
 function Layout() {
+  const { t } = useI18n();
   const ws = useWorkspace();
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { if (ws.data?.theme) applyTheme(ws.data.theme); }, [ws.data]);
@@ -62,7 +64,7 @@ function Layout() {
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-full focus:border-2 focus:border-[var(--color-ink)] focus:bg-[var(--color-acid)] focus:px-4 focus:py-2 focus:font-heading focus:font-bold"
         >
-          跳至主要內容
+          {t("common.skipToMain")}
         </a>
       )}
       {showNav && <SideNav />}
