@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useGenerateHooks, useMe, type Hook } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
+import { useI18n } from "@/lib/i18n";
 
-const PLATFORMS: { value: string; label: string }[] = [
-  { value: "instagram", label: "Instagram" },
-  { value: "xiaohongshu", label: "小紅書" },
-  { value: "tiktok", label: "TikTok" },
-  { value: "youtube", label: "YouTube" },
+const PLATFORM_VALUES: { value: string; enLabel: string }[] = [
+  { value: "instagram", enLabel: "Instagram" },
+  { value: "xiaohongshu", enLabel: "xiaohongshu" },
+  { value: "tiktok", enLabel: "TikTok" },
+  { value: "youtube", enLabel: "YouTube" },
 ];
 
 /** Map a stored social-handle platform string to a HookPlatform value (default instagram). */
@@ -19,13 +20,23 @@ export function normalizePlatform(raw?: string | null): string {
 }
 
 export function HookPanel({ missionSlug }: { missionSlug: string }) {
+  const { t } = useI18n();
   const me = useMe();
   const gen = useGenerateHooks();
   const [platform, setPlatform] = useState(() => normalizePlatform(me.data?.social_handles?.[0]?.platform));
 
+  const PLATFORMS = useMemo(
+    () =>
+      PLATFORM_VALUES.map((p) => ({
+        value: p.value,
+        label: p.value === "xiaohongshu" ? t("app.hook.platformXiaohongshu") : p.enLabel,
+      })),
+    [t],
+  );
+
   return (
     <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-      <h3 className="font-heading font-bold">內容靈感</h3>
+      <h3 className="font-heading font-bold">{t("app.hook.heading")}</h3>
       <div className="flex flex-wrap gap-2">
         {PLATFORMS.map((p) => (
           <button
@@ -43,23 +54,23 @@ export function HookPanel({ missionSlug }: { missionSlug: string }) {
         disabled={gen.isPending}
         className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 text-center font-heading font-bold text-[var(--color-ink)]"
       >
-        {gen.isPending ? "生成中…" : "生成"}
+        {gen.isPending ? t("app.hook.generating") : t("app.hook.generateCta")}
       </button>
-      {gen.isError && <p className="text-sm text-[var(--color-magenta)]">生成失敗，請重試</p>}
+      {gen.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.hook.generateError")}</p>}
       {gen.data && (
         <div className="space-y-2">
-          <BadgePill>{gen.data.source === "ai" ? "AI 生成" : "範本"}</BadgePill>
+          <BadgePill>{gen.data.source === "ai" ? t("app.hook.sourceAi") : t("app.hook.sourceTemplate")}</BadgePill>
           <ul className="space-y-2">
             {gen.data.hooks.map((h: Hook, i: number) => (
               <li key={i} className="flex items-start gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2">
                 <BadgePill>{h.angle}</BadgePill>
                 <p className="flex-1 text-sm">{h.text}</p>
                 <button
-                  aria-label="複製"
+                  aria-label={t("app.hook.copyAria")}
                   onClick={() => navigator.clipboard?.writeText(h.text)}
                   className="shrink-0 rounded border border-[var(--color-ink)] px-2 py-0.5 text-xs"
                 >
-                  複製
+                  {t("app.hook.copyAria")}
                 </button>
               </li>
             ))}
