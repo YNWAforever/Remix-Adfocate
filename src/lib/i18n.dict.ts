@@ -41,10 +41,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.matchAriaLabel": "What to do today",
     "app.home.matchCta": "What to do today?",
     "app.home.quickMission": "Missions",
+    "app.home.quickRedemption": "Redeem Points",
     "app.home.quickWalletHistory": "Points History",
     "app.home.quickExplore": "Explore Rewards",
     "app.home.featuredMissions": "Featured Missions",
-    "app.home.missionsError": "Failed to load",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "Missions",
@@ -115,10 +115,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.matchAriaLabel": "今日整乜好",
     "app.home.matchCta": "今日整乜好？",
     "app.home.quickMission": "限時任務",
+    "app.home.quickRedemption": "積分兌換",
     "app.home.quickWalletHistory": "積分記錄",
     "app.home.quickExplore": "探索獎賞",
     "app.home.featuredMissions": "精選任務",
-    "app.home.missionsError": "載入失敗",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "限時任務",

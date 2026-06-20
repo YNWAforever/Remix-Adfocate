@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Lightbulb } from "lucide-react";
 import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe } from "@/lib/queries/kocmax";
@@ -25,16 +25,21 @@ function MissionDetail() {
   const [showHooks, setShowHooks] = useState(false);
 
   // Map API submission status codes to display labels via i18n.
-  const STATUS_LABEL: Record<string, string> = {
-    applied: t("app.mission.statusApplied"),
-    joined: t("app.mission.statusJoined"),
-    submitted: t("app.mission.statusApplied"),
-    under_review: t("app.mission.statusApplied"),
-    approved: t("app.mission.statusApproved"),
-    rejected: t("app.mission.statusRejected"),
-    expired: t("app.mission.statusExpired"),
-    declined: t("app.mission.statusDeclined"),
-  };
+  // submitted / under_review are server-side variants of the creator-facing
+  // "applied" state and all surface as 審批中 / "Under Review".
+  const STATUS_LABEL = useMemo<Record<string, string>>(
+    () => ({
+      applied: t("app.mission.statusApplied"),
+      joined: t("app.mission.statusJoined"),
+      submitted: t("app.mission.statusApplied"),
+      under_review: t("app.mission.statusApplied"),
+      approved: t("app.mission.statusApproved"),
+      rejected: t("app.mission.statusRejected"),
+      expired: t("app.mission.statusExpired"),
+      declined: t("app.mission.statusDeclined"),
+    }),
+    [t],
+  );
 
   if (m.isLoading) return <div className="mx-auto max-w-lg p-4 lg:max-w-5xl"><SkeletonCard className="h-96" /></div>;
   if (m.isError || !m.data) return (
@@ -104,7 +109,6 @@ function MissionDetail() {
             <>
               <button
                 onClick={() => setShowHooks((v) => !v)}
-                aria-label={t("app.mission.hooksCta")}
                 className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] py-3 text-center font-heading font-bold text-white"
               >
                 <Lightbulb size={18} aria-hidden /> {t("app.mission.hooksCta")}

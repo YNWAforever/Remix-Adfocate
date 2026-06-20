@@ -19,7 +19,7 @@ function Home() {
 
   const quickLinks = [
     { to: "/mission", labelKey: "app.home.quickMission" as const, icon: Target },
-    { to: "/redemption", labelKey: "app.nav.redemption" as const, icon: Gift },
+    { to: "/redemption", labelKey: "app.home.quickRedemption" as const, icon: Gift },
     { to: "/wallet", labelKey: "app.home.quickWalletHistory" as const, icon: Receipt },
     { to: "/explore", labelKey: "app.home.quickExplore" as const, icon: CalendarCheck },
   ];
@@ -84,7 +84,7 @@ function Home() {
 
         <section>
           <h2 className="mb-2 font-heading font-bold">{t("app.home.featuredMissions")}</h2>
-          {missions.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.home.missionsError")}</p>}
+          {missions.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.mission.loadFailed")}</p>}
           <div className="space-y-2">
             {missions.data?.slice(0, 3).map((m) => (
               <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>
