@@ -356,6 +356,24 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.category.parenting": "Parenting",
     "app.category.pet": "Pets",
 
+    // ── common ────────────────────────────────────────────────
+    "common.progress": "Progress",
+
+    // ── app: my missions ─────────────────────────────────────
+    "app.my.heading": "My Missions",
+    "app.my.empty": "You haven't joined any missions yet.",
+    "app.my.pointsAwarded": "+{n} pts",
+    "app.my.pointsReward": "{n} pts",
+
+    // ── app: operator detail ──────────────────────────────────
+    "app.operator.creatorDetailHeading": "Creator Detail",
+    "app.operator.creatorDetailSubtitle": "Operator-facing creator profile, review history, and internal notes.",
+    "app.operator.creatorDetailBack": "Back to queue",
+
+    // ── app: reward card ──────────────────────────────────────
+    "app.reward.soldOut": "Sold Out",
+    "app.reward.points": "{n} pts",
+
     // ── app: admin / operator console ─────────────────────────
     "app.admin.title": "Operator Console",
     "app.admin.subtitle": "Applications, active creators, submission review, and creator vetting.",
@@ -732,6 +750,24 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.category.travel": "旅遊",
     "app.category.parenting": "媽媽",
     "app.category.pet": "寵物",
+
+    // ── common ────────────────────────────────────────────────
+    "common.progress": "進度",
+
+    // ── app: my missions ─────────────────────────────────────
+    "app.my.heading": "我的任務",
+    "app.my.empty": "尚未加入任何任務。",
+    "app.my.pointsAwarded": "+{n} 積分",
+    "app.my.pointsReward": "{n} 積分",
+
+    // ── app: operator detail ──────────────────────────────────
+    "app.operator.creatorDetailHeading": "創作者詳情",
+    "app.operator.creatorDetailSubtitle": "營運用創作者檔案、審核紀錄與內部備註。",
+    "app.operator.creatorDetailBack": "返回佇列",
+
+    // ── app: reward card ──────────────────────────────────────
+    "app.reward.soldOut": "已換罄",
+    "app.reward.points": "{n} 積分",
 
     // ── app: admin / operator console ─────────────────────────
     "app.admin.title": "營運後台",
