@@ -4,7 +4,7 @@ import { useAssistantChat, type AssistantCitation } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
 import { AssistantMessage } from "./AssistantMessage";
 
-type Turn = { role: "user" | "assistant"; text: string; citations?: AssistantCitation[] };
+type Turn = { side: "user" | "assistant"; text: string; citations?: AssistantCitation[] };
 
 export function AssistantPanel({ onClose }: { onClose: () => void }) {
   const { t } = useI18n();
@@ -21,11 +21,11 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
   function send(message: string) {
     const text = message.trim();
     if (!text || chat.isPending) return;
-    setTurns((prev) => [...prev, { role: "user", text }]);
+    setTurns((prev) => [...prev, { side: "user" as const, text }]);
     setInput("");
     chat.mutate({ message: text, conversation_id: conversationId }, {
-      onSuccess: (r) => { setConversationId(r.conversation_id); setTurns((prev) => [...prev, { role: "assistant", text: r.answer, citations: r.citations }]); },
-      onError: () => setTurns((prev) => [...prev, { role: "assistant", text: t("app.assistant.error") }]),
+      onSuccess: (r) => { setConversationId(r.conversation_id); setTurns((prev) => [...prev, { side: "assistant" as const, text: r.answer, citations: r.citations }]); },
+      onError: () => setTurns((prev) => [...prev, { side: "assistant" as const, text: t("app.assistant.error") }]),
     });
   }
 
@@ -45,9 +45,9 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
             ))}
           </div>
         )}
-        {turns.map((turn, i) => <AssistantMessage key={i} role={turn.role} text={turn.text} citations={turn.citations} />)}
+        {turns.map((turn, i) => <AssistantMessage key={i} side={turn.side} text={turn.text} citations={turn.citations} />)}
         {turns.length === 0 && chat.data && (
-          <AssistantMessage role="assistant" text={chat.data.answer} citations={chat.data.citations} />
+          <AssistantMessage side="assistant" text={chat.data.answer} citations={chat.data.citations} />
         )}
         {chat.isPending && <p className="text-xs text-[var(--color-soft-ink)]">{t("app.assistant.thinking")}</p>}
       </div>

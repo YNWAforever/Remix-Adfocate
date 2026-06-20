@@ -41,16 +41,20 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
         }
       />
       {open && (
-        <div
-          role="dialog"
-          aria-label={t("app.redemption.dialogTitle")}
-          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
-          onClick={() => setOpen(false)}
-        >
+        <>
+          <button
+            type="button"
+            aria-label={t("app.redemption.dialogTitle")}
+            className="fixed inset-0 z-50 bg-black/50"
+            onClick={() => setOpen(false)}
+          />
           <div
-            className="w-full max-w-sm rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
-            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-label={t("app.redemption.dialogTitle")}
+            aria-modal="true"
+            className="pointer-events-none fixed inset-0 z-[51] grid place-items-center p-4"
           >
+          <div className="pointer-events-auto w-full max-w-sm rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5">
             {code === null ? (
               <>
                 <h2 className="font-display text-lg font-bold">{t("app.redemption.dialogTitle")}</h2>
@@ -98,7 +102,8 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
               </>
             )}
           </div>
-        </div>
+          </div>
+        </>
       )}
     </>
   );

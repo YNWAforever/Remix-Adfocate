@@ -8,7 +8,7 @@ vi.mock("@tanstack/react-router", async () => {
   return {
     ...actual,
     Outlet: () => <div>outlet</div>,
-    Link: ({ children }: { children?: React.ReactNode }) => <a>{children}</a>,
+    Link: ({ children }: { children?: React.ReactNode }) => <a href="/">{children}</a>,
   };
 });
 vi.mock("@/lib/admin", () => ({
