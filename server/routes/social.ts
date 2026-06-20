@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { addOrUpdateSocialAccount, listSocialAccounts } from "../lib/social/repo.js";
-import { scanSocialAccount } from "../lib/social/service.js";
+import { issueVerificationCode, scanSocialAccount, verifyOwnership } from "../lib/social/service.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import type { SocialPlatform } from "../lib/social/types.js";
 
@@ -76,5 +76,37 @@ socialRoutes.post("/accounts/:id/scan", async (c) => {
     }
 
     return c.json({ error: "Social scan failed", code: "db_error" }, 500);
+  }
+});
+
+socialRoutes.post("/accounts/:id/verification", async (c) => {
+  try {
+    const { code, expiresAt } = await issueVerificationCode({
+      creatorId: c.get("userId"),
+      accountId: c.req.param("id"),
+    });
+    return c.json({ code, expiresAt });
+  } catch (error) {
+    const ecode = typeof error === "object" && error && "code" in error ? error.code : null;
+    if (ecode === "not_found") return c.json({ error: "Social account not found", code: ecode }, 404);
+    return c.json({ error: "Failed to issue verification code", code: "db_error" }, 500);
+  }
+});
+
+socialRoutes.post("/accounts/:id/verification/confirm", async (c) => {
+  try {
+    const account = await verifyOwnership({
+      creatorId: c.get("userId"),
+      accountId: c.req.param("id"),
+    });
+    return c.json({ account });
+  } catch (error) {
+    const ecode = typeof error === "object" && error && "code" in error ? (error.code as string) : null;
+    if (ecode === "not_found") return c.json({ error: "Social account not found", code: ecode }, 404);
+    if (ecode === "code_expired") return c.json({ error: "Verification code missing or expired", code: ecode }, 410);
+    if (ecode === "code_not_in_bio") return c.json({ error: "Code not found in your bio", code: ecode }, 422);
+    if (ecode === "handle_taken") return c.json({ error: "Handle already verified by another creator", code: ecode }, 409);
+    if (ecode === "provider_not_configured") return c.json({ error: "Verification is temporarily unavailable", code: "provider_unavailable" }, 503);
+    return c.json({ error: "Verification failed", code: "db_error" }, 500);
   }
 });
