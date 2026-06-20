@@ -1,23 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { missionTypeLabel, platformLabel, effortLabel, spotsLeft, eligibility } from "./missionMeta";
+import { missionTypeLabelKey, platformLabelKey, effortLabelKey, spotsLeft, eligibility } from "./missionMeta";
 
 describe("missionMeta", () => {
-  it("maps mission types, falling back to the raw value", () => {
-    expect(missionTypeLabel("ugc")).toBe("原創內容");
-    expect(missionTypeLabel("koc_trial")).toBe("體驗開箱");
-    expect(missionTypeLabel("mystery_type")).toBe("mystery_type");
+  it("maps mission types to dict keys, falling back to the raw value", () => {
+    expect(missionTypeLabelKey("ugc")).toBe("app.missionType.ugc");
+    expect(missionTypeLabelKey("koc_trial")).toBe("app.missionType.kocTrial");
+    expect(missionTypeLabelKey("mystery_type")).toBe("mystery_type");
   });
 
-  it("maps platforms, capitalising unknowns", () => {
-    expect(platformLabel("tiktok")).toBe("TikTok");
-    expect(platformLabel("xiaohongshu")).toBe("小紅書");
-    expect(platformLabel("bilibili")).toBe("Bilibili");
+  it("maps platforms to dict keys or brand names", () => {
+    expect(platformLabelKey("tiktok")).toBe("TikTok");
+    expect(platformLabelKey("xiaohongshu")).toBe("app.platform.xiaohongshu");
+    expect(platformLabelKey("bilibili")).toBe("Bilibili");
   });
 
-  it("labels effort, null for none", () => {
-    expect(effortLabel("high")).toBe("高");
-    expect(effortLabel(null)).toBeNull();
-    expect(effortLabel(undefined)).toBeNull();
+  it("labels effort as dict keys, null for none", () => {
+    expect(effortLabelKey("high")).toBe("app.effort.high");
+    expect(effortLabelKey(null)).toBeNull();
+    expect(effortLabelKey(undefined)).toBeNull();
   });
 
   it("computes spots left, clamped at 0", () => {
@@ -30,6 +30,7 @@ describe("missionMeta", () => {
     expect(eligibility("L1", "L3").qualified).toBe(true);
     const locked = eligibility("L2", "L1");
     expect(locked.qualified).toBe(false);
-    expect(locked.label).toBe("需 L2 · 你係 L1");
+    expect(locked.labelKey).toBe("app.eligibility.notQualified");
+    expect(locked.params).toEqual({ req: "L2", level: "L1" });
   });
 });

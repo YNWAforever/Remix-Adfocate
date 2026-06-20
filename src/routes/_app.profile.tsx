@@ -8,6 +8,7 @@ import { LangToggle } from "@/components/LangToggle";
 import { LevelChip } from "@/components/LevelChip";
 import { SocialTrustPanel } from "@/components/SocialTrustPanel";
 import { useI18n } from "@/lib/i18n";
+import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
 import { supabase } from "@/lib/supabase";
 
@@ -134,7 +135,7 @@ function Profile() {
                 <div className="flex flex-wrap gap-2">
                   {d.categories.map((c) => (
                     <span key={c} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm">
-                      {c}
+                      {t(categoryLabelKey(c))}
                     </span>
                   ))}
                 </div>
@@ -152,7 +153,7 @@ function Profile() {
                       key={s.platform}
                       className="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
                     >
-                      <span className="font-heading font-semibold">{s.platform}</span>
+                      <span className="font-heading font-semibold">{t(platformDisplayLabelKey(s.platform))}</span>
                       <span className="text-[var(--color-soft-ink)]">{s.handle}</span>
                     </li>
                   ))}
@@ -214,7 +215,7 @@ function Profile() {
 
           <section className="space-y-2">
             <h2 className="font-heading font-bold">{t("app.profile.categories")}</h2>
-            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} />
+            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
           </section>
 
           <section className="space-y-2">
@@ -225,8 +226,8 @@ function Profile() {
                   key={p}
                   value={handles[p] ?? ""}
                   onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                  placeholder={t("common.platformHandleLabel", { platform: p })}
-                  aria-label={t("common.platformHandleLabel", { platform: p })}
+                  placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
+                  aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
                   className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
                 />
               ))}

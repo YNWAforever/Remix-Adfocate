@@ -28,7 +28,7 @@ export function MissionFacts({ mission, creatorLevel }: { mission: Mission; crea
       <Fact icon={<Star size={18} />} label={t("app.mission.factReward")} value={reward} />
       <Fact icon={<Users size={18} />} label={t("app.mission.factQuota")} value={left > 0 ? t("app.mission.spotsLeft", { n: left }) : t("app.mission.spotsFull")} ok={left > 0} />
       <Fact icon={<Clock size={18} />} label={t("app.mission.factDeadline")} value={mission.deadline ? mission.deadline.slice(0, 10) : t("app.mission.noDeadline")} />
-      <Fact icon={<ShieldCheck size={18} />} label={t("app.mission.factEligibility")} value={elig.label} ok={elig.qualified} />
+      <Fact icon={<ShieldCheck size={18} />} label={t("app.mission.factEligibility")} value={t(elig.labelKey, elig.params)} ok={elig.qualified} />
     </section>
   );
 }

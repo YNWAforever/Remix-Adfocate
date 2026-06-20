@@ -12,6 +12,7 @@ import {
   useCompleteOnboarding,
 } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
+import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 
 export const Route = createFileRoute("/_app/onboarding")({ component: Wizard });
 
@@ -82,7 +83,7 @@ function Wizard() {
         <section className="space-y-4">
           <h1 className="font-display text-2xl font-bold">{t("app.onboarding.categoriesTitle")}</h1>
           <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.categoriesHint")}</p>
-          <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} />
+          <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
           <div className="flex gap-3">
             <button
               type="button"
@@ -112,8 +113,8 @@ function Wizard() {
                 key={p}
                 value={handles[p] ?? ""}
                 onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                placeholder={t("common.platformHandleLabel", { platform: p })}
-                aria-label={t("common.platformHandleLabel", { platform: p })}
+                placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
+                aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
                 className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
               />
             ))}

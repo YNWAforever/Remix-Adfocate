@@ -7,7 +7,7 @@ import { SkeletonCard } from "@/components/SkeletonCard";
 import { HookPanel } from "@/components/HookPanel";
 import { MissionFacts } from "@/components/MissionFacts";
 import { MissionBrief } from "@/components/MissionBrief";
-import { missionTypeLabel } from "@/lib/missionMeta";
+import { missionTypeLabelKey } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
@@ -77,7 +77,7 @@ function MissionDetail() {
         <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
           <div className="flex flex-wrap items-center gap-2">
             {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
-            <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{missionTypeLabel(m.data.mission_type)}</span>
+            <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{t(missionTypeLabelKey(m.data.mission_type))}</span>
           </div>
           <h2 className="font-display text-xl font-bold">{m.data.title}</h2>
           <MissionBrief mission={m.data} />

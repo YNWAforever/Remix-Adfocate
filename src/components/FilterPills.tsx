@@ -1,4 +1,16 @@
-export function FilterPills({ options, value, onChange }: { options: readonly string[]; value: string; onChange: (v: string) => void }) {
+import type { ReactNode } from "react";
+
+export function FilterPills({
+  options,
+  value,
+  onChange,
+  renderLabel,
+}: {
+  options: readonly string[];
+  value: string;
+  onChange: (v: string) => void;
+  renderLabel?: (value: string) => ReactNode;
+}) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">
       {options.map((opt) => {
@@ -11,7 +23,7 @@ export function FilterPills({ options, value, onChange }: { options: readonly st
             onClick={() => onChange(opt)}
             className={`filter-pill shrink-0 rounded-full border-2 border-[var(--color-ink)] px-3 py-1 text-sm ${active ? "bg-[var(--color-acid)] font-bold" : "bg-white"}`}
           >
-            {opt}
+            {renderLabel ? renderLabel(opt) : opt}
           </button>
         );
       })}
@@ -23,10 +35,12 @@ export function FilterPillsMulti({
   options,
   value,
   onChange,
+  renderLabel,
 }: {
   options: readonly string[];
   value: string[];
   onChange: (v: string[]) => void;
+  renderLabel?: (value: string) => ReactNode;
 }) {
   function toggle(opt: string) {
     onChange(value.includes(opt) ? value.filter((v) => v !== opt) : [...value, opt]);
@@ -43,7 +57,7 @@ export function FilterPillsMulti({
             onClick={() => toggle(opt)}
             className={`filter-pill shrink-0 rounded-full border-2 border-[var(--color-ink)] px-3 py-1 text-sm ${active ? "bg-[var(--color-acid)] font-bold" : "bg-white"}`}
           >
-            {opt}
+            {renderLabel ? renderLabel(opt) : opt}
           </button>
         );
       })}

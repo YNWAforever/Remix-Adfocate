@@ -6,6 +6,7 @@ import { FilterPills } from "@/components/FilterPills";
 import { RedeemGiftCard } from "@/components/RedeemGiftCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
+import { categoryLabelKey } from "@/lib/labels";
 
 export const Route = createFileRoute("/_app/redemption/")({ component: Redemption });
 
@@ -24,7 +25,7 @@ function Redemption() {
         <h1 className="font-display text-2xl font-bold">{t("app.redemption.pageTitle")}</h1>
         <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.historyLabel")}</Link>
       </div>
-      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
+      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} renderLabel={(v) => t(categoryLabelKey(v))} />
       {gifts.isLoading && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           <SkeletonCard className="h-48" />

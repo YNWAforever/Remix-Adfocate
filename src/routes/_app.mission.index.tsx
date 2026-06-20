@@ -5,6 +5,7 @@ import { FilterPills } from "@/components/FilterPills";
 import { MissionCard } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
+import { categoryLabelKey } from "@/lib/labels";
 
 export const Route = createFileRoute("/_app/mission/")({ component: Missions });
 
@@ -18,7 +19,7 @@ function Missions() {
   return (
     <div className="mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <h1 className="font-display text-2xl font-bold">{t("app.mission.pageTitle")}</h1>
-      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
+      <FilterPills options={CATEGORIES} value={category} onChange={setCategory} renderLabel={(v) => t(categoryLabelKey(v))} />
       {missions.isLoading && (
         <div className="grid gap-2 lg:grid-cols-2">
           <SkeletonCard className="h-24" />
