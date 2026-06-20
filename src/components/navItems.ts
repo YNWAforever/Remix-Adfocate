@@ -1,11 +1,11 @@
 import { Home, Target, Gift, Wallet, Compass, type LucideIcon } from "lucide-react";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; exact: boolean };
+export type NavItem = { to: string; labelKey: string; icon: LucideIcon; exact: boolean };
 
 export const NAV_ITEMS: NavItem[] = [
-  { to: "/home", label: "主頁", icon: Home, exact: true },
-  { to: "/mission", label: "任務", icon: Target, exact: false },
-  { to: "/redemption", label: "積分兌換", icon: Gift, exact: false },
-  { to: "/wallet", label: "錢包", icon: Wallet, exact: false },
-  { to: "/explore", label: "探索", icon: Compass, exact: false },
+  { to: "/home", labelKey: "app.nav.home", icon: Home, exact: true },
+  { to: "/mission", labelKey: "app.nav.mission", icon: Target, exact: false },
+  { to: "/redemption", labelKey: "app.nav.redemption", icon: Gift, exact: false },
+  { to: "/wallet", labelKey: "app.nav.wallet", icon: Wallet, exact: false },
+  { to: "/explore", labelKey: "app.nav.explore", icon: Compass, exact: false },
 ];
