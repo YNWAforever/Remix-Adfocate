@@ -32,7 +32,9 @@ type Ctx = {
 const I18nCtx = createContext<Ctx>({
   lang: "zh",
   setLang: () => {},
-  t: (k) => String(k),
+  // Default mirrors the provider's lookup so out-of-provider renders (e.g. the
+  // router-level NotFound) still show real copy at the zh default, not raw keys.
+  t: (k, params) => interpolate(dict.zh[k] ?? dict.en[k] ?? k, params),
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
