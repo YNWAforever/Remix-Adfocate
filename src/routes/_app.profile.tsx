@@ -175,6 +175,7 @@ function Profile() {
                   type="button"
                   onClick={copyReferral}
                   disabled={!d.referral_code}
+                  aria-label={t("app.profile.copyReferralAria")}
                   className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
                 >
                   {copied ? t("app.profile.copied") : t("app.profile.copyCode")}
