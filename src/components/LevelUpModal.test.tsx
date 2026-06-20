@@ -21,7 +21,7 @@ describe("LevelUpModal", () => {
   it("shows the celebration when level is ahead of level_seen", () => {
     render(<LevelUpModal />);
     expect(screen.getByText("🎉 你升級了！")).toBeInTheDocument();
-    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText("KOC 新手")).toBeInTheDocument();
   });
 
   it("calls markLevelSeen when 太好了 is tapped", () => {

@@ -22,7 +22,7 @@ export function LevelUpModal() {
       <div className="w-full max-w-sm space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-6 text-center shadow-[6px_6px_0_0_var(--color-ink)]">
         <p className="font-display text-2xl font-bold">🎉 {t("app.level.levelUp")}</p>
         <p className="text-5xl" aria-hidden>{def.emoji}</p>
-        <p className="font-heading text-xl font-bold">{def.label}</p>
+        <p className="font-heading text-xl font-bold">{t(def.labelKey)}</p>
         {def.unlockKey && <p className="text-sm text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: t(def.unlockKey) })}</p>}
         <button
           type="button"

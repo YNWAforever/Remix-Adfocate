@@ -12,7 +12,7 @@ export function LevelProgress({ xp }: { xp: number }) {
         <span className="text-2xl" aria-hidden>
           {p.current.emoji}
         </span>
-        <span className="font-heading font-bold">{p.current.label}</span>
+        <span className="font-heading font-bold">{t(p.current.labelKey)}</span>
         <span className="ml-auto text-sm text-[var(--color-soft-ink)]">{xp} XP</span>
       </div>
       {p.next ? (
@@ -21,7 +21,7 @@ export function LevelProgress({ xp }: { xp: number }) {
             <div className="h-full bg-[var(--color-acid)]" style={{ width: `${p.pct}%` }} />
           </div>
           <p className="text-sm text-[var(--color-soft-ink)]">
-            {t("app.level.toNext", { n: (p.xpForNext ?? 0) - p.xpIntoCurrent, level: p.next.label })}
+            {t("app.level.toNext", { n: (p.xpForNext ?? 0) - p.xpIntoCurrent, level: t(p.next.labelKey) })}
           </p>
           <p className="text-xs text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: p.next.unlockKey ? t(p.next.unlockKey) : "" })}</p>
         </>

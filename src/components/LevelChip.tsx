@@ -15,7 +15,7 @@ export function LevelChip({ xp }: { xp: number }) {
       {/* Truncate only the label (English level names run long, e.g. "Micro-Influencer");
           the emoji and the view-passport call-to-action stay visible so the chip never
           overflows a cramped mobile header. */}
-      <span className="min-w-0 truncate">{current.label}</span>
+      <span className="min-w-0 truncate">{t(current.labelKey)}</span>
       <span className="shrink-0">{t("app.level.viewPassport")}</span>
     </Link>
   );

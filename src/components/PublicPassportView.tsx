@@ -31,7 +31,7 @@ export function PublicPassportView({ passport }: { passport: PublicPassport }) {
             <div className="min-w-0">
               <h1 className="truncate font-display text-2xl font-bold">{passport.creator.displayName}</h1>
               <p className="font-heading font-bold">
-                <span aria-hidden>{lvl.emoji}</span> {lvl.label} · {passport.creator.xp} XP
+                <span aria-hidden>{lvl.emoji}</span> {t(lvl.labelKey)} · {passport.creator.xp} XP
               </p>
             </div>
           </div>
