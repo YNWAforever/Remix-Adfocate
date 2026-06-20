@@ -261,6 +261,9 @@ function HeroSection() {
 }
 
 function PillarsSection() {
+  // Phase-1 stopgap: the Grow / Capital / Copilot pillars don't have dedicated
+  // public pages yet, so their CTAs point at /login (the join/enter funnel).
+  // Repoint these to their own routes once those pages ship.
   const pillars = [
     {
       to: "/login" as const,
@@ -316,7 +319,7 @@ function PillarsSection() {
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {pillars.map((p, i) => (
           <Link
-            key={p.to}
+            key={p.tag}
             to={p.to}
             className={cn(
               "group relative overflow-hidden rounded-3xl border border-border bg-white p-6 flex flex-col gap-5 transition-all duration-300",
