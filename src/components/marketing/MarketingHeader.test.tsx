@@ -1,11 +1,17 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 // Mock the router Link so we can assert hrefs without a RouterProvider.
-vi.mock("@tanstack/react-router", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Link: ({ to, children, ...p }: any) => <a href={to} {...p}>{children}</a>,
-}));
+vi.mock("@tanstack/react-router", async (importActual) => {
+  const actual = await importActual<typeof import("@tanstack/react-router")>();
+  return {
+    ...actual,
+    Link: ({ to, children, ...p }: { to: string; children: React.ReactNode; [k: string]: unknown }) => (
+      <a href={to} {...p}>{children}</a>
+    ),
+  };
+});
 
 // Controllable session mock.
 const getSession = vi.fn();

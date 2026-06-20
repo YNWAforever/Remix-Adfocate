@@ -19,6 +19,9 @@ export function MarketingHeader() {
   const [open, setOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
 
+  // Intentional one-shot read: no onAuthStateChange subscription because this
+  // header is used on public/SSG marketing pages. The app shell re-validates
+  // auth on entry, so a single check here is sufficient to show the right CTA.
   useEffect(() => {
     let active = true;
     supabase.auth.getSession().then(({ data }) => {
@@ -72,6 +75,7 @@ export function MarketingHeader() {
             type="button"
             className="lg:hidden"
             aria-label={open ? t("common.close") : t("common.menu")}
+            aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
           >
             {open ? <X /> : <Menu />}
@@ -80,7 +84,7 @@ export function MarketingHeader() {
       </div>
 
       {open && (
-        <nav className="border-t-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 lg:hidden" aria-label={t("common.mainNav")}>
+        <nav className="border-t-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 lg:hidden" aria-label={t("common.mobileNav")}>
           {NAV.map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setOpen(false)} className="block py-2 font-semibold">
               {t(l.key)}
