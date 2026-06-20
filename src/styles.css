@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @theme {
   /* Typography — Acid Y2K: Space Grotesk display + DM Sans body + JetBrains Mono kicker */
