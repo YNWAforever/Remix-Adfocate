@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
-  return { ...actual, Link: (p: { children: React.ReactNode }) => <a>{p.children}</a> };
+  return { ...actual, Link: (p: { children: React.ReactNode }) => <a href="/">{p.children}</a> };
 });
 
 const hoisted = vi.hoisted(() => ({

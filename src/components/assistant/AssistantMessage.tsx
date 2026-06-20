@@ -1,7 +1,7 @@
 import type { AssistantCitation } from "@/lib/queries/kocmax";
 
-export function AssistantMessage({ role, text, citations }: { role: "user" | "assistant"; text: string; citations?: AssistantCitation[] }) {
-  const mine = role === "user";
+export function AssistantMessage({ side, text, citations }: { side: "user" | "assistant"; text: string; citations?: AssistantCitation[] }) {
+  const mine = side === "user";
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div className={`max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm ${mine ? "bg-[var(--color-acid)]" : "bg-white"}`}>

@@ -13,7 +13,7 @@ vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual<object>("@tanstack/react-router");
   return {
     ...actual,
-    Link: ({ children }: { children?: React.ReactNode }) => <a>{children}</a>,
+    Link: ({ children }: { children?: React.ReactNode }) => <a href="/">{children}</a>,
   };
 });
 
