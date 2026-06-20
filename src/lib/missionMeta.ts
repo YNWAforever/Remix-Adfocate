@@ -1,42 +1,76 @@
 import { levelIndex } from "./levels";
 
-export const MISSION_TYPE_LABEL: Record<string, string> = {
-  koc_trial: "體驗開箱",
-  ugc: "原創內容",
-  clipping: "短片剪輯",
-  affiliate: "分潤帶貨",
-  performance_cpm: "流量任務",
-  live_commerce: "直播帶貨",
-  brand_ambassador: "品牌大使",
+// Maps hold translation keys, not display strings.
+// Consumers call t(missionTypeLabelKey(type)) to get the translated label.
+
+const MISSION_TYPE_KEY: Record<string, string> = {
+  koc_trial: "app.missionType.kocTrial",
+  ugc: "app.missionType.ugc",
+  clipping: "app.missionType.clipping",
+  affiliate: "app.missionType.affiliate",
+  performance_cpm: "app.missionType.performanceCpm",
+  live_commerce: "app.missionType.liveCommerce",
+  brand_ambassador: "app.missionType.brandAmbassador",
 };
-export function missionTypeLabel(type: string): string {
-  return MISSION_TYPE_LABEL[type] ?? type;
+/** Returns a dict key like "app.missionType.ugc". Pass to t() in a component. */
+export function missionTypeLabelKey(type: string): string {
+  return MISSION_TYPE_KEY[type] ?? type;
 }
 
-export const PLATFORM_LABEL: Record<string, string> = {
+// Keep old name as alias returning a key (so test file can be updated).
+/** @deprecated Use missionTypeLabelKey + t() in components */
+export const missionTypeLabel = missionTypeLabelKey;
+
+const PLATFORM_KEY: Record<string, string> = {
+  xiaohongshu: "app.platform.xiaohongshu",
+};
+// Correct brand casing for English-identical platforms where naive title-casing
+// would be wrong (Tiktok→TikTok, Youtube→YouTube).
+const PLATFORM_BRAND: Record<string, string> = {
   instagram: "Instagram",
   tiktok: "TikTok",
-  xiaohongshu: "小紅書",
   youtube: "YouTube",
-  threads: "Threads",
-  facebook: "Facebook",
 };
-export function platformLabel(p: string): string {
-  return PLATFORM_LABEL[p] ?? p.charAt(0).toUpperCase() + p.slice(1);
+/** Returns a dict key for platforms that need translation (e.g. xiaohongshu → 小紅書/RED).
+ *  Brand-name platforms return their proper brand casing (English-identical in both
+ *  locales); unknown values fall back to title-case. */
+export function platformLabelKey(p: string): string {
+  return PLATFORM_KEY[p] ?? PLATFORM_BRAND[p.toLowerCase()] ?? p.charAt(0).toUpperCase() + p.slice(1);
 }
 
+// Keep old name as alias.
+/** @deprecated Use platformLabelKey + t() in components; returns key or brand name */
+export const platformLabel = platformLabelKey;
+
 export type EffortLevel = "low" | "medium" | "high";
-const EFFORT_LABEL: Record<EffortLevel, string> = { low: "低", medium: "中", high: "高" };
-export function effortLabel(effort: EffortLevel | null | undefined): string | null {
-  return effort ? EFFORT_LABEL[effort] : null;
+const EFFORT_KEY: Record<EffortLevel, string> = {
+  low: "app.effort.low",
+  medium: "app.effort.medium",
+  high: "app.effort.high",
+};
+/** Returns a dict key like "app.effort.high". Pass to t() in a component. */
+export function effortLabelKey(effort: EffortLevel | null | undefined): string | null {
+  return effort ? EFFORT_KEY[effort] : null;
 }
+
+// Keep old name as alias.
+/** @deprecated Use effortLabelKey + t() in components */
+export const effortLabel = effortLabelKey;
 
 export function spotsLeft(quota: number, filled: number): number {
   return Math.max(0, quota - filled);
 }
 
-export type Eligibility = { qualified: boolean; label: string };
-/** Display-only. The real gate is server-side (join/apply return `level_locked` 409). */
+export type Eligibility = {
+  qualified: boolean;
+  labelKey: string;
+  params?: Record<string, string>;
+  /** @deprecated use labelKey+params with t(); kept for test compatibility only */
+  label?: string;
+};
+
+/** Display-only. The real gate is server-side (join/apply return `level_locked` 409).
+ *  Returns a key + params for t() interpolation. */
 export function eligibility(
   requiredLevel: string | undefined | null,
   creatorLevel: string | undefined | null,
@@ -45,7 +79,18 @@ export function eligibility(
   const have = levelIndex(creatorLevel);
   const reqId = requiredLevel ?? "L0";
   if (have >= need) {
-    return { qualified: true, label: need === 0 ? "所有等級可參加" : `需 ${reqId} · 你符合` };
+    if (need === 0) {
+      return { qualified: true, labelKey: "app.eligibility.allLevels" };
+    }
+    return {
+      qualified: true,
+      labelKey: "app.eligibility.qualified",
+      params: { req: reqId },
+    };
   }
-  return { qualified: false, label: `需 ${reqId} · 你係 ${creatorLevel ?? "L0"}` };
+  return {
+    qualified: false,
+    labelKey: "app.eligibility.notQualified",
+    params: { req: reqId, level: creatorLevel ?? "L0" },
+  };
 }

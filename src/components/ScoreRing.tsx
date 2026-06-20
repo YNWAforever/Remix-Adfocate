@@ -1,6 +1,8 @@
+import { useI18n } from "@/lib/i18n";
+
 /** An SVG circular gauge for a single passport score. `value` is 0..100, or `null` for a
  *  locked score (Content / Brand Safety, or a computed score with no source data yet),
- *  which renders a greyed ring with "敬請期待". A real 0 renders the value, not the lock. */
+ *  which renders a greyed ring with "Coming Soon". A real 0 renders the value, not the lock. */
 export function ScoreRing({
   value,
   label,
@@ -10,6 +12,7 @@ export function ScoreRing({
   label: string;
   accent: string;
 }) {
+  const { t } = useI18n();
   const r = 32;
   const circ = 2 * Math.PI * r;
   const locked = value === null;
@@ -34,7 +37,7 @@ export function ScoreRing({
         )}
       </svg>
       <span className="font-heading text-sm font-bold">{label}</span>
-      <span className="text-xs text-[var(--color-soft-ink)]">{locked ? "敬請期待" : value}</span>
+      <span className="text-xs text-[var(--color-soft-ink)]">{locked ? t("app.passport.scoreLocked") : value}</span>
     </div>
   );
 }

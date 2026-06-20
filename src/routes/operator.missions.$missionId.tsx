@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n";
 import { MissionShortlistPanel } from "@/components/operator/MissionShortlistPanel";
 import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/operator/missions/$missionId")({
 });
 
 function OperatorMissionShortlistRoute() {
+  const { t } = useI18n();
   const { missionId } = Route.useParams();
   const [secret, setSecret] = useState<string | null>(getAdminSecret());
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
@@ -70,7 +72,7 @@ function OperatorMissionShortlistRoute() {
           </div>
         </div>
 
-        {shortlist.isLoading ? <p className="text-sm">載入中…</p> : null}
+        {shortlist.isLoading ? <p className="text-sm">{t("common.loading")}</p> : null}
 
         <MissionShortlistPanel missionId={missionId} rows={shortlist.data?.shortlists ?? []} />
 
@@ -96,7 +98,7 @@ function OperatorMissionShortlistRoute() {
             </label>
           </div>
 
-          {queue.isLoading ? <p className="text-sm">載入中…</p> : null}
+          {queue.isLoading ? <p className="text-sm">{t("common.loading")}</p> : null}
           {!queue.isLoading && (queue.data?.creators.length ?? 0) === 0 ? (
             <p className="text-sm text-[var(--color-soft-ink)]">No creators match this mission queue view.</p>
           ) : null}

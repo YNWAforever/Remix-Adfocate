@@ -16,6 +16,7 @@ import {
   postCreatorNote,
   type AdminNoteCategory,
 } from "@/lib/admin";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/operator/creators/$creatorId")({
   component: OperatorCreatorDetailRoute,
@@ -63,6 +64,7 @@ function maybeRecord(value: unknown) {
 }
 
 function OperatorCreatorDetailRoute() {
+  const { t } = useI18n();
   const { creatorId } = Route.useParams();
   const queryClient = useQueryClient();
   const [secret, setSecret] = useState<string | null>(getAdminSecret());
@@ -103,22 +105,22 @@ function OperatorCreatorDetailRoute() {
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-xl font-bold">創作者詳情</h1>
+              <h1 className="font-display text-xl font-bold">{t("app.operator.creatorDetailHeading")}</h1>
               {review ? <ReviewBadge status={review.status} /> : null}
               {review ? <RiskBadge risk={review.riskLevel} /> : null}
             </div>
-            <p className="text-sm text-[var(--color-soft-ink)]">營運用創作者檔案、審核紀錄與內部備註。</p>
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.operator.creatorDetailSubtitle")}</p>
           </div>
           <Link
             to="/admin/creators"
             className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold"
           >
             <ArrowLeft className="h-4 w-4" />
-            返回佇列
+            {t("app.operator.creatorDetailBack")}
           </Link>
         </div>
 
-        {detail.isLoading ? <p className="text-sm">載入中…</p> : null}
+        {detail.isLoading ? <p className="text-sm">{t("common.loading")}</p> : null}
 
         {creator && review && detailData ? (
           <>

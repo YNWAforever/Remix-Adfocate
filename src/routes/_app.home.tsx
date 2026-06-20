@@ -4,7 +4,9 @@ import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { MissionCard } from "@/components/MissionCard";
+import { LangToggle } from "@/components/LangToggle";
 import { LEVELS, levelIndex } from "@/lib/levels";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -13,14 +15,23 @@ function Home() {
   const balance = useBalance();
   const missions = useMissions();
   useRealtimeBalance(me.data?.id);
+  const { t } = useI18n();
+
+  const quickLinks = [
+    { to: "/mission", labelKey: "app.home.quickMission" as const, icon: Target },
+    { to: "/redemption", labelKey: "app.home.quickRedemption" as const, icon: Gift },
+    { to: "/wallet", labelKey: "app.home.quickWalletHistory" as const, icon: Receipt },
+    { to: "/explore", labelKey: "app.home.quickExplore" as const, icon: CalendarCheck },
+  ];
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
       <div className="flex items-center justify-end gap-2">
+        <LangToggle className="lg:hidden" />
         {me.data?.level && (
           <Link
             to="/passport"
-            aria-label="創作者護照"
+            aria-label={t("app.home.passportAriaLabel")}
             className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
           >
             {LEVELS[levelIndex(me.data.level)].emoji} {me.data.level}
@@ -28,7 +39,7 @@ function Home() {
         )}
         <Link
           to="/profile"
-          aria-label="個人檔案"
+          aria-label={t("app.home.profileAriaLabel")}
           className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
         >
           {me.data?.avatar_url ? (
@@ -38,36 +49,33 @@ function Home() {
           )}
         </Link>
       </div>
+
       <section className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-6 text-[var(--color-ink)] shadow-[4px_4px_0_0_var(--color-ink)]">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em]">ADFOCATE · KOCMAX</span>
-        <h1 className="mt-2 font-display text-3xl font-bold leading-[1.05]">賺取積分<br/>兌換心儀獎賞</h1>
-        <p className="mt-2 text-sm">購物賺積分 · 完成任務 · 兌換獎賞</p>
+        <h1 className="mt-2 font-display text-3xl font-bold leading-[1.05]" style={{ whiteSpace: "pre-line" }}>{t("app.home.heroTitle")}</h1>
+        <p className="mt-2 text-sm">{t("app.home.heroBody")}</p>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">
-          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
+          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
           <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
 
           <Link
             to="/match"
-            aria-label="今日整乜好"
+            aria-label={t("app.home.matchAriaLabel")}
             className="flex items-center justify-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] p-4 font-heading text-lg font-bold text-white shadow-[4px_4px_0_0_var(--color-ink)]"
           >
-            <Sparkles size={20} aria-hidden /> 今日整乜好？
+            <Sparkles size={20} aria-hidden /> {t("app.home.matchCta")}
           </Link>
 
           <section className="grid grid-cols-2 gap-3">
-            {[
-              { to: "/mission", label: "限時任務", icon: Target },
-              { to: "/redemption", label: "積分兌換", icon: Gift },
-              { to: "/wallet", label: "積分記錄", icon: Receipt },
-              { to: "/explore", label: "探索獎賞", icon: CalendarCheck },
-            ].map((a) => {
+            {quickLinks.map((a) => {
               const Icon = a.icon;
+              const label = t(a.labelKey);
               return (
-                <Link key={a.label} to={a.to} aria-label={a.label} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
-                  <Icon size={20} aria-hidden /> {a.label}
+                <Link key={a.labelKey} to={a.to} aria-label={label} className="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold">
+                  <Icon size={20} aria-hidden /> {label}
                 </Link>
               );
             })}
@@ -75,8 +83,8 @@ function Home() {
         </div>
 
         <section>
-          <h2 className="mb-2 font-heading font-bold">精選任務</h2>
-          {missions.isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
+          <h2 className="mb-2 font-heading font-bold">{t("app.home.featuredMissions")}</h2>
+          {missions.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.mission.loadFailed")}</p>}
           <div className="space-y-2">
             {missions.data?.slice(0, 3).map((m) => (
               <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>

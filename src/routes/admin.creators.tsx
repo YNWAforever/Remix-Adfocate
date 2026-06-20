@@ -11,6 +11,7 @@ import {
   type AdminRiskLevel,
   type CreatorReviewQueueFilters,
 } from "@/lib/admin";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/creators")({
   component: CreatorsTab,
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/admin/creators")({
 });
 
 function CreatorsTab() {
+  const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
@@ -91,9 +93,9 @@ function CreatorsTab() {
         </div>
       </section>
 
-      {creators.isLoading && <p className="text-sm">載入中…</p>}
+      {creators.isLoading && <p className="text-sm">{t("common.loading")}</p>}
       {!creators.isLoading && creators.data?.creators.length === 0 && (
-        <p className="text-sm text-[var(--color-soft-ink)]">暫無待審核創作者</p>
+        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.creatorsEmpty")}</p>
       )}
 
       <div className="space-y-3">

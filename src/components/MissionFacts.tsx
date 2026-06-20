@@ -2,6 +2,7 @@ import { Star, Users, Clock, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Mission } from "@/lib/queries/kocmax";
 import { spotsLeft, eligibility } from "@/lib/missionMeta";
+import { useI18n } from "@/lib/i18n";
 
 function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; value: string; ok?: boolean }) {
   return (
@@ -16,15 +17,18 @@ function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; valu
 }
 
 export function MissionFacts({ mission, creatorLevel }: { mission: Mission; creatorLevel?: string | null }) {
+  const { t } = useI18n();
   const left = spotsLeft(mission.quota, mission.filled);
   const elig = eligibility(mission.required_level, creatorLevel);
-  const reward = `${mission.points_reward} 積分${mission.cash_reward ? ` · HK$${mission.cash_reward}` : ""}`;
+  const reward = mission.cash_reward
+    ? `${t("app.mission.factRewardValue", { pts: mission.points_reward })} · HK$${mission.cash_reward}`
+    : t("app.mission.factRewardValue", { pts: mission.points_reward });
   return (
     <section className="grid grid-cols-2 gap-3">
-      <Fact icon={<Star size={18} />} label="獎勵" value={reward} />
-      <Fact icon={<Users size={18} />} label="名額" value={left > 0 ? `尚餘 ${left} 個` : "額滿"} ok={left > 0} />
-      <Fact icon={<Clock size={18} />} label="截止" value={mission.deadline ? mission.deadline.slice(0, 10) : "無截止日期"} />
-      <Fact icon={<ShieldCheck size={18} />} label="資格" value={elig.label} ok={elig.qualified} />
+      <Fact icon={<Star size={18} />} label={t("app.mission.factReward")} value={reward} />
+      <Fact icon={<Users size={18} />} label={t("app.mission.factQuota")} value={left > 0 ? t("app.mission.spotsLeft", { n: left }) : t("app.mission.spotsFull")} ok={left > 0} />
+      <Fact icon={<Clock size={18} />} label={t("app.mission.factDeadline")} value={mission.deadline ? mission.deadline.slice(0, 10) : t("app.mission.noDeadline")} />
+      <Fact icon={<ShieldCheck size={18} />} label={t("app.mission.factEligibility")} value={t(elig.labelKey, elig.params)} ok={elig.qualified} />
     </section>
   );
 }

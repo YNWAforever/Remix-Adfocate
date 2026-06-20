@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Mission } from "@/lib/queries/kocmax";
-import { platformLabel, effortLabel } from "@/lib/missionMeta";
+import { platformLabelKey, effortLabelKey } from "@/lib/missionMeta";
+import { useI18n } from "@/lib/i18n";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -12,44 +13,45 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function MissionBrief({ mission }: { mission: Mission }) {
+  const { t } = useI18n();
   const deliverables = mission.deliverables ?? [];
   const requirements = mission.requirements ?? [];
   const platforms = mission.platforms ?? [];
-  const effort = effortLabel(mission.effort);
+  const effortKey = effortLabelKey(mission.effort);
   const hasAny =
-    !!mission.description || deliverables.length > 0 || requirements.length > 0 || platforms.length > 0 || !!effort;
+    !!mission.description || deliverables.length > 0 || requirements.length > 0 || platforms.length > 0 || !!effortKey;
 
-  if (!hasAny) return <p className="text-sm text-[var(--color-soft-ink)]">詳情陸續更新</p>;
+  if (!hasAny) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.mission.briefEmpty")}</p>;
 
   return (
     <div className="space-y-4">
       {mission.description && (
-        <Section title="關於任務">
+        <Section title={t("app.mission.briefAbout")}>
           <p className="text-sm text-[var(--color-soft-ink)]">{mission.description}</p>
         </Section>
       )}
       {deliverables.length > 0 && (
-        <Section title="交付內容">
+        <Section title={t("app.mission.briefDeliverables")}>
           <ul className="list-disc space-y-1 pl-5 text-sm">{deliverables.map((d, i) => <li key={i}>{d}</li>)}</ul>
         </Section>
       )}
       {requirements.length > 0 && (
-        <Section title="注意事項">
+        <Section title={t("app.mission.briefRequirements")}>
           <ul className="list-disc space-y-1 pl-5 text-sm">{requirements.map((r, i) => <li key={i}>{r}</li>)}</ul>
         </Section>
       )}
       {platforms.length > 0 && (
-        <Section title="發佈平台">
+        <Section title={t("app.mission.briefPlatforms")}>
           <div className="flex flex-wrap gap-2">
             {platforms.map((p) => (
-              <span key={p} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-heading font-bold">{platformLabel(p)}</span>
+              <span key={p} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-heading font-bold">{t(platformLabelKey(p))}</span>
             ))}
           </div>
         </Section>
       )}
-      {effort && (
-        <Section title="預計投入">
-          <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{effort}</span>
+      {effortKey && (
+        <Section title={t("app.mission.briefEffort")}>
+          <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-heading font-bold">{t(effortKey)}</span>
         </Section>
       )}
     </div>

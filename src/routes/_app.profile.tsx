@@ -4,8 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CreatorProfileMediaPanel } from "@/components/CreatorProfileMediaPanel";
 import { FilterPillsMulti } from "@/components/FilterPills";
 import { IdentityHeader } from "@/components/IdentityHeader";
+import { LangToggle } from "@/components/LangToggle";
 import { LevelChip } from "@/components/LevelChip";
 import { SocialTrustPanel } from "@/components/SocialTrustPanel";
+import { useI18n } from "@/lib/i18n";
+import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
 import { supabase } from "@/lib/supabase";
 
@@ -16,6 +19,7 @@ const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
 const CARD = "rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]";
 
 function Profile() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const me = useMe();
@@ -52,7 +56,7 @@ function Profile() {
       await update.mutateAsync({ display_name: displayName.trim() || undefined, categories, social_handles });
       setEditing(false);
     } catch {
-      setError("儲存失敗，請重試");
+      setError(t("common.saveError"));
     }
   }
 
@@ -72,14 +76,14 @@ function Profile() {
   if (me.isLoading) {
     return (
       <div className="mx-auto max-w-lg p-4">
-        <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>
+        <p className="text-sm text-[var(--color-soft-ink)]">{t("common.loading")}</p>
       </div>
     );
   }
   if (me.isError || !me.data) {
     return (
       <div className="mx-auto max-w-lg p-4">
-        <p className="text-sm text-[var(--color-magenta)]">載入失敗，請重試</p>
+        <p className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>
       </div>
     );
   }
@@ -89,32 +93,35 @@ function Profile() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
       <section className={`${CARD} p-5`}>
-        <IdentityHeader
-          name={d.display_name ?? "KOC"}
-          avatarUrl={d.avatar_url}
-          actions={
-            !editing && (
-              <>
-                <button
-                  type="button"
-                  onClick={startEdit}
-                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
-                >
-                  編輯
-                </button>
-                <button
-                  type="button"
-                  onClick={signOut}
-                  className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
-                >
-                  登出
-                </button>
-              </>
-            )
-          }
-        >
-          <LevelChip xp={d.xp} />
-        </IdentityHeader>
+        <div className="flex items-start justify-between">
+          <IdentityHeader
+            name={d.display_name ?? "KOC"}
+            avatarUrl={d.avatar_url}
+            actions={
+              !editing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={startEdit}
+                    className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                  >
+                    {t("app.profile.edit")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  >
+                    {t("app.profile.signOut")}
+                  </button>
+                </>
+              )
+            }
+          >
+            <LevelChip xp={d.xp} />
+          </IdentityHeader>
+          <LangToggle />
+        </div>
       </section>
 
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
@@ -123,22 +130,22 @@ function Profile() {
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
             <section className="space-y-2">
-              <h2 className="font-heading font-bold">內容範疇</h2>
+              <h2 className="font-heading font-bold">{t("app.profile.categories")}</h2>
               {d.categories?.length ? (
                 <div className="flex flex-wrap gap-2">
                   {d.categories.map((c) => (
                     <span key={c} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm">
-                      {c}
+                      {t(categoryLabelKey(c))}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.profile.notSet")}</p>
               )}
             </section>
 
             <section className="space-y-3">
-              <h2 className="font-heading font-bold">社交帳號</h2>
+              <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
               {d.social_handles?.length ? (
                 <ul className="space-y-1">
                   {d.social_handles.map((s) => (
@@ -146,13 +153,13 @@ function Profile() {
                       key={s.platform}
                       className="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
                     >
-                      <span className="font-heading font-semibold">{s.platform}</span>
+                      <span className="font-heading font-semibold">{t(platformDisplayLabelKey(s.platform))}</span>
                       <span className="text-[var(--color-soft-ink)]">{s.handle}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-[var(--color-soft-ink)]">尚未設定</p>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.profile.notSet")}</p>
               )}
               <SocialTrustPanel />
             </section>
@@ -162,20 +169,20 @@ function Profile() {
             <CreatorProfileMediaPanel />
 
             <section className={`space-y-2 ${CARD}`}>
-              <h2 className="font-heading font-bold">我的邀請碼</h2>
+              <h2 className="font-heading font-bold">{t("app.profile.referralCode")}</h2>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-lg font-bold tracking-widest">{d.referral_code ?? "—"}</span>
                 <button
                   type="button"
                   onClick={copyReferral}
                   disabled={!d.referral_code}
-                  aria-label="複製邀請碼"
+                  aria-label={t("app.profile.copyReferralAria")}
                   className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
                 >
-                  {copied ? "已複製" : "複製"}
+                  {copied ? t("app.profile.copied") : t("app.profile.copyCode")}
                 </button>
               </div>
-              <p className="text-sm text-[var(--color-soft-ink)]">邀請朋友，各得 200 分</p>
+              <p className="text-sm text-[var(--color-soft-ink)]">{t("app.profile.referralNote")}</p>
             </section>
 
             <section className="grid grid-cols-2 gap-3">
@@ -183,13 +190,13 @@ function Profile() {
                 to="/my"
                 className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
               >
-                我的任務
+                {t("app.profile.myMissions")}
               </Link>
               <Link
                 to="/redemption/history"
                 className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
               >
-                兌換記錄
+                {t("app.profile.redemptionHistory")}
               </Link>
             </section>
           </div>
@@ -197,30 +204,30 @@ function Profile() {
       ) : (
         <div className="mx-auto w-full max-w-lg space-y-6">
           <section className="space-y-2">
-            <h2 className="font-heading font-bold">顯示名稱</h2>
+            <h2 className="font-heading font-bold">{t("app.profile.displayName")}</h2>
             <input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              aria-label="顯示名稱"
+              aria-label={t("app.profile.displayName")}
               className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
             />
           </section>
 
           <section className="space-y-2">
-            <h2 className="font-heading font-bold">內容範疇</h2>
-            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} />
+            <h2 className="font-heading font-bold">{t("app.profile.categories")}</h2>
+            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
           </section>
 
           <section className="space-y-2">
-            <h2 className="font-heading font-bold">社交帳號</h2>
+            <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
             <div className="space-y-2">
               {PLATFORMS.map((p) => (
                 <input
                   key={p}
                   value={handles[p] ?? ""}
                   onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                  placeholder={`${p} 帳號`}
-                  aria-label={`${p} 帳號`}
+                  placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
+                  aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
                   className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
                 />
               ))}
@@ -236,7 +243,7 @@ function Profile() {
               }}
               className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold"
             >
-              取消
+              {t("common.cancel")}
             </button>
             <button
               type="button"
@@ -244,7 +251,7 @@ function Profile() {
               disabled={update.isPending}
               className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
             >
-              {update.isPending ? "儲存中…" : "儲存"}
+              {update.isPending ? t("app.profile.saving") : t("app.profile.save")}
             </button>
           </div>
         </div>

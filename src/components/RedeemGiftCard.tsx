@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { RewardCard } from "./RewardCard";
 import { useRedeemGift, type Gift } from "@/lib/queries/kocmax";
+import { useI18n } from "@/lib/i18n";
 
 export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number }) {
+  const { t } = useI18n();
   const redeem = useRedeemGift();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState<string | null>(null);
@@ -13,6 +15,12 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
   function confirm() {
     redeem.mutate(gift.id, { onSuccess: (r) => setCode(r.code) });
   }
+
+  const btnLabel = soldOut
+    ? t("app.redemption.soldOut")
+    : poor
+      ? t("app.redemption.insufficient")
+      : t("app.redemption.redeemBtn");
 
   return (
     <>
@@ -28,14 +36,14 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
             onClick={() => { setCode(null); setOpen(true); }}
             className="mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 font-heading text-sm font-bold text-white disabled:opacity-40"
           >
-            {soldOut ? "已換罄" : poor ? "積分不足" : "兌換"}
+            {btnLabel}
           </button>
         }
       />
       {open && (
         <div
           role="dialog"
-          aria-label="兌換"
+          aria-label={t("app.redemption.dialogTitle")}
           className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
           onClick={() => setOpen(false)}
         >
@@ -45,16 +53,16 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
           >
             {code === null ? (
               <>
-                <h2 className="font-display text-lg font-bold">確認兌換</h2>
-                <p className="mt-2 text-sm">用 {gift.points_cost} 積分兌換「{gift.name}」？</p>
-                {redeem.isError && <p className="mt-2 text-sm text-[var(--color-magenta)]">兌換失敗，請再試</p>}
+                <h2 className="font-display text-lg font-bold">{t("app.redemption.dialogTitle")}</h2>
+                <p className="mt-2 text-sm">{t("app.redemption.dialogBody", { pts: gift.points_cost, name: gift.name })}</p>
+                {redeem.isError && <p className="mt-2 text-sm text-[var(--color-magenta)]">{t("app.redemption.redeemError")}</p>}
                 <div className="mt-4 flex gap-2">
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold"
                   >
-                    取消
+                    {t("common.cancel")}
                   </button>
                   <button
                     type="button"
@@ -62,14 +70,14 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
                     onClick={confirm}
                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-2 font-heading text-sm font-bold text-white disabled:opacity-40"
                   >
-                    {redeem.isPending ? "處理中…" : "確認"}
+                    {redeem.isPending ? t("common.processing") : t("app.redemption.confirm")}
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h2 className="font-display text-lg font-bold">兌換成功 🎉</h2>
-                <p className="mt-2 text-sm">你的兌換碼：</p>
+                <h2 className="font-display text-lg font-bold">{t("app.redemption.successTitle")}</h2>
+                <p className="mt-2 text-sm">{t("app.redemption.yourCode")}</p>
                 <p className="mt-1 select-all rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] bg-[var(--color-muted,#F4F4F4)] p-3 text-center font-mono text-lg font-bold">
                   {code}
                 </p>
@@ -78,14 +86,14 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
                   onClick={() => navigator.clipboard?.writeText(code)}
                   className="mt-3 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold"
                 >
-                  複製兌換碼
+                  {t("app.redemption.copyCode")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   className="mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold text-white"
                 >
-                  完成
+                  {t("app.redemption.done")}
                 </button>
               </>
             )}
