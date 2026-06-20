@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ExternalLink, Pencil, Star, Trash2, Upload, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useI18n } from "@/lib/i18n";
 import {
   type ProfileMediaLink,
   type PortfolioPlatformType,
@@ -13,17 +14,19 @@ import {
   useUpdatePortfolioLink,
 } from "@/lib/queries/kocmax";
 
-const PLATFORM_OPTIONS: Array<{ value: PortfolioPlatformType; label: string }> = [
-  { value: "instagram", label: "Instagram" },
-  { value: "threads", label: "Threads" },
-  { value: "tiktok", label: "TikTok" },
-  { value: "youtube", label: "YouTube" },
-  { value: "website", label: "Website" },
-  { value: "case_study", label: "Case study" },
-  { value: "other", label: "Other" },
+// Platform labels are brand names — not translated. Only the non-brand labels are localised below.
+const PLATFORM_OPTIONS_VALUES: Array<{ value: PortfolioPlatformType; enLabel: string }> = [
+  { value: "instagram", enLabel: "Instagram" },
+  { value: "threads", enLabel: "Threads" },
+  { value: "tiktok", enLabel: "TikTok" },
+  { value: "youtube", enLabel: "YouTube" },
+  { value: "website", enLabel: "Website" },
+  { value: "case_study", enLabel: "Case study" },
+  { value: "other", enLabel: "Other" },
 ];
 
 export function CreatorProfileMediaPanel() {
+  const { t } = useI18n();
   const media = useProfileMedia();
   const createUpload = useCreateAvatarUpload();
   const selectAvatar = useSelectUploadedAvatar();
@@ -46,6 +49,11 @@ export function CreatorProfileMediaPanel() {
   const [savingLinkId, setSavingLinkId] = useState<string | null>(null);
   const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
 
+  const platformOptions = useMemo<Array<{ value: PortfolioPlatformType; label: string }>>(
+    () => PLATFORM_OPTIONS_VALUES.map((o) => ({ value: o.value, label: o.enLabel })),
+    [],
+  );
+
   async function uploadAvatar(file: File) {
     setMessage(null);
     const metadata = await createUpload.mutateAsync({
@@ -58,7 +66,7 @@ export function CreatorProfileMediaPanel() {
       .upload(metadata.path, file, { contentType: metadata.contentType, upsert: false });
     if (error) throw error;
     await selectAvatar.mutateAsync(metadata.path);
-    setMessage("頭像已更新，發佈後會顯示在公開護照");
+    setMessage(t("app.media.avatarUpdated"));
   }
 
   async function submitLink() {
@@ -117,7 +125,7 @@ export function CreatorProfileMediaPanel() {
   async function toggleHighlight(link: ProfileMediaLink) {
     const isEnabling = !link.publicHighlight;
     if (isEnabling && selectedHighlights + pendingHighlightIds.length >= 3) {
-      setMessage("公開精選最多 3 個");
+      setMessage(t("app.media.highlightCap"));
       return;
     }
 
@@ -129,7 +137,7 @@ export function CreatorProfileMediaPanel() {
       await updateLink.mutateAsync({ id: link.id, patch: { public_highlight: !link.publicHighlight } });
       setMessage(null);
     } catch {
-      setMessage("公開精選更新失敗");
+      setMessage(t("app.media.highlightError"));
     } finally {
       if (isEnabling) {
         setPendingHighlightIds((current) => current.filter((id) => id !== link.id));
@@ -143,7 +151,7 @@ export function CreatorProfileMediaPanel() {
     try {
       await deleteLink.mutateAsync(linkId);
     } catch {
-      setMessage("作品刪除失敗");
+      setMessage(t("app.media.deleteError"));
     } finally {
       setDeletingLinkId(null);
     }
@@ -152,8 +160,8 @@ export function CreatorProfileMediaPanel() {
   if (media.isLoading) {
     return (
       <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-        <h2 className="font-heading font-bold">創作者媒體</h2>
-        <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>
+        <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
+        <p className="text-sm text-[var(--color-soft-ink)]">{t("common.loading")}</p>
       </section>
     );
   }
@@ -161,8 +169,8 @@ export function CreatorProfileMediaPanel() {
   if (media.isError || !media.data) {
     return (
       <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-        <h2 className="font-heading font-bold">創作者媒體</h2>
-        <p className="text-sm text-[var(--color-magenta)]">媒體資料載入失敗</p>
+        <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
+        <p className="text-sm text-[var(--color-magenta)]">{t("app.media.loadFailed")}</p>
       </section>
     );
   }
@@ -172,7 +180,7 @@ export function CreatorProfileMediaPanel() {
   return (
     <section className="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-heading font-bold">創作者媒體</h2>
+        <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
         <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold">
           {media.data.completeness.score}%
         </span>
@@ -182,15 +190,15 @@ export function CreatorProfileMediaPanel() {
 
       <label className="flex cursor-pointer items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-heading font-bold">
         <Upload className="h-4 w-4" />
-        上載頭像
+        {t("app.media.uploadAvatar")}
         <input
-          aria-label="上載頭像"
+          aria-label={t("app.media.uploadAvatar")}
           type="file"
           accept="image/png,image/jpeg,image/webp"
           className="sr-only"
           onChange={(event) => {
             const file = event.currentTarget.files?.[0];
-            if (file) void uploadAvatar(file).catch(() => setMessage("頭像上載失敗"));
+            if (file) void uploadAvatar(file).catch(() => setMessage(t("app.media.avatarUploadError")));
           }}
         />
       </label>
@@ -199,24 +207,24 @@ export function CreatorProfileMediaPanel() {
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          aria-label="作品標題"
-          placeholder="作品標題"
+          aria-label={t("app.media.workTitle")}
+          placeholder={t("app.media.workTitle")}
           className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
         />
         <input
           value={url}
           onChange={(event) => setUrl(event.target.value)}
-          aria-label="作品連結"
+          aria-label={t("app.media.workUrl")}
           placeholder="https://example.com/work"
           className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
         />
         <select
           value={platformType}
           onChange={(event) => setPlatformType(event.target.value as PortfolioPlatformType)}
-          aria-label="作品類型"
+          aria-label={t("app.media.workType")}
           className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
         >
-          {PLATFORM_OPTIONS.map((option) => (
+          {platformOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -225,18 +233,18 @@ export function CreatorProfileMediaPanel() {
         <input
           value={caption}
           onChange={(event) => setCaption(event.target.value)}
-          aria-label="作品說明"
-          placeholder="作品說明"
+          aria-label={t("app.media.workCaption")}
+          placeholder={t("app.media.workCaption")}
           className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
         />
         <button
           type="button"
-          aria-label="新增作品"
+          aria-label={t("app.media.addWork")}
           disabled={!title.trim() || !url.trim() || createLink.isPending}
-          onClick={() => void submitLink().catch(() => setMessage("作品新增失敗"))}
+          onClick={() => void submitLink().catch(() => setMessage(t("app.media.addError")))}
           className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
         >
-          新增作品
+          {t("app.media.addWork")}
         </button>
       </div>
 
@@ -261,34 +269,34 @@ export function CreatorProfileMediaPanel() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  aria-label={`編輯作品 ${link.title}`}
+                  aria-label={t("app.media.editWorkAria", { title: link.title })}
                   disabled={isEditing && savingLinkId === link.id}
                   onClick={() => beginEdit(link)}
                   className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
                 >
                   <Pencil className="h-4 w-4" />
-                  編輯
+                  {t("app.media.editBtn")}
                 </button>
                 <button
                   type="button"
-                  aria-label={`切換公開精選 ${link.title}`}
+                  aria-label={t("app.media.toggleHighlightAria", { title: link.title })}
                   aria-pressed={effectivePublicHighlight}
                   disabled={highlightDisabled}
                   onClick={() => void toggleHighlight(link)}
                   className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
                 >
                   <Star className="h-4 w-4" />
-                  {effectivePublicHighlight ? "公開精選" : "設為公開"}
+                  {effectivePublicHighlight ? t("app.media.highlighted") : t("app.media.setPublic")}
                 </button>
                 <button
                   type="button"
-                  aria-label={`刪除作品 ${link.title}`}
+                  aria-label={t("app.media.deleteWorkAria", { title: link.title })}
                   disabled={deletingLinkId === link.id}
                   onClick={() => void removeLink(link.id)}
                   className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold text-[var(--color-magenta)] disabled:opacity-50"
                 >
                   <Trash2 className="h-4 w-4" />
-                  刪除
+                  {t("app.media.deleteBtn")}
                 </button>
               </div>
               {isEditing ? (
@@ -296,22 +304,22 @@ export function CreatorProfileMediaPanel() {
                   <input
                     value={editTitle}
                     onChange={(event) => setEditTitle(event.target.value)}
-                    aria-label={`編輯作品標題 ${link.title}`}
+                    aria-label={t("app.media.editTitleAria", { title: link.title })}
                     className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
                   />
                   <input
                     value={editUrl}
                     onChange={(event) => setEditUrl(event.target.value)}
-                    aria-label={`編輯作品連結 ${link.title}`}
+                    aria-label={t("app.media.editUrlAria", { title: link.title })}
                     className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
                   />
                   <select
                     value={editPlatformType}
                     onChange={(event) => setEditPlatformType(event.target.value as PortfolioPlatformType)}
-                    aria-label={`編輯作品類型 ${link.title}`}
+                    aria-label={t("app.media.editTypeAria", { title: link.title })}
                     className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
                   >
-                    {PLATFORM_OPTIONS.map((option) => (
+                    {platformOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -320,7 +328,7 @@ export function CreatorProfileMediaPanel() {
                   <input
                     value={editCaption}
                     onChange={(event) => setEditCaption(event.target.value)}
-                    aria-label={`編輯作品說明 ${link.title}`}
+                    aria-label={t("app.media.editCaptionAria", { title: link.title })}
                     className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
                   />
                   <input
@@ -329,28 +337,28 @@ export function CreatorProfileMediaPanel() {
                     min={0}
                     value={editSortOrder}
                     onChange={(event) => setEditSortOrder(event.target.value)}
-                    aria-label={`編輯排序 ${link.title}`}
+                    aria-label={t("app.media.editSortAria", { title: link.title })}
                     className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2 text-sm"
                   />
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      aria-label={`儲存作品 ${link.title}`}
+                      aria-label={t("app.media.saveWorkAria", { title: link.title })}
                       disabled={!editTitle.trim() || !editUrl.trim() || savingLinkId === link.id}
-                      onClick={() => void saveEdit(link.id).catch(() => setMessage("作品更新失敗"))}
+                      onClick={() => void saveEdit(link.id).catch(() => setMessage(t("app.media.updateError")))}
                       className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 text-sm font-heading font-bold disabled:opacity-50"
                     >
-                      儲存
+                      {t("app.media.saveBtn")}
                     </button>
                     <button
                       type="button"
-                      aria-label={`取消編輯 ${link.title}`}
+                      aria-label={t("app.media.cancelEditAria", { title: link.title })}
                       disabled={savingLinkId === link.id}
                       onClick={cancelEdit}
                       className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
                     >
                       <X className="h-4 w-4" />
-                      取消
+                      {t("common.cancel")}
                     </button>
                   </div>
                 </div>
@@ -362,12 +370,12 @@ export function CreatorProfileMediaPanel() {
 
       <button
         type="button"
-        aria-label="發佈到公開護照"
+        aria-label={t("app.media.publishBtn")}
         disabled={publish.isPending}
-        onClick={() => void publish.mutateAsync().then(() => setMessage("公開護照已更新")).catch(() => setMessage("發佈失敗"))}
+        onClick={() => void publish.mutateAsync().then(() => setMessage(t("app.media.publishSuccess"))).catch(() => setMessage(t("app.media.publishError")))}
         className="w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
       >
-        發佈到公開護照
+        {t("app.media.publishBtn")}
       </button>
     </section>
   );
