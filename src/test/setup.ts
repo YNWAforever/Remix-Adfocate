@@ -1,6 +1,18 @@
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
 
+// jsdom does not implement IntersectionObserver. Polyfill with a no-op class so
+// components that call `new IntersectionObserver(...)` in useEffect can mount in
+// unit/smoke tests without throwing.
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  globalThis.IntersectionObserver = class IntersectionObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() { return []; }
+  } as unknown as typeof IntersectionObserver;
+}
+
 // jsdom in this vitest config ships a stub localStorage ({} with no methods).
 // Polyfill it with a real in-memory implementation so any code that reads/writes
 // window.localStorage in components or hooks works correctly in unit tests.
