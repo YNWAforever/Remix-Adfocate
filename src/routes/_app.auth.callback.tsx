@@ -37,5 +37,5 @@ function Callback() {
       </div>
     );
   }
-  return <div className="p-8">{t("app.auth.loading")}</div>;
+  return <div className="p-8">{t("common.signingIn")}</div>;
 }

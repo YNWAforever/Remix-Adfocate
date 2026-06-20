@@ -21,6 +21,9 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.balanceError": "Failed to load points",
     "common.cancel": "Cancel",
     "common.processing": "Processing…",
+    "common.saveError": "Save failed. Please try again.",
+    "common.platformHandleLabel": "{platform} handle",
+    "common.signingIn": "Signing in…",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
@@ -136,8 +139,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.profile.displayName": "Display Name",
     "app.profile.saving": "Saving…",
     "app.profile.save": "Save",
-    "app.profile.saveError": "Save failed. Please try again.",
-    "app.profile.handlePlaceholder": "{platform} handle",
 
     // ── app: passport ─────────────────────────────────────────
     "app.passport.scores": "Creator Scores",
@@ -163,7 +164,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.levelUpCta": "Awesome!",
 
     // ── app: onboarding ───────────────────────────────────────
-    "app.onboarding.saveError": "Save failed. Please try again.",
     "app.onboarding.claimError": "Claim failed. Please try again.",
     "app.onboarding.categoriesTitle": "Your Interests",
     "app.onboarding.categoriesHint": "Choose your content categories (1–3), so we can recommend missions.",
@@ -171,7 +171,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.next": "Next",
     "app.onboarding.platformsTitle": "Your Platforms",
     "app.onboarding.platformsHint": "Add your social handles (optional) — you can verify later.",
-    "app.onboarding.handleLabel": "{platform} handle",
     "app.onboarding.missionsTitle": "Your First Mission",
     "app.onboarding.missionsHint": "These missions are picked for you. You can join them on the missions page after sign-up.",
     "app.onboarding.rewardTitle": "Welcome Reward",
@@ -189,22 +188,19 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.login.phoneAriaLabel": "WhatsApp phone number",
     "app.login.sending": "Sending…",
     "app.login.sendOtpCta": "Get code via WhatsApp",
-    "app.login.otpSentTo": "Verification code sent via WhatsApp to ",
+    "app.login.otpSentTo": "Verification code sent via WhatsApp to {value}",
     "app.login.codePlaceholder": "6-digit code",
     "app.login.codeAriaLabel": "Verification code",
-    "app.login.verifying": "Signing in…",
     "app.login.verifyCta": "Verify & Sign In",
     "app.login.changePhone": "Change phone number",
     "app.login.otherMethods": "Other sign-in methods",
     "app.login.authError": "Sign-in could not be completed. Please try again.",
     "app.login.emailAriaLabel": "Email address",
     "app.login.emailCta": "Sign in with magic link",
-    "app.login.magicLinkSent": "Sign-in link sent to ",
-    "app.login.magicLinkSentSuffix": ". Please check your inbox.",
+    "app.login.magicLinkSent": "Sign-in link sent to {value}. Please check your inbox.",
     "app.login.googleCta": "Sign in with Google",
 
     // ── app: auth ─────────────────────────────────────────────
-    "app.auth.loading": "Signing in…",
     "app.auth.callbackError": "Sign-in could not be completed. Please sign in again.",
     "app.auth.backToLogin": "Back to Sign In",
   },
@@ -220,6 +216,9 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.balanceError": "積分載入失敗",
     "common.cancel": "取消",
     "common.processing": "處理中…",
+    "common.saveError": "儲存失敗，請重試",
+    "common.platformHandleLabel": "{platform} 帳號",
+    "common.signingIn": "登入中…",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",
@@ -335,8 +334,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.profile.displayName": "顯示名稱",
     "app.profile.saving": "儲存中…",
     "app.profile.save": "儲存",
-    "app.profile.saveError": "儲存失敗，請重試",
-    "app.profile.handlePlaceholder": "{platform} 帳號",
 
     // ── app: passport ─────────────────────────────────────────
     "app.passport.scores": "創作者評分",
@@ -362,7 +359,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.levelUpCta": "太好了",
 
     // ── app: onboarding ───────────────────────────────────────
-    "app.onboarding.saveError": "儲存失敗，請重試",
     "app.onboarding.claimError": "領取失敗，請重試",
     "app.onboarding.categoriesTitle": "你的範疇",
     "app.onboarding.categoriesHint": "選擇你的內容範疇（可選 1–3 個），方便我們推薦任務。",
@@ -370,7 +366,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.next": "下一步",
     "app.onboarding.platformsTitle": "你的平台",
     "app.onboarding.platformsHint": "填寫你的社交帳號（可選），稍後可驗證。",
-    "app.onboarding.handleLabel": "{platform} 帳號",
     "app.onboarding.missionsTitle": "你的第一個任務",
     "app.onboarding.missionsHint": "這些是為你推薦的任務。完成註冊後即可在任務頁面參加。",
     "app.onboarding.rewardTitle": "迎新獎賞",
@@ -388,22 +383,19 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.login.phoneAriaLabel": "WhatsApp 電話號碼",
     "app.login.sending": "傳送中…",
     "app.login.sendOtpCta": "用 WhatsApp 收驗證碼",
-    "app.login.otpSentTo": "驗證碼已透過 WhatsApp 傳送至 ",
+    "app.login.otpSentTo": "驗證碼已透過 WhatsApp 傳送至 {value}",
     "app.login.codePlaceholder": "6 位數驗證碼",
     "app.login.codeAriaLabel": "驗證碼",
-    "app.login.verifying": "登入中…",
     "app.login.verifyCta": "驗證並登入",
     "app.login.changePhone": "更改電話號碼",
     "app.login.otherMethods": "其他登入方式",
     "app.login.authError": "登入未能完成，請重試",
     "app.login.emailAriaLabel": "電郵地址",
     "app.login.emailCta": "用電郵連結登入",
-    "app.login.magicLinkSent": "登入連結已傳送至 ",
-    "app.login.magicLinkSentSuffix": "，請查看電郵。",
+    "app.login.magicLinkSent": "登入連結已傳送至 {value}，請查看電郵。",
     "app.login.googleCta": "用 Google 登入",
 
     // ── app: auth ─────────────────────────────────────────────
-    "app.auth.loading": "登入中…",
     "app.auth.callbackError": "登入未能完成，請重新登入",
     "app.auth.backToLogin": "返回登入",
   },

@@ -55,7 +55,7 @@ function Profile() {
       await update.mutateAsync({ display_name: displayName.trim() || undefined, categories, social_handles });
       setEditing(false);
     } catch {
-      setError(t("app.profile.saveError"));
+      setError(t("common.saveError"));
     }
   }
 
@@ -225,8 +225,8 @@ function Profile() {
                   key={p}
                   value={handles[p] ?? ""}
                   onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                  placeholder={t("app.profile.handlePlaceholder", { platform: p })}
-                  aria-label={t("app.profile.handlePlaceholder", { platform: p })}
+                  placeholder={t("common.platformHandleLabel", { platform: p })}
+                  aria-label={t("common.platformHandleLabel", { platform: p })}
                   className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
                 />
               ))}

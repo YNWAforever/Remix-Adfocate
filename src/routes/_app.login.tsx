@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
+import { BoldValue } from "@/components/RichText";
 
 export const Route = createFileRoute("/_app/login")({ component: Login });
 
@@ -96,8 +97,7 @@ function Login() {
       ) : (
         <form onSubmit={verify} className="space-y-3">
           <p className="text-sm text-[var(--color-soft-ink)]">
-            {t("app.login.otpSentTo")}
-            <span className="font-bold text-[var(--color-ink)]">{toHkE164(phone)}</span>
+            <BoldValue template={t("app.login.otpSentTo")} value={toHkE164(phone)} />
           </p>
           <input
             type="text"
@@ -115,7 +115,7 @@ function Login() {
             disabled={busy}
             className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
           >
-            {busy ? t("app.login.verifying") : t("app.login.verifyCta")}
+            {busy ? t("common.signingIn") : t("app.login.verifyCta")}
           </button>
           <button
             type="button"
@@ -173,9 +173,7 @@ function EmailAndGoogle() {
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
       {sent ? (
         <p className="text-sm text-[var(--color-soft-ink)]">
-          {t("app.login.magicLinkSent")}
-          <span className="font-bold text-[var(--color-ink)]">{email.trim()}</span>
-          {t("app.login.magicLinkSentSuffix")}
+          <BoldValue template={t("app.login.magicLinkSent")} value={email.trim()} />
         </p>
       ) : (
         <form onSubmit={sendLink} className="space-y-2">

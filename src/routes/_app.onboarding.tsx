@@ -40,7 +40,7 @@ function Wizard() {
     try {
       await saveProfile.mutateAsync({ categories: selected, step: 3 });
       setStep(3);
-    } catch { setError(t("app.onboarding.saveError")); }
+    } catch { setError(t("common.saveError")); }
   }
 
   async function platformsNext() {
@@ -51,7 +51,7 @@ function Wizard() {
       }
       await saveProfile.mutateAsync({ step: 4 });
       setStep(4);
-    } catch { setError(t("app.onboarding.saveError")); }
+    } catch { setError(t("common.saveError")); }
   }
 
   async function missionNext() {
@@ -59,7 +59,7 @@ function Wizard() {
     try {
       await saveProfile.mutateAsync({ step: 5 });
       setStep(5);
-    } catch { setError(t("app.onboarding.saveError")); }
+    } catch { setError(t("common.saveError")); }
   }
 
   async function claim() {
@@ -112,8 +112,8 @@ function Wizard() {
                 key={p}
                 value={handles[p] ?? ""}
                 onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                placeholder={t("app.onboarding.handleLabel", { platform: p })}
-                aria-label={t("app.onboarding.handleLabel", { platform: p })}
+                placeholder={t("common.platformHandleLabel", { platform: p })}
+                aria-label={t("common.platformHandleLabel", { platform: p })}
                 className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
               />
             ))}
