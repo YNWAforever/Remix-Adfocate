@@ -33,6 +33,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "cta.explore": "Explore Missions",
     "cta.browse": "Browse Adfoplace",
     "cta.contact": "Talk to Adfocate",
+    "cta.login": "Log in",
+    "cta.toApp": "Go to KOCmax",
     "hero.title": "From KOC to creator entrepreneur.",
     "hero.sub": "Adfocate helps creators grow their influence, earn from brand opportunities, and turn verified creator performance into future income and capital access.",
     "hero.join": "Join as Creator",
@@ -148,6 +150,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.saveError": "Save failed. Please try again.",
     "common.platformHandleLabel": "{platform} handle",
     "common.signingIn": "Signing in…",
+    "common.menu": "Menu",
+    "common.close": "Close",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
@@ -552,6 +556,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "cta.explore": "探索任務",
     "cta.browse": "瀏覽 Adfoplace",
     "cta.contact": "聯絡 Adfocate",
+    "cta.login": "登入",
+    "cta.toApp": "前往 KOCmax",
     "hero.title": "由 KOC 成長為創作者事業。",
     "hero.sub": "Adfocate 幫助創作者增長影響力，從品牌機會中賺取收入，並將經過驗證的創作者表現轉化為未來收入與資金渠道。",
     "hero.join": "成為創作者",
@@ -667,6 +673,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.saveError": "儲存失敗，請重試",
     "common.platformHandleLabel": "{platform} 帳號",
     "common.signingIn": "登入中…",
+    "common.menu": "選單",
+    "common.close": "關閉",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",
