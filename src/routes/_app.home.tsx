@@ -4,6 +4,7 @@ import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { MissionCard } from "@/components/MissionCard";
+import { LangToggle } from "@/components/LangToggle";
 import { LEVELS, levelIndex } from "@/lib/levels";
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
@@ -16,7 +17,9 @@ function Home() {
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <LangToggle className="lg:hidden" />
+        <div className="flex items-center gap-2">
         {me.data?.level && (
           <Link
             to="/passport"
@@ -37,6 +40,7 @@ function Home() {
             (me.data?.display_name?.[0] ?? "?").toUpperCase()
           )}
         </Link>
+        </div>
       </div>
       <section className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-6 text-[var(--color-ink)] shadow-[4px_4px_0_0_var(--color-ink)]">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em]">ADFOCATE · KOCMAX</span>
