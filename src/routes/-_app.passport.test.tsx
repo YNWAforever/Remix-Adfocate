@@ -85,8 +85,8 @@ describe("Passport page", () => {
   it("renders the identity hero with name and level progress", () => {
     renderPassport();
     expect(screen.getByRole("heading", { name: "阿明" })).toBeInTheDocument();
-    expect(screen.getByText("Explorer")).toBeInTheDocument();
-    expect(screen.getByText("還需 1400 XP 升至 Creator")).toBeInTheDocument();
+    expect(screen.getByText("KOC 新手")).toBeInTheDocument();
+    expect(screen.getByText("還需 1400 XP 升至 信譽 KOC")).toBeInTheDocument();
   });
 
   it("creates and revokes a public passport link", async () => {

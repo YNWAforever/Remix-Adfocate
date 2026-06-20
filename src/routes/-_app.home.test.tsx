@@ -42,7 +42,7 @@ describe("Home", () => {
 
   it("shows a level chip with the current level", () => {
     renderHome();
-    expect(screen.getByText("🌟 L1")).toBeInTheDocument();
+    expect(screen.getByText("🌱 L1")).toBeInTheDocument();
   });
 
   it("links the level chip to the creator passport", () => {

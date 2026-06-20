@@ -84,7 +84,7 @@ describe("Profile page", () => {
   it("renders name, level, categories and referral code", () => {
     renderProfile();
     expect(screen.getByText("阿明")).toBeInTheDocument();
-    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText("KOC 新手")).toBeInTheDocument();
     expect(screen.getByText(/看護照/).closest("a")).toHaveAttribute("href", "/passport");
     expect(screen.getByText("美容")).toBeInTheDocument();
     expect(screen.getByText("Social trust")).toBeInTheDocument();
