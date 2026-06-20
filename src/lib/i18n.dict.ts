@@ -11,6 +11,8 @@ export type Locale = "en" | "zh";
 export const dict: Record<Locale, Record<string, string>> = {
   en: {
     // ── site / marketing ──────────────────────────────────────
+    // Marketing-site keys. nav.* here are the public top-nav labels,
+    // distinct from the app.nav.* bottom-nav labels used inside the creator app.
     "nav.home": "Home",
     "nav.creators": "Creators",
     "nav.brands": "Brands",
@@ -126,10 +128,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "footer.company": "Company",
     "footer.disclaimer": "Creator capital and payout advance concepts shown in this preview are illustrative only. Any financing product would be subject to eligibility, approval, and applicable licensing or partner arrangements.",
     "lang.toggle": "繁中",
-    apply: "Apply",
-    view: "View Offer",
-    learn: "Learn More",
-    coming: "Coming Soon",
+    "apply": "Apply",
+    "view": "View Offer",
+    "learn": "Learn More",
+    "coming": "Coming Soon",
     "join.waitlist": "Join Waitlist",
 
     // ── common ──────────────────────────────────────────────
@@ -528,6 +530,8 @@ export const dict: Record<Locale, Record<string, string>> = {
   },
   zh: {
     // ── site / marketing ──────────────────────────────────────
+    // Marketing-site keys. nav.* here are the public top-nav labels,
+    // distinct from the app.nav.* bottom-nav labels used inside the creator app.
     "nav.home": "首頁",
     "nav.creators": "創作者",
     "nav.brands": "品牌",
@@ -643,10 +647,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "footer.company": "公司",
     "footer.disclaimer": "此預覽中展示的創作者資金及付款預支概念僅供說明。任何融資產品均須視乎資格、審批及相關持牌或合作夥伴安排而定。",
     "lang.toggle": "EN",
-    apply: "申請",
-    view: "查看優惠",
-    learn: "了解更多",
-    coming: "即將推出",
+    "apply": "申請",
+    "view": "查看優惠",
+    "learn": "了解更多",
+    "coming": "即將推出",
     "join.waitlist": "加入候補名單",
 
     // ── common ──────────────────────────────────────────────
