@@ -40,3 +40,17 @@ describe("levels", () => {
     expect(pMax.pct).toBe(100);
   });
 });
+
+describe("canonical LEVELS", () => {
+  it("uses marketing names via i18n keys and engine XP thresholds", () => {
+    expect(LEVELS.map((l) => l.id)).toEqual(["L0", "L1", "L2", "L3", "L4", "L5", "L6"]);
+    expect(LEVELS.map((l) => l.xpRequired)).toEqual([0, 500, 2000, 6000, 15000, 40000, 100000]);
+    expect(LEVELS.map((l) => l.labelKey)).toEqual([
+      "app.level.l0", "app.level.l1", "app.level.l2", "app.level.l3",
+      "app.level.l4", "app.level.l5", "app.level.l6",
+    ]);
+    // Marketing narrative fields are present for the _site pages.
+    expect(LEVELS[2].emoji).toBe("💬");
+    expect(LEVELS[2].goal).toBe("Prove reliability");
+  });
+});

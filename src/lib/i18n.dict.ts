@@ -325,6 +325,13 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.match.fitScore": "{score}% fit",
 
     // ── app: level ────────────────────────────────────────────
+    "app.level.l0": "Shopper",
+    "app.level.l1": "KOC Starter",
+    "app.level.l2": "Trusted KOC",
+    "app.level.l3": "Nano Creator",
+    "app.level.l4": "Micro-Influencer",
+    "app.level.l5": "Influencer",
+    "app.level.l6": "Creator Entrepreneur",
     "app.level.toNext": "{n} XP to reach {level}",
     "app.level.unlock": "Unlock: {unlock}",
     "app.level.max": "Max level",
@@ -855,6 +862,13 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.match.fitScore": "{score}% 啱你",
 
     // ── app: level ────────────────────────────────────────────
+    "app.level.l0": "購物者",
+    "app.level.l1": "KOC 新手",
+    "app.level.l2": "信譽 KOC",
+    "app.level.l3": "微型創作者",
+    "app.level.l4": "微網紅",
+    "app.level.l5": "網紅",
+    "app.level.l6": "創作者企業家",
     "app.level.toNext": "還需 {n} XP 升至 {level}",
     "app.level.unlock": "解鎖：{unlock}",
     "app.level.max": "最高等級",
