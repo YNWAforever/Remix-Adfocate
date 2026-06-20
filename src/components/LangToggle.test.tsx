@@ -5,6 +5,7 @@ import { LangToggle } from "./LangToggle";
 
 function setup() {
   window.localStorage.clear();
+  window.localStorage.setItem("lang", "zh"); // force zh default locally (don't rely on navigator.language)
   return render(
     <I18nProvider>
       <LangToggle />

@@ -19,11 +19,3 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
   writable: true,
 });
-
-// Override navigator.language to "zh-HK" so i18n detection defaults to zh
-// in tests (jsdom defaults to "en-US" which would flip the expected locale).
-Object.defineProperty(window.navigator, "language", {
-  value: "zh-HK",
-  writable: true,
-  configurable: true,
-});
