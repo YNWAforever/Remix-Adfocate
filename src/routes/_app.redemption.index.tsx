@@ -5,22 +5,24 @@ import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { FilterPills } from "@/components/FilterPills";
 import { RedeemGiftCard } from "@/components/RedeemGiftCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app/redemption/")({ component: Redemption });
 
 const CATEGORIES = ["全部", "美容", "餐飲", "娛樂", "生活", "電子", "健康", "時尚"] as const;
 
 function Redemption() {
+  const { t } = useI18n();
   const [category, setCategory] = useState<string>("全部");
   const balance = useBalance();
   const gifts = useGifts(category === "全部" ? undefined : category);
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
-      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">積分載入失敗</p>}
+      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.wallet.balanceError")}</p>}
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold">積分兌換</h1>
-        <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">兌換記錄</Link>
+        <h1 className="font-display text-2xl font-bold">{t("app.redemption.pageTitle")}</h1>
+        <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.historyLink")}</Link>
       </div>
       <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
       {gifts.isLoading && (
@@ -29,9 +31,9 @@ function Redemption() {
           <SkeletonCard className="h-48" />
         </div>
       )}
-      {gifts.isError && <p className="text-sm text-[var(--color-magenta)]">載入失敗</p>}
+      {gifts.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.redemption.loadError")}</p>}
       {!gifts.isLoading && !gifts.isError && gifts.data?.length === 0 && (
-        <p className="text-sm text-[var(--color-soft-ink)]">此分類暫無獎賞</p>
+        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.redemption.empty")}</p>
       )}
       {!gifts.isLoading && !gifts.isError && (gifts.data?.length ?? 0) > 0 && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
