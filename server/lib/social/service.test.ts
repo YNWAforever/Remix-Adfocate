@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { scanSocialAccountWithDeps } from "./service";
+import { scanSocialAccountWithDeps, verifyOwnershipWithDeps } from "./service";
 import { SocialProviderError, type SocialAccountRecord, type SocialScanResult } from "./types";
 
 const baseAccount: SocialAccountRecord = {
@@ -441,5 +441,54 @@ describe("social scan service", () => {
     );
     expect(repo.insertSnapshot).toHaveBeenCalledTimes(2);
     expect(persistScores).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("verifyOwnershipWithDeps", () => {
+  const account = {
+    ...baseAccount,
+    verification_code: "ADF-7K9Q2M",
+    verification_code_expires_at: new Date(Date.now() + 3_600_000).toISOString(),
+    verified_at: null,
+  };
+  function deps(over: Partial<{ acct: typeof account; bio: string | null }> = {}) {
+    const verified = { ...(over.acct ?? account), owner_verified: true, verified_at: new Date().toISOString() };
+    return {
+      repo: {
+        getAccountForCreator: vi.fn().mockResolvedValue(over.acct ?? account),
+        markVerified: vi.fn().mockResolvedValue(verified),
+      },
+      provider: vi.fn().mockResolvedValue({ bio: over.bio ?? "beauty creator ADF-7K9Q2M in HK" }),
+      verified,
+    };
+  }
+
+  it("flips verified when the code is in the bio (case-insensitive)", async () => {
+    const d = deps({ bio: "Beauty ✨ adf-7k9q2m" });
+    const res = await verifyOwnershipWithDeps({ creatorId: "creator-1", accountId: "acc-1", repo: d.repo, provider: d.provider });
+    expect(d.repo.markVerified).toHaveBeenCalledWith("acc-1");
+    expect(res.owner_verified).toBe(true);
+  });
+
+  it("throws code_not_in_bio when absent", async () => {
+    const d = deps({ bio: "no code here" });
+    await expect(verifyOwnershipWithDeps({ creatorId: "creator-1", accountId: "acc-1", repo: d.repo, provider: d.provider }))
+      .rejects.toMatchObject({ code: "code_not_in_bio" });
+    expect(d.repo.markVerified).not.toHaveBeenCalled();
+  });
+
+  it("throws code_expired when expired or missing", async () => {
+    const expired = { ...account, verification_code_expires_at: new Date(Date.now() - 1000).toISOString() };
+    const d = deps({ acct: expired });
+    await expect(verifyOwnershipWithDeps({ creatorId: "creator-1", accountId: "acc-1", repo: d.repo, provider: d.provider }))
+      .rejects.toMatchObject({ code: "code_expired" });
+    expect(d.provider).not.toHaveBeenCalled();
+  });
+
+  it("propagates provider_not_configured", async () => {
+    const d = deps();
+    d.provider.mockRejectedValue(new SocialProviderError("provider_not_configured", "off"));
+    await expect(verifyOwnershipWithDeps({ creatorId: "creator-1", accountId: "acc-1", repo: d.repo, provider: d.provider }))
+      .rejects.toMatchObject({ code: "provider_not_configured" });
   });
 });
