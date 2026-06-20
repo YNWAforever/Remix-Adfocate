@@ -17,6 +17,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.retry": "Retry",
     "common.skipToMain": "Skip to main content",
     "common.mainNav": "Main navigation",
+    "common.toggleLang": "Switch language",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
@@ -39,6 +40,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.retry": "重試",
     "common.skipToMain": "跳至主要內容",
     "common.mainNav": "主要導航",
+    "common.toggleLang": "切換語言",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",

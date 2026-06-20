@@ -23,4 +23,22 @@ describe("BottomNav", () => {
       await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
     }
   });
+
+  it("renders correct hrefs for each tab", async () => {
+    renderNav();
+    const expected = [
+      { label: "主頁", href: "/home" },
+      { label: "任務", href: "/mission" },
+      { label: "積分兌換", href: "/redemption" },
+      { label: "錢包", href: "/wallet" },
+      { label: "探索", href: "/explore" },
+    ];
+    for (const { label, href } of expected) {
+      await waitFor(() => {
+        const link = screen.getByText(label).closest("a");
+        expect(link).not.toBeNull();
+        expect(link!.getAttribute("href")).toBe(href);
+      });
+    }
+  });
 });

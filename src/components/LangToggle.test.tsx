@@ -16,7 +16,7 @@ function setup() {
 describe("LangToggle", () => {
   it("shows the other language label and toggles + persists", () => {
     setup();
-    const btn = screen.getByRole("button", { name: /toggle language/i });
+    const btn = screen.getByRole("button", { name: /切換語言|switch language/i });
     // zh default → button offers English ("EN")
     expect(btn).toHaveTextContent("EN");
     fireEvent.click(btn);

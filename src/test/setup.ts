@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import { afterEach } from "vitest";
 
 // jsdom in this vitest config ships a stub localStorage ({} with no methods).
 // Polyfill it with a real in-memory implementation so any code that reads/writes
@@ -18,4 +19,10 @@ const localStorageMock = (() => {
 Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
   writable: true,
+});
+
+// Reset the shared in-memory store between tests so locale/state seeded by one
+// test (e.g. localStorage.setItem("lang", …)) never leaks into the next.
+afterEach(() => {
+  localStorageMock.clear();
 });

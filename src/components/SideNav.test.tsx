@@ -42,4 +42,11 @@ describe("SideNav", () => {
       });
     }
   });
+
+  it("renders the language toggle in its footer", async () => {
+    renderNav();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /切換語言|switch language/i })).toBeInTheDocument(),
+    );
+  });
 });
