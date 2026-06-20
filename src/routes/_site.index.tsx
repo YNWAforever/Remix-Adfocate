@@ -2,7 +2,7 @@ import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { WHATSAPP_LOGIN } from "@/lib/features";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_site/")({
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (data.session) throw redirect({ to: "/home" });

@@ -169,6 +169,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notFound.body": "This link may have expired or been mistyped.",
     "app.notFound.home": "Back to home",
 
+    // ── site error boundary ──────────────────────────────────
+    "site.error.title": "Something went wrong",
+    "site.error.body": "Please refresh or head back home.",
+
     // ── app: home ────────────────────────────────────────────
     "app.home.passportAriaLabel": "Creator Passport",
     "app.home.profileAriaLabel": "Profile",
@@ -694,6 +698,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notFound.title": "404 — 找不到頁面",
     "app.notFound.body": "這個連結可能已失效或輸入錯誤。",
     "app.notFound.home": "回首頁",
+
+    // ── site error boundary ──────────────────────────────────
+    "site.error.title": "發生錯誤",
+    "site.error.body": "請重新整理或返回首頁。",
 
     // ── app: home ────────────────────────────────────────────
     "app.home.passportAriaLabel": "創作者護照",
