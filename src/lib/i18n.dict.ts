@@ -339,6 +339,17 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.levelUp": "You levelled up!",
     "app.level.levelUpCta": "Awesome!",
 
+    // ── app: social verification ──────────────────────────────
+    "app.social.verifyCta": "Verify ownership",
+    "app.social.verified": "Ownership verified",
+    "app.social.verifyInstructions": "Add this code to your {platform} bio, then tap Verify:",
+    "app.social.verifyNow": "Verify now",
+    "app.social.verifyReissue": "Get a new code",
+    "app.social.errCodeNotInBio": "We couldn't find the code in your bio yet. Save your bio and try again.",
+    "app.social.errCodeExpired": "That code expired. Get a new one.",
+    "app.social.errUnavailable": "Auto-check is unavailable right now — please request manual review.",
+    "app.social.errHandleTaken": "This handle is already verified by another account.",
+
     // ── app: onboarding ───────────────────────────────────────
     "app.onboarding.claimError": "Claim failed. Please try again.",
     "app.onboarding.categoriesTitle": "Your Interests",
@@ -347,6 +358,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.next": "Next",
     "app.onboarding.platformsTitle": "Your Platforms",
     "app.onboarding.platformsHint": "Add your social handles (optional) — you can verify later.",
+    "app.onboarding.verifyLater": "You can verify ownership later to become a Trusted KOC and unlock paid missions.",
     "app.onboarding.missionsTitle": "Your First Mission",
     "app.onboarding.missionsHint": "These missions are picked for you. You can join them on the missions page after sign-up.",
     "app.onboarding.rewardTitle": "Welcome Reward",
@@ -876,6 +888,17 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.levelUp": "你升級了！",
     "app.level.levelUpCta": "太好了",
 
+    // ── app: social verification ──────────────────────────────
+    "app.social.verifyCta": "驗證擁有權",
+    "app.social.verified": "已驗證擁有權",
+    "app.social.verifyInstructions": "將此代碼加入你的 {platform} 個人簡介，然後按驗證：",
+    "app.social.verifyNow": "立即驗證",
+    "app.social.verifyReissue": "取得新代碼",
+    "app.social.errCodeNotInBio": "暫時喺你嘅簡介搵唔到代碼。儲存簡介後再試。",
+    "app.social.errCodeExpired": "代碼已過期，請取得新代碼。",
+    "app.social.errUnavailable": "自動驗證暫時未能使用 — 請申請人手審核。",
+    "app.social.errHandleTaken": "此帳號已被另一位用戶驗證。",
+
     // ── app: onboarding ───────────────────────────────────────
     "app.onboarding.claimError": "領取失敗，請重試",
     "app.onboarding.categoriesTitle": "你的範疇",
@@ -884,6 +907,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.next": "下一步",
     "app.onboarding.platformsTitle": "你的平台",
     "app.onboarding.platformsHint": "填寫你的社交帳號（可選），稍後可驗證。",
+    "app.onboarding.verifyLater": "你之後可以驗證擁有權，成為信譽 KOC 並解鎖有薪任務。",
     "app.onboarding.missionsTitle": "你的第一個任務",
     "app.onboarding.missionsHint": "這些是為你推薦的任務。完成註冊後即可在任務頁面參加。",
     "app.onboarding.rewardTitle": "迎新獎賞",

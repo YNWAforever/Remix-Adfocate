@@ -237,6 +237,25 @@ export function useScanSocialAccount() {
   });
 }
 
+export function useIssueVerification() {
+  return useMutation({
+    mutationFn: (accountId: string) =>
+      apiFetch<{ code: string; expiresAt: string }>(`/social/accounts/${accountId}/verification`, { method: "POST" }),
+  });
+}
+
+export function useConfirmVerification() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (accountId: string) =>
+      apiFetch<{ account: SocialAccount }>(`/social/accounts/${accountId}/verification/confirm`, { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["social-accounts"] });
+      qc.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+}
+
 export function useUseSocialAvatar() {
   const qc = useQueryClient();
   return useMutation({

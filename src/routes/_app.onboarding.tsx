@@ -107,6 +107,7 @@ function Wizard() {
         <section className="space-y-4">
           <h1 className="font-display text-2xl font-bold">{t("app.onboarding.platformsTitle")}</h1>
           <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.platformsHint")}</p>
+          <p className="text-xs text-[var(--color-soft-ink)]">{t("app.onboarding.verifyLater")}</p>
           <div className="space-y-2">
             {PLATFORMS.map((p) => (
               <input
