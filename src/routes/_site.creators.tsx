@@ -15,12 +15,12 @@ import {
   Check,
 } from "lucide-react";
 import {
-  creatorLevels,
   mockCreatorPassport,
   copilotTools,
   academyTracks,
   resources,
 } from "@/data/mockData";
+import { LEVELS } from "@/lib/levels";
 import { legacyAffiliateSteps, localized } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -332,11 +332,11 @@ function CreatorLevelsSection() {
         </div>
 
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {creatorLevels.map((level, i) => {
-            const isDemoLevel = level.level === mockCreatorPassport.level;
+          {LEVELS.map((level, i) => {
+            const isDemoLevel = level.id === mockCreatorPassport.level;
             return (
               <article
-                key={level.level}
+                key={level.id}
                 className={cn(
                   "game-card flex flex-col gap-3",
                   isDemoLevel && "border-brand-pink/40 bg-brand-pink/5",
@@ -347,9 +347,9 @@ function CreatorLevelsSection() {
                 <div className="flex items-center justify-between">
                   <span className="text-3xl">{level.emoji}</span>
                   <span
-                    className={cn("level-pill", levelPillClass[level.level] ?? "level-pill-l1")}
+                    className={cn("level-pill", levelPillClass[level.id] ?? "level-pill-l1")}
                   >
-                    {level.level} {level.label}
+                    {level.id} {t(level.labelKey)}
                   </span>
                 </div>
 

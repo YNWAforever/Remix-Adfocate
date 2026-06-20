@@ -20,7 +20,8 @@ import {
   Crown,
   MessageCircle,
 } from "lucide-react";
-import { creatorLevels, mockCreatorPassport } from "@/data/mockData";
+import { mockCreatorPassport } from "@/data/mockData";
+import { LEVELS } from "@/lib/levels";
 import { legacyActivationServices, localized } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -634,9 +635,9 @@ function GrowthLadderSection() {
           <div className="hidden lg:block absolute top-[88px] left-8 right-8 h-px bg-gradient-to-r from-transparent via-brand-lilac/40 to-transparent" />
 
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 relative">
-            {creatorLevels.map((level, i) => (
+            {LEVELS.map((level, i) => (
               <div
-                key={level.level}
+                key={level.id}
                 className={cn(
                   "group relative flex flex-col items-center text-center gap-3 rounded-3xl bg-white/70 backdrop-blur-sm border border-white p-5 shadow-[0_4px_20px_-8px_rgba(196,181,253,0.25)] hover:shadow-[0_12px_30px_-10px_rgba(255,181,194,0.4)] hover:-translate-y-1 transition-all duration-300",
                   `stagger-${Math.min(i + 1, 8)} animate-slide-up`,
@@ -649,15 +650,15 @@ function GrowthLadderSection() {
                   </div>
                 </div>
                 <span className="font-mono text-[10px] tracking-[0.18em] text-soft-ink/60">
-                  LEVEL {level.level.slice(1)}
+                  LEVEL {level.id.slice(1)}
                 </span>
                 <span
                   className={cn(
                     "level-pill text-[10px]",
-                    levelPillClass[level.level] ?? "level-pill-l1",
+                    levelPillClass[level.id] ?? "level-pill-l1",
                   )}
                 >
-                  {level.label}
+                  {t(level.labelKey)}
                 </span>
                 <p className="text-[11px] text-soft-ink leading-snug font-body">{level.goal}</p>
               </div>
@@ -687,8 +688,8 @@ function GrowthLadderSection() {
 function CreatorPassportPreview() {
   const { t } = useI18n();
   const passport = mockCreatorPassport;
-  const nextLevel = creatorLevels.find(
-    (l) => parseInt(l.level.slice(1)) === parseInt(passport.level.slice(1)) + 1,
+  const nextLevel = LEVELS.find(
+    (l) => parseInt(l.id.slice(1)) === parseInt(passport.level.slice(1)) + 1,
   );
   const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
 
@@ -798,7 +799,7 @@ function CreatorPassportPreview() {
                   Next Unlock
                 </p>
                 <p className="font-heading font-bold text-sm text-foreground">
-                  {nextLevel?.label ?? "Higher Level"}
+                  {nextLevel ? t(nextLevel.labelKey) : "Higher Level"}
                 </p>
                 <p className="text-xs text-soft-ink mt-0.5">
                   {(passport.xpNext - passport.xp).toLocaleString()} XP to go
