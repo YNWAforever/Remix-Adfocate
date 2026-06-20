@@ -22,7 +22,7 @@ function Wallet() {
         {/* Left column — points */}
         <div className="space-y-4">
           <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
-          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.wallet.balanceError")}</p>}
+          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
 
           <h2 className="font-heading font-bold">{t("app.wallet.pointsHistory")}</h2>
           {history.isLoading && <SkeletonCard className="h-24" />}

@@ -20,10 +20,10 @@ export function LevelUpModal() {
   return (
     <div role="dialog" aria-label={t("app.level.levelUp")} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-sm space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-6 text-center shadow-[6px_6px_0_0_var(--color-ink)]">
-        <p className="font-display text-2xl font-bold">{t("app.level.levelUp")}</p>
+        <p className="font-display text-2xl font-bold">🎉 {t("app.level.levelUp")}</p>
         <p className="text-5xl" aria-hidden>{def.emoji}</p>
         <p className="font-heading text-xl font-bold">{def.label}</p>
-        {def.unlock && <p className="text-sm text-[var(--color-soft-ink)]">{t("app.level.levelUpUnlock", { unlock: def.unlock })}</p>}
+        {def.unlock && <p className="text-sm text-[var(--color-soft-ink)]">{t("app.level.unlock", { unlock: def.unlock })}</p>}
         <button
           type="button"
           onClick={() => mark.mutate()}

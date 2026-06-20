@@ -58,7 +58,7 @@ function Home() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">
-          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.home.balanceError")}</p>}
+          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
           <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
 
           <Link

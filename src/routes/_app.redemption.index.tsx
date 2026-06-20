@@ -19,10 +19,10 @@ function Redemption() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-5xl">
       <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
-      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.wallet.balanceError")}</p>}
+      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">{t("app.redemption.pageTitle")}</h1>
-        <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.historyLink")}</Link>
+        <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.historyLabel")}</Link>
       </div>
       <FilterPills options={CATEGORIES} value={category} onChange={setCategory} />
       {gifts.isLoading && (

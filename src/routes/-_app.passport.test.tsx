@@ -100,13 +100,13 @@ describe("Passport page", () => {
 
     renderPassport();
 
-    fireEvent.click(screen.getByRole("button", { name: "Create link" }));
+    fireEvent.click(screen.getByRole("button", { name: "建立連結" }));
 
     await waitFor(() => expect(hoisted.createShare).toHaveBeenCalledTimes(1));
     expect(await screen.findByText("/passport/token")).toBeInTheDocument();
     expect(writeText).toHaveBeenCalledWith("/passport/token");
 
-    fireEvent.click(screen.getByRole("button", { name: "Revoke link" }));
+    fireEvent.click(screen.getByRole("button", { name: "撤銷連結" }));
 
     await waitFor(() => expect(hoisted.revokeShare).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(screen.queryByText("/passport/token")).not.toBeInTheDocument());

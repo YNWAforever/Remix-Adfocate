@@ -18,6 +18,9 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.skipToMain": "Skip to main content",
     "common.mainNav": "Main navigation",
     "common.toggleLang": "Switch language",
+    "common.balanceError": "Failed to load points",
+    "common.cancel": "Cancel",
+    "common.processing": "Processing…",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
@@ -37,7 +40,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.profileAriaLabel": "Profile",
     "app.home.heroTitle": "Earn Points\nRedeem Rewards",
     "app.home.heroBody": "Shop · Complete Missions · Redeem Rewards",
-    "app.home.balanceError": "Failed to load points",
     "app.home.matchAriaLabel": "What to do today",
     "app.home.matchCta": "What to do today?",
     "app.home.quickMission": "Missions",
@@ -52,7 +54,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.mission.emptyCategory": "No missions in this category",
     "app.mission.loadError": "Could not load mission",
     "app.mission.backToList": "Back to list",
-    "app.mission.processing": "Processing…",
     "app.mission.applyCta": "Apply for Mission",
     "app.mission.joinCta": "Join Mission",
     "app.mission.submitContent": "Submit Content",
@@ -85,7 +86,6 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: wallet ───────────────────────────────────────────
     "app.wallet.pageTitle": "Wallet",
-    "app.wallet.balanceError": "Failed to load points",
     "app.wallet.pointsHistory": "Points History",
     "app.wallet.historyError": "Failed to load history",
     "app.wallet.historyEmpty": "No history yet",
@@ -96,10 +96,9 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: redemption ───────────────────────────────────────
     "app.redemption.pageTitle": "Redeem Points",
-    "app.redemption.historyLink": "Redemption History",
+    "app.redemption.historyLabel": "Redemption History",
     "app.redemption.loadError": "Failed to load",
     "app.redemption.empty": "No rewards in this category",
-    "app.redemption.historyTitle": "Redemption History",
     "app.redemption.backToRedeem": "Back to Redeem",
     "app.redemption.historyError": "Failed to load history",
     "app.redemption.rewardFallback": "Reward",
@@ -111,8 +110,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.redemption.dialogTitle": "Confirm Redemption",
     "app.redemption.dialogBody": "Redeem \"{name}\" for {pts} points?",
     "app.redemption.redeemError": "Redemption failed. Please try again.",
-    "app.redemption.cancel": "Cancel",
-    "app.redemption.processing": "Processing…",
     "app.redemption.confirm": "Confirm",
     "app.redemption.successTitle": "Redeemed! 🎉",
     "app.redemption.yourCode": "Your code:",
@@ -137,7 +134,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.profile.myMissions": "My Missions",
     "app.profile.redemptionHistory": "Redemption History",
     "app.profile.displayName": "Display Name",
-    "app.profile.cancel": "Cancel",
     "app.profile.saving": "Saving…",
     "app.profile.save": "Save",
     "app.profile.saveError": "Save failed. Please try again.",
@@ -164,7 +160,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.max": "Max level",
     "app.level.viewPassport": "· View Passport →",
     "app.level.levelUp": "You levelled up!",
-    "app.level.levelUpUnlock": "Unlock: {unlock}",
     "app.level.levelUpCta": "Awesome!",
   },
   zh: {
@@ -176,6 +171,9 @@ export const dict: Record<Locale, Record<string, string>> = {
     "common.skipToMain": "跳至主要內容",
     "common.mainNav": "主要導航",
     "common.toggleLang": "切換語言",
+    "common.balanceError": "積分載入失敗",
+    "common.cancel": "取消",
+    "common.processing": "處理中…",
 
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",
@@ -195,7 +193,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.profileAriaLabel": "個人檔案",
     "app.home.heroTitle": "賺取積分\n兌換心儀獎賞",
     "app.home.heroBody": "購物賺積分 · 完成任務 · 兌換獎賞",
-    "app.home.balanceError": "積分載入失敗",
     "app.home.matchAriaLabel": "今日整乜好",
     "app.home.matchCta": "今日整乜好？",
     "app.home.quickMission": "限時任務",
@@ -210,7 +207,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.mission.emptyCategory": "此分類暫無任務",
     "app.mission.loadError": "無法載入任務",
     "app.mission.backToList": "返回列表",
-    "app.mission.processing": "處理中…",
     "app.mission.applyCta": "申請任務",
     "app.mission.joinCta": "加入任務",
     "app.mission.submitContent": "提交內容",
@@ -243,7 +239,6 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: wallet ───────────────────────────────────────────
     "app.wallet.pageTitle": "錢包",
-    "app.wallet.balanceError": "積分載入失敗",
     "app.wallet.pointsHistory": "積分記錄",
     "app.wallet.historyError": "記錄載入失敗",
     "app.wallet.historyEmpty": "暫無記錄",
@@ -254,10 +249,9 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: redemption ───────────────────────────────────────
     "app.redemption.pageTitle": "積分兌換",
-    "app.redemption.historyLink": "兌換記錄",
+    "app.redemption.historyLabel": "兌換記錄",
     "app.redemption.loadError": "載入失敗",
     "app.redemption.empty": "此分類暫無獎賞",
-    "app.redemption.historyTitle": "兌換記錄",
     "app.redemption.backToRedeem": "返回兌換",
     "app.redemption.historyError": "記錄載入失敗",
     "app.redemption.rewardFallback": "獎賞",
@@ -269,8 +263,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.redemption.dialogTitle": "確認兌換",
     "app.redemption.dialogBody": "用 {pts} 積分兌換「{name}」？",
     "app.redemption.redeemError": "兌換失敗，請再試",
-    "app.redemption.cancel": "取消",
-    "app.redemption.processing": "處理中…",
     "app.redemption.confirm": "確認",
     "app.redemption.successTitle": "兌換成功 🎉",
     "app.redemption.yourCode": "你的兌換碼：",
@@ -295,7 +287,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.profile.myMissions": "我的任務",
     "app.profile.redemptionHistory": "兌換記錄",
     "app.profile.displayName": "顯示名稱",
-    "app.profile.cancel": "取消",
     "app.profile.saving": "儲存中…",
     "app.profile.save": "儲存",
     "app.profile.saveError": "儲存失敗，請重試",
@@ -305,9 +296,9 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.passport.scores": "創作者評分",
     "app.passport.badges": "徽章",
     "app.passport.badgesEmpty": "完成任務與連結社交帳號即可解鎖徽章。",
-    "app.passport.shareTitle": "Public passport",
-    "app.passport.createLink": "Create link",
-    "app.passport.revokeLink": "Revoke link",
+    "app.passport.shareTitle": "公開護照",
+    "app.passport.createLink": "建立連結",
+    "app.passport.revokeLink": "撤銷連結",
     "app.passport.scoreLocked": "敬請期待",
 
     // ── app: match ────────────────────────────────────────────
@@ -321,8 +312,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.unlock": "解鎖：{unlock}",
     "app.level.max": "最高等級",
     "app.level.viewPassport": "· 看護照 →",
-    "app.level.levelUp": "🎉 你升級了！",
-    "app.level.levelUpUnlock": "解鎖：{unlock}",
+    "app.level.levelUp": "你升級了！",
     "app.level.levelUpCta": "太好了",
   },
 };

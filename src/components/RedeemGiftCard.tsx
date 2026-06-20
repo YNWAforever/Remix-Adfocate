@@ -62,7 +62,7 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
                     onClick={() => setOpen(false)}
                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold"
                   >
-                    {t("app.redemption.cancel")}
+                    {t("common.cancel")}
                   </button>
                   <button
                     type="button"
@@ -70,7 +70,7 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
                     onClick={confirm}
                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-2 font-heading text-sm font-bold text-white disabled:opacity-40"
                   >
-                    {redeem.isPending ? t("app.redemption.processing") : t("app.redemption.confirm")}
+                    {redeem.isPending ? t("common.processing") : t("app.redemption.confirm")}
                   </button>
                 </div>
               </>

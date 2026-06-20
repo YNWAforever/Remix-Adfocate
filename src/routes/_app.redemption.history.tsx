@@ -11,7 +11,7 @@ function RedemptionHistory() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-3xl">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold">{t("app.redemption.historyTitle")}</h1>
+        <h1 className="font-display text-2xl font-bold">{t("app.redemption.historyLabel")}</h1>
         <Link to="/redemption" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.backToRedeem")}</Link>
       </div>
       {q.isLoading && <SkeletonCard className="h-24" />}

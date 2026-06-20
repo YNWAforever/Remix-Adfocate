@@ -242,7 +242,7 @@ function Profile() {
               }}
               className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold"
             >
-              {t("app.profile.cancel")}
+              {t("common.cancel")}
             </button>
             <button
               type="button"
