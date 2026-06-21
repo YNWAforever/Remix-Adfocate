@@ -106,6 +106,7 @@ function HeroSection() {
 }
 
 function PlaybooksGridSection() {
+  const { lang } = useI18n();
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
       <div className="space-y-6">
@@ -114,7 +115,7 @@ function PlaybooksGridSection() {
 
           return (
             <article
-              key={pb.industry}
+              key={pb.industry.en}
               className={cn(
                 "game-card border-2 border-gray-200 bg-white overflow-hidden",
                 clr.border,
@@ -130,7 +131,7 @@ function PlaybooksGridSection() {
                       <span className="text-3xl">{pb.emoji}</span>
                       <div>
                         <h2 className="font-display text-2xl sm:text-3xl text-foreground leading-tight">
-                          {pb.industry}
+                          {localized(pb.industry, lang)}
                         </h2>
                       </div>
                     </div>
@@ -138,13 +139,13 @@ function PlaybooksGridSection() {
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {pb.levels.map((level) => (
                         <span
-                          key={level}
+                          key={level.en}
                           className={cn(
                             "level-pill text-[10px]",
-                            levelPillMap[level] ?? "level-pill-l1",
+                            levelPillMap[level.en] ?? "level-pill-l1",
                           )}
                         >
-                          {level}
+                          {localized(level, lang)}
                         </span>
                       ))}
                     </div>
@@ -174,7 +175,7 @@ function PlaybooksGridSection() {
                             Creator Angle
                           </span>
                         </div>
-                        <p className="text-xs text-foreground leading-relaxed">{pb.creatorAngle}</p>
+                        <p className="text-xs text-foreground leading-relaxed">{localized(pb.creatorAngle, lang)}</p>
                       </div>
 
                       <div className="rounded-xl bg-white border border-gray-200 p-3">

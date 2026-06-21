@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { I18nProvider } from "@/lib/i18n";
 import { AcademyTrackCard } from "./AcademyTrackCard";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -16,31 +15,39 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const track = {
   id: "a3",
-  title: "直播帶貨",
+  title: { en: "Live Commerce", zh: "直播帶貨" },
   level: "L2+",
   requiredLevel: "L2",
-  duration: "20 min",
+  duration: { en: "20 min", zh: "20 分鐘" },
   color: "yellow",
   emoji: "📈",
-  description: "x",
+  description: { en: "x", zh: "x" },
   teaserKey: "app.guide.teaser.a3",
 };
 
-function renderCard(effective: string) {
+function renderCard(creatorLevel: string, isTrusted: boolean) {
+  // No I18nProvider → default i18n context (zh), matching the other guide tests.
   return render(
-    <I18nProvider>
-      <AcademyTrackCard track={track} effectiveLevel={effective} />
-    </I18nProvider>,
+    <AcademyTrackCard track={track} creatorLevel={creatorLevel} isTrusted={isTrusted} />,
   );
 }
 
 describe("AcademyTrackCard", () => {
-  it("shows a lock + unlock label when above effective level", () => {
-    renderCard("L1");
-    expect(screen.getByText(/🔒|解鎖/)).toBeInTheDocument();
+  it("shows a lock + 'unlock at' label when under-levelled (need more XP)", () => {
+    renderCard("L1", false);
+    expect(screen.getByText(/🔒/)).toBeInTheDocument();
+    expect(screen.getByText(/解鎖/)).toBeInTheDocument();
   });
-  it("is an active link when unlocked", () => {
-    const { container } = renderCard("L3");
+
+  it("is an active link to the track when unlocked (level met + trusted)", () => {
+    const { container } = renderCard("L3", true);
     expect(container.querySelector('a[href="/guide/track/a3"]')).not.toBeNull();
+  });
+
+  it("links to /profile with verify copy when XP is met but unverified", () => {
+    const { container } = renderCard("L2", false);
+    // verification is the only remaining gate → card points at /profile
+    expect(container.querySelector('a[href="/profile"]')).not.toBeNull();
+    expect(screen.getByText(/驗證社交帳號/)).toBeInTheDocument();
   });
 });
