@@ -83,6 +83,7 @@ missionRoutes.post("/:slug/join", async (c) => {
     .select("id")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
+    .eq("status", "active")            // B1: draft/closed → 404 before the RPC round-trip
     .maybeSingle();
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
