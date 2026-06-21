@@ -1,5 +1,10 @@
 import "@testing-library/jest-dom/vitest";
+import { configure } from "@testing-library/dom";
 import { afterEach } from "vitest";
+
+// Exclude <option> elements from getByText queries so that closed <select> option
+// text doesn't conflict with visible badge/label text in the same component.
+configure({ defaultIgnore: "script, style, option" });
 
 // jsdom does not implement IntersectionObserver. Polyfill with a no-op class so
 // components that call `new IntersectionObserver(...)` in useEffect can mount in
