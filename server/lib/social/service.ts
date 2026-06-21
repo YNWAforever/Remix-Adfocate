@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { serviceClient } from "../supabase.js";
 import { persistScores } from "../persistScores.js";
 import { scanRapidApiProfile } from "./rapidApi.js";
@@ -174,6 +175,71 @@ export async function selectSocialAvatar(input: { creatorId: string; accountId: 
 
   if (error) throw error;
   return account.external_avatar_url;
+}
+
+const VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
+const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no I/O/0/1
+
+/** ADF- + 6 unambiguous base32-ish chars (CSPRNG, bias-free). */
+export function makeVerificationCode(): string {
+  let out = "";
+  for (let i = 0; i < 6; i++) out += CODE_ALPHABET[randomInt(CODE_ALPHABET.length)];
+  return `ADF-${out}`;
+}
+
+type VerifyRepo = {
+  getAccountForCreator: (creatorId: string, accountId: string) => Promise<SocialAccountRecord | null>;
+  markVerified: (accountId: string) => Promise<SocialAccountRecord>;
+};
+
+export async function verifyOwnershipWithDeps(input: {
+  creatorId: string;
+  accountId: string;
+  now?: number;
+  repo: VerifyRepo;
+  provider: (x: { platform: SocialPlatform; handle: string }) => Promise<{ bio: string | null }>;
+}): Promise<SocialAccountRecord> {
+  const account = await input.repo.getAccountForCreator(input.creatorId, input.accountId);
+  if (!account) throw Object.assign(new Error("Social account not found"), { code: "not_found" });
+
+  const code = account.verification_code;
+  const exp = account.verification_code_expires_at;
+  const now = input.now ?? Date.now();
+  if (!code || !exp || Date.parse(exp) < now) {
+    throw Object.assign(new Error("Verification code missing or expired"), { code: "code_expired" });
+  }
+
+  const scan = await input.provider({ platform: account.platform, handle: account.handle });
+  const bio = (scan.bio ?? "").toLowerCase();
+  if (!bio.includes(code.toLowerCase())) {
+    throw Object.assign(new Error("Code not found in bio"), { code: "code_not_in_bio" });
+  }
+  return input.repo.markVerified(input.accountId);
+}
+
+export async function verifyOwnership(input: { creatorId: string; accountId: string }): Promise<SocialAccountRecord> {
+  const svc = serviceClient();
+  const verified = await verifyOwnershipWithDeps({
+    creatorId: input.creatorId,
+    accountId: input.accountId,
+    repo: {
+      getAccountForCreator: (creatorId, accountId) => repo.getAccountForCreator(svc, { creatorId, accountId }),
+      markVerified: (accountId) => repo.markVerified(svc, accountId),
+    },
+    provider: ({ platform, handle }) => scanRapidApiProfile({ platform, handle }),
+  });
+  await persistScores(input.creatorId);
+  return verified;
+}
+
+export async function issueVerificationCode(input: { creatorId: string; accountId: string }): Promise<{ code: string; expiresAt: string }> {
+  const svc = serviceClient();
+  const account = await repo.getAccountForCreator(svc, input);
+  if (!account) throw Object.assign(new Error("Social account not found"), { code: "not_found" });
+  const code = makeVerificationCode();
+  const expiresAt = new Date(Date.now() + VERIFICATION_TTL_MS).toISOString();
+  await repo.setVerificationCode(svc, input.accountId, code, expiresAt);
+  return { code, expiresAt };
 }
 
 export async function refreshDueSocialAccounts(limit = 25): Promise<{ scanned: number; failed: number }> {

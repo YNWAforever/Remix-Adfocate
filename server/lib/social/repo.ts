@@ -184,6 +184,45 @@ export async function insertSnapshot(
   if (pruneError) throw pruneError;
 }
 
+export async function setVerificationCode(
+  supabase: SupabaseClient,
+  accountId: string,
+  code: string,
+  expiresAt: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("creator_social_accounts")
+    .update({ verification_code: code, verification_code_expires_at: expiresAt, updated_at: new Date().toISOString() })
+    .eq("id", accountId);
+  if (error) throw error;
+}
+
+export async function markVerified(
+  supabase: SupabaseClient,
+  accountId: string,
+): Promise<SocialAccountRecord> {
+  const { data, error } = await supabase
+    .from("creator_social_accounts")
+    .update({
+      owner_verified: true,
+      verified_at: new Date().toISOString(),
+      verification_code: null,
+      verification_code_expires_at: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", accountId)
+    .select("*")
+    .single();
+  if (error) {
+    // 23505 = unique_violation on the verified-handle partial index.
+    if ((error as { code?: string }).code === "23505") {
+      throw Object.assign(new Error("handle already verified by another creator"), { code: "handle_taken" });
+    }
+    throw error;
+  }
+  return data as SocialAccountRecord;
+}
+
 export async function listDueSocialAccounts(
   supabase: SupabaseClient,
   limit = 25,

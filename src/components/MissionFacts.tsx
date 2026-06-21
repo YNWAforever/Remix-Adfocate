@@ -16,10 +16,10 @@ function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; valu
   );
 }
 
-export function MissionFacts({ mission, creatorLevel }: { mission: Mission; creatorLevel?: string | null }) {
+export function MissionFacts({ mission, creatorLevel, isTrusted = true }: { mission: Mission; creatorLevel?: string | null; isTrusted?: boolean }) {
   const { t } = useI18n();
   const left = spotsLeft(mission.quota, mission.filled);
-  const elig = eligibility(mission.required_level, creatorLevel);
+  const elig = eligibility(mission.required_level, creatorLevel, isTrusted);
   const reward = mission.cash_reward
     ? `${t("app.mission.factRewardValue", { pts: mission.points_reward })} · HK$${mission.cash_reward}`
     : t("app.mission.factRewardValue", { pts: mission.points_reward });

@@ -15,7 +15,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 });
 
 vi.mock("@/lib/queries/kocmax", () => ({
-  useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null, level: "L1" }, isLoading: false }),
+  useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null, level: "L1", effective_level: "L1", is_trusted: false }, isLoading: false }),
   useBalance: () => ({ data: { balance: 0, available_to: null }, isLoading: false, isError: false }),
   useMissions: () => ({ data: [], isLoading: false, isError: false }),
 }));
@@ -40,9 +40,10 @@ describe("Home", () => {
     expect(link).toHaveAttribute("href", "/profile");
   });
 
-  it("shows a level chip with the current level", () => {
+  it("shows a level chip with the effective level label (not raw ID)", () => {
     renderHome();
-    expect(screen.getByText("🌟 L1")).toBeInTheDocument();
+    // effective_level = "L1" → emoji 🌱, label = "KOC 新手" (zh locale)
+    expect(screen.getByText("🌱 KOC 新手")).toBeInTheDocument();
   });
 
   it("links the level chip to the creator passport", () => {

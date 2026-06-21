@@ -98,28 +98,6 @@ export const missionCards: Mission[] = [
   },
 ];
 
-// ─── CREATOR LEVELS ───
-export type CreatorLevelData = {
-  level: string;
-  label: string;
-  goal: string;
-  unlocks: string[];
-  xpRequired: number;
-  color: string;
-  emoji: string;
-  incomeExample: string;
-};
-
-export const creatorLevels: CreatorLevelData[] = [
-  { level: "L0", label: "Shopper", goal: "Discover missions and rewards", unlocks: ["Product trials", "Points", "Coupons"], xpRequired: 0, color: "cream", emoji: "🛒", incomeExample: "Points & coupons" },
-  { level: "L1", label: "KOC Starter", goal: "Complete first missions", unlocks: ["Review tasks", "Simple submissions", "Starter badge"], xpRequired: 100, color: "pink", emoji: "🌱", incomeExample: "Points, product samples" },
-  { level: "L2", label: "Trusted KOC", goal: "Prove reliability", unlocks: ["Repeat missions", "Better rewards", "Badges"], xpRequired: 500, color: "yellow", emoji: "💬", incomeExample: "HK$200–800 per mission" },
-  { level: "L3", label: "Nano Creator", goal: "Build niche and consistency", unlocks: ["Profile insights", "Growth resources", "Affiliate eligibility"], xpRequired: 1200, color: "mint", emoji: "📱", incomeExample: "HK$800–2,500 per campaign" },
-  { level: "L4", label: "Micro-Influencer", goal: "Earn from campaigns", unlocks: ["Paid briefs", "Affiliate offers", "Content jobs"], xpRequired: 3000, color: "blue", emoji: "⭐", incomeExample: "HK$2,500–8,000 per campaign" },
-  { level: "L5", label: "Influencer", goal: "Build recurring income", unlocks: ["Retainers", "Live commerce", "Brand deals"], xpRequired: 8000, color: "lilac", emoji: "🌟", incomeExample: "HK$8,000–25,000/month" },
-  { level: "L6", label: "Creator Entrepreneur", goal: "Build a creator business", unlocks: ["Product drops", "Capital readiness", "Premium support"], xpRequired: 20000, color: "gold", emoji: "🚀", incomeExample: "HK$25,000+/month" },
-];
-
 // ─── CREATOR PASSPORT ───
 export type CreatorPassport = {
   name: string;

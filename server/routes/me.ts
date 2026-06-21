@@ -7,6 +7,7 @@ import { listSocialAccounts } from "../lib/social/repo.js";
 import { selectSocialAvatar } from "../lib/social/service.js";
 import { effectiveSocialHandles, privateSocialTrustSummary } from "../lib/social/passportSocial.js";
 import { createPublicToken, hashPublicToken } from "../lib/tokens.js";
+import { isTrusted, effectiveLevel } from "../lib/trust.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -88,7 +89,13 @@ meRoutes.get("/", async (c) => {
     .eq("id", c.get("userId"))
     .single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json(data);
+
+  const trusted = await isTrusted(supabase, c.get("userId"), (data as { xp?: number }).xp);
+  return c.json({
+    ...data,
+    is_trusted: trusted,
+    effective_level: effectiveLevel((data as { level?: string }).level, trusted),
+  });
 });
 
 /** PUT /api/me/profile — edit own profile. Replace semantics, no onboarding-step coupling.
@@ -247,24 +254,33 @@ meRoutes.delete("/passport/share", async (c) => {
 });
 
 /** POST /api/me/level-seen — acknowledge the level-up celebration. Reads the caller's
- *  current level server-side (so the value can't be forged) and stores it as level_seen,
- *  clearing the pending celebration. Idempotent; RLS scopes the write to id = auth.uid(). */
+ *  current level server-side (so the value can't be forged) and stores the *effective* level
+ *  as level_seen, clearing the pending celebration. Using effective level means the celebration
+ *  fires at verification (trusted KOC) rather than raw XP crossing 2000.
+ *  Idempotent; RLS scopes the write to id = auth.uid(). */
 meRoutes.post("/level-seen", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
 
   const { data: current, error: readErr } = await supabase
     .from("creators")
-    .select("level")
+    .select("level, xp")
     .eq("id", c.get("userId"))
     .single();
   if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
 
+  const trusted = await isTrusted(supabase, c.get("userId"), (current as { xp?: number }).xp);
+  const seen = effectiveLevel((current as { level?: string }).level, trusted);
+
   const { data, error } = await supabase
     .from("creators")
-    .update({ level_seen: current.level })
+    .update({ level_seen: seen })
     .eq("id", c.get("userId"))
     .select(ME_PROJECTION)
     .single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json(data);
+  return c.json({
+    ...data,
+    is_trusted: trusted,
+    effective_level: effectiveLevel((data as { level?: string }).level, trusted),
+  });
 });

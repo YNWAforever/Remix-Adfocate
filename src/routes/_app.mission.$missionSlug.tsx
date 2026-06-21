@@ -9,6 +9,7 @@ import { MissionFacts } from "@/components/MissionFacts";
 import { MissionBrief } from "@/components/MissionBrief";
 import { missionTypeLabelKey } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
+import { ApiError } from "@/lib/api";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 
@@ -70,7 +71,7 @@ function MissionDetail() {
         {/* Facts — first on mobile (reward/quota/deadline/eligibility before the long brief, as on
             the pre-redesign single column); top of the right column on desktop. */}
         <div className="lg:col-start-2 lg:row-start-1">
-          <MissionFacts mission={m.data} creatorLevel={me.data?.level} />
+          <MissionFacts mission={m.data} creatorLevel={me.data?.level} isTrusted={me.data?.is_trusted ?? true} />
         </div>
 
         {/* Title + brief — left column on desktop, spanning both rows so the action zone tucks beside it. */}
@@ -104,6 +105,33 @@ function MissionDetail() {
               <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · ${t("app.mission.pointsAwarded", { n: sub.points_awarded ?? 0 })}` : ""}</span>
             </section>
           )}
+
+          {/* Inline gate error — shown when join or apply throws */}
+          {(join.isError || apply.isError) && (() => {
+            const err = (join.error ?? apply.error) as ApiError | null;
+            const code = err instanceof ApiError ? err.code : null;
+            if (code === "verification_required") {
+              return (
+                <div className="rounded-[var(--radius)] border-2 border-[var(--color-magenta)] bg-white p-3 text-sm text-[var(--color-magenta)]" role="alert">
+                  <p>{t("app.mission.errorVerify")}</p>
+                  <Link to="/profile" className="mt-1 inline-block font-bold underline">{t("app.social.verifyNow")}</Link>
+                </div>
+              );
+            }
+            const messageMap: Record<string, string> = {
+              level_locked: t("app.mission.errorLevelLocked"),
+              mission_full: t("app.mission.errorMissionFull"),
+              closed: t("app.mission.errorClosed"),
+              not_open: t("app.mission.errorClosed"),
+              already_joined: t("app.mission.errorAlreadyJoined"),
+              already_applied: t("app.mission.errorAlreadyApplied"),
+              not_application: t("app.mission.errorNotApplication"),
+            };
+            const msg = (code && messageMap[code]) ? messageMap[code] : t("app.mission.actionError");
+            return (
+              <p className="rounded-[var(--radius)] border-2 border-[var(--color-magenta)] bg-white p-3 text-sm text-[var(--color-magenta)]" role="alert">{msg}</p>
+            );
+          })()}
 
           {!isApplication && (
             <>

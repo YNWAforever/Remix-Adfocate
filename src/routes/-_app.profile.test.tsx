@@ -42,6 +42,8 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useSocialAccounts: () => ({ data: [], isLoading: false, isError: false }),
   useAddSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useScanSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useIssueVerification: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useConfirmVerification: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useUseSocialAvatar: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useProfileMedia: () => ({
     data: {
@@ -84,7 +86,7 @@ describe("Profile page", () => {
   it("renders name, level, categories and referral code", () => {
     renderProfile();
     expect(screen.getByText("阿明")).toBeInTheDocument();
-    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText("KOC 新手")).toBeInTheDocument();
     expect(screen.getByText(/看護照/).closest("a")).toHaveAttribute("href", "/passport");
     expect(screen.getByText("美容")).toBeInTheDocument();
     expect(screen.getByText("Social trust")).toBeInTheDocument();
