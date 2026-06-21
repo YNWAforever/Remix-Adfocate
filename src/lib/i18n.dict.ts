@@ -221,6 +221,14 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.mission.briefPlatforms": "Platforms",
     "app.mission.briefEffort": "Estimated Effort",
     "app.mission.briefEmpty": "Details coming soon",
+    "app.mission.errorVerify": "Verify a social handle to unlock this mission",
+    "app.mission.errorLevelLocked": "Your level doesn't meet this mission's requirements",
+    "app.mission.errorMissionFull": "This mission is full",
+    "app.mission.errorClosed": "This mission is no longer available",
+    "app.mission.errorAlreadyJoined": "You've already joined this mission",
+    "app.mission.errorAlreadyApplied": "You've already applied to this mission",
+    "app.mission.errorNotApplication": "This mission requires an application — use the Apply button",
+    "app.mission.actionError": "Couldn't complete that action. Please try again.",
 
     // ── app: wallet ───────────────────────────────────────────
     "app.wallet.pageTitle": "Wallet",
@@ -771,6 +779,14 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.mission.briefPlatforms": "發佈平台",
     "app.mission.briefEffort": "預計投入",
     "app.mission.briefEmpty": "詳情陸續更新",
+    "app.mission.errorVerify": "驗證社交帳號以解鎖此任務",
+    "app.mission.errorLevelLocked": "你的等級未符合此任務要求",
+    "app.mission.errorMissionFull": "此任務名額已滿",
+    "app.mission.errorClosed": "此任務已不再開放",
+    "app.mission.errorAlreadyJoined": "你已加入此任務",
+    "app.mission.errorAlreadyApplied": "你已申請此任務",
+    "app.mission.errorNotApplication": "此任務需要申請，請使用申請按鈕",
+    "app.mission.actionError": "操作失敗，請重試。",
 
     // ── app: wallet ───────────────────────────────────────────
     "app.wallet.pageTitle": "錢包",
