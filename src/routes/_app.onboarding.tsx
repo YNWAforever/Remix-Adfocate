@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ProgressBar } from "@/components/ProgressBar";
 import { FilterPillsMulti } from "@/components/FilterPills";
@@ -29,8 +29,8 @@ function Wizard() {
   const connectSocial = useConnectSocial();
   const complete = useCompleteOnboarding();
 
-  // Resume at the persisted step; the wizard renders screens for steps 2–5.
-  const [step, setStep] = useState<number>(() => Math.max(2, status.data?.onboarding_step ?? 2));
+  // Resume at the persisted step; primer occupies step 1 (DB sentinel), wizard renders 2–5.
+  const [step, setStep] = useState<number>(() => Math.max(1, status.data?.onboarding_step ?? 1));
   const [categories, setCategories] = useState<string[]>([]);
   const [handles, setHandles] = useState<Record<string, string>>({});
   const [reward, setReward] = useState<{ referral_code: string } | null>(null);
@@ -76,8 +76,28 @@ function Wizard() {
 
   return (
     <div className="mx-auto max-w-sm space-y-5 p-6">
-      <ProgressBar value={step - 1} max={5} />
+      <ProgressBar value={step - 1} max={4} />
       {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
+
+      {step === 1 && (
+        <section className="space-y-5">
+          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.primerTitle")}</h1>
+          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.primerBody")}</p>
+          <div className="rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-lemon)] p-4">
+            <p className="text-sm font-medium leading-relaxed">{t("app.onboarding.primerLadder")}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setStep(2)}
+            className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
+          >
+            {t("app.onboarding.primerCta")}
+          </button>
+          <Link to="/guide" className="block text-center text-sm underline">
+            {t("app.onboarding.primerVisitGuide")}
+          </Link>
+        </section>
+      )}
 
       {step === 2 && (
         <section className="space-y-4">
