@@ -60,3 +60,35 @@ suite("B1 visibility guards", () => {
     expect(res.status).toBe(404); // detail-guard returns not_found before the RPC; closed never visible
   });
 });
+
+suite("B1 admin read endpoints", () => {
+  beforeAll(async () => {
+    await cleanup();
+    await makeMission({ slug: "test-adm-active", status: "active", category: "美容" });
+    await makeMission({ slug: "test-adm-draft", status: "draft", category: "美容" });
+  });
+  afterAll(cleanup);
+
+  it("401s without the secret", async () => {
+    expect((await app.request("/api/admin/missions", { headers: { "Content-Type": "application/json" } })).status).toBe(401);
+  });
+  it("lists workspaces ordered by name", async () => {
+    const { workspaces } = await (await adminreq("/admin/workspaces")).json();
+    expect(Array.isArray(workspaces)).toBe(true);
+    expect(workspaces.length).toBeGreaterThan(0);
+  });
+  it("lists all statuses for a workspace, each annotated with engaged", async () => {
+    const { missions } = await (await adminreq("/admin/missions?workspace=00000000-0000-0000-0000-0000000000aa")).json();
+    const slugs = missions.map((m: { slug: string }) => m.slug);
+    expect(slugs).toContain("test-adm-active");
+    expect(slugs).toContain("test-adm-draft"); // admin sees drafts
+    expect(missions.every((m: { engaged: boolean }) => typeof m.engaged === "boolean")).toBe(true);
+  });
+  it("filters by status", async () => {
+    const { missions } = await (await adminreq("/admin/missions?status=draft")).json();
+    expect(missions.every((m: { status: string }) => m.status === "draft")).toBe(true);
+  });
+  it("404s an unknown id", async () => {
+    expect((await adminreq("/admin/missions/00000000-0000-0000-0000-000000000000")).status).toBe(404);
+  });
+});
