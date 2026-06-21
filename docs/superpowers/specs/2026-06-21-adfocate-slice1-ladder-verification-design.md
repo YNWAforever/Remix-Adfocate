@@ -158,7 +158,9 @@ Add to `server/routes/social.ts` (all `instagram`/`threads`, caller-owned accoun
 In **`join_mission`** and **`apply_mission`**, gate with **decomposed** checks so the reason code reflects what is actually missing (raw XP vs verification), not the bundled `is_trusted`:
 ```sql
 -- inside each RPC, after loading m.required_level and v_level:
-if public.level_ordinal(m.required_level) >= 2 then
+-- NOTE: level_ordinal is 1-indexed (array_position: L0=1, L1=2, L2=3...), so the
+-- L2+ threshold MUST be level_ordinal('L2'), NOT a bare 2 (a bare 2 == L1+).
+if public.level_ordinal(m.required_level) >= public.level_ordinal('L2') then
   -- L2+ mission: need enough XP AND a verified handle.
   if public.level_ordinal(v_level) < public.level_ordinal(m.required_level) then
     raise exception 'level_locked';          -- not enough XP yet → "earn XP"
