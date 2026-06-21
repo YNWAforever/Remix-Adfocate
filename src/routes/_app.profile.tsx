@@ -118,7 +118,7 @@ function Profile() {
               )
             }
           >
-            <LevelChip xp={d.xp} />
+            <LevelChip xp={d.xp} effectiveLevelId={d.effective_level} />
           </IdentityHeader>
           <LangToggle />
         </div>

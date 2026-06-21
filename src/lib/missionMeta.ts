@@ -71,7 +71,10 @@ export type Eligibility = {
 
 /** Display-only. The real gate is server-side (join/apply return `level_locked` 409).
  *  Returns a key + params for t() interpolation.
- *  Pass creatorLevel = the EFFECTIVE level (already capped at L1 for unverified creators).
+ *  Pass creatorLevel = the RAW level (me.data.level, NOT effective_level) so the
+ *  "verify to unlock" branch only fires when XP already meets the requirement and
+ *  verification is the sole remaining gate. A low-XP creator correctly sees
+ *  "need more XP" rather than the misleading "verify to unlock" advisory.
  *  Pass isTrusted = me.data.is_trusted so the verify-to-unlock branch can fire. */
 export function eligibility(
   requiredLevel: string | undefined | null,
@@ -79,22 +82,22 @@ export function eligibility(
   isTrusted = true,
 ): Eligibility {
   const need = levelIndex(requiredLevel);
-  const have = levelIndex(creatorLevel);
+  const have = levelIndex(creatorLevel); // RAW level index
   const reqId = requiredLevel ?? "L0";
-  if (have >= need) {
-    if (need === 0) {
-      return { qualified: true, labelKey: "app.eligibility.allLevels" };
-    }
+  if (need === 0) {
+    return { qualified: true, labelKey: "app.eligibility.allLevels" };
+  }
+  if (have < need) {
+    // XP not there yet — needs more missions, not verification
     return {
-      qualified: true,
-      labelKey: "app.eligibility.qualified",
-      params: { req: reqId },
+      qualified: false,
+      labelKey: "app.eligibility.notQualified",
+      params: { req: reqId, level: creatorLevel ?? "L0" },
     };
   }
-  // The creator's XP would qualify them (raw level ≥ need) but verification is the gate.
-  // Specifically: effective level is capped at L1 for untrusted, so if need ≥ 2 and
-  // the creator's effective level is at least L1, they need to verify — not earn more XP.
-  if (need >= 2 && !isTrusted && have >= 1) {
+  // have >= need: XP is satisfied
+  if (need >= 2 && !isTrusted) {
+    // Raw XP meets the requirement but creator is unverified — verification is the gate
     return {
       qualified: false,
       labelKey: "app.eligibility.verifyToUnlock",
@@ -102,8 +105,8 @@ export function eligibility(
     };
   }
   return {
-    qualified: false,
-    labelKey: "app.eligibility.notQualified",
-    params: { req: reqId, level: creatorLevel ?? "L0" },
+    qualified: true,
+    labelKey: "app.eligibility.qualified",
+    params: { req: reqId },
   };
 }

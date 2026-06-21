@@ -346,6 +346,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.viewPassport": "· View Passport →",
     "app.level.levelUp": "You levelled up!",
     "app.level.levelUpCta": "Awesome!",
+    "app.level.readyVerify": "Ready — verify a social handle to unlock {level}",
 
     // ── app: social verification ──────────────────────────────
     "app.social.verifyCta": "Verify ownership",
@@ -904,6 +905,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.level.viewPassport": "· 看護照 →",
     "app.level.levelUp": "你升級了！",
     "app.level.levelUpCta": "太好了",
+    "app.level.readyVerify": "已達標 — 驗證社交帳號即可解鎖 {level}",
 
     // ── app: social verification ──────────────────────────────
     "app.social.verifyCta": "驗證擁有權",

@@ -43,7 +43,7 @@ function Passport() {
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
       <section className={`${CARD} p-5`}>
         <IdentityHeader name={name} avatarUrl={me.data?.avatar_url}>
-          <LevelProgress xp={p.xp} />
+          <LevelProgress xp={p.xp} effectiveLevelId={me.data?.effective_level} />
         </IdentityHeader>
       </section>
 
