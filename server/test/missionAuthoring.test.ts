@@ -92,3 +92,50 @@ suite("B1 admin read endpoints", () => {
     expect((await adminreq("/admin/missions/00000000-0000-0000-0000-000000000000")).status).toBe(404);
   });
 });
+
+suite("B1 create + edit", () => {
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  async function createDraft(slug: string, over: Record<string, unknown> = {}) {
+    const res = await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({ workspace_id: "00000000-0000-0000-0000-0000000000aa", slug, title: "草稿", mission_type: "ugc", ...over }),
+    });
+    return { res, body: await res.json() };
+  }
+
+  it("creates a sparse draft (no reward) → 201, not visible to creators", async () => {
+    const { res, body } = await createDraft("test-create-1");
+    expect(res.status).toBe(201);
+    expect(body.mission.status).toBe("draft");
+    const koc = await makeCreator("b1create@test.local", 0);
+    const { missions } = await (await koreq("/missions", koc.jwt)).json();
+    expect(missions.map((m: { slug: string }) => m.slug)).not.toContain("test-create-1");
+  });
+
+  it("422s a draft missing mission_type with a per-field error", async () => {
+    const res = await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({ workspace_id: "00000000-0000-0000-0000-0000000000aa", slug: "test-create-2", title: "x" }),
+    });
+    expect(res.status).toBe(422);
+    const body = await res.json();
+    expect(body.code).toBe("validation");
+    expect(body.fields).toHaveProperty("mission_type");
+  });
+
+  it("422s a duplicate slug in the same workspace", async () => {
+    await createDraft("test-dupe");
+    const { res, body } = await createDraft("test-dupe");
+    expect(res.status).toBe(422);
+    expect(body.fields).toHaveProperty("slug");
+  });
+
+  it("edits the brief of a draft → 200", async () => {
+    const { body } = await createDraft("test-edit-brief");
+    const res = await adminreq(`/admin/missions/${body.mission.id}`, { method: "PATCH", body: JSON.stringify({ title: "新標題", description: "做啲嘢" }) });
+    expect(res.status).toBe(200);
+    expect((await res.json()).mission.title).toBe("新標題");
+  });
+});
