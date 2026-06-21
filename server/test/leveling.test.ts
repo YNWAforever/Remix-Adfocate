@@ -38,13 +38,16 @@ suite("leveling engine", () => {
   });
 
   it("activates the mission level-gate once xp crosses the threshold", async () => {
+    // Uses an L1 mission so this exercises the pure XP gate (L0/L1 = XP-only).
+    // The L2 gate additionally requires a verified handle (Slice 1) — that
+    // XP-AND-verification path is covered in verificationGate.test.ts.
     const g = await makeCreator("leveling-gate@test.local", 0);
-    const m = await makeMission({ slug: "test-l2-only", required_level: "L2" });
+    const m = await makeMission({ slug: "test-l1-gate", required_level: "L1" });
 
     const locked = await req(`/missions/${m.slug}/join`, g.jwt, { method: "POST" });
     expect(locked.status).toBe(409); // level_locked → RPC_409
 
-    await setXp(g.userId, 2000); // → L2
+    await setXp(g.userId, 500); // → L1
     const ok = await req(`/missions/${m.slug}/join`, g.jwt, { method: "POST" });
     expect(ok.status).toBe(200);
   });

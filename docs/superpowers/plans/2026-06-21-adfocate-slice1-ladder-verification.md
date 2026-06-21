@@ -315,7 +315,7 @@ begin
 
   -- Effective-level gate. L2+ missions need both XP and a verified handle;
   -- the codes are decomposed so the message is honest (earn XP vs verify).
-  if public.level_ordinal(m.required_level) >= 2 then
+  if public.level_ordinal(m.required_level) >= public.level_ordinal('L2') then  -- level_ordinal is 1-indexed (L0=1..L6=7); compare to L2's ordinal, not a bare 2
     if public.level_ordinal(v_level) < public.level_ordinal(m.required_level) then
       raise exception 'level_locked';
     elsif not exists (
@@ -375,7 +375,7 @@ begin
   if m.access_type <> 'application' then raise exception 'not_application'; end if;
   if m.deadline is not null and m.deadline < current_date then raise exception 'closed'; end if;
 
-  if public.level_ordinal(m.required_level) >= 2 then
+  if public.level_ordinal(m.required_level) >= public.level_ordinal('L2') then  -- level_ordinal is 1-indexed (L0=1..L6=7); compare to L2's ordinal, not a bare 2
     if public.level_ordinal(v_level) < public.level_ordinal(m.required_level) then
       raise exception 'level_locked';
     elsif not exists (

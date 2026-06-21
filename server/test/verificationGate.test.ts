@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createApp } from "../app";
-import { cleanup, hasSupabaseEnv, makeCreator, makeMission } from "./helpers";
-import { createClient } from "@supabase/supabase-js";
+import { cleanup, hasSupabaseEnv, makeCreator, makeMission, serviceForTests } from "./helpers";
 
 // Mock the provider so confirm finds the code we inject into the returned bio.
 let nextBio = "";
@@ -26,10 +25,6 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
-
-const svc = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
 
 suite("verification + L2 gate", () => {
   let c: { userId: string; jwt: string };
@@ -56,7 +51,7 @@ suite("verification + L2 gate", () => {
 
   it("confirm returns 422 code_not_in_bio when absent", async () => {
     // re-issue then confirm with a bio missing the code
-    await svc.from("creator_social_accounts").update({ owner_verified: false }).eq("id", accountId);
+    await serviceForTests().from("creator_social_accounts").update({ owner_verified: false }).eq("id", accountId);
     const issued = await (await req(`/social/accounts/${accountId}/verification`, c.jwt, { method: "POST" })).json();
     nextBio = "no code here";
     const res = await req(`/social/accounts/${accountId}/verification/confirm`, c.jwt, { method: "POST" });
@@ -71,7 +66,7 @@ suite("verification + L2 gate", () => {
 
   it("untrusted high-XP creator is blocked from an L2 mission with verification_required", async () => {
     const u = await makeCreator("xp-no-verify@test.local");
-    await svc.from("creators").update({ xp: 5000, level: "L2" }).eq("id", u.userId); // raw L2, no verified handle
+    await serviceForTests().from("creators").update({ xp: 5000, level: "L2" }).eq("id", u.userId); // raw L2, no verified handle
     const mission = await makeMission({ slug: "test-l2-open", access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, u.jwt, { method: "POST" });
     expect(res.status).toBe(409);
@@ -80,7 +75,7 @@ suite("verification + L2 gate", () => {
 
   it("low-XP creator gets level_locked (not verification_required)", async () => {
     const u = await makeCreator("low-xp@test.local");
-    await svc.from("creators").update({ xp: 100, level: "L0" }).eq("id", u.userId);
+    await serviceForTests().from("creators").update({ xp: 100, level: "L0" }).eq("id", u.userId);
     const mission = await makeMission({ slug: "test-l2-open2", access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, u.jwt, { method: "POST" });
     expect(res.status).toBe(409);
@@ -88,7 +83,7 @@ suite("verification + L2 gate", () => {
   });
 
   it("verified + enough XP can join the L2 mission", async () => {
-    await svc.from("creators").update({ xp: 5000, level: "L2" }).eq("id", c.userId); // c has a verified handle
+    await serviceForTests().from("creators").update({ xp: 5000, level: "L2" }).eq("id", c.userId); // c has a verified handle
     const mission = await makeMission({ slug: "test-l2-open3", access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, c.jwt, { method: "POST" });
     expect(res.status).toBe(200);
