@@ -73,7 +73,6 @@ describe("Track detail page — gating", () => {
     hoisted.trackId = "nonexistent";
     renderTrack();
 
-    // key not in dict → t() returns the key itself
-    expect(screen.getByText("app.guide.trackNotFound")).toBeInTheDocument();
+    expect(screen.getByText("找不到課程。")).toBeInTheDocument();
   });
 });

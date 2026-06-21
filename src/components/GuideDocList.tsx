@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { guideDocs, type GuideCategory } from "@/data/guideDocs";
 import { getRead } from "@/lib/guideProgress";
@@ -29,17 +30,16 @@ export function GuideDocList({ creatorId }: Props) {
       {grouped.map(({ cat, docs }) => (
         <section key={cat}>
           <h4 className="mb-1.5 font-mono text-[11px] uppercase tracking-widest text-[var(--color-soft-ink)]">
-            {t(CATEGORY_LABEL_KEY[cat]) !== CATEGORY_LABEL_KEY[cat]
-              ? t(CATEGORY_LABEL_KEY[cat])
-              : cat}
+            {t(CATEGORY_LABEL_KEY[cat])}
           </h4>
           <ul className="flex flex-col gap-1">
             {docs.map((doc) => {
               const isRead = read.has(doc.id);
               return (
                 <li key={doc.id}>
-                  <a
-                    href={`/guide/doc/${doc.id}`}
+                  <Link
+                    to="/guide/doc/$slug"
+                    params={{ slug: doc.id }}
                     className="flex items-center gap-2 rounded-lg border border-[var(--color-ink)] bg-white px-3 py-2 no-underline hover:opacity-90 transition-opacity"
                   >
                     <span aria-hidden>{doc.emoji}</span>
@@ -49,7 +49,7 @@ export function GuideDocList({ creatorId }: Props) {
                         ✓
                       </span>
                     )}
-                  </a>
+                  </Link>
                 </li>
               );
             })}

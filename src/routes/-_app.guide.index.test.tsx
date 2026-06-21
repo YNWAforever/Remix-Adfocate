@@ -22,6 +22,17 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => hoisted.me,
 }));
 
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+  return {
+    ...actual,
+    Link: (p: { children: React.ReactNode; to: string; params?: Record<string, string>; className?: string }) => {
+      const href = p.to.replace(/\$(\w+)/g, (_, k) => p.params?.[k] ?? k);
+      return <a href={href} className={p.className}>{p.children}</a>;
+    },
+  };
+});
+
 import { Route } from "./_app.guide.index";
 
 function renderHub() {
@@ -61,8 +72,8 @@ describe("GuideHub page", () => {
 
   it("renders a known guide doc title", () => {
     renderHub();
-    // "account" doc → titleKey "app.guide.doc.account" → zh "帳戶"
-    expect(screen.getByText("帳戶")).toBeInTheDocument();
+    // "leveling" doc → titleKey "app.guide.doc.leveling" → zh "等級制度"
+    expect(screen.getByText("等級制度")).toBeInTheDocument();
   });
 
   it("renders the first academy track title", () => {

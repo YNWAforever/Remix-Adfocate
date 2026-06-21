@@ -1,7 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { I18nProvider } from "@/lib/i18n";
 import { AcademyTrackCard } from "./AcademyTrackCard";
+
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+  return {
+    ...actual,
+    Link: (p: { children: React.ReactNode; to: string; params?: Record<string, string>; className?: string }) => {
+      const href = p.to.replace(/\$(\w+)/g, (_, k) => p.params?.[k] ?? k);
+      return <a href={href} className={p.className}>{p.children}</a>;
+    },
+  };
+});
 
 const track = {
   id: "a3",

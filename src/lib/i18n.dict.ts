@@ -579,6 +579,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.guide.unlockAt": "Unlocks at {level}",
     "app.guide.locked": "Locked",
     "app.guide.back": "Back",
+    "app.guide.cat.start": "Getting Started",
+    "app.guide.cat.missions": "Missions",
+    "app.guide.cat.rewards": "Rewards",
+    "app.guide.cat.account": "Account",
+    "app.guide.docNotFound": "Guide not found.",
+    "app.guide.trackNotFound": "Track not found.",
 
     // ── app: guide doc titles ─────────────────────────────────
     "app.guide.doc.account": "Account",
@@ -1178,6 +1184,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.guide.unlockAt": "{level} 解鎖",
     "app.guide.locked": "已鎖定",
     "app.guide.back": "返回",
+    "app.guide.cat.start": "入門",
+    "app.guide.cat.missions": "任務",
+    "app.guide.cat.rewards": "獎勵",
+    "app.guide.cat.account": "帳戶",
+    "app.guide.docNotFound": "找不到指南。",
+    "app.guide.trackNotFound": "找不到課程。",
 
     // ── app: guide doc titles ─────────────────────────────────
     "app.guide.doc.account": "帳戶",

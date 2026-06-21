@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { isTrackUnlocked } from "@/lib/academyGating";
 import { LEVELS, levelIndex } from "@/lib/levels";
@@ -14,8 +15,9 @@ export function AcademyTrackCard({ track, effectiveLevel }: Props) {
 
   if (unlocked) {
     return (
-      <a
-        href={`/guide/track/${track.id}`}
+      <Link
+        to="/guide/track/$trackId"
+        params={{ trackId: track.id }}
         className="pastel-card flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 no-underline hover:opacity-90 transition-opacity"
       >
         <span className="text-2xl" aria-hidden>
@@ -25,7 +27,7 @@ export function AcademyTrackCard({ track, effectiveLevel }: Props) {
           <h3 className="font-heading font-semibold leading-snug">{track.title}</h3>
           <p className="mt-0.5 text-sm text-[var(--color-soft-ink)]">{track.duration}</p>
         </div>
-      </a>
+      </Link>
     );
   }
 
