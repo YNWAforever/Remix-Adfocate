@@ -36,6 +36,16 @@ function Wizard() {
   const [reward, setReward] = useState<{ referral_code: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  async function primerNext() {
+    setError(null);
+    try {
+      // Persist step 2 so the primer is shown once: a reload now resumes at
+      // categories (seed Math.max(1, onboarding_step)) instead of re-showing it.
+      await saveProfile.mutateAsync({ step: 2 });
+      setStep(2);
+    } catch { setError(t("common.saveError")); }
+  }
+
   async function categoriesNext(selected: string[]) {
     setError(null);
     try {
@@ -88,7 +98,7 @@ function Wizard() {
           </div>
           <button
             type="button"
-            onClick={() => setStep(2)}
+            onClick={primerNext}
             className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
           >
             {t("app.onboarding.primerCta")}

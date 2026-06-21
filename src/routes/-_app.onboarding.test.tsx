@@ -5,16 +5,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
-  return { ...actual, useNavigate: () => mockNavigate };
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    Link: (p: { children: React.ReactNode; to: string; className?: string }) => (
+      <a href={p.to} className={p.className}>{p.children}</a>
+    ),
+  };
 });
 
 const hoisted = vi.hoisted(() => ({
   saveProfile: vi.fn(),
   connectSocial: vi.fn(),
   complete: vi.fn(),
+  onboardingStep: 2,
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
-  useOnboardingStatus: () => ({ data: { onboarding_step: 2, onboarding_completed: false, completion_pct: 25 }, isLoading: false }),
+  useOnboardingStatus: () => ({ data: { onboarding_step: hoisted.onboardingStep, onboarding_completed: false, completion_pct: 25 }, isLoading: false }),
   useRecommendedMissions: () => ({ data: [{ id: "1", slug: "m1", title: "美容試用", category: "美容", points_reward: 300 }], isLoading: false }),
   useSaveProfile: () => ({ mutateAsync: hoisted.saveProfile, isPending: false }),
   useConnectSocial: () => ({ mutateAsync: hoisted.connectSocial, isPending: false }),
@@ -37,6 +44,7 @@ function renderWizard() {
 describe("Onboarding wizard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.onboardingStep = 2;
     hoisted.saveProfile.mockResolvedValue({ onboarding_step: 3 });
     hoisted.connectSocial.mockResolvedValue({ social_handles: [] });
     hoisted.complete.mockResolvedValue({ referral_code: "ABCD1234", onboarding_completed: true, onboarding_step: 5 });
@@ -45,6 +53,17 @@ describe("Onboarding wizard", () => {
   it("starts at the categories step (step 2)", () => {
     renderWizard();
     expect(screen.getByText("你的範疇")).toBeInTheDocument();
+  });
+
+  it("first-run primer (step 1): persists step 2 before advancing to categories", async () => {
+    hoisted.onboardingStep = 1;
+    renderWizard();
+    // primer screen shows first
+    expect(screen.getByText("你的成長階梯")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("開始"));
+    // must persist step 2 so the primer is one-time (survives a reload)
+    await waitFor(() => expect(hoisted.saveProfile).toHaveBeenCalledWith({ step: 2 }));
+    expect(await screen.findByText("你的範疇")).toBeInTheDocument();
   });
 
   it("saves selected categories and advances to platforms", async () => {
