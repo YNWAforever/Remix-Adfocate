@@ -13,6 +13,7 @@ export function AdminTabs() {
 
   const tabs = useMemo(
     () => [
+      { to: "/admin/missions", label: t("app.admin.tabMissions") },
       { to: "/admin/applications", label: t("app.admin.tabApplications") },
       { to: "/admin/engaged", label: t("app.admin.tabEngaged") },
       { to: "/admin/submissions", label: t("app.admin.tabSubmissions") },
