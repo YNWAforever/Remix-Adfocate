@@ -39,7 +39,7 @@ export function AcademyTrackCard({ track, creatorLevel, isTrusted }: Props) {
   const needsVerification = elig.labelKey === "app.eligibility.verifyToUnlock";
   // Verification gate → point to /profile to verify; otherwise show the level needed.
   const lockedCopy = needsVerification
-    ? t("app.eligibility.verifyToUnlock", { req: track.level })
+    ? t("app.guide.verifyToUnlock")
     : t("app.guide.unlockAt", { level: track.level });
 
   const body = (

@@ -54,8 +54,8 @@ const levelPillMap: Record<string, string> = {
   "KOC Starter": "level-pill-l1",
   "Trusted KOC": "level-pill-l2",
   "Nano Creator": "level-pill-l3",
-  "Micro-Influencer": "level-pill-l4",
-  Influencer: "level-pill-l5",
+  "Micro-KOL": "level-pill-l4",
+  "Small KOL": "level-pill-l5",
 };
 
 function PlaybooksPage() {

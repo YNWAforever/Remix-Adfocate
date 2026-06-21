@@ -56,10 +56,10 @@ function TrackDetailPage() {
             {needsVerification ? (
               <>
                 <p className="text-sm text-[var(--color-ink-muted)]">
-                  {t("app.eligibility.verifyToUnlock", { req: track.level })}
+                  {t("app.guide.verifyToUnlock")}
                 </p>
                 <Link to="/profile" className="inline-block text-sm font-heading font-bold underline">
-                  {t("app.guide.unlockAt", { level: track.level })}
+                  {t("app.social.verifyNow")}
                 </Link>
               </>
             ) : (
