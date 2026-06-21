@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
+type MeData = { id: string; display_name: string; level: string; effective_level: string; xp: number };
+type HoistedMe = { data: MeData | undefined; isLoading: boolean; isError: boolean };
+
 const hoisted = vi.hoisted(() => ({
   me: {
     data: {
@@ -9,10 +12,10 @@ const hoisted = vi.hoisted(() => ({
       level: "L0",
       effective_level: "L0",
       xp: 0,
-    },
+    } as MeData | undefined,
     isLoading: false,
     isError: false,
-  },
+  } as HoistedMe,
 }));
 
 vi.mock("@/lib/queries/kocmax", () => ({

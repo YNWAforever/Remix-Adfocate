@@ -30,7 +30,7 @@ function GuideHub() {
         <h2 className="font-heading font-bold">{t("app.guide.sectionPlaybooks")}</h2>
         <div className="grid grid-cols-2 gap-3">
           {[...playbooks, ...resources].map((p) => (
-            <PlaybookCard key={p.id} item={p} />
+            <PlaybookCard key={"id" in p ? p.id : p.industry} item={p} />
           ))}
         </div>
       </section>
