@@ -37,7 +37,10 @@ function MissionsList() {
   }, [ws.error, list.error, reportAuthError]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["admin-missions"] });
-  const onErr = (e: unknown) => window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
+  const onErr = (e: unknown) => {
+    if (e instanceof AdminAuthError) { reportAuthError(e); return; }
+    window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
+  };
   const publish = useMutation({ mutationFn: (id: string) => publishMission(id), onSuccess: invalidate, onError: onErr });
   const close = useMutation({ mutationFn: (id: string) => closeMission(id), onSuccess: invalidate, onError: onErr });
   const remove = useMutation({ mutationFn: (id: string) => deleteMissionDraft(id), onSuccess: invalidate, onError: onErr });

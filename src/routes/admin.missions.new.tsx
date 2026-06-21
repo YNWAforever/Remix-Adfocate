@@ -20,8 +20,14 @@ function NewMission() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-lg font-bold">新任務（草稿）</h1>
-      <MissionEditor mode="create" workspaces={ws.data?.workspaces ?? []} saving={create.isPending}
-        onSave={(body) => create.mutateAsync(body)} />
+      {/* Mount the editor only once workspaces are fetched — its initial workspace_id is
+          captured at mount, so rendering before the query resolves leaves it empty. */}
+      {ws.data ? (
+        <MissionEditor mode="create" workspaces={ws.data.workspaces ?? []} saving={create.isPending}
+          onSave={(body) => create.mutateAsync(body)} />
+      ) : (
+        <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>
+      )}
     </div>
   );
 }
