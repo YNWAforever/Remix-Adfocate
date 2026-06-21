@@ -13,9 +13,13 @@ export const Route = createFileRoute("/_app/guide/")({ component: GuideHub });
 function GuideHub() {
   const me = useMe();
   const { t } = useI18n();
-  const effective = me.data?.effective_level ?? me.data?.level;
+  // Gating input: use effective_level ONLY (academyGating defaults missing → "L0",
+  // i.e. fail closed). Do NOT fall back to raw level — that would over-unlock
+  // gated tracks for unverified creators if the field were ever absent.
+  const effective = me.data?.effective_level;
   const creatorId = me.data?.id;
-  const readCount = creatorId ? guideDocs.filter((d) => getRead(creatorId).has(d.id)).length : 0;
+  const read = creatorId ? getRead(creatorId) : new Set<string>();
+  const readCount = guideDocs.filter((d) => read.has(d.id)).length;
 
   return (
     <div className="mx-auto max-w-lg p-4 lg:max-w-5xl space-y-6">

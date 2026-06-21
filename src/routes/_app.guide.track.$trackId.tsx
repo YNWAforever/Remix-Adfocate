@@ -24,7 +24,9 @@ function TrackDetailPage() {
     );
   }
 
-  const effectiveLevel = me.data?.effective_level ?? me.data?.level;
+  // Gating input: effective_level ONLY (fail closed — academyGating defaults a
+  // missing level to "L0"). Falling back to raw level would over-unlock.
+  const effectiveLevel = me.data?.effective_level;
   const unlocked = isTrackUnlocked(track.requiredLevel, effectiveLevel);
   const requiredLevelDef = LEVELS[levelIndex(track.requiredLevel)];
 
