@@ -1,7 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-/** Mirrors private.creator_is_trusted (migration 0017). Keep this constant in sync.
- *  SQL: select xp >= 2000 and exists (owner_verified handle) */
+/** "Trusted" XP bar. THREE places encode this 2000 and must stay in sync:
+ *  1) here (TS isTrusted), 2) private.creator_is_trusted in migration 0017 (SQL),
+ *  3) LEVELS L2 `xpRequired: 2000` in src/lib/levels.ts (the leveling trigger that
+ *  sets creators.level off this threshold). Change one → change all three.
+ *  SQL mirror: select xp >= 2000 and exists (owner_verified handle). */
 export const TRUSTED_XP_THRESHOLD = 2000;
 
 const LEVEL_IDS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"];

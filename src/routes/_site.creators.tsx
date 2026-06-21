@@ -586,7 +586,7 @@ function CreatorPassportFullSection() {
 }
 
 function GrowResourcesSection() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const resourceGroups = [
     {
@@ -686,7 +686,7 @@ function GrowResourcesSection() {
                       key={item.id}
                       className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-white border border-gray-200 text-soft-ink inline-flex items-center gap-1"
                     >
-                      {icon} {item.title}
+                      {icon} {typeof item.title === "string" ? item.title : localized(item.title, lang)}
                     </span>
                   );
                 })}

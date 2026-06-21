@@ -13,11 +13,11 @@ export function BottomNav() {
             key={item.labelKey}
             to={item.to}
             activeOptions={{ exact: item.exact }}
-            className="flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-soft-ink)]"
-            activeProps={{ className: "flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-ink)] font-bold" }}
+            className="min-w-0 flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-soft-ink)]"
+            activeProps={{ className: "min-w-0 flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-ink)] font-bold" }}
           >
             <Icon size={20} aria-hidden />
-            <span>{t(item.labelKey)}</span>
+            <span className="max-w-full truncate">{t(item.labelKey)}</span>
           </Link>
         );
       })}

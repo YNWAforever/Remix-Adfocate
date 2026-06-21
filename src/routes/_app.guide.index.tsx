@@ -13,10 +13,11 @@ export const Route = createFileRoute("/_app/guide/")({ component: GuideHub });
 function GuideHub() {
   const me = useMe();
   const { t } = useI18n();
-  // Gating input: use effective_level ONLY (academyGating defaults missing → "L0",
-  // i.e. fail closed). Do NOT fall back to raw level — that would over-unlock
-  // gated tracks for unverified creators if the field were ever absent.
-  const effective = me.data?.effective_level;
+  // Gate inputs: RAW level + trust flag. AcademyTrackCard's eligibility() applies
+  // the L1 cap and distinguishes "need XP" from "need verification". Defaults
+  // (L0 / untrusted) fail closed if a field is ever absent.
+  const creatorLevel = me.data?.level;
+  const isTrusted = me.data?.is_trusted ?? false;
   const creatorId = me.data?.id;
   const read = creatorId ? getRead(creatorId) : new Set<string>();
   const readCount = guideDocs.filter((d) => read.has(d.id)).length;
@@ -34,7 +35,7 @@ function GuideHub() {
         <h2 className="font-heading font-bold">{t("app.guide.sectionPlaybooks")}</h2>
         <div className="grid grid-cols-2 gap-3">
           {[...playbooks, ...resources].map((p) => (
-            <PlaybookCard key={"id" in p ? p.id : p.industry} item={p} />
+            <PlaybookCard key={"id" in p ? p.id : p.industry.en} item={p} />
           ))}
         </div>
       </section>
@@ -50,7 +51,7 @@ function GuideHub() {
         </div>
         <div className="grid grid-cols-2 gap-3">
           {academyTracks.map((tr) => (
-            <AcademyTrackCard key={tr.id} track={tr} effectiveLevel={effective} />
+            <AcademyTrackCard key={tr.id} track={tr} creatorLevel={creatorLevel} isTrusted={isTrusted} />
           ))}
         </div>
       </section>
