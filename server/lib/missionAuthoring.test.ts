@@ -1,6 +1,6 @@
 // server/lib/missionAuthoring.test.ts
 import { describe, it, expect } from "vitest";
-import { isValidSlug, suggestSlug, MISSION_LEVELS, MISSION_TYPES, validateMission, type MissionInput } from "./missionAuthoring.js";
+import { isValidSlug, suggestSlug, MISSION_LEVELS, MISSION_TYPES, validateMission, validateEdit, type MissionInput, type MissionRecord } from "./missionAuthoring.js";
 
 describe("isValidSlug", () => {
   it("accepts lowercase alnum + hyphens", () => {
@@ -82,5 +82,48 @@ describe("validateMission publish mode", () => {
     expect(validateMission(cpm, "publish", TODAY).errors).toHaveProperty("cpm_rate");
     expect(validateMission({ ...cpm, cpm_rate: 5 }, "publish", TODAY).errors).toHaveProperty("cpm_rate"); // pool still missing
     expect(validateMission({ ...cpm, cpm_rate: 5, cpm_budget_pool: 1000 }, "publish", TODAY).ok).toBe(true);
+  });
+});
+
+const draftRec: MissionRecord = {
+  status: "draft", workspace_id: "ws", slug: "test-x", title: "t", mission_type: "ugc",
+  points_reward: 100, cash_reward: null, access_type: "open", required_level: "L0",
+  quota: 10, filled: 0, deadline: "2026-07-01",
+};
+const activeRec: MissionRecord = { ...draftRec, status: "active" };
+
+describe("validateEdit", () => {
+  it("draft: nothing frozen — slug/type/rewards all editable", () => {
+    expect(validateEdit(draftRec, { slug: "test-y", mission_type: "clipping", points_reward: 200 }, false).ok).toBe(true);
+  });
+  it("published + unengaged: slug & mission_type are frozen, rest editable", () => {
+    expect(validateEdit(activeRec, { slug: "test-z" }, false).errors).toHaveProperty("slug");
+    expect(validateEdit(activeRec, { mission_type: "ugc" }, false).ok).toBe(true); // same value = no-op
+    expect(validateEdit(activeRec, { mission_type: "clipping" }, false).errors).toHaveProperty("mission_type");
+    expect(validateEdit(activeRec, { points_reward: 999 }, false).ok).toBe(true); // unengaged → editable
+  });
+  it("engaged: economic fields locked, but re-sending the same value is a no-op", () => {
+    expect(validateEdit(activeRec, { points_reward: 999 }, true).errors).toHaveProperty("points_reward");
+    expect(validateEdit(activeRec, { cash_reward: 5 }, true).errors).toHaveProperty("cash_reward");
+    expect(validateEdit(activeRec, { access_type: "application" }, true).errors).toHaveProperty("access_type");
+    expect(validateEdit(activeRec, { required_level: "L3" }, true).errors).toHaveProperty("required_level");
+    expect(validateEdit(activeRec, { points_reward: 100 }, true).ok).toBe(true); // unchanged
+    expect(validateEdit(activeRec, { title: "新標題", description: "x" }, true).ok).toBe(true); // brief always editable
+  });
+  it("engaged: quota floor = max(existing.quota, filled); deadline extend-only", () => {
+    const engaged: MissionRecord = { ...activeRec, quota: 10, filled: 7 };
+    expect(validateEdit(engaged, { quota: 6 }, true).errors).toHaveProperty("quota"); // below filled
+    expect(validateEdit(engaged, { quota: 12 }, true).ok).toBe(true);
+    expect(validateEdit(engaged, { deadline: "2026-06-30" }, true).errors).toHaveProperty("deadline"); // earlier
+    expect(validateEdit(engaged, { deadline: "2026-08-01" }, true).ok).toBe(true);
+  });
+  it("all-declined mission stays fully editable (hasEngagement=false)", () => {
+    expect(validateEdit(activeRec, { points_reward: 500, quota: 1 }, false).ok).toBe(true);
+  });
+  it("format checks apply regardless of status", () => {
+    expect(validateEdit(draftRec, { slug: "Bad Slug" }, false).errors).toHaveProperty("slug");
+    expect(validateEdit(draftRec, { required_level: "L9" }, false).errors).toHaveProperty("required_level");
+    expect(validateEdit(draftRec, { quota: 0 }, false).errors).toHaveProperty("quota");
+    expect(validateEdit(draftRec, { effort: "extreme" }, false).errors).toHaveProperty("effort");
   });
 });

@@ -112,3 +112,58 @@ export function validateMission(
 
   return { ok: Object.keys(errors).length === 0, errors };
 }
+
+const LOCKED_ON_ENGAGEMENT = [
+  "points_reward", "cash_reward", "cpm_rate", "cpm_budget_pool", "access_type", "required_level",
+] as const;
+
+export function validateEdit(
+  existing: MissionRecord,
+  patch: MissionInput,
+  hasEngagement: boolean,
+): ValidationResult {
+  const errors: Record<string, string> = {};
+  const has = (k: keyof MissionInput) => Object.prototype.hasOwnProperty.call(patch, k);
+
+  // Format checks — apply to any status.
+  if (has("slug") && !isValidSlug(patch.slug)) errors.slug = "Slug 須為小寫英數字與連字號（a-z0-9-）";
+  if (has("mission_type") && !MISSION_TYPES.includes(patch.mission_type as MissionType)) {
+    errors.mission_type = "任務類型無效";
+  }
+  if (has("required_level") && !MISSION_LEVELS.includes(patch.required_level as (typeof MISSION_LEVELS)[number])) {
+    errors.required_level = "等級要求無效";
+  }
+  if (has("access_type") && !ACCESS_TYPES.includes(patch.access_type as (typeof ACCESS_TYPES)[number])) {
+    errors.access_type = "參與方式無效";
+  }
+  if (has("effort") && patch.effort != null && !EFFORTS.includes(patch.effort as (typeof EFFORTS)[number])) {
+    errors.effort = "投入程度無效";
+  }
+  if (has("quota") && (!Number.isInteger(patch.quota) || num(patch.quota) < 1)) {
+    errors.quota = "名額須為 1 或以上";
+  }
+
+  // Frozen at publish (independent of engagement).
+  if (existing.status !== "draft") {
+    if (has("slug") && patch.slug !== existing.slug) errors.slug = "已發佈：Slug 不可更改";
+    if (has("mission_type") && patch.mission_type !== existing.mission_type) {
+      errors.mission_type = "已發佈：任務類型不可更改";
+    }
+  }
+
+  // Locked / constrained on engagement.
+  if (hasEngagement) {
+    for (const f of LOCKED_ON_ENGAGEMENT) {
+      if (has(f) && !sameNullable(patch[f], existing[f])) errors[f] = "已有創作者參與：此欄位已鎖定";
+    }
+    if (has("quota") && !errors.quota) {
+      const floor = Math.max(num(existing.quota), num(existing.filled));
+      if (num(patch.quota) < floor) errors.quota = `名額不可低於 ${floor}（現有名額／已參與人數）`;
+    }
+    if (has("deadline") && patch.deadline != null && existing.deadline != null && patch.deadline < existing.deadline) {
+      errors.deadline = "已有創作者參與：截止日期只可延後";
+    }
+  }
+
+  return { ok: Object.keys(errors).length === 0, errors };
+}
