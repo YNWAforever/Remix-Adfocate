@@ -1,8 +1,11 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AdminAuthError,
+  AdminRequestError,
   approveSubmission,
   clearAdminSecret,
+  createMission,
+  fetchAdminMissions,
   fetchCreatorDetail,
   fetchCreatorReviewQueue,
   fetchEngagedUsers,
@@ -220,5 +223,23 @@ describe("admin client helpers", () => {
     );
     await fetchEngagedUsers();
     expect(fetchMock).toHaveBeenCalledWith("/api/admin/engaged", expect.any(Object));
+  });
+});
+
+describe("AdminRequestError surfaces code + fields", () => {
+  beforeEach(() => sessionStorage.setItem("adfocate_admin_secret", "s"));
+  it("throws AdminRequestError carrying fields on 422", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false, status: 422,
+      json: async () => ({ error: "bad", code: "validation", fields: { slug: "taken" } }),
+    }));
+    await expect(createMission({ workspace_id: "w", slug: "x", title: "t", mission_type: "ugc" }))
+      .rejects.toMatchObject({ code: "validation", fields: { slug: "taken" } });
+  });
+  it("fetchAdminMissions builds the workspace+status query", async () => {
+    const f = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ missions: [] }) });
+    vi.stubGlobal("fetch", f);
+    await fetchAdminMissions("ws1", "draft");
+    expect(f).toHaveBeenCalledWith(expect.stringContaining("/admin/missions?workspace=ws1&status=draft"), expect.anything());
   });
 });

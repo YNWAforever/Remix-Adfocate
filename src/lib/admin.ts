@@ -158,6 +158,16 @@ export function clearAdminSecret() {
 
 export class AdminAuthError extends Error {}
 
+export class AdminRequestError extends Error {
+  code?: string;
+  fields?: Record<string, string>;
+  constructor(message: string, code?: string, fields?: Record<string, string>) {
+    super(message);
+    this.code = code;
+    this.fields = fields;
+  }
+}
+
 export async function adminFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const secret = getAdminSecret();
   const res = await fetch(`/api${path}`, {
@@ -174,7 +184,7 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? res.statusText);
+    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields);
   }
   return res.json() as Promise<T>;
 }
@@ -345,4 +355,91 @@ export function rejectSubmission(id: string, notes?: string) {
 
 export function fetchEngagedUsers() {
   return adminFetch<{ creators: EngagedCreator[] }>("/admin/engaged");
+}
+
+// ---- B1 mission authoring -------------------------------------------------
+export type AdminWorkspace = { id: string; slug: string; name: string };
+
+export type AdminMission = {
+  id: string;
+  workspace_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  mission_type: string;
+  access_type: "open" | "application";
+  required_level: string;
+  points_reward: number;
+  cash_reward: number | null;
+  cpm_rate: number | null;
+  cpm_budget_pool: number | null;
+  deadline: string | null;
+  quota: number;
+  filled: number;
+  status: "draft" | "active" | "closed";
+  deliverables: string[];
+  requirements: string[];
+  platforms: string[];
+  effort: "low" | "medium" | "high" | null;
+  updated_at: string;
+  published_at: string | null;
+  closed_at: string | null;
+};
+export type AdminMissionRow = AdminMission & { engaged: boolean };
+
+export type MissionDraftInput = {
+  workspace_id: string;
+  slug: string;
+  title: string;
+  mission_type: string;
+  description?: string | null;
+  category?: string | null;
+  access_type?: "open" | "application";
+  required_level?: string;
+  points_reward?: number | null;
+  cash_reward?: number | null;
+  cpm_rate?: number | null;
+  cpm_budget_pool?: number | null;
+  deadline?: string | null;
+  quota?: number | null;
+  deliverables?: string[];
+  requirements?: string[];
+  platforms?: string[];
+  effort?: "low" | "medium" | "high" | null;
+};
+export type MissionPatch = Partial<MissionDraftInput>;
+
+export const adminMissionKeys = {
+  workspaces: ["admin-workspaces"] as const,
+  list: (workspace: string, status: string) => ["admin-missions", workspace, status] as const,
+  detail: (id: string) => ["admin-mission", id] as const,
+};
+
+export function fetchWorkspaces() {
+  return adminFetch<{ workspaces: AdminWorkspace[] }>("/admin/workspaces");
+}
+export function fetchAdminMissions(workspace: string, status: string) {
+  const qs = new URLSearchParams();
+  if (workspace) qs.set("workspace", workspace);
+  if (status) qs.set("status", status);
+  return adminFetch<{ missions: AdminMissionRow[] }>(`/admin/missions?${qs.toString()}`);
+}
+export function fetchAdminMission(id: string) {
+  return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}`);
+}
+export function createMission(body: MissionDraftInput) {
+  return adminFetch<{ mission: AdminMission }>("/admin/missions", { method: "POST", body: JSON.stringify(body) });
+}
+export function updateMission(id: string, patch: MissionPatch) {
+  return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
+}
+export function publishMission(id: string) {
+  return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}/publish`, { method: "POST", body: JSON.stringify({}) });
+}
+export function closeMission(id: string) {
+  return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}/close`, { method: "POST", body: JSON.stringify({}) });
+}
+export function deleteMissionDraft(id: string) {
+  return adminFetch<{ ok: true }>(`/admin/missions/${id}`, { method: "DELETE" });
 }
