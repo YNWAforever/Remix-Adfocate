@@ -1,7 +1,7 @@
 // server/routes/adminMissions.ts
 import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
-import { validateMission, validateEdit, type MissionInput, type MissionRecord } from "../lib/missionAuthoring.js";
+import { type MissionInput } from "../lib/missionAuthoring.js";
 
 /** Secret-gated mission authoring (Slice B1). Mounted under the /admin shared-secret gate;
  *  uses serviceClient (bypasses RLS). Real per-workspace role auth lands with the Brand
