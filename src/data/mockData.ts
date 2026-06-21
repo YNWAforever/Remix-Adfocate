@@ -418,103 +418,9 @@ export const packages: PackageCard[] = [
   { id: "p12", title: "Adfoplace Offer Launch", bestFor: "Marketplace activation", deliverables: ["Offer setup", "Creator matching", "Performance tracking"], color: "pink" },
 ];
 
-// ─── PLAYBOOKS ───
-export type Playbook = {
-  industry: string;
-  emoji: string;
-  color: string;
-  levels: string[];
-  ideas: string[];
-  creatorAngle: string;
-  measurementFocus: string;
-};
-
-export const playbooks: Playbook[] = [
-  {
-    industry: "Beauty & Personal Care", emoji: "💄", color: "pink",
-    levels: ["KOC Starter", "Nano Creator", "Micro-Influencer", "Influencer"],
-    ideas: [
-      "KOC skincare trial with before-after storytelling",
-      "Nano creator tutorial series (5 looks in 5 days)",
-      "Micro-influencer affiliate offer (12% commission)",
-      "Live shopping bundle promotion",
-      "Creator product drop pilot",
-      "Mature beauty KOC campaign",
-    ],
-    creatorAngle: "From product tester to beauty affiliate creator.",
-    measurementFocus: "Saves, review sentiment, coupon conversion, repeat creator demand",
-  },
-  {
-    industry: "F&B & Restaurants", emoji: "🍜", color: "yellow",
-    levels: ["KOC Starter", "Trusted KOC", "Nano Creator"],
-    ideas: [
-      "Restaurant opening creator coverage",
-      "Hidden menu challenge",
-      "Under HK$100 dining series",
-      "Weekend café coupon mission",
-      "District food trail with map content",
-      "Family dining KOC review",
-    ],
-    creatorAngle: "From food lover to trusted local food guide.",
-    measurementFocus: "Store visits, coupon redemption, story engagement, follower growth",
-  },
-  {
-    industry: "Travel & Hospitality", emoji: "✈️", color: "blue",
-    levels: ["Trusted KOC", "Nano Creator", "Micro-Influencer"],
-    ideas: [
-      "Hotel KOC stay review",
-      "Macau one-day travel mission",
-      "Attraction ticket creator guide",
-      "eSIM travel creator campaign",
-      "Travel insurance education",
-      "Food and culture itinerary challenge",
-    ],
-    creatorAngle: "From trip sharer to travel content creator.",
-    measurementFocus: "Booking inquiries, itinerary saves, UGC quality, destination awareness",
-  },
-  {
-    industry: "Retail & eCommerce", emoji: "🛍️", color: "mint",
-    levels: ["KOC Starter", "Trusted KOC", "Nano Creator", "Micro-Influencer"],
-    ideas: [
-      "Product unboxing wave",
-      "Short-form video sprint (10 creators × 3 reels)",
-      "Affiliate coupon program",
-      "Live shopping campaign",
-      "Seasonal gift guide with creator picks",
-      "Product comparison series",
-    ],
-    creatorAngle: "From shopper to shopping content creator and affiliate seller.",
-    measurementFocus: "Click-through, coupon usage, affiliate conversion, content library size",
-  },
-  {
-    industry: "Healthcare & Wellness", emoji: "🌿", color: "mint",
-    levels: ["KOC Starter", "Trusted KOC", "Nano Creator"],
-    ideas: [
-      "Supplement KOC trial with check-in content",
-      "Fitness challenge (21-day creator journey)",
-      "Health check education series",
-      "Mental wellness storytelling",
-      "Nutrition education reels",
-      "Wellness seminar coverage",
-    ],
-    creatorAngle: "From wellness enthusiast to trusted health content creator.",
-    measurementFocus: "Check-in completion, saves, trust signals, education reach",
-  },
-  {
-    industry: "Finance & Insurance", emoji: "💳", color: "lilac",
-    levels: ["Nano Creator", "Micro-Influencer", "Influencer"],
-    ideas: [
-      "Anti-scam education campaign",
-      "Insurance literacy short videos",
-      "Credit card lifestyle campaign",
-      "Travel insurance checklist content",
-      "Financial wellness challenge",
-      "Plain-language finance FAQ series",
-    ],
-    creatorAngle: "From everyday consumer to finance literacy creator.",
-    measurementFocus: "Education completion, trust uplift, enquiry volume, content saves",
-  },
-];
+// ─── PLAYBOOKS (re-exported from academy.ts) ───
+export { playbooks } from "./academy";
+export type { Playbook } from "./academy";
 
 // ─── STORIES ───
 export type StoryCard = {
@@ -535,46 +441,9 @@ export const storyCards: StoryCard[] = [
   { name: "Moo Beef Café", industry: "F&B", activation: "Food creator tasting mission with menu features and visit reels.", color: "yellow" },
 ];
 
-// ─── ACADEMY TRACKS ───
-export type AcademyTrack = {
-  id: string;
-  title: string;
-  level: string;
-  duration: string;
-  color: string;
-  emoji: string;
-};
-
-export const academyTracks: AcademyTrack[] = [
-  { id: "a1", title: "KOC Starter Bootcamp", level: "L0–L1", duration: "4 modules", color: "pink", emoji: "🌱" },
-  { id: "a2", title: "Product Review Basics", level: "L1+", duration: "3 modules", color: "yellow", emoji: "⭐" },
-  { id: "a3", title: "Instagram Reels Growth", level: "L2+", duration: "5 modules", color: "mint", emoji: "📱" },
-  { id: "a4", title: "TikTok / Short-Form Hooks", level: "L2+", duration: "4 modules", color: "blue", emoji: "🎬" },
-  { id: "a5", title: "Xiaohongshu-Style Content", level: "L2+", duration: "3 modules", color: "pink", emoji: "📕" },
-  { id: "a6", title: "Affiliate Monetization", level: "L3+", duration: "4 modules", color: "lilac", emoji: "💰" },
-  { id: "a7", title: "Live Commerce Training", level: "L4+", duration: "5 modules", color: "mint", emoji: "🎙️" },
-  { id: "a8", title: "Brand Brief & Compliance", level: "L3+", duration: "2 modules", color: "yellow", emoji: "📋" },
-  { id: "a9", title: "Creator Finance Basics", level: "L3+", duration: "3 modules", color: "blue", emoji: "🏦" },
-];
-
-// ─── RESOURCES ───
-export type Resource = {
-  id: string;
-  title: string;
-  type: string;
-  emoji: string;
-};
-
-export const resources: Resource[] = [
-  { id: "r1", title: "Caption Templates", type: "Template pack", emoji: "📝" },
-  { id: "r2", title: "Hook Formulas", type: "Playbook", emoji: "🎣" },
-  { id: "r3", title: "Shot Lists", type: "Checklist", emoji: "📸" },
-  { id: "r4", title: "Media Kit Template", type: "Template", emoji: "📁" },
-  { id: "r5", title: "Rate Card Guide", type: "Guide", emoji: "💵" },
-  { id: "r6", title: "Disclosure Checklist", type: "Checklist", emoji: "✅" },
-  { id: "r7", title: "Affiliate Content Playbook", type: "Playbook", emoji: "📈" },
-  { id: "r8", title: "Live Shopping Rundown Template", type: "Template", emoji: "🎙️" },
-];
+// ─── ACADEMY TRACKS + RESOURCES (re-exported from academy.ts) ───
+export { academyTracks, resources } from "./academy";
+export type { AcademyTrack, Resource } from "./academy";
 
 // ─── BRAND CAMPAIGN BUILDER ───
 export const builderGoals = ["Awareness", "Trust & Reviews", "Traffic", "Sales", "Content Library", "Event Buzz"];
