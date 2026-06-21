@@ -1,4 +1,4 @@
-import { Home, Target, Gift, Wallet, Compass, type LucideIcon } from "lucide-react";
+import { Home, Target, Gift, Wallet, Compass, BookOpen, type LucideIcon } from "lucide-react";
 
 export type NavItem = { to: string; labelKey: string; icon: LucideIcon; exact: boolean };
 
@@ -8,4 +8,5 @@ export const NAV_ITEMS: NavItem[] = [
   { to: "/redemption", labelKey: "app.nav.redemption", icon: Gift, exact: false },
   { to: "/wallet", labelKey: "app.nav.wallet", icon: Wallet, exact: false },
   { to: "/explore", labelKey: "app.nav.explore", icon: Compass, exact: false },
+  { to: "/guide", labelKey: "app.nav.guide", icon: BookOpen, exact: false },
 ];
