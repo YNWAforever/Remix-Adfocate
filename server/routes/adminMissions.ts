@@ -130,5 +130,55 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
   return c.json({ mission: data });
 });
 
+adminMissionRoutes.post("/missions/:id/publish", async (c) => {
+  const id = c.req.param("id");
+  const svc = serviceClient();
+  const { data: m, error } = await svc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
+  if ((m as unknown as { status: string }).status !== "draft") return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
+
+  const { ok, errors } = validateMission(m as unknown as MissionInput, "publish", hkToday());
+  if (!ok) return c.json({ error: "發佈前請完成必填欄位", code: "validation", fields: errors }, 422);
+
+  const now = new Date().toISOString();
+  const { data, error: uErr } = await svc.from("missions")
+    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+  if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  return c.json({ mission: data });
+});
+
+adminMissionRoutes.post("/missions/:id/close", async (c) => {
+  const id = c.req.param("id");
+  const svc = serviceClient();
+  const { data: m, error } = await svc.from("missions").select("id, status").eq("id", id).maybeSingle();
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
+  if ((m as { status: string }).status !== "active") return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
+
+  const now = new Date().toISOString();
+  const { data, error: uErr } = await svc.from("missions")
+    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+  if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  return c.json({ mission: data });
+});
+
+adminMissionRoutes.delete("/missions/:id", async (c) => {
+  const id = c.req.param("id");
+  const svc = serviceClient();
+  const { data: m, error } = await svc.from("missions").select("id, status").eq("id", id).maybeSingle();
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
+  if ((m as { status: string }).status !== "draft") return c.json({ error: "只有草稿可以刪除", code: "invalid_transition" }, 409);
+
+  const { count, error: cErr } = await svc.from("mission_submissions").select("id", { count: "exact", head: true }).eq("mission_id", id);
+  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if ((count ?? 0) > 0) return c.json({ error: "已有報名紀錄的草稿不可刪除", code: "invalid_transition" }, 409);
+
+  const { error: dErr } = await svc.from("missions").delete().eq("id", id);
+  if (dErr) return c.json({ error: dErr.message, code: "db_error" }, 500);
+  return c.json({ ok: true });
+});
+
 // Re-export helpers for Tasks 8–9 to import from this file.
 export { hkToday, countEngaged, EDITABLE_COLS, MISSION_COLS };

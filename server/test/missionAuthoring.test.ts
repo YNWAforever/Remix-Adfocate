@@ -139,3 +139,83 @@ suite("B1 create + edit", () => {
     expect((await res.json()).mission.title).toBe("新標題");
   });
 });
+
+suite("B1 lifecycle + locks", () => {
+  const WS = "00000000-0000-0000-0000-0000000000aa";
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  async function createDraft(slug: string, over: Record<string, unknown> = {}) {
+    const res = await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({ workspace_id: WS, slug, title: "草稿", mission_type: "ugc", ...over }),
+    });
+    return (await res.json()).mission;
+  }
+  async function publish(id: string) {
+    return adminreq(`/admin/missions/${id}/publish`, { method: "POST" });
+  }
+
+  it("publish-missing-fields → 422 with fields; complete draft → 200 + visible to creators", async () => {
+    const bad = await createDraft("test-pub-bad"); // no reward/category/deadline
+    const r1 = await publish(bad.id);
+    expect(r1.status).toBe(422);
+    expect((await r1.json()).fields).toHaveProperty("category");
+
+    const good = await createDraft("test-pub-good", {
+      description: "做啲嘢", category: "美容", access_type: "open", required_level: "L0",
+      quota: 5, deadline: "2030-01-01", points_reward: 100,
+    });
+    expect((await publish(good.id)).status).toBe(200);
+
+    const koc = await makeCreator("b1pub@test.local", 0);
+    const { missions } = await (await koreq("/missions", koc.jwt)).json();
+    expect(missions.map((m: { slug: string }) => m.slug)).toContain("test-pub-good");
+  });
+
+  it("publish a non-draft → 409; close a non-active → 409; edit a closed → 409", async () => {
+    const m = await createDraft("test-lc", {
+      description: "x", category: "美容", access_type: "open", required_level: "L0", quota: 3, deadline: "2030-01-01", points_reward: 50,
+    });
+    await publish(m.id);
+    expect((await publish(m.id)).status).toBe(409); // already active
+    expect((await adminreq(`/admin/missions/${m.id}/close`, { method: "POST" })).status).toBe(200);
+    expect((await adminreq(`/admin/missions/${m.id}/close`, { method: "POST" })).status).toBe(409); // already closed
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ title: "x" }) })).status).toBe(409);
+  });
+
+  it("slug & mission_type frozen after publish → 422", async () => {
+    const m = await createDraft("test-frozen", {
+      description: "x", category: "美容", access_type: "open", required_level: "L0", quota: 3, deadline: "2030-01-01", points_reward: 50,
+    });
+    await publish(m.id);
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ slug: "test-frozen-2" }) })).status).toBe(422);
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ mission_type: "clipping" }) })).status).toBe(422);
+    // brief still editable
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ description: "新簡介" }) })).status).toBe(200);
+  });
+
+  it("economic fields lock after a creator joins; brief stays editable; quota cannot drop below filled", async () => {
+    const m = await createDraft("test-engage", {
+      description: "x", category: "美容", access_type: "open", required_level: "L0", quota: 5, deadline: "2030-01-01", points_reward: 50,
+    });
+    await publish(m.id);
+    const koc = await makeCreator("b1eng@test.local", 0);
+    expect((await koreq("/missions/test-engage/join", koc.jwt, { method: "POST" })).status).toBe(200);
+
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ points_reward: 999 }) })).status).toBe(422);
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ quota: 0 }) })).status).toBe(422);
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ title: "改個名" }) })).status).toBe(200);
+    expect((await adminreq(`/admin/missions/${m.id}`, { method: "PATCH", body: JSON.stringify({ quota: 9 }) })).status).toBe(200);
+  });
+
+  it("delete draft → ok; delete active → 409", async () => {
+    const d = await createDraft("test-del-draft");
+    expect((await adminreq(`/admin/missions/${d.id}`, { method: "DELETE" })).status).toBe(200);
+    const a = await createDraft("test-del-active", {
+      description: "x", category: "美容", access_type: "open", required_level: "L0", quota: 3, deadline: "2030-01-01", points_reward: 50,
+    });
+    await publish(a.id);
+    expect((await adminreq(`/admin/missions/${a.id}`, { method: "DELETE" })).status).toBe(409);
+  });
+});
