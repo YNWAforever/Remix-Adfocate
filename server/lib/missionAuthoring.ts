@@ -69,3 +69,46 @@ function sameNullable(a: unknown, b: unknown): boolean {
   if (typeof a === "number" || typeof b === "number") return Number(a) === Number(b);
   return a === b;
 }
+
+export function validateMission(
+  input: MissionInput,
+  mode: "draft" | "publish",
+  today?: string,
+): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  // Required in BOTH modes (mission_type is NOT NULL with no default in the DB).
+  if (!nonEmpty(input.workspace_id)) errors.workspace_id = "請選擇品牌 workspace";
+  if (!nonEmpty(input.title)) errors.title = "請輸入任務標題";
+  if (!isValidSlug(input.slug)) errors.slug = "Slug 須為小寫英數字與連字號（a-z0-9-）";
+  if (!input.mission_type || !MISSION_TYPES.includes(input.mission_type as MissionType)) {
+    errors.mission_type = "請選擇任務類型";
+  }
+
+  if (mode === "publish") {
+    if (!nonEmpty(input.description)) errors.description = "發佈前請輸入任務簡介";
+    if (!nonEmpty(input.category)) errors.category = "請選擇任務分類";
+    if (!input.access_type || !ACCESS_TYPES.includes(input.access_type as (typeof ACCESS_TYPES)[number])) {
+      errors.access_type = "請選擇參與方式";
+    }
+    if (!input.required_level || !MISSION_LEVELS.includes(input.required_level as (typeof MISSION_LEVELS)[number])) {
+      errors.required_level = "請選擇等級要求";
+    }
+    if (!Number.isInteger(input.quota) || num(input.quota) < 1) errors.quota = "名額須為 1 或以上";
+    if (!today) errors.deadline = "缺少截止日期基準";
+    else if (!input.deadline || input.deadline < today) errors.deadline = "截止日期須為今天或之後";
+
+    // Reward-by-type. Only performance_cpm differs; the rest are "points and/or cash".
+    if (input.mission_type === "performance_cpm") {
+      if (!(num(input.cpm_rate) > 0 && num(input.cpm_budget_pool) > 0)) {
+        errors.cpm_rate = "CPM 任務須設定 CPM 單價與預算池（均大於 0）";
+      }
+    } else if (!errors.mission_type) {
+      if (!(num(input.points_reward) > 0 || num(input.cash_reward) > 0)) {
+        errors.points_reward = "請設定積分或現金獎勵（至少一項大於 0）";
+      }
+    }
+  }
+
+  return { ok: Object.keys(errors).length === 0, errors };
+}
