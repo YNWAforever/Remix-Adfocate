@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "../app";
-import { cleanup, hasSupabaseEnv, makeStaff, makeUser, serviceForTests } from "./helpers";
+import { cleanup, hasSupabaseEnv, makeCreator, makeStaff, makeUser, serviceForTests } from "./helpers";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -59,5 +59,30 @@ suite("requireStaff gate + GET /admin/me", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.staff).toEqual({ userId: null, email: "shared-secret" });
+  });
+
+  it("audit attribution uses the staff identity, not client headers", async () => {
+    const staff = await makeStaff("staff-audit@test.local");
+    const creator = await makeCreator("audit-target@test.local");
+    // A CRM action (review) as the staff JWT — also send spoofed operator headers.
+    const res = await app.request(`/api/admin/creators/${creator.userId}/review`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${staff.jwt}`,
+        "x-operator-id": "SPOOFED",
+        "x-operator-label": "Spoofed",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: "approved", risk_level: "low" }),
+    });
+    expect(res.status).toBe(200);
+    const audit = await serviceForTests()
+      .from("operator_audit_events")
+      .select("operator_id, actor_label")
+      .eq("creator_id", creator.userId)
+      .limit(1)
+      .maybeSingle();
+    expect(audit.data?.operator_id).toBe(staff.userId);
+    expect(audit.data?.actor_label).toBe("staff-audit@test.local");
   });
 });
