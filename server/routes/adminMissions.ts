@@ -1,7 +1,11 @@
 // server/routes/adminMissions.ts
 import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
-import { type MissionInput, type MissionRecord, validateMission, validateEdit } from "../lib/missionAuthoring.js";
+import {
+  type MissionInput, type MissionRecord, validateMission, validateEdit,
+  normalizeBrief, nextDuplicateSlug,
+} from "../lib/missionAuthoring.js";
+import { normalizePortfolioUrl } from "../lib/profileMedia/service.js";
 
 /** Secret-gated mission authoring (Slice B1). Mounted under the /admin shared-secret gate;
  *  uses serviceClient (bypasses RLS). Real per-workspace role auth lands with the Brand
@@ -13,13 +17,24 @@ const ENGAGED_STATUSES = ["applied", "joined", "submitted", "under_review", "app
 const MISSION_COLS =
   "id, workspace_id, slug, title, description, category, mission_type, access_type, required_level, " +
   "points_reward, cash_reward, cpm_rate, cpm_budget_pool, deadline, quota, filled, status, " +
-  "deliverables, requirements, platforms, effort, created_at, updated_at, published_at, closed_at";
+  "deliverables, requirements, platforms, effort, " +
+  "target_audience, dos, donts, key_messages, reference_links, " +
+  "created_at, updated_at, published_at, closed_at";
 
 const EDITABLE_COLS: (keyof MissionInput)[] = [
   "slug", "title", "description", "category", "mission_type", "access_type", "required_level",
   "points_reward", "cash_reward", "cpm_rate", "cpm_budget_pool", "deadline", "quota",
   "deliverables", "requirements", "platforms", "effort",
+  "target_audience", "dos", "donts", "key_messages", "reference_links",
 ];
+
+// normalizeBrief() trims/dedupes brief fields; here we additionally canonicalize each
+// reference link to a full http(s) URL (validateMission/validateEdit already rejected
+// invalid ones, so this is non-throwing for anything that reaches insert/update).
+function normalizeBriefForWrite(input: MissionInput) {
+  const brief = normalizeBrief(input);
+  return { ...brief, reference_links: brief.reference_links.map((u) => normalizePortfolioUrl(u)) };
+}
 
 // Asia/Hong_Kong YYYY-MM-DD. The route (not the pure module) is where the clock lives.
 // en-CA formats as YYYY-MM-DD; HK = UTC+8, no DST.
@@ -87,6 +102,7 @@ adminMissionRoutes.post("/missions", async (c) => {
     deadline: body.deadline ?? null, quota: body.quota ?? 10,
     deliverables: body.deliverables ?? [], requirements: body.requirements ?? [], platforms: body.platforms ?? [],
     effort: body.effort ?? null, status: "draft",
+    ...normalizeBriefForWrite(body),
   };
   const { data, error } = await serviceClient().from("missions").insert(insert).select(MISSION_COLS).single();
   if (error) {
@@ -119,6 +135,12 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
 
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   for (const k of EDITABLE_COLS) if (Object.prototype.hasOwnProperty.call(patch, k)) updates[k] = patch[k];
+
+  // Normalize brief fields that were actually sent (don't resurrect absent ones).
+  const briefDefaults = normalizeBriefForWrite(patch);
+  for (const k of ["target_audience", "dos", "donts", "key_messages", "reference_links"] as const) {
+    if (Object.prototype.hasOwnProperty.call(patch, k)) updates[k] = briefDefaults[k];
+  }
 
   const { data, error } = await svc.from("missions").update(updates).eq("id", id).select(MISSION_COLS).single();
   if (error) {
@@ -178,6 +200,65 @@ adminMissionRoutes.delete("/missions/:id", async (c) => {
   const { error: dErr } = await svc.from("missions").delete().eq("id", id);
   if (dErr) return c.json({ error: dErr.message, code: "db_error" }, 500);
   return c.json({ ok: true });
+});
+
+adminMissionRoutes.post("/missions/:id/duplicate", async (c) => {
+  const id = c.req.param("id");
+  const svc = serviceClient();
+
+  // 1. Load source (any status).
+  const { data: src, error: sErr } = await svc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
+  if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
+  if (!src) return c.json({ error: "not_found", code: "not_found" }, 404);
+  const source = src as unknown as Record<string, unknown> & { workspace_id: string; slug: string };
+
+  // 2. Resolve target workspace.
+  const body = await c.req.json<{ workspace_id?: string }>().catch(() => ({}) as { workspace_id?: string });
+  const targetWs = body.workspace_id ?? source.workspace_id;
+  if (body.workspace_id) {
+    const { data: ws, error: wErr } = await svc.from("workspaces").select("id").eq("id", body.workspace_id).maybeSingle();
+    if (wErr) return c.json({ error: wErr.message, code: "db_error" }, 500);
+    if (!ws) return c.json({ error: "not_found", code: "not_found" }, 404);
+  }
+
+  // Pure draft-builder from a source row + chosen slug.
+  const draftFrom = (slug: string) => {
+    const base: Record<string, unknown> = {};
+    for (const k of EDITABLE_COLS) base[k] = source[k as string];
+    return {
+      ...base,
+      workspace_id: targetWs,
+      slug,
+      status: "draft",
+      filled: 0,
+      published_at: null,
+      closed_at: null,
+      created_by: null,
+    };
+  };
+
+  const fetchSlugs = async () => {
+    const { data, error } = await svc.from("missions").select("slug").eq("workspace_id", targetWs);
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r) => r.slug as string);
+  };
+
+  // 3-5. Compute slug, insert, retry once on a racy unique clash.
+  try {
+    let slug = nextDuplicateSlug(source.slug, await fetchSlugs());
+    let ins = await svc.from("missions").insert(draftFrom(slug)).select(MISSION_COLS).single();
+    if (ins.error?.code === "23505") {
+      slug = nextDuplicateSlug(source.slug, await fetchSlugs());
+      ins = await svc.from("missions").insert(draftFrom(slug)).select(MISSION_COLS).single();
+    }
+    if (ins.error?.code === "23505") {
+      return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "無法產生唯一 slug，請稍後再試" } }, 422);
+    }
+    if (ins.error) return c.json({ error: ins.error.message, code: "db_error" }, 500);
+    return c.json({ mission: ins.data }, 201);
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : "duplicate failed", code: "db_error" }, 500);
+  }
 });
 
 // Re-export helpers for Tasks 8–9 to import from this file.
