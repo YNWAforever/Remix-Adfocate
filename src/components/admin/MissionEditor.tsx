@@ -2,6 +2,11 @@
 import { useState } from "react";
 import { MISSION_CATEGORIES } from "@/lib/missionCategories";
 import { AdminRequestError, type AdminMission, type MissionDraftInput } from "@/lib/admin";
+import { ArrayInput } from "./ArrayInput";
+import { PlatformPicker } from "./PlatformPicker";
+import { MissionBrief } from "@/components/MissionBrief";
+import { MissionFacts } from "@/components/MissionFacts";
+import type { Mission } from "@/lib/queries/kocmax";
 
 const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
 const LEVELS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"] as const;
@@ -17,8 +22,6 @@ type Props = {
   saving?: boolean;
 };
 
-const toLines = (a?: string[] | null) => (a ?? []).join("\n");
-const fromLines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
 
 export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
@@ -38,11 +41,17 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
     cpm_budget_pool: initial?.cpm_budget_pool != null ? String(initial.cpm_budget_pool) : "",
     deadline: initial?.deadline ?? "",
     quota: String(initial?.quota ?? "10"),
-    deliverables: toLines(initial?.deliverables),
-    requirements: toLines(initial?.requirements),
-    platforms: toLines(initial?.platforms),
+    deliverables: initial?.deliverables ?? [],
+    requirements: initial?.requirements ?? [],
+    platforms: initial?.platforms ?? [],
     effort: initial?.effort ?? "",
+    target_audience: initial?.target_audience ?? "",
+    dos: initial?.dos ?? [],
+    donts: initial?.donts ?? [],
+    key_messages: initial?.key_messages ?? [],
+    reference_links: initial?.reference_links ?? [],
   });
+  const [preview, setPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
@@ -60,8 +69,10 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
       cpm_rate: isCpm ? numOrNull(f.cpm_rate) : null,
       cpm_budget_pool: isCpm ? numOrNull(f.cpm_budget_pool) : null,
       deadline: f.deadline || null, quota: Number(f.quota || 0),
-      deliverables: fromLines(f.deliverables), requirements: fromLines(f.requirements), platforms: fromLines(f.platforms),
+      deliverables: f.deliverables, requirements: f.requirements, platforms: f.platforms,
       effort: (f.effort || null) as MissionDraftInput["effort"],
+      target_audience: f.target_audience.trim() || null,
+      dos: f.dos, donts: f.donts, key_messages: f.key_messages, reference_links: f.reference_links,
     };
     try {
       await onSave(body);
@@ -75,6 +86,32 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
   const input = "h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50";
   const area = "w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm";
   const lockNote = (reason: string) => <span className="ml-2 text-xs text-[var(--color-soft-ink)]">{reason}</span>;
+
+  const previewMission: Mission = {
+    id: initial?.id ?? "preview",
+    slug: f.slug || "preview",
+    title: f.title || "（未命名任務）",
+    description: f.description || undefined,
+    category: f.category || undefined,
+    mission_type: f.mission_type,
+    access_type: f.access_type,
+    points_reward: Number(f.points_reward || 0),
+    cash_reward: numOrNull(f.cash_reward),
+    required_level: f.required_level,
+    deliverables: f.deliverables,
+    requirements: f.requirements,
+    platforms: f.platforms,
+    effort: (f.effort || null) as Mission["effort"],
+    target_audience: f.target_audience.trim() || null,
+    dos: f.dos,
+    donts: f.donts,
+    key_messages: f.key_messages,
+    reference_links: f.reference_links,
+    deadline: f.deadline || undefined,
+    quota: Number(f.quota || 0),
+    filled: initial?.filled ?? 0,
+    status: initial?.status ?? "draft",
+  };
 
   return (
     <div className="space-y-5">
@@ -153,21 +190,59 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         <label className="block text-sm">任務簡介
           <textarea aria-label="任務簡介" rows={4} className={area} value={f.description} onChange={set("description")} /><Err k="description" />
         </label>
-        <label className="block text-sm">交付項目（每行一項）
-          <textarea aria-label="交付項目" rows={3} className={area} value={f.deliverables} onChange={set("deliverables")} />
-        </label>
-        <label className="block text-sm">要求（每行一項）
-          <textarea aria-label="要求" rows={3} className={area} value={f.requirements} onChange={set("requirements")} />
-        </label>
-        <label className="block text-sm">平台（每行一個）
-          <textarea aria-label="平台" rows={2} className={area} value={f.platforms} onChange={set("platforms")} />
-        </label>
+        <p className="block text-sm font-bold">交付內容</p>
+        <ArrayInput value={f.deliverables} onChange={(v) => setF({ ...f, deliverables: v })} placeholder="新增交付項目…" />
+
+        <p className="block text-sm font-bold">注意事項 / 要求</p>
+        <ArrayInput value={f.requirements} onChange={(v) => setF({ ...f, requirements: v })} placeholder="新增要求…" />
+
+        <p className="block text-sm font-bold">發佈平台</p>
+        <PlatformPicker value={f.platforms} onChange={(v) => setF({ ...f, platforms: v })} />
+
+        <label className="block text-sm font-bold" htmlFor="m-audience">目標受眾</label>
+        <textarea
+          id="m-audience"
+          aria-label="目標受眾"
+          className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+          rows={2}
+          value={f.target_audience}
+          onChange={(e) => setF({ ...f, target_audience: e.target.value })}
+        />
+
+        <p className="block text-sm font-bold">建議做法（Do's）</p>
+        <ArrayInput value={f.dos} onChange={(v) => setF({ ...f, dos: v })} placeholder="新增建議做法…" />
+
+        <p className="block text-sm font-bold">避免事項（Don'ts）</p>
+        <ArrayInput value={f.donts} onChange={(v) => setF({ ...f, donts: v })} placeholder="新增避免事項…" />
+
+        <p className="block text-sm font-bold">重點訊息</p>
+        <ArrayInput value={f.key_messages} onChange={(v) => setF({ ...f, key_messages: v })} placeholder="重點訊息…" />
+
+        <p className="block text-sm font-bold">參考及素材連結</p>
+        <ArrayInput value={f.reference_links} onChange={(v) => setF({ ...f, reference_links: v })} placeholder="https://…" />
+
         <label className="block text-sm">投入程度
           <select aria-label="投入程度" className={input} value={f.effort} onChange={set("effort")}>
             {EFFORTS.map((e) => <option key={e} value={e}>{e === "" ? "— 不指定 —" : e}</option>)}
           </select><Err k="effort" />
         </label>
       </section>
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => setPreview((p) => !p)}
+          className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+        >
+          {preview ? "隱藏預覽" : "預覽"}
+        </button>
+        {preview && (
+          <div className="space-y-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
+            <MissionFacts mission={previewMission} />
+            <MissionBrief mission={previewMission} />
+          </div>
+        )}
+      </div>
 
       <button onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
         {mode === "create" ? "儲存草稿" : "儲存變更"}
