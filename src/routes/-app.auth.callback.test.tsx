@@ -8,7 +8,7 @@ vi.mock("@tanstack/react-router", async () => {
   return {
     ...actual,
     useNavigate: () => hoisted.navigate,
-    Link: ({ children }: { children?: React.ReactNode }) => <a>{children}</a>,
+    Link: ({ children }: { children?: React.ReactNode }) => <span>{children}</span>,
     createFileRoute: () => (opts: unknown) => opts,
   };
 });

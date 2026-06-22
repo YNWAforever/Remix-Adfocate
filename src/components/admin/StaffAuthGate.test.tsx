@@ -19,7 +19,6 @@ vi.mock("@/lib/supabase", () => ({
 vi.mock("@/lib/i18n", () => ({ useI18n: () => ({ t: (k: string) => k }) }));
 
 import { StaffAuthGate } from "./StaffAuthGate";
-import { supabase } from "@/lib/supabase";
 
 beforeEach(() => {
   hoisted.session = null;
