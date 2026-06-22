@@ -5,17 +5,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({
   fetchWorkspaces: vi.fn(), fetchAdminMissions: vi.fn(), publishMission: vi.fn(), closeMission: vi.fn(), deleteMissionDraft: vi.fn(),
+  duplicateMission: vi.fn(), navigate: vi.fn(),
 }));
 vi.mock("@tanstack/react-router", async (i) => ({
   ...(await i<object>()),
   createFileRoute: () => (o: unknown) => o,
-  useNavigate: () => vi.fn(),
+  useNavigate: () => h.navigate,
   Link: ({ children, to }: { children?: React.ReactNode; to?: string }) => <a href={to}>{children}</a>,
 }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
 vi.mock("@/lib/admin", () => ({
   fetchWorkspaces: h.fetchWorkspaces, fetchAdminMissions: h.fetchAdminMissions,
   publishMission: h.publishMission, closeMission: h.closeMission, deleteMissionDraft: h.deleteMissionDraft,
+  duplicateMission: h.duplicateMission,
   adminMissionKeys: { workspaces: ["w"], list: (a: string, b: string) => ["m", a, b], detail: (id: string) => ["d", id] },
   AdminAuthError: class extends Error {}, AdminRequestError: class extends Error {},
 }));
@@ -40,5 +42,20 @@ describe("admin missions list", () => {
     expect(screen.getByText("草稿")).toBeInTheDocument();
     fireEvent.click(screen.getByText("發佈"));
     await waitFor(() => expect(h.publishMission).toHaveBeenCalledWith("m1"));
+  });
+
+  it("duplicates a mission and navigates to the new draft's editor", async () => {
+    h.fetchWorkspaces.mockResolvedValue({ workspaces: [{ id: "w1", slug: "demo", name: "Demo" }] });
+    h.fetchAdminMissions.mockResolvedValue({ missions: [
+      { id: "m1", slug: "ugc-1", title: "M1", status: "active", workspace_id: "w1", engaged: false },
+    ] });
+    h.duplicateMission.mockResolvedValue({ mission: { id: "m2" } });
+    r();
+    await screen.findByText("M1");
+    fireEvent.click(screen.getByRole("button", { name: /複製/ }));
+    await waitFor(() => expect(h.duplicateMission).toHaveBeenCalledWith("m1"));
+    await waitFor(() => expect(h.navigate).toHaveBeenCalledWith(
+      expect.objectContaining({ to: "/admin/missions/$missionId", params: { missionId: "m2" } }),
+    ));
   });
 });

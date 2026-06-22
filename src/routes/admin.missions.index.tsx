@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AdminAuthError, AdminRequestError, adminMissionKeys, closeMission, deleteMissionDraft,
-  fetchAdminMissions, fetchWorkspaces, publishMission, type AdminMissionRow,
+  duplicateMission, fetchAdminMissions, fetchWorkspaces, publishMission, type AdminMissionRow,
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 
@@ -44,6 +44,14 @@ function MissionsList() {
   const publish = useMutation({ mutationFn: (id: string) => publishMission(id), onSuccess: invalidate, onError: onErr });
   const close = useMutation({ mutationFn: (id: string) => closeMission(id), onSuccess: invalidate, onError: onErr });
   const remove = useMutation({ mutationFn: (id: string) => deleteMissionDraft(id), onSuccess: invalidate, onError: onErr });
+  const duplicate = useMutation({
+    mutationFn: (id: string) => duplicateMission(id),
+    onSuccess: (res) => {
+      invalidate();
+      navigate({ to: "/admin/missions/$missionId", params: { missionId: res.mission.id } });
+    },
+    onError: onErr,
+  });
 
   if (ws.data && ws.data.workspaces.length === 0) {
     return <p className="text-sm text-[var(--color-soft-ink)]">尚未有任何品牌 workspace。</p>;
@@ -81,6 +89,7 @@ function MissionsList() {
               {m.status === "draft" ? <button disabled={publish.isPending} onClick={() => publish.mutate(m.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
               {m.status === "active" ? <button disabled={close.isPending} onClick={() => { if (window.confirm("關閉此任務？將停止新報名。")) close.mutate(m.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
               {m.status === "draft" ? <button disabled={remove.isPending} onClick={() => { if (window.confirm("刪除此草稿？")) remove.mutate(m.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">刪除</button> : null}
+              <button disabled={duplicate.isPending} onClick={() => duplicate.mutate(m.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">複製</button>
             </div>
           </div>
         ))}
