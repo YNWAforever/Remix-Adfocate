@@ -8,6 +8,8 @@ export type Mission = {
   cash_reward?: number | null; required_level?: string;
   deliverables?: string[]; requirements?: string[]; platforms?: string[];
   effort?: "low" | "medium" | "high" | null; brand?: string | null;
+  target_audience?: string | null;
+  dos?: string[]; donts?: string[]; key_messages?: string[]; reference_links?: string[];
   deadline?: string; quota: number; filled: number; status: string;
   my_status?: SubmissionStatus | null;
 };
