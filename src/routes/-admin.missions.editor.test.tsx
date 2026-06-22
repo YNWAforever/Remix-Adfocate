@@ -11,7 +11,9 @@ const active: AdminMission = {
   id: "m1", workspace_id: "w1", slug: "test-x", title: "任務", description: "d", category: "美容",
   mission_type: "ugc", access_type: "open", required_level: "L0", points_reward: 100, cash_reward: null,
   cpm_rate: null, cpm_budget_pool: null, deadline: "2030-01-01", quota: 10, filled: 3, status: "active",
-  deliverables: [], requirements: [], platforms: [], effort: null, updated_at: "", published_at: "", closed_at: null,
+  deliverables: [], requirements: [], platforms: [], effort: null,
+  target_audience: null, dos: [], donts: [], key_messages: [], reference_links: [],
+  updated_at: "", published_at: "", closed_at: null,
 };
 
 describe("MissionEditor", () => {

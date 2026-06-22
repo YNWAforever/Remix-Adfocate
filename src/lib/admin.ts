@@ -382,6 +382,11 @@ export type AdminMission = {
   requirements: string[];
   platforms: string[];
   effort: "low" | "medium" | "high" | null;
+  target_audience: string | null;
+  dos: string[];
+  donts: string[];
+  key_messages: string[];
+  reference_links: string[];
   updated_at: string;
   published_at: string | null;
   closed_at: string | null;
@@ -407,6 +412,11 @@ export type MissionDraftInput = {
   requirements?: string[];
   platforms?: string[];
   effort?: "low" | "medium" | "high" | null;
+  target_audience?: string | null;
+  dos?: string[];
+  donts?: string[];
+  key_messages?: string[];
+  reference_links?: string[];
 };
 export type MissionPatch = Partial<MissionDraftInput>;
 
@@ -442,4 +452,11 @@ export function closeMission(id: string) {
 }
 export function deleteMissionDraft(id: string) {
   return adminFetch<{ ok: true }>(`/admin/missions/${id}`, { method: "DELETE" });
+}
+
+export function duplicateMission(id: string, body?: { workspace_id?: string }) {
+  return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}/duplicate`, {
+    method: "POST",
+    body: JSON.stringify(body ?? {}),
+  });
 }
