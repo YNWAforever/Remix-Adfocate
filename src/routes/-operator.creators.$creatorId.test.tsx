@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
-  secret: "s" as string | null,
   fetchCreatorDetail: vi.fn(),
   postCreatorNote: vi.fn(),
   postCreatorReview: vi.fn(),
@@ -19,14 +18,12 @@ vi.mock("@tanstack/react-router", async () => {
 
 vi.mock("@/lib/admin", async () => ({
   ...(await vi.importActual<object>("@/lib/admin")),
-  getAdminSecret: () => hoisted.secret,
-  setAdminSecret: (s: string) => { hoisted.secret = s; },
-  clearAdminSecret: () => { hoisted.secret = null; },
   fetchCreatorDetail: hoisted.fetchCreatorDetail,
   postCreatorNote: hoisted.postCreatorNote,
   postCreatorReview: hoisted.postCreatorReview,
   AdminAuthError: class AdminAuthError extends Error {},
 }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 
 import { Route } from "./operator.creators.$creatorId";
 
@@ -42,7 +39,6 @@ function renderRoute() {
 describe("operator creator detail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    hoisted.secret = "s";
     vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-1" } as never);
     hoisted.fetchCreatorDetail.mockResolvedValue({
       creator: {

@@ -8,7 +8,7 @@ vi.mock("@/lib/admin", () => ({
   adminMissionKeys: { workspaces: ["admin-workspaces"] },
   AdminAuthError: class AdminAuthError extends Error {},
 }));
-vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 
 import { AdminWorkspaceProvider, useAdminWorkspace } from "./AdminWorkspaceContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
