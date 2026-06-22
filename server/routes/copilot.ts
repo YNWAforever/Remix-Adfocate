@@ -24,7 +24,7 @@ copilotRoutes.post("/hook-generator", async (c) => {
     : "instagram";
 
   const [{ data: mission, error: mErr }, { data: creator, error: cErr }] = await Promise.all([
-    supabase.from("missions").select("title, description, category").eq("workspace_id", workspaceId).eq("slug", missionSlug).single(),
+    supabase.from("missions").select("title, description, category").eq("workspace_id", workspaceId).eq("slug", missionSlug).eq("status", "active").single(),
     supabase.from("creators").select("categories").eq("id", userId).single(),
   ]);
   if (mErr) {

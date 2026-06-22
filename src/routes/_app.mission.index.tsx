@@ -6,11 +6,12 @@ import { MissionCard } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
 import { categoryLabelKey } from "@/lib/labels";
+import { MISSION_CATEGORIES, ALL_CATEGORY } from "@/lib/missionCategories";
 
 export const Route = createFileRoute("/_app/mission/")({ component: Missions });
 
-// Category values are sent to the API as-is; "全部" is the UI-only sentinel for "no filter".
-const CATEGORIES = ["全部", "社交", "美容", "餐飲", "生活"] as const;
+// Category values are sent to the API as-is; ALL_CATEGORY is the UI-only sentinel for "no filter".
+const CATEGORIES = [ALL_CATEGORY, ...MISSION_CATEGORIES] as const;
 
 function Missions() {
   const [category, setCategory] = useState<string>("全部");

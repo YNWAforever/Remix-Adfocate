@@ -26,6 +26,7 @@ missionRoutes.get("/", async (c) => {
     .from("missions")
     .select("id, slug, title, description, category, mission_type, access_type, points_reward, deadline, quota, filled, status")
     .eq("workspace_id", c.get("workspaceId"))
+    .eq("status", "active")            // B1: never surface draft/closed to creators
     .order("created_at", { ascending: false });
   if (category && category !== "全部") q = q.eq("category", category);
   const { data, error } = await q;
@@ -65,6 +66,7 @@ missionRoutes.get("/:slug", async (c) => {
     .select("*, workspaces(name)")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
+    .eq("status", "active")            // B1: draft/closed → 404 for creators
     .maybeSingle();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   if (!data) return c.json({ error: "Not found", code: "not_found" }, 404);
@@ -81,6 +83,7 @@ missionRoutes.post("/:slug/join", async (c) => {
     .select("id")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
+    .eq("status", "active")            // B1: draft/closed → 404 before the RPC round-trip
     .maybeSingle();
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);

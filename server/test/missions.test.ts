@@ -57,11 +57,13 @@ suite("mission join", () => {
     expect((await res.json()).code).toBe("not_open");
   });
 
-  it("rejects join on a closed mission", async () => {
+  it("rejects join on a closed mission with 404 (status guard fires before RPC)", async () => {
     await makeMission({ slug: "test-join-closed", status: "closed" });
     const res = await req("/missions/test-join-closed/join", koc.jwt, { method: "POST" });
-    expect(res.status).toBe(409);
-    expect((await res.json()).code).toBe("closed");
+    // B1 guard: join lookup filters .eq("status","active"), so closed missions are
+    // not_found at the DB level — consistent with GET /:slug and missionAuthoring tests.
+    expect(res.status).toBe(404);
+    expect((await res.json()).code).toBe("not_found");
   });
 
   it("404s an unknown mission slug", async () => {
