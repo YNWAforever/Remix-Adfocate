@@ -15,8 +15,39 @@ function toHkE164(raw: string): string {
   return `+852${digits}`;
 }
 
+/** Branded full-bleed shell: dot canvas + centered pastel card. */
+function AuthShell({ children }: { children: React.ReactNode }) {
+  const { lang, setLang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10">
+      <div
+        aria-hidden
+        className="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
+      />
+      <div className="relative z-10 w-full max-w-md">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]">
+            Adfocate<span className="text-[var(--color-magenta)]">.</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setLang(lang === "en" ? "zh" : "en")}
+            className="tag-mono"
+            aria-label={tx("Switch language", "切換語言")}
+          >
+            EN · 繁
+          </button>
+        </div>
+        <div className="pastel-card p-6 sm:p-8">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 function Login() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
 
   const [showSecondary, setShowSecondary] = useState(false);
@@ -56,21 +87,29 @@ function Login() {
   // Until WhatsApp OTP is live, email magic-link is the primary (working) method.
   if (!WHATSAPP_LOGIN) {
     return (
-      <div className="mx-auto max-w-sm space-y-4 p-8">
-        <h1 className="font-display text-2xl font-bold">{t("app.login.title")}</h1>
-        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHint")}</p>
-        <EmailAndGoogle />
-      </div>
+      <AuthShell>
+        <span className="sticker">{tx("CREATOR ACCESS", "創作者登入")}</span>
+        <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
+          {t("app.login.title")}
+        </h1>
+        <p className="mt-2 text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHint")}</p>
+        <div className="mt-5">
+          <EmailAndGoogle />
+        </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-4 p-8">
-      <h1 className="font-display text-2xl font-bold">{t("app.login.title")}</h1>
-      {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
+    <AuthShell>
+      <span className="sticker">{tx("CREATOR ACCESS", "創作者登入")}</span>
+      <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
+        {t("app.login.title")}
+      </h1>
+      {error && <p className="mt-3 text-sm text-[var(--color-magenta)]">{error}</p>}
 
       {stage === "phone" ? (
-        <form onSubmit={sendOtp} className="space-y-3">
+        <form onSubmit={sendOtp} className="mt-4 space-y-3">
           <p className="text-sm text-[var(--color-soft-ink)]">{t("app.login.whatsappHint")}</p>
           <div className="flex items-center gap-2">
             <span className="rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 font-mono text-sm">+852</span>
@@ -89,13 +128,16 @@ function Login() {
           <button
             type="submit"
             disabled={busy}
-            className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+            className="btn-primary w-full disabled:opacity-50"
           >
             {busy ? t("app.login.sending") : t("app.login.sendOtpCta")}
           </button>
+          <p className="pt-1 text-center font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]">
+            {tx("WhatsApp · No password · Hong Kong", "WhatsApp · 免密碼 · 香港")}
+          </p>
         </form>
       ) : (
-        <form onSubmit={verify} className="space-y-3">
+        <form onSubmit={verify} className="mt-4 space-y-3">
           <p className="text-sm text-[var(--color-soft-ink)]">
             <BoldValue template={t("app.login.otpSentTo")} value={toHkE164(phone)} />
           </p>
@@ -107,27 +149,27 @@ function Login() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder={t("app.login.codePlaceholder")}
-            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 text-center font-mono text-lg tracking-widest"
+            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 text-center font-mono text-2xl tracking-[0.4em]"
             aria-label={t("app.login.codeAriaLabel")}
           />
           <button
             type="submit"
             disabled={busy}
-            className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+            className="btn-primary w-full disabled:opacity-50"
           >
             {busy ? t("common.signingIn") : t("app.login.verifyCta")}
           </button>
           <button
             type="button"
             onClick={() => { setStage("phone"); setCode(""); setError(null); }}
-            className="w-full text-center text-sm text-[var(--color-soft-ink)]"
+            className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)]"
           >
             {t("app.login.changePhone")}
           </button>
         </form>
       )}
 
-      <div className="pt-2">
+      <div className="pt-4">
         <button
           type="button"
           onClick={() => setShowSecondary((s) => !s)}
@@ -137,7 +179,7 @@ function Login() {
         </button>
         {showSecondary && <EmailAndGoogle />}
       </div>
-    </div>
+    </AuthShell>
   );
 }
 
@@ -190,7 +232,7 @@ function EmailAndGoogle() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+            className="btn-ink w-full disabled:opacity-50"
           >
             {busy ? t("app.login.sending") : t("app.login.emailCta")}
           </button>

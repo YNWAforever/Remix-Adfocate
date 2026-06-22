@@ -21,6 +21,7 @@
   --color-magenta-pop: #FF3D7F; /* decorative-only, never as text on light */
   --color-violet:  #7C5CFF;
   --color-cyan:    #00E5FF;
+  --color-lemon:   #FAFFC2;   /* soft-acid wash for callout cards (onboarding primer) */
 
   /* Legacy brand-* names remapped (so every existing className still themes) */
   --color-rose: #D81B60;

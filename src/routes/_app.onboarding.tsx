@@ -20,7 +20,8 @@ const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", 
 const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
 
 function Wizard() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const status = useOnboardingStatus();
@@ -85,123 +86,150 @@ function Wizard() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-5 p-6">
-      <ProgressBar value={step - 1} max={4} />
-      {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
+    <div className="relative flex min-h-screen items-center justify-center bg-[var(--color-paper)] px-4 py-10">
+      <div className="dot-pattern pointer-events-none absolute inset-0 -z-10 opacity-[0.18]" aria-hidden />
 
-      {step === 1 && (
-        <section className="space-y-5">
-          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.primerTitle")}</h1>
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.primerBody")}</p>
-          <div className="rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-lemon)] p-4">
-            <p className="text-sm font-medium leading-relaxed">{t("app.onboarding.primerLadder")}</p>
+      <div className="pastel-card w-full max-w-md rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-6">
+        <div className="mb-5 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-display text-lg font-bold text-[var(--color-ink)]">
+              Adfocate<span className="text-[var(--color-magenta)]">.</span>
+            </span>
+            <span className="tag-mono">{tx(`STEP ${step} / 5`, `第 ${step} / 5 步`)}</span>
           </div>
-          <button
-            type="button"
-            onClick={primerNext}
-            className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-          >
-            {t("app.onboarding.primerCta")}
-          </button>
-          <Link to="/guide" className="block text-center text-sm underline">
-            {t("app.onboarding.primerVisitGuide")}
-          </Link>
-        </section>
-      )}
+          <ProgressBar value={step - 1} max={4} />
+        </div>
 
-      {step === 2 && (
-        <section className="space-y-4">
-          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.categoriesTitle")}</h1>
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.categoriesHint")}</p>
-          <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
-          <div className="flex gap-3">
+        {error && <p className="mb-4 text-sm text-[var(--color-magenta)]">{error}</p>}
+
+        {step === 1 && (
+          <section className="space-y-5">
+            <span className="sticker">{tx("WELCOME", "歡迎加入")}</span>
+            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.primerTitle")}</h1>
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.primerBody")}</p>
+            <div className="rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-lemon)] p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+              <div className="mb-3 flex items-center gap-2" aria-hidden>
+                <span className="level-pill level-pill-l1">L1</span>
+                <span className="text-[var(--color-soft-ink)]">→</span>
+                <span className="level-pill level-pill-l3">L3</span>
+                <span className="text-[var(--color-soft-ink)]">→</span>
+                <span className="level-pill level-pill-l6">L6</span>
+              </div>
+              <p className="text-sm font-medium leading-relaxed text-[var(--color-ink)]">{t("app.onboarding.primerLadder")}</p>
+            </div>
             <button
               type="button"
-              onClick={() => categoriesNext([])}
-              className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold"
+              onClick={primerNext}
+              className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
             >
-              {t("app.onboarding.skip")}
+              {t("app.onboarding.primerCta")}
             </button>
-            <button
-              type="button"
-              onClick={() => categoriesNext(categories)}
-              className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-            >
-              {t("app.onboarding.next")}
-            </button>
-          </div>
-        </section>
-      )}
+            <Link to="/guide" className="block text-center text-sm text-[var(--color-soft-ink)] underline">
+              {t("app.onboarding.primerVisitGuide")}
+            </Link>
+          </section>
+        )}
 
-      {step === 3 && (
-        <section className="space-y-4">
-          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.platformsTitle")}</h1>
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.platformsHint")}</p>
-          <p className="text-xs text-[var(--color-soft-ink)]">{t("app.onboarding.verifyLater")}</p>
-          <div className="space-y-2">
-            {PLATFORMS.map((p) => (
-              <input
-                key={p}
-                value={handles[p] ?? ""}
-                onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
-                aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
-                className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-              />
-            ))}
-          </div>
-          <div className="flex gap-3">
-            <button type="button" onClick={platformsNext} className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold">{t("app.onboarding.skip")}</button>
-            <button type="button" onClick={platformsNext} className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
-          </div>
-        </section>
-      )}
-
-      {step === 4 && (
-        <section className="space-y-4">
-          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.missionsTitle")}</h1>
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.missionsHint")}</p>
-          <div className="space-y-3">
-            {(recommended.data ?? []).map((m) => (
-              <MissionCard key={m.id} title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
-            ))}
-          </div>
-          <button type="button" onClick={missionNext} className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
-        </section>
-      )}
-
-      {step === 5 && (
-        <section className="space-y-4 text-center">
-          <h1 className="font-display text-2xl font-bold">{t("app.onboarding.rewardTitle")}</h1>
-          {reward ? (
-            <div className="space-y-3">
-              <p className="font-display text-4xl font-bold text-[var(--color-acid)]">{t("app.onboarding.bonusPoints")}</p>
-              <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralLabel")}</p>
-              <p className="font-mono text-xl font-bold tracking-widest">{reward.referral_code}</p>
-              <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralNote")}</p>
+        {step === 2 && (
+          <section className="space-y-4">
+            <span className="sticker">{tx("INTERESTS", "興趣")}</span>
+            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.categoriesTitle")}</h1>
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.categoriesHint")}</p>
+            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
+            <div className="flex gap-3">
               <button
                 type="button"
-                onClick={() => navigate({ to: "/home" })}
-                className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
+                onClick={() => categoriesNext([])}
+                className="btn-ink flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold text-[var(--color-ink)]"
               >
-                {t("app.onboarding.goHome")}
+                {t("app.onboarding.skip")}
               </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.claimHint")}</p>
               <button
                 type="button"
-                onClick={claim}
-                disabled={complete.isPending}
-                className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+                onClick={() => categoriesNext(categories)}
+                className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
               >
-                {complete.isPending ? t("common.processing") : t("app.onboarding.claimCta")}
+                {t("app.onboarding.next")}
               </button>
             </div>
-          )}
-        </section>
-      )}
+          </section>
+        )}
+
+        {step === 3 && (
+          <section className="space-y-4">
+            <span className="sticker">{tx("PLATFORMS", "平台")}</span>
+            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.platformsTitle")}</h1>
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.platformsHint")}</p>
+            <p className="text-xs text-[var(--color-soft-ink)]">{t("app.onboarding.verifyLater")}</p>
+            <div className="space-y-2">
+              {PLATFORMS.map((p) => (
+                <input
+                  key={p}
+                  value={handles[p] ?? ""}
+                  onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
+                  placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
+                  aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
+                  className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
+                />
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button type="button" onClick={platformsNext} className="btn-ink flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.skip")}</button>
+              <button type="button" onClick={platformsNext} className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
+            </div>
+          </section>
+        )}
+
+        {step === 4 && (
+          <section className="space-y-4">
+            <span className="sticker">{tx("FOR YOU", "為你推薦")}</span>
+            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.missionsTitle")}</h1>
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.missionsHint")}</p>
+            <div className="space-y-3">
+              {(recommended.data ?? []).map((m) => (
+                <MissionCard key={m.id} title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
+              ))}
+            </div>
+            <button type="button" onClick={missionNext} className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
+          </section>
+        )}
+
+        {step === 5 && (
+          <section className="space-y-4 text-center">
+            <span className="sticker">{tx("YOU'RE IN", "完成")}</span>
+            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.rewardTitle")}</h1>
+            {reward ? (
+              <div className="space-y-3">
+                <p className="text-outline-ink font-display text-5xl font-bold">{t("app.onboarding.bonusPoints")}</p>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralLabel")}</p>
+                <div className="rounded-xl border-2 border-[var(--color-ink)] bg-white p-4 shadow-[6px_6px_0_0_var(--color-violet)]">
+                  <p className="font-mono text-xl font-bold tracking-widest text-[var(--color-ink)]">{reward.referral_code}</p>
+                </div>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralNote")}</p>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/home" })}
+                  className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
+                >
+                  {t("app.onboarding.goHome")}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.claimHint")}</p>
+                <button
+                  type="button"
+                  onClick={claim}
+                  disabled={complete.isPending}
+                  className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+                >
+                  {complete.isPending ? t("common.processing") : t("app.onboarding.claimCta")}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

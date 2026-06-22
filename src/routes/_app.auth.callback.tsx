@@ -7,7 +7,8 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/_app/auth/callback")({ component: Callback });
 
 function Callback() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -36,16 +37,39 @@ function Callback() {
   }, [navigate]);
   if (failed) {
     return (
-      <div className="mx-auto max-w-sm space-y-4 p-8 text-center">
-        <p className="text-sm text-[var(--color-magenta)]">{t("app.auth.callbackError")}</p>
-        <Link
-          to="/login"
-          className="btn-primary inline-flex rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-6 py-2 font-heading font-bold text-[var(--color-ink)]"
-        >
-          {t("app.auth.backToLogin")}
-        </Link>
+      <div className="relative flex min-h-screen items-center justify-center px-6">
+        <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
+        <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
+          <span className="sticker">ADFOCATE</span>
+          <p className="font-display text-lg font-bold text-[var(--color-ink)]">
+            {t("app.auth.callbackError")}
+          </p>
+          <p className="text-sm text-[var(--color-magenta)]">
+            {tx("Something went sideways", "登入連線出現問題")}
+          </p>
+          <Link to="/login" className="btn-primary inline-flex">
+            {t("app.auth.backToLogin")}
+          </Link>
+        </div>
       </div>
     );
   }
-  return <div className="p-8">{t("common.signingIn")}</div>;
+  return (
+    <div className="relative flex min-h-screen items-center justify-center px-6">
+      <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
+      <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
+        <span className="sticker">ADFOCATE</span>
+        <div
+          className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent"
+          aria-hidden="true"
+        />
+        <p className="font-display text-lg font-bold text-[var(--color-ink)]">
+          {t("common.signingIn")}
+        </p>
+        <p className="tag-mono text-[var(--color-soft-ink)]">
+          {tx("Securing your session", "正在建立連線")}
+        </p>
+      </div>
+    </div>
+  );
 }
