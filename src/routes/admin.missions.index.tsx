@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AdminAuthError, AdminRequestError, adminMissionKeys, closeMission, deleteMissionDraft,
-  duplicateMission, fetchAdminMissions, fetchWorkspaces, publishMission, type AdminMissionRow,
+  duplicateMission, fetchAdminMissions, publishMission, type AdminMissionRow,
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 
 export const Route = createFileRoute("/admin/missions/")({ component: MissionsList });
 
@@ -17,24 +18,18 @@ function MissionsList() {
   const { secret, reportAuthError } = useAdminAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [workspace, setWorkspace] = useState("");
+  const { workspace } = useAdminWorkspace();
   const [status, setStatus] = useState("");
-
-  const ws = useQuery({ queryKey: adminMissionKeys.workspaces, queryFn: fetchWorkspaces, enabled: !!secret, retry: false });
-  // Default to the first workspace once loaded.
-  useEffect(() => {
-    if (!workspace && ws.data?.workspaces.length) setWorkspace(ws.data.workspaces[0].id);
-  }, [ws.data, workspace]);
 
   const list = useQuery({
     queryKey: adminMissionKeys.list(workspace, status),
     queryFn: () => fetchAdminMissions(workspace, status),
-    enabled: !!secret && !!workspace,
+    enabled: !!secret,
     retry: false,
   });
   useEffect(() => {
-    for (const e of [ws.error, list.error]) if (e instanceof AdminAuthError) reportAuthError(e);
-  }, [ws.error, list.error, reportAuthError]);
+    if (list.error instanceof AdminAuthError) reportAuthError(list.error);
+  }, [list.error, reportAuthError]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["admin-missions"] });
   const onErr = (e: unknown) => {
@@ -53,16 +48,9 @@ function MissionsList() {
     onError: onErr,
   });
 
-  if (ws.data && ws.data.workspaces.length === 0) {
-    return <p className="text-sm text-[var(--color-soft-ink)]">尚未有任何品牌 workspace。</p>;
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <select aria-label="品牌" value={workspace} onChange={(e) => setWorkspace(e.target.value)} className="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm">
-          {(ws.data?.workspaces ?? []).map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
-        </select>
         <select aria-label="狀態" value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm">
           {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
         </select>

@@ -14,6 +14,7 @@ vi.mock("@tanstack/react-router", async (i) => ({
   Link: ({ children, to }: { children?: React.ReactNode; to?: string }) => <a href={to}>{children}</a>,
 }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
 vi.mock("@/lib/admin", () => ({
   fetchWorkspaces: h.fetchWorkspaces, fetchAdminMissions: h.fetchAdminMissions,
   publishMission: h.publishMission, closeMission: h.closeMission, deleteMissionDraft: h.deleteMissionDraft,
@@ -31,8 +32,7 @@ function r() {
 
 describe("admin missions list", () => {
   beforeEach(() => vi.clearAllMocks());
-  it("lists missions for the default workspace and shows a Publish action on drafts", async () => {
-    h.fetchWorkspaces.mockResolvedValue({ workspaces: [{ id: "w1", slug: "demo", name: "Demo" }] });
+  it("lists missions for the active workspace and shows a Publish action on drafts", async () => {
     h.fetchAdminMissions.mockResolvedValue({
       missions: [{ id: "m1", title: "草稿任務", slug: "test-x", mission_type: "ugc", status: "draft", engaged: false, points_reward: 100, cash_reward: null, filled: 0, quota: 10, deadline: null }],
     });
@@ -45,7 +45,6 @@ describe("admin missions list", () => {
   });
 
   it("duplicates a mission and navigates to the new draft's editor", async () => {
-    h.fetchWorkspaces.mockResolvedValue({ workspaces: [{ id: "w1", slug: "demo", name: "Demo" }] });
     h.fetchAdminMissions.mockResolvedValue({ missions: [
       { id: "m1", slug: "ugc-1", title: "M1", status: "active", workspace_id: "w1", engaged: false },
     ] });
