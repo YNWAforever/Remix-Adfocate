@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, Star, Globe, Award } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Sparkles, TrendingUp, Globe, Award } from "lucide-react";
 import { legacyStoryCards, localized } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -8,44 +8,47 @@ export const Route = createFileRoute("/_site/stories")({
   component: StoriesPage,
 });
 
+// Map each legacy story card's `color` to art-direction tokens reusing the
+// existing design-system classes. pink/lilac have no .game-card-* hover
+// variant, so they fall back to a colored top accent border.
 const colorAccentMap: Record<
   string,
-  { dot: string; pillBg: string; pillText: string; pillBorder: string; decorColor: string }
+  { card: string; topBorder: string; tagBg: string; tagText: string; dot: string }
 > = {
   pink: {
-    dot: "bg-brand-pink",
-    pillBg: "bg-brand-pink/10",
-    pillText: "text-brand-pink",
-    pillBorder: "border-brand-pink/20",
-    decorColor: "rgba(255,181,194,0.06)",
+    card: "game-card",
+    topBorder: "border-t-[6px] border-t-[var(--color-magenta)]",
+    tagBg: "bg-[var(--color-magenta)]",
+    tagText: "text-white",
+    dot: "bg-[var(--color-magenta)]",
   },
   yellow: {
-    dot: "bg-brand-yellow",
-    pillBg: "bg-brand-yellow/10",
-    pillText: "text-yellow-700",
-    pillBorder: "border-brand-yellow/20",
-    decorColor: "rgba(254,240,138,0.1)",
+    card: "game-card game-card-yellow",
+    topBorder: "border-t-[6px] border-t-[var(--color-acid)]",
+    tagBg: "bg-[var(--color-acid)]",
+    tagText: "text-[var(--color-ink)]",
+    dot: "bg-[var(--color-acid)]",
   },
   mint: {
-    dot: "bg-brand-mint",
-    pillBg: "bg-brand-mint/10",
-    pillText: "text-mint-700",
-    pillBorder: "border-brand-mint/20",
-    decorColor: "rgba(167,243,208,0.08)",
+    card: "game-card game-card-mint",
+    topBorder: "border-t-[6px] border-t-[var(--color-cyan)]",
+    tagBg: "bg-[var(--color-cyan)]",
+    tagText: "text-[var(--color-ink)]",
+    dot: "bg-[var(--color-cyan)]",
   },
   blue: {
-    dot: "bg-brand-blue",
-    pillBg: "bg-brand-blue/10",
-    pillText: "text-brand-blue",
-    pillBorder: "border-brand-blue/20",
-    decorColor: "rgba(186,230,253,0.06)",
+    card: "game-card game-card-blue",
+    topBorder: "border-t-[6px] border-t-[var(--color-violet)]",
+    tagBg: "bg-[var(--color-violet)]",
+    tagText: "text-white",
+    dot: "bg-[var(--color-violet)]",
   },
   lilac: {
-    dot: "bg-brand-lilac",
-    pillBg: "bg-brand-lilac/10",
-    pillText: "text-purple-600",
-    pillBorder: "border-brand-lilac/20",
-    decorColor: "rgba(196,181,253,0.08)",
+    card: "game-card",
+    topBorder: "border-t-[6px] border-t-[var(--color-violet)]",
+    tagBg: "bg-[var(--color-violet)]",
+    tagText: "text-white",
+    dot: "bg-[var(--color-violet)]",
   },
 };
 
@@ -54,125 +57,119 @@ function StoriesPage() {
     <div>
       <HeroSection />
       <StoriesGridSection />
-      <BottomCTASection />
+      <DualCTASection />
     </div>
   );
 }
 
+/* §26 — HERO: centered statement, metric-led, paper + dot-grid */
 function HeroSection() {
-  return (
-    <section className="relative overflow-hidden pt-8 pb-12 sm:pt-20 sm:pb-24">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,181,194,0.15) 0%, transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 -left-32 w-[400px] h-[400px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(196,181,253,0.12) 0%, transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute top-1/2 left-1/3 w-[350px] h-[350px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(254,240,138,0.1) 0%, transparent 60%)",
-          }}
-        />
-      </div>
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <span className="inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-brand-pink border-2 border-brand-pink/30 rounded-full px-3 py-1.5 bg-white mb-6">
-            Stories
+  return (
+    <section className="relative overflow-hidden">
+      <div className="absolute inset-0 dot-pattern opacity-[0.5]" aria-hidden="true" />
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-14 pb-16 sm:pt-24 sm:pb-24 text-center">
+        <span className="sticker mb-6">{tx("Stories", "案例")}</span>
+
+        <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-[var(--color-ink)] leading-[1.02] tracking-tight">
+          {tx("Results talk", "成績說話")}
+          <span className="text-[var(--color-magenta)]">.</span>
+        </h1>
+
+        <p className="mt-6 text-base sm:text-lg text-[var(--color-soft-ink)] max-w-2xl mx-auto leading-relaxed">
+          {/* Preserved original hero supporting copy */}
+          {tx(
+            "A snapshot of brand work across beauty, travel, retail, community, and F&B — powered by Adfocate creator activations.",
+            "橫跨美妝、旅遊、零售、社群及餐飲嘅品牌案例一覽 — 全部由 Adfocate 創作者激活推動。",
+          )}
+        </p>
+
+        {/* metric-led proof row */}
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <span className="metric-badge metric-up">
+            <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
+            {legacyStoryCards.length} {tx("brand cases", "個品牌案例")}
           </span>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground max-w-3xl leading-[1.05] mb-5">
-            Success Stories<span className="text-brand-pink">.</span>
-          </h1>
-          <p className="text-soft-ink text-sm sm:text-base max-w-xl mb-6 leading-relaxed">
-            A snapshot of brand work across beauty, travel, retail, community, and F&B — powered by
-            Adfocate creator activations.
-          </p>
+          <span className="tag-mono">{tx("5 industries", "5 大行業")}</span>
+          <span className="tag-mono">{tx("HK · since 2019", "香港 · 由 2019")}</span>
         </div>
       </div>
     </section>
   );
 }
 
+/* §27 — STORY CARDS: mosaic / masonry grid, color-mapped accents,
+   one oversized stroked numeral as the page's second-read moment */
 function StoriesGridSection() {
   const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
-      <div className="space-y-8 sm:space-y-12">
-        {legacyStoryCards.map((story, i) => {
-          const clr = colorAccentMap[story.color] ?? colorAccentMap.pink;
-          const isLeft = i % 2 === 0;
+    <section className="relative bg-[var(--color-paper)]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        {/* Section header with the SECOND-READ MOMENT: oversized stroked count */}
+        <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
+          <div className="max-w-xl">
+            <span className="tag-mono mb-3">{tx("Portfolio", "作品集")}</span>
+            <h2 className="font-display text-3xl sm:text-4xl text-[var(--color-ink)] leading-tight">
+              {tx("The proof, card by card", "一張一張，講成績")}
+            </h2>
+          </div>
+          <div className="relative leading-none" aria-hidden="true">
+            <span className="font-display text-7xl sm:text-8xl lg:text-9xl text-outline-ink select-none">
+              {String(legacyStoryCards.length).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
 
-          return (
-            <div
-              key={story.id}
-              className={cn(
-                "flex flex-col gap-6 items-center",
-                isLeft ? "lg:flex-row" : "lg:flex-row-reverse",
-                "stagger-" + Math.min(i + 1, 8),
-                "animate-slide-up",
-              )}
-            >
-              {/* Decorative element */}
-              <div className="hidden lg:flex items-center justify-center shrink-0 relative">
-                <div
-                  className="h-28 w-28 rounded-full flex items-center justify-center relative"
-                  style={{
-                    background: `radial-gradient(circle, ${clr.decorColor} 40%, transparent 80%)`,
-                  }}
-                >
+        {/* Masonry-style mosaic via CSS columns so cards keep varied heights */}
+        <div className="[column-gap:1.5rem] sm:columns-2 lg:columns-3">
+          {legacyStoryCards.map((story, i) => {
+            const clr = colorAccentMap[story.color] ?? colorAccentMap.pink;
+
+            return (
+              <article
+                key={story.id}
+                className={cn(
+                  "mb-6 break-inside-avoid bg-white p-5 sm:p-6",
+                  clr.card,
+                  clr.topBorder,
+                  "stagger-" + Math.min(i + 1, 8),
+                  "animate-slide-up",
+                )}
+              >
+                <div className="flex items-center gap-2.5 mb-4">
                   <span
                     className={cn(
-                      "h-16 w-16 rounded-full flex items-center justify-center",
-                      clr.pillBg,
-                    )}
-                  >
-                    <Star className={cn("h-7 w-7", clr.pillText)} />
-                  </span>
-                </div>
-              </div>
-
-              {/* Story card */}
-              <article className="game-card border-2 border-gray-200 bg-white p-5 sm:p-7 flex-1 max-w-2xl">
-                <div className="flex items-center gap-3 mb-4">
-                  <span
-                    className={cn(
-                      "text-[10px] font-mono font-bold tracking-[0.1em] uppercase px-3 py-1 rounded-full border",
-                      clr.pillBg,
-                      clr.pillText,
-                      clr.pillBorder,
+                      "text-[10px] font-mono font-bold tracking-[0.12em] uppercase px-2.5 py-1 rounded-full border-2 border-[var(--color-ink)]",
+                      clr.tagBg,
+                      clr.tagText,
                     )}
                   >
                     {localized(story.industry, lang)}
                   </span>
-                  <span className={cn("h-2.5 w-2.5 rounded-full", clr.dot)} />
-                  <span className="text-[10px] font-mono text-soft-ink">
-                    {localized({ en: "Portfolio proof", zh: "過往案例" }, lang)}
+                  <span className={cn("h-2.5 w-2.5 rounded-full", clr.dot)} aria-hidden="true" />
+                  <span className="text-[10px] font-mono text-[var(--color-soft-ink)]">
+                    {tx("Portfolio proof", "過往案例")}
                   </span>
                 </div>
 
-                <h2 className="font-display text-2xl sm:text-3xl text-foreground mb-3">
+                <h3 className="font-display text-2xl sm:text-[1.75rem] text-[var(--color-ink)] leading-tight mb-3">
                   {story.client}
-                </h2>
-                <p className="text-sm text-soft-ink leading-relaxed mb-4">
+                </h3>
+                <p className="text-sm text-[var(--color-soft-ink)] leading-relaxed mb-4">
                   {localized(story.activation, lang)}
                 </p>
 
-                <div className="grid gap-2 sm:grid-cols-2 text-[11px] text-soft-ink font-mono">
-                  <span className="inline-flex items-center gap-1">
-                    <Globe className="h-3.5 w-3.5" />
+                <div className="grid gap-2 text-[11px] text-[var(--color-soft-ink)] font-mono mb-4">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5" aria-hidden="true" />
                     {story.year ? story.year : localized(story.product, lang)}
                   </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Award className="h-3.5 w-3.5" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <Award className="h-3.5 w-3.5" aria-hidden="true" />
                     {story.service ? localized(story.service, lang) : localized(story.proof, lang)}
                   </span>
                 </div>
@@ -181,64 +178,62 @@ function StoriesGridSection() {
                   href={story.sourceUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className={cn(
-                    "mt-4 inline-flex items-center gap-1.5 text-sm font-heading font-bold hover:gap-2 transition-all",
-                    clr.pillText,
-                  )}
+                  className="inline-flex items-center gap-1.5 text-sm font-heading font-bold text-[var(--color-ink)] hover:gap-2.5 transition-all"
                 >
-                  {localized({ en: "Reference", zh: "參考來源" }, lang)}{" "}
-                  <ArrowRight className="h-4 w-4" />
+                  {tx("Reference", "參考來源")}
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                 </a>
               </article>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
 
-function BottomCTASection() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
-      <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 lg:p-14 bg-gradient-to-br from-charcoal via-ink to-charcoal shadow-lg">
-        <div
-          className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,181,194,0.2) 0%, transparent 60%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(167,243,208,0.15) 0%, transparent 60%)",
-          }}
-        />
+/* §28 — DUAL CTA: color-blocked diptych (creators / brands) */
+function DualCTASection() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
-        <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] items-center">
-          <div>
-            <h2 className="font-display text-2xl sm:text-3xl text-white leading-tight">
-              Want to be our next success story?
-            </h2>
-            <p className="text-gray-300 mt-2">
-              Join Adfocate as a creator or brand and start building verified creator activations
-              that drive real results.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2 h-13 px-7 rounded-full bg-primary text-primary-foreground font-bold text-sm hover:bg-rose-hover transition-colors"
-            >
-              <Sparkles className="h-4 w-4" /> Start Your Story
-            </Link>
-            <Link
-              to="/creators"
-              className="inline-flex items-center justify-center h-13 px-7 rounded-full bg-white text-foreground font-bold text-sm border-2 border-white hover:bg-gray-100 transition-colors"
-            >
-              Join as Creator
-            </Link>
-          </div>
+  return (
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+      <div className="grid gap-0 overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] shadow-[6px_6px_0_0_var(--color-ink)] md:grid-cols-2">
+        {/* Creators — acid field */}
+        <div className="relative bg-[var(--color-acid)] p-8 sm:p-10 lg:p-12 md:border-r-2 md:border-[var(--color-ink)]">
+          <span className="tag-mono mb-4">{tx("For creators", "創作者")}</span>
+          <h2 className="font-display text-3xl sm:text-4xl text-[var(--color-ink)] leading-tight">
+            {tx("Be the next story", "成為下一個案例")}
+          </h2>
+          <p className="mt-3 text-[var(--color-ink)]/80 text-sm sm:text-base leading-relaxed max-w-sm">
+            {tx(
+              "Join KOCmax, level up, and turn your content into verified, paid activations.",
+              "加入 KOCmax，逐級升級，將你嘅內容變成有紀錄、有收入嘅激活。",
+            )}
+          </p>
+          <Link to="/creators" className="btn-ink mt-7 inline-flex items-center gap-2">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            {tx("Join as creator", "以創作者身份加入")}
+          </Link>
+        </div>
+
+        {/* Brands — violet field */}
+        <div className="relative bg-[var(--color-violet)] p-8 sm:p-10 lg:p-12">
+          <span className="tag-mono mb-4">{tx("For brands", "品牌")}</span>
+          <h2 className="font-display text-3xl sm:text-4xl text-white leading-tight">
+            {tx("Want results like these?", "想要同樣嘅成績？")}
+          </h2>
+          <p className="mt-3 text-white/85 text-sm sm:text-base leading-relaxed max-w-sm">
+            {tx(
+              "Brief us your goal and we'll match the right creators to drive real activation.",
+              "話我哋知你嘅目標，我哋為你配對啱嘅創作者，帶動真正激活。",
+            )}
+          </p>
+          <Link to="/contact" className="btn-primary mt-7 inline-flex items-center gap-2">
+            {tx("Start your story", "開始你嘅故事")}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </section>
