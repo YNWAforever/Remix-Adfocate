@@ -40,4 +40,10 @@ describe("auth callback", () => {
     renderCallback("?code=abc");
     await waitFor(() => expect(hoisted.finishAuth).toHaveBeenCalled());
   });
+
+  it("does not skip bootstrap for a non-admin next that merely starts with 'admin' text", async () => {
+    renderCallback("?next=/adminfoo&code=abc");
+    await waitFor(() => expect(hoisted.finishAuth).toHaveBeenCalled());
+    expect(hoisted.navigate).not.toHaveBeenCalledWith({ to: "/adminfoo" });
+  });
 });

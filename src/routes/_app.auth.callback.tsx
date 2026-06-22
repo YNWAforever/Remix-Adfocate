@@ -20,7 +20,10 @@ function Callback() {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) throw error;
         const next = params.get("next");
-        if (next && next.startsWith("/admin")) {
+        // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
+        // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
+        // from accidentally skipping bootstrap on a crafted next param.
+        if (next && /^\/admin(\/|$)/.test(next)) {
           // Staff Google login — do NOT run creator bootstrap (which would create a creator row).
           navigate({ to: next });
           return;

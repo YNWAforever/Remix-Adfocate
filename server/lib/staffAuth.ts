@@ -21,8 +21,9 @@ export function parseAllowlist(raw: string | undefined): Set<string> {
 
 /**
  * Resolve a Supabase user to a staff identity:
- *  1. active staff_users row → return it;
- *  2. else email ∈ STAFF_EMAIL_ALLOWLIST → upsert + return (first-login auto-promotion);
+ *  1. existing row → active row returns it; a deactivated (active=false) row returns null
+ *     (durable revocation — never auto-reactivated, even if still allow-listed);
+ *  2. else (no row) email ∈ STAFF_EMAIL_ALLOWLIST → upsert + return (first-login auto-promotion);
  *  3. else null.
  * Thin DB glue; throws on a DB error so the caller can surface 500.
  */
@@ -35,10 +36,12 @@ export async function resolveStaff(
     .from("staff_users")
     .select("user_id, email, active, created_at")
     .eq("user_id", userId)
-    .eq("active", true)
     .maybeSingle();
   if (error) throw error;
-  if (existing) return existing as StaffUser;
+  // A row that exists is authoritative: an explicitly deactivated (active=false) row is a
+  // durable revocation and must NOT be auto-reactivated, even if the email is still in the
+  // allowlist. Only a brand-new user (no row at all) is auto-promoted below.
+  if (existing) return (existing as StaffUser).active ? (existing as StaffUser) : null;
 
   const lower = email?.toLowerCase() ?? "";
   if (lower && parseAllowlist(process.env.STAFF_EMAIL_ALLOWLIST).has(lower)) {

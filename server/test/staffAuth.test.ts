@@ -69,4 +69,11 @@ describe("resolveStaff", () => {
     const out = await resolveStaff(stubClient({ existing: null }), "u3", null);
     expect(out).toBeNull();
   });
+
+  it("does not auto-reactivate an explicitly deactivated row, even if allow-listed", async () => {
+    process.env[ALLOW] = "a@fimmick.com";
+    const out = await resolveStaff(stubClient({ existing: { ...ROW, active: false } }), "u1", "a@fimmick.com");
+    expect(out).toBeNull();
+    delete process.env[ALLOW];
+  });
 });
