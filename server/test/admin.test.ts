@@ -267,3 +267,31 @@ suite("B2: workspace-scoped review", () => {
     expect(ok.status).toBe(200);
   });
 });
+
+suite("B2: mission activity drill-in", () => {
+  afterAll(cleanup);
+
+  it("returns the mission + bucketed activity", async () => {
+    const koc = await makeCreator("activity@test.local", 0);
+    await makeMission({ slug: "test-activity", points_reward: 200, quota: 5 });
+    const list = await (await adminreq(`/admin/missions?workspace=00000000-0000-0000-0000-0000000000aa`)).json();
+    const m = (list.missions as Array<{ id: string; slug: string }>).find((x) => x.slug === "test-activity")!;
+
+    await koreq("/missions/test-activity/join", koc.jwt, { method: "POST" });
+    await koreq("/missions/test-activity/submit", koc.jwt, {
+      method: "PUT", body: JSON.stringify({ content_urls: ["https://ig.com/p/x"] }),
+    });
+
+    const res = await adminreq(`/admin/missions/${m.id}/activity`);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.mission.slug).toBe("test-activity");
+    expect(body.submissions.length).toBe(1);
+    expect(body.fill.quota).toBe(5);
+  });
+
+  it("404s for a missing mission", async () => {
+    const res = await adminreq("/admin/missions/00000000-0000-0000-0000-0000000000ff/activity");
+    expect(res.status).toBe(404);
+  });
+});

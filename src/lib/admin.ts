@@ -433,6 +433,7 @@ export const adminMissionKeys = {
   workspaces: ["admin-workspaces"] as const,
   list: (workspace: string, status: string) => ["admin-missions", workspace, status] as const,
   detail: (id: string) => ["admin-mission", id] as const,
+  activity: (id: string) => ["admin-mission-activity", id] as const,
 };
 
 export function fetchWorkspaces() {
@@ -446,6 +447,32 @@ export function fetchAdminMissions(workspace: string, status: string) {
 }
 export function fetchAdminMission(id: string) {
   return adminFetch<{ mission: AdminMission }>(`/admin/missions/${id}`);
+}
+
+export type MissionActivityRow = {
+  id: string;
+  mission_id?: string;
+  creator_id?: string;
+  status: string;
+  content_urls: string[] | null;
+  submitted_at: string | null;
+  created_at: string;
+  creators: { display_name: string };
+  missions: { slug: string; title: string; points_reward: number };
+  creator_review: { status: AdminReviewStatus; risk_level: AdminRiskLevel };
+  mission_shortlist: { status: string } | null;
+};
+
+export type MissionActivity = {
+  mission: AdminMission;
+  applicants: MissionActivityRow[];
+  submissions: MissionActivityRow[];
+  engaged: MissionActivityRow[];
+  fill: { filled: number; quota: number };
+};
+
+export function fetchMissionActivity(id: string) {
+  return adminFetch<MissionActivity>(`/admin/missions/${id}/activity`);
 }
 export function createMission(body: MissionDraftInput) {
   return adminFetch<{ mission: AdminMission }>("/admin/missions", { method: "POST", body: JSON.stringify(body) });

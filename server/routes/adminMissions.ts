@@ -6,6 +6,8 @@ import {
   normalizeBrief, nextDuplicateSlug,
 } from "../lib/missionAuthoring.js";
 import { normalizePortfolioUrl } from "../lib/profileMedia/service.js";
+import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
+import { shapeMissionActivity, type MissionActivityRow } from "../lib/missionActivity.js";
 
 /** Secret-gated mission authoring (Slice B1). Mounted under the /admin shared-secret gate;
  *  uses serviceClient (bypasses RLS). Real per-workspace role auth lands with the Brand
@@ -258,6 +260,31 @@ adminMissionRoutes.post("/missions/:id/duplicate", async (c) => {
     return c.json({ mission: ins.data }, 201);
   } catch (err) {
     return c.json({ error: err instanceof Error ? err.message : "duplicate failed", code: "db_error" }, 500);
+  }
+});
+
+adminMissionRoutes.get("/missions/:id/activity", async (c) => {
+  const id = c.req.param("id");
+  const svc = serviceClient();
+
+  const { data: mission, error: mErr } = await svc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
+  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
+  if (!mission) return c.json({ error: "not_found", code: "not_found" }, 404);
+
+  const { data: rows, error: rErr } = await svc
+    .from("mission_submissions")
+    .select("id, mission_id, status, content_urls, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+    .eq("mission_id", id)
+    .order("created_at", { ascending: true });
+  if (rErr) return c.json({ error: rErr.message, code: "db_error" }, 500);
+
+  try {
+    const enriched = (await enrichAdminMissionRows(svc, rows ?? [])) as unknown as MissionActivityRow[];
+    const m = mission as unknown as { filled: number | null; quota: number | null };
+    return c.json({ mission, ...shapeMissionActivity(m, enriched) });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to enrich activity";
+    return c.json({ error: message, code: "db_error" }, 500);
   }
 });
 
