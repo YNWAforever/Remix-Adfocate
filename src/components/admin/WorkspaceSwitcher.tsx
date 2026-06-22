@@ -5,12 +5,12 @@ import { useAdminAuth } from "./AdminAuthContext";
 import { useAdminWorkspace } from "./AdminWorkspaceContext";
 
 export function WorkspaceSwitcher() {
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace, setWorkspace } = useAdminWorkspace();
   const ws = useQuery({
     queryKey: adminMissionKeys.workspaces,
     queryFn: fetchWorkspaces,
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

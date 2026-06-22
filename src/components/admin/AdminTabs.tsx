@@ -10,7 +10,7 @@ const base = "inline-flex h-9 items-center gap-2 rounded-full border-2 border-[v
 
 export function AdminTabs() {
   const { t } = useI18n();
-  const { secret } = useAdminAuth();
+  const { authed } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
 
   const tabs = useMemo(
@@ -28,13 +28,13 @@ export function AdminTabs() {
   const apps = useQuery({
     queryKey: adminKeys.applications(workspace),
     queryFn: () => fetchApplications(workspace),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   const subs = useQuery({
     queryKey: adminKeys.submissions("submitted", workspace),
     queryFn: () => fetchSubmissions("submitted", workspace),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   const counts: Record<string, number | undefined> = {

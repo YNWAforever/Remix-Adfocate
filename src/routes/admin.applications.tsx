@@ -18,13 +18,13 @@ export const Route = createFileRoute("/admin/applications")({ component: Applica
 
 function ApplicationsTab() {
   const { t } = useI18n();
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
   const apps = useQuery({
     queryKey: adminKeys.applications(workspace),
     queryFn: () => fetchApplications(workspace),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

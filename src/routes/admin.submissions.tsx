@@ -17,13 +17,13 @@ export const Route = createFileRoute("/admin/submissions")({ component: Submissi
 
 function SubmissionsTab() {
   const { t } = useI18n();
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
   const subs = useQuery({
     queryKey: adminKeys.submissions("submitted", workspace),
     queryFn: () => fetchSubmissions("submitted", workspace),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

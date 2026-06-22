@@ -11,12 +11,12 @@ export const Route = createFileRoute("/admin/missions/$missionId")({ component: 
 
 function EditMission() {
   const { missionId } = useParams({ from: "/admin/missions/$missionId" });
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const navigate = useNavigate();
   const q = useQuery({
     queryKey: adminMissionKeys.detail(missionId),
     queryFn: () => fetchAdminMission(missionId),
-    enabled: !!secret, retry: false,
+    enabled: authed, retry: false,
   });
   useEffect(() => { if (q.error instanceof AdminAuthError) reportAuthError(q.error); }, [q.error, reportAuthError]);
   const update = useMutation({
