@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
   AdminAuthError,
   fetchCreatorReviewQueue,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/admin/creators")({
 function CreatorsTab() {
   const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
   const [risk, setRisk] = useState<AdminRiskLevel | "all">("all");
@@ -29,7 +31,7 @@ function CreatorsTab() {
   const { mission_id: missionId } = Route.useSearch();
 
   const creators = useQuery({
-    queryKey: ["admin-creators-review", { q, status, risk, sort, missionId }],
+    queryKey: ["admin-creators-review", { q, status, risk, sort, missionId, workspace }],
     enabled: !!secret,
     retry: false,
     queryFn: () =>
@@ -39,6 +41,7 @@ function CreatorsTab() {
         riskLevel: risk === "all" ? undefined : risk,
         sort,
         missionId,
+        workspace: workspace || undefined,
         page: 1,
         pageSize: 25,
       }),

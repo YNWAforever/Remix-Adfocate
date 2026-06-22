@@ -90,6 +90,7 @@ export type CreatorReviewQueueFilters = {
   status?: AdminReviewStatus;
   riskLevel?: AdminRiskLevel;
   missionId?: string;
+  workspace?: string;
   q?: string;
   page?: number;
   pageSize?: number;
@@ -194,6 +195,7 @@ function queryString(filters: CreatorReviewQueueFilters): string {
   if (filters.status) qs.set("status", filters.status);
   if (filters.riskLevel) qs.set("risk_level", filters.riskLevel);
   if (filters.missionId) qs.set("mission_id", filters.missionId);
+  if (filters.workspace) qs.set("workspace", filters.workspace);
   if (filters.q) qs.set("q", filters.q);
   qs.set("page", String(filters.page ?? 1));
   qs.set("page_size", String(filters.pageSize ?? 25));
@@ -273,10 +275,14 @@ export function patchMissionShortlist(
 // ---- Unified /admin dashboard: shared query keys, types, fetchers ----------
 
 export const adminKeys = {
-  applications: ["admin-applications"] as const,
-  submissions: (status: string) => ["admin-submissions", status] as const,
-  engaged: ["admin-engaged"] as const,
+  applications: (workspace: string) => ["admin-applications", workspace] as const,
+  submissions: (status: string, workspace: string) => ["admin-submissions", status, workspace] as const,
+  engaged: (workspace: string) => ["admin-engaged", workspace] as const,
 };
+
+function wsq(workspace?: string) {
+  return workspace ? `workspace=${encodeURIComponent(workspace)}` : "";
+}
 
 export type Application = {
   id: string;
@@ -320,8 +326,9 @@ export type EngagedCreator = {
   activeMissions: EngagedActiveMission[];
 };
 
-export function fetchApplications() {
-  return adminFetch<{ applications: Application[] }>("/admin/applications");
+export function fetchApplications(workspace = "") {
+  const qs = wsq(workspace);
+  return adminFetch<{ applications: Application[] }>(`/admin/applications${qs ? `?${qs}` : ""}`);
 }
 
 export function acceptApplication(id: string) {
@@ -335,8 +342,9 @@ export function declineApplication(id: string, notes?: string) {
   });
 }
 
-export function fetchSubmissions(status = "submitted") {
-  return adminFetch<{ submissions: Submission[] }>(`/admin/submissions?status=${encodeURIComponent(status)}`);
+export function fetchSubmissions(status = "submitted", workspace = "") {
+  const parts = [`status=${encodeURIComponent(status)}`, wsq(workspace)].filter(Boolean);
+  return adminFetch<{ submissions: Submission[] }>(`/admin/submissions?${parts.join("&")}`);
 }
 
 export function approveSubmission(id: string, body: { notes?: string; rating?: number }) {
@@ -353,8 +361,9 @@ export function rejectSubmission(id: string, notes?: string) {
   });
 }
 
-export function fetchEngagedUsers() {
-  return adminFetch<{ creators: EngagedCreator[] }>("/admin/engaged");
+export function fetchEngagedUsers(workspace = "") {
+  const qs = wsq(workspace);
+  return adminFetch<{ creators: EngagedCreator[] }>(`/admin/engaged${qs ? `?${qs}` : ""}`);
 }
 
 // ---- B1 mission authoring -------------------------------------------------
