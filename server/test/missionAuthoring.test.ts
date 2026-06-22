@@ -219,3 +219,77 @@ suite("B1 lifecycle + locks", () => {
     expect((await adminreq(`/admin/missions/${a.id}`, { method: "DELETE" })).status).toBe(409);
   });
 });
+
+suite("B2: brief fields round-trip + duplicate", () => {
+  const WORKSPACE_ID = "00000000-0000-0000-0000-0000000000aa";
+  afterAll(cleanup);
+
+  it("creates a draft with brief fields and reads them back", async () => {
+    const create = await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: WORKSPACE_ID, slug: "test-b2-brief", title: "Brief", mission_type: "ugc",
+        target_audience: "  20-30 城市女性 ",
+        dos: [" 真實分享 ", ""],
+        donts: ["唔可以講粗口"],
+        key_messages: ["新精華", " 快速見效 "],
+        reference_links: [" example.com/post ", ""],
+      }),
+    });
+    expect(create.status).toBe(201);
+    const { mission } = await create.json();
+    expect(mission.target_audience).toBe("20-30 城市女性");
+    expect(mission.dos).toEqual(["真實分享"]);
+    expect(mission.key_messages).toEqual(["新精華", "快速見效"]);
+    expect(mission.reference_links).toEqual(["https://example.com/post"]);
+  });
+
+  it("rejects a bad reference link with 422 + fields.reference_links", async () => {
+    const res = await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: WORKSPACE_ID, slug: "test-b2-badlink", title: "X", mission_type: "ugc",
+        reference_links: ["not a url"],
+      }),
+    });
+    expect(res.status).toBe(422);
+    const body = await res.json();
+    expect(body.code).toBe("validation");
+    expect(body.fields.reference_links).toBeTruthy();
+  });
+
+  it("duplicates a mission into a -copy draft, copying brief fields", async () => {
+    const src = await (await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: WORKSPACE_ID, slug: "test-b2-dup", title: "Dup me", mission_type: "ugc",
+        key_messages: ["copy this"],
+      }),
+    })).json();
+
+    const dup = await adminreq(`/admin/missions/${src.mission.id}/duplicate`, { method: "POST" });
+    expect(dup.status).toBe(201);
+    const { mission } = await dup.json();
+    expect(mission.id).not.toBe(src.mission.id);
+    expect(mission.slug).toBe("test-b2-dup-copy");
+    expect(mission.status).toBe("draft");
+    expect(mission.filled).toBe(0);
+    expect(mission.key_messages).toEqual(["copy this"]);
+  });
+
+  it("suffixes -copy-2 when -copy already exists", async () => {
+    const src = await (await adminreq("/admin/missions", {
+      method: "POST",
+      body: JSON.stringify({ workspace_id: WORKSPACE_ID, slug: "test-b2-dup2", title: "D2", mission_type: "ugc" }),
+    })).json();
+    await adminreq(`/admin/missions/${src.mission.id}/duplicate`, { method: "POST" }); // -copy
+    const dup2 = await adminreq(`/admin/missions/${src.mission.id}/duplicate`, { method: "POST" }); // -copy-2
+    expect((await dup2.json()).mission.slug).toBe("test-b2-dup2-copy-2");
+  });
+
+  it("404s when duplicating a missing mission", async () => {
+    const res = await adminreq("/admin/missions/00000000-0000-0000-0000-0000000000ff/duplicate", { method: "POST" });
+    expect(res.status).toBe(404);
+    expect((await res.json()).code).toBe("not_found");
+  });
+});

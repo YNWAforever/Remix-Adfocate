@@ -10,6 +10,7 @@ import {
   type Application,
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { ReviewBadge, ShortlistBadge } from "@/components/operator/OperatorBadges";
 import { useI18n } from "@/lib/i18n";
 
@@ -18,8 +19,14 @@ export const Route = createFileRoute("/admin/applications")({ component: Applica
 function ApplicationsTab() {
   const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
-  const apps = useQuery({ queryKey: adminKeys.applications, queryFn: fetchApplications, enabled: !!secret, retry: false });
+  const apps = useQuery({
+    queryKey: adminKeys.applications(workspace),
+    queryFn: () => fetchApplications(workspace),
+    enabled: !!secret,
+    retry: false,
+  });
   useEffect(() => {
     if (apps.error instanceof AdminAuthError) reportAuthError(apps.error);
   }, [apps.error, reportAuthError]);
@@ -27,7 +34,7 @@ function ApplicationsTab() {
   const decide = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" }) =>
       action === "accept" ? acceptApplication(id) : declineApplication(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.applications }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.applications(workspace) }),
   });
 
   if (apps.isLoading) return <p className="text-sm">{t("common.loading")}</p>;

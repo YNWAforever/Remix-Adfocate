@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AdminAuthError, adminKeys, fetchEngagedUsers, type EngagedCreator } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/engaged")({ component: EngagedTab });
@@ -10,7 +11,13 @@ export const Route = createFileRoute("/admin/engaged")({ component: EngagedTab }
 function EngagedTab() {
   const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
-  const q = useQuery({ queryKey: adminKeys.engaged, queryFn: fetchEngagedUsers, enabled: !!secret, retry: false });
+  const { workspace } = useAdminWorkspace();
+  const q = useQuery({
+    queryKey: adminKeys.engaged(workspace),
+    queryFn: () => fetchEngagedUsers(workspace),
+    enabled: !!secret,
+    retry: false,
+  });
   useEffect(() => {
     if (q.error instanceof AdminAuthError) reportAuthError(q.error);
   }, [q.error, reportAuthError]);

@@ -4,11 +4,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({ fetchApplications: vi.fn(), acceptApplication: vi.fn(), declineApplication: vi.fn() }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
 vi.mock("@/lib/admin", () => ({
   fetchApplications: h.fetchApplications,
   acceptApplication: h.acceptApplication,
   declineApplication: h.declineApplication,
-  adminKeys: { applications: ["admin-applications"] },
+  adminKeys: { applications: (ws: string) => ["admin-applications", ws] },
   AdminAuthError: class extends Error {},
 }));
 vi.mock("@/components/operator/OperatorBadges", () => ({

@@ -3,6 +3,8 @@
  *  owns slug validation, the publish-readiness matrix, and the edit-lock tiers. Mirrors the
  *  pure-module pattern of lib/missionMatch.ts / lib/hookGen.ts. */
 
+import { normalizePortfolioUrl } from "./profileMedia/service.js";
+
 // Mirror of the DB CHECK (0001_init missions.mission_type). Keep in sync with that constraint.
 export const MISSION_TYPES = [
   "koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador",
@@ -15,6 +17,74 @@ export type MissionType = (typeof MISSION_TYPES)[number];
 export const MISSION_LEVELS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"] as const;
 export const ACCESS_TYPES = ["open", "application"] as const;
 export const EFFORTS = ["low", "medium", "high"] as const;
+
+export const MAX_BRIEF_ITEMS = 12;
+export const MAX_BRIEF_ITEM_LEN = 200;
+export const MAX_AUDIENCE_LEN = 500;
+
+export function normBriefArray(items: string[] | null | undefined): string[] {
+  return (items ?? [])
+    .map((s) => (typeof s === "string" ? s.trim() : ""))
+    .filter(Boolean)
+    .slice(0, MAX_BRIEF_ITEMS);
+}
+
+export function normAudience(v: string | null | undefined): string | null {
+  const t = typeof v === "string" ? v.trim() : "";
+  return t === "" ? null : t;
+}
+
+export function normalizeBrief(input: MissionInput): {
+  target_audience: string | null;
+  dos: string[];
+  donts: string[];
+  key_messages: string[];
+  reference_links: string[];
+} {
+  return {
+    target_audience: normAudience(input.target_audience),
+    dos: normBriefArray(input.dos),
+    donts: normBriefArray(input.donts),
+    key_messages: normBriefArray(input.key_messages),
+    reference_links: normBriefArray(input.reference_links),
+  };
+}
+
+// Errors only on PRESENT + invalid brief fields. Absent fields never error (they enrich, not gate).
+function briefErrors(input: MissionInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+  const has = (k: keyof MissionInput) => Object.prototype.hasOwnProperty.call(input, k);
+
+  if (has("target_audience")) {
+    const aud = normAudience(input.target_audience);
+    if (aud && aud.length > MAX_AUDIENCE_LEN) errors.target_audience = `目標受眾不可超過 ${MAX_AUDIENCE_LEN} 字`;
+  }
+  for (const f of ["dos", "donts", "key_messages"] as const) {
+    if (has(f)) {
+      const items = normBriefArray(input[f]);
+      if (items.some((x) => x.length > MAX_BRIEF_ITEM_LEN)) errors[f] = `每項不可超過 ${MAX_BRIEF_ITEM_LEN} 字`;
+    }
+  }
+  if (has("reference_links")) {
+    const items = normBriefArray(input.reference_links);
+    for (const link of items) {
+      if (link.length > MAX_BRIEF_ITEM_LEN) { errors.reference_links = `每項不可超過 ${MAX_BRIEF_ITEM_LEN} 字`; break; }
+      try { normalizePortfolioUrl(link); } catch { errors.reference_links = "請輸入有效的網址（http 或 https）"; break; }
+    }
+  }
+  return errors;
+}
+
+/** First free `<base>-copy`, `<base>-copy-2`, … given the slugs already used in the TARGET workspace. */
+export function nextDuplicateSlug(base: string, existingSlugs: string[]): string {
+  const used = new Set(existingSlugs);
+  const first = `${base}-copy`;
+  if (!used.has(first)) return first;
+  for (let n = 2; ; n++) {
+    const candidate = `${base}-copy-${n}`;
+    if (!used.has(candidate)) return candidate;
+  }
+}
 
 export type MissionInput = {
   workspace_id?: string | null;
@@ -35,6 +105,11 @@ export type MissionInput = {
   requirements?: string[];
   platforms?: string[];
   effort?: string | null;
+  target_audience?: string | null;
+  dos?: string[];
+  donts?: string[];
+  key_messages?: string[];
+  reference_links?: string[];
 };
 
 // The existing record for an edit, as read from the DB.
@@ -110,6 +185,8 @@ export function validateMission(
     }
   }
 
+  Object.assign(errors, briefErrors(input));
+
   return { ok: Object.keys(errors).length === 0, errors };
 }
 
@@ -164,6 +241,8 @@ export function validateEdit(
       errors.deadline = "已有創作者參與：截止日期只可延後";
     }
   }
+
+  Object.assign(errors, briefErrors(patch));
 
   return { ok: Object.keys(errors).length === 0, errors };
 }

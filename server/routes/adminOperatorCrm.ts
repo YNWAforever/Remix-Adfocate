@@ -63,6 +63,7 @@ adminOperatorCrmRoutes.get("/creators/review", async (c) => {
         riskLevel,
         missionId: nonEmptyText(c.req.query("mission_id")) ?? undefined,
         q: nonEmptyText(c.req.query("q")) ?? undefined,
+        workspace: c.req.query("workspace") || undefined,
         page,
         pageSize,
         sort: (c.req.query("sort") as "last_activity" | "trust_score" | "level" | "social_freshness") || "last_activity",

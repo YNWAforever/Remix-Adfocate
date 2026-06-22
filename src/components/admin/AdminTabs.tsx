@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminKeys, fetchApplications, fetchSubmissions } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "./AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
 
 const base = "inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] px-3 text-sm font-heading font-bold";
@@ -10,6 +11,7 @@ const base = "inline-flex h-9 items-center gap-2 rounded-full border-2 border-[v
 export function AdminTabs() {
   const { t } = useI18n();
   const { secret } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
 
   const tabs = useMemo(
     () => [
@@ -23,10 +25,15 @@ export function AdminTabs() {
   );
 
   // Shared query keys => these reuse the cache the tabs populate; no extra fetch.
-  const apps = useQuery({ queryKey: adminKeys.applications, queryFn: fetchApplications, enabled: !!secret, retry: false });
+  const apps = useQuery({
+    queryKey: adminKeys.applications(workspace),
+    queryFn: () => fetchApplications(workspace),
+    enabled: !!secret,
+    retry: false,
+  });
   const subs = useQuery({
-    queryKey: adminKeys.submissions("submitted"),
-    queryFn: () => fetchSubmissions("submitted"),
+    queryKey: adminKeys.submissions("submitted", workspace),
+    queryFn: () => fetchSubmissions("submitted", workspace),
     enabled: !!secret,
     retry: false,
   });

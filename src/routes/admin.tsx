@@ -3,6 +3,8 @@ import { useState } from "react";
 import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
 import { AdminTabs } from "@/components/admin/AdminTabs";
 import { AdminAuthContext } from "@/components/admin/AdminAuthContext";
+import { AdminWorkspaceProvider } from "@/components/admin/AdminWorkspaceContext";
+import { WorkspaceSwitcher } from "@/components/admin/WorkspaceSwitcher";
 import { getAdminSecret } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
 
@@ -22,14 +24,19 @@ function AdminLayout() {
       }}
     >
       <AdminAuthContext.Provider value={{ secret, reportAuthError: setAuthError }}>
-        <div className="mx-auto max-w-5xl space-y-4 p-4">
-          <header className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
-            <h1 className="font-display text-xl font-bold">{t("app.admin.title")}</h1>
-            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.subtitle")}</p>
-          </header>
-          <AdminTabs />
-          <Outlet />
-        </div>
+        <AdminWorkspaceProvider>
+          <div className="mx-auto max-w-5xl space-y-4 p-4">
+            <header className="flex items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+              <div>
+                <h1 className="font-display text-xl font-bold">{t("app.admin.title")}</h1>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.subtitle")}</p>
+              </div>
+              <WorkspaceSwitcher />
+            </header>
+            <AdminTabs />
+            <Outlet />
+          </div>
+        </AdminWorkspaceProvider>
       </AdminAuthContext.Provider>
     </OperatorAuthGate>
   );

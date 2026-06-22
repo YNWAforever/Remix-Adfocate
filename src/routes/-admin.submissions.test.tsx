@@ -4,11 +4,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({ fetchSubmissions: vi.fn(), approveSubmission: vi.fn(), rejectSubmission: vi.fn() }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
 vi.mock("@/lib/admin", () => ({
   fetchSubmissions: h.fetchSubmissions,
   approveSubmission: h.approveSubmission,
   rejectSubmission: h.rejectSubmission,
-  adminKeys: { submissions: () => ["admin-submissions", "submitted"] },
+  adminKeys: { submissions: (status: string, ws: string) => ["admin-submissions", status, ws] },
   AdminAuthError: class extends Error {},
 }));
 

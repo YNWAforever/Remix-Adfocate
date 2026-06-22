@@ -1,6 +1,6 @@
 // server/lib/missionAuthoring.test.ts
 import { describe, it, expect } from "vitest";
-import { isValidSlug, suggestSlug, MISSION_LEVELS, MISSION_TYPES, validateMission, validateEdit, type MissionInput, type MissionRecord } from "./missionAuthoring.js";
+import { isValidSlug, suggestSlug, MISSION_LEVELS, MISSION_TYPES, validateMission, validateEdit, normBriefArray, normAudience, normalizeBrief, nextDuplicateSlug, type MissionInput, type MissionRecord } from "./missionAuthoring.js";
 
 describe("isValidSlug", () => {
   it("accepts lowercase alnum + hyphens", () => {
@@ -125,5 +125,103 @@ describe("validateEdit", () => {
     expect(validateEdit(draftRec, { required_level: "L9" }, false).errors).toHaveProperty("required_level");
     expect(validateEdit(draftRec, { quota: 0 }, false).errors).toHaveProperty("quota");
     expect(validateEdit(draftRec, { effort: "extreme" }, false).errors).toHaveProperty("effort");
+  });
+});
+
+describe("brief normalization", () => {
+  it("trims, drops empties, caps at 12 items", () => {
+    const raw = ["  a ", "", "  ", ...Array.from({ length: 13 }, (_, i) => `x${i}`)];
+    const out = normBriefArray(raw);
+    expect(out[0]).toBe("a");
+    expect(out).toHaveLength(12);
+    expect(out.includes("")).toBe(false);
+  });
+
+  it("normAudience empties to null and trims", () => {
+    expect(normAudience("   ")).toBeNull();
+    expect(normAudience(null)).toBeNull();
+    expect(normAudience("  hello ")).toBe("hello");
+  });
+
+  it("normalizeBrief returns the 5 cleaned fields", () => {
+    const out = normalizeBrief({
+      target_audience: "  20-30 urban  ",
+      dos: [" be authentic ", ""],
+      donts: ["no profanity"],
+      key_messages: ["fresh", "  fast "],
+      reference_links: [" https://ex.com/a ", ""],
+    });
+    expect(out).toEqual({
+      target_audience: "20-30 urban",
+      dos: ["be authentic"],
+      donts: ["no profanity"],
+      key_messages: ["fresh", "fast"],
+      reference_links: ["https://ex.com/a"],
+    });
+  });
+});
+
+describe("validateMission — brief fields", () => {
+  const base = {
+    workspace_id: "w1", title: "T", slug: "ugc-1", mission_type: "ugc",
+  };
+
+  it("accepts missing brief fields at publish (they do not gate)", () => {
+    const r = validateMission(
+      { ...base, description: "d", category: "社交", access_type: "open", required_level: "L0",
+        quota: 5, deadline: "2099-01-01", points_reward: 100 },
+      "publish",
+      "2026-06-22",
+    );
+    expect(r.ok).toBe(true);
+  });
+
+  it("rejects a reference_links entry that is not an http(s) URL", () => {
+    const r = validateMission({ ...base, reference_links: ["not a url"] }, "draft");
+    expect(r.ok).toBe(false);
+    expect(r.errors.reference_links).toBeTruthy();
+  });
+
+  it("accepts a bare-domain reference link (normalizePortfolioUrl prepends https)", () => {
+    const r = validateMission({ ...base, reference_links: ["example.com/post"] }, "draft");
+    expect(r.errors.reference_links).toBeUndefined();
+  });
+
+  it("rejects a key_messages item longer than 200 chars", () => {
+    const r = validateMission({ ...base, key_messages: ["x".repeat(201)] }, "draft");
+    expect(r.errors.key_messages).toBeTruthy();
+  });
+
+  it("rejects target_audience longer than 500 chars", () => {
+    const r = validateMission({ ...base, target_audience: "x".repeat(501) }, "draft");
+    expect(r.errors.target_audience).toBeTruthy();
+  });
+});
+
+describe("validateEdit — brief fields", () => {
+  const existing = { status: "active" as const, slug: "ugc-1", mission_type: "ugc" };
+  it("allows editing brief fields after publish", () => {
+    const r = validateEdit(existing, { key_messages: ["new point"] }, false);
+    expect(r.ok).toBe(true);
+  });
+  it("flags a bad reference link in a patch", () => {
+    const r = validateEdit(existing, { reference_links: ["javascript:alert(1)"] }, false);
+    expect(r.ok).toBe(false);
+    expect(r.errors.reference_links).toBeTruthy();
+  });
+});
+
+describe("nextDuplicateSlug", () => {
+  it("appends -copy when free", () => {
+    expect(nextDuplicateSlug("ugc-1", ["ugc-1"])).toBe("ugc-1-copy");
+  });
+  it("appends -copy-2 when -copy is taken", () => {
+    expect(nextDuplicateSlug("ugc-1", ["ugc-1", "ugc-1-copy"])).toBe("ugc-1-copy-2");
+  });
+  it("finds the first free suffix among many collisions", () => {
+    expect(nextDuplicateSlug("ugc-1", ["ugc-1-copy", "ugc-1-copy-2", "ugc-1-copy-3"])).toBe("ugc-1-copy-4");
+  });
+  it("treats the slug set as workspace-local (only what is passed in)", () => {
+    expect(nextDuplicateSlug("ugc-1", [])).toBe("ugc-1-copy");
   });
 });

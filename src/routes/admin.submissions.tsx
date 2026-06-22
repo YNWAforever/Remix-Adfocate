@@ -10,6 +10,7 @@ import {
   type Submission,
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsTab });
@@ -17,10 +18,11 @@ export const Route = createFileRoute("/admin/submissions")({ component: Submissi
 function SubmissionsTab() {
   const { t } = useI18n();
   const { secret, reportAuthError } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
   const subs = useQuery({
-    queryKey: adminKeys.submissions("submitted"),
-    queryFn: () => fetchSubmissions("submitted"),
+    queryKey: adminKeys.submissions("submitted", workspace),
+    queryFn: () => fetchSubmissions("submitted", workspace),
     enabled: !!secret,
     retry: false,
   });
@@ -37,7 +39,7 @@ function SubmissionsTab() {
         <SubmissionCard
           key={s.id}
           submission={s}
-          onDone={() => qc.invalidateQueries({ queryKey: adminKeys.submissions("submitted") })}
+          onDone={() => qc.invalidateQueries({ queryKey: adminKeys.submissions("submitted", workspace) })}
         />
       ))}
     </div>
