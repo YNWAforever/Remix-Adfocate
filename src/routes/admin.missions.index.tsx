@@ -15,7 +15,7 @@ const STATUSES = ["", "draft", "active", "closed"] as const;
 const STATUS_LABEL: Record<string, string> = { "": "全部", draft: "草稿", active: "進行中", closed: "已關閉" };
 
 function MissionsList() {
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const { workspace } = useAdminWorkspace();
@@ -24,7 +24,7 @@ function MissionsList() {
   const list = useQuery({
     queryKey: adminMissionKeys.list(workspace, status),
     queryFn: () => fetchAdminMissions(workspace, status),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

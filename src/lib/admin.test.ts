@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AdminAuthError,
   AdminRequestError,
+  adminFetch,
   approveSubmission,
-  clearAdminSecret,
   createMission,
   fetchAdminMissions,
   fetchCreatorDetail,
@@ -11,19 +11,41 @@ import {
   fetchEngagedUsers,
   fetchMissionShortlist,
   fetchSubmissions,
-  getAdminSecret,
   postCreatorReview,
-  setAdminSecret,
 } from "./admin";
+import { supabase } from "@/lib/supabase";
+
+vi.mock("@/lib/supabase", () => ({
+  supabase: { auth: { getSession: vi.fn() } },
+}));
 
 describe("admin client helpers", () => {
+  beforeEach(() => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: { access_token: "jwt-123" } },
+    } as never);
+  });
+
   afterEach(() => {
-    clearAdminSecret();
     vi.restoreAllMocks();
   });
 
+  it("sends Authorization: Bearer and no x-admin-secret", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
+    await adminFetch("/admin/ping");
+    const headers = (fetchMock.mock.calls[0][1] as RequestInit).headers as Record<string, string>;
+    expect(headers.Authorization).toBe("Bearer jwt-123");
+    expect(headers["x-admin-secret"]).toBeUndefined();
+  });
+
+  it("throws AdminAuthError on 401 (no secret-clear side effect)", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 401 }));
+    await expect(adminFetch("/admin/ping")).rejects.toBeInstanceOf(AdminAuthError);
+  });
+
   it("adds review queue filters to the admin URL", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ creators: [], page: 2, pageSize: 10, total: 0 }), { status: 200 }),
     );
@@ -41,13 +63,12 @@ describe("admin client helpers", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/admin/creators/review?status=approved&risk_level=low&mission_id=mission-1&q=amy&page=2&page_size=10&sort=trust_score",
       expect.objectContaining({
-        headers: expect.objectContaining({ "x-admin-secret": "secret" }),
+        headers: expect.objectContaining({ Authorization: "Bearer jwt-123" }),
       }),
     );
   });
 
   it("posts creator review bodies with snake_case API keys", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ review: { status: "approved", riskLevel: "low" } }), { status: 200 }),
     );
@@ -73,18 +94,7 @@ describe("admin client helpers", () => {
     );
   });
 
-  it("clears a stale secret on 401", async () => {
-    setAdminSecret("bad-secret");
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ code: "no_admin" }), { status: 401 }));
-
-    await expect(fetchCreatorReviewQueue({ page: 1, pageSize: 25, sort: "last_activity" })).rejects.toBeInstanceOf(
-      AdminAuthError,
-    );
-    expect(getAdminSecret()).toBeNull();
-  });
-
   it("reads mission shortlist responses from the shortlists key", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -103,7 +113,6 @@ describe("admin client helpers", () => {
   });
 
   it("preserves snake_case creator detail fields", async () => {
-    setAdminSecret("secret");
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -193,7 +202,6 @@ describe("admin client helpers", () => {
   });
 
   it("approveSubmission posts notes + quality_rating", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ status: "approved" }), { status: 200 }),
     );
@@ -208,7 +216,6 @@ describe("admin client helpers", () => {
   });
 
   it("fetchSubmissions encodes the status query", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ submissions: [] }), { status: 200 }),
     );
@@ -217,7 +224,6 @@ describe("admin client helpers", () => {
   });
 
   it("fetchEngagedUsers hits the engaged endpoint", async () => {
-    setAdminSecret("secret");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ creators: [] }), { status: 200 }),
     );
@@ -227,7 +233,16 @@ describe("admin client helpers", () => {
 });
 
 describe("AdminRequestError surfaces code + fields", () => {
-  beforeEach(() => sessionStorage.setItem("adfocate_admin_secret", "s"));
+  beforeEach(() => {
+    vi.mocked(supabase.auth.getSession).mockResolvedValue({
+      data: { session: { access_token: "jwt-123" } },
+    } as never);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("throws AdminRequestError carrying fields on 422", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: false, status: 422,

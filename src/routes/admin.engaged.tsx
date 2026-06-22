@@ -10,12 +10,12 @@ export const Route = createFileRoute("/admin/engaged")({ component: EngagedTab }
 
 function EngagedTab() {
   const { t } = useI18n();
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const q = useQuery({
     queryKey: adminKeys.engaged(workspace),
     queryFn: () => fetchEngagedUsers(workspace),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

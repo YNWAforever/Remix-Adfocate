@@ -8,14 +8,14 @@ import { useAdminAuth } from "./AdminAuthContext";
 import { useAdminWorkspace } from "./AdminWorkspaceContext";
 
 export function MissionManage({ missionId }: { missionId: string }) {
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
 
   const q = useQuery({
     queryKey: adminMissionKeys.activity(missionId),
     queryFn: () => fetchMissionActivity(missionId),
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
   });
   useEffect(() => {

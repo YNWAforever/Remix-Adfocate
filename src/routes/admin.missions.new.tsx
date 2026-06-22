@@ -9,9 +9,9 @@ import { MissionEditor } from "@/components/admin/MissionEditor";
 export const Route = createFileRoute("/admin/missions/new")({ component: NewMission });
 
 function NewMission() {
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const navigate = useNavigate();
-  const ws = useQuery({ queryKey: adminMissionKeys.workspaces, queryFn: fetchWorkspaces, enabled: !!secret, retry: false });
+  const ws = useQuery({ queryKey: adminMissionKeys.workspaces, queryFn: fetchWorkspaces, enabled: authed, retry: false });
   useEffect(() => { if (ws.error instanceof AdminAuthError) reportAuthError(ws.error); }, [ws.error, reportAuthError]);
   const create = useMutation({
     mutationFn: (body: MissionDraftInput) => createMission(body),

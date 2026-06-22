@@ -13,7 +13,7 @@ vi.mock("@tanstack/react-router", async (i) => ({
   useNavigate: () => h.navigate,
   Link: ({ children, to }: { children?: React.ReactNode; to?: string }) => <a href={to}>{children}</a>,
 }));
-vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
 vi.mock("@/lib/admin", () => ({
   fetchWorkspaces: h.fetchWorkspaces, fetchAdminMissions: h.fetchAdminMissions,

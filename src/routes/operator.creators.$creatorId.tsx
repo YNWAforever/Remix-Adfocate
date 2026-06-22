@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, NotebookPen, ShieldCheck, UserRound } from "lucide-react";
-import { useMemo, useState } from "react";
-import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
+import { useEffect, useMemo, useState } from "react";
+import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import {
   RiskBadge,
   ReviewBadge,
@@ -11,8 +11,8 @@ import {
 } from "@/components/operator/OperatorBadges";
 import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
 import {
+  AdminAuthError,
   fetchCreatorDetail,
-  getAdminSecret,
   postCreatorNote,
   type AdminNoteCategory,
 } from "@/lib/admin";
@@ -67,12 +67,12 @@ function OperatorCreatorDetailRoute() {
   const { t } = useI18n();
   const { creatorId } = Route.useParams();
   const queryClient = useQueryClient();
-  const [secret, setSecret] = useState<string | null>(getAdminSecret());
+  const { authed, reportAuthError } = useAdminAuth();
   const [noteBody, setNoteBody] = useState("");
 
   const detail = useQuery({
     queryKey: ["admin-creator-detail", creatorId],
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
     queryFn: () => fetchCreatorDetail(creatorId),
   });
@@ -99,8 +99,14 @@ function OperatorCreatorDetailRoute() {
     return Object.entries(creator.scores).filter(([, value]) => typeof value === "number") as Array<[string, number]>;
   }, [creator]);
 
+  // Route auth errors through the shared operator context so StaffAuthGate can re-prompt.
+  // Must run in an effect (not during render) to avoid updating the parent layout mid-render.
+  useEffect(() => {
+    if (detail.error instanceof AdminAuthError) reportAuthError(detail.error);
+  }, [detail.error, reportAuthError]);
+
   return (
-    <OperatorAuthGate error={detail.error} onSecretChange={setSecret}>
+    <>
       <div className="mx-auto max-w-6xl space-y-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
           <div className="space-y-1">
@@ -430,6 +436,6 @@ function OperatorCreatorDetailRoute() {
           </>
         ) : null}
       </div>
-    </OperatorAuthGate>
+    </>
   );
 }

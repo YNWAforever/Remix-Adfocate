@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { MissionShortlistPanel } from "@/components/operator/MissionShortlistPanel";
-import { OperatorAuthGate } from "@/components/operator/OperatorAuthGate";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
+import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import {
+  AdminAuthError,
   fetchCreatorReviewQueue,
   fetchMissionShortlist,
-  getAdminSecret,
   type AdminReviewStatus,
 } from "@/lib/admin";
 
@@ -20,21 +20,21 @@ export const Route = createFileRoute("/operator/missions/$missionId")({
 function OperatorMissionShortlistRoute() {
   const { t } = useI18n();
   const { missionId } = Route.useParams();
-  const [secret, setSecret] = useState<string | null>(getAdminSecret());
+  const { authed, reportAuthError } = useAdminAuth();
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
   const queryClient = useQueryClient();
   const selectedStatus = status === "all" ? undefined : status;
 
   const shortlist = useQuery({
     queryKey: ["admin-mission-shortlist", missionId],
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
     queryFn: () => fetchMissionShortlist(missionId),
   });
 
   const queue = useQuery({
     queryKey: ["admin-creators-review", { missionId, status: selectedStatus }],
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
     queryFn: () =>
       fetchCreatorReviewQueue({
@@ -46,8 +46,17 @@ function OperatorMissionShortlistRoute() {
       }),
   });
 
+  // Route auth errors through the shared operator context so StaffAuthGate can re-prompt.
+  // Must run in an effect (not during render) to avoid updating the parent layout mid-render.
+  useEffect(() => {
+    if (shortlist.error instanceof AdminAuthError) reportAuthError(shortlist.error);
+  }, [shortlist.error, reportAuthError]);
+  useEffect(() => {
+    if (queue.error instanceof AdminAuthError) reportAuthError(queue.error);
+  }, [queue.error, reportAuthError]);
+
   return (
-    <OperatorAuthGate error={shortlist.error ?? queue.error} onSecretChange={setSecret}>
+    <>
       <div className="mx-auto max-w-6xl space-y-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
           <div className="space-y-1">
@@ -115,6 +124,6 @@ function OperatorMissionShortlistRoute() {
           </div>
         </section>
       </div>
-    </OperatorAuthGate>
+    </>
   );
 }

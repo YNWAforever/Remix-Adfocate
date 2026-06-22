@@ -1,7 +1,7 @@
-// Interim operator auth: a shared ADMIN_SECRET kept in sessionStorage (cleared on tab
-// close). Single-operator internal tool only — real per-workspace role auth lands with
-// the Brand Dashboard. Mirrors the x-admin-secret check in server/routes/admin.ts.
-const KEY = "adfocate_admin_secret";
+// Admin/operator API client. B3a: authenticates with the staff member's Supabase JWT
+// (Authorization: Bearer), resolved server-side against staff_users. Staff are global, so
+// no X-Workspace-Slug is sent (workspace scoping is the ?workspace/?ws query convenience).
+import { supabase } from "@/lib/supabase";
 
 export type AdminReviewStatus = "needs_review" | "approved" | "flagged";
 export type AdminRiskLevel = "low" | "medium" | "high" | "unknown";
@@ -147,16 +147,6 @@ type AdminCreatorDetailResponse = {
   missionHistory: Array<Record<string, unknown>>;
 };
 
-export function getAdminSecret(): string | null {
-  return sessionStorage.getItem(KEY);
-}
-export function setAdminSecret(secret: string) {
-  sessionStorage.setItem(KEY, secret);
-}
-export function clearAdminSecret() {
-  sessionStorage.removeItem(KEY);
-}
-
 export class AdminAuthError extends Error {}
 
 export class AdminRequestError extends Error {
@@ -170,17 +160,17 @@ export class AdminRequestError extends Error {
 }
 
 export async function adminFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const secret = getAdminSecret();
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
   const res = await fetch(`/api${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
-      ...(secret ? { "x-admin-secret": secret } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers ?? {}),
     },
   });
   if (res.status === 401) {
-    clearAdminSecret();
     throw new AdminAuthError("unauthorized");
   }
   if (!res.ok) {

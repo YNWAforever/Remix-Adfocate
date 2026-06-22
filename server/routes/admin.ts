@@ -1,23 +1,46 @@
 import { Hono } from "hono";
 import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
-import { serviceClient } from "../lib/supabase.js";
+import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
 import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 import { markVerified } from "../lib/social/repo.js";
+import { resolveStaff, type AdminEnv, type StaffUser } from "../lib/staffAuth.js";
 
-/** Operator-only review endpoints. Interim shared-secret auth (replaced by real
- *  admin-auth / the Brand Dashboard in Slice 8). Uses the service client. */
-export const adminRoutes = new Hono();
+/** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
+ *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
+export const adminRoutes = new Hono<AdminEnv>();
 
 adminRoutes.use("*", async (c, next) => {
+  // Break-glass (B3b removes this block): the shared secret still grants full access and
+  // keeps the existing secret-based test suite + emergency curl working.
   const secret = process.env.ADMIN_SECRET;
-  const provided = c.req.header("x-admin-secret");
-  if (!secret || provided !== secret) {
-    return c.json({ error: "forbidden", code: "no_admin" }, 401);
+  if (secret && c.req.header("x-admin-secret") === secret) {
+    c.set("staff", { userId: null, email: "shared-secret", viaSecret: true });
+    return next();
   }
+  // Primary: Supabase JWT → staff_users (or allowlist auto-promote).
+  const auth = c.req.header("Authorization") ?? "";
+  const jwt = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!jwt) return c.json({ error: "forbidden", code: "no_admin" }, 401);
+  const { data, error } = await makeUserClient(jwt).auth.getUser();
+  if (error || !data.user) return c.json({ error: "invalid token", code: "bad_token" }, 401);
+  let staff: StaffUser | null;
+  try {
+    staff = await resolveStaff(serviceClient(), data.user.id, data.user.email ?? null);
+  } catch (err) {
+    console.error("[requireStaff] resolveStaff threw:", err);
+    return c.json({ error: "staff lookup failed", code: "db_error" }, 500);
+  }
+  if (!staff) return c.json({ error: "not staff", code: "not_staff" }, 403);
+  c.set("staff", { userId: staff.user_id, email: staff.email });
   await next();
+});
+
+adminRoutes.get("/me", (c) => {
+  const s = c.get("staff");
+  return c.json({ staff: { userId: s.userId, email: s.email } });
 });
 
 adminRoutes.route("/", adminOperatorCrmRoutes);

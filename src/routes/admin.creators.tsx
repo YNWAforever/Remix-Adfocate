@@ -22,7 +22,7 @@ export const Route = createFileRoute("/admin/creators")({
 
 function CreatorsTab() {
   const { t } = useI18n();
-  const { secret, reportAuthError } = useAdminAuth();
+  const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
@@ -32,7 +32,7 @@ function CreatorsTab() {
 
   const creators = useQuery({
     queryKey: ["admin-creators-review", { q, status, risk, sort, missionId, workspace }],
-    enabled: !!secret,
+    enabled: authed,
     retry: false,
     queryFn: () =>
       fetchCreatorReviewQueue({

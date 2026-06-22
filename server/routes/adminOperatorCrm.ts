@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { Context } from "hono";
 import {
   addCreatorReviewNote,
   getCreatorOperatorDetail,
@@ -18,14 +19,22 @@ import {
   parseShortlistStatus,
 } from "../lib/operatorCrm/serializers.js";
 import { serviceClient } from "../lib/supabase.js";
+import type { AdminEnv } from "../lib/staffAuth.js";
 
-export const adminOperatorCrmRoutes = new Hono();
+export const adminOperatorCrmRoutes = new Hono<AdminEnv>();
 
-function operatorContext(c: { req: { header(name: string): string | undefined } }) {
-  return {
-    operatorId: c.req.header("x-operator-id")?.trim() || "admin-secret",
-    actorLabel: c.req.header("x-operator-label")?.trim() || "Admin operator",
-  };
+function operatorContext(c: Context<AdminEnv>) {
+  const staff = c.get("staff");
+  // Break-glass (shared secret) keeps honoring the legacy client headers so the existing
+  // secret-based tests + emergency curl preserve their attribution. Real JWT staff always
+  // get their unspoofable identity (B3b removes the break-glass branch entirely).
+  if (staff.viaSecret) {
+    return {
+      operatorId: c.req.header("x-operator-id")?.trim() || "shared-secret",
+      actorLabel: c.req.header("x-operator-label")?.trim() || "Admin operator",
+    };
+  }
+  return { operatorId: staff.userId!, actorLabel: staff.email };
 }
 
 function crmError(c: { json: (body: unknown, status?: number) => Response }, error: unknown) {

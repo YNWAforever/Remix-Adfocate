@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
-  secret: "s" as string | null,
   fetchMissionShortlist: vi.fn(),
   fetchCreatorReviewQueue: vi.fn(),
   patchMissionShortlist: vi.fn(),
@@ -19,18 +18,12 @@ vi.mock("@tanstack/react-router", async () => {
 
 vi.mock("@/lib/admin", async () => ({
   ...(await vi.importActual<object>("@/lib/admin")),
-  getAdminSecret: () => hoisted.secret,
-  setAdminSecret: (s: string) => {
-    hoisted.secret = s;
-  },
-  clearAdminSecret: () => {
-    hoisted.secret = null;
-  },
   fetchMissionShortlist: hoisted.fetchMissionShortlist,
   fetchCreatorReviewQueue: hoisted.fetchCreatorReviewQueue,
   patchMissionShortlist: hoisted.patchMissionShortlist,
   AdminAuthError: class AdminAuthError extends Error {},
 }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 
 import { Route } from "./operator.missions.$missionId";
 

@@ -20,7 +20,7 @@ vi.mock("@/lib/admin", () => ({
   AdminAuthError: class AdminAuthError extends Error {},
   AdminRequestError: class AdminRequestError extends Error {},
 }));
-vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ secret: "s", reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
 
 import { MissionManage } from "@/components/admin/MissionManage";
