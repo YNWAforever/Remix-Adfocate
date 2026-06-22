@@ -14,10 +14,17 @@ function Callback() {
     (async () => {
       try {
         // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
-        const code = new URLSearchParams(window.location.search).get("code");
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
         if (!code) throw new Error("no auth code in callback URL");
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) throw error;
+        const next = params.get("next");
+        if (next && next.startsWith("/admin")) {
+          // Staff Google login — do NOT run creator bootstrap (which would create a creator row).
+          navigate({ to: next });
+          return;
+        }
         await finishAuth(navigate);
       } catch {
         setFailed(true);
