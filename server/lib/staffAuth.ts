@@ -18,3 +18,37 @@ export function parseAllowlist(raw: string | undefined): Set<string> {
       .filter(Boolean),
   );
 }
+
+/**
+ * Resolve a Supabase user to a staff identity:
+ *  1. active staff_users row → return it;
+ *  2. else email ∈ STAFF_EMAIL_ALLOWLIST → upsert + return (first-login auto-promotion);
+ *  3. else null.
+ * Thin DB glue; throws on a DB error so the caller can surface 500.
+ */
+export async function resolveStaff(
+  svc: SupabaseClient,
+  userId: string,
+  email: string | null,
+): Promise<StaffUser | null> {
+  const { data: existing, error } = await svc
+    .from("staff_users")
+    .select("user_id, email, active, created_at")
+    .eq("user_id", userId)
+    .eq("active", true)
+    .maybeSingle();
+  if (error) throw error;
+  if (existing) return existing as StaffUser;
+
+  const lower = email?.toLowerCase() ?? "";
+  if (lower && parseAllowlist(process.env.STAFF_EMAIL_ALLOWLIST).has(lower)) {
+    const { data: upserted, error: upErr } = await svc
+      .from("staff_users")
+      .upsert({ user_id: userId, email: lower, active: true }, { onConflict: "user_id" })
+      .select("user_id, email, active, created_at")
+      .single();
+    if (upErr) throw upErr;
+    return upserted as StaffUser;
+  }
+  return null;
+}
