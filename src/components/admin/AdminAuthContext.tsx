@@ -1,12 +1,16 @@
 import { createContext, useContext } from "react";
 
+export type AdminStaff = { userId: string | null; email: string };
+
 export type AdminAuth = {
-  secret: string | null;
+  authed: boolean;
+  staff: AdminStaff | null;
   reportAuthError: (error: unknown) => void;
 };
 
 export const AdminAuthContext = createContext<AdminAuth>({
-  secret: null,
+  authed: false,
+  staff: null,
   reportAuthError: () => {},
 });
 
