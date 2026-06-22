@@ -16,9 +16,15 @@ vi.mock("@/lib/admin", () => ({
   setAdminSecret: (s: string) => { hoisted.secret = s; },
   clearAdminSecret: () => { hoisted.secret = null; },
   AdminAuthError: class AdminAuthError extends Error {},
-  adminKeys: { applications: ["admin-applications"], submissions: () => ["admin-submissions", "submitted"] },
+  adminKeys: {
+    applications: () => ["admin-applications"],
+    submissions: () => ["admin-submissions", "submitted"],
+    engaged: () => ["admin-engaged"],
+  },
+  adminMissionKeys: { workspaces: ["admin-workspaces"] },
   fetchApplications: vi.fn().mockResolvedValue({ applications: [] }),
   fetchSubmissions: vi.fn().mockResolvedValue({ submissions: [] }),
+  fetchWorkspaces: vi.fn().mockResolvedValue({ workspaces: [] }),
 }));
 
 import { Route } from "./admin";
