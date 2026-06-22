@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Sparkles, ArrowRight, Package } from "lucide-react";
-import { legacyActivationServices, localized } from "@/data/legacyAdfocateContent";
-import { packages } from "@/data/mockData";
+import { Check, ArrowRight, ArrowUpRight } from "lucide-react";
+import {
+  legacyActivationServices,
+  localized,
+} from "@/data/legacyAdfocateContent";
+import { packages, type PackageCard } from "@/data/mockData";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -9,299 +12,295 @@ export const Route = createFileRoute("/_site/packages")({
   component: PackagesPage,
 });
 
-const colorAccentMap: Record<
-  string,
-  {
-    border: string;
-    bg: string;
-    dot: string;
-    badgeBg: string;
-    badgeText: string;
-    badgeBorder: string;
-    deliverableDot: string;
-    ctaBg: string;
-    ctaText: string;
-    ctaHover: string;
-  }
-> = {
-  pink: {
-    border: "border-brand-pink/30 hover:border-brand-pink",
-    bg: "bg-brand-pink/5",
-    dot: "bg-brand-pink",
-    badgeBg: "bg-brand-pink/10",
-    badgeText: "text-brand-pink",
-    badgeBorder: "border-brand-pink/20",
-    deliverableDot: "text-brand-pink",
-    ctaBg: "bg-brand-pink",
-    ctaText: "text-white",
-    ctaHover: "hover:bg-primary/85",
-  },
-  yellow: {
-    border: "border-brand-yellow/30 hover:border-brand-yellow",
-    bg: "bg-brand-yellow/5",
-    dot: "bg-brand-yellow",
-    badgeBg: "bg-brand-yellow/10",
-    badgeText: "text-yellow-700",
-    badgeBorder: "border-brand-yellow/20",
-    deliverableDot: "text-brand-yellow",
-    ctaBg: "bg-brand-yellow",
-    ctaText: "text-foreground",
-    ctaHover: "hover:bg-butter/85",
-  },
-  mint: {
-    border: "border-brand-mint/30 hover:border-brand-mint",
-    bg: "bg-brand-mint/5",
-    dot: "bg-brand-mint",
-    badgeBg: "bg-brand-mint/10",
-    badgeText: "text-mint-700",
-    badgeBorder: "border-brand-mint/20",
-    deliverableDot: "text-brand-mint",
-    ctaBg: "bg-brand-mint",
-    ctaText: "text-foreground",
-    ctaHover: "hover:bg-mint/85",
-  },
-  blue: {
-    border: "border-brand-blue/30 hover:border-brand-blue",
-    bg: "bg-brand-blue/5",
-    dot: "bg-brand-blue",
-    badgeBg: "bg-brand-blue/10",
-    badgeText: "text-brand-blue",
-    badgeBorder: "border-brand-blue/20",
-    deliverableDot: "text-brand-blue",
-    ctaBg: "bg-brand-blue",
-    ctaText: "text-white",
-    ctaHover: "hover:bg-brand-blue/90",
-  },
-  lilac: {
-    border: "border-brand-lilac/30 hover:border-brand-lilac",
-    bg: "bg-brand-lilac/5",
-    dot: "bg-brand-lilac",
-    badgeBg: "bg-brand-lilac/10",
-    badgeText: "text-purple-600",
-    badgeBorder: "border-brand-lilac/20",
-    deliverableDot: "text-brand-lilac",
-    ctaBg: "bg-brand-lilac",
-    ctaText: "text-white",
-    ctaHover: "hover:bg-brand-lilac/90",
-  },
+// Acid Y2K accent per legacy color key — used as the card top-edge + dot.
+const ACCENT: Record<string, string> = {
+  pink: "var(--color-magenta)",
+  yellow: "var(--color-acid)",
+  mint: "var(--color-cyan)",
+  blue: "var(--color-violet)",
+  lilac: "var(--color-violet)",
 };
+
+// The recommended tier — surfaced with an acid border + sticker.
+const RECOMMENDED_ID = "p4";
 
 function PackagesPage() {
   return (
     <div>
       <HeroSection />
-      <LegacyServiceMapSection />
       <PackagesGridSection />
-      <BottomCTASection />
+      <ServiceMapSection />
+      <CustomCTASection />
     </div>
   );
 }
 
-function LegacyServiceMapSection() {
+// ─── 20. HERO — stacked center, minimalist ───
+function HeroSection() {
   const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 border-t border-gray-200">
-      <div className="rounded-2xl border-2 border-foreground bg-white p-5 sm:p-7 shadow-[4px_4px_0_0_#0A0A0A]">
-        <div className="grid gap-5 lg:grid-cols-[280px_1fr] items-start">
-          <div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand-lilac">
-              {localized({ en: "Service map", zh: "服務對照" }, lang)}
+    <section className="relative overflow-hidden bg-[var(--color-paper)]">
+      <div className="dot-pattern absolute inset-0 opacity-40" aria-hidden="true" />
+      <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:py-28">
+        <span className="sticker mx-auto mb-7 inline-block">
+          {tx("Packages · 方案", "方案 · PACKAGES")}
+        </span>
+        <h1 className="font-display text-[var(--color-ink)]">
+          {tx("Pick the plan that fits", "揀啱你嘅方案")}
+          <span className="text-[var(--color-magenta)]">.</span>
+        </h1>
+        <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[var(--color-soft-ink)] sm:text-lg">
+          {tx(
+            "Productized creator campaign formats. Start from a ready package, or mix and match with the Adfocate team for your specific brand goals.",
+            "產品化嘅創作者活動格式。揀一個現成方案，或者同 Adfocate 團隊度身組合，配合你品牌嘅目標。",
+          )}
+        </p>
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link to="/contact" className="btn-primary">
+            {tx("Plan a campaign", "規劃活動")}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link to="/playbooks" className="btn-ink">
+            {tx("Browse playbooks", "瀏覽 Playbooks")}
+          </Link>
+        </div>
+        <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
+          {tx(
+            "12 formats · HK market · Mix & match",
+            "12 種格式 · 香港市場 · 自由組合",
+          )}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ─── 21. PACKAGE GRID — pricing bento, recommended tier highlighted ───
+function PackagesGridSection() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+      <header className="mb-10 max-w-2xl">
+        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-magenta)]">
+          {tx("The menu", "活動菜單")}
+        </span>
+        <h2 className="mt-3 font-display text-[var(--color-ink)]">
+          {tx("Every format, ready to launch", "每個格式，準備即開即用")}
+        </h2>
+        <p className="mt-4 text-[var(--color-soft-ink)]">
+          {tx(
+            "Each package is a tested creator workflow with a clear brief, deliverables, and a report. The Affiliate program is where most brands start.",
+            "每個方案都係一條實測過嘅創作者流程，有清晰 Brief、交付物同報告。大部分品牌都係由 Affiliate 計劃開始。",
+          )}
+        </p>
+      </header>
+
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {packages.map((pkg, i) => (
+          <PackageTier
+            key={pkg.id}
+            pkg={pkg}
+            index={i}
+            recommended={pkg.id === RECOMMENDED_ID}
+            tx={tx}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PackageTier({
+  pkg,
+  index,
+  recommended,
+  tx,
+}: {
+  pkg: PackageCard;
+  index: number;
+  recommended: boolean;
+  tx: (en: string, zh: string) => string;
+}) {
+  const accent = ACCENT[pkg.color] ?? ACCENT.pink;
+
+  return (
+    <article
+      className={cn(
+        "pastel-card relative flex flex-col gap-4 animate-slide-up",
+        "stagger-" + Math.min(index + 1, 8),
+        recommended &&
+          "lg:scale-[1.02] lg:shadow-[6px_6px_0_0_var(--color-acid)]",
+      )}
+      style={
+        recommended
+          ? { borderColor: "var(--color-acid)", borderWidth: "3px" }
+          : undefined
+      }
+    >
+      {recommended && (
+        <span className="sticker absolute -right-2 -top-3 z-10">
+          {tx("Recommended", "推薦")}
+        </span>
+      )}
+
+      <div className="flex items-center justify-between">
+        <span className="tag-mono">{tx("Package", "方案")}</span>
+        <span
+          className="h-3 w-3 rounded-full border-2 border-[var(--color-ink)]"
+          style={{ background: accent }}
+          aria-hidden="true"
+        />
+      </div>
+
+      <h3 className="font-heading text-lg leading-snug text-[var(--color-ink)]">
+        {pkg.title}
+      </h3>
+
+      <div className="rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-3 py-2.5">
+        <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-soft-ink)]">
+          {tx("Best for", "最適合")}
+        </span>
+        <p className="mt-0.5 font-heading text-sm font-semibold text-[var(--color-ink)]">
+          {pkg.bestFor}
+        </p>
+      </div>
+
+      <div>
+        <span className="mb-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-soft-ink)]">
+          {tx("Deliverables", "交付物")}
+        </span>
+        <ul className="space-y-1.5">
+          {pkg.deliverables.map((d) => (
+            <li
+              key={d}
+              className="flex items-start gap-2 text-sm text-[var(--color-ink)]"
+            >
+              <Check
+                className="mt-0.5 h-4 w-4 shrink-0"
+                style={{ color: accent }}
+                aria-hidden="true"
+              />
+              <span>{d}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Link
+        to="/contact"
+        className={cn("mt-auto", recommended ? "btn-primary" : "btn-ink")}
+      >
+        {tx("Talk to us", "聯絡我們")}
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </article>
+  );
+}
+
+// ─── Service map — folded-in supporting band (preserves all 12 services) ───
+function ServiceMapSection() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+
+  return (
+    <section className="bg-[var(--color-paper)]">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+        <div className="grid items-start gap-8 lg:grid-cols-[320px_1fr]">
+          <div className="lg:sticky lg:top-24">
+            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-magenta)]">
+              {tx("Service map", "服務對照")}
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl text-foreground mt-2 leading-tight">
+            <h2 className="mt-3 font-display text-[var(--color-ink)]">
               {localized(
                 {
-                  en: "Proven agency services, packaged into repeatable creator workflows.",
-                  zh: "把實戰服務，整理成可重複的創作者流程。",
+                  en: "Agency-grade services, packaged into creator workflows.",
+                  zh: "實戰級服務，整理成可重複嘅創作者流程。",
                 },
                 lang,
               )}
             </h2>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {legacyActivationServices.map((service) => (
-              <Link
-                key={service.id}
-                to="/contact"
-                className="rounded-xl border border-gray-200 bg-cream/40 p-3 hover:border-brand-lilac/40 transition-colors"
-              >
-                <p className="font-heading font-bold text-xs text-foreground leading-snug">
-                  {localized(service.title, lang)}
-                </p>
-                <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-soft-ink">
-                  {service.modernHome}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HeroSection() {
-  return (
-    <section className="relative overflow-hidden pt-8 pb-12 sm:pt-20 sm:pb-24">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(196,181,253,0.18) 0%, transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 -left-32 w-[400px] h-[400px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(186,230,253,0.12) 0%, transparent 65%)",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <span className="inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-brand-lilac border-2 border-brand-lilac/30 rounded-full px-3 py-1.5 bg-white mb-6">
-            Packages
-          </span>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground max-w-3xl leading-[1.05] mb-5">
-            Campaign Packages<span className="text-brand-lilac">.</span>
-          </h1>
-          <p className="text-soft-ink text-sm sm:text-base max-w-xl mb-8 leading-relaxed">
-            Productized creator campaign formats. Pick a starting package, or mix and match with the
-            Adfocate team for your specific brand goals.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-flex items-center gap-2 h-13 px-8 rounded-full bg-primary text-primary-foreground font-bold text-sm hover:bg-rose-hover transition-colors"
-          >
-            <Sparkles className="h-4 w-4" /> Plan a Campaign
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PackagesGridSection() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {packages.map((pkg, i) => {
-          const clr = colorAccentMap[pkg.color] ?? colorAccentMap.pink;
-
-          return (
-            <article
-              key={pkg.id}
-              className={cn(
-                "game-card flex flex-col gap-3.5 group",
-                clr.border,
-                clr.bg,
-                "stagger-" + Math.min(i + 1, 8),
-                "animate-slide-up",
+            <p className="mt-4 text-[var(--color-soft-ink)]">
+              {tx(
+                "Every package above traces back to a service we have run for HK brands. Tap any to start a conversation.",
+                "上面每個方案，都源自我哋為香港品牌實際執行過嘅服務。撳任何一個即可開始傾。",
               )}
-            >
-              <div className="flex items-center justify-between">
-                <span
-                  className={cn(
-                    "text-[10px] font-mono font-bold tracking-[0.15em] uppercase px-2.5 py-1 rounded-full border",
-                    clr.badgeBg,
-                    clr.badgeText,
-                    clr.badgeBorder,
-                  )}
-                >
-                  Package
-                </span>
-                <span className={cn("h-2.5 w-2.5 rounded-full", clr.dot)} />
-              </div>
-
-              <h3 className="font-heading font-bold text-sm text-foreground leading-snug">
-                {pkg.title}
-              </h3>
-
-              <div className="rounded-lg bg-white border border-gray-200 px-3 py-2">
-                <span className="text-[10px] font-mono uppercase tracking-[0.1em] text-soft-ink">
-                  Best For
-                </span>
-                <p className="text-xs text-foreground font-heading font-semibold mt-0.5">
-                  {pkg.bestFor}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-[0.1em] text-soft-ink mb-2 block">
-                  Deliverables
-                </span>
-                <ul className="space-y-1.5">
-                  {pkg.deliverables.map((d) => (
-                    <li key={d} className="flex items-start gap-2 text-xs text-foreground">
-                      <Check className={cn("h-3.5 w-3.5 mt-0.5 shrink-0", clr.deliverableDot)} />
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <Link
-                to="/contact"
-                className={cn(
-                  "mt-auto inline-flex items-center justify-center gap-1.5 h-10 rounded-full text-sm font-heading font-bold transition-all duration-200 group-hover:scale-[1.02] active:scale-[0.98]",
-                  clr.ctaBg,
-                  clr.ctaText,
-                  clr.ctaHover,
-                )}
-              >
-                Talk to us <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function BottomCTASection() {
-  return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
-      <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 lg:p-14 bg-gradient-to-br from-charcoal via-ink to-charcoal shadow-lg">
-        <div
-          className="absolute top-0 right-0 w-[300px] h-[300px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(196,181,253,0.2) 0%, transparent 60%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,181,194,0.15) 0%, transparent 60%)",
-          }}
-        />
-
-        <div className="relative grid gap-6 lg:grid-cols-[1fr_auto] items-center">
-          <div>
-            <h2 className="font-display text-2xl sm:text-3xl text-white leading-tight">
-              Need a custom campaign package?
-            </h2>
-            <p className="text-gray-300 mt-2">
-              Tell us your goal, budget, and timeline. We will design a tailored creator package for
-              your brand, category, and audience.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2 h-13 px-7 rounded-full bg-secondary text-secondary-foreground font-bold text-sm hover:bg-brand-lilac/90 transition-colors"
-            >
-              <Package className="h-4 w-4" /> Request Custom Package
+
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {legacyActivationServices.map((service) => (
+              <li key={service.id}>
+                <Link
+                  to="/contact"
+                  className="game-card game-card-blue flex h-full flex-col gap-2"
+                >
+                  <span className="tag-mono w-fit">{service.modernHome}</span>
+                  <p className="font-heading text-sm font-bold leading-snug text-[var(--color-ink)]">
+                    {localized(service.title, lang)}
+                  </p>
+                  <span className="mt-auto inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-soft-ink)]">
+                    {tx("Start", "開始")}
+                    <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── 22. CUSTOM CTA — banner ───
+function CustomCTASection() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+      <div className="relative overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-8 shadow-[8px_8px_0_0_var(--color-ink)] sm:p-12 lg:p-14">
+        <span
+          className="pointer-events-none absolute -right-6 -top-10 select-none font-display text-[12rem] leading-none text-outline-ink opacity-20"
+          aria-hidden="true"
+        >
+          +
+        </span>
+        <div className="relative grid items-center gap-7 lg:grid-cols-[1fr_auto]">
+          <div className="max-w-xl">
+            <h2 className="font-display text-[var(--color-ink)]">
+              {tx("Need a custom package?", "需要客製方案？")}
+            </h2>
+            <p className="mt-3 text-[var(--color-ink)]/80">
+              {tx(
+                "Tell us your goal, budget, and timeline. We will design a tailored creator package for your brand, category, and audience.",
+                "話俾我哋知你嘅目標、預算同時間表，我哋會為你嘅品牌、品類同受眾，設計度身嘅創作者方案。",
+              )}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+            <Link to="/contact" className="btn-ink">
+              {tx("Request custom package", "申請客製方案")}
+              <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/playbooks"
-              className="inline-flex items-center justify-center h-13 px-7 rounded-full bg-white text-foreground font-bold text-sm border-2 border-white hover:bg-gray-100 transition-colors"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-card)] px-7 font-heading text-sm font-bold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-paper)]"
             >
-              Browse Playbooks
+              {tx("Browse playbooks", "瀏覽 Playbooks")}
             </Link>
           </div>
         </div>
+        <p className="relative mt-7 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
+          {tx(
+            "No retainer to start · HK market · Reply in 1 business day",
+            "免綁約起步 · 香港市場 · 一個工作天內回覆",
+          )}
+        </p>
       </div>
     </section>
   );

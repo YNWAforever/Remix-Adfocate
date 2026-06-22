@@ -10,8 +10,11 @@ import {
   Wallet,
   Store,
   Users,
+  Mail,
+  ArrowUpRight,
 } from "lucide-react";
 import { legacyContact } from "@/data/legacyAdfocateContent";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_site/contact")({
@@ -20,13 +23,16 @@ export const Route = createFileRoute("/_site/contact")({
 
 type TabId = "brand" | "creator" | "adfoplace" | "capital" | "partner";
 
-const tabs: { id: TabId; label: string; icon: typeof Building2 }[] = [
-  { id: "brand", label: "Brand Enquiry", icon: Building2 },
-  { id: "creator", label: "Creator Signup", icon: User },
-  { id: "adfoplace", label: "Adfoplace Offer", icon: Store },
-  { id: "capital", label: "Capital Waitlist", icon: Wallet },
-  { id: "partner", label: "Partner Enquiry", icon: Users },
+const tabs: { id: TabId; label: string; labelZh: string; icon: typeof Building2 }[] = [
+  { id: "brand", label: "Brand Enquiry", labelZh: "品牌查詢", icon: Building2 },
+  { id: "creator", label: "Creator Signup", labelZh: "創作者報名", icon: User },
+  { id: "adfoplace", label: "Adfoplace Offer", labelZh: "Adfoplace 優惠", icon: Store },
+  { id: "capital", label: "Capital Waitlist", labelZh: "資金候補", icon: Wallet },
+  { id: "partner", label: "Partner Enquiry", labelZh: "合作查詢", icon: Users },
 ];
+
+// Which audience path each tab belongs to — drives the two-path toggle context.
+const creatorTabs: TabId[] = ["creator", "capital"];
 
 const campaignInterests = [
   "KOL Awareness Campaign",
@@ -89,6 +95,9 @@ const incomeStreams = [
 const submitToastMessage = `Thanks! This preview form has recorded your interest locally. For live enquiries, email ${legacyContact.email}.`;
 
 function ContactPage() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+
   const [activeTab, setActiveTab] = useState<TabId>("brand");
   const [submitted, setSubmitted] = useState(false);
 
@@ -105,8 +114,8 @@ function ContactPage() {
 
   return (
     <div>
-      <HeroSection />
-      <FormSection
+      <ContactLayout
+        tx={tx}
         activeTab={activeTab}
         switchTab={switchTab}
         submitted={submitted}
@@ -117,118 +126,262 @@ function ContactPage() {
   );
 }
 
-function HeroSection() {
-  return (
-    <section className="relative overflow-hidden pt-8 pb-8 sm:pt-20 sm:pb-14">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(255,181,194,0.15) 0%, transparent 65%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 -left-32 w-[400px] h-[400px] rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgba(167,243,208,0.12) 0%, transparent 65%)",
-          }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <span className="inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-brand-pink border-2 border-brand-pink/30 rounded-full px-3 py-1.5 bg-white mb-6">
-            Contact
-          </span>
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground max-w-3xl leading-[1.05] mb-5">
-            Let's talk about your campaign<span className="text-brand-pink">.</span>
-          </h1>
-          <p className="text-soft-ink text-sm sm:text-base max-w-xl leading-relaxed">
-            Choose the right form below for campaign planning, creator signup, Adfoplace offers,
-            capital interest, or partnerships. For live enquiries, email{" "}
-            <a
-              href={`mailto:${legacyContact.email}`}
-              className="font-bold text-brand-pink hover:underline"
-            >
-              {legacyContact.email}
-            </a>
-            .
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FormSection({
+function ContactLayout({
+  tx,
   activeTab,
   switchTab,
   submitted,
   handleSubmit,
   setSubmitted,
 }: {
+  tx: (en: string, zh: string) => string;
   activeTab: TabId;
   switchTab: (tab: TabId) => void;
   submitted: boolean;
   handleSubmit: (e: React.FormEvent) => void;
   setSubmitted: (v: boolean) => void;
 }) {
+  const isCreatorPath = creatorTabs.includes(activeTab);
+
   return (
-    <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200">
-      {/* Tab bar */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {tabs.map((tab) => {
-          const active = activeTab === tab.id;
-          const TabIcon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => switchTab(tab.id)}
-              className={cn(
-                "px-4 h-10 rounded-full text-sm font-bold border-2 transition-[color,background-color,border-color] duration-150 inline-flex items-center gap-1.5",
-                active
-                  ? "filter-pill-active bg-brand-pink/10 border-brand-pink/40 text-brand-pink"
-                  : "filter-pill bg-white border-gray-200 text-soft-ink hover:text-foreground hover:border-gray-300",
-              )}
-            >
-              <TabIcon className="h-3.5 w-3.5" /> {tab.label}
-            </button>
-          );
-        })}
+    <section className="relative overflow-hidden dot-pattern">
+      {/* soft ambient glows, decorative */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute -top-20 right-[-6rem] w-[460px] h-[460px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(206,26,92,0.10) 0%, transparent 65%)",
+          }}
+        />
+        <div
+          className="absolute bottom-[-8rem] -left-32 w-[420px] h-[420px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(0,229,255,0.12) 0%, transparent 65%)",
+          }}
+        />
       </div>
 
-      {/* Success state */}
-      {submitted ? (
-        <div className="game-card border-2 border-brand-mint/30 bg-brand-mint/5 p-8 sm:p-10 text-center">
-          <CheckCircle2 className="h-12 w-12 text-brand-mint mx-auto mb-4" />
-          <h2 className="font-display text-2xl text-foreground mb-2">Thanks!</h2>
-          <p className="text-sm text-soft-ink max-w-md mx-auto leading-relaxed mb-6">
-            This preview form has recorded your interest locally. Live submissions will be connected
-            in the next phase. For live enquiries, email {legacyContact.email}.
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-10 pb-16 sm:pt-20 sm:pb-24">
+        {/* ── HERO: off-grid editorial (text lower-left, artifact upper-right) ── */}
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-end mb-12 sm:mb-16">
+          {/* artifact comes FIRST on desktop's right column via order, text anchors bottom-left */}
+          <div className="lg:col-span-7 lg:pb-2 order-2 lg:order-1">
+            <span className="sticker">{tx("Say hi", "傾偈")}</span>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-[4.25rem] leading-[1.02] mt-5 mb-5 max-w-2xl">
+              {tx("Let's talk about", "傾下你嘅")}
+              <br />
+              {tx("your next move", "下一步")}
+              <span className="text-[var(--color-magenta)]">.</span>
+            </h1>
+            <p className="font-body text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl leading-relaxed">
+              {tx(
+                "Brands, creators, partners — pick a path below and we'll route you to the right team. Hong Kong-based, fast to reply.",
+                "品牌、創作者、合作夥伴 —— 揀返條啱嘅路，我哋會幫你搵啱負責嘅團隊。香港團隊，回覆快。",
+              )}
+            </p>
+
+            <a
+              href={`mailto:${legacyContact.email}`}
+              className="group inline-flex items-center gap-2 mt-6 font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-ink)] font-bold"
+            >
+              <Mail className="h-4 w-4 text-[var(--color-magenta)]" aria-hidden="true" />
+              <span className="border-b-2 border-[var(--color-ink)] pb-0.5">
+                {legacyContact.email}
+              </span>
+              <ArrowUpRight
+                className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+
+          {/* artifact: a small "routing card" mock built from primitives */}
+          <div className="lg:col-span-5 order-1 lg:order-2">
+            <RoutingArtifact tx={tx} isCreatorPath={isCreatorPath} />
+          </div>
+        </div>
+
+        {/* ── Two-path framing line + tab toggle ── */}
+        <div className="mb-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-soft-ink)] font-bold mb-3">
+            {tx("Choose your path", "揀返條路")}
           </p>
-          <button
-            type="button"
-            onClick={() => setSubmitted(false)}
-            className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-white border-2 border-gray-200 text-foreground font-bold text-sm hover:border-gray-300 transition-colors"
-          >
-            Send another enquiry
-          </button>
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label={tx("Enquiry type", "查詢類型")}>
+            {tabs.map((tab) => {
+              const active = activeTab === tab.id;
+              const TabIcon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => switchTab(tab.id)}
+                  className={cn(
+                    "filter-pill gap-1.5",
+                    active && "filter-pill-active",
+                  )}
+                >
+                  <TabIcon className="h-3.5 w-3.5" aria-hidden="true" />{" "}
+                  {tx(tab.label, tab.labelZh)}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* recipient/context line that adjusts per path */}
+          <p className="mt-3 font-body text-sm text-[var(--color-soft-ink)] max-w-xl">
+            {isCreatorPath
+              ? tx(
+                  "Creator path — goes to the Creator Success team for onboarding and earnings.",
+                  "創作者路線 —— 交由創作者成長團隊跟進報名同收入安排。",
+                )
+              : tx(
+                  "Brand & partner path — goes to the Campaigns team for planning and scoping.",
+                  "品牌及合作路線 —— 交由活動策劃團隊跟進方案同報價。",
+                )}
+          </p>
         </div>
-      ) : (
-        <div className="game-card border-2 border-gray-200 bg-white p-6 sm:p-8">
-          {activeTab === "brand" && <BrandForm onSubmit={handleSubmit} />}
-          {activeTab === "creator" && <CreatorForm onSubmit={handleSubmit} />}
-          {activeTab === "adfoplace" && <AdfoplaceForm onSubmit={handleSubmit} />}
-          {activeTab === "capital" && <CapitalForm onSubmit={handleSubmit} />}
-          {activeTab === "partner" && <PartnerForm onSubmit={handleSubmit} />}
-        </div>
-      )}
+
+        {/* ── Form / Success card ── */}
+        {submitted ? (
+          <SuccessState tx={tx} setSubmitted={setSubmitted} />
+        ) : (
+          <div className="pastel-card p-6 sm:p-8 lg:p-10 bg-[var(--color-card)]">
+            {activeTab === "brand" && <BrandForm tx={tx} onSubmit={handleSubmit} />}
+            {activeTab === "creator" && <CreatorForm tx={tx} onSubmit={handleSubmit} />}
+            {activeTab === "adfoplace" && <AdfoplaceForm tx={tx} onSubmit={handleSubmit} />}
+            {activeTab === "capital" && <CapitalForm tx={tx} onSubmit={handleSubmit} />}
+            {activeTab === "partner" && <PartnerForm tx={tx} onSubmit={handleSubmit} />}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
 
-function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
+/* ── Hero artifact: a routing card mock (pastel-card + tag-mono + level-pill) ── */
+function RoutingArtifact({
+  tx,
+  isCreatorPath,
+}: {
+  tx: (en: string, zh: string) => string;
+  isCreatorPath: boolean;
+}) {
+  return (
+    <div className="pastel-card p-5 sm:p-6 bg-[var(--color-card)] animate-float">
+      <div className="flex items-center justify-between mb-4">
+        <span className="tag-mono">{tx("Routing", "分流")}</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
+          HK · 24h
+        </span>
+      </div>
+
+      <p className="font-display text-2xl leading-tight mb-1">
+        {isCreatorPath
+          ? tx("Creator desk", "創作者組")
+          : tx("Campaign desk", "活動策劃組")}
+      </p>
+      <p className="font-body text-sm text-[var(--color-soft-ink)] mb-5">
+        {isCreatorPath
+          ? tx("Onboarding · earnings · levels", "報名 · 收入 · 升級")
+          : tx("Planning · creators · reporting", "策劃 · 配對 · 數據")}
+      </p>
+
+      {/* level ladder cue, decorative */}
+      <div className="flex items-center gap-1.5 mb-5" aria-hidden="true">
+        <span className="level-pill level-pill-l0">L0</span>
+        <span className="level-pill level-pill-l2">L2</span>
+        <span className="level-pill level-pill-l4">L4</span>
+        <span className="level-pill level-pill-l6">L6</span>
+      </div>
+
+      <div className="flex items-center gap-3 border-t-2 border-dashed border-[var(--color-ink)]/15 pt-4">
+        <div className="grid h-9 w-9 place-items-center rounded-full bg-[var(--color-acid)] border-2 border-[var(--color-ink)]">
+          <Sparkles className="h-4 w-4 text-[var(--color-ink)]" aria-hidden="true" />
+        </div>
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] font-bold leading-tight">
+          {tx("Real humans, fast", "真人回覆，夠快")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Success state: centered confirmation (second-read = oversized stroked check echo) ── */
+function SuccessState({
+  tx,
+  setSubmitted,
+}: {
+  tx: (en: string, zh: string) => string;
+  setSubmitted: (v: boolean) => void;
+}) {
+  return (
+    <div className="pastel-card bg-[var(--color-ink)] p-10 sm:p-14 text-center relative overflow-hidden">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute -right-6 -bottom-10 font-display text-[12rem] leading-none text-outline-yellow opacity-30"
+      >
+        ✓
+      </span>
+      <div className="relative">
+        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-acid)] border-2 border-[var(--color-acid)]">
+          <CheckCircle2 className="h-9 w-9 text-[var(--color-ink)]" aria-hidden="true" />
+        </div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-acid)] font-bold mb-3">
+          {tx("Received", "已收到")}
+        </p>
+        <h2 className="font-display text-3xl sm:text-4xl text-[var(--color-paper)] mb-3">
+          {tx("Thanks — we got it.", "多謝你！收到喇。")}
+        </h2>
+        <p className="font-body text-sm text-[var(--color-paper)]/75 max-w-md mx-auto leading-relaxed mb-7">
+          {tx(
+            `This preview form recorded your interest locally. Live submissions connect in the next phase. For live enquiries, email ${legacyContact.email}.`,
+            `呢個預覽表格已經喺本機記低你嘅查詢。正式提交功能會喺下一階段接通。如要即時查詢，可電郵 ${legacyContact.email}。`,
+          )}
+        </p>
+        <button type="button" onClick={() => setSubmitted(false)} className="btn-primary">
+          {tx("Send another enquiry", "再發一個查詢")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FormHeader({
+  icon: Icon,
+  accent,
+  title,
+  sub,
+}: {
+  icon: typeof Building2;
+  accent: string;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <div className="mb-2">
+      <div className="flex items-center gap-2.5">
+        <div
+          className="grid h-9 w-9 place-items-center rounded-full border-2 border-[var(--color-ink)]"
+          style={{ background: accent }}
+        >
+          <Icon className="h-4 w-4 text-[var(--color-ink)]" aria-hidden="true" />
+        </div>
+        <h2 className="font-display text-xl sm:text-2xl text-[var(--color-ink)]">{title}</h2>
+      </div>
+      <p className="mt-2 font-body text-sm text-[var(--color-soft-ink)]">{sub}</p>
+    </div>
+  );
+}
+
+function BrandForm({
+  tx,
+  onSubmit,
+}: {
+  tx: (en: string, zh: string) => string;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -242,31 +395,33 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Building2 className="h-5 w-5 text-brand-pink" />
-        <h2 className="font-display text-xl text-foreground">Brand Enquiry</h2>
-      </div>
+      <FormHeader
+        icon={Building2}
+        accent="var(--color-magenta-pop)"
+        title={tx("Brand Enquiry", "品牌查詢")}
+        sub={tx("Tell us about the campaign you have in mind.", "話我哋知你諗緊嘅活動。")}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Name">
+        <Field label={tx("Name", "姓名")}>
           <Input
             name="name"
             value={form.name}
             onChange={(v) => setForm({ ...form, name: v })}
             required
-            placeholder="Your name"
+            placeholder={tx("Your name", "你嘅名")}
           />
         </Field>
-        <Field label="Company">
+        <Field label={tx("Company", "公司")}>
           <Input
             name="company"
             value={form.company}
             onChange={(v) => setForm({ ...form, company: v })}
             required
-            placeholder="Your company"
+            placeholder={tx("Your company", "你嘅公司")}
           />
         </Field>
-        <Field label="Email">
+        <Field label={tx("Email", "電郵")}>
           <Input
             name="email"
             type="email"
@@ -276,7 +431,7 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="you@company.com"
           />
         </Field>
-        <Field label="Phone / WhatsApp">
+        <Field label={tx("Phone / WhatsApp", "電話 / WhatsApp")}>
           <Input
             name="phone"
             type="tel"
@@ -285,7 +440,7 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="+852 xxxx xxxx"
           />
         </Field>
-        <Field label="Campaign Interest">
+        <Field label={tx("Campaign Interest", "活動類型")}>
           <Select
             name="campaignInterest"
             value={form.campaignInterest}
@@ -293,7 +448,7 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             onChange={(v) => setForm({ ...form, campaignInterest: v })}
           />
         </Field>
-        <Field label="Budget Range">
+        <Field label={tx("Budget Range", "預算範圍")}>
           <Select
             name="budget"
             value={form.budget}
@@ -301,7 +456,7 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             onChange={(v) => setForm({ ...form, budget: v })}
           />
         </Field>
-        <Field label="Market">
+        <Field label={tx("Market", "市場")}>
           <Select
             name="market"
             value={form.market}
@@ -311,32 +466,32 @@ function BrandForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
         </Field>
       </div>
 
-      <Field label="Message">
-        <textarea
+      <Field label={tx("Message", "訊息")}>
+        <Textarea
           name="message"
           value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onChange={(v) => setForm({ ...form, message: v })}
           rows={4}
-          className="w-full rounded-xl bg-white border-2 border-gray-200 px-4 py-3 text-sm text-foreground placeholder-gray-400 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-pink/40 focus-visible:border-brand-pink/50 transition-[border-color,box-shadow] duration-150 resize-none"
-          placeholder="Tell us about your campaign goals, timeline, and target audience..."
+          placeholder={tx(
+            "Tell us about your campaign goals, timeline, and target audience...",
+            "講下你嘅活動目標、時間表同目標受眾……",
+          )}
         />
       </Field>
 
-      <button
-        type="submit"
-        className="h-12 rounded-full bg-primary text-primary-foreground font-bold text-sm hover:bg-rose-hover transition-colors inline-flex items-center justify-center gap-2"
-      >
-        <Send className="h-4 w-4" /> Send Brand Enquiry
-      </button>
-
-      <p className="text-[10px] text-soft-ink/70 text-center">
-        Preview form: for live enquiries, email {legacyContact.email}.
-      </p>
+      <SubmitButton icon={Send} label={tx("Send Brand Enquiry", "提交品牌查詢")} />
+      <PreviewNote tx={tx} />
     </form>
   );
 }
 
-function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
+function CreatorForm({
+  tx,
+  onSubmit,
+}: {
+  tx: (en: string, zh: string) => string;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -356,31 +511,38 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
     setForm({ ...form, interests: { ...form.interests, [key]: !form.interests[key] } });
   };
 
-  const interestLabels: { key: keyof typeof form.interests; label: string; emoji: string }[] = [
-    { key: "missions", label: "Missions", emoji: "🎯" },
-    { key: "offers", label: "Adfoplace Offers", emoji: "🛍️" },
-    { key: "academy", label: "Academy & Resources", emoji: "📚" },
-    { key: "capitalWaitlist", label: "Capital Waitlist", emoji: "🏦" },
+  const interestLabels: {
+    key: keyof typeof form.interests;
+    label: string;
+    labelZh: string;
+    emoji: string;
+  }[] = [
+    { key: "missions", label: "Missions", labelZh: "任務", emoji: "🎯" },
+    { key: "offers", label: "Adfoplace Offers", labelZh: "Adfoplace 優惠", emoji: "🛍️" },
+    { key: "academy", label: "Academy & Resources", labelZh: "學院同資源", emoji: "📚" },
+    { key: "capitalWaitlist", label: "Capital Waitlist", labelZh: "資金候補", emoji: "🏦" },
   ];
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="flex items-center gap-2 mb-1">
-        <User className="h-5 w-5 text-brand-mint" />
-        <h2 className="font-display text-xl text-foreground">Creator Signup</h2>
-      </div>
+      <FormHeader
+        icon={User}
+        accent="var(--color-acid)"
+        title={tx("Creator Signup", "創作者報名")}
+        sub={tx("Start earning — tell us who you are.", "開始賺錢 —— 介紹下你自己。")}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Name">
+        <Field label={tx("Name", "姓名")}>
           <Input
             name="name"
             value={form.name}
             onChange={(v) => setForm({ ...form, name: v })}
             required
-            placeholder="Your name"
+            placeholder={tx("Your name", "你嘅名")}
           />
         </Field>
-        <Field label="Email">
+        <Field label={tx("Email", "電郵")}>
           <Input
             name="email"
             type="email"
@@ -390,7 +552,7 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="you@email.com"
           />
         </Field>
-        <Field label="Phone / WhatsApp">
+        <Field label={tx("Phone / WhatsApp", "電話 / WhatsApp")}>
           <Input
             name="phone"
             type="tel"
@@ -399,7 +561,7 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="+852 xxxx xxxx"
           />
         </Field>
-        <Field label="Social Handle">
+        <Field label={tx("Social Handle", "社交帳號")}>
           <Input
             name="socialHandle"
             value={form.socialHandle}
@@ -407,7 +569,7 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="@yourhandle"
           />
         </Field>
-        <Field label="Main Category">
+        <Field label={tx("Main Category", "主要範疇")}>
           <Select
             name="mainCategory"
             value={form.mainCategory}
@@ -415,7 +577,7 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             onChange={(v) => setForm({ ...form, mainCategory: v })}
           />
         </Field>
-        <Field label="Current Level (Self-Select)">
+        <Field label={tx("Current Level (Self-Select)", "現時等級（自選）")}>
           <Select
             name="currentLevel"
             value={form.currentLevel}
@@ -425,41 +587,38 @@ function CreatorForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
         </Field>
       </div>
 
-      <Field label="I'm interested in">
+      <Field label={tx("I'm interested in", "我有興趣")}>
         <div className="flex flex-wrap gap-2">
           {interestLabels.map((item) => (
             <button
               key={item.key}
               type="button"
+              aria-pressed={form.interests[item.key]}
               onClick={() => toggleInterest(item.key)}
               className={cn(
-                "px-4 h-10 rounded-full text-sm font-bold border-2 transition-[color,background-color,border-color] duration-150 inline-flex items-center gap-1.5",
-                form.interests[item.key]
-                  ? "bg-brand-mint/10 border-brand-mint/40 text-brand-mint"
-                  : "bg-white border-gray-200 text-soft-ink hover:text-foreground hover:border-gray-300",
+                "filter-pill gap-1.5",
+                form.interests[item.key] && "filter-pill-active",
               )}
             >
-              {item.emoji} {item.label}
+              {item.emoji} {tx(item.label, item.labelZh)}
             </button>
           ))}
         </div>
       </Field>
 
-      <button
-        type="submit"
-        className="h-12 rounded-full bg-brand-mint text-foreground font-bold text-sm hover:bg-mint/85 transition-colors inline-flex items-center justify-center gap-2"
-      >
-        <Sparkles className="h-4 w-4" /> Join as Creator
-      </button>
-
-      <p className="text-[10px] text-soft-ink/70 text-center">
-        Preview form: for live creator enquiries, email {legacyContact.email}.
-      </p>
+      <SubmitButton icon={Sparkles} label={tx("Join as Creator", "成為創作者")} />
+      <PreviewNote tx={tx} />
     </form>
   );
 }
 
-function AdfoplaceForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
+function AdfoplaceForm({
+  tx,
+  onSubmit,
+}: {
+  tx: (en: string, zh: string) => string;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -470,31 +629,33 @@ function AdfoplaceForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void })
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Store className="h-5 w-5 text-brand-blue" />
-        <h2 className="font-display text-xl text-foreground">List an Adfoplace Offer</h2>
-      </div>
+      <FormHeader
+        icon={Store}
+        accent="var(--color-cyan)"
+        title={tx("List an Adfoplace Offer", "上架 Adfoplace 優惠")}
+        sub={tx("Put your offer in front of active creators.", "畀活躍創作者睇到你嘅優惠。")}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Name">
+        <Field label={tx("Name", "姓名")}>
           <Input
             name="name"
             value={form.name}
             onChange={(v) => setForm({ ...form, name: v })}
             required
-            placeholder="Your name"
+            placeholder={tx("Your name", "你嘅名")}
           />
         </Field>
-        <Field label="Company">
+        <Field label={tx("Company", "公司")}>
           <Input
             name="company"
             value={form.company}
             onChange={(v) => setForm({ ...form, company: v })}
             required
-            placeholder="Brand / company name"
+            placeholder={tx("Brand / company name", "品牌 / 公司名稱")}
           />
         </Field>
-        <Field label="Email">
+        <Field label={tx("Email", "電郵")}>
           <Input
             name="email"
             type="email"
@@ -504,7 +665,7 @@ function AdfoplaceForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void })
             placeholder="you@company.com"
           />
         </Field>
-        <Field label="Offer Type">
+        <Field label={tx("Offer Type", "優惠類型")}>
           <Select
             name="offerType"
             value={form.offerType}
@@ -522,32 +683,32 @@ function AdfoplaceForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void })
         </Field>
       </div>
 
-      <Field label="Message">
-        <textarea
+      <Field label={tx("Message", "訊息")}>
+        <Textarea
           name="message"
           value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onChange={(v) => setForm({ ...form, message: v })}
           rows={4}
-          className="w-full rounded-xl bg-white border-2 border-gray-200 px-4 py-3 text-sm text-foreground placeholder-gray-400 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-blue/40 focus-visible:border-brand-blue/50 transition-[border-color,box-shadow] duration-150 resize-none"
-          placeholder="Describe the offer, reward structure, and creator requirements..."
+          placeholder={tx(
+            "Describe the offer, reward structure, and creator requirements...",
+            "描述優惠內容、獎勵結構同創作者要求……",
+          )}
         />
       </Field>
 
-      <button
-        type="submit"
-        className="h-12 rounded-full bg-sky text-foreground font-bold text-sm hover:bg-brand-blue/90 transition-colors inline-flex items-center justify-center gap-2"
-      >
-        <Store className="h-4 w-4" /> Submit Offer Request
-      </button>
-
-      <p className="text-[10px] text-soft-ink/70 text-center">
-        Preview form: for live offer enquiries, email {legacyContact.email}.
-      </p>
+      <SubmitButton icon={Store} label={tx("Submit Offer Request", "提交優惠申請")} />
+      <PreviewNote tx={tx} />
     </form>
   );
 }
 
-function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
+function CapitalForm({
+  tx,
+  onSubmit,
+}: {
+  tx: (en: string, zh: string) => string;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
   const [form, setForm] = useState({
     name: "",
     creatorHandle: "",
@@ -560,22 +721,24 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Wallet className="h-5 w-5 text-brand-yellow" />
-        <h2 className="font-display text-xl text-foreground">Capital Waitlist</h2>
-      </div>
+      <FormHeader
+        icon={Wallet}
+        accent="var(--color-acid)"
+        title={tx("Capital Waitlist", "資金候補")}
+        sub={tx("Register interest in future creator capital.", "登記對未來創作者資金嘅興趣。")}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Name">
+        <Field label={tx("Name", "姓名")}>
           <Input
             name="name"
             value={form.name}
             onChange={(v) => setForm({ ...form, name: v })}
             required
-            placeholder="Your name"
+            placeholder={tx("Your name", "你嘅名")}
           />
         </Field>
-        <Field label="Creator Handle">
+        <Field label={tx("Creator Handle", "創作者帳號")}>
           <Input
             name="creatorHandle"
             value={form.creatorHandle}
@@ -584,7 +747,7 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="@yourhandle"
           />
         </Field>
-        <Field label="Email">
+        <Field label={tx("Email", "電郵")}>
           <Input
             name="email"
             type="email"
@@ -594,7 +757,7 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="you@email.com"
           />
         </Field>
-        <Field label="Estimated Monthly Income">
+        <Field label={tx("Estimated Monthly Income", "估計每月收入")}>
           <Input
             name="estimatedMonthlyIncome"
             value={form.estimatedMonthlyIncome}
@@ -602,7 +765,7 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="e.g. HK$5,000"
           />
         </Field>
-        <Field label="Main Income Stream">
+        <Field label={tx("Main Income Stream", "主要收入來源")}>
           <Select
             name="mainIncomeStream"
             value={form.mainIncomeStream}
@@ -612,14 +775,21 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
         </Field>
       </div>
 
-      <Field label="Why are you interested in creator capital?">
-        <textarea
+      <Field
+        label={tx(
+          "Why are you interested in creator capital?",
+          "點解你對創作者資金有興趣？",
+        )}
+      >
+        <Textarea
           name="reason"
           value={form.reason}
-          onChange={(e) => setForm({ ...form, reason: e.target.value })}
+          onChange={(v) => setForm({ ...form, reason: v })}
           rows={3}
-          className="w-full rounded-xl bg-white border-2 border-gray-200 px-4 py-3 text-sm text-foreground placeholder-gray-400 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-yellow/40 focus-visible:border-brand-yellow/50 transition-[border-color,box-shadow] duration-150 resize-none"
-          placeholder="e.g. Equipment funding, campaign float, business growth..."
+          placeholder={tx(
+            "e.g. Equipment funding, campaign float, business growth...",
+            "例如：器材資金、活動周轉、業務增長……",
+          )}
         />
       </Field>
 
@@ -629,30 +799,29 @@ function CapitalForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
           checked={form.consent}
           onChange={(e) => setForm({ ...form, consent: e.target.checked })}
           required
-          className="mt-1 h-4 w-4 rounded border-2 border-gray-300 text-brand-yellow focus:ring-brand-yellow shrink-0"
+          className="mt-1 h-4 w-4 rounded border-2 border-[var(--color-ink)]/30 text-[var(--color-acid)] focus:ring-[var(--color-acid)] shrink-0"
         />
-        <span className="text-xs text-soft-ink leading-relaxed">
-          I understand this is a preview waitlist only. Adfocate does not provide financing in this
-          prototype. Any capital or payout advance product would be subject to eligibility, risk
-          assessment, approval, and applicable licensed partner or regulatory arrangements.
+        <span className="text-xs text-[var(--color-soft-ink)] leading-relaxed">
+          {tx(
+            "I understand this is a preview waitlist only. Adfocate does not provide financing in this prototype. Any capital or payout advance product would be subject to eligibility, risk assessment, approval, and applicable licensed partner or regulatory arrangements.",
+            "我明白呢個只係預覽候補名單。Adfocate 喺呢個原型唔提供任何融資。任何資金或預支產品須視乎資格、風險評估、審批，以及適用嘅持牌夥伴或監管安排。",
+          )}
         </span>
       </label>
 
-      <button
-        type="submit"
-        className="h-12 rounded-full bg-brand-yellow text-foreground font-bold text-sm hover:bg-butter/85 transition-colors inline-flex items-center justify-center gap-2"
-      >
-        <Wallet className="h-4 w-4" /> Join Capital Waitlist
-      </button>
-
-      <p className="text-[10px] text-soft-ink/70 text-center">
-        Preview form: for live capital enquiries, email {legacyContact.email}.
-      </p>
+      <SubmitButton icon={Wallet} label={tx("Join Capital Waitlist", "加入資金候補")} />
+      <PreviewNote tx={tx} />
     </form>
   );
 }
 
-function PartnerForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
+function PartnerForm({
+  tx,
+  onSubmit,
+}: {
+  tx: (en: string, zh: string) => string;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -663,31 +832,33 @@ function PartnerForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-5">
-      <div className="flex items-center gap-2 mb-1">
-        <Users className="h-5 w-5 text-brand-lilac" />
-        <h2 className="font-display text-xl text-foreground">Partner Enquiry</h2>
-      </div>
+      <FormHeader
+        icon={Users}
+        accent="var(--color-violet)"
+        title={tx("Partner Enquiry", "合作查詢")}
+        sub={tx("Let's explore building something together.", "一齊傾下點樣合作。")}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Name">
+        <Field label={tx("Name", "姓名")}>
           <Input
             name="name"
             value={form.name}
             onChange={(v) => setForm({ ...form, name: v })}
             required
-            placeholder="Your name"
+            placeholder={tx("Your name", "你嘅名")}
           />
         </Field>
-        <Field label="Company">
+        <Field label={tx("Company", "公司")}>
           <Input
             name="company"
             value={form.company}
             onChange={(v) => setForm({ ...form, company: v })}
             required
-            placeholder="Your company"
+            placeholder={tx("Your company", "你嘅公司")}
           />
         </Field>
-        <Field label="Email">
+        <Field label={tx("Email", "電郵")}>
           <Input
             name="email"
             type="email"
@@ -697,7 +868,7 @@ function PartnerForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
             placeholder="you@company.com"
           />
         </Field>
-        <Field label="Partnership Type">
+        <Field label={tx("Partnership Type", "合作類型")}>
           <Select
             name="partnershipType"
             value={form.partnershipType}
@@ -707,35 +878,48 @@ function PartnerForm({ onSubmit }: { onSubmit: (e: React.FormEvent) => void }) {
         </Field>
       </div>
 
-      <Field label="Message">
-        <textarea
+      <Field label={tx("Message", "訊息")}>
+        <Textarea
           name="message"
           value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          onChange={(v) => setForm({ ...form, message: v })}
           rows={4}
-          className="w-full rounded-xl bg-white border-2 border-gray-200 px-4 py-3 text-sm text-foreground placeholder-gray-400 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-lilac/40 focus-visible:border-brand-lilac/50 transition-[border-color,box-shadow] duration-150 resize-none"
-          placeholder="Tell us about the partnership opportunity..."
+          placeholder={tx(
+            "Tell us about the partnership opportunity...",
+            "話我哋知呢個合作機會……",
+          )}
         />
       </Field>
 
-      <button
-        type="submit"
-        className="h-12 rounded-full bg-secondary text-secondary-foreground font-bold text-sm hover:bg-brand-lilac/90 transition-colors inline-flex items-center justify-center gap-2"
-      >
-        <Send className="h-4 w-4" /> Send Partner Enquiry
-      </button>
-
-      <p className="text-[10px] text-soft-ink/70 text-center">
-        Preview form: for live partnership enquiries, email {legacyContact.email}.
-      </p>
+      <SubmitButton icon={Send} label={tx("Send Partner Enquiry", "提交合作查詢")} />
+      <PreviewNote tx={tx} />
     </form>
+  );
+}
+
+function SubmitButton({ icon: Icon, label }: { icon: typeof Send; label: string }) {
+  return (
+    <button type="submit" className="btn-primary w-full">
+      <Icon className="h-4 w-4" aria-hidden="true" /> {label}
+    </button>
+  );
+}
+
+function PreviewNote({ tx }: { tx: (en: string, zh: string) => string }) {
+  return (
+    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-soft-ink)]/70 text-center">
+      {tx(
+        `Preview form — for live enquiries, email ${legacyContact.email}.`,
+        `預覽表格 —— 如要即時查詢，請電郵 ${legacyContact.email}。`,
+      )}
+    </p>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-soft-ink font-bold">
+      <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--color-soft-ink)] font-bold">
         {label}
       </span>
       <div className="mt-2">{children}</div>
@@ -766,7 +950,7 @@ function Input({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full h-11 rounded-full bg-white border-2 border-gray-200 px-4 text-sm text-foreground placeholder-gray-400 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-pink/40 focus-visible:border-brand-pink/50 transition-[border-color,box-shadow] duration-150"
+      className="w-full h-11 rounded-full bg-[var(--color-card)] border-2 border-[var(--color-ink)]/15 px-4 text-sm text-[var(--color-ink)] placeholder-[var(--color-soft-ink)]/50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--color-magenta)]/30 focus-visible:border-[var(--color-magenta)] transition-[border-color,box-shadow] duration-150"
     />
   );
 }
@@ -787,7 +971,7 @@ function Select({
       name={name}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full h-11 rounded-full bg-white border-2 border-gray-200 px-4 text-sm text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-pink/40 focus-visible:border-brand-pink/50 transition-[border-color,box-shadow] duration-150 appearance-none cursor-pointer"
+      className="w-full h-11 rounded-full bg-[var(--color-card)] border-2 border-[var(--color-ink)]/15 px-4 text-sm text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--color-magenta)]/30 focus-visible:border-[var(--color-magenta)] transition-[border-color,box-shadow] duration-150 appearance-none cursor-pointer"
     >
       {options.map((o) => (
         <option key={o} value={o}>
@@ -795,5 +979,30 @@ function Select({
         </option>
       ))}
     </select>
+  );
+}
+
+function Textarea({
+  name,
+  value,
+  onChange,
+  rows,
+  placeholder,
+}: {
+  name: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows: number;
+  placeholder?: string;
+}) {
+  return (
+    <textarea
+      name={name}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      rows={rows}
+      placeholder={placeholder}
+      className="w-full rounded-2xl bg-[var(--color-card)] border-2 border-[var(--color-ink)]/15 px-4 py-3 text-sm text-[var(--color-ink)] placeholder-[var(--color-soft-ink)]/50 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[var(--color-magenta)]/30 focus-visible:border-[var(--color-magenta)] transition-[border-color,box-shadow] duration-150 resize-none"
+    />
   );
 }
