@@ -233,3 +233,37 @@ suite("admin engaged roster", () => {
     expect(creators.find((c: { id: string }) => c.id === done.userId)).toBeUndefined();
   });
 });
+
+suite("B2: workspace-scoped review", () => {
+  const DEMO = "00000000-0000-0000-0000-0000000000aa";
+  const OTHER = "00000000-0000-0000-0000-0000000000bb";
+  afterAll(cleanup);
+
+  it("filters applications by ?workspace= (demo returns the row, bogus returns none)", async () => {
+    const koc = await makeCreator("ws-scope@test.local", 0);
+    await makeMission({ slug: "test-ws-scope", points_reward: 100, quota: 5, access_type: "application" });
+    await koreq("/missions/test-ws-scope/apply", koc.jwt, { method: "POST" });
+
+    const scoped = await adminreq(`/admin/applications?workspace=${DEMO}`);
+    expect(scoped.status).toBe(200);
+    const rows = (await scoped.json()).applications as Array<{ missions: { slug: string } }>;
+    expect(rows.some((r) => r.missions.slug === "test-ws-scope")).toBe(true);
+
+    const none = await adminreq(`/admin/applications?workspace=${OTHER}`);
+    expect(((await none.json()).applications as unknown[]).length).toBe(0);
+  });
+
+  it("filters submissions by ?workspace=", async () => {
+    const none = await adminreq(`/admin/submissions?status=submitted&workspace=${OTHER}`);
+    expect(((await none.json()).submissions as unknown[]).length).toBe(0);
+    const ok = await adminreq(`/admin/submissions?status=submitted&workspace=${DEMO}`);
+    expect(ok.status).toBe(200);
+  });
+
+  it("filters engaged by ?workspace=", async () => {
+    const none = await adminreq(`/admin/engaged?workspace=${OTHER}`);
+    expect(((await none.json()).creators as unknown[]).length).toBe(0);
+    const ok = await adminreq(`/admin/engaged?workspace=${DEMO}`);
+    expect(ok.status).toBe(200);
+  });
+});

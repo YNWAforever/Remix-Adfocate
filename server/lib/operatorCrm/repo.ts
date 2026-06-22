@@ -397,6 +397,7 @@ export async function listCreatorReviewQueue(
   if (filters.missionId) await mustGetMission(supabase, filters.missionId);
 
   let creatorQuery = supabase.from("creators").select(CREATOR_PROJECTION);
+  if (filters.workspace) creatorQuery = creatorQuery.eq("workspace_id", filters.workspace);
   if (filters.q) creatorQuery = creatorQuery.ilike("display_name", `%${filters.q}%`);
   const { data: creatorsData, error: creatorsError } = await creatorQuery;
   if (creatorsError) failDb(creatorsError);

@@ -28,14 +28,16 @@ adminRoutes.route("/", adminMissionRoutes);
 // Dashboard (Slice 8) replaces this with per-workspace, role-scoped review.
 adminRoutes.get("/submissions", async (c) => {
   const status = c.req.query("status") ?? "submitted";
+  const ws = c.req.query("workspace");
   const svc = serviceClient();
-  const { data, error } = await svc
+  let q = svc
     .from("mission_submissions")
     .select(
       "id, mission_id, status, content_urls, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
     )
-    .eq("status", status)
-    .order("submitted_at", { ascending: true });
+    .eq("status", status);
+  if (ws) q = q.eq("missions.workspace_id", ws);
+  const { data, error } = await q.order("submitted_at", { ascending: true });
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   try {
     return c.json({ submissions: await enrichAdminMissionRows(svc, data ?? []) });
@@ -78,12 +80,14 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
 // Pending applications (status='applied') across workspaces — interim single-operator
 // scope, same caveat as /submissions above (Brand Dashboard replaces with role-scoped review).
 adminRoutes.get("/applications", async (c) => {
+  const ws = c.req.query("workspace");
   const svc = serviceClient();
-  const { data, error } = await svc
+  let q = svc
     .from("mission_submissions")
     .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
-    .eq("status", "applied")
-    .order("created_at", { ascending: true });
+    .eq("status", "applied");
+  if (ws) q = q.eq("missions.workspace_id", ws);
+  const { data, error } = await q.order("created_at", { ascending: true });
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   try {
     return c.json({ applications: await enrichAdminMissionRows(svc, data ?? []) });
@@ -98,14 +102,16 @@ adminRoutes.get("/applications", async (c) => {
 // completed/points rollups. Interim single-operator/single-workspace scope (same
 // caveat as /submissions and /applications above; the Brand Dashboard replaces this).
 adminRoutes.get("/engaged", async (c) => {
+  const ws = c.req.query("workspace");
   const svc = serviceClient();
-  const { data, error } = await svc
+  let q = svc
     .from("mission_submissions")
     .select(
       "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
     )
-    .in("status", ["joined", "submitted", "under_review", "approved"])
-    .order("created_at", { ascending: true });
+    .in("status", ["joined", "submitted", "under_review", "approved"]);
+  if (ws) q = q.eq("missions.workspace_id", ws);
+  const { data, error } = await q.order("created_at", { ascending: true });
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });

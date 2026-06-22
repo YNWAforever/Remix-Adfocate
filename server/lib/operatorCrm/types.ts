@@ -48,6 +48,7 @@ export type CreatorQueueFilters = {
   riskLevel?: CreatorRiskLevel;
   missionId?: string;
   q?: string;
+  workspace?: string;
   page: number;
   pageSize: number;
   sort: "last_activity" | "trust_score" | "level" | "social_freshness";
