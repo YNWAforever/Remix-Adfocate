@@ -64,6 +64,27 @@ export async function makeCreator(email: string, balance = 0) {
   return { userId, jwt: session.session!.access_token };
 }
 
+/** Create a confirmed auth user + an active staff_users row. Returns a signed-in JWT.
+ *  Email MUST end in @test.local so cleanup() removes it. */
+export async function makeStaff(email: string) {
+  if (!email.endsWith("@test.local")) {
+    throw new Error('staff test emails must end in "@test.local" so cleanup() can remove them');
+  }
+  const { data: created, error } = await service().auth.admin.createUser({
+    email, password: "test-pw-123456", email_confirm: true,
+  });
+  if (error) throw error;
+  const userId = created.user.id;
+  await service().from("staff_users").insert({ user_id: userId, email });
+
+  const anon = createClient(url, anonKey, nextClientOptions());
+  const { data: session, error: signErr } = await anon.auth.signInWithPassword({
+    email, password: "test-pw-123456",
+  });
+  if (signErr) throw signErr;
+  return { userId, jwt: session.session!.access_token };
+}
+
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
@@ -261,5 +282,12 @@ export async function cleanup() {
     await service().from("redemptions").delete().eq("gift_id", g.id);
     await service().from("redemption_codes").delete().eq("gift_id", g.id);
     await service().from("redemption_gifts").delete().eq("id", g.id);
+  }
+  // Test staff users (email "%@test.local") + their auth users.
+  const staffRows = await service().from("staff_users").select("user_id").like("email", "%@test.local");
+  for (const s of staffRows.data ?? []) {
+    await service().from("operator_audit_events").delete().eq("operator_id", s.user_id);
+    await service().from("staff_users").delete().eq("user_id", s.user_id);
+    await service().auth.admin.deleteUser(s.user_id);
   }
 }
