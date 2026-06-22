@@ -19,8 +19,8 @@
 ## 1. Context & Motivation
 
 Adfocate is a creator-rewards platform with a staff `/admin` surface that today manages
-Missions, Applications, Engaged creators, Submissions, Creators, Workspaces, and (in an open
-PR, #37) staff Google-SSO. It has **no DB-backed editorial content system** — the only "content"
+Missions, Applications, Engaged creators, Submissions, Creators, Workspaces, and staff
+Google-SSO (B3a, PR #37 — **merged to main**). It has **no DB-backed editorial content system** — the only "content"
 is the Academy (static markdown in `content/help/*.zh-HK.md` + TS data in `src/data/`), editable
 only by shipping code.
 
@@ -56,7 +56,7 @@ in markdown from `/admin`, surfaced to logged-in creators in a News feed and a H
 |---|---|
 | DB | Migration `0021_content_hub.sql` (see §8 for numbering): `content_items`, `content_categories`, `content_tags`, `content_item_tags`; indexes; RLS; grants; `content-media` storage bucket; RPCs `content_increment_views`, `content_publish_scheduled` |
 | Pure logic | `server/lib/contentAuthoring.ts` — input validation, slug helpers (`slugify`/`nextDuplicateSlug`), status-transition guard, cover/image URL validation. No I/O → fully unit-tested |
-| Admin API | `server/routes/adminContent.ts` (Hono), **sub-mounted inside `adminRoutes`** so it inherits the `x-admin-secret`/`ADMIN_SECRET` middleware; writes via `serviceClient()` |
+| Admin API | `server/routes/adminContent.ts` (`Hono<AdminEnv>`), **sub-mounted inside `adminRoutes`** so it inherits the staff-auth middleware (Supabase JWT → `staff_users` via `resolveStaff`; `x-admin-secret` break-glass); reads `c.get("staff")`; writes via `serviceClient()` |
 | Creator read API | `server/routes/content.ts` (Hono), **mounted on the `guarded` group** (`workspaceAuth`); reads via `makeUserClient(jwt)` under RLS — mirrors `match.ts`/`missions.ts` |
 | Cron | new `/api/cron/publish-scheduled` handler in `cron.ts` + a `vercel.json` crons entry; `Authorization: Bearer ${CRON_SECRET}` guard like `social-refresh` |
 | Admin UI | `/admin/content` list + `/admin/content/:id` markdown editor; new "Content" tab in `AdminTabs` |
@@ -88,7 +88,7 @@ server import (enforced by `check:esm`); `npm run type-check` (runs `tsr generat
 | `body_en` | text NULL | optional markdown; null → falls back to zh on render |
 | `cover_image_url` | text NULL | validated https (see §4) |
 | `category_id` | uuid NULL FK → `content_categories(id)` ON DELETE SET NULL | single category |
-| `author_id` | uuid NULL | staff attribution (firms when B3a staff-SSO merges) |
+| `author_id` | uuid NULL | staff attribution from `c.get("staff").userId` (B3a merged); null when the break-glass secret is used |
 | `workspace_id` | uuid NULL FK → `workspaces(id)` | **null = global creator content**; reserved for C2 |
 | `pinned` | boolean NOT NULL default false | feed/home curation |
 | `pinned_rank` | int NULL | lower = higher priority among pinned |
@@ -143,9 +143,12 @@ missions precedent, `0001:47`) and scope slug lookups accordingly.
    the creator read route uses `makeUserClient(jwt)` so RLS applies as the caller. Drafts/scheduled/archived
    and workspace-scoped rows are invisible to creators.
 4. **Admin gate** — `adminContent.ts` is sub-mounted via `adminRoutes.route("/", adminContentRoutes)` so it
-   inherits `admin.ts`'s `x-admin-secret` → `ADMIN_SECRET` header middleware; `OperatorAuthGate` is only the
-   client prompt that supplies the secret (stored in `sessionStorage`). The secret carries no Supabase JWT,
-   hence `serviceClient()` for writes.
+   inherits `admin.ts`'s staff-auth middleware: a Supabase JWT is resolved to a `staff_users` row via
+   `resolveStaff()` (with `STAFF_EMAIL_ALLOWLIST` first-login auto-promotion), and `x-admin-secret` is kept as
+   a one-release break-glass. The middleware sets `c.get("staff")` (`{userId, email, viaSecret?}`); the client
+   `StaffAuthGate` (Google SSO) supplies the JWT and `adminFetch` attaches it. Writes use `serviceClient()`
+   (the staff JWT authenticates the caller; the service client performs the privileged write). `author_id` is
+   set from `c.get("staff").userId` (null under break-glass).
 5. **Integrity & concurrency guards** — slug unique at DB; publish requires `title_zh` + non-empty `body_zh`;
    schedule requires `scheduled_for` strictly in the future; **slug is editable only while `draft`, frozen
    once published** (avoids `/news/:slug` 404s and broken shares); **optimistic concurrency** — `PATCH`
@@ -228,8 +231,8 @@ is acceptable; the bucket holds only editorial imagery.
 
 ## 8. Rollout (codebase lessons baked in)
 
-- **Migration numbering:** the open staff-auth PR (#37) already adds `0020_staff_auth.sql`, so this slice is
-  **`0021_content_hub.sql`** (reconcile to the next free number at implementation time if merge order shifts).
+- **Migration numbering:** staff-auth (PR #37) is **merged to main** and `0020_staff_auth.sql` is on disk, so
+  this slice is **`0021_content_hub.sql`** (the next free sequential number; verify before applying).
 - **Tracker drift:** apply to prod via **Supabase MCP raw SQL / `execute_sql`** (the tracker sits at `0017`;
   `0018`/`0019` were applied via raw SQL, **not** `apply_migration` — re-applying via `apply_migration` would
   conflict). Apply **before deploy**, then `notify pgrst, 'reload schema'` (the deploy-before-migrate 500 lesson).
