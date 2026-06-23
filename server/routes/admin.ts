@@ -29,7 +29,13 @@ adminRoutes.use("*", async (c, next) => {
   if (error || !data.user) return c.json({ error: "invalid token", code: "bad_token" }, 401);
   let staff: StaffUser | null;
   try {
-    staff = await resolveStaff(serviceClient(), data.user.id, data.user.email ?? null);
+    // Pass email-verified so domain-wide (@fimmick.com) promotion only trusts a proven address.
+    staff = await resolveStaff(
+      serviceClient(),
+      data.user.id,
+      data.user.email ?? null,
+      Boolean(data.user.email_confirmed_at),
+    );
   } catch (err) {
     console.error("[requireStaff] resolveStaff threw:", err);
     return c.json({ error: "staff lookup failed", code: "db_error" }, 500);
