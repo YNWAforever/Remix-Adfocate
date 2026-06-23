@@ -8,7 +8,7 @@ export const notificationRoutes = new Hono<Env>();
  *  plus the current unread count. RLS scopes every read to auth.uid(). */
 notificationRoutes.get("/", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
-  const limit = Math.min(Number(c.req.query("limit") ?? 20) || 20, 50);
+  const limit = Math.max(1, Math.min(Number(c.req.query("limit") ?? 20) || 20, 50));
   const before = c.req.query("before");
 
   let q = supabase
@@ -42,10 +42,10 @@ notificationRoutes.post("/read", async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const ids = Array.isArray(body.ids) ? (body.ids as string[]) : [];
   if (ids.length === 0) return c.json({ updated: 0 });
-  const { error } = await supabase
-    .from("notifications").update({ read_at: new Date().toISOString() }).in("id", ids).is("read_at", null);
+  const { data, error } = await supabase
+    .from("notifications").update({ read_at: new Date().toISOString() }).in("id", ids).is("read_at", null).select("id");
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ updated: ids.length });
+  return c.json({ updated: data?.length ?? 0 });  // actual rows flipped, not the input count
 });
 
 /** POST /api/notifications/read-all — mark all of the caller's unread rows read. */
