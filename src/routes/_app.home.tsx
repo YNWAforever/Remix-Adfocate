@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Target, Gift, Receipt, CalendarCheck, Sparkles } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
@@ -7,6 +8,8 @@ import { MissionCard } from "@/components/MissionCard";
 import { LangToggle } from "@/components/LangToggle";
 import { LEVELS, levelIndex } from "@/lib/levels";
 import { useI18n } from "@/lib/i18n";
+import { fetchNews, contentKeys } from "@/lib/content";
+import { NewsCard } from "@/components/news/NewsCard";
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -15,7 +18,11 @@ function Home() {
   const balance = useBalance();
   const missions = useMissions();
   useRealtimeBalance(me.data?.id);
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const news = useQuery({
+    queryKey: contentKeys.news({ kind: "announcement", lang }),
+    queryFn: () => fetchNews({ kind: "announcement", lang }),
+  });
 
   const quickLinks = [
     { to: "/mission", labelKey: "app.home.quickMission" as const, icon: Target },
@@ -59,6 +66,17 @@ function Home() {
         <h1 className="mt-2 font-display text-3xl font-bold leading-[1.05]" style={{ whiteSpace: "pre-line" }}>{t("app.home.heroTitle")}</h1>
         <p className="mt-2 text-sm">{t("app.home.heroBody")}</p>
       </section>
+
+      {news.data?.items.length ? (
+        <section className="space-y-2">
+          <h2 className="font-heading font-bold">{t("app.home.newsHeading")}</h2>
+          <div className="grid gap-3 lg:grid-cols-2">
+            {news.data.items.slice(0, 2).map((it) => (
+              <NewsCard key={it.id} item={it} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">

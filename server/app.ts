@@ -15,6 +15,7 @@ import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
 import { profileMediaRoutes } from "./routes/profileMedia.js";
+import { contentRoutes } from "./routes/content.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -46,6 +47,7 @@ export function createApp() {
   guarded.route("/redemption", redemptionRoutes);
   guarded.route("/social", socialRoutes);
   guarded.route("/workspace", workspaceRoutes);
+  guarded.route("/content", contentRoutes);
   app.route("/", guarded);
 
   return { app, guarded };

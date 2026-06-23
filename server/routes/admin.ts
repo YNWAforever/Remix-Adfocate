@@ -7,6 +7,7 @@ import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 import { markVerified } from "../lib/social/repo.js";
 import { resolveStaff, type AdminEnv, type StaffUser } from "../lib/staffAuth.js";
+import { adminContentRoutes } from "./adminContent.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -28,7 +29,13 @@ adminRoutes.use("*", async (c, next) => {
   if (error || !data.user) return c.json({ error: "invalid token", code: "bad_token" }, 401);
   let staff: StaffUser | null;
   try {
-    staff = await resolveStaff(serviceClient(), data.user.id, data.user.email ?? null);
+    // Pass email-verified so domain-wide (@fimmick.com) promotion only trusts a proven address.
+    staff = await resolveStaff(
+      serviceClient(),
+      data.user.id,
+      data.user.email ?? null,
+      Boolean(data.user.email_confirmed_at),
+    );
   } catch (err) {
     console.error("[requireStaff] resolveStaff threw:", err);
     return c.json({ error: "staff lookup failed", code: "db_error" }, 500);
@@ -45,6 +52,7 @@ adminRoutes.get("/me", (c) => {
 
 adminRoutes.route("/", adminOperatorCrmRoutes);
 adminRoutes.route("/", adminMissionRoutes);
+adminRoutes.route("/", adminContentRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand

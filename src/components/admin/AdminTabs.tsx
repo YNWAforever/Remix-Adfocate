@@ -20,6 +20,7 @@ export function AdminTabs() {
       { to: "/admin/engaged", label: t("app.admin.tabEngaged") },
       { to: "/admin/submissions", label: t("app.admin.tabSubmissions") },
       { to: "/admin/creators", label: t("app.admin.tabCreators") },
+      { to: "/admin/content", label: t("app.admin.tabContent") },
     ] as const,
     [t],
   );
