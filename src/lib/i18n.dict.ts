@@ -185,6 +185,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.quickWalletHistory": "Points History",
     "app.home.quickExplore": "Explore Rewards",
     "app.home.featuredMissions": "Featured Missions",
+    "app.home.newsHeading": "Latest",
+
+    // ── app: news ─────────────────────────────────────────────
+    "app.news.title": "Updates",
+    "app.news.empty": "Nothing here yet.",
+    "app.news.related": "Related",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "Missions",
@@ -557,6 +563,11 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.admin.tabEngaged": "Active Creators",
     "app.admin.tabSubmissions": "Submissions",
     "app.admin.tabCreators": "Creator Review",
+    "app.admin.tabContent": "Content",
+    "app.admin.content.title": "Content Hub",
+    "app.admin.content.new": "New content",
+    "app.admin.content.empty": "No content yet.",
+    "app.admin.content.saved": "Saved",
     "app.admin.applicationsEmpty": "No pending applications",
     "app.admin.applicationsAccept": "Accept",
     "app.admin.applicationsDecline": "Decline",
@@ -798,6 +809,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.quickWalletHistory": "積分記錄",
     "app.home.quickExplore": "探索獎賞",
     "app.home.featuredMissions": "精選任務",
+    "app.home.newsHeading": "最新消息",
+
+    // ── app: news ─────────────────────────────────────────────
+    "app.news.title": "資訊",
+    "app.news.empty": "暫時未有內容。",
+    "app.news.related": "相關內容",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "限時任務",
@@ -1170,6 +1187,11 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.admin.tabEngaged": "活躍創作者",
     "app.admin.tabSubmissions": "作品審批",
     "app.admin.tabCreators": "創作者審核",
+    "app.admin.tabContent": "內容",
+    "app.admin.content.title": "內容管理",
+    "app.admin.content.new": "新增內容",
+    "app.admin.content.empty": "尚未有內容。",
+    "app.admin.content.saved": "已儲存",
     "app.admin.applicationsEmpty": "暫無待審批申請",
     "app.admin.applicationsAccept": "接受",
     "app.admin.applicationsDecline": "拒絕",
