@@ -9,6 +9,7 @@ vi.mock("@tanstack/react-router", async () => {
     ...actual,
     Outlet: () => <div>outlet</div>,
     Link: ({ children }: { children?: React.ReactNode }) => <a href="/">{children}</a>,
+    useLocation: () => ({ pathname: "/admin/insights" }),
   };
 });
 
@@ -18,6 +19,7 @@ vi.mock("@/lib/admin", () => ({
     applications: () => ["admin-applications"],
     submissions: () => ["admin-submissions", "submitted"],
     engaged: () => ["admin-engaged"],
+    insights: () => ["admin-insights"],
   },
   adminMissionKeys: { workspaces: ["admin-workspaces"] },
   fetchApplications: vi.fn().mockResolvedValue({ applications: [] }),
@@ -40,9 +42,9 @@ function renderLayout() {
 describe("admin layout", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it("renders the tab bar + outlet when the gate yields children", () => {
+  it("renders the sidebar shell + outlet when the gate yields children", () => {
     renderLayout();
-    expect(screen.getByText("活躍創作者")).toBeInTheDocument();
+    expect(screen.getByText("登出")).toBeInTheDocument();
     expect(screen.getByText("outlet")).toBeInTheDocument();
   });
 });
