@@ -159,6 +159,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
     "app.nav.mission": "Missions",
+    "app.nav.notifications": "Alerts",
     "app.nav.redemption": "Redeem",
     "app.nav.wallet": "Wallet",
     "app.nav.explore": "Explore",
@@ -790,6 +791,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",
     "app.nav.mission": "任務",
+    "app.nav.notifications": "通知",
     "app.nav.redemption": "積分兌換",
     "app.nav.wallet": "錢包",
     "app.nav.explore": "探索",

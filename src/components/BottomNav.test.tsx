@@ -1,5 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+
+vi.mock("@/lib/queries/kocmax", () => ({ useUnreadCount: () => ({ data: 0 }) }));
 import { RouterProvider, createRouter, createRootRoute, createRoute, createMemoryHistory } from "@tanstack/react-router";
 import { I18nProvider } from "@/lib/i18n";
 import { BottomNav } from "./BottomNav";
@@ -17,9 +19,9 @@ function renderNav() {
 }
 
 describe("BottomNav", () => {
-  it("renders all five member tabs", async () => {
+  it("renders all member tabs", async () => {
     renderNav();
-    for (const label of ["主頁", "任務", "積分兌換", "錢包", "探索"]) {
+    for (const label of ["主頁", "任務", "通知", "積分兌換", "錢包", "探索"]) {
       await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
     }
   });
@@ -29,6 +31,7 @@ describe("BottomNav", () => {
     const expected = [
       { label: "主頁", href: "/home" },
       { label: "任務", href: "/mission" },
+      { label: "通知", href: "/notifications" },
       { label: "積分兌換", href: "/redemption" },
       { label: "錢包", href: "/wallet" },
       { label: "探索", href: "/explore" },
