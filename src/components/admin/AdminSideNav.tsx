@@ -41,7 +41,7 @@ export function AdminSideNav({ mobile = false, onNavigate }: { mobile?: boolean;
             const Icon = item.icon;
             if (item.locked) {
               return (
-                <div key={item.labelKey} className={ITEM_LOCKED} aria-disabled>
+                <div key={item.labelKey} className={ITEM_LOCKED}>
                   <Icon size={20} aria-hidden />
                   <span>{t(item.labelKey)}</span>
                   <span className="ml-auto rounded-full border border-dashed border-[var(--color-soft-ink)] px-1.5 text-[10px] uppercase">

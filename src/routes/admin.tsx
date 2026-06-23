@@ -19,9 +19,9 @@ function AdminLayout() {
           <AdminWorkspaceProvider>
             <AdminSideNav />
             <div className="min-h-screen lg:pl-60">
-              <AdminTopBar onMenu={() => setNavOpen((v) => !v)} />
+              <AdminTopBar onMenu={() => setNavOpen((v) => !v)} navOpen={navOpen} />
               {navOpen ? (
-                <div className="p-4 lg:hidden">
+                <div id="admin-mobile-nav" className="p-4 lg:hidden">
                   <AdminSideNav mobile onNavigate={() => setNavOpen(false)} />
                 </div>
               ) : null}

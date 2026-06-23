@@ -7,16 +7,23 @@ import { useAdminAuth } from "./AdminAuthContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { adminPageTitleKey } from "./adminNavItems";
 
-export function AdminTopBar({ onMenu }: { onMenu: () => void }) {
+export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: boolean }) {
   const { t } = useI18n();
   const { staff } = useAdminAuth();
   const { pathname } = useLocation();
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+  }
+
   return (
     <header className="sticky top-0 z-30 flex items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3">
       <button
         type="button"
         onClick={onMenu}
-        aria-label={t("app.admin.openNav")}
+        aria-label={navOpen ? t("app.admin.closeNav") : t("app.admin.openNav")}
+        aria-expanded={navOpen}
+        aria-controls="admin-mobile-nav"
         className="lg:hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2"
       >
         <Menu size={18} aria-hidden />
@@ -29,7 +36,7 @@ export function AdminTopBar({ onMenu }: { onMenu: () => void }) {
         ) : null}
         <button
           type="button"
-          onClick={() => supabase.auth.signOut()}
+          onClick={handleSignOut}
           className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold"
         >
           {t("app.admin.signOut")}

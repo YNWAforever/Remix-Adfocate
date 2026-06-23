@@ -19,7 +19,6 @@ vi.mock("@/lib/admin", () => ({
     applications: () => ["admin-applications"],
     submissions: () => ["admin-submissions", "submitted"],
     engaged: () => ["admin-engaged"],
-    insights: () => ["admin-insights"],
   },
   adminMissionKeys: { workspaces: ["admin-workspaces"] },
   fetchApplications: vi.fn().mockResolvedValue({ applications: [] }),
