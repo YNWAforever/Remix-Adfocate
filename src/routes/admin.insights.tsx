@@ -129,6 +129,7 @@ function WindowSelector({ value, onChange }: { value: Win; onChange: (w: Win) =>
           key={o.w}
           type="button"
           onClick={() => onChange(o.w)}
+          aria-pressed={value === o.w}
           className={value === o.w ? "filter-pill filter-pill-active" : "filter-pill"}
         >
           {o.label}
@@ -175,7 +176,11 @@ function InsightsPage() {
       </div>
 
       {!data ? (
-        <InsightsSkeleton />
+        q.isError && !(q.error instanceof AdminAuthError) ? (
+          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.insights.loadError")}</p>
+        ) : (
+          <InsightsSkeleton />
+        )
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">

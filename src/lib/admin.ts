@@ -268,7 +268,7 @@ export const adminKeys = {
   applications: (workspace: string) => ["admin-applications", workspace] as const,
   submissions: (status: string, workspace: string) => ["admin-submissions", status, workspace] as const,
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
-  insights: (workspace: string, window: number) => ["admin-insights", workspace, window] as const,
+  insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
 };
 
 function wsq(workspace?: string) {
@@ -506,7 +506,7 @@ export type Insights = {
   trend: Array<{ bucket: string; joined: number; submitted: number; approved: number }>;
 };
 
-export function fetchInsights(workspace = "", window = 30) {
-  const parts = [`window=${window}`, wsq(workspace)].filter(Boolean);
+export function fetchInsights(workspace = "", windowDays = 30) {
+  const parts = [`window=${windowDays}`, wsq(workspace)].filter(Boolean);
   return adminFetch<{ insights: Insights }>(`/admin/insights?${parts.join("&")}`);
 }

@@ -39,7 +39,7 @@ const payload = {
       missionFillRate: { value: 25, prev: 0, deltaPct: null },
       completions: { value: 9, prev: 5, deltaPct: 80 },
     },
-    funnel: { joined: 20, submitted: 12, approved: 8, joinToSubmit: 60, submitToApprove: 66.7 },
+    funnel: { joined: 20, submitted: 11, approved: 8, joinToSubmit: 60, submitToApprove: 66.7 },
     levels: [
       { level: "L0", count: 5 },
       { level: "L1", count: 3 },
@@ -71,7 +71,7 @@ describe("admin insights page", () => {
   it("renders KPI values and the active-creators delta", async () => {
     h.fetchInsights.mockResolvedValue(payload);
     r();
-    await waitFor(() => expect(screen.getAllByText("12").length).toBeGreaterThanOrEqual(1)); // active creators
+    await waitFor(() => expect(screen.getByText("12")).toBeInTheDocument()); // active creators
     expect(screen.getByText("活躍創作者")).toBeInTheDocument();
     expect(screen.getByText("+50%")).toBeInTheDocument(); // delta badge
     // null delta renders the em dash, not "0%"

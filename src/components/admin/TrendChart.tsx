@@ -1,4 +1,5 @@
 // src/components/admin/TrendChart.tsx
+import { useId } from "react";
 import { useI18n } from "@/lib/i18n";
 
 export type TrendPoint = { bucket: string; joined: number; submitted: number; approved: number };
@@ -15,6 +16,7 @@ const PAD = 24;
 
 export function TrendChart({ data }: { data: TrendPoint[] }) {
   const { t } = useI18n();
+  const titleId = useId();
   const allZero = data.every((d) => d.joined === 0 && d.submitted === 0 && d.approved === 0);
 
   if (data.length === 0 || allZero) {
@@ -33,7 +35,8 @@ export function TrendChart({ data }: { data: TrendPoint[] }) {
     data.map((d, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(d[key]).toFixed(1)}`).join(" ");
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={t("app.insights.trendTitle")}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-labelledby={titleId}>
+      <title id={titleId}>{t("app.insights.trendTitle")}</title>
       <line x1={PAD} y1={H - PAD} x2={W - PAD} y2={H - PAD} stroke="var(--color-ink)" strokeWidth="1.5" />
       {SERIES.map((s) => (
         <path
