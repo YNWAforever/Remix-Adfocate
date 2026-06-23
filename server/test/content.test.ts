@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { createClient } from "@supabase/supabase-js";
 import { makeCreator, serviceForTests, cleanup, hasSupabaseEnv } from "./helpers";
 
 const { app } = createApp();
