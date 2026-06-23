@@ -8,6 +8,7 @@ import { missionRoutes } from "./routes/missions.js";
 import { redemptionRoutes } from "./routes/redemption.js";
 import { adminRoutes } from "./routes/admin.js";
 import { matchRoutes } from "./routes/match.js";
+import { notificationRoutes } from "./routes/notifications.js";
 import { copilotRoutes } from "./routes/copilot.js";
 import { assistantRoutes } from "./routes/assistant.js";
 import { publicRoutes } from "./routes/public.js";
@@ -39,6 +40,7 @@ export function createApp() {
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
   guarded.route("/match", matchRoutes);
+  guarded.route("/notifications", notificationRoutes);
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/redemption", redemptionRoutes);
