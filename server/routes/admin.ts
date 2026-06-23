@@ -8,6 +8,7 @@ import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRos
 import { markVerified } from "../lib/social/repo.js";
 import { resolveStaff, type AdminEnv, type StaffUser } from "../lib/staffAuth.js";
 import { adminContentRoutes } from "./adminContent.js";
+import { adminInsightsRoutes } from "./adminInsights.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -53,6 +54,7 @@ adminRoutes.get("/me", (c) => {
 adminRoutes.route("/", adminOperatorCrmRoutes);
 adminRoutes.route("/", adminMissionRoutes);
 adminRoutes.route("/", adminContentRoutes);
+adminRoutes.route("/", adminInsightsRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand
