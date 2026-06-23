@@ -47,4 +47,12 @@ suite("admin insights", () => {
     expect(Array.isArray(insights.trend)).toBe(true);
     expect(insights.trend.length).toBe(30);
   });
+
+  it("accepts a workspace filter without crashing", async () => {
+    const res = await adminReq("/admin/insights?window=30&workspace=00000000-0000-0000-0000-0000000000ff", staff.jwt);
+    expect(res.status).toBe(200);
+    const { insights } = await res.json();
+    expect(insights.window.days).toBe(30);
+    expect(insights.levels).toHaveLength(7);
+  });
 });

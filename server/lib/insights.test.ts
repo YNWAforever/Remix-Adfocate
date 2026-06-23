@@ -126,12 +126,14 @@ describe("shapeInsights", () => {
     expect(byLevel.L6).toBe(0);
   });
 
-  it("buckets the trend by day for 30d and by week for 90d", () => {
+  it("buckets the trend by day for 7d/30d and by week for 90d", () => {
     const sevenSubs = [sub({ creator_id: "a", status: "joined", created_at: inWin })];
     const day = shapeInsights({ to: TO, days: 30, submissions: sevenSubs, earnings: [], creators: [], missions: [] });
     expect(day.trend.length).toBe(30); // 30 daily buckets
     const week = shapeInsights({ to: TO, days: 90, submissions: sevenSubs, earnings: [], creators: [], missions: [] });
     expect(week.trend.length).toBeGreaterThanOrEqual(12); // ~13 weekly buckets
     expect(week.trend.length).toBeLessThanOrEqual(14);
+    const sevenDay = shapeInsights({ to: TO, days: 7, submissions: sevenSubs, earnings: [], creators: [], missions: [] });
+    expect(sevenDay.trend.length).toBe(7);
   });
 });

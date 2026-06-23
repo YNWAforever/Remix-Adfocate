@@ -51,6 +51,11 @@ export type ShapeInsightsInput = {
 };
 
 const ACTIVE_STATUSES: ReadonlySet<string> = new Set(["joined", "submitted", "under_review"]);
+// "Loop" statuses = participations that actually entered the earn loop. We intentionally
+// EXCLUDE 'applied' (pending application — hasn't joined yet) and 'declined' (rejected
+// application — never joined), so funnel.joined counts creators who joined the earn loop,
+// not pending/rejected applicants. App-gated missions whose participants are all still
+// 'applied' correctly show 0 joined until they are accepted.
 const LOOP_STATUSES: ReadonlySet<string> = new Set([
   "joined",
   "submitted",
@@ -102,6 +107,8 @@ function funnelCounts(subs: InsightsSubmissionRow[], fromMs: number, toMs: numbe
   let approved = 0;
   for (const r of subs) {
     if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, fromMs, toMs)) joined += 1;
+    // Status-agnostic on purpose: a row that later expired still genuinely reached the
+    // submitted stage, so it counts toward funnel.submitted.
     if (inRange(r.submitted_at, fromMs, toMs)) submitted += 1;
     if (r.status === "approved" && inRange(r.reviewed_at, fromMs, toMs)) approved += 1;
   }
@@ -139,6 +146,8 @@ function buildTrend(subs: InsightsSubmissionRow[], fromMs: number, toMs: number,
     const end = Math.min(start + stepMs, toMs);
     buckets.push({ bucket: new Date(start).toISOString().slice(0, 10), start, end, joined: 0, submitted: 0, approved: 0 });
   }
+  // O(rows × buckets) — fine at MVP scale (hundreds of rows × ≤30 buckets). If submissions
+  // ever exceed ~5k, switch to a single pass with a date→bucket-index map.
   for (const r of subs) {
     for (const b of buckets) {
       if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, b.start, b.end)) b.joined += 1;
