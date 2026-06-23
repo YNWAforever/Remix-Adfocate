@@ -15,6 +15,7 @@ suite("requireStaff gate + GET /admin/me", () => {
   beforeAll(cleanup);
   afterAll(async () => {
     delete process.env.STAFF_EMAIL_ALLOWLIST;
+    delete process.env.STAFF_EMAIL_DOMAINS;
     await cleanup();
   });
 
@@ -50,6 +51,20 @@ suite("requireStaff gate + GET /admin/me", () => {
       .from("staff_users").select("user_id, active").eq("user_id", user.userId).maybeSingle();
     expect(row.data?.active).toBe(true);
     delete process.env.STAFF_EMAIL_ALLOWLIST;
+    await serviceForTests().from("staff_users").delete().eq("user_id", user.userId);
+    await serviceForTests().auth.admin.deleteUser(user.userId);
+  });
+
+  it("auto-promotes any email on a staff domain (STAFF_EMAIL_DOMAINS) on first login", async () => {
+    // Use test.local as the staff domain so the created user is removable by cleanup().
+    const user = await makeUser({ email: "domain-promote@test.local" });
+    process.env.STAFF_EMAIL_DOMAINS = "test.local";
+    const res = await meReq({ Authorization: `Bearer ${user.jwt}` });
+    expect(res.status).toBe(200);
+    const row = await serviceForTests()
+      .from("staff_users").select("user_id, active").eq("user_id", user.userId).maybeSingle();
+    expect(row.data?.active).toBe(true);
+    delete process.env.STAFF_EMAIL_DOMAINS;
     await serviceForTests().from("staff_users").delete().eq("user_id", user.userId);
     await serviceForTests().auth.admin.deleteUser(user.userId);
   });
