@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import type { NotificationRow } from "@/lib/notifications";
 
 export type SubmissionStatus = "joined" | "submitted" | "under_review" | "approved" | "rejected" | "expired";
 export type Mission = {
@@ -520,5 +521,48 @@ export function useAssistantChat() {
   return useMutation({
     mutationFn: (body: { message: string; conversation_id?: string; locale?: string }) =>
       apiFetch<AssistantReply>("/assistant/chat", { method: "POST", body: JSON.stringify(body) }),
+  });
+}
+
+export type NotificationList = { items: NotificationRow[]; unread_count: number };
+
+export function useNotifications() {
+  return useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => apiFetch<NotificationList>("/notifications"),
+  });
+}
+
+/** Lightweight unread count for the nav badge — polls on focus + interval. */
+export function useUnreadCount() {
+  return useQuery({
+    queryKey: ["notifications-unread-count"],
+    queryFn: async () => (await apiFetch<{ count: number }>("/notifications/unread-count")).count,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+  });
+}
+
+export function useMarkRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (ids: string[]) =>
+      apiFetch<{ updated: number }>("/notifications/read", { method: "POST", body: JSON.stringify({ ids }) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+    },
+  });
+}
+
+export function useMarkAllRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch<{ ok: boolean }>("/notifications/read-all", { method: "POST" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-unread-count"] });
+    },
   });
 }
