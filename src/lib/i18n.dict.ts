@@ -159,6 +159,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "Home",
     "app.nav.mission": "Missions",
+    "app.nav.notifications": "Alerts",
     "app.nav.redemption": "Redeem",
     "app.nav.wallet": "Wallet",
     "app.nav.explore": "Explore",
@@ -632,6 +633,24 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.primerLadder": "Earn XP from missions → verify a social handle → unlock Trusted KOC and paid opportunities",
     "app.onboarding.primerCta": "Get Started",
     "app.onboarding.primerVisitGuide": "Browse Academy",
+
+    // ── app: notifications ────────────────────────────────────
+    "app.notif.title": "Notifications",
+    "app.notif.empty": "No notifications yet.",
+    "app.notif.markAll": "Mark all read",
+    "app.notif.submission_approved.title": "Submission approved!",
+    "app.notif.submission_approved.body": "\"{mission}\" approved — +{points} pts · +{xp} XP",
+    "app.notif.submission_rejected.title": "Submission needs work",
+    "app.notif.submission_rejected.body": "\"{mission}\" was not approved. {reason}",
+    "app.notif.application_accepted.title": "Application accepted",
+    "app.notif.application_accepted.body": "You're in on \"{mission}\" — start creating!",
+    "app.notif.application_declined.title": "Application declined",
+    "app.notif.application_declined.body": "\"{mission}\" wasn't a match this time. {notes}",
+    "app.notif.level_up.title": "Level up!",
+    "app.notif.level_up.body": "You reached {level}. Keep going!",
+    "app.notif.redemption_ready.title": "Reward ready",
+    "app.notif.redemption_ready.body": "Your \"{gift}\" code is ready — view it in Redeem history.",
+    "app.notif.toast.new": "You have a new notification",
   },
   zh: {
     // ── site / marketing ──────────────────────────────────────
@@ -783,6 +802,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     // ── app shell / nav ─────────────────────────────────────
     "app.nav.home": "主頁",
     "app.nav.mission": "任務",
+    "app.nav.notifications": "通知",
     "app.nav.redemption": "積分兌換",
     "app.nav.wallet": "錢包",
     "app.nav.explore": "探索",
@@ -1256,5 +1276,23 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.onboarding.primerLadder": "完成任務賺 XP → 驗證社交帳號 → 解鎖信譽 KOC 及有薪機會",
     "app.onboarding.primerCta": "開始",
     "app.onboarding.primerVisitGuide": "逛逛學院",
+
+    // ── app: notifications ────────────────────────────────────
+    "app.notif.title": "通知",
+    "app.notif.empty": "暫時未有通知。",
+    "app.notif.markAll": "全部標為已讀",
+    "app.notif.submission_approved.title": "內容已通過！",
+    "app.notif.submission_approved.body": "「{mission}」已獲批，+{points} 分・+{xp} XP",
+    "app.notif.submission_rejected.title": "內容需要修改",
+    "app.notif.submission_rejected.body": "「{mission}」未獲批。{reason}",
+    "app.notif.application_accepted.title": "申請已接受",
+    "app.notif.application_accepted.body": "你已加入「{mission}」，開始創作啦！",
+    "app.notif.application_declined.title": "申請未獲接受",
+    "app.notif.application_declined.body": "「{mission}」今次未夾，下次再試。{notes}",
+    "app.notif.level_up.title": "升級喇！",
+    "app.notif.level_up.body": "你已晉升至 {level}，繼續努力！",
+    "app.notif.redemption_ready.title": "獎賞準備好",
+    "app.notif.redemption_ready.body": "你嘅「{gift}」兌換碼已準備好，可喺兌換紀錄查看。",
+    "app.notif.toast.new": "你有一則新通知",
   },
 };

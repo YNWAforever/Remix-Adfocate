@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { LevelUpModal } from "@/components/LevelUpModal";
+import { NotificationToaster } from "@/components/NotificationToaster";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app")({
@@ -72,6 +73,7 @@ function Layout() {
       <LevelUpModal />
       {showNav && <BottomNav />}
       {showNav && <AssistantLauncher />}
+      {showNav && <NotificationToaster />}
     </div>
   );
 }

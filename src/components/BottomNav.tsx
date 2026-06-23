@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
 import { NAV_ITEMS } from "./navItems";
+import { NotificationBadge } from "./NotificationBadge";
 
 export function BottomNav() {
   const { t } = useI18n();
@@ -16,7 +17,14 @@ export function BottomNav() {
             className="min-w-0 flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-soft-ink)]"
             activeProps={{ className: "min-w-0 flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-mono uppercase tracking-wide text-[var(--color-ink)] font-bold" }}
           >
-            <Icon size={20} aria-hidden />
+            <span className="relative">
+              <Icon size={20} aria-hidden />
+              {item.showUnreadBadge && (
+                <span className="absolute -right-2 -top-1">
+                  <NotificationBadge />
+                </span>
+              )}
+            </span>
             <span className="max-w-full truncate">{t(item.labelKey)}</span>
           </Link>
         );
