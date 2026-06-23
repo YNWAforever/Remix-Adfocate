@@ -185,6 +185,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.quickWalletHistory": "Points History",
     "app.home.quickExplore": "Explore Rewards",
     "app.home.featuredMissions": "Featured Missions",
+    "app.home.newsHeading": "Latest",
+
+    // ── app: news ─────────────────────────────────────────────
+    "app.news.title": "Updates",
+    "app.news.empty": "Nothing here yet.",
+    "app.news.related": "Related",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "Missions",
@@ -803,6 +809,12 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.home.quickWalletHistory": "積分記錄",
     "app.home.quickExplore": "探索獎賞",
     "app.home.featuredMissions": "精選任務",
+    "app.home.newsHeading": "最新消息",
+
+    // ── app: news ─────────────────────────────────────────────
+    "app.news.title": "資訊",
+    "app.news.empty": "暫時未有內容。",
+    "app.news.related": "相關內容",
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "限時任務",
