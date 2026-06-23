@@ -29,7 +29,7 @@ export function AdminSideNav({ mobile = false, onNavigate }: { mobile?: boolean;
 
   return (
     <nav aria-label={t("app.admin.title")} className={mobile ? MOBILE : DESKTOP}>
-      <Link to="/admin/insights" className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
+      <Link to={"/admin/insights" as never} className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
         {t("app.admin.brand")}
       </Link>
       {ADMIN_NAV_GROUPS.map((group) => (
