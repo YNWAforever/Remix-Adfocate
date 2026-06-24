@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({ fetchRadar: vi.fn(), reportAuthError: vi.fn() }));
@@ -73,5 +73,13 @@ describe("admin radar page", () => {
     h.fetchRadar.mockRejectedValue(new Error("network failure"));
     r();
     await waitFor(() => expect(screen.getByText("無法載入雷達數據。")).toBeInTheDocument());
+  });
+
+  it("recovers from a load error when Retry is clicked", async () => {
+    h.fetchRadar.mockRejectedValueOnce(new Error("network failure")).mockResolvedValueOnce(populatedRadar);
+    r();
+    const retry = await screen.findByRole("button", { name: "重試" });
+    fireEvent.click(retry);
+    await waitFor(() => expect(screen.getByText("Alice Lam")).toBeInTheDocument());
   });
 });

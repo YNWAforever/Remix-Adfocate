@@ -110,20 +110,28 @@ function SlaList({ queue }: { queue: Radar["slaBreaching"] }) {
 }
 
 function RisingList({ queue }: { queue: Radar["rising"] }) {
+  const { t } = useI18n();
   return (
     <QueueCard titleKey="app.radar.risingTitle" emptyKey="app.radar.risingEmpty" total={queue.total}>
       <ul className="divide-y divide-[var(--color-soft-ink)]/20 space-y-0">
-        {queue.items.map((row: RadarRisingRow) => (
-          <li key={row.creator_id} className="flex items-center justify-between py-2">
-            <div className="flex items-center gap-2">
-              <span className={`level-pill level-pill-${row.level.toLowerCase()}`}>{row.level}</span>
-              <p className="text-sm font-semibold">{row.display_name ?? row.creator_id}</p>
-            </div>
-            <span className="font-mono text-xs text-[var(--color-ink)]">
-              {row.recent_approvals}✓ {row.avg_quality !== null ? `★${row.avg_quality}` : ""}
-            </span>
-          </li>
-        ))}
+        {queue.items.map((row: RadarRisingRow) => {
+          const stat =
+            t("app.radar.approvalsLabel", { n: row.recent_approvals }) +
+            (row.avg_quality !== null ? `, ${t("app.radar.qualityLabel", { n: row.avg_quality })}` : "");
+          return (
+            <li key={row.creator_id} className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                <span className={`level-pill level-pill-${row.level.toLowerCase()}`}>{row.level}</span>
+                <p className="text-sm font-semibold">{row.display_name ?? row.creator_id}</p>
+              </div>
+              <span className="font-mono text-xs text-[var(--color-ink)]" aria-label={stat}>
+                <span aria-hidden="true">
+                  {row.recent_approvals}✓ {row.avg_quality !== null ? `★${row.avg_quality}` : ""}
+                </span>
+              </span>
+            </li>
+          );
+        })}
       </ul>
       <MoreIndicator queue={queue} />
     </QueueCard>
@@ -185,7 +193,12 @@ function RadarPage() {
 
       {!data ? (
         q.isError && !(q.error instanceof AdminAuthError) ? (
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.radar.loadError")}</p>
+          <div className="pastel-card flex flex-col items-start gap-3 p-5" role="alert">
+            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.radar.loadError")}</p>
+            <button type="button" className="btn-ink" onClick={() => q.refetch()} disabled={q.isFetching}>
+              {t("app.radar.retry")}
+            </button>
+          </div>
         ) : (
           <RadarSkeleton />
         )
