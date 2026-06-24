@@ -22,6 +22,9 @@ adminRadarRoutes.get("/radar", async (c) => {
   const now = new Date().toISOString();
   const nowMs = Date.parse(now);
   const cutoffIso = new Date(nowMs - days * DAY_MS).toISOString();
+  // At-risk lookback: creators idle for > 30d must have had activity in the past 180d to appear.
+  // This fence prevents a full table scan as submission volume grows.
+  const atRiskFenceIso = new Date(nowMs - 180 * DAY_MS).toISOString();
   // Due-soon threshold: deadlines within the next 2 calendar days
   const dueSoonIso = new Date(nowMs + 2 * DAY_MS).toISOString();
 
@@ -31,7 +34,8 @@ adminRadarRoutes.get("/radar", async (c) => {
   // Queue A: all historical submissions with creator info (used to derive at-risk creators).
   let allSubsQ = svc
     .from("mission_submissions")
-    .select("creator_id, status, created_at, submitted_at, reviewed_at, creators!inner(display_name, phone)");
+    .select("creator_id, status, created_at, submitted_at, reviewed_at, creators!inner(display_name, phone)")
+    .gte("created_at", atRiskFenceIso);
   if (ws) allSubsQ = allSubsQ.eq("workspace_id", ws);
 
   // Queue B: submissions whose review_deadline is overdue OR due within 2 days.
