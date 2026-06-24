@@ -8,6 +8,7 @@ import {
   Layers,
   Target,
   FileText,
+  Radar,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,7 +26,10 @@ export type AdminNavGroup = { labelKey: string; items: AdminNavItem[] };
 export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     labelKey: "app.admin.navGroupAnalytics",
-    items: [{ to: "/admin/insights", labelKey: "app.admin.tabInsights", icon: BarChart3, exact: false }],
+    items: [
+      { to: "/admin/insights", labelKey: "app.admin.tabInsights", icon: BarChart3, exact: false },
+      { to: "/admin/radar", labelKey: "app.admin.tabRadar", icon: Radar, exact: false },
+    ],
   },
   {
     labelKey: "app.admin.navGroupReview",
