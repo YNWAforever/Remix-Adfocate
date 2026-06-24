@@ -27,16 +27,6 @@ function r() {
   );
 }
 
-const emptyRadar = {
-  radar: {
-    window: { days: 30, from: "2026-06-01T00:00:00.000Z" },
-    atRisk: { items: [], total: 0 },
-    slaBreaching: { items: [], total: 0 },
-    rising: { items: [], total: 0 },
-    newUnactivated: { items: [], total: 0 },
-  },
-};
-
 const populatedRadar = {
   radar: {
     window: { days: 30, from: "2026-06-01T00:00:00.000Z" },
