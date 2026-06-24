@@ -103,8 +103,148 @@ export type ShapeRadarInput = {
   allParticipantIds: string[];          // distinct creator_ids from all mission_submissions (anti-join for Queue D)
 };
 
-// --- Implementation stub (will fail tests until Task 2 implements it) ---------
+// --- Private helpers ----------------------------------------------------------
 
-export function shapeRadar(_input: ShapeRadarInput): Radar {
-  throw new Error("not implemented");
+function cap<T>(items: T[]): RadarQueue<T> {
+  return { items: items.slice(0, TOP_N), total: items.length };
+}
+
+function buildAtRisk(rows: AtRiskRawRow[], nowMs: number, cutoffMs: number): RadarAtRiskRow[] {
+  // Group rows by creator_id: track their most-recent activity timestamp and whether
+  // any row is currently active. Fetching all submissions per creator lets us determine
+  // both "they've participated before" and "they have nothing active right now."
+  const map = new Map<
+    string,
+    { display_name: string | null; phone: string | null; lastActiveMs: number; hasActive: boolean }
+  >();
+
+  for (const r of rows) {
+    const ts = [r.created_at, r.submitted_at, r.reviewed_at]
+      .filter((t): t is string => t !== null && t !== undefined)
+      .map((t) => Date.parse(t))
+      .filter(Number.isFinite);
+    const rowLastMs = ts.length ? Math.max(...ts) : 0;
+    const isActive = ACTIVE_STATUSES.has(r.status);
+
+    const cur = map.get(r.creator_id);
+    if (cur) {
+      cur.lastActiveMs = Math.max(cur.lastActiveMs, rowLastMs);
+      cur.hasActive = cur.hasActive || isActive;
+    } else {
+      map.set(r.creator_id, {
+        display_name: r.creators.display_name,
+        phone: r.creators.phone,
+        lastActiveMs: rowLastMs,
+        hasActive: isActive,
+      });
+    }
+  }
+
+  return [...map.entries()]
+    .filter(([, v]) => !v.hasActive && v.lastActiveMs > 0 && v.lastActiveMs < cutoffMs)
+    .sort(([, a], [, b]) => a.lastActiveMs - b.lastActiveMs) // most stale first
+    .map(([creator_id, v]) => ({
+      creator_id,
+      display_name: v.display_name,
+      phone: v.phone,
+      last_active: new Date(v.lastActiveMs).toISOString(),
+      days_idle: Math.floor((nowMs - v.lastActiveMs) / DAY_MS),
+    }));
+}
+
+function buildSlaBreaching(rows: OverdueRawRow[], nowMs: number): RadarOverdueRow[] {
+  // DB query already filters to status ∈ (submitted, under_review) and deadline ≤ now+2d;
+  // DB orders by review_deadline ASC (most-overdue first).
+  return rows.map((r) => {
+    const deadlineMs = Date.parse(r.review_deadline);
+    return {
+      submission_id: r.id,
+      creator_id: r.creator_id,
+      display_name: r.creators.display_name,
+      mission_title: r.missions.title,
+      status: r.status as "submitted" | "under_review",
+      review_deadline: r.review_deadline,
+      urgency: deadlineMs < nowMs ? "overdue" : "due_soon",
+      hours_overdue: Math.round((nowMs - deadlineMs) / HOUR_MS),
+    };
+  });
+}
+
+function buildRising(rows: RecentApprovalRawRow[]): RadarRisingRow[] {
+  const map = new Map<
+    string,
+    { display_name: string | null; level: string; count: number; ratingSum: number; ratedCount: number }
+  >();
+
+  for (const r of rows) {
+    const cur = map.get(r.creator_id);
+    if (cur) {
+      cur.count += 1;
+      if (r.quality_rating !== null) {
+        cur.ratingSum += r.quality_rating;
+        cur.ratedCount += 1;
+      }
+    } else {
+      map.set(r.creator_id, {
+        display_name: r.creators.display_name,
+        level: r.creators.level,
+        count: 1,
+        ratingSum: r.quality_rating ?? 0,
+        ratedCount: r.quality_rating !== null ? 1 : 0,
+      });
+    }
+  }
+
+  return [...map.entries()]
+    .map(([creator_id, v]) => {
+      const avg_quality =
+        v.ratedCount > 0 ? Math.round((v.ratingSum / v.ratedCount) * 10) / 10 : null;
+      const score = v.count * (avg_quality ?? 3);
+      return {
+        creator_id,
+        display_name: v.display_name,
+        level: v.level,
+        recent_approvals: v.count,
+        avg_quality,
+        score,
+      };
+    })
+    .sort((a, b) => b.score - a.score); // highest score first
+}
+
+function buildNewUnactivated(
+  rows: NewCreatorRawRow[],
+  participantIds: Set<string>,
+  nowMs: number,
+): RadarNewCreatorRow[] {
+  // Creators table has no workspace_id column — creators are global, not workspace-scoped.
+  // The anti-join is done here in JS against the participant set built by the route.
+  // DB already returns newest-first (ORDER BY created_at DESC).
+  return rows
+    .filter((r) => !participantIds.has(r.id))
+    .map((r) => ({
+      creator_id: r.id,
+      display_name: r.display_name,
+      phone: r.phone,
+      created_at: r.created_at,
+      days_since_join: Math.floor((nowMs - Date.parse(r.created_at)) / DAY_MS),
+    }));
+}
+
+// --- Public API ---------------------------------------------------------------
+
+export function shapeRadar(input: ShapeRadarInput): Radar {
+  const { now, days } = input;
+  const nowMs = Date.parse(now);
+  const cutoffMs = nowMs - days * DAY_MS;
+  const fromIso = new Date(cutoffMs).toISOString();
+  const participantIds = new Set(input.allParticipantIds);
+
+  return {
+    window: { days, from: fromIso },
+    atRisk: cap(buildAtRisk(input.allSubmissions, nowMs, cutoffMs)),
+    slaBreaching: cap(buildSlaBreaching(input.overdueSubmissions, nowMs)),
+    rising: cap(buildRising(input.recentApprovals)),
+    newUnactivated: cap(buildNewUnactivated(input.newCreators, participantIds, nowMs)),
+  };
 }
