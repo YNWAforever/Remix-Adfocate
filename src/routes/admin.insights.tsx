@@ -206,12 +206,6 @@ function InsightsPage() {
             <FunnelView funnel={data.funnel} />
             <LevelBars levels={data.levels} />
           </div>
-
-          {/* Slice 2 teaser — locked, matches the nav locked idiom */}
-          <div className="pastel-card p-5 opacity-60">
-            <h2 className="font-heading text-base font-bold">{t("app.insights.radarTitle")}</h2>
-            <p className="mt-1 text-sm text-[var(--color-soft-ink)]">{t("app.insights.radarSoon")}</p>
-          </div>
         </>
       )}
     </div>
