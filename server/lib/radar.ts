@@ -7,7 +7,7 @@ const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
 const TOP_N = 20;
 
-const ACTIVE_STATUSES = new Set(["joined", "submitted", "under_review"]);
+const ACTIVE_STATUSES = new Set(["joined", "applied", "submitted", "under_review"]);
 
 // --- Raw DB row types (PostgREST joined shape) --------------------------------
 

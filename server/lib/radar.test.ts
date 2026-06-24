@@ -17,7 +17,6 @@ const daysAgo = (n: number) => new Date(NOW_MS - n * DAY_MS).toISOString();
 // Helper: ISO string N days after NOW (future deadline)
 const daysAhead = (n: number) => new Date(NOW_MS + n * DAY_MS).toISOString();
 
-let uid = 0;
 function sub(over: Partial<AtRiskRawRow> & { creator_id: string; status: string }): AtRiskRawRow {
   return {
     creator_id: over.creator_id,
@@ -32,7 +31,7 @@ function sub(over: Partial<AtRiskRawRow> & { creator_id: string; status: string 
 function overdue(over: Partial<OverdueRawRow> & { id: string }): OverdueRawRow {
   return {
     id: over.id,
-    creator_id: over.creator_id ?? `c${uid++}`,
+    creator_id: over.creator_id ?? `c-${over.id}`,
     status: over.status ?? "submitted",
     review_deadline: over.review_deadline ?? daysAgo(1),
     creators: over.creators ?? { display_name: "Creator" },
@@ -155,5 +154,17 @@ describe("shapeRadar", () => {
     const creators = [newCreator({ id: "n1", created_at: daysAgo(10) })];
     const r = shapeRadar(base({ newCreators: creators }));
     expect(r.newUnactivated.items[0].days_since_join).toBe(10);
+  });
+
+  it("excludes at-risk creators who have a pending application (applied status)", () => {
+    const applied = sub({ creator_id: "pending", status: "applied", created_at: daysAgo(60) });
+    const r = shapeRadar(base({ allSubmissions: [applied] }));
+    expect(r.atRisk.total).toBe(0);
+  });
+
+  it("sets window.from to the correct ISO cutoff", () => {
+    const r = shapeRadar(base());
+    // days=30, now=NOW → from should be 30 days before NOW
+    expect(r.window.from).toBe(daysAgo(30));
   });
 });
