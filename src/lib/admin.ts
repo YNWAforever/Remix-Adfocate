@@ -268,6 +268,7 @@ export const adminKeys = {
   applications: (workspace: string) => ["admin-applications", workspace] as const,
   submissions: (status: string, workspace: string) => ["admin-submissions", status, workspace] as const,
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
+  insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
 };
 
 function wsq(workspace?: string) {
@@ -485,4 +486,27 @@ export function duplicateMission(id: string, body?: { workspace_id?: string }) {
     method: "POST",
     body: JSON.stringify(body ?? {}),
   });
+}
+
+// ---- Insights dashboard (mirrors server/lib/insights.ts — keep in sync) ----
+export type InsightsMetric = { value: number; prev: number; deltaPct: number | null };
+
+export type Insights = {
+  window: { days: 7 | 30 | 90; from: string; to: string };
+  kpis: {
+    activeCreators: InsightsMetric;
+    submitToApprove: InsightsMetric;
+    pointsIssued: InsightsMetric;
+    cashPaid: InsightsMetric;
+    missionFillRate: InsightsMetric;
+    completions: InsightsMetric;
+  };
+  funnel: { joined: number; submitted: number; approved: number; joinToSubmit: number; submitToApprove: number };
+  levels: Array<{ level: string; count: number }>;
+  trend: Array<{ bucket: string; joined: number; submitted: number; approved: number }>;
+};
+
+export function fetchInsights(workspace = "", windowDays = 30) {
+  const parts = [`window=${windowDays}`, wsq(workspace)].filter(Boolean);
+  return adminFetch<{ insights: Insights }>(`/admin/insights?${parts.join("&")}`);
 }
