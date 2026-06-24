@@ -269,6 +269,7 @@ export const adminKeys = {
   submissions: (status: string, workspace: string) => ["admin-submissions", status, workspace] as const,
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
   insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
+  radar: (workspace: string, days: number) => ["admin-radar", workspace, days] as const,
 };
 
 function wsq(workspace?: string) {
@@ -509,4 +510,57 @@ export type Insights = {
 export function fetchInsights(workspace = "", windowDays = 30) {
   const parts = [`window=${windowDays}`, wsq(workspace)].filter(Boolean);
   return adminFetch<{ insights: Insights }>(`/admin/insights?${parts.join("&")}`);
+}
+
+// ---- Radar dashboard (mirrors server/lib/radar.ts — keep in sync) ------------
+
+export type RadarQueue<T> = { items: T[]; total: number };
+
+export type RadarAtRiskRow = {
+  creator_id: string;
+  display_name: string | null;
+  phone: string | null;
+  last_active: string;
+  days_idle: number;
+};
+
+export type RadarOverdueRow = {
+  submission_id: string;
+  creator_id: string;
+  display_name: string | null;
+  mission_title: string;
+  status: "submitted" | "under_review";
+  review_deadline: string;
+  urgency: "overdue" | "due_soon";
+  hours_overdue: number;
+};
+
+export type RadarRisingRow = {
+  creator_id: string;
+  display_name: string | null;
+  level: string;
+  recent_approvals: number;
+  avg_quality: number | null;
+  score: number;
+};
+
+export type RadarNewCreatorRow = {
+  creator_id: string;
+  display_name: string | null;
+  phone: string | null;
+  created_at: string;
+  days_since_join: number;
+};
+
+export type Radar = {
+  window: { days: number; from: string };
+  atRisk: RadarQueue<RadarAtRiskRow>;
+  slaBreaching: RadarQueue<RadarOverdueRow>;
+  rising: RadarQueue<RadarRisingRow>;
+  newUnactivated: RadarQueue<RadarNewCreatorRow>;
+};
+
+export function fetchRadar(workspace = "", days = 30) {
+  const parts = [`days=${days}`, wsq(workspace)].filter(Boolean);
+  return adminFetch<{ radar: Radar }>(`/admin/radar?${parts.join("&")}`);
 }
