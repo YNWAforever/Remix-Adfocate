@@ -171,7 +171,7 @@ function InsightsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold">{t("app.insights.heading")}</h1>
+        <h2 className="font-display text-2xl font-bold">{t("app.insights.heading")}</h2>
         <WindowSelector value={win} onChange={setWin} />
       </div>
 

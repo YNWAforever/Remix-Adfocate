@@ -47,7 +47,7 @@ function QueueCard({
     <div className="pastel-card p-5">
       <div className="mb-3 flex items-center gap-2">
         <h2 className="font-heading text-base font-bold">{t(titleKey)}</h2>
-        <span className="rounded-full border border-[var(--color-ink)] px-2 py-0.5 font-mono text-xs">
+        <span className="rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 font-mono text-xs">
           {total}
         </span>
       </div>
@@ -64,7 +64,7 @@ function AtRiskList({ queue }: { queue: Radar["atRisk"] }) {
   const { t } = useI18n();
   return (
     <QueueCard titleKey="app.radar.atRiskTitle" emptyKey="app.radar.atRiskEmpty" total={queue.total}>
-      <ul className="divide-y divide-[var(--color-soft-ink)] divide-opacity-20 space-y-0">
+      <ul className="divide-y divide-[var(--color-soft-ink)]/20 space-y-0">
         {queue.items.map((row: RadarAtRiskRow) => (
           <li key={row.creator_id} className="flex items-center justify-between py-2">
             <div>
@@ -85,7 +85,7 @@ function SlaList({ queue }: { queue: Radar["slaBreaching"] }) {
   const { t } = useI18n();
   return (
     <QueueCard titleKey="app.radar.slaTitle" emptyKey="app.radar.slaEmpty" total={queue.total}>
-      <ul className="divide-y divide-[var(--color-soft-ink)] divide-opacity-20 space-y-0">
+      <ul className="divide-y divide-[var(--color-soft-ink)]/20 space-y-0">
         {queue.items.map((row: RadarOverdueRow) => (
           <li key={row.submission_id} className="flex items-center justify-between py-2">
             <div>
@@ -112,7 +112,7 @@ function SlaList({ queue }: { queue: Radar["slaBreaching"] }) {
 function RisingList({ queue }: { queue: Radar["rising"] }) {
   return (
     <QueueCard titleKey="app.radar.risingTitle" emptyKey="app.radar.risingEmpty" total={queue.total}>
-      <ul className="divide-y divide-[var(--color-soft-ink)] divide-opacity-20 space-y-0">
+      <ul className="divide-y divide-[var(--color-soft-ink)]/20 space-y-0">
         {queue.items.map((row: RadarRisingRow) => (
           <li key={row.creator_id} className="flex items-center justify-between py-2">
             <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ function NewList({ queue }: { queue: Radar["newUnactivated"] }) {
   const { t } = useI18n();
   return (
     <QueueCard titleKey="app.radar.newTitle" emptyKey="app.radar.newEmpty" total={queue.total}>
-      <ul className="divide-y divide-[var(--color-soft-ink)] divide-opacity-20 space-y-0">
+      <ul className="divide-y divide-[var(--color-soft-ink)]/20 space-y-0">
         {queue.items.map((row: RadarNewCreatorRow) => (
           <li key={row.creator_id} className="flex items-center justify-between py-2">
             <p className="text-sm font-semibold">{row.display_name ?? row.phone ?? row.creator_id}</p>
@@ -181,7 +181,7 @@ function RadarPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-2xl font-bold">{t("app.radar.heading")}</h1>
+      <h2 className="font-display text-2xl font-bold">{t("app.radar.heading")}</h2>
 
       {!data ? (
         q.isError && !(q.error instanceof AdminAuthError) ? (

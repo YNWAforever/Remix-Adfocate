@@ -24,7 +24,7 @@ export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: 
         aria-label={navOpen ? t("app.admin.closeNav") : t("app.admin.openNav")}
         aria-expanded={navOpen}
         aria-controls="admin-mobile-nav"
-        className="lg:hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2"
+        className="lg:hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
       >
         <Menu size={18} aria-hidden />
       </button>
@@ -37,7 +37,7 @@ export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: 
         <button
           type="button"
           onClick={handleSignOut}
-          className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold"
+          className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm font-heading font-bold"
         >
           {t("app.admin.signOut")}
         </button>
