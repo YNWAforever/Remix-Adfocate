@@ -150,29 +150,36 @@ body::before {
   opacity: 0.5;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  line-height: 1.05;
-  color: #0A0A0A;
-  letter-spacing: -0.03em;
-}
+/* Base element typography lives in @layer base so these element defaults
+   apply only when no utility is present. Any heading authored with a text-*
+   size utility (e.g. admin section titles) then wins, because Tailwind's
+   utilities layer outranks base. Raw <h1>/<h2> on marketing/_site pages
+   carry no size utility, so they keep the large display sizes below. */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.05;
+    color: #0A0A0A;
+    letter-spacing: -0.03em;
+  }
 
-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
 
-h2 {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4vw, 3.2rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-}
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
 
-h3 { font-size: 1.25rem; font-weight: 700; }
+  h3 { font-size: 1.25rem; font-weight: 700; }
+}
 
 p { line-height: 1.65; }
 
