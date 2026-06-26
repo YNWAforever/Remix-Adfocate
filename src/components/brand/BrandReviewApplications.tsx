@@ -28,7 +28,10 @@ export function BrandReviewApplications() {
   const decide = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" }) =>
       action === "accept" ? acceptBrandApplication(id) : declineBrandApplication(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: brandKeys.applications() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: brandKeys.applications() });
+      qc.invalidateQueries({ queryKey: brandKeys.engaged() });
+    },
     onError: onErr,
   });
 
