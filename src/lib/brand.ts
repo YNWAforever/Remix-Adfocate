@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { AdminRequestError } from "@/lib/admin";
-import type { AdminMission, MissionDraftInput, MissionPatch } from "@/lib/admin";
+import type { AdminMission, MissionDraftInput, MissionPatch, Application, Submission, EngagedCreator } from "@/lib/admin";
 
 export class BrandAuthError extends Error {}
 export type BrandMe = { email: string; workspaceId: string; workspaceName: string; role: "owner" | "member" };
@@ -13,6 +13,9 @@ export const brandKeys = {
   me: () => ["brand-me"] as const,
   missions: (status: string) => ["brand-missions", status] as const,
   mission: (id: string) => ["brand-mission", id] as const,
+  submissions: (status: string) => ["brand-submissions", status] as const,
+  applications: () => ["brand-applications"] as const,
+  engaged: () => ["brand-engaged"] as const,
 };
 
 async function brandFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -46,3 +49,23 @@ export const createBrandMission = (body: MissionDraftInput) =>
   brandFetch<{ mission: AdminMission }>("/missions", { method: "POST", body: JSON.stringify(body) });
 export const updateBrandMission = (id: string, patch: MissionPatch) =>
   brandFetch<{ mission: AdminMission }>(`/missions/${id}`, { method: "PUT", body: JSON.stringify(patch) });
+
+// --- Slice 2: review + payout ----------------------------------------------------------------
+export const fetchBrandSubmissions = (status = "submitted") =>
+  brandFetch<{ submissions: Submission[] }>(`/review/submissions?status=${encodeURIComponent(status)}`);
+export const fetchBrandApplications = () =>
+  brandFetch<{ applications: Application[] }>("/review/applications");
+export const fetchBrandEngaged = () =>
+  brandFetch<{ creators: EngagedCreator[] }>("/review/engaged");
+
+export const approveBrandSubmission = (id: string, body: { notes?: string; rating?: number }) =>
+  brandFetch(`/review/submissions/${id}/approve`, {
+    method: "POST",
+    body: JSON.stringify({ notes: body.notes, quality_rating: body.rating }),
+  });
+export const rejectBrandSubmission = (id: string, notes?: string) =>
+  brandFetch(`/review/submissions/${id}/reject`, { method: "POST", body: JSON.stringify(notes ? { notes } : {}) });
+export const acceptBrandApplication = (id: string) =>
+  brandFetch(`/review/applications/${id}/accept`, { method: "POST", body: JSON.stringify({}) });
+export const declineBrandApplication = (id: string, notes?: string) =>
+  brandFetch(`/review/applications/${id}/decline`, { method: "POST", body: JSON.stringify(notes ? { notes } : {}) });
