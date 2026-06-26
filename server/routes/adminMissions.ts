@@ -289,4 +289,4 @@ adminMissionRoutes.get("/missions/:id/activity", async (c) => {
 });
 
 // Re-export helpers for Tasks 8–9 to import from this file.
-export { hkToday, countEngaged, EDITABLE_COLS, MISSION_COLS };
+export { hkToday, countEngaged, EDITABLE_COLS, MISSION_COLS, normalizeBriefForWrite };
