@@ -9,6 +9,7 @@ import {
   approveBrandSubmission,
   rejectBrandSubmission,
 } from "@/lib/brand";
+import { AdminRequestError } from "@/lib/admin";
 import type { Submission } from "@/lib/admin";
 
 export function BrandReviewSubmissions() {
@@ -43,13 +44,19 @@ export function BrandReviewSubmissions() {
 
 function BrandSubmissionCard({ submission, onDone }: { submission: Submission; onDone: () => void }) {
   const { t } = useI18n();
+  const { reportAuthError } = useBrandAuth();
   const [rating, setRating] = useState("");
   const [notes, setNotes] = useState("");
+  const onErr = (e: unknown) => {
+    if (e instanceof BrandAuthError) { reportAuthError(e); return; }
+    window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
+  };
   const approve = useMutation({
     mutationFn: () => approveBrandSubmission(submission.id, { notes: notes || undefined, rating: rating ? Number(rating) : undefined }),
     onSuccess: onDone,
+    onError: onErr,
   });
-  const reject = useMutation({ mutationFn: () => rejectBrandSubmission(submission.id, notes || undefined), onSuccess: onDone });
+  const reject = useMutation({ mutationFn: () => rejectBrandSubmission(submission.id, notes || undefined), onSuccess: onDone, onError: onErr });
   const busy = approve.isPending || reject.isPending;
 
   return (

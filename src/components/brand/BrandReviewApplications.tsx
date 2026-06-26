@@ -9,6 +9,7 @@ import {
   acceptBrandApplication,
   declineBrandApplication,
 } from "@/lib/brand";
+import { AdminRequestError } from "@/lib/admin";
 
 export function BrandReviewApplications() {
   const { t } = useI18n();
@@ -19,10 +20,16 @@ export function BrandReviewApplications() {
     if (apps.error instanceof BrandAuthError) reportAuthError(apps.error);
   }, [apps.error, reportAuthError]);
 
+  const onErr = (e: unknown) => {
+    if (e instanceof BrandAuthError) { reportAuthError(e); return; }
+    window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
+  };
+
   const decide = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" }) =>
       action === "accept" ? acceptBrandApplication(id) : declineBrandApplication(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: brandKeys.applications() }),
+    onError: onErr,
   });
 
   if (apps.isLoading) return <p className="text-sm">載入中…</p>;
