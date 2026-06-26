@@ -10,6 +10,7 @@ import { resolveStaff, type AdminEnv, type StaffUser } from "../lib/staffAuth.js
 import { adminContentRoutes } from "./adminContent.js";
 import { adminInsightsRoutes } from "./adminInsights.js";
 import { adminRadarRoutes } from "./adminRadar.js";
+import { adminBrandInviteRoutes } from "./adminBrandInvites.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -57,6 +58,7 @@ adminRoutes.route("/", adminMissionRoutes);
 adminRoutes.route("/", adminContentRoutes);
 adminRoutes.route("/", adminInsightsRoutes);
 adminRoutes.route("/", adminRadarRoutes);
+adminRoutes.route("/", adminBrandInviteRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand
