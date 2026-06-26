@@ -169,13 +169,13 @@ export async function seedBrandSubmission(opts: {
     .from("point_balances")
     .upsert(
       { creator_id: opts.creatorId, workspace_id: opts.workspaceId, balance: 0 },
-      { onConflict: "creator_id,workspace_id" },
+      { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
     );
   await service()
     .from("earnings_balances")
     .upsert(
       { creator_id: opts.creatorId, workspace_id: opts.workspaceId, available: 0 },
-      { onConflict: "creator_id,workspace_id" },
+      { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
     );
   const row: Record<string, unknown> = {
     mission_id: opts.missionId,
