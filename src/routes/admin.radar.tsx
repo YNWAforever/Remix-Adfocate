@@ -45,9 +45,9 @@ function QueueCard({
   const { t } = useI18n();
   return (
     <div className="pastel-card p-5">
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3 flex items-start gap-2">
         <h2 className="font-heading text-base font-bold">{t(titleKey)}</h2>
-        <span className="rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 font-mono text-xs">
+        <span className="mt-0.5 shrink-0 rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 font-mono text-xs">
           {total}
         </span>
       </div>
