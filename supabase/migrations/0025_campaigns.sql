@@ -126,3 +126,49 @@ create unique index if not exists et_campaign_prize_uniq  on public.earnings_tra
   (source_ref) where left(source_ref, 15) = 'campaign_prize:';
 create unique index if not exists wbt_campaign_prize_uniq on public.workspace_budget_transactions
   (source_ref) where left(source_ref, 15) = 'campaign_prize:';
+
+-- 7. rank_campaign — single source of truth for leaderboard AND settlement ranks.
+create or replace function public.rank_campaign(p_campaign uuid)
+returns table (creator_id uuid, rank int, approved bigint, avg_quality numeric)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  with cfg as (
+    select id, workspace_id, starts_at, ends_at
+      from public.campaigns where id = p_campaign
+  ),
+  counted as (
+    select s.creator_id,
+           count(*) as approved,
+           coalesce(avg(s.quality_rating) filter (where s.quality_rating is not null), 0) as avg_quality
+      from public.mission_submissions s
+      join cfg on s.workspace_id = cfg.workspace_id
+      join public.campaign_missions cm
+        on cm.campaign_id = cfg.id
+       and cm.mission_id  = s.mission_id
+       and cm.added_at   <= s.reviewed_at
+       and (cm.removed_at is null or s.reviewed_at < cm.removed_at)
+     where s.status = 'approved'
+       and s.submitted_at >= cfg.starts_at
+       and s.submitted_at <  cfg.ends_at
+     group by s.creator_id
+  )
+  select c.creator_id,
+         row_number() over (
+           order by c.approved desc,
+                    c.avg_quality desc,
+                    p.goal_reached_at asc nulls last,
+                    c.creator_id asc
+         )::int as rank,
+         c.approved,
+         c.avg_quality
+    from counted c
+    left join public.campaign_participants p
+      on p.campaign_id = p_campaign and p.creator_id = c.creator_id;
+$$;
+revoke all on function public.rank_campaign(uuid) from public;
+revoke all on function public.rank_campaign(uuid) from anon;
+revoke all on function public.rank_campaign(uuid) from authenticated;
+grant execute on function public.rank_campaign(uuid) to service_role;
