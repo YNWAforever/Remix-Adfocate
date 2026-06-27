@@ -60,20 +60,10 @@ async function pointTxns(ref: string) {
   return data ?? [];
 }
 
-/** Remove campaigns whose slug starts with "test-camp-" (not covered by global cleanup). */
-async function cleanupCampaigns() {
-  const { data: camps } = await svc().from("campaigns").select("id").like("slug", "test-camp-%");
-  for (const c of camps ?? []) {
-    await svc().from("campaign_participants").delete().eq("campaign_id", c.id);
-    await svc().from("campaign_missions").delete().eq("campaign_id", c.id);
-    await svc().from("campaigns").delete().eq("id", c.id);
-  }
-}
-
 suite("campaigns — completion bonus", () => {
   let koc: { userId: string };
-  beforeAll(async () => { await cleanupCampaigns(); await cleanup(); koc = await makeCreator("camp-bonus@test.local", 0); });
-  afterAll(async () => { await cleanupCampaigns(); await cleanup(); });
+  beforeAll(async () => { await cleanup(); koc = await makeCreator("camp-bonus@test.local", 0); });
+  afterAll(cleanup);
 
   it("auto-enrolls, counts, and pays the bonus exactly once on goal crossing", async () => {
     const m1 = await makeMission({ slug: "test-camp-m1" });

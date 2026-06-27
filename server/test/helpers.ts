@@ -302,6 +302,13 @@ export async function getCreatorScores(userId: string) {
 }
 
 export async function cleanup() {
+  // Campaigns G1: delete test campaigns (slug "test-%") — cascades campaign_missions +
+  // campaign_participants — then the throwaway workspaces ("test-camp-%") created by the
+  // cross-workspace settlement tests (cascades their campaigns + budget rows). Done first so
+  // the per-(workspace_id, slug) unique on campaigns never trips a re-run.
+  await service().from("campaigns").delete().like("slug", "test-%");
+  await service().from("workspaces").delete().like("slug", "test-camp-%");
+
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
