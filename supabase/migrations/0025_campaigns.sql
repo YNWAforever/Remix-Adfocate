@@ -458,3 +458,14 @@ $$;
 create trigger campaign_progress_on_approval
   after update of status on public.mission_submissions
   for each row execute function public.campaign_progress_on_approval();
+
+-- 10. Extend notifications.type to admit the two campaign notification literals.
+--     NOTE (prod): verify the live constraint name first:
+--       select conname from pg_constraint
+--        where conrelid='public.notifications'::regclass and contype='c';
+alter table public.notifications drop constraint if exists notifications_type_check;
+alter table public.notifications add constraint notifications_type_check
+  check (type in (
+    'submission_approved','submission_rejected','redemption_ready',
+    'level_up','application_accepted','application_declined',
+    'campaign_goal_reached','campaign_prize_awarded'));
