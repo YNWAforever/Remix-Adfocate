@@ -172,3 +172,76 @@ revoke all on function public.rank_campaign(uuid) from public;
 revoke all on function public.rank_campaign(uuid) from anon;
 revoke all on function public.rank_campaign(uuid) from authenticated;
 grant execute on function public.rank_campaign(uuid) to service_role;
+
+-- 8a. grant_campaign_completion_bonus — points+XP to the creator's HOME workspace, exactly once.
+create or replace function public.grant_campaign_completion_bonus(p_campaign uuid, p_creator uuid)
+returns void
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_part   public.campaign_participants;
+  v_ws     uuid;
+  v_points int;
+  v_xp     int;
+  v_status text;
+  v_title  text;
+  v_slug   text;
+  v_home   uuid;
+  v_bal    int;
+begin
+  select * into v_part from public.campaign_participants
+    where campaign_id = p_campaign and creator_id = p_creator for update;
+  if v_part.id is null then return; end if;
+  if v_part.bonus_granted_at is not null then return; end if;            -- primary idempotency guard
+
+  select workspace_id, completion_bonus_points, completion_bonus_xp, status, title, slug
+    into v_ws, v_points, v_xp, v_status, v_title, v_slug
+    from public.campaigns where id = p_campaign for share;
+  if v_status = 'settled' then return; end if;
+  if v_part.workspace_id <> v_ws then raise exception 'workspace_mismatch'; end if;
+
+  -- Resolve the creator's HOME workspace (where balances live) — NOT the campaign workspace.
+  select workspace_id into v_home from public.creators where id = p_creator;
+  if v_home is null then raise exception 'creator % not found', p_creator; end if;
+
+  if coalesce(v_points, 0) > 0 then
+    insert into public.point_balances (creator_id, workspace_id, balance)
+      values (p_creator, v_home, 0) on conflict (creator_id, workspace_id) do nothing;
+    select balance into v_bal from public.point_balances
+      where creator_id = p_creator and workspace_id = v_home for update;
+    -- Ledger insert FIRST: a duplicate (already paid) aborts here, before we touch the balance.
+    begin
+      insert into public.point_transactions
+        (creator_id, workspace_id, type, delta, balance_after, source_ref, description)
+        values (p_creator, v_home, 'bonus', v_points, v_bal + v_points,
+                'campaign_bonus:' || p_campaign || ':' || p_creator, '挑戰完成獎賞');
+    exception when unique_violation then
+      return;   -- DB backstop; primary guard is bonus_granted_at under for update
+    end;
+    update public.point_balances set balance = balance + v_points, updated_at = now()
+      where creator_id = p_creator and workspace_id = v_home;
+  end if;
+
+  if coalesce(v_xp, 0) > 0 then
+    update public.creators set xp = xp + v_xp where id = p_creator;     -- 0008 trigger recomputes level
+  end if;
+
+  update public.campaign_participants set bonus_granted_at = now() where id = v_part.id;
+
+  -- Notification is best-effort ONLY — never roll back the bonus.
+  begin
+    insert into public.notifications (user_id, workspace_id, type, entity_type, entity_id, data)
+      values (p_creator, v_ws, 'campaign_goal_reached', 'campaign', p_campaign,
+              jsonb_build_object('campaign_title', coalesce(v_title, ''),
+                                 'campaign_slug',  coalesce(v_slug, ''),
+                                 'points', coalesce(v_points, 0),
+                                 'xp',     coalesce(v_xp, 0)));
+  exception when others then
+    raise warning 'campaign_goal_reached notification failed for campaign % creator %', p_campaign, p_creator;
+  end;
+end;
+$$;
+revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from public;
+revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from anon;
+revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from authenticated;
+grant execute on function public.grant_campaign_completion_bonus(uuid, uuid) to service_role;
