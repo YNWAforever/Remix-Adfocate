@@ -13,6 +13,9 @@ const SECRET = process.env.ADMIN_SECRET;
 function adminreq(path: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, { ...init, headers: { "x-admin-secret": SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) } });
 }
+function creatorReq(path: string, jwt: string, init: RequestInit = {}) {
+  return app.request(`/api${path}`, { ...init, headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) } });
+}
 const svc = () => serviceForTests();
 
 // ---- fixtures -------------------------------------------------------------------------------
@@ -509,5 +512,78 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     expect(close2.status).toBe(409);
     const b2 = await close2.json() as { code: string };
     expect(b2.code).toBe("conflict");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Creator read route smoke tests: drive campaignRoutes via Hono app
+// ---------------------------------------------------------------------------
+suite("campaigns — creator read routes", () => {
+  let creator: { userId: string; jwt: string };
+  beforeAll(async () => {
+    await cleanup();
+    creator = await makeCreator("camp-cr-read@test.local", 0);
+  });
+  afterAll(cleanup);
+
+  it("GET /campaigns → 200, active campaign in creator's workspace appears in list", async () => {
+    await makeCampaign({ slug: "test-cr-active" });
+    const res = await creatorReq("/campaigns", creator.jwt);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { campaigns: Array<{ slug: string; status: string }> };
+    expect(Array.isArray(body.campaigns)).toBe(true);
+    const found = body.campaigns.find((c) => c.slug === "test-cr-active");
+    expect(found).toBeTruthy();
+    expect(found?.status).toBe("active");
+  });
+
+  it("GET /campaigns/:slug → 200 with my_progress object after seeding approved sub", async () => {
+    const m = await makeMission({ slug: "test-cr-detail-m" });
+    const camp = await makeCampaign({ slug: "test-cr-detail", goal_target: 2 });
+    await attach(camp.id, m.id);
+    // Seed an approved submission so the trigger enrolls the creator and increments approved_count.
+    // submitted_at is in-window; reviewed_at in-window (trigger uses submitted_at for enrollment).
+    await seedApprovedSub({
+      creator: creator.userId, mission: m.id,
+      submitted_at: "2026-06-10T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z",
+    });
+    const res = await creatorReq(`/campaigns/${camp.slug}`, creator.jwt);
+    expect(res.status).toBe(200);
+    const body = await res.json() as {
+      campaign: { slug: string };
+      missions: unknown[];
+      my_progress: { approved: number; goal_reached: boolean; bonus_granted: boolean; prize_rank: unknown; rank: unknown };
+    };
+    expect(body.campaign.slug).toBe("test-cr-detail");
+    expect(Array.isArray(body.missions)).toBe(true);
+    expect(body.my_progress).toBeDefined();
+    expect(typeof body.my_progress.approved).toBe("number");
+    expect(body.my_progress.approved).toBeGreaterThanOrEqual(1);
+  });
+
+  it("GET /campaigns/:slug/leaderboard → 200 with leaderboard array", async () => {
+    const m = await makeMission({ slug: "test-cr-lb-m" });
+    const camp = await makeCampaign({ slug: "test-cr-lb", goal_target: 1 });
+    await attach(camp.id, m.id);
+    await seedApprovedSub({
+      creator: creator.userId, mission: m.id,
+      submitted_at: "2026-06-10T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z",
+    });
+    const res = await creatorReq(`/campaigns/${camp.slug}/leaderboard`, creator.jwt);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { leaderboard: Array<{ creator_id: string; rank: number }> };
+    expect(Array.isArray(body.leaderboard)).toBe(true);
+    expect(body.leaderboard.length).toBeGreaterThanOrEqual(1);
+    const mine = body.leaderboard.find((e) => e.creator_id === creator.userId);
+    expect(mine).toBeTruthy();
+    expect(typeof mine?.rank).toBe("number");
+  });
+
+  it("GET /campaigns/:slug for a draft campaign → 404", async () => {
+    await makeCampaign({ slug: "test-cr-draft", status: "draft" });
+    const res = await creatorReq("/campaigns/test-cr-draft", creator.jwt);
+    expect(res.status).toBe(404);
+    const body = await res.json() as { code: string };
+    expect(body.code).toBe("not_found");
   });
 });

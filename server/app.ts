@@ -17,6 +17,7 @@ import { cronRoutes } from "./routes/cron.js";
 import { profileMediaRoutes } from "./routes/profileMedia.js";
 import { contentRoutes } from "./routes/content.js";
 import { brandRoutes } from "./routes/brand.js";
+import { campaignRoutes } from "./routes/campaigns.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -42,6 +43,7 @@ export function createApp() {
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
+  guarded.route("/campaigns", campaignRoutes);
   guarded.route("/match", matchRoutes);
   guarded.route("/notifications", notificationRoutes);
   guarded.route("/copilot", copilotRoutes);
