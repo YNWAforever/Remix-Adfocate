@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import {
   type CampaignInput, type CampaignRecord, validateCampaign, validateEdit,
-  validatePrizeTiers, canAttachMission, CAMPAIGN_EDITABLE_COLS,
+  canAttachMission, CAMPAIGN_EDITABLE_COLS,
 } from "../lib/campaignAuthoring.js";
 import { shapeLeaderboard } from "../lib/campaignLeaderboard.js";
 
