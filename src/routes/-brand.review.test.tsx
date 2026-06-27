@@ -10,6 +10,7 @@ const h = vi.hoisted(() => ({
   rejectBrandSubmission: vi.fn(),
   acceptBrandApplication: vi.fn(),
   declineBrandApplication: vi.fn(),
+  fetchBrandBudget: vi.fn().mockResolvedValue({ budget: { balance: 0, enforced: false }, transactions: [] }),
   reportAuthError: vi.fn(),
 }));
 
@@ -21,10 +22,12 @@ vi.mock("@/lib/brand", () => ({
   rejectBrandSubmission: h.rejectBrandSubmission,
   acceptBrandApplication: h.acceptBrandApplication,
   declineBrandApplication: h.declineBrandApplication,
+  fetchBrandBudget: h.fetchBrandBudget,
   brandKeys: {
     submissions: (s: string) => ["brand-submissions", s],
     applications: () => ["brand-applications"],
     engaged: () => ["brand-engaged"],
+    budget: () => ["brand-budget"],
   },
   BrandAuthError: class extends Error {},
 }));
