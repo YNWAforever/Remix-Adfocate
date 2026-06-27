@@ -189,6 +189,21 @@ export async function seedBrandSubmission(opts: {
   return data.id as string;
 }
 
+/** Set a workspace's budget balance + enforcement directly (service-role) for the budget tests.
+ *  Upserts the workspace_budgets row. */
+export async function seedWorkspaceBudget(opts: {
+  workspaceId: string;
+  balance?: number;
+  enforced?: boolean;
+}) {
+  await service()
+    .from("workspace_budgets")
+    .upsert(
+      { workspace_id: opts.workspaceId, balance: opts.balance ?? 0, enforced: opts.enforced ?? false },
+      { onConflict: "workspace_id" },
+    );
+}
+
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
