@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS } from "./helpers.js";
+import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, userForJwt } from "./helpers.js";
 import { campaignBonusRef, campaignPrizeRef } from "../lib/campaignAuthoring.js";
 
 const hasEnv = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_KEY;
@@ -275,5 +275,62 @@ suite("campaigns — insufficient budget", () => {
     expect(Number((await budget(DEMO_WS))?.balance)).toBe(0);   // 800 funded − 2×400
     const { data: c2 } = await svc().from("campaigns").select("status").eq("id", camp.id).single();
     expect(c2.status).toBe("settled");
+  });
+});
+
+suite("campaigns — constraints & RLS", () => {
+  let koc: { userId: string; jwt: string };
+  let other: { userId: string; jwt: string };
+  beforeAll(async () => {
+    await cleanup();
+    koc = await makeCreator("camp-rls-a@test.local", 0);
+    other = await makeCreator("camp-rls-b@test.local", 0);
+  });
+  afterAll(cleanup);
+
+  it("rejects attaching a mission already active in another campaign (one-active index)", async () => {
+    const m = await makeMission({ slug: "test-excl-m" });
+    const c1 = await makeCampaign({ slug: "test-excl-1" });
+    const c2 = await makeCampaign({ slug: "test-excl-2" });
+    await attach(c1.id, m.id);
+    const { error } = await svc().from("campaign_missions")
+      .insert({ campaign_id: c2.id, mission_id: m.id, workspace_id: DEMO_WS });
+    expect(error?.code).toBe("23505");                  // partial-unique on (mission_id) where removed_at is null
+  });
+
+  it("mission removed mid-campaign keeps approvals earned while attached (as-of-approval)", async () => {
+    const m = await makeMission({ slug: "test-rm-m" });
+    const camp = await makeCampaign({ slug: "test-rm", goal_target: 5 });
+    await attach(camp.id, m.id);
+    await seedApprovedSub({ creator: koc.userId, mission: m.id,
+      submitted_at: "2026-06-05T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
+    // Remove the mission AFTER that approval (removed_at must be > reviewed_at).
+    await svc().from("campaign_missions").update({ removed_at: "2027-06-01T00:00:00Z" })
+      .eq("campaign_id", camp.id).eq("mission_id", m.id);
+    const { data: ranked } = await svc().rpc("rank_campaign", { p_campaign: camp.id });
+    const mine = (ranked ?? []).find((r: { creator_id: string }) => r.creator_id === koc.userId);
+    expect(Number(mine?.approved)).toBe(1);             // not retroactively erased
+  });
+
+  it("reject_submission on an approved row raises wrong_state (monotonic invariant)", async () => {
+    const m = await makeMission({ slug: "test-term-m" });
+    const camp = await makeCampaign({ slug: "test-term", goal_target: 1 });
+    await attach(camp.id, m.id);
+    const id = await seedApprovedSub({ creator: koc.userId, mission: m.id, submitted_at: "2026-06-05T00:00:00Z" });
+    const { error } = await svc().rpc("reject_submission", { p_submission: id, p_notes: "x" });
+    expect(String(error?.message)).toContain("wrong_state");
+  });
+
+  it("creator may read only their own participant row; not another creator's", async () => {
+    const m = await makeMission({ slug: "test-self-m" });
+    const camp = await makeCampaign({ slug: "test-self", goal_target: 1 });
+    await attach(camp.id, m.id);
+    await seedApprovedSub({ creator: koc.userId, mission: m.id, submitted_at: "2026-06-05T00:00:00Z" });
+
+    const mine = await userForJwt(koc.jwt).from("campaign_participants").select("creator_id").eq("campaign_id", camp.id);
+    expect((mine.data ?? []).map((r) => r.creator_id)).toEqual([koc.userId]);
+
+    const theirs = await userForJwt(other.jwt).from("campaign_participants").select("creator_id").eq("campaign_id", camp.id);
+    expect(theirs.data ?? []).toEqual([]);              // RLS: only self-read
   });
 });
