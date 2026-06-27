@@ -245,3 +245,159 @@ revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from p
 revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from anon;
 revoke all on function public.grant_campaign_completion_bonus(uuid, uuid) from authenticated;
 grant execute on function public.grant_campaign_completion_bonus(uuid, uuid) to service_role;
+
+-- 8b. close_campaign — active -> closed. Stops counting; opens the grace window.
+create or replace function public.close_campaign(p_campaign uuid)
+returns public.campaigns
+language plpgsql security definer set search_path = public
+as $$
+declare v_c public.campaigns;
+begin
+  select * into v_c from public.campaigns where id = p_campaign for update;
+  if v_c.id is null then raise exception 'not_found'; end if;
+  if v_c.status <> 'active' then raise exception 'wrong_state'; end if;
+  update public.campaigns set status = 'closed', closed_at = now(), updated_at = now()
+    where id = p_campaign returning * into v_c;
+  return v_c;
+end;
+$$;
+revoke all on function public.close_campaign(uuid) from public;
+revoke all on function public.close_campaign(uuid) from anon;
+revoke all on function public.close_campaign(uuid) from authenticated;
+grant execute on function public.close_campaign(uuid) to service_role;
+
+-- 8c. settle_campaign — closed -> settled. Re-validates tiers, ranks, pays top-N. Idempotent.
+create or replace function public.settle_campaign(p_campaign uuid)
+returns public.campaigns
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_c        public.campaigns;
+  v_tier     jsonb;
+  v_prev_to  int := 0;
+  v_row      record;
+  v_home     uuid;
+  v_pbal     int;
+  v_ebal     numeric;
+  v_bgt_bal  numeric;
+  v_bgt_enf  boolean;
+  v_cash     numeric;
+  v_points   int;
+  v_xp       int;
+  v_ref      text;
+begin
+  select * into v_c from public.campaigns where id = p_campaign for update;
+  if v_c.id is null then raise exception 'not_found'; end if;
+  if v_c.settled_at is not null then return v_c; end if;        -- idempotent: already settled
+  if v_c.status <> 'closed' then raise exception 'wrong_state'; end if;
+
+  -- Re-validate prize_tiers in-RPC: ascending, non-overlapping, non-negative.
+  for v_tier in select * from jsonb_array_elements(v_c.prize_tiers) loop
+    if (v_tier->>'rank_from')::int < 1
+       or (v_tier->>'rank_to')::int < (v_tier->>'rank_from')::int
+       or (v_tier->>'rank_from')::int <= v_prev_to
+       or coalesce((v_tier->>'cash')::numeric, 0)  < 0
+       or coalesce((v_tier->>'points')::int, 0)    < 0
+       or coalesce((v_tier->>'xp')::int, 0)        < 0
+    then raise exception 'invalid_prize_tiers'; end if;
+    v_prev_to := (v_tier->>'rank_to')::int;
+  end loop;
+
+  -- Rank via the shared ranker; stamp prize_rank (defensively upserting any missing row).
+  for v_row in select * from public.rank_campaign(p_campaign) loop
+    insert into public.campaign_participants (campaign_id, creator_id, workspace_id, approved_count)
+      values (p_campaign, v_row.creator_id, v_c.workspace_id, v_row.approved)
+      on conflict (campaign_id, creator_id) do nothing;
+    update public.campaign_participants set prize_rank = v_row.rank
+      where campaign_id = p_campaign and creator_id = v_row.creator_id;
+  end loop;
+
+  -- Pay each tier. A creator wins at most one rank → one campaign_prize: ref per (campaign,creator).
+  for v_tier in select * from jsonb_array_elements(v_c.prize_tiers) loop
+    v_cash   := coalesce((v_tier->>'cash')::numeric, 0);
+    v_points := coalesce((v_tier->>'points')::int, 0);
+    v_xp     := coalesce((v_tier->>'xp')::int, 0);
+    for v_row in
+      select cp.id as part_id, cp.creator_id, cp.prize_rank
+        from public.campaign_participants cp
+       where cp.campaign_id = p_campaign
+         and cp.prize_rank between (v_tier->>'rank_from')::int and (v_tier->>'rank_to')::int
+         and cp.prize_granted_at is null
+    loop
+      v_ref := 'campaign_prize:' || p_campaign || ':' || v_row.creator_id;
+      begin   -- per-winner savepoint
+        select workspace_id into v_home from public.creators where id = v_row.creator_id;
+
+        -- CASH: debit the CAMPAIGN workspace budget (hard cap); credit the HOME workspace earnings.
+        if v_cash > 0 then
+          select balance, enforced into v_bgt_bal, v_bgt_enf
+            from public.workspace_budgets where workspace_id = v_c.workspace_id for update;
+          if coalesce(v_bgt_enf, false) and coalesce(v_bgt_bal, 0) < v_cash then
+            raise exception 'insufficient_budget';   -- NOT caught here → rolls back the whole settle
+          end if;
+          if v_bgt_bal is not null then
+            update public.workspace_budgets set balance = balance - v_cash, updated_at = now()
+              where workspace_id = v_c.workspace_id returning balance into v_bgt_bal;
+            insert into public.workspace_budget_transactions
+              (workspace_id, type, delta, balance_after, source_ref, description)
+              values (v_c.workspace_id, 'debit', -v_cash, v_bgt_bal, v_ref, v_c.title);
+          end if;
+          insert into public.earnings_balances (creator_id, workspace_id, available)
+            values (v_row.creator_id, v_home, 0) on conflict (creator_id, workspace_id) do nothing;
+          select available into v_ebal from public.earnings_balances
+            where creator_id = v_row.creator_id and workspace_id = v_home for update;
+          insert into public.earnings_transactions
+            (creator_id, workspace_id, type, amount, balance_after, source_ref, description)
+            values (v_row.creator_id, v_home, 'earn', v_cash, v_ebal + v_cash, v_ref, v_c.title);
+          update public.earnings_balances set available = available + v_cash, updated_at = now()
+            where creator_id = v_row.creator_id and workspace_id = v_home;
+        end if;
+
+        -- POINTS: HOME workspace.
+        if v_points > 0 then
+          insert into public.point_balances (creator_id, workspace_id, balance)
+            values (v_row.creator_id, v_home, 0) on conflict (creator_id, workspace_id) do nothing;
+          select balance into v_pbal from public.point_balances
+            where creator_id = v_row.creator_id and workspace_id = v_home for update;
+          insert into public.point_transactions
+            (creator_id, workspace_id, type, delta, balance_after, source_ref, description)
+            values (v_row.creator_id, v_home, 'bonus', v_points, v_pbal + v_points, v_ref, v_c.title);
+          update public.point_balances set balance = balance + v_points, updated_at = now()
+            where creator_id = v_row.creator_id and workspace_id = v_home;
+        end if;
+
+        -- XP.
+        if v_xp > 0 then
+          update public.creators set xp = xp + v_xp where id = v_row.creator_id;
+        end if;
+
+        update public.campaign_participants set prize_granted_at = now() where id = v_row.part_id;
+
+        begin   -- best-effort notification
+          insert into public.notifications (user_id, workspace_id, type, entity_type, entity_id, data)
+            values (v_row.creator_id, v_c.workspace_id, 'campaign_prize_awarded', 'campaign', p_campaign,
+                    jsonb_build_object('campaign_title', coalesce(v_c.title, ''),
+                                       'campaign_slug',  coalesce(v_c.slug, ''),
+                                       'rank',   v_row.prize_rank,
+                                       'cash',   v_cash,
+                                       'points', v_points,
+                                       'xp',     v_xp));
+        exception when others then
+          raise warning 'campaign_prize_awarded notification failed for campaign % creator %', p_campaign, v_row.creator_id;
+        end;
+
+      exception
+        when unique_violation then null;   -- already paid → skip this winner (DB backstop)
+      end;
+    end loop;
+  end loop;
+
+  update public.campaigns set status = 'settled', settled_at = now(), updated_at = now()
+    where id = p_campaign returning * into v_c;
+  return v_c;
+end;
+$$;
+revoke all on function public.settle_campaign(uuid) from public;
+revoke all on function public.settle_campaign(uuid) from anon;
+revoke all on function public.settle_campaign(uuid) from authenticated;
+grant execute on function public.settle_campaign(uuid) to service_role;
