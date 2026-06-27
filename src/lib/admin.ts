@@ -2,6 +2,7 @@
 // (Authorization: Bearer), resolved server-side against staff_users. Staff are global, so
 // no X-Workspace-Slug is sent (workspace scoping is the ?workspace/?ws query convenience).
 import { supabase } from "@/lib/supabase";
+import type { BudgetTxn, BrandBudget } from "@/lib/brand";
 
 export type AdminReviewStatus = "needs_review" | "approved" | "flagged";
 export type AdminRiskLevel = "low" | "medium" | "high" | "unknown";
@@ -270,6 +271,7 @@ export const adminKeys = {
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
   insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
   radar: (workspace: string, days: number) => ["admin-radar", workspace, days] as const,
+  budget: (workspace: string) => ["admin-budget", workspace] as const,
 };
 
 function wsq(workspace?: string) {
@@ -564,3 +566,13 @@ export function fetchRadar(workspace = "", days = 30) {
   const parts = [`days=${days}`, wsq(workspace)].filter(Boolean);
   return adminFetch<{ radar: Radar }>(`/admin/radar?${parts.join("&")}`);
 }
+
+// --- Slice 3: operator budget ---------------------------------------------------------------
+export const fetchAdminBudget = (workspace: string) =>
+  adminFetch<{ budget: BrandBudget; transactions: BudgetTxn[] }>(`/admin/budget?workspace=${encodeURIComponent(workspace)}`);
+export const topupAdminBudget = (workspaceId: string, amount: number) =>
+  adminFetch<{ balance: number }>("/admin/budget/topup", { method: "POST", body: JSON.stringify({ workspace_id: workspaceId, amount }) });
+export const adjustAdminBudget = (workspaceId: string, delta: number, description?: string) =>
+  adminFetch<{ balance: number }>("/admin/budget/adjust", { method: "POST", body: JSON.stringify({ workspace_id: workspaceId, delta, description }) });
+export const setAdminBudgetEnforcement = (workspaceId: string, enforced: boolean) =>
+  adminFetch<{ enforced: boolean }>("/admin/budget/enforcement", { method: "POST", body: JSON.stringify({ workspace_id: workspaceId, enforced }) });

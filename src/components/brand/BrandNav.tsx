@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, Target, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Target, ClipboardCheck, Wallet } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const ITEMS = [
   { to: "/brand", exact: true, icon: LayoutDashboard, labelKey: "app.brand.navDashboard" },
   { to: "/brand/missions", exact: false, icon: Target, labelKey: "app.brand.navMissions" },
   { to: "/brand/review", exact: false, icon: ClipboardCheck, labelKey: "app.brand.navReview" },
+  { to: "/brand/budget", exact: false, icon: Wallet, labelKey: "app.brand.navBudget" },
 ] as const;
 
 const DESKTOP_ITEM =

@@ -9,6 +9,7 @@ import {
   Target,
   FileText,
   Radar,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -51,6 +52,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       { to: "/admin/missions", labelKey: "app.admin.tabMissions", icon: Target, exact: false },
       { to: "/admin/content", labelKey: "app.admin.tabContent", icon: FileText, exact: false },
+      { to: "/admin/budget", labelKey: "app.admin.budget.tab", icon: Wallet, exact: false },
     ],
   },
 ];
