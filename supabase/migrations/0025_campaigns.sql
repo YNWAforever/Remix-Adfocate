@@ -76,3 +76,43 @@ create table if not exists public.campaign_participants (
   unique (campaign_id, creator_id)
 );
 create index if not exists campaign_participants_campaign_idx on public.campaign_participants (campaign_id);
+
+-- 5. RLS ---------------------------------------------------------------------------------------
+alter table public.campaigns           enable row level security;
+alter table public.campaign_missions   enable row level security;
+alter table public.campaign_participants enable row level security;
+
+-- campaigns: brand CRUD scoped by membership (additive; harmless without brand routes).
+create policy campaigns_brand_select on public.campaigns for select to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaigns_brand_insert on public.campaigns for insert to authenticated
+  with check (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaigns_brand_update on public.campaigns for update to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active))
+  with check (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaigns_brand_delete on public.campaigns for delete to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users bu where bu.user_id = auth.uid() and bu.active and bu.role = 'owner'));
+
+-- campaign_missions: same idiom.
+create policy campaign_missions_brand_select on public.campaign_missions for select to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaign_missions_brand_insert on public.campaign_missions for insert to authenticated
+  with check (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaign_missions_brand_update on public.campaign_missions for update to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active))
+  with check (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaign_missions_brand_delete on public.campaign_missions for delete to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users bu where bu.user_id = auth.uid() and bu.active and bu.role = 'owner'));
+
+-- campaign_participants: brand SELECT + creator self-read only. NO writes to authenticated.
+create policy campaign_participants_brand_select on public.campaign_participants for select to authenticated
+  using (workspace_id in (select workspace_id from public.brand_users where user_id = auth.uid() and active));
+create policy campaign_participants_self_read on public.campaign_participants for select to authenticated
+  using (creator_id = auth.uid());
+
+grant select, insert, update, delete on public.campaigns         to authenticated;
+grant select, insert, update, delete on public.campaign_missions to authenticated;
+grant select                          on public.campaign_participants to authenticated;
+grant all on public.campaigns            to service_role;
+grant all on public.campaign_missions    to service_role;
+grant all on public.campaign_participants to service_role;
