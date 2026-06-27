@@ -7,6 +7,7 @@ import {
   UserCheck,
   Layers,
   Target,
+  Trophy,
   FileText,
   Radar,
   type LucideIcon,
@@ -50,6 +51,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: "app.admin.navGroupLibrary",
     items: [
       { to: "/admin/missions", labelKey: "app.admin.tabMissions", icon: Target, exact: false },
+      { to: "/admin/campaigns", labelKey: "app.admin.tabCampaigns", icon: Trophy, exact: false },
       { to: "/admin/content", labelKey: "app.admin.tabContent", icon: FileText, exact: false },
     ],
   },

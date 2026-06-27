@@ -270,6 +270,9 @@ export const adminKeys = {
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
   insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
   radar: (workspace: string, days: number) => ["admin-radar", workspace, days] as const,
+  campaigns: (workspace: string, status: string) => ["admin-campaigns", workspace, status] as const,
+  campaignDetail: (id: string) => ["admin-campaign", id] as const,
+  campaignLeaderboard: (id: string) => ["admin-campaign-board", id] as const,
 };
 
 function wsq(workspace?: string) {
@@ -563,4 +566,64 @@ export type Radar = {
 export function fetchRadar(workspace = "", days = 30) {
   const parts = [`days=${days}`, wsq(workspace)].filter(Boolean);
   return adminFetch<{ radar: Radar }>(`/admin/radar?${parts.join("&")}`);
+}
+
+// ---- G1 Campaigns & Challenges (mirrors server/lib/campaignAuthoring.ts) ------
+export type CampaignPrizeTier = { rank_from: number; rank_to: number; cash: number; points: number; xp: number };
+
+export type AdminCampaign = {
+  id: string;
+  workspace_id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  status: string;
+  starts_at: string;
+  ends_at: string;
+  goal_target: number;
+  completion_bonus_points: number;
+  completion_bonus_xp: number;
+  prize_tiers: CampaignPrizeTier[];
+};
+export type CampaignDraftInput = Omit<AdminCampaign, "id" | "status"> & { workspace_id: string };
+
+export type AdminCampaignMission = {
+  mission_id: string;
+  added_at: string;
+  removed_at: string | null;
+  missions: { title: string; slug: string; status: string } | null;
+};
+
+export function fetchCampaigns(workspace: string, status: string) {
+  const qs = new URLSearchParams();
+  if (workspace) qs.set("workspace", workspace);
+  if (status) qs.set("status", status);
+  return adminFetch<{ campaigns: AdminCampaign[] }>(`/admin/campaigns${qs.toString() ? `?${qs}` : ""}`);
+}
+export function fetchCampaign(id: string) {
+  return adminFetch<{ campaign: AdminCampaign; missions: AdminCampaignMission[]; participants: number }>(`/admin/campaigns/${id}`);
+}
+export function createCampaign(body: Partial<CampaignDraftInput>) {
+  return adminFetch<{ campaign: AdminCampaign }>("/admin/campaigns", { method: "POST", body: JSON.stringify(body) });
+}
+export function updateCampaign(id: string, patch: Partial<CampaignDraftInput>) {
+  return adminFetch<{ campaign: AdminCampaign }>(`/admin/campaigns/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
+}
+export function publishCampaign(id: string) {
+  return adminFetch(`/admin/campaigns/${id}/publish`, { method: "POST", body: JSON.stringify({}) });
+}
+export function attachCampaignMission(id: string, mission_id: string) {
+  return adminFetch(`/admin/campaigns/${id}/missions`, { method: "POST", body: JSON.stringify({ mission_id }) });
+}
+export function detachCampaignMission(id: string, missionId: string) {
+  return adminFetch(`/admin/campaigns/${id}/missions/${missionId}`, { method: "DELETE" });
+}
+export function closeCampaign(id: string) {
+  return adminFetch(`/admin/campaigns/${id}/close`, { method: "POST", body: JSON.stringify({}) });
+}
+export function settleCampaign(id: string) {
+  return adminFetch(`/admin/campaigns/${id}/settle`, { method: "POST", body: JSON.stringify({}) });
+}
+export function fetchCampaignLeaderboard(id: string) {
+  return adminFetch<{ leaderboard: unknown[] }>(`/admin/campaigns/${id}/leaderboard`);
 }
