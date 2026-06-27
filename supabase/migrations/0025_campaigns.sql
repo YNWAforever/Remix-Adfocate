@@ -116,3 +116,13 @@ grant select                          on public.campaign_participants to authent
 grant all on public.campaigns            to service_role;
 grant all on public.campaign_missions    to service_role;
 grant all on public.campaign_participants to service_role;
+
+-- 6. Idempotency backbone: per-(campaign,creator) source_ref uniqueness on the existing ledgers.
+create unique index if not exists pt_campaign_bonus_uniq  on public.point_transactions
+  (source_ref) where left(source_ref, 15) = 'campaign_bonus:';
+create unique index if not exists pt_campaign_prize_uniq  on public.point_transactions
+  (source_ref) where left(source_ref, 15) = 'campaign_prize:';
+create unique index if not exists et_campaign_prize_uniq  on public.earnings_transactions
+  (source_ref) where left(source_ref, 15) = 'campaign_prize:';
+create unique index if not exists wbt_campaign_prize_uniq on public.workspace_budget_transactions
+  (source_ref) where left(source_ref, 15) = 'campaign_prize:';
