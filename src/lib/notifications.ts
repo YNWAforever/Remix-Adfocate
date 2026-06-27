@@ -1,8 +1,9 @@
-import { CheckCircle2, XCircle, Gift, TrendingUp, UserCheck, UserX, Bell, type LucideIcon } from "lucide-react";
+import { CheckCircle2, XCircle, Gift, TrendingUp, UserCheck, UserX, Trophy, Award, Bell, type LucideIcon } from "lucide-react";
 
 export type NotificationType =
   | "submission_approved" | "submission_rejected" | "redemption_ready"
-  | "level_up" | "application_accepted" | "application_declined";
+  | "level_up" | "application_accepted" | "application_declined"
+  | "campaign_goal_reached" | "campaign_prize_awarded";
 
 export type NotificationRow = {
   id: string;
@@ -25,6 +26,8 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   level_up: TrendingUp,
   application_accepted: UserCheck,
   application_declined: UserX,
+  campaign_goal_reached: Trophy,
+  campaign_prize_awarded: Award,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {
@@ -44,6 +47,9 @@ function paramsFor(data: Record<string, unknown>): Record<string, string | numbe
     notes: s("notes"),
     points: n("points"),
     xp: n("xp"),
+    campaign: s("campaign_title"),
+    rank: n("rank"),
+    cash: n("cash"),
   };
 }
 
@@ -51,6 +57,11 @@ function hrefFor(row: NotificationRow): string {
   switch (row.type) {
     case "level_up": return "/passport";
     case "redemption_ready": return "/redemption/history";
+    case "campaign_goal_reached":
+    case "campaign_prize_awarded": {
+      const slug = row.data.campaign_slug;
+      return typeof slug === "string" && slug ? `/campaigns/${slug}` : "/campaigns";
+    }
     default: {
       const slug = row.data.mission_slug;
       return typeof slug === "string" && slug ? `/mission/${slug}` : "/home";

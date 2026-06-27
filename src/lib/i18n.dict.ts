@@ -701,6 +701,23 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.redemption_ready.title": "Reward ready",
     "app.notif.redemption_ready.body": "Your \"{gift}\" code is ready — view it in Redeem history.",
     "app.notif.toast.new": "You have a new notification",
+    "app.notif.campaign_goal_reached.title": "Challenge goal reached!",
+    "app.notif.campaign_goal_reached.body": "You hit the goal in \"{campaign}\" — +{points} pts · +{xp} XP",
+    "app.notif.campaign_prize_awarded.title": "You won a prize!",
+    "app.notif.campaign_prize_awarded.body": "Rank {rank} in \"{campaign}\" — HK${cash} · +{points} pts · +{xp} XP",
+
+    // ── app: campaigns ────────────────────────────────────────
+    "app.nav.campaigns": "Challenges",
+    "app.admin.tabCampaigns": "Challenges",
+    "app.campaigns.title": "Challenges",
+    "app.campaigns.active": "Active",
+    "app.campaigns.upcoming": "Upcoming",
+    "app.campaigns.goalProgress": "Approved {x} / {y}",
+    "app.campaigns.leaderboard": "Leaderboard",
+    "app.campaigns.completionBonus": "Completion bonus",
+    "app.campaigns.prizes": "Prizes",
+    "app.campaigns.spotsToPrize": "{n} spots from a prize",
+    "app.campaigns.endsIn": "Ends in",
 
     // ── app: brand portal ─────────────────────────────────────
     "app.brand.title": "Brand Portal",
@@ -1411,6 +1428,23 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.redemption_ready.title": "獎賞準備好",
     "app.notif.redemption_ready.body": "你嘅「{gift}」兌換碼已準備好，可喺兌換紀錄查看。",
     "app.notif.toast.new": "你有一則新通知",
+    "app.notif.campaign_goal_reached.title": "達成挑戰目標！",
+    "app.notif.campaign_goal_reached.body": "你喺「{campaign}」達標，+{points} 分・+{xp} XP",
+    "app.notif.campaign_prize_awarded.title": "你贏得獎賞！",
+    "app.notif.campaign_prize_awarded.body": "「{campaign}」第 {rank} 名 — HK${cash}・+{points} 分・+{xp} XP",
+
+    // ── app: campaigns ────────────────────────────────────────
+    "app.nav.campaigns": "挑戰",
+    "app.admin.tabCampaigns": "挑戰",
+    "app.campaigns.title": "挑戰",
+    "app.campaigns.active": "進行中",
+    "app.campaigns.upcoming": "即將開始",
+    "app.campaigns.goalProgress": "已批核 {x} / {y}",
+    "app.campaigns.leaderboard": "排行榜",
+    "app.campaigns.completionBonus": "完成獎勵",
+    "app.campaigns.prizes": "名次獎品",
+    "app.campaigns.spotsToPrize": "差 {n} 名入獎",
+    "app.campaigns.endsIn": "距離結束",
 
     // ── app: brand portal ─────────────────────────────────────
     "app.brand.title": "品牌平台",

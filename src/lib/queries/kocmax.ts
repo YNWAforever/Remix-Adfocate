@@ -566,3 +566,63 @@ export function useMarkAllRead() {
     },
   });
 }
+
+// ── Campaigns ──────────────────────────────────────────────────────────────
+
+export type Campaign = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  status: string;
+  starts_at: string;
+  ends_at: string;
+  goal_target: number;
+  completion_bonus_points: number;
+  completion_bonus_xp: number;
+  prize_tiers: { rank_from: number; rank_to: number; cash: number; points: number; xp: number }[];
+};
+
+export type CampaignDetail = {
+  campaign: Campaign;
+  missions: { mission_id: string; missions: { title: string; slug: string; status: string } }[];
+  my_progress: {
+    approved: number;
+    goal_reached: boolean;
+    bonus_granted: boolean;
+    prize_rank: number | null;
+    rank: number | null;
+  };
+};
+
+export type LeaderboardEntry = {
+  creator_id: string;
+  rank: number;
+  approved: number;
+  avg_quality: number;
+  display_name: string;
+  avatar_url: string | null;
+  level: number;
+};
+
+export function useCampaigns() {
+  return useQuery({
+    queryKey: ["campaigns"],
+    queryFn: async () => (await apiFetch<{ campaigns: Campaign[] }>("/campaigns")).campaigns,
+  });
+}
+
+export function useCampaign(slug: string) {
+  return useQuery({
+    queryKey: ["campaign", slug],
+    queryFn: () => apiFetch<CampaignDetail>(`/campaigns/${slug}`),
+  });
+}
+
+export function useCampaignLeaderboard(slug: string) {
+  return useQuery({
+    queryKey: ["campaign-leaderboard", slug],
+    queryFn: async () =>
+      (await apiFetch<{ leaderboard: LeaderboardEntry[] }>(`/campaigns/${slug}/leaderboard`)).leaderboard,
+  });
+}
