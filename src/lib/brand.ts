@@ -17,6 +17,7 @@ export const brandKeys = {
   applications: () => ["brand-applications"] as const,
   engaged: () => ["brand-engaged"] as const,
   budget: () => ["brand-budget"] as const,
+  insights: (window: number) => ["brand-insights", window] as const,
 };
 
 async function brandFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -79,3 +80,24 @@ export type BudgetTxn = {
 export type BrandBudget = { balance: number; enforced: boolean };
 export const fetchBrandBudget = () =>
   brandFetch<{ budget: BrandBudget; transactions: BudgetTxn[] }>("/budget");
+
+// --- Slice 4: insights (read-only) -----------------------------------------------------------
+export type BrandMetric = { value: number; prev: number; deltaPct: number | null };
+export type BrandTopCreator = { creatorId: string; name: string; approved: number; avgQuality: number };
+export type BrandInsights = {
+  window: { days: 7 | 30 | 90; from: string; to: string };
+  kpis: {
+    liveMissions: BrandMetric;
+    missionFillRate: BrandMetric;
+    submissionsReceived: BrandMetric;
+    approvalRate: BrandMetric;
+    completions: BrandMetric;
+    cashPaid: BrandMetric;
+    costPerDeliverable: BrandMetric;
+    pointsDistributed: BrandMetric;
+  };
+  topCreators: BrandTopCreator[];
+  trend: Array<{ bucket: string; joined: number; submitted: number; approved: number }>;
+};
+export const fetchBrandInsights = (window: number) =>
+  brandFetch<{ insights: BrandInsights }>(`/insights?window=${window}`);
