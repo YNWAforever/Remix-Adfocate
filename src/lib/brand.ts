@@ -16,6 +16,7 @@ export const brandKeys = {
   submissions: (status: string) => ["brand-submissions", status] as const,
   applications: () => ["brand-applications"] as const,
   engaged: () => ["brand-engaged"] as const,
+  budget: () => ["brand-budget"] as const,
 };
 
 async function brandFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -69,3 +70,12 @@ export const acceptBrandApplication = (id: string) =>
   brandFetch(`/review/applications/${id}/accept`, { method: "POST", body: JSON.stringify({}) });
 export const declineBrandApplication = (id: string, notes?: string) =>
   brandFetch(`/review/applications/${id}/decline`, { method: "POST", body: JSON.stringify(notes ? { notes } : {}) });
+
+// --- Slice 3: budget (read-only) -------------------------------------------------------------
+export type BudgetTxn = {
+  id: string; type: "topup" | "debit" | "adjust"; delta: number; balance_after: number;
+  source_ref: string | null; description: string | null; created_at: string;
+};
+export type BrandBudget = { balance: number; enforced: boolean };
+export const fetchBrandBudget = () =>
+  brandFetch<{ budget: BrandBudget; transactions: BudgetTxn[] }>("/budget");
