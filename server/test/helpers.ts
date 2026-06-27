@@ -154,6 +154,41 @@ export async function seedMission(workspaceId: string, opts: {
   return data as { id: string; slug: string };
 }
 
+/** Seed a mission_submissions row (service-role) in a brand's own workspace for the review tests,
+ *  plus the point/earnings balance rows the payout RPC needs in THAT workspace. The payout RPC
+ *  (approve_submission) credits point_balances/earnings_balances keyed by (creator_id, workspace_id),
+ *  so a creator whose home workspace is DEMO_WS needs balance rows seeded in the brand workspace
+ *  before they can be paid out there. Returns the new submission id. */
+export async function seedBrandSubmission(opts: {
+  creatorId: string;
+  workspaceId: string;
+  missionId: string;
+  status: string;
+}) {
+  await service()
+    .from("point_balances")
+    .upsert(
+      { creator_id: opts.creatorId, workspace_id: opts.workspaceId, balance: 0 },
+      { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
+    );
+  await service()
+    .from("earnings_balances")
+    .upsert(
+      { creator_id: opts.creatorId, workspace_id: opts.workspaceId, available: 0 },
+      { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
+    );
+  const row: Record<string, unknown> = {
+    mission_id: opts.missionId,
+    creator_id: opts.creatorId,
+    workspace_id: opts.workspaceId,
+    status: opts.status,
+  };
+  if (opts.status === "submitted") row.submitted_at = new Date().toISOString();
+  const { data, error } = await service().from("mission_submissions").insert(row).select("id").single();
+  if (error) throw error;
+  return data.id as string;
+}
+
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
