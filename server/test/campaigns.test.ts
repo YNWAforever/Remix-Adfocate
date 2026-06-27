@@ -179,8 +179,8 @@ suite("campaigns — settlement", () => {
     expect(pa).toBeTruthy();
     const { data: rowA } = await svc().from("campaign_participants").select("prize_rank, prize_granted_at")
       .eq("campaign_id", camp.id).eq("creator_id", a.userId).single();
-    expect(rowA.prize_rank).toBe(1);
-    expect(rowA.prize_granted_at).not.toBeNull();
+    expect(rowA!.prize_rank).toBe(1);
+    expect(rowA!.prize_granted_at).not.toBeNull();
 
     const refA = campaignPrizeRef(camp.id, a.userId);
     expect((await earnTxns(refA)).length).toBe(1);
@@ -220,8 +220,8 @@ suite("campaigns — settlement", () => {
     const ref = campaignPrizeRef(camp.id, a.userId);
     // earnings credited on the HOME workspace (DEMO_WS), NOT ws2.
     const { data: et } = await svc().from("earnings_transactions").select("workspace_id, amount").eq("source_ref", ref).single();
-    expect(et.workspace_id).toBe(DEMO_WS);
-    expect(Number(et.amount)).toBe(300);
+    expect(et!.workspace_id).toBe(DEMO_WS);
+    expect(Number(et!.amount)).toBe(300);
     // budget debited on the CAMPAIGN workspace (ws2).
     expect(Number((await budget(ws2))?.balance)).toBe(200);
   });
@@ -272,8 +272,8 @@ suite("campaigns — insufficient budget", () => {
     expect((await earnTxns(campaignPrizeRef(camp.id, b.userId))).length).toBe(0);
     expect(Number((await budget(DEMO_WS))?.balance)).toBe(400);
     const { data: c1 } = await svc().from("campaigns").select("status, settled_at").eq("id", camp.id).single();
-    expect(c1.status).toBe("closed");
-    expect(c1.settled_at).toBeNull();
+    expect(c1!.status).toBe("closed");
+    expect(c1!.settled_at).toBeNull();
 
     // Top up to cover both, then re-settle.
     await svc().rpc("credit_workspace_budget", { p_workspace: DEMO_WS, p_delta: 400, p_type: "topup" });
@@ -283,7 +283,7 @@ suite("campaigns — insufficient budget", () => {
     expect((await earnTxns(campaignPrizeRef(camp.id, b.userId))).length).toBe(1);
     expect(Number((await budget(DEMO_WS))?.balance)).toBe(0);   // 800 funded − 2×400
     const { data: c2 } = await svc().from("campaigns").select("status").eq("id", camp.id).single();
-    expect(c2.status).toBe("settled");
+    expect(c2!.status).toBe("settled");
   });
 });
 
