@@ -1,9 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, userForJwt } from "./helpers.js";
 import { campaignBonusRef, campaignPrizeRef } from "../lib/campaignAuthoring.js";
+import { createApp } from "../app.js";
 
 const hasEnv = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_KEY;
 const suite = hasEnv ? describe : describe.skip;
+
+// Operator-route smoke test setup (must set ADMIN_SECRET before createApp()).
+process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
+const { app } = createApp();
+const SECRET = process.env.ADMIN_SECRET;
+function adminreq(path: string, init: RequestInit = {}) {
+  return app.request(`/api${path}`, { ...init, headers: { "x-admin-secret": SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) } });
+}
 const svc = () => serviceForTests();
 
 // ---- fixtures -------------------------------------------------------------------------------
@@ -332,5 +341,173 @@ suite("campaigns — constraints & RLS", () => {
 
     const theirs = await userForJwt(other.jwt).from("campaign_participants").select("creator_id").eq("campaign_id", camp.id);
     expect(theirs.data ?? []).toEqual([]);              // RLS: only self-read
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Operator-route smoke tests: drive adminCampaignRoutes via Hono app
+// ---------------------------------------------------------------------------
+suite("campaigns — operator routes (adminCampaignRoutes)", () => {
+  let koc: { userId: string };
+  beforeAll(async () => {
+    await cleanup();
+    koc = await makeCreator("camp-route@test.local", 0);
+  });
+  afterAll(cleanup);
+
+  it("create draft → 201", async () => {
+    // starts_at, ends_at, goal_target are NOT NULL at the DB level even for drafts.
+    const res = await adminreq("/admin/campaigns", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: DEMO_WS, slug: "test-r-1", title: "x",
+        starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
+        goal_target: 1,
+      }),
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json() as { campaign: { slug: string; status: string } };
+    expect(body.campaign.slug).toBe("test-r-1");
+    expect(body.campaign.status).toBe("draft");
+  });
+
+  it("attach mission already active in another campaign → 409", async () => {
+    const m = await makeMission({ slug: "test-r-excl-m" });
+    // Campaign 1: create + attach mission (direct DB insert since status is active).
+    const { data: c1, error: ce1 } = await serviceForTests().from("campaigns").insert({
+      workspace_id: DEMO_WS, slug: "test-r-excl-1", title: "excl1", status: "active",
+      starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
+      goal_target: 1, completion_bonus_points: 10, completion_bonus_xp: 5,
+      prize_tiers: [], published_at: "2026-06-01T00:00:00Z",
+    }).select("id").single();
+    if (ce1) throw ce1;
+    await serviceForTests().from("campaign_missions").insert({
+      campaign_id: (c1 as { id: string }).id, mission_id: m.id, workspace_id: DEMO_WS,
+    });
+
+    // Campaign 2: create draft via route (starts_at/ends_at/goal_target required by NOT NULL).
+    const c2res = await adminreq("/admin/campaigns", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: DEMO_WS, slug: "test-r-excl-2", title: "excl2",
+        starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
+        goal_target: 1,
+      }),
+    });
+    expect(c2res.status).toBe(201);
+    const c2id = ((await c2res.json()) as { campaign: { id: string } }).campaign.id;
+
+    // Try to attach the same mission → 409.
+    const attachRes = await adminreq(`/admin/campaigns/${c2id}/missions`, {
+      method: "POST",
+      body: JSON.stringify({ mission_id: m.id }),
+    });
+    expect(attachRes.status).toBe(409);
+  });
+
+  it("publish a draft missing window/goal/reward → 422", async () => {
+    // Create a valid draft (dates + goal_target required by DB) but with NO reward
+    // (completion_bonus_points=0, xp=0, no prize_tiers) → publish should reject with 422.
+    const createRes = await adminreq("/admin/campaigns", {
+      method: "POST",
+      body: JSON.stringify({
+        workspace_id: DEMO_WS, slug: "test-r-nowin", title: "no reward",
+        starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
+        goal_target: 1,
+        completion_bonus_points: 0, completion_bonus_xp: 0, prize_tiers: [],
+      }),
+    });
+    expect(createRes.status).toBe(201);
+    const id = ((await createRes.json()) as { campaign: { id: string } }).campaign.id;
+
+    // Publish with no reward → 422 (至少需要完成獎勵或名次獎品).
+    const publishRes = await adminreq(`/admin/campaigns/${id}/publish`, { method: "POST" });
+    expect(publishRes.status).toBe(422);
+    const pb = await publishRes.json() as { code: string; fields: Record<string, string> };
+    expect(pb.code).toBe("validation");
+    // The "reward" field error should be present.
+    expect(pb.fields).toHaveProperty("reward");
+  });
+
+  it("settle on an enforced-but-unfunded campaign with a cash prize winner → 402", async () => {
+    // Set up a throwaway workspace with 0 balance + enforcement.
+    const { data: ws, error: wsErr } = await serviceForTests().from("workspaces")
+      .insert({ slug: "test-camp-route-ws", name: "route-ws" }).select("id").single();
+    if (wsErr) throw wsErr;
+    const wsId = (ws as { id: string }).id;
+
+    // Mission in that workspace.
+    const { data: msn, error: msnErr } = await serviceForTests().from("missions").insert({
+      workspace_id: wsId, slug: "test-r-settle-m", title: "settle-m",
+      mission_type: "ugc", access_type: "open", points_reward: 50, cash_reward: null,
+      quota: 10, filled: 0, status: "active", required_level: "L0", deadline: null, category: "美容",
+    }).select("id").single();
+    if (msnErr) throw msnErr;
+    const missionId = (msn as { id: string }).id;
+
+    // Campaign with cash prize tier (1 winner → 500 HKD).
+    const { data: camp, error: campErr } = await serviceForTests().from("campaigns").insert({
+      workspace_id: wsId, slug: "test-r-settle", title: "settle",
+      status: "active", starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
+      goal_target: 1, completion_bonus_points: 0, completion_bonus_xp: 0,
+      prize_tiers: [{ rank_from: 1, rank_to: 1, cash: 500, points: 0, xp: 0 }],
+      published_at: "2026-06-01T00:00:00Z",
+    }).select("id").single();
+    if (campErr) throw campErr;
+    const campaignId = (camp as { id: string }).id;
+
+    // Attach mission + seed an approved sub so rank_campaign produces a winner.
+    await serviceForTests().from("campaign_missions").insert({
+      campaign_id: campaignId, mission_id: missionId, workspace_id: wsId,
+    });
+    // reviewed_at must be >= campaign_missions.added_at (now()) for rank_campaign join.
+    const { data: sub, error: subErr } = await serviceForTests().from("mission_submissions").insert({
+      creator_id: koc.userId, workspace_id: wsId, mission_id: missionId,
+      status: "submitted", submitted_at: "2026-06-05T00:00:00Z",
+    }).select("id").single();
+    if (subErr) throw subErr;
+    await serviceForTests().from("mission_submissions").update({
+      status: "approved", reviewed_at: "2027-01-01T00:00:00Z", quality_rating: null,
+    }).eq("id", (sub as { id: string }).id);
+
+    // Enforce budget with 0 balance.
+    await serviceForTests().rpc("set_workspace_budget_enforcement", { p_workspace: wsId, p_enforced: true });
+
+    // Close via route.
+    const closeRes = await adminreq(`/admin/campaigns/${campaignId}/close`, { method: "POST" });
+    expect(closeRes.status).toBe(200);
+
+    // Settle via route → 402 (insufficient_budget).
+    const settleRes = await adminreq(`/admin/campaigns/${campaignId}/settle`, { method: "POST" });
+    expect(settleRes.status).toBe(402);
+    const sb = await settleRes.json() as { code: string };
+    expect(sb.code).toBe("insufficient_budget");
+
+    // Cleanup throwaway workspace (cascade).
+    await serviceForTests().from("campaigns").delete().eq("id", campaignId);
+    await serviceForTests().from("missions").delete().eq("id", missionId);
+    await serviceForTests().from("workspaces").delete().eq("id", wsId);
+  });
+
+  it("close an active campaign twice → second close returns 409", async () => {
+    // Create + publish a minimal campaign directly.
+    const { data: camp, error: campErr } = await serviceForTests().from("campaigns").insert({
+      workspace_id: DEMO_WS, slug: "test-r-close2x", title: "close2x",
+      status: "active", starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
+      goal_target: 1, completion_bonus_points: 50, completion_bonus_xp: 10,
+      prize_tiers: [], published_at: "2026-06-01T00:00:00Z",
+    }).select("id").single();
+    if (campErr) throw campErr;
+    const campaignId = (camp as { id: string }).id;
+
+    // First close → 200.
+    const close1 = await adminreq(`/admin/campaigns/${campaignId}/close`, { method: "POST" });
+    expect(close1.status).toBe(200);
+
+    // Second close → 409.
+    const close2 = await adminreq(`/admin/campaigns/${campaignId}/close`, { method: "POST" });
+    expect(close2.status).toBe(409);
+    const b2 = await close2.json() as { code: string };
+    expect(b2.code).toBe("conflict");
   });
 });
