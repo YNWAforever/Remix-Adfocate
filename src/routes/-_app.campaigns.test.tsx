@@ -83,7 +83,7 @@ describe("campaigns list route", () => {
           slug: "winter-promo",
           title: "即將來臨",
           description: null,
-          status: "draft",
+          status: "active",
           starts_at: "2099-06-01T00:00:00Z",
           ends_at: "2099-12-31T00:00:00Z",
           goal_target: 5,

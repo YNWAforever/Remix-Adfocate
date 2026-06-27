@@ -34,9 +34,15 @@ function NewCampaign() {
     if (!workspaceId && ws.data?.workspaces?.[0]) setWorkspaceId(ws.data.workspaces[0].id);
   }, [ws.data, workspaceId]);
 
+  const onErr = (e: unknown) => {
+    if (e instanceof AdminAuthError) { reportAuthError(e); return; }
+    window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
+  };
+
   const create = useMutation({
     mutationFn: (body: Partial<CampaignDraftInput>) => createCampaign(body),
     onSuccess: (res) => navigate({ to: "/admin/campaigns/$id", params: { id: res.campaign.id } }),
+    onError: onErr,
   });
   const fieldErrors = create.error instanceof AdminRequestError ? create.error.fields ?? {} : {};
 
@@ -64,6 +70,7 @@ function NewCampaign() {
   const labelCls = "block text-xs font-bold text-[var(--color-soft-ink)]";
   const errCls = "text-xs text-red-600";
 
+  if (ws.error && !(ws.error instanceof AdminAuthError)) return <p className="text-sm text-red-600">無法載入品牌列表，請重試。</p>;
   if (!ws.data) return <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>;
 
   return (

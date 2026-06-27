@@ -40,7 +40,15 @@ function CampaignDetail() {
           })}
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden">
-          <div className="h-2 rounded-full bg-primary" style={{ width: `${pct}%` }} />
+          <div
+            className="h-2 rounded-full bg-primary"
+            style={{ width: `${pct}%` }}
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t("app.campaigns.goalProgress", { x: my_progress.approved, y: campaign.goal_target })}
+          />
         </div>
         {my_progress.goal_reached && (
           <div className="text-xs text-green-600">✓ {t("app.campaigns.completionBonus")}</div>
@@ -57,8 +65,8 @@ function CampaignDetail() {
         </div>
         {campaign.prize_tiers.length > 0 && (
           <ul className="text-sm space-y-1">
-            {campaign.prize_tiers.map((tr, i) => (
-              <li key={i}>
+            {campaign.prize_tiers.map((tr) => (
+              <li key={`${tr.rank_from}-${tr.rank_to}`}>
                 #{tr.rank_from}
                 {tr.rank_to !== tr.rank_from ? `–${tr.rank_to}` : ""}: HK${tr.cash} ·{" "}
                 {tr.points} pts · {tr.xp} XP
@@ -71,7 +79,7 @@ function CampaignDetail() {
       {/* Missions in this campaign */}
       {missions.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold">{t("app.campaigns.title")}</h2>
+          <h2 className="text-sm font-semibold">{t("app.campaigns.missions")}</h2>
           {missions.map((m) => (
             <div key={m.mission_id} className="rounded-xl border p-3 text-sm">
               {m.missions?.title}

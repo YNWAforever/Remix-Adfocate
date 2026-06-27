@@ -81,6 +81,7 @@ function EditCampaign() {
   const save = useMutation({
     mutationFn: (patch: Partial<CampaignDraftInput>) => updateCampaign(id, patch),
     onSuccess: invalidate,
+    onError: onErr,
   });
   const publish = useMutation({ mutationFn: () => publishCampaign(id), onSuccess: invalidate, onError: onErr });
   const close = useMutation({ mutationFn: () => closeCampaign(id), onSuccess: invalidate, onError: onErr });

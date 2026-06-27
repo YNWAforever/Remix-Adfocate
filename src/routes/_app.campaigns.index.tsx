@@ -8,8 +8,8 @@ function CampaignsList() {
   const { t } = useI18n();
   const { data: campaigns = [], isLoading } = useCampaigns();
   const now = new Date().toISOString();
-  const active = campaigns.filter((c) => c.starts_at <= now && c.status !== "closed");
-  const upcoming = campaigns.filter((c) => c.starts_at > now);
+  const active = campaigns.filter((c) => c.status === "active" && c.starts_at <= now);
+  const upcoming = campaigns.filter((c) => c.status === "active" && c.starts_at > now);
 
   if (isLoading) return <div className="p-4 text-muted-foreground">…</div>;
 

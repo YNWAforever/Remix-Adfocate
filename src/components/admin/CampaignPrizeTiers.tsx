@@ -90,7 +90,7 @@ export function PrizeTierEditor({
             </label>
             <div>
               {!disabled ? (
-                <button type="button" onClick={() => remove(i)} className="h-8 rounded-full border-2 border-[var(--color-ink)] bg-white px-2 text-xs font-bold">移除</button>
+                <button type="button" onClick={() => remove(i)} aria-label={`移除第 ${i + 1} 個獎品階級`} className="h-8 rounded-full border-2 border-[var(--color-ink)] bg-white px-2 text-xs font-bold">移除</button>
               ) : null}
             </div>
           </div>

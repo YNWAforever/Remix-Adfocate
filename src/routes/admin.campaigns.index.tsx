@@ -11,7 +11,7 @@ import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 
 export const Route = createFileRoute("/admin/campaigns/")({ component: CampaignsList });
 
-const STATUSES = ["", "draft", "active", "closed"] as const;
+const STATUSES = ["", "draft", "active", "closed", "settled"] as const;
 const STATUS_LABEL: Record<string, string> = {
   "": "全部", draft: "草稿", active: "進行中", closed: "已關閉", settled: "已結算",
 };
