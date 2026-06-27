@@ -73,7 +73,6 @@ export function validatePrizeTiers(tiers: PrizeTier[]): { ok: boolean; error?: s
 export function validateCampaign(
   input: CampaignInput,
   mode: "draft" | "publish",
-  _today?: string,
 ): ValidationResult {
   const errors: Record<string, string> = {};
   if (!nonEmpty(input.workspace_id)) errors.workspace_id = "必填";
