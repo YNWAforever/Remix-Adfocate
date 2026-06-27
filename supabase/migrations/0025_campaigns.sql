@@ -401,3 +401,60 @@ revoke all on function public.settle_campaign(uuid) from public;
 revoke all on function public.settle_campaign(uuid) from anon;
 revoke all on function public.settle_campaign(uuid) from authenticated;
 grant execute on function public.settle_campaign(uuid) to service_role;
+
+-- 9. Trigger: advance the (unique) live campaign on a submission becoming approved.
+create or replace function public.campaign_progress_on_approval()
+returns trigger
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_c    record;
+  v_part public.campaign_participants;
+begin
+  -- Only the transition into 'approved' (monotonic; approved is terminal).
+  if not (old.status is distinct from 'approved' and new.status = 'approved') then
+    return new;
+  end if;
+
+  -- The single live campaign whose ACTIVE set contains this mission (one-active-per-mission).
+  select c.id, c.workspace_id, c.starts_at, c.ends_at, c.goal_target
+    into v_c
+    from public.campaign_missions cm
+    join public.campaigns c on c.id = cm.campaign_id and c.workspace_id = cm.workspace_id
+   where cm.mission_id = new.mission_id
+     and cm.removed_at is null
+     and c.status <> 'settled'
+   for share of c;                              -- fences against close_campaign's for update
+  if v_c.id is null then return new; end if;
+
+  -- Window eligibility keys on submitted_at (delivered-in-window), not reviewed_at/now().
+  if not (new.submitted_at >= v_c.starts_at and new.submitted_at < v_c.ends_at) then
+    return new;
+  end if;
+
+  -- Auto-enroll, then lock the participant row and count from the LOCKED row (never a recount).
+  insert into public.campaign_participants (campaign_id, creator_id, workspace_id, approved_count)
+    values (v_c.id, new.creator_id, v_c.workspace_id, 0)
+    on conflict (campaign_id, creator_id) do nothing;
+  select * into v_part from public.campaign_participants
+    where campaign_id = v_c.id and creator_id = new.creator_id for update;
+
+  update public.campaign_participants
+     set approved_count    = approved_count + 1,
+         last_approved_at   = now(),
+         first_approved_at  = coalesce(first_approved_at, now())
+   where id = v_part.id
+   returning * into v_part;
+
+  if v_part.approved_count >= v_c.goal_target and v_part.goal_reached_at is null then
+    update public.campaign_participants set goal_reached_at = now() where id = v_part.id;
+    perform public.grant_campaign_completion_bonus(v_c.id, new.creator_id);
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger campaign_progress_on_approval
+  after update of status on public.mission_submissions
+  for each row execute function public.campaign_progress_on_approval();
