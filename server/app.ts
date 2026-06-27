@@ -16,6 +16,7 @@ import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
 import { profileMediaRoutes } from "./routes/profileMedia.js";
 import { contentRoutes } from "./routes/content.js";
+import { brandRoutes } from "./routes/brand.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -30,6 +31,7 @@ export function createApp() {
 
   // Unguarded operator endpoints (own shared-secret middleware, not workspaceAuth).
   app.route("/admin", adminRoutes);
+  app.route("/brand", brandRoutes);
   app.route("/public", publicRoutes);
   app.route("/cron", cronRoutes);
 

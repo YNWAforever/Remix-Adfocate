@@ -85,6 +85,75 @@ export async function makeStaff(email: string) {
   return { userId, jwt: session.session!.access_token };
 }
 
+let brandWsSeq = 0;
+/** Create a confirmed brand auth user + an active brand_users row. When workspaceId is omitted,
+ *  a throwaway workspace (slug "test-brand-ws-...") is created so two brands are isolated.
+ *  Email MUST end in @test.local so cleanup() removes it. Returns a signed-in JWT, the workspace
+ *  id, and deactivate() which flips brand_users.active=false (durable revocation). */
+export async function makeBrand(email: string, workspaceId?: string, role: "owner" | "member" = "owner") {
+  if (!email.endsWith("@test.local")) {
+    throw new Error('brand test emails must end in "@test.local" so cleanup() can remove them');
+  }
+  let wsId = workspaceId;
+  if (!wsId) {
+    brandWsSeq += 1;
+    const slug = `test-brand-ws-${Date.now()}-${brandWsSeq}`;
+    const { data: ws, error: wErr } = await service()
+      .from("workspaces").insert({ slug, name: `Test Brand WS ${brandWsSeq}` }).select("id").single();
+    if (wErr) throw wErr;
+    wsId = ws.id as string;
+  }
+
+  const { data: created, error } = await service().auth.admin.createUser({
+    email, password: "test-pw-123456", email_confirm: true,
+  });
+  if (error) throw error;
+  const userId = created.user.id;
+  await service().from("brand_users").insert({ user_id: userId, workspace_id: wsId, email, role, active: true });
+
+  const anon = createClient(url, anonKey, nextClientOptions());
+  const { data: session, error: signErr } = await anon.auth.signInWithPassword({ email, password: "test-pw-123456" });
+  if (signErr) throw signErr;
+
+  return {
+    userId,
+    jwt: session.session!.access_token,
+    workspaceId: wsId,
+    async deactivate() {
+      const { error: dErr } = await service().from("brand_users").update({ active: false }).eq("user_id", userId);
+      if (dErr) throw dErr;
+    },
+  };
+}
+
+/** Seed a mission in a given workspace (service-role). Slug MUST start with "test-" so cleanup()
+ *  removes it. Used by the brand RLS isolation tests. */
+export async function seedMission(workspaceId: string, opts: {
+  slug: string; title?: string; status?: string; mission_type?: string;
+  points_reward?: number; cash_reward?: number | null; quota?: number; filled?: number;
+}) {
+  if (!opts.slug.startsWith("test-")) {
+    throw new Error('seedMission slug must start with "test-" so cleanup() can remove it');
+  }
+  const { data, error } = await service().from("missions").insert({
+    workspace_id: workspaceId,
+    slug: opts.slug,
+    title: opts.title ?? opts.slug,
+    mission_type: opts.mission_type ?? "ugc",
+    access_type: "open",
+    points_reward: opts.points_reward ?? 100,
+    cash_reward: opts.cash_reward ?? null,
+    quota: opts.quota ?? 10,
+    filled: opts.filled ?? 0,
+    status: opts.status ?? "draft",
+    required_level: "L0",
+    category: "美容",
+    deadline: null,
+  }).select("id, slug").single();
+  if (error) throw error;
+  return data as { id: string; slug: string };
+}
+
 /** Create a confirmed auth user (email or phone) with NO creator row yet.
  *  Returns a signed-in JWT — used to test first-login bootstrap. */
 export async function makeUser(opts: { email?: string; phone?: string }) {
@@ -289,5 +358,24 @@ export async function cleanup() {
     await service().from("operator_audit_events").delete().eq("operator_id", s.user_id);
     await service().from("staff_users").delete().eq("user_id", s.user_id);
     await service().auth.admin.deleteUser(s.user_id);
+  }
+
+  // Brand test data: memberships/invites for %@test.local, the throwaway workspaces makeBrand
+  // created (slug "test-brand-ws-%"), any missions still in them, and the brand auth users.
+  const brandUsers = await service().from("brand_users").select("user_id").like("email", "%@test.local");
+  const brandUserIds = (brandUsers.data ?? []).map((r) => r.user_id as string);
+  await service().from("brand_invites").delete().like("email", "%@test.local");
+  await service().from("brand_users").delete().like("email", "%@test.local");
+  for (const id of brandUserIds) await service().auth.admin.deleteUser(id);
+
+  const brandWs = await service().from("workspaces").select("id").like("slug", "test-brand-ws-%");
+  const brandWsIds = (brandWs.data ?? []).map((r) => r.id as string);
+  if (brandWsIds.length) {
+    const leftover = await service().from("missions").select("id").in("workspace_id", brandWsIds);
+    for (const m of leftover.data ?? []) {
+      await service().from("mission_submissions").delete().eq("mission_id", m.id);
+      await service().from("missions").delete().eq("id", m.id);
+    }
+    await service().from("workspaces").delete().in("id", brandWsIds);
   }
 }

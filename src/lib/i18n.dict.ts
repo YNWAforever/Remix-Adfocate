@@ -701,6 +701,23 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.redemption_ready.title": "Reward ready",
     "app.notif.redemption_ready.body": "Your \"{gift}\" code is ready — view it in Redeem history.",
     "app.notif.toast.new": "You have a new notification",
+
+    // ── app: brand portal ─────────────────────────────────────
+    "app.brand.title": "Brand Portal",
+    "app.brand.noAccess": "No brand access — contact your Fimmick representative.",
+    "app.brand.loadError": "Couldn't load the brand portal. Please try again.",
+    "app.brand.toLogin": "Go to sign-in",
+    "app.brand.signOut": "Sign out",
+    "app.brand.navDashboard": "Overview",
+    "app.brand.navMissions": "Missions",
+    "app.brand.missionCount": "{count} missions",
+    "app.brand.newMission": "New mission",
+    "app.brand.loginHeading": "Brand sign-in",
+    "app.brand.loginEmailLabel": "Work email",
+    "app.brand.loginSend": "Send magic link",
+    "app.brand.loginCheckEmail": "Check your email for a sign-in link.",
+    "app.brand.callbackWorking": "Signing you in…",
+    "app.brand.callbackFailed": "Sign-in failed. Please request a new link.",
   },
   zh: {
     // ── site / marketing ──────────────────────────────────────
@@ -1394,5 +1411,22 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.redemption_ready.title": "獎賞準備好",
     "app.notif.redemption_ready.body": "你嘅「{gift}」兌換碼已準備好，可喺兌換紀錄查看。",
     "app.notif.toast.new": "你有一則新通知",
+
+    // ── app: brand portal ─────────────────────────────────────
+    "app.brand.title": "品牌平台",
+    "app.brand.noAccess": "沒有品牌存取權 — 請聯絡你的 Fimmick 對接人。",
+    "app.brand.loadError": "無法載入品牌平台，請稍後再試。",
+    "app.brand.toLogin": "前往登入",
+    "app.brand.signOut": "登出",
+    "app.brand.navDashboard": "概覽",
+    "app.brand.navMissions": "任務",
+    "app.brand.missionCount": "{count} 個任務",
+    "app.brand.newMission": "新任務",
+    "app.brand.loginHeading": "品牌登入",
+    "app.brand.loginEmailLabel": "公司電郵",
+    "app.brand.loginSend": "傳送登入連結",
+    "app.brand.loginCheckEmail": "請查看電郵中的登入連結。",
+    "app.brand.callbackWorking": "正在登入…",
+    "app.brand.callbackFailed": "登入失敗，請重新索取連結。",
   },
 };
