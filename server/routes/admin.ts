@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
+import { adminBudgetRoutes } from "./adminBudget.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
 import { persistScores } from "../lib/persistScores.js";
@@ -55,6 +56,7 @@ adminRoutes.get("/me", (c) => {
 
 adminRoutes.route("/", adminOperatorCrmRoutes);
 adminRoutes.route("/", adminMissionRoutes);
+adminRoutes.route("/", adminBudgetRoutes);
 adminRoutes.route("/", adminContentRoutes);
 adminRoutes.route("/", adminInsightsRoutes);
 adminRoutes.route("/", adminRadarRoutes);
@@ -100,7 +102,10 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
     p_notes: notes,
     p_quality_rating: rating,
   });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error) {
+    if (error.message === "insufficient_budget") return c.json({ error: "budget exhausted", code: "insufficient_budget" }, 402);
+    return c.json({ error: error.message, code: "rpc_error" }, 400);
+  }
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
