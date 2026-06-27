@@ -6,6 +6,7 @@ import { type MissionInput, type MissionRecord, validateMission, validateEdit } 
 import { MISSION_COLS, EDITABLE_COLS, hkToday, countEngaged, normalizeBriefForWrite } from "./adminMissions.js";
 import { brandReviewRoutes } from "./brandReview.js";
 import { brandBudgetRoutes } from "./brandBudget.js";
+import { brandInsightsRoutes } from "./brandInsights.js";
 
 /** Brand self-serve portal API. Brands authenticate as real Supabase users; mission reads/writes
  *  run through makeUserClient(jwt) so Postgres RLS (migration 0023) enforces workspace isolation —
@@ -192,5 +193,6 @@ guarded.delete("/missions/:id", async (c) => {
 
 guarded.route("/review", brandReviewRoutes);
 guarded.route("/", brandBudgetRoutes);
+guarded.route("/", brandInsightsRoutes);
 
 brandRoutes.route("/", guarded);
