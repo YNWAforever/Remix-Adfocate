@@ -587,3 +587,41 @@ suite("campaigns — creator read routes", () => {
     expect(body.code).toBe("not_found");
   });
 });
+
+suite("campaigns — cross-workspace isolation (creator route)", () => {
+  let koc: { userId: string; jwt: string };
+  let foreignWs: string;
+  beforeAll(async () => {
+    await cleanup();
+    koc = await makeCreator("camp-iso@test.local", 0);          // home = DEMO_WS ("demo")
+    foreignWs = await makeWorkspace("test-camp-isob");          // a different workspace
+  });
+  afterAll(cleanup);
+
+  it("a creator cannot see / read a campaign in another workspace", async () => {
+    // Active campaign in the FOREIGN workspace.
+    const foreign = await makeCampaign({ slug: "test-iso-foreign", status: "active", workspace_id: foreignWs });
+    // Also an active campaign in the creator's OWN workspace (happy-path guard against false-pass).
+    const mine = await makeCampaign({ slug: "test-iso-mine", status: "active" });
+
+    // List: only the creator's own workspace campaign appears; the foreign one does not.
+    const listRes = await creatorReq("/campaigns", koc.jwt);
+    expect(listRes.status).toBe(200);
+    const listBody = await listRes.json() as { campaigns: { slug: string }[] };
+    const slugs = listBody.campaigns.map((c) => c.slug);
+    expect(slugs).toContain("test-iso-mine");
+    expect(slugs).not.toContain("test-iso-foreign");
+
+    // Detail of the foreign campaign → 404 (no data leak).
+    const detailRes = await creatorReq(`/campaigns/${foreign.slug}`, koc.jwt);
+    expect(detailRes.status).toBe(404);
+
+    // Leaderboard of the foreign campaign → 404 (ownership verified before rank_campaign).
+    const lbRes = await creatorReq(`/campaigns/${foreign.slug}/leaderboard`, koc.jwt);
+    expect(lbRes.status).toBe(404);
+
+    // Sanity: the creator CAN read their own campaign's detail (so the 404s aren't a false pass).
+    const okRes = await creatorReq(`/campaigns/${mine.slug}`, koc.jwt);
+    expect(okRes.status).toBe(200);
+  });
+});

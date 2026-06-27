@@ -15,7 +15,7 @@ campaignRoutes.get("/", async (c) => {
   const { data, error } = await svc.from("campaigns").select(PUBLIC_COLS)
     .eq("workspace_id", c.get("workspaceId")).eq("status", "active")
     .order("ends_at", { ascending: true });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) { console.error("[campaigns] db_error", error); return c.json({ error: "伺服器錯誤", code: "db_error" }, 500); }
   return c.json({ campaigns: data ?? [] });
 });
 
@@ -25,7 +25,7 @@ campaignRoutes.get("/:slug", async (c) => {
   const ws = c.get("workspaceId");
   const { data: rawCampaign, error } = await svc.from("campaigns").select(PUBLIC_COLS)
     .eq("workspace_id", ws).eq("slug", c.req.param("slug")).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) { console.error("[campaigns] db_error", error); return c.json({ error: "伺服器錯誤", code: "db_error" }, 500); }
   const campaign = rawCampaign as { id: string; status: string; [key: string]: unknown } | null;
   if (!campaign || campaign.status === "draft") return c.json({ error: "not_found", code: "not_found" }, 404);
 
@@ -60,7 +60,7 @@ campaignRoutes.get("/:slug/leaderboard", async (c) => {
   const campaign = rawLb as { id: string } | null;
   if (!campaign) return c.json({ error: "not_found", code: "not_found" }, 404);
   const { data: ranked, error } = await svc.rpc("rank_campaign", { p_campaign: campaign.id });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) { console.error("[campaigns] db_error", error); return c.json({ error: "伺服器錯誤", code: "db_error" }, 500); }
   const ids = (ranked ?? []).map((r: { creator_id: string }) => r.creator_id);
   const { data: profiles } = ids.length
     ? await svc.from("creators").select("id, display_name, avatar_url, level").in("id", ids)
