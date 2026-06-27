@@ -217,3 +217,63 @@ suite("campaigns — settlement", () => {
     expect(Number((await budget(ws2))?.balance)).toBe(200);
   });
 });
+
+suite("campaigns — insufficient budget", () => {
+  let a: { userId: string }, b: { userId: string };
+  beforeAll(async () => {
+    await cleanup();
+    // Reset DEMO_WS budget to 0 + enforcement off so balance assertions are deterministic.
+    const cur = await budget(DEMO_WS);
+    const curBal = cur ? Number(cur.balance) : 0;
+    if (curBal > 0) {
+      await svc().rpc("credit_workspace_budget", { p_workspace: DEMO_WS, p_delta: -curBal, p_type: "adjust" });
+    }
+    await svc().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
+    a = await makeCreator("camp-ins-a@test.local", 0);
+    b = await makeCreator("camp-ins-b@test.local", 0);
+  });
+  afterAll(cleanup);
+
+  it("rolls back the entire settlement; top-up + re-settle pays only unpaid winners", async () => {
+    const m1 = await makeMission({ slug: "test-ins-m1" });
+    const m2 = await makeMission({ slug: "test-ins-m2" });
+    const camp = await makeCampaign({
+      slug: "test-ins", goal_target: 1, bonus_points: 0, bonus_xp: 0,
+      prize_tiers: [{ rank_from: 1, rank_to: 2, cash: 400, points: 0, xp: 0 }],  // both A and B win 400
+    });
+    await attach(camp.id, m1.id);
+    await attach(camp.id, m2.id);
+    // A ranks 1 (2 approved), B ranks 2 (1 approved).
+    // reviewed_at must be >= campaign_missions.added_at (now()) for rank_campaign join.
+    await seedApprovedSub({ creator: a.userId, mission: m1.id, submitted_at: "2026-06-05T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
+    await seedApprovedSub({ creator: a.userId, mission: m2.id, submitted_at: "2026-06-06T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
+    await seedApprovedSub({ creator: b.userId, mission: m1.id, submitted_at: "2026-06-07T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
+
+    // Fund only 400 + enforce → can pay ONE 400 prize, not two.
+    await svc().rpc("credit_workspace_budget", { p_workspace: DEMO_WS, p_delta: 400, p_type: "topup" });
+    await svc().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: true });
+    await svc().rpc("close_campaign", { p_campaign: camp.id });
+
+    const fail = await svc().rpc("settle_campaign", { p_campaign: camp.id });
+    expect(fail.error).not.toBeNull();
+    expect(String(fail.error?.message)).toContain("insufficient_budget");
+
+    // Full rollback: no prize ledger rows, budget untouched, campaign still 'closed'.
+    expect((await earnTxns(campaignPrizeRef(camp.id, a.userId))).length).toBe(0);
+    expect((await earnTxns(campaignPrizeRef(camp.id, b.userId))).length).toBe(0);
+    expect(Number((await budget(DEMO_WS))?.balance)).toBe(400);
+    const { data: c1 } = await svc().from("campaigns").select("status, settled_at").eq("id", camp.id).single();
+    expect(c1.status).toBe("closed");
+    expect(c1.settled_at).toBeNull();
+
+    // Top up to cover both, then re-settle.
+    await svc().rpc("credit_workspace_budget", { p_workspace: DEMO_WS, p_delta: 400, p_type: "topup" });
+    const ok = await svc().rpc("settle_campaign", { p_campaign: camp.id });
+    expect(ok.error).toBeNull();
+    expect((await earnTxns(campaignPrizeRef(camp.id, a.userId))).length).toBe(1);
+    expect((await earnTxns(campaignPrizeRef(camp.id, b.userId))).length).toBe(1);
+    expect(Number((await budget(DEMO_WS))?.balance)).toBe(0);   // 800 funded − 2×400
+    const { data: c2 } = await svc().from("campaigns").select("status").eq("id", camp.id).single();
+    expect(c2.status).toBe("settled");
+  });
+});
