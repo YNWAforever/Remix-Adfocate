@@ -103,7 +103,10 @@ brandReviewRoutes.post("/submissions/:id/approve", async (c) => {
     return c.json({ error: "not_found", code: "not_found" }, 404);
   }
   const { data, error } = await svc.rpc("approve_submission", { p_submission: id, p_notes: notes, p_quality_rating: rating });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error) {
+    if (error.message === "insufficient_budget") return c.json({ error: "budget exhausted", code: "insufficient_budget" }, 402);
+    return c.json({ error: error.message, code: "rpc_error" }, 400);
+  }
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
