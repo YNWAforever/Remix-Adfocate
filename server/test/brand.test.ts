@@ -7,7 +7,7 @@ const suite = hasSupabaseEnv ? describe : describe.skip;
 const req = (path: string, jwt: string, init: RequestInit = {}) =>
   app.request(`/api${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
+    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", "X-Workspace-Slug": "demo", ...(init.headers ?? {}) },
   });
 
 suite("brand portal", () => {
