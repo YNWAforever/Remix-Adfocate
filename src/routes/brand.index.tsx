@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useBrandAuth } from "@/components/brand/BrandAuthContext";
 import { brandKeys, fetchBrandMissions } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n";
+import { BrandBudgetCard } from "@/components/brand/BrandBudgetCard";
 
 export const Route = createFileRoute("/brand/")({ component: BrandDashboard });
 
@@ -14,6 +15,7 @@ function BrandDashboard() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-2xl font-bold">{brand.workspaceName}</h1>
+      <BrandBudgetCard />
       <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.brand.missionCount", { count })}</p>
         <div className="flex flex-wrap gap-2">

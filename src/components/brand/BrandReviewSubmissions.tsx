@@ -9,6 +9,7 @@ import {
   approveBrandSubmission,
   rejectBrandSubmission,
 } from "@/lib/brand";
+import { BrandBudgetBanner } from "@/components/brand/BrandBudgetCard";
 import { AdminRequestError } from "@/lib/admin";
 import type { Submission } from "@/lib/admin";
 
@@ -31,6 +32,7 @@ export function BrandReviewSubmissions() {
 
   return (
     <div className="space-y-3">
+      <BrandBudgetBanner />
       {subs.data?.submissions.map((s) => (
         <BrandSubmissionCard
           key={s.id}
