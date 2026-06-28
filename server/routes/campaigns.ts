@@ -65,5 +65,17 @@ campaignRoutes.get("/:slug/leaderboard", async (c) => {
   const { data: profiles } = ids.length
     ? await svc.from("creators").select("id, display_name, avatar_url, level").in("id", ids)
     : { data: [] };
-  return c.json({ leaderboard: shapeLeaderboard(ranked ?? [], profiles ?? []) });
+
+  // latest snapshot batch → prevRank map (for ↑/↓/NEW movement)
+  const { data: latest } = await svc.from("campaign_rank_snapshots")
+    .select("captured_at").eq("campaign_id", campaign.id)
+    .order("captured_at", { ascending: false }).limit(1).maybeSingle();
+  const prevRanks = new Map<string, number>();
+  if (latest?.captured_at) {
+    const { data: snap } = await svc.from("campaign_rank_snapshots")
+      .select("creator_id, rank").eq("campaign_id", campaign.id).eq("captured_at", latest.captured_at);
+    for (const s of snap ?? []) prevRanks.set(s.creator_id, s.rank);
+  }
+
+  return c.json({ leaderboard: shapeLeaderboard(ranked ?? [], profiles ?? [], prevRanks) });
 });
