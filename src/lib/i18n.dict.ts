@@ -705,6 +705,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.campaign_goal_reached.body": "You hit the goal in \"{campaign}\" — +{points} pts · +{xp} XP",
     "app.notif.campaign_prize_awarded.title": "You won a prize!",
     "app.notif.campaign_prize_awarded.body": "Rank {rank} in \"{campaign}\" — HK${cash} · +{points} pts · +{xp} XP",
+    "app.notif.campaign_started.title": "New challenge live!",
+    "app.notif.campaign_started.body": "\"{campaign}\" is a fit for you — see how to win 🎯",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "Challenges",
@@ -1433,6 +1435,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.campaign_goal_reached.body": "你喺「{campaign}」達標，+{points} 分・+{xp} XP",
     "app.notif.campaign_prize_awarded.title": "你贏得獎賞！",
     "app.notif.campaign_prize_awarded.body": "「{campaign}」第 {rank} 名 — HK${cash}・+{points} 分・+{xp} XP",
+    "app.notif.campaign_started.title": "新挑戰開始！",
+    "app.notif.campaign_started.body": "「{campaign}」啱你參加，立即睇下點贏獎賞 🎯",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "挑戰",
