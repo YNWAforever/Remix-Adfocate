@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, hasSupabaseEnv } from "./helpers.js";
+import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, hasSupabaseEnv, setCreatorProfile } from "./helpers.js";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const svc = () => serviceForTests();
@@ -185,5 +185,33 @@ suite("broadcast_campaign_started", () => {
     const notif = notifs![0];
     expect(notif.entity_id).toBe(camp.id);
     expect(notif.data.campaign_slug).toBe(camp.slug);
+  });
+});
+
+// ---- Block 4: notifyCampaignStarted policy --------------------------------------------------
+
+suite("notifyCampaignStarted policy", () => {
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  it("notifies a matched creator but not an unmatched one", async () => {
+    const camp = await makeCampaign({ slug: "test-s2-notify", status: "active" });
+    const mission = await makeMission({ slug: "test-s2-notify-m", category: "beauty", required_level: "L1" });
+    await attach(camp.id, mission.id);
+
+    const match = await makeCreator("s2-match@test.local", 0);
+    await setCreatorProfile(match.userId, { categories: ["beauty"], level: "L2" });
+    const noMatch = await makeCreator("s2-nomatch@test.local", 0);
+    await setCreatorProfile(noMatch.userId, { categories: ["food"], level: "L2" });
+
+    const { notifyCampaignStarted } = await import("../lib/notifyCampaignStarted.js");
+    await notifyCampaignStarted(camp.id);
+
+    const { data: a } = await svc().from("notifications").select("id")
+      .eq("user_id", match.userId).eq("type", "campaign_started").eq("entity_id", camp.id);
+    const { data: b } = await svc().from("notifications").select("id")
+      .eq("user_id", noMatch.userId).eq("type", "campaign_started").eq("entity_id", camp.id);
+    expect((a ?? []).length).toBe(1);
+    expect((b ?? []).length).toBe(0);
   });
 });

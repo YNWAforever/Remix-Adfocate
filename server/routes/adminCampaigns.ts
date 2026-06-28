@@ -5,6 +5,7 @@ import {
   canAttachMission, CAMPAIGN_EDITABLE_COLS,
 } from "../lib/campaignAuthoring.js";
 import { shapeLeaderboard } from "../lib/campaignLeaderboard.js";
+import { notifyCampaignStarted } from "../lib/notifyCampaignStarted.js";
 
 export const adminCampaignRoutes = new Hono();
 
@@ -98,6 +99,7 @@ adminCampaignRoutes.post("/campaigns/:id/publish", async (c) => {
     .update({ status: "active", published_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("id", id).select(CAMPAIGN_COLS).single();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  await notifyCampaignStarted(c.req.param("id"));   // best-effort; never throws
   return c.json({ campaign: data });
 });
 
