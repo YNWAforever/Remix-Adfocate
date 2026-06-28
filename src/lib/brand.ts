@@ -46,3 +46,36 @@ export const createBrandMission = (body: MissionDraftInput) =>
   brandFetch<{ mission: AdminMission }>("/missions", { method: "POST", body: JSON.stringify(body) });
 export const updateBrandMission = (id: string, patch: MissionPatch) =>
   brandFetch<{ mission: AdminMission }>(`/missions/${id}`, { method: "PUT", body: JSON.stringify(patch) });
+
+export type BrandCampaign = {
+  id: string; workspace_id: string; slug: string; title: string; description: string | null; status: string;
+  starts_at: string; ends_at: string; goal_target: number;
+  completion_bonus_points: number; completion_bonus_xp: number;
+  prize_tiers: { rank_from: number; rank_to: number; cash: number; points: number; xp: number }[];
+};
+export type BrandCampaignDraft = Omit<BrandCampaign, "id" | "workspace_id" | "status">;
+
+export const brandCampaignKeys = {
+  list: (status: string) => ["brand-campaigns", status] as const,
+  detail: (id: string) => ["brand-campaign", id] as const,
+  leaderboard: (id: string) => ["brand-campaign-board", id] as const,
+};
+
+export const fetchBrandCampaigns = (status = "") =>
+  brandFetch<{ campaigns: BrandCampaign[] }>(`/campaigns${status ? `?status=${encodeURIComponent(status)}` : ""}`);
+export const fetchBrandCampaign = (id: string) =>
+  brandFetch<{ campaign: BrandCampaign; missions: unknown[]; participants: number }>(`/campaigns/${id}`);
+export const createBrandCampaign = (body: Partial<BrandCampaignDraft>) =>
+  brandFetch<{ campaign: BrandCampaign }>("/campaigns", { method: "POST", body: JSON.stringify(body) });
+export const updateBrandCampaign = (id: string, patch: Partial<BrandCampaignDraft>) =>
+  brandFetch<{ campaign: BrandCampaign }>(`/campaigns/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
+export const publishBrandCampaign = (id: string) =>
+  brandFetch(`/campaigns/${id}/publish`, { method: "POST", body: JSON.stringify({}) });
+export const attachBrandCampaignMission = (id: string, mission_id: string) =>
+  brandFetch(`/campaigns/${id}/missions`, { method: "POST", body: JSON.stringify({ mission_id }) });
+export const detachBrandCampaignMission = (id: string, missionId: string) =>
+  brandFetch(`/campaigns/${id}/missions/${missionId}`, { method: "DELETE" });
+export const closeBrandCampaign = (id: string) =>
+  brandFetch(`/campaigns/${id}/close`, { method: "POST", body: JSON.stringify({}) });
+export const fetchBrandCampaignLeaderboard = (id: string) =>
+  brandFetch<{ leaderboard: { creator_id: string; rank: number; approved: number; avg_quality: number; display_name: string; avatar_url: string | null; level: number }[] }>(`/campaigns/${id}/leaderboard`);
