@@ -302,6 +302,18 @@ export async function getCreatorScores(userId: string) {
 }
 
 export async function cleanup() {
+  // Campaigns G1: delete test campaigns (slug "test-%") — cascades campaign_missions +
+  // campaign_participants — then the throwaway workspaces ("test-camp-%") created by the
+  // cross-workspace settlement tests (cascades their campaigns + budget rows). Done first so
+  // the per-(workspace_id, slug) unique on campaigns never trips a re-run.
+  await service().from("campaigns").delete().like("slug", "test-%");
+  await service().from("workspaces").delete().like("slug", "test-camp-%");
+  // A campaign settlement test may have left the shared DEMO_WS budget enforced; 0024's
+  // budget-aware approve_submission would then 400 every unrelated cash-mission approval
+  // (wallet/insights/etc.). Reset DEMO_WS to unenforced (RPC — workspace_budgets has no
+  // service_role table grant). Harmless when no budget row / already unenforced.
+  await service().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
+
   // Test creators (delete cascades their mission_submissions).
   const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");

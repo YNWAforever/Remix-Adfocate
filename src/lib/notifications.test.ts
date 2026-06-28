@@ -43,8 +43,24 @@ describe("renderNotification", () => {
     expect(r.body).not.toMatch(/\{[a-z_]+\}/);
   });
 
+  it("renders campaign_goal_reached with points/xp and links to the campaign", () => {
+    const v = renderNotification({ type: "campaign_goal_reached",
+      data: { campaign_title: "六月挑戰", campaign_slug: "jun", points: 200, xp: 50 } } as never, t);
+    expect(v.title).toBeTruthy();
+    expect(v.body).toContain("六月挑戰");
+    expect(v.href).toBe("/campaigns/jun");
+  });
+
+  it("renders campaign_prize_awarded with rank/cash", () => {
+    const v = renderNotification({ type: "campaign_prize_awarded",
+      data: { campaign_title: "六月挑戰", campaign_slug: "jun", rank: 1, cash: 500, points: 0, xp: 0 } } as never, t);
+    expect(v.body).toContain("六月挑戰");
+    expect(v.href).toBe("/campaigns/jun");
+  });
+
   it("returns an icon name for every type", () => {
-    (["submission_approved","submission_rejected","redemption_ready","level_up","application_accepted","application_declined"] as NotificationType[])
+    (["submission_approved","submission_rejected","redemption_ready","level_up","application_accepted","application_declined",
+      "campaign_goal_reached","campaign_prize_awarded"] as NotificationType[])
       .forEach((ty) => expect(renderNotification(row(ty), t).icon).toBeTruthy());
   });
 });
