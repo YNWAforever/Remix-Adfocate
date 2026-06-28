@@ -107,6 +107,12 @@ export function scoreMissions(creator: MatchCreator, missions: MatchMission[], n
   });
 }
 
+/** True iff SOME mission in the set is both unlocked for the creator AND a niche match.
+ *  No-niche creators never match (categoryTerm is 0.5, never 1). */
+export function creatorQualifiesForCampaign(creator: MatchCreator, missions: MatchMission[]): boolean {
+  return missions.some((m) => levelFitTerm(creator, m) === 1 && categoryTerm(creator, m) === 1);
+}
+
 /** Eligible-first, then fit_score desc, then deadline asc (nulls last), then points desc. */
 export function rankMissions(scored: ScoredMission[]): ScoredMission[] {
   return [...scored].sort((a, b) => {
