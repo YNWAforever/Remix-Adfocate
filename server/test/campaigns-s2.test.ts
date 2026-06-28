@@ -214,4 +214,31 @@ suite("notifyCampaignStarted policy", () => {
     expect((a ?? []).length).toBe(1);
     expect((b ?? []).length).toBe(0);
   });
+
+  it("does NOT notify a matching creator in a DIFFERENT workspace (isolation)", async () => {
+    // Campaign + beauty/L1 mission live in DEMO_WS.
+    const camp = await makeCampaign({ slug: "test-s2-notify-iso", status: "active" });
+    const mission = await makeMission({ slug: "test-s2-notify-iso-m", category: "beauty", required_level: "L1" });
+    await attach(camp.id, mission.id);
+
+    // A creator who WOULD match on niche+level, but lives in a different workspace.
+    const { data: fwsRow, error: fwsErr } = await svc().from("workspaces")
+      .insert({ slug: "test-camp-s2-foreign", name: "s2 foreign" }).select("id").single();
+    if (fwsErr) throw fwsErr;
+    const foreignWs = (fwsRow as { id: string }).id;
+    const foreign = await makeCreator("s2-foreign@test.local", 0);
+    await svc().from("creators")
+      .update({ workspace_id: foreignWs, categories: ["beauty"], level: "L2", status: "active" })
+      .eq("id", foreign.userId);
+
+    await notifyCampaignStarted(camp.id);
+
+    const { data: n } = await svc().from("notifications").select("id")
+      .eq("user_id", foreign.userId).eq("type", "campaign_started").eq("entity_id", camp.id);
+    // Move the foreign creator home BEFORE asserting: cleanup() drops "test-camp-%" workspaces
+    // before deleting creators, and creators.workspace_id has no ON DELETE cascade — so a creator
+    // left in the throwaway ws (e.g. on a failed assertion) would block cleanup's workspace delete.
+    await svc().from("creators").update({ workspace_id: DEMO_WS }).eq("id", foreign.userId);
+    expect((n ?? []).length).toBe(0); // workspace-scoped: a foreign-workspace match is never notified
+  });
 });

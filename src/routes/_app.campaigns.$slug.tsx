@@ -102,7 +102,7 @@ function CampaignDetail() {
               <span>
                 #{row.rank} {row.display_name || "—"}{" "}
                 {row.movement == null ? (
-                  <span className="text-xs text-muted-foreground" title={t("app.campaign.lb.new")}>{t("app.campaign.lb.new")}</span>
+                  <span className="text-xs text-muted-foreground" aria-label={t("app.campaign.lb.new")}>{t("app.campaign.lb.new")}</span>
                 ) : row.movement > 0 ? (
                   <span className="text-xs text-emerald-600" aria-label={t("app.campaign.lb.up", { n: row.movement })}>↑{row.movement}</span>
                 ) : row.movement < 0 ? (
