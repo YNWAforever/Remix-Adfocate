@@ -603,6 +603,7 @@ export type LeaderboardEntry = {
   display_name: string;
   avatar_url: string | null;
   level: number;
+  movement: number | null;
 };
 
 export function useCampaigns() {

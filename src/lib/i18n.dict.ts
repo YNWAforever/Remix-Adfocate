@@ -721,6 +721,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.campaigns.spotsToPrize": "{n} spots from a prize",
     "app.campaigns.endsIn": "Ends in",
     "app.campaigns.missions": "Missions",
+    "app.campaign.lb.new": "New",
+    "app.campaign.lb.up": "Up {n}",
+    "app.campaign.lb.down": "Down {n}",
+    "app.campaign.lb.same": "No change",
 
     // ── app: brand portal ─────────────────────────────────────
     "app.brand.title": "Brand Portal",
@@ -1451,6 +1455,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.campaigns.spotsToPrize": "差 {n} 名入獎",
     "app.campaigns.endsIn": "距離結束",
     "app.campaigns.missions": "任務",
+    "app.campaign.lb.new": "新上榜",
+    "app.campaign.lb.up": "升 {n} 位",
+    "app.campaign.lb.down": "跌 {n} 位",
+    "app.campaign.lb.same": "無變",
 
     // ── app: brand portal ─────────────────────────────────────
     "app.brand.title": "品牌平台",
