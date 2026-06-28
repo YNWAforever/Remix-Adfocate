@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, hasSupabaseEnv, setCreatorProfile } from "./helpers.js";
+import { notifyCampaignStarted } from "../lib/notifyCampaignStarted.js";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const svc = () => serviceForTests();
@@ -204,7 +205,6 @@ suite("notifyCampaignStarted policy", () => {
     const noMatch = await makeCreator("s2-nomatch@test.local", 0);
     await setCreatorProfile(noMatch.userId, { categories: ["food"], level: "L2" });
 
-    const { notifyCampaignStarted } = await import("../lib/notifyCampaignStarted.js");
     await notifyCampaignStarted(camp.id);
 
     const { data: a } = await svc().from("notifications").select("id")
