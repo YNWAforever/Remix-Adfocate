@@ -4,6 +4,7 @@ import { serviceClient, makeUserClient } from "../lib/supabase.js";
 import { requireBrand, acceptBrandInvite, type BrandEnv } from "../lib/brandAuth.js";
 import { type MissionInput, type MissionRecord, validateMission, validateEdit } from "../lib/missionAuthoring.js";
 import { MISSION_COLS, EDITABLE_COLS, hkToday, countEngaged, normalizeBriefForWrite } from "./adminMissions.js";
+import { brandCampaignRoutes } from "./brandCampaigns.js";
 
 /** Brand self-serve portal API. Brands authenticate as real Supabase users; mission reads/writes
  *  run through makeUserClient(jwt) so Postgres RLS (migration 0023) enforces workspace isolation —
@@ -188,4 +189,5 @@ guarded.delete("/missions/:id", async (c) => {
   return c.json({ ok: true });
 });
 
+guarded.route("/campaigns", brandCampaignRoutes);
 brandRoutes.route("/", guarded);
