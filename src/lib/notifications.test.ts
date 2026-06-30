@@ -60,7 +60,14 @@ describe("renderNotification", () => {
 
   it("returns an icon name for every type", () => {
     (["submission_approved","submission_rejected","redemption_ready","level_up","application_accepted","application_declined",
-      "campaign_goal_reached","campaign_prize_awarded"] as NotificationType[])
+      "campaign_goal_reached","campaign_prize_awarded","campaign_started"] as NotificationType[])
       .forEach((ty) => expect(renderNotification(row(ty), t).icon).toBeTruthy());
+  });
+
+  it("renders campaign_started with the campaign title and links to the campaign", () => {
+    const r = renderNotification(row("campaign_started", { campaign_title: "夏日挑戰", campaign_slug: "summer" }), t);
+    expect(r.title).toBeTruthy();
+    expect(r.body).toContain("夏日挑戰");
+    expect(r.href).toBe("/campaigns/summer");
   });
 });

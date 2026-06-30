@@ -29,11 +29,22 @@ cronRoutes.get("/social-refresh", async (c) => {
   return c.json(result);
 });
 
-cronRoutes.get("/publish-scheduled", async (c) => {
+cronRoutes.get("/daily", async (c) => {
   const expected = process.env.CRON_SECRET;
   if (!expected || c.req.header("Authorization") !== `Bearer ${expected}`)
     return c.json({ error: "Unauthorized", code: "unauthorized" }, 401);
-  const { data, error } = await serviceClient().rpc("content_publish_scheduled");
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ published: data ?? 0 });
+  const svc = serviceClient();
+  const out: { published: number | null; snapshotted: number | null; campaignsClosed: number | null; errors: string[] } =
+    { published: null, snapshotted: null, campaignsClosed: null, errors: [] };
+
+  try { const { data, error } = await svc.rpc("content_publish_scheduled"); if (error) throw error; out.published = data ?? 0; }
+  catch (e: unknown) { out.errors.push("publish:" + (e instanceof Error ? e.message : String(e))); }
+
+  try { const { data, error } = await svc.rpc("snapshot_campaign_leaderboards"); if (error) throw error; out.snapshotted = data ?? 0; }
+  catch (e: unknown) { out.errors.push("snapshot:" + (e instanceof Error ? e.message : String(e))); }
+
+  try { const { data, error } = await svc.rpc("close_due_campaigns"); if (error) throw error; out.campaignsClosed = data ?? 0; }
+  catch (e: unknown) { out.errors.push("close:" + (e instanceof Error ? e.message : String(e))); }
+
+  return c.json(out);
 });

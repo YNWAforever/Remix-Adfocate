@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   categoryTerm, rewardTerm, urgencyTerm, readinessTerm, levelFitTerm,
-  scoreMissions, rankMissions, filterCandidates, rationaleFor,
+  scoreMissions, rankMissions, filterCandidates, rationaleFor, creatorQualifiesForCampaign,
   type MatchCreator, type MatchMission,
 } from "./missionMatch";
 
@@ -129,5 +129,23 @@ describe("rationaleFor", () => {
   it("falls back to a recommendation when no signal fires", () => {
     const { rationale } = rationaleFor(mission({ category: null }), { category: 0, reward: 0.1, urgency: 0.2 }, false);
     expect(rationale).toBe("為你推薦");
+  });
+});
+
+describe("creatorQualifiesForCampaign", () => {
+  it("matches on niche + level fit", () => {
+    expect(creatorQualifiesForCampaign(creator({ level: "L2", categories: ["beauty"] }), [mission({ category: "beauty", required_level: "L1" })])).toBe(true);
+  });
+  it("no match when niche differs", () => {
+    expect(creatorQualifiesForCampaign(creator({ level: "L2", categories: ["food"] }), [mission({ category: "beauty", required_level: "L1" })])).toBe(false);
+  });
+  it("no match when under-level even if niche fits", () => {
+    expect(creatorQualifiesForCampaign(creator({ level: "L0", categories: ["beauty"] }), [mission({ category: "beauty", required_level: "L3" })])).toBe(false);
+  });
+  it("EXCLUDES no-niche creators (categoryTerm 0.5, never 1)", () => {
+    expect(creatorQualifiesForCampaign(creator({ level: "L2", categories: [] }), [mission({ category: "beauty", required_level: "L1" })])).toBe(false);
+  });
+  it("matches if ANY mission in the set qualifies", () => {
+    expect(creatorQualifiesForCampaign(creator({ level: "L1", categories: ["food"] }), [mission({ category: "beauty", required_level: "L1" }), mission({ category: "food", required_level: "L1" })])).toBe(true);
   });
 });

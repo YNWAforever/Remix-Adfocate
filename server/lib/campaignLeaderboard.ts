@@ -6,6 +6,7 @@ export type CreatorProfile = { id: string; display_name: string | null; avatar_u
 export type LeaderboardEntry = {
   creator_id: string; rank: number; approved: number; avg_quality: number;
   display_name: string; avatar_url: string | null; level: number;
+  movement: number | null;
 };
 
 export function num(v: unknown): number {
@@ -14,10 +15,13 @@ export function num(v: unknown): number {
   return 0;
 }
 
-export function shapeLeaderboard(rows: RankRow[], profiles: CreatorProfile[]): LeaderboardEntry[] {
+export function shapeLeaderboard(
+  rows: RankRow[], profiles: CreatorProfile[], prevRanks?: Map<string, number>,
+): LeaderboardEntry[] {
   const byId = new Map(profiles.map((p) => [p.id, p]));
   return rows.map((r) => {
     const p = byId.get(r.creator_id);
+    const prev = prevRanks?.get(r.creator_id);
     return {
       creator_id: r.creator_id,
       rank: num(r.rank),
@@ -26,6 +30,7 @@ export function shapeLeaderboard(rows: RankRow[], profiles: CreatorProfile[]): L
       display_name: p?.display_name ?? "",
       avatar_url: p?.avatar_url ?? null,
       level: num(p?.level),
+      movement: prev == null ? null : prev - num(r.rank),
     };
   });
 }

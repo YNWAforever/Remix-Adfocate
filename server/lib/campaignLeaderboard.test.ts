@@ -36,3 +36,29 @@ describe("spotsToPrize", () => {
     expect(spotsToPrize(5, 3)).toBe(2);
   });
 });
+
+describe("shapeLeaderboard movement", () => {
+  it("computes movement vs previous ranks (up/down/new/unchanged)", () => {
+    const rows = [
+      { creator_id: "a", rank: 1, approved: 5, avg_quality: 0 },
+      { creator_id: "b", rank: 2, approved: 3, avg_quality: 0 },
+      { creator_id: "c", rank: 3, approved: 1, avg_quality: 0 },
+    ];
+    const profiles = rows.map((r) => ({ id: r.creator_id, display_name: r.creator_id }));
+    const prev = new Map([["a", 2], ["b", 2], ["c", 5]]); // a 2→1 (+1), b unchanged (0), c 5→3 (+2)
+    const out = shapeLeaderboard(rows, profiles, prev);
+    expect(out.find((e) => e.creator_id === "a")!.movement).toBe(1);
+    expect(out.find((e) => e.creator_id === "b")!.movement).toBe(0);
+    expect(out.find((e) => e.creator_id === "c")!.movement).toBe(2);
+  });
+  it("movement is null when no previous rank exists (NEW)", () => {
+    const out = shapeLeaderboard([{ creator_id: "z", rank: 1, approved: 1, avg_quality: 0 }],
+      [{ id: "z", display_name: "Z" }], new Map());
+    expect(out[0].movement).toBeNull();
+  });
+  it("back-compat: omitting prevRanks yields null movement", () => {
+    const out = shapeLeaderboard([{ creator_id: "z", rank: 1, approved: 1, avg_quality: 0 }],
+      [{ id: "z", display_name: "Z" }]);
+    expect(out[0].movement).toBeNull();
+  });
+});
