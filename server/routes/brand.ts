@@ -4,6 +4,7 @@ import { serviceClient, makeUserClient } from "../lib/supabase.js";
 import { requireBrand, acceptBrandInvite, type BrandEnv } from "../lib/brandAuth.js";
 import { type MissionInput, type MissionRecord, validateMission, validateEdit } from "../lib/missionAuthoring.js";
 import { MISSION_COLS, EDITABLE_COLS, hkToday, countEngaged, normalizeBriefForWrite } from "./adminMissions.js";
+import { brandResourcesRoutes } from "./brandResources.js";
 
 /** Brand self-serve portal API. Brands authenticate as real Supabase users; mission reads/writes
  *  run through makeUserClient(jwt) so Postgres RLS (migration 0023) enforces workspace isolation —
@@ -46,6 +47,7 @@ brandRoutes.post("/accept", async (c) => {
 // --- Guarded brand API -----------------------------------------------------------------------
 const guarded = new Hono<BrandEnv>();
 guarded.use("*", requireBrand());
+guarded.route("/", brandResourcesRoutes);
 
 guarded.get("/me", async (c) => {
   const b = c.var.brand;

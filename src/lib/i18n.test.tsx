@@ -25,6 +25,22 @@ function Probe() {
   return <span>{t("app.notFound.title")}</span>;
 }
 
+describe("brand resources i18n keys", () => {
+  it("defines app.brand.resources.* + app.brand.navResources in both locales", () => {
+    const keys = [
+      "app.brand.resources.title",
+      "app.brand.resources.empty",
+      "app.brand.resources.loading",
+      "app.brand.resources.error",
+      "app.brand.navResources",
+    ];
+    for (const k of keys) {
+      expect(dict.en[k], `en.${k}`).toBeDefined();
+      expect(dict.zh[k], `zh.${k}`).toBeDefined();
+    }
+  });
+});
+
 describe("i18n provider", () => {
   beforeEach(() => {
     // Pre-seed storage so detectInitial() returns "zh" (jsdom navigator.language is "en-US").

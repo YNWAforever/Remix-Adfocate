@@ -13,11 +13,11 @@ export const adminContentRoutes = new Hono<AdminEnv>();
 
 const COLS =
   "id, kind, slug, status, title_zh, title_en, excerpt_zh, excerpt_en, body_zh, body_en, " +
-  "cover_image_url, category_id, author_id, workspace_id, pinned, pinned_rank, views, " +
+  "cover_image_url, category_id, author_id, workspace_id, audience, pinned, pinned_rank, views, " +
   "scheduled_for, published_at, archived_at, created_at, updated_at";
 
 const EDITABLE: (keyof ContentInput)[] = [
-  "kind", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "body_zh", "body_en",
+  "kind", "audience", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "body_zh", "body_en",
   "cover_image_url", "category_id", "pinned", "pinned_rank",
 ];
 

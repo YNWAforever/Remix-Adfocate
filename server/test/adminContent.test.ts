@@ -49,3 +49,23 @@ suite("adminContent lifecycle", () => {
     expect((await app.request("/api/admin/content")).status).toBe(401);
   });
 });
+
+suite("adminContent audience", () => {
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  it("defaults to 'creator' when omitted, and can be set + edited to 'brand'", async () => {
+    const res = await adminreq("/admin/content", { method: "POST", body: JSON.stringify({ kind: "article", title_zh: "預設受眾", body_zh: "" }) });
+    expect(res.status).toBe(201);
+    const { item } = await res.json();
+    expect(item.audience).toBe("creator");
+
+    const patch = await adminreq(`/admin/content/${item.id}`, { method: "PATCH", body: JSON.stringify({ audience: "brand" }) });
+    expect(patch.status).toBe(200);
+    expect((await patch.json()).item.audience).toBe("brand");
+
+    const created = await adminreq("/admin/content", { method: "POST", body: JSON.stringify({ kind: "article", title_zh: "品牌指南", body_zh: "", audience: "brand" }) });
+    expect(created.status).toBe(201);
+    expect((await created.json()).item.audience).toBe("brand");
+  });
+});

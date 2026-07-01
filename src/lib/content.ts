@@ -3,9 +3,10 @@ import { adminFetch } from "@/lib/admin";
 
 export type ContentKind = "article" | "announcement";
 export type ContentStatus = "draft" | "scheduled" | "published" | "archived";
+export type ContentAudience = "creator" | "brand";
 
 export type AdminContentRow = {
-  id: string; kind: ContentKind; slug: string; status: ContentStatus;
+  id: string; kind: ContentKind; audience: ContentAudience; slug: string; status: ContentStatus;
   title_zh: string; title_en: string | null; excerpt_zh: string | null; excerpt_en: string | null;
   body_zh: string; body_en: string | null; cover_image_url: string | null; category_id: string | null;
   pinned: boolean; pinned_rank: number | null; views: number; scheduled_for: string | null;

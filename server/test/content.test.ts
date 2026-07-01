@@ -15,12 +15,19 @@ suite("creator content reads (RLS)", () => {
     await cleanup();
     koc = await makeCreator("content-read@test.local", 0);
     const svc = serviceForTests();
+    const { data: cat } = await svc.from("content_categories").select("id").eq("slug", "creator-tips").single();
+    const categoryId = cat!.id;
     await svc.from("content_items").insert([
-      { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", published_at: new Date().toISOString() },
-      { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x" },
+      { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
+      { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x", audience: "creator" },
+      { kind: "article", slug: "c1-brand-leak", status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", category_id: categoryId, published_at: new Date().toISOString() },
+      { kind: "article", slug: "c1-related-creator", status: "published", title_zh: "相關創作者文章", body_zh: "z", audience: "creator", category_id: categoryId, published_at: new Date().toISOString() },
     ]);
   });
-  afterAll(cleanup);
+  afterAll(async () => {
+    await serviceForTests().from("content_items").delete().in("slug", ["c1-pub", "c1-draft", "c1-brand-leak", "c1-related-creator"]);
+    await cleanup();
+  });
 
   it("list returns published, hides draft", async () => {
     const { items } = await (await koreq("/content", koc.jwt)).json();
@@ -36,5 +43,23 @@ suite("creator content reads (RLS)", () => {
     expect((await res.json()).item.slug).toBe("c1-pub");
     const { data } = await serviceForTests().from("content_items").select("views").eq("slug", "c1-pub").single();
     expect(data!.views).toBeGreaterThanOrEqual(1);
+  });
+
+  it("never returns a brand-audience row in the list, even with a kind filter", async () => {
+    const { items } = await (await koreq("/content", koc.jwt)).json();
+    expect(items.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
+    const { items: filtered } = await (await koreq("/content?kind=article", koc.jwt)).json();
+    expect(filtered.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
+  });
+
+  it("404s a direct slug fetch of a brand-audience row", async () => {
+    expect((await koreq("/content/c1-brand-leak", koc.jwt)).status).toBe(404);
+  });
+
+  it("never returns a brand-audience row in related articles, even via a shared category", async () => {
+    const res = await koreq("/content/c1-related-creator", koc.jwt);
+    expect(res.status).toBe(200);
+    const { related } = await res.json();
+    expect(related.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
   });
 });

@@ -42,7 +42,7 @@ contentRoutes.get("/", async (c) => {
   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
   const page = Math.max(1, Number(c.req.query("page") ?? 1));
   const pageSize = 20;
-  let q = supabase.from("content_items").select(SEL, { count: "exact" });
+  let q = supabase.from("content_items").select(SEL, { count: "exact" }).eq("audience", "creator");
   const kind = c.req.query("kind"); if (kind) q = q.eq("kind", kind);
   const category = c.req.query("category"); if (category) q = q.eq("content_categories.slug", category);
   q = q.order("pinned_rank", { ascending: true, nullsFirst: false })
@@ -59,7 +59,7 @@ contentRoutes.get("/:slug", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
   const slug = c.req.param("slug");
-  const { data, error } = await supabase.from("content_items").select(SEL).eq("slug", slug).maybeSingle();
+  const { data, error } = await supabase.from("content_items").select(SEL).eq("audience", "creator").eq("slug", slug).maybeSingle();
   if (error || !data) return c.json({ error: "not found", code: "not_found" }, 404);
   await supabase.rpc("content_increment_views", { p_slug: slug });
 
@@ -68,12 +68,12 @@ contentRoutes.get("/:slug", async (c) => {
   let related: ReturnType<typeof shape>[] = [];
   if (tagSlugs.length) {
     const { data: rel } = await supabase.from("content_items").select(SEL)
-      .neq("slug", slug).contains("content_item_tags.content_tags.slug", tagSlugs).limit(4);
+      .eq("audience", "creator").neq("slug", slug).contains("content_item_tags.content_tags.slug", tagSlugs).limit(4);
     related = ((rel as unknown as Row[]) ?? []).map((r) => shape(r, lang, false));
   }
   if (!related.length && row.content_categories) {
     const { data: rel2 } = await supabase.from("content_items").select(SEL)
-      .neq("slug", slug).eq("content_categories.slug", row.content_categories.slug)
+      .eq("audience", "creator").neq("slug", slug).eq("content_categories.slug", row.content_categories.slug)
       .order("published_at", { ascending: false }).limit(4);
     related = ((rel2 as unknown as Row[]) ?? []).map((r) => shape(r, lang, false));
   }
