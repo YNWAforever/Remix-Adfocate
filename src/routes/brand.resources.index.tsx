@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BrandAuthError, brandKeys, fetchBrandResources } from "@/lib/brand";
@@ -25,11 +25,10 @@ function BrandResourcesList() {
       ) : null}
       <div className="grid gap-3 lg:grid-cols-2">
         {list.data?.items.map((item) => (
-          // Plain <a> (not TanStack's type-safe `Link`) because `/brand/resources/$slug`
-          // doesn't exist as a route yet — it lands in Task 10. Swap to `Link` then.
-          <a
+          <Link
             key={item.id}
-            href={`/brand/resources/${item.slug}`}
+            to="/brand/resources/$slug"
+            params={{ slug: item.slug }}
             className="block rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 hover:bg-[var(--color-paper)]"
           >
             {item.coverImageUrl && (
@@ -39,7 +38,7 @@ function BrandResourcesList() {
             {item.excerpt && (
               <p className="mt-1 line-clamp-2 text-sm text-[var(--color-soft-ink)]">{item.excerpt}</p>
             )}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
