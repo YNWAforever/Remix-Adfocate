@@ -7,7 +7,7 @@ import {
   listCategories, uploadContentImage, contentKeys, type AdminContentRow,
 } from "@/lib/content";
 
-const EMPTY: Partial<AdminContentRow> = { kind: "article", title_zh: "", body_zh: "", title_en: "", body_en: "" };
+const EMPTY: Partial<AdminContentRow> = { kind: "article", audience: "creator", title_zh: "", body_zh: "", title_en: "", body_en: "" };
 
 export function ContentEditor({ id }: { id: string }) {
   const isNew = id === "new";
@@ -65,6 +65,11 @@ export function ContentEditor({ id }: { id: string }) {
         <label className="block text-xs uppercase">Kind
           <select value={form.kind} onChange={(e) => set({ kind: e.target.value as AdminContentRow["kind"] })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm">
             <option value="article">Article</option><option value="announcement">Announcement</option>
+          </select>
+        </label>
+        <label className="block text-xs uppercase">Audience
+          <select value={form.audience ?? "creator"} onChange={(e) => set({ audience: e.target.value as AdminContentRow["audience"] })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm">
+            <option value="creator">Creator-facing</option><option value="brand">Brand-facing</option>
           </select>
         </label>
         <label className="block text-xs uppercase">Category
