@@ -15,14 +15,17 @@ suite("creator content reads (RLS)", () => {
     await cleanup();
     koc = await makeCreator("content-read@test.local", 0);
     const svc = serviceForTests();
+    const { data: cat } = await svc.from("content_categories").select("id").eq("slug", "creator-tips").single();
+    const categoryId = cat!.id;
     await svc.from("content_items").insert([
       { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
       { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x", audience: "creator" },
-      { kind: "article", slug: "c1-brand-leak", status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", published_at: new Date().toISOString() },
+      { kind: "article", slug: "c1-brand-leak", status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", category_id: categoryId, published_at: new Date().toISOString() },
+      { kind: "article", slug: "c1-related-creator", status: "published", title_zh: "相關創作者文章", body_zh: "z", audience: "creator", category_id: categoryId, published_at: new Date().toISOString() },
     ]);
   });
   afterAll(async () => {
-    await serviceForTests().from("content_items").delete().in("slug", ["c1-pub", "c1-draft", "c1-brand-leak"]);
+    await serviceForTests().from("content_items").delete().in("slug", ["c1-pub", "c1-draft", "c1-brand-leak", "c1-related-creator"]);
     await cleanup();
   });
 
@@ -51,5 +54,12 @@ suite("creator content reads (RLS)", () => {
 
   it("404s a direct slug fetch of a brand-audience row", async () => {
     expect((await koreq("/content/c1-brand-leak", koc.jwt)).status).toBe(404);
+  });
+
+  it("never returns a brand-audience row in related articles, even via a shared category", async () => {
+    const res = await koreq("/content/c1-related-creator", koc.jwt);
+    expect(res.status).toBe(200);
+    const { related } = await res.json();
+    expect(related.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
   });
 });

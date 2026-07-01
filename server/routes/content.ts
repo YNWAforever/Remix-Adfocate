@@ -68,12 +68,12 @@ contentRoutes.get("/:slug", async (c) => {
   let related: ReturnType<typeof shape>[] = [];
   if (tagSlugs.length) {
     const { data: rel } = await supabase.from("content_items").select(SEL)
-      .neq("slug", slug).contains("content_item_tags.content_tags.slug", tagSlugs).limit(4);
+      .eq("audience", "creator").neq("slug", slug).contains("content_item_tags.content_tags.slug", tagSlugs).limit(4);
     related = ((rel as unknown as Row[]) ?? []).map((r) => shape(r, lang, false));
   }
   if (!related.length && row.content_categories) {
     const { data: rel2 } = await supabase.from("content_items").select(SEL)
-      .neq("slug", slug).eq("content_categories.slug", row.content_categories.slug)
+      .eq("audience", "creator").neq("slug", slug).eq("content_categories.slug", row.content_categories.slug)
       .order("published_at", { ascending: false }).limit(4);
     related = ((rel2 as unknown as Row[]) ?? []).map((r) => shape(r, lang, false));
   }
