@@ -42,7 +42,7 @@ contentRoutes.get("/", async (c) => {
   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
   const page = Math.max(1, Number(c.req.query("page") ?? 1));
   const pageSize = 20;
-  let q = supabase.from("content_items").select(SEL, { count: "exact" });
+  let q = supabase.from("content_items").select(SEL, { count: "exact" }).eq("audience", "creator");
   const kind = c.req.query("kind"); if (kind) q = q.eq("kind", kind);
   const category = c.req.query("category"); if (category) q = q.eq("content_categories.slug", category);
   q = q.order("pinned_rank", { ascending: true, nullsFirst: false })
@@ -59,7 +59,7 @@ contentRoutes.get("/:slug", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
   const slug = c.req.param("slug");
-  const { data, error } = await supabase.from("content_items").select(SEL).eq("slug", slug).maybeSingle();
+  const { data, error } = await supabase.from("content_items").select(SEL).eq("audience", "creator").eq("slug", slug).maybeSingle();
   if (error || !data) return c.json({ error: "not found", code: "not_found" }, 404);
   await supabase.rpc("content_increment_views", { p_slug: slug });
 

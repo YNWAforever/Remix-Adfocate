@@ -16,11 +16,15 @@ suite("creator content reads (RLS)", () => {
     koc = await makeCreator("content-read@test.local", 0);
     const svc = serviceForTests();
     await svc.from("content_items").insert([
-      { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", published_at: new Date().toISOString() },
-      { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x" },
+      { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
+      { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x", audience: "creator" },
+      { kind: "article", slug: "c1-brand-leak", status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", published_at: new Date().toISOString() },
     ]);
   });
-  afterAll(cleanup);
+  afterAll(async () => {
+    await serviceForTests().from("content_items").delete().in("slug", ["c1-pub", "c1-draft", "c1-brand-leak"]);
+    await cleanup();
+  });
 
   it("list returns published, hides draft", async () => {
     const { items } = await (await koreq("/content", koc.jwt)).json();
@@ -36,5 +40,16 @@ suite("creator content reads (RLS)", () => {
     expect((await res.json()).item.slug).toBe("c1-pub");
     const { data } = await serviceForTests().from("content_items").select("views").eq("slug", "c1-pub").single();
     expect(data!.views).toBeGreaterThanOrEqual(1);
+  });
+
+  it("never returns a brand-audience row in the list, even with a kind filter", async () => {
+    const { items } = await (await koreq("/content", koc.jwt)).json();
+    expect(items.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
+    const { items: filtered } = await (await koreq("/content?kind=article", koc.jwt)).json();
+    expect(filtered.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
+  });
+
+  it("404s a direct slug fetch of a brand-audience row", async () => {
+    expect((await koreq("/content/c1-brand-leak", koc.jwt)).status).toBe(404);
   });
 });
