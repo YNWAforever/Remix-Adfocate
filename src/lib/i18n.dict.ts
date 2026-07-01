@@ -742,6 +742,11 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.brand.loginCheckEmail": "Check your email for a sign-in link.",
     "app.brand.callbackWorking": "Signing you in…",
     "app.brand.callbackFailed": "Sign-in failed. Please request a new link.",
+    "app.brand.navResources": "Resources",
+    "app.brand.resources.title": "Resources",
+    "app.brand.resources.empty": "No resources yet.",
+    "app.brand.resources.loading": "Loading…",
+    "app.brand.resources.error": "Couldn't load resources. Please try again.",
   },
   zh: {
     // ── site / marketing ──────────────────────────────────────
@@ -1476,5 +1481,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.brand.loginCheckEmail": "請查看電郵中的登入連結。",
     "app.brand.callbackWorking": "正在登入…",
     "app.brand.callbackFailed": "登入失敗，請重新索取連結。",
+    "app.brand.navResources": "資源",
+    "app.brand.resources.title": "資源中心",
+    "app.brand.resources.empty": "暫時未有內容。",
+    "app.brand.resources.loading": "載入中…",
+    "app.brand.resources.error": "無法載入資源，請稍後再試。",
   },
 };
