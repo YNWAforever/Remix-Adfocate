@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, Target } from "lucide-react";
+import { LayoutDashboard, Target, BookOpen } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 const ITEMS = [
   { to: "/brand", exact: true, icon: LayoutDashboard, labelKey: "app.brand.navDashboard" },
   { to: "/brand/missions", exact: false, icon: Target, labelKey: "app.brand.navMissions" },
+  { to: "/brand/resources", exact: false, icon: BookOpen, labelKey: "app.brand.navResources" },
 ] as const;
 
 const DESKTOP_ITEM =
