@@ -51,6 +51,7 @@ suite("adminContent lifecycle", () => {
 });
 
 suite("adminContent audience", () => {
+  beforeAll(cleanup);
   afterAll(cleanup);
 
   it("defaults to 'creator' when omitted, and can be set + edited to 'brand'", async () => {
