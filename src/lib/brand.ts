@@ -8,11 +8,17 @@ export type BrandMission = {
   id: string; slug: string; title: string; status: string; mission_type: string;
   points_reward: number; cash_reward: number | null; filled: number; quota: number; deadline: string | null;
 };
+export type BrandResource = {
+  id: string; slug: string; kind: string; title: string; excerpt: string | null;
+  body?: string; coverImageUrl: string | null; publishedAt: string | null; pinned: boolean; views: number;
+};
 
 export const brandKeys = {
   me: () => ["brand-me"] as const,
   missions: (status: string) => ["brand-missions", status] as const,
   mission: (id: string) => ["brand-mission", id] as const,
+  resources: (page: number) => ["brand-resources", page] as const,
+  resource: (slug: string) => ["brand-resource", slug] as const,
 };
 
 async function brandFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -46,3 +52,7 @@ export const createBrandMission = (body: MissionDraftInput) =>
   brandFetch<{ mission: AdminMission }>("/missions", { method: "POST", body: JSON.stringify(body) });
 export const updateBrandMission = (id: string, patch: MissionPatch) =>
   brandFetch<{ mission: AdminMission }>(`/missions/${id}`, { method: "PUT", body: JSON.stringify(patch) });
+export const fetchBrandResources = (page = 1) =>
+  brandFetch<{ items: BrandResource[]; page: number; pageSize: number; total: number }>(`/resources?page=${page}`);
+export const fetchBrandResource = (slug: string) =>
+  brandFetch<{ item: BrandResource }>(`/resources/${slug}`);
