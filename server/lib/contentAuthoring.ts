@@ -7,12 +7,16 @@ export type ContentKind = (typeof CONTENT_KINDS)[number];
 export const CONTENT_STATUSES = ["draft", "scheduled", "published", "archived"] as const;
 export type ContentStatus = (typeof CONTENT_STATUSES)[number];
 
+export const CONTENT_AUDIENCES = ["creator", "brand"] as const;
+export type ContentAudience = (typeof CONTENT_AUDIENCES)[number];
+
 export const MAX_TITLE = 200;
 export const MAX_EXCERPT = 500;
 export const MAX_BODY = 50_000;
 
 export type ContentInput = {
   kind: ContentKind;
+  audience?: ContentAudience;
   slug?: string;
   title_zh: string;
   title_en?: string | null;
@@ -54,6 +58,8 @@ function lenErr(v: unknown, max: number, label: string): string | null {
 export function validateContentInput(input: ContentInput): { errors: Record<string, string> } {
   const errors: Record<string, string> = {};
   if (!CONTENT_KINDS.includes(input.kind as ContentKind)) errors.kind = "請選擇有效的內容類型";
+  if (input.audience !== undefined && !CONTENT_AUDIENCES.includes(input.audience as ContentAudience))
+    errors.audience = "請選擇有效的受眾對象";
   if (!input.title_zh || !input.title_zh.trim()) errors.title_zh = "請輸入中文標題";
   const titleErr = lenErr(input.title_zh, MAX_TITLE, "標題");
   if (titleErr) errors.title_zh = titleErr;
@@ -68,6 +74,7 @@ export function validateContentEdit(input: ContentEditInput): { errors: Record<s
   const errors: Record<string, string> = {};
   const has = (k: keyof ContentEditInput) => Object.prototype.hasOwnProperty.call(input, k);
   if (has("kind") && !CONTENT_KINDS.includes(input.kind as ContentKind)) errors.kind = "請選擇有效的內容類型";
+  if (has("audience") && !CONTENT_AUDIENCES.includes(input.audience as ContentAudience)) errors.audience = "請選擇有效的受眾對象";
   if (has("title_zh") && (!input.title_zh || !input.title_zh.trim())) errors.title_zh = "請輸入中文標題";
   if (has("title_zh")) { const e = lenErr(input.title_zh, MAX_TITLE, "標題"); if (e) errors.title_zh = e; }
   if (has("excerpt_zh")) { const e = lenErr(input.excerpt_zh, MAX_EXCERPT, "摘要"); if (e) errors.excerpt_zh = e; }

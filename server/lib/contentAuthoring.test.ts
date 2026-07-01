@@ -50,6 +50,26 @@ describe("validateContentEdit", () => {
   });
 });
 
+describe("validateContentInput audience", () => {
+  it("accepts 'creator', 'brand', and omitted (no default applied here — the DB defaults it)", () => {
+    expect(Object.keys(validateContentInput({ kind: "article", title_zh: "t", body_zh: "", audience: "creator" }).errors)).toHaveLength(0);
+    expect(Object.keys(validateContentInput({ kind: "article", title_zh: "t", body_zh: "", audience: "brand" }).errors)).toHaveLength(0);
+    expect(Object.keys(validateContentInput({ kind: "article", title_zh: "t", body_zh: "" }).errors)).toHaveLength(0);
+  });
+  it("rejects an unknown audience", () => {
+    const { errors } = validateContentInput({ kind: "article", title_zh: "t", body_zh: "", audience: "everyone" } as never);
+    expect(errors.audience).toBeDefined();
+  });
+});
+
+describe("validateContentEdit audience", () => {
+  it("only errors when audience is PRESENT and invalid", () => {
+    expect(Object.keys(validateContentEdit({}).errors)).toHaveLength(0);
+    expect(Object.keys(validateContentEdit({ audience: "brand" }).errors)).toHaveLength(0);
+    expect(validateContentEdit({ audience: "everyone" } as never).errors.audience).toBeDefined();
+  });
+});
+
 describe("canTransition", () => {
   it("allows draft→published, scheduled→published, published→archived", () => {
     expect(canTransition("draft", "published")).toBe(true);
