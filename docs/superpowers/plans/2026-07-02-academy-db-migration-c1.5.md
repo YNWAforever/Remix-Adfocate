@@ -456,6 +456,8 @@ function pick(en: string | null | undefined, zh: string | null | undefined, lang
   return (lang === "en" && en ? en : zh) ?? "";
 }
 
+// Collapse {en,zh} objects (and arrays of them, e.g. playbook levels[]) to the active language.
+// Plain strings and plain-string arrays (e.g. playbook ideas[], zh-only) pass through unchanged.
 function localizeMeta(meta: Record<string, unknown>, lang: string): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(meta ?? {})) {
@@ -1066,7 +1068,8 @@ import type { AcademyPlaybook, AcademyResource } from "@/lib/academy";
 type Props = { item: AcademyPlaybook | AcademyResource };
 
 function isPlaybook(item: AcademyPlaybook | AcademyResource): item is AcademyPlaybook {
-  return "creatorAngle" in (item.meta ?? {}) || (item as AcademyPlaybook).meta?.ideas !== undefined;
+  // creatorAngle is playbook-only meta (resources carry only { type, fileUrl }); no unsafe cast.
+  return "creatorAngle" in (item.meta ?? {});
 }
 
 export function PlaybookCard({ item }: Props) {
@@ -1288,8 +1291,10 @@ function GuideDocPage() {
 
   useEffect(() => { if (doc) markRead(me.data?.id, slug); }, [doc, me.data?.id, slug]);
 
+  // apiFetch throws on a 404, so a missing slug lands the query in the error state.
+  // Gate not-found on q.isError (never on pending) so a valid slug can't false-fire while loading.
   if (q.isLoading) return <div className="p-4 text-sm">…</div>;
-  if (q.isSuccess === false && !doc) {
+  if (q.isError) {
     return (
       <div className="flex flex-col items-center gap-4 p-8 text-center">
         <p className="text-sm text-[var(--color-magenta)]">{t("app.guide.docNotFound")}</p>
@@ -1336,8 +1341,9 @@ function TrackDetailPage() {
   const q = useQuery({ queryKey: academyKeys.track(trackId, uiLang), queryFn: () => fetchAcademyTrack(trackId, uiLang), retry: false });
   const track = q.data?.item;
 
+  // apiFetch throws on a 404 → error state; gate not-found on q.isError, never on pending.
   if (q.isLoading) return <div className="p-4 text-sm">…</div>;
-  if (q.isSuccess === false && !track) {
+  if (q.isError) {
     return (
       <div className="flex flex-col items-center gap-4 p-8 text-center">
         <p className="text-sm text-[var(--color-magenta)]">{t("app.guide.trackNotFound")}</p>
