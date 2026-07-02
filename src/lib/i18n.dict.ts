@@ -660,27 +660,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.guide.docNotFound": "Guide not found.",
     "app.guide.trackNotFound": "Track not found.",
 
-    // ── app: guide doc titles ─────────────────────────────────
-    "app.guide.doc.account": "Account",
-    "app.guide.doc.leveling": "Levels",
-    "app.guide.doc.missions": "Missions",
-    "app.guide.doc.submission": "Submitting Content",
-    "app.guide.doc.points": "Points",
-    "app.guide.doc.redemption": "Redemption",
-    "app.guide.doc.wallet": "Wallet",
-    "app.guide.doc.profile": "Profile",
-
-    // ── app: academy track teasers ────────────────────────────
-    "app.guide.teaser.a1": "Unlock the basics: learn how KOC missions work and earn your first points.",
-    "app.guide.teaser.a2": "Reach L1 to unlock product review fundamentals and build brand trust.",
-    "app.guide.teaser.a3": "Reach Trusted KOC to unlock Reels growth tactics and algorithm tips.",
-    "app.guide.teaser.a4": "Reach Trusted KOC to learn TikTok hook formulas that stop the scroll.",
-    "app.guide.teaser.a5": "Reach Trusted KOC to master RED-style content and reach new audiences.",
-    "app.guide.teaser.a6": "Reach Nano Creator to start building passive income through affiliate links.",
-    "app.guide.teaser.a7": "Reach Micro-Influencer to unlock live commerce training and selling techniques.",
-    "app.guide.teaser.a8": "Reach Nano Creator to learn how to read brand briefs and stay compliant.",
-    "app.guide.teaser.a9": "Reach Nano Creator to manage freelance income, taxes, and brand negotiations.",
-
     // ── app: onboarding primer ────────────────────────────────
     "app.onboarding.primerTitle": "Your Growth Ladder",
     "app.onboarding.primerBody": "KOCmax is more than missions — it's a path from casual KOC to creator entrepreneur.",
@@ -1402,27 +1381,6 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.guide.cat.account": "帳戶",
     "app.guide.docNotFound": "找不到指南。",
     "app.guide.trackNotFound": "找不到課程。",
-
-    // ── app: guide doc titles ─────────────────────────────────
-    "app.guide.doc.account": "帳戶",
-    "app.guide.doc.leveling": "等級制度",
-    "app.guide.doc.missions": "任務",
-    "app.guide.doc.submission": "提交內容",
-    "app.guide.doc.points": "積分",
-    "app.guide.doc.redemption": "兌換",
-    "app.guide.doc.wallet": "錢包",
-    "app.guide.doc.profile": "個人檔案",
-
-    // ── app: academy track teasers ────────────────────────────
-    "app.guide.teaser.a1": "解鎖基礎：了解 KOC 任務流程，賺取你的第一批積分。",
-    "app.guide.teaser.a2": "達到 L1 即可解鎖：學習撰寫真實評測，提升品牌信任度。",
-    "app.guide.teaser.a3": "升至信譽 KOC 即可解鎖：掌握 Reels 剪接技巧與演算法攻略。",
-    "app.guide.teaser.a4": "升至信譽 KOC 即可解鎖：學習令人停止滑動的 TikTok Hook 公式。",
-    "app.guide.teaser.a5": "升至信譽 KOC 即可解鎖：掌握小紅書圖文排版與種草文案技巧。",
-    "app.guide.teaser.a6": "升至微型創作者即可解鎖：透過聯盟推廣建立穩定被動收入。",
-    "app.guide.teaser.a7": "升至微網紅即可解鎖：直播帶貨全攻略，成為直播達人。",
-    "app.guide.teaser.a8": "升至微型創作者即可解鎖：解讀品牌 Brief，確保內容合規專業。",
-    "app.guide.teaser.a9": "升至微型創作者即可解鎖：管理自由工作收入、稅務與品牌議價技巧。",
 
     // ── app: onboarding primer ────────────────────────────────
     "app.onboarding.primerTitle": "你的成長階梯",
