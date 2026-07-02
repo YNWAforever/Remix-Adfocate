@@ -4,7 +4,7 @@
 -- tracker is out of sync (0018–0027 applied out-of-tracker). Run `NOTIFY pgrst, 'reload schema';`
 -- after applying so PostgREST sees the new table + RLS.
 
-create table public.academy_content (
+create table if not exists public.academy_content (
   id             uuid primary key default gen_random_uuid(),
   kind           text not null check (kind in ('guide_doc','track','playbook','resource')),
   slug           text not null unique,
@@ -28,10 +28,13 @@ create table public.academy_content (
   updated_at     timestamptz not null default now()
 );
 
-create index academy_content_kind_status_sort_idx
+create index if not exists academy_content_kind_status_sort_idx
   on public.academy_content (kind, status, sort);
 
 -- Reuse the existing 0021 touch function (do NOT redefine it — that would clobber content_items).
+-- Trigger/policy have no `if not exists` in Postgres; on a retry against an already-applied DB
+-- these two `create` statements below will each emit a harmless "already exists" error — expected,
+-- not a failure signal (matches this file's own re-apply contract per the header comment above).
 create trigger academy_content_touch
   before update on public.academy_content
   for each row execute function public.content_touch_updated_at();
