@@ -3,6 +3,7 @@ import { Sparkles, Lock } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useMissionMatch } from "@/lib/queries/kocmax";
 import { MissionCard } from "@/components/MissionCard";
+import { SkeletonCard } from "@/components/SkeletonCard";
 
 export const Route = createFileRoute("/_app/match")({ component: Match });
 
@@ -21,7 +22,12 @@ function Match() {
         <p className="mt-1 text-sm text-[var(--color-soft-ink)]">{t("app.match.subTitle")}</p>
       </header>
 
-      {match.isLoading && <p className="text-sm text-[var(--color-soft-ink)]">{t("common.loading")}</p>}
+      {match.isLoading && (
+        <div className="grid gap-3 lg:grid-cols-2">
+          <SkeletonCard className="h-24" />
+          <SkeletonCard className="h-24" />
+        </div>
+      )}
       {match.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>}
       {empty && (
         <p className="rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-6 text-center text-sm text-[var(--color-soft-ink)]">

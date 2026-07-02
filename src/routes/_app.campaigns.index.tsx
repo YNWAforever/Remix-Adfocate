@@ -10,14 +10,23 @@ function CampaignsList() {
   const now = new Date().toISOString();
   const active = campaigns.filter((c) => c.status === "active" && c.starts_at <= now);
   const upcoming = campaigns.filter((c) => c.status === "active" && c.starts_at > now);
+  const empty = !isLoading && active.length === 0 && upcoming.length === 0;
 
   if (isLoading) return <div className="p-4 text-muted-foreground">…</div>;
 
   return (
     <div className="mx-auto max-w-3xl p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("app.campaigns.title")}</h1>
-      <CampaignSection title={t("app.campaigns.active")} items={active} />
-      <CampaignSection title={t("app.campaigns.upcoming")} items={upcoming} />
+      {empty ? (
+        <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          {t("app.campaigns.empty")}
+        </p>
+      ) : (
+        <>
+          <CampaignSection title={t("app.campaigns.active")} items={active} />
+          <CampaignSection title={t("app.campaigns.upcoming")} items={upcoming} />
+        </>
+      )}
     </div>
   );
 }

@@ -59,7 +59,11 @@ function Layout() {
   useEffect(() => { if (ws.data?.theme) applyTheme(ws.data.theme); }, [ws.data]);
   const showNav = !(path === "/login" || path.startsWith("/auth/") || path.startsWith("/onboarding"));
   return (
-    <div className={`min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]${showNav ? " pb-20 lg:pb-0 lg:pl-60" : ""}`}>
+    // pb-36 (not pb-20) reserves room for both the fixed BottomNav (~64px) and the
+    // AssistantLauncher FAB stacked above it (bottom-20 + 56px tall) so the FAB never
+    // covers the last on-page CTA when scrolled to the bottom. Desktop FAB sits in the
+    // corner with SideNav clearance, so it doesn't need the extra reserve.
+    <div className={`min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]${showNav ? " pb-36 lg:pb-0 lg:pl-60" : ""}`}>
       {showNav && (
         <a
           href="#main"

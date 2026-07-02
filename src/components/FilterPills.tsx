@@ -12,7 +12,7 @@ export function FilterPills({
   renderLabel?: (value: string) => ReactNode;
 }) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1">
+    <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1">
       {options.map((opt) => {
         const active = opt === value;
         return (
@@ -21,7 +21,7 @@ export function FilterPills({
             type="button"
             aria-pressed={active}
             onClick={() => onChange(opt)}
-            className={`filter-pill shrink-0 rounded-full border-2 border-[var(--color-ink)] px-3 py-1 text-sm ${active ? "bg-[var(--color-acid)] font-bold" : "bg-white"}`}
+            className={`filter-pill shrink-0 ${active ? "filter-pill-active" : ""}`}
           >
             {renderLabel ? renderLabel(opt) : opt}
           </button>
@@ -55,7 +55,7 @@ export function FilterPillsMulti({
             type="button"
             aria-pressed={active}
             onClick={() => toggle(opt)}
-            className={`filter-pill shrink-0 rounded-full border-2 border-[var(--color-ink)] px-3 py-1 text-sm ${active ? "bg-[var(--color-acid)] font-bold" : "bg-white"}`}
+            className={`filter-pill shrink-0 ${active ? "filter-pill-active" : ""}`}
           >
             {renderLabel ? renderLabel(opt) : opt}
           </button>

@@ -10,7 +10,7 @@ function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; valu
       <span className={ok === false ? "text-[var(--color-magenta)]" : "text-[var(--color-ink)]"} aria-hidden>{icon}</span>
       <div className="min-w-0">
         <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]">{label}</p>
-        <p className="truncate font-heading font-bold">{value}</p>
+        <p className="line-clamp-2 font-heading font-bold leading-tight">{value}</p>
       </div>
     </div>
   );

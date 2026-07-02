@@ -10,7 +10,7 @@ export function LangToggle({ className = "" }: { className?: string }) {
       onClick={() => setLang(lang === "en" ? "zh" : "en")}
       aria-label={t("common.toggleLang")}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full border-2",
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2",
         "border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)]",
         "font-heading transition-transform hover:-translate-y-0.5",
         className,

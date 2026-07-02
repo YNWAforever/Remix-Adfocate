@@ -18,6 +18,8 @@ function detectInitial(): Locale {
   return nav.startsWith("en") ? "en" : "zh"; // HK audience default
 }
 
+const HTML_LANG: Record<Locale, string> = { en: "en", zh: "zh-Hant-HK" };
+
 function interpolate(s: string, params?: Record<string, string | number>): string {
   if (!params) return s;
   return s.replace(/\{(\w+)\}/g, (_, k: string) => (k in params ? String(params[k]) : `{${k}}`));
@@ -44,6 +46,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setLangState(detectInitial());
   }, []);
+
+  // Keep <html lang> in sync so assistive tech (and browser translate prompts)
+  // pronounce/translate the page in the locale actually being rendered.
+  useEffect(() => {
+    if (typeof document !== "undefined") document.documentElement.lang = HTML_LANG[lang];
+  }, [lang]);
 
   const value = useMemo<Ctx>(
     () => ({

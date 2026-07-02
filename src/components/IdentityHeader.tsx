@@ -15,7 +15,7 @@ export function IdentityHeader({
 }) {
   const initial = (name?.[0] ?? "?").toUpperCase();
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-4">
       <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold">
         {avatarUrl ? <img src={avatarUrl} alt="" className="h-full w-full object-cover" /> : initial}
       </div>
