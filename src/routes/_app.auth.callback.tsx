@@ -11,13 +11,22 @@ function Callback() {
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
   const [failed, setFailed] = useState(false);
+  // Supabase redirects an expired/reused magic link back here as
+  // ?error=access_denied&error_code=otp_expired (no ?code=) — worth a specific
+  // message so the user knows to request a new link, not "something broke".
+  const [linkExpired, setLinkExpired] = useState(false);
   useEffect(() => {
     (async () => {
       try {
         // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
-        if (!code) throw new Error("no auth code in callback URL");
+        if (!code) {
+          if (params.get("error_code") === "otp_expired" || params.get("error") === "access_denied") {
+            setLinkExpired(true);
+          }
+          throw new Error("no auth code in callback URL");
+        }
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) throw error;
         const next = params.get("next");
@@ -45,7 +54,7 @@ function Callback() {
             {t("app.auth.callbackError")}
           </p>
           <p className="text-sm text-[var(--color-magenta)]">
-            {tx("Something went sideways", "登入連線出現問題")}
+            {linkExpired ? t("app.auth.linkExpired") : tx("Something went sideways", "登入連線出現問題")}
           </p>
           <Link to="/login" className="btn-primary inline-flex">
             {t("app.auth.backToLogin")}

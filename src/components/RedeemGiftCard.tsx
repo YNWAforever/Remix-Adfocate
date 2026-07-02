@@ -30,14 +30,26 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
         stockRemaining={gift.stock_remaining}
         imageUrl={gift.image_url}
         footer={
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => { setCode(null); setOpen(true); }}
-            className="mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 font-heading text-sm font-bold text-white disabled:opacity-40"
-          >
-            {btnLabel}
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={disabled}
+              aria-describedby={poor && !soldOut ? `need-more-${gift.id}` : undefined}
+              onClick={() => { setCode(null); setOpen(true); }}
+              className={
+                disabled
+                  ? "mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] px-3 py-1.5 font-heading text-sm font-bold text-[var(--color-soft-ink)]"
+                  : "mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 font-heading text-sm font-bold text-white"
+              }
+            >
+              {btnLabel}
+            </button>
+            {poor && !soldOut && (
+              <p id={`need-more-${gift.id}`} className="mt-1 text-center text-xs text-[var(--color-soft-ink)]">
+                {t("app.redemption.needMore", { n: gift.points_cost - balance })}
+              </p>
+            )}
+          </>
         }
       />
       {open && (

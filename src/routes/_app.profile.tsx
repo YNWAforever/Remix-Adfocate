@@ -93,7 +93,7 @@ function Profile() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
       <section className={`${CARD} p-5`}>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <IdentityHeader
             name={d.display_name ?? "KOC"}
             avatarUrl={d.avatar_url}

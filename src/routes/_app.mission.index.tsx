@@ -31,6 +31,8 @@ function Missions() {
       {!missions.isLoading && !missions.isError && missions.data?.length === 0 && (
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.mission.emptyCategory")}</p>
       )}
+      {/* sr-only: page has no visible section heading between h1 and the mission h3s */}
+      <h2 className="sr-only">{t("app.mission.resultsHeading")}</h2>
       <div className="grid gap-2 lg:grid-cols-2">
         {missions.data?.map((m) => (
           <Link key={m.id} to="/mission/$missionSlug" params={{ missionSlug: m.slug }}>

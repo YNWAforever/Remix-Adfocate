@@ -195,6 +195,7 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "Missions",
+    "app.mission.resultsHeading": "All missions",
     "app.mission.loadFailed": "Failed to load",
     "app.mission.emptyCategory": "No missions in this category",
     "app.mission.loadError": "Could not load mission",
@@ -264,6 +265,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.redemption.historyEmpty": "No redemptions yet",
     "app.redemption.soldOut": "Sold Out",
     "app.redemption.insufficient": "Insufficient Points",
+    "app.redemption.needMore": "Need {n} more pts",
     "app.redemption.redeemBtn": "Redeem",
     "app.redemption.dialogTitle": "Confirm Redemption",
     "app.redemption.dialogBody": "Redeem \"{name}\" for {pts} points?",
@@ -411,6 +413,7 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: auth ─────────────────────────────────────────────
     "app.auth.callbackError": "Sign-in could not be completed. Please sign in again.",
+    "app.auth.linkExpired": "This sign-in link has expired or was already used.",
     "app.auth.backToLogin": "Back to Sign In",
 
     // ── app: explore ──────────────────────────────────────────
@@ -704,6 +707,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.campaigns.spotsToPrize": "{n} spots from a prize",
     "app.campaigns.endsIn": "Ends in",
     "app.campaigns.missions": "Missions",
+    "app.campaigns.empty": "No challenges right now — check back soon.",
     "app.campaign.lb.new": "New",
     "app.campaign.lb.up": "Up {n}",
     "app.campaign.lb.down": "Down {n}",
@@ -917,6 +921,7 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: mission ──────────────────────────────────────────
     "app.mission.pageTitle": "限時任務",
+    "app.mission.resultsHeading": "所有任務",
     "app.mission.loadFailed": "載入失敗",
     "app.mission.emptyCategory": "此分類暫無任務",
     "app.mission.loadError": "無法載入任務",
@@ -986,6 +991,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.redemption.historyEmpty": "暫無兌換記錄",
     "app.redemption.soldOut": "已換罄",
     "app.redemption.insufficient": "積分不足",
+    "app.redemption.needMore": "還差 {n} 分",
     "app.redemption.redeemBtn": "兌換",
     "app.redemption.dialogTitle": "確認兌換",
     "app.redemption.dialogBody": "用 {pts} 積分兌換「{name}」？",
@@ -1133,6 +1139,7 @@ export const dict: Record<Locale, Record<string, string>> = {
 
     // ── app: auth ─────────────────────────────────────────────
     "app.auth.callbackError": "登入未能完成，請重新登入",
+    "app.auth.linkExpired": "呢個登入連結已過期或已被使用。",
     "app.auth.backToLogin": "返回登入",
 
     // ── app: explore ──────────────────────────────────────────
@@ -1426,6 +1433,7 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.campaigns.spotsToPrize": "差 {n} 名入獎",
     "app.campaigns.endsIn": "距離結束",
     "app.campaigns.missions": "任務",
+    "app.campaigns.empty": "暫時未有進行中嘅挑戰，遲啲再嚟睇睇。",
     "app.campaign.lb.new": "新上榜",
     "app.campaign.lb.up": "升 {n} 位",
     "app.campaign.lb.down": "跌 {n} 位",
