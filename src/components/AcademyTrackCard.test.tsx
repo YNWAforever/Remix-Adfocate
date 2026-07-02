@@ -15,14 +15,15 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const track = {
   id: "a3",
-  title: { en: "Live Commerce", zh: "直播帶貨" },
-  level: "L2+",
+  kind: "track" as const,
+  slug: "a3",
+  title: "直播帶貨",
+  excerpt: "x",
   requiredLevel: "L2",
-  duration: { en: "20 min", zh: "20 分鐘" },
-  color: "yellow",
   emoji: "📈",
-  description: { en: "x", zh: "x" },
-  teaserKey: "app.guide.teaser.a3",
+  color: "yellow",
+  sort: 0,
+  meta: { duration: "20 分鐘", levelLabel: "L2+", teaser_zh: "x", teaser_en: "x" },
 };
 
 function renderCard(creatorLevel: string, isTrusted: boolean) {
