@@ -418,9 +418,9 @@ export const packages: PackageCard[] = [
   { id: "p12", title: "Adfoplace Offer Launch", bestFor: "Marketplace activation", deliverables: ["Offer setup", "Creator matching", "Performance tracking"], color: "pink" },
 ];
 
-// ─── PLAYBOOKS (re-exported from academy.ts) ───
-export { playbooks } from "./academy";
-export type { Playbook } from "./academy";
+// ─── PLAYBOOKS (re-exported from marketingShowcase.ts) ───
+export { playbooks } from "./marketingShowcase";
+export type { Playbook } from "./marketingShowcase";
 
 // ─── STORIES ───
 export type StoryCard = {
@@ -441,9 +441,9 @@ export const storyCards: StoryCard[] = [
   { name: "Moo Beef Café", industry: "F&B", activation: "Food creator tasting mission with menu features and visit reels.", color: "yellow" },
 ];
 
-// ─── ACADEMY TRACKS + RESOURCES (re-exported from academy.ts) ───
-export { academyTracks, resources } from "./academy";
-export type { AcademyTrack, Resource } from "./academy";
+// ─── ACADEMY TRACKS + RESOURCES (re-exported from marketingShowcase.ts) ───
+export { academyTracks, resources } from "./marketingShowcase";
+export type { AcademyTrack, Resource } from "./marketingShowcase";
 
 // ─── BRAND CAMPAIGN BUILDER ───
 export const builderGoals = ["Awareness", "Trust & Reviews", "Traffic", "Sales", "Content Library", "Event Buzz"];
