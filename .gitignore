@@ -8,3 +8,4 @@ src/routeTree.gen.ts
 coverage
 .DS_Store
 .superpowers
+.worktrees

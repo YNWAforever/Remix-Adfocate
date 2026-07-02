@@ -16,6 +16,7 @@ import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
 import { profileMediaRoutes } from "./routes/profileMedia.js";
 import { contentRoutes } from "./routes/content.js";
+import { academyRoutes } from "./routes/academy.js";
 import { brandRoutes } from "./routes/brand.js";
 import { campaignRoutes } from "./routes/campaigns.js";
 
@@ -52,6 +53,7 @@ export function createApp() {
   guarded.route("/social", socialRoutes);
   guarded.route("/workspace", workspaceRoutes);
   guarded.route("/content", contentRoutes);
+  guarded.route("/academy", academyRoutes);
   app.route("/", guarded);
 
   return { app, guarded };

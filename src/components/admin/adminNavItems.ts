@@ -10,6 +10,7 @@ import {
   Trophy,
   FileText,
   Radar,
+  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +54,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { to: "/admin/missions", labelKey: "app.admin.tabMissions", icon: Target, exact: false },
       { to: "/admin/campaigns", labelKey: "app.admin.tabCampaigns", icon: Trophy, exact: false },
       { to: "/admin/content", labelKey: "app.admin.tabContent", icon: FileText, exact: false },
+      { to: "/admin/academy", labelKey: "app.admin.tabAcademy", icon: GraduationCap, exact: false },
     ],
   },
 ];
