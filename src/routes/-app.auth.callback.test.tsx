@@ -13,10 +13,19 @@ vi.mock("@tanstack/react-router", async () => {
   };
 });
 vi.mock("@/lib/supabase", () => ({
-  supabase: { auth: { exchangeCodeForSession: vi.fn(async () => ({ error: null })) } },
+  supabase: {
+    auth: {
+      exchangeCodeForSession: vi.fn(async () => ({
+        data: { session: { user: { app_metadata: { provider: "email" } } } },
+        error: null,
+      })),
+    },
+  },
 }));
 vi.mock("@/lib/auth-flow", () => ({ finishAuth: hoisted.finishAuth }));
-vi.mock("@/lib/i18n", () => ({ useI18n: () => ({ t: (k: string) => k }) }));
+vi.mock("@/lib/i18n", () => ({
+  useI18n: () => ({ lang: "zh", localeReady: true, t: (k: string) => k }),
+}));
 
 import { Route } from "./_app.auth.callback";
 
