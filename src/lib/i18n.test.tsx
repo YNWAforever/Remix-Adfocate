@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { dict } from "./i18n.dict";
 import { I18nProvider, useI18n } from "./i18n";
 
@@ -63,6 +63,12 @@ function Probe() {
   return <span>{t("app.notFound.title")}</span>;
 }
 
+function LocaleReadyProbe({ observed }: { observed: string[] }) {
+  const { lang, localeReady } = useI18n();
+  observed.push(`${lang}:${localeReady}`);
+  return <span>{`${lang}:${localeReady}`}</span>;
+}
+
 describe("brand resources i18n keys", () => {
   it("defines app.brand.resources.* + app.brand.navResources in both locales", () => {
     const keys = [
@@ -93,5 +99,20 @@ describe("i18n provider", () => {
     );
     // useEffect resolves locale post-mount; zh is the SSR/first default.
     expect(screen.getByText(dict.zh["app.notFound.title"])).toBeInTheDocument();
+  });
+
+  it("marks locale ready only after resolving the stored locale", async () => {
+    const observed: string[] = [];
+    window.localStorage.setItem("lang", "en");
+
+    render(
+      <I18nProvider>
+        <LocaleReadyProbe observed={observed} />
+      </I18nProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByText("en:true")).toBeInTheDocument());
+    expect(observed).toContain("zh:false");
+    expect(observed).toContain("en:true");
   });
 });

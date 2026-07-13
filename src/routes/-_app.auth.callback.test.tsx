@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 const { mockNavigate, trackActivationEvent } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
@@ -24,6 +24,7 @@ vi.mock("@/lib/auth-flow", () => ({ finishAuth: mockFinishAuth }));
 
 import { supabase } from "@/lib/supabase";
 import { dict } from "@/lib/i18n.dict";
+import { I18nProvider } from "@/lib/i18n";
 import { Route } from "./_app.auth.callback";
 
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
@@ -33,9 +34,19 @@ function renderCallback() {
   return render(<Callback />);
 }
 
+function renderHydratedCallback() {
+  const Callback = Route.options.component as React.ComponentType;
+  return render(
+    <I18nProvider>
+      <Callback />
+    </I18nProvider>,
+  );
+}
+
 describe("Auth callback (PKCE landing)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.localStorage.clear();
     window.history.replaceState({}, "", "/kocmax/demo/auth/callback?code=abc123");
     vi.mocked(supabase.auth.exchangeCodeForSession).mockResolvedValue({
       data: { session: { user: { app_metadata: { provider: "email" } } } },
@@ -60,6 +71,22 @@ describe("Auth callback (PKCE landing)", () => {
       deviceCategory: "desktop",
       method: "email_magic_link",
     }));
+  });
+
+  it("exchanges and completes exactly once when the stored locale hydrates", async () => {
+    window.localStorage.setItem("lang", "en");
+    mockFinishAuth.mockResolvedValue({ created: true, onboardingCompleted: false, destination: "/onboarding" });
+    renderHydratedCallback();
+
+    await waitFor(() => expect(trackActivationEvent).toHaveBeenCalledWith("signup_completed", {
+      locale: "en",
+      deviceCategory: "desktop",
+      method: "email_magic_link",
+    }));
+    expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledTimes(1);
+    expect(mockFinishAuth).toHaveBeenCalledTimes(1);
+    expect(trackActivationEvent.mock.calls.filter(([name]) => name === "signup_completed"))
+      .toHaveLength(1);
   });
 
   it("shows the recovery state when no code is present", async () => {
@@ -95,6 +122,23 @@ describe("Auth callback (PKCE landing)", () => {
     await waitFor(() => expect(screen.getByText(/登入未能完成/)).toBeInTheDocument());
     expect(document.body).not.toHaveTextContent("bad code");
     expect(mockFinishAuth).not.toHaveBeenCalled();
+  });
+
+  it("retries a rate-limited exchange and completes after the retry succeeds", async () => {
+    vi.mocked(supabase.auth.exchangeCodeForSession)
+      .mockResolvedValueOnce({ data: {}, error: { message: "rate limited", status: 429 } } as never)
+      .mockResolvedValueOnce({
+        data: { session: { user: { app_metadata: { provider: "email" } } } },
+        error: null,
+      } as never);
+    renderCallback();
+
+    fireEvent.click(await screen.findByRole("button", {
+      name: dict.zh["app.auth.action.retry"],
+    }));
+
+    await waitFor(() => expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledTimes(2));
+    expect(mockFinishAuth).toHaveBeenCalledTimes(1);
   });
 
   it("shows the recovery state when finishAuth throws", async () => {

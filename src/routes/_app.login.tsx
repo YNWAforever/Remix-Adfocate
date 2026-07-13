@@ -255,8 +255,7 @@ function EmailAndGoogle() {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
 
-  async function sendLink(e: React.FormEvent) {
-    e.preventDefault();
+  async function requestLink() {
     setBusy(true);
     setFeedback(null);
     trackActivationEvent("auth_link_requested", {
@@ -292,6 +291,11 @@ function EmailAndGoogle() {
     }
   }
 
+  function sendLink(e: React.FormEvent) {
+    e.preventDefault();
+    void requestLink();
+  }
+
   async function google() {
     setFeedback(null);
     try {
@@ -309,7 +313,7 @@ function EmailAndGoogle() {
     <div className="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4">
       {feedback && (
         <div id="login-email-error">
-          <AuthFeedback feedback={feedback} onRetry={() => setFeedback(null)} />
+          <AuthFeedback feedback={feedback} onRetry={() => void requestLink()} />
         </div>
       )}
       {sent ? (

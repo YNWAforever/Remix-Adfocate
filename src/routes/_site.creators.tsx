@@ -932,17 +932,17 @@ function FinalCtaSection() {
 }
 
 function CreatorsPage() {
-  const { lang } = useI18n();
+  const { lang, localeReady } = useI18n();
   const trackedPageView = useRef(false);
 
   useEffect(() => {
-    if (trackedPageView.current) return;
+    if (!localeReady || trackedPageView.current) return;
     trackedPageView.current = true;
     trackActivationEvent("landing_page_viewed", {
       locale: lang,
       deviceCategory: getDeviceCategory(),
     });
-  }, [lang]);
+  }, [lang, localeReady]);
 
   return (
     <div>

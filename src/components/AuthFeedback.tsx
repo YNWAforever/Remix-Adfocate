@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useId } from "react";
 
 import { useI18n } from "@/lib/i18n";
 import type { AuthFeedbackState } from "@/lib/authFeedback";
@@ -20,8 +21,9 @@ export function AuthFeedback({
   requestNewLinkTo = "/login",
 }: AuthFeedbackProps) {
   const { t } = useI18n();
-  const titleId = `auth-feedback-${feedback.category}-title`;
-  const bodyId = `auth-feedback-${feedback.category}-body`;
+  const instanceId = useId();
+  const titleId = `auth-feedback-${instanceId}-title`;
+  const bodyId = `auth-feedback-${instanceId}-body`;
 
   return (
     <section

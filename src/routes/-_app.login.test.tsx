@@ -132,7 +132,7 @@ describe("Login (WhatsApp primary)", () => {
     await screen.findByText(/登入連結已傳送/);
   });
 
-  it("preserves email and emits PII-free analytics for friendly rate-limit recovery", async () => {
+  it("retries a failed email request with the preserved address and PII-free analytics", async () => {
     const rawMessage = "rate limit exceeded for user@example.com";
     vi.mocked(supabase.auth.signInWithOtp).mockResolvedValueOnce({
       data: {},
@@ -160,7 +160,14 @@ describe("Login (WhatsApp primary)", () => {
     expect(JSON.stringify(trackActivationEvent.mock.calls)).not.toContain(rawMessage);
 
     fireEvent.click(screen.getByRole("button", { name: "重試" }));
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(email).toHaveValue("user@example.com");
+
+    await waitFor(() => expect(supabase.auth.signInWithOtp).toHaveBeenCalledTimes(2));
+    expect(supabase.auth.signInWithOtp).toHaveBeenLastCalledWith({
+      email: "user@example.com",
+      options: { emailRedirectTo: expect.stringContaining("/auth/callback") },
+    });
+    expect(trackActivationEvent.mock.calls.filter(([name]) => name === "auth_link_requested"))
+      .toHaveLength(2);
+    expect(await screen.findByText(/登入連結已傳送/)).toHaveTextContent("user@example.com");
   });
 });

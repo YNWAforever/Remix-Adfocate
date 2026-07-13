@@ -140,6 +140,20 @@ describe("_site creator acquisition", () => {
       .toHaveAttribute("href", "/login");
   });
 
+  it("tracks one page view after the stored English locale resolves", async () => {
+    renderPage(comp(CreatorsRoute));
+
+    await waitFor(() => expect(trackActivationEvent).toHaveBeenCalledWith(
+      "landing_page_viewed",
+      {
+        locale: "en",
+        deviceCategory: "desktop",
+      },
+    ));
+    expect(trackActivationEvent.mock.calls.filter(([name]) => name === "landing_page_viewed"))
+      .toHaveLength(1);
+  });
+
   it("tracks the creator page once and records source-specific CTA clicks", async () => {
     renderPage(comp(CreatorsRoute));
 

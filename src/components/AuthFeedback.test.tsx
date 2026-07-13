@@ -69,4 +69,24 @@ describe("AuthFeedback", () => {
     expect(await screen.findByRole("link", { name: dict.en["app.auth.action.backToLogin"] }))
       .toHaveAttribute("href", "/login");
   });
+
+  it("uses unique label and description references for simultaneous feedback", async () => {
+    render(
+      <I18nProvider>
+        <AuthFeedback feedback={expiredFeedback} />
+        <AuthFeedback feedback={expiredFeedback} />
+      </I18nProvider>,
+    );
+
+    const alerts = await screen.findAllByRole("alert");
+    const labelIds = alerts.map((alert) => alert.getAttribute("aria-labelledby"));
+    const descriptionIds = alerts.map((alert) => alert.getAttribute("aria-describedby"));
+
+    expect(new Set(labelIds).size).toBe(2);
+    expect(new Set(descriptionIds).size).toBe(2);
+    for (const id of [...labelIds, ...descriptionIds]) {
+      expect(id).not.toBeNull();
+      expect(document.getElementById(id!)).toBeInTheDocument();
+    }
+  });
 });

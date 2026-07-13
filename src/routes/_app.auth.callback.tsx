@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AuthFeedback } from "@/components/AuthFeedback";
 import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
@@ -29,52 +29,63 @@ function authMethod(provider: unknown): "email_magic_link" | "whatsapp" | "googl
 }
 
 function Callback() {
-  const { t, lang } = useI18n();
+  const { t, lang, localeReady } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
+  const langRef = useRef(lang);
+  const startedRef = useRef(false);
 
   useEffect(() => {
-    (async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      if (!code) {
-        setFeedback(classifyAuthError({
-          code: params.get("error_code") ?? params.get("error") ?? "malformed_callback",
-          message: params.get("error_description"),
-        }));
+    langRef.current = lang;
+  }, [lang]);
+
+  const runCallback = useCallback(async () => {
+    setFeedback(null);
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (!code) {
+      setFeedback(classifyAuthError({
+        code: params.get("error_code") ?? params.get("error") ?? "malformed_callback",
+        message: params.get("error_description"),
+      }));
+      return;
+    }
+
+    try {
+      // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) {
+        setFeedback(feedbackForError(error));
         return;
       }
-
-      try {
-        // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
-        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) {
-          setFeedback(feedbackForError(error));
-          return;
-        }
-        const next = params.get("next");
-        // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
-        // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
-        // from accidentally skipping bootstrap on a crafted next param.
-        if (next && /^\/admin(\/|$)/.test(next)) {
-          // Staff Google login: do not run creator bootstrap (which would create a creator row).
-          navigate({ to: next });
-          return;
-        }
-        const result = await finishAuth(navigate);
-        if (result.created) {
-          trackActivationEvent("signup_completed", {
-            locale: lang,
-            deviceCategory: getDeviceCategory(),
-            method: authMethod(data.session?.user.app_metadata.provider),
-          });
-        }
-      } catch (error) {
-        setFeedback(feedbackForError(error));
+      const next = params.get("next");
+      // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
+      // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
+      // from accidentally skipping bootstrap on a crafted next param.
+      if (next && /^\/admin(\/|$)/.test(next)) {
+        // Staff Google login: do not run creator bootstrap (which would create a creator row).
+        navigate({ to: next });
+        return;
       }
-    })();
-  }, [lang, navigate]);
+      const result = await finishAuth(navigate);
+      if (result.created) {
+        trackActivationEvent("signup_completed", {
+          locale: langRef.current,
+          deviceCategory: getDeviceCategory(),
+          method: authMethod(data.session?.user.app_metadata.provider),
+        });
+      }
+    } catch (error) {
+      setFeedback(feedbackForError(error));
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!localeReady || startedRef.current) return;
+    startedRef.current = true;
+    void runCallback();
+  }, [localeReady, runCallback]);
 
   if (feedback) {
     return (
@@ -85,7 +96,7 @@ function Callback() {
           <h1 className="font-display text-lg font-bold text-[var(--color-ink)]">
             {t("app.auth.callbackError")}
           </h1>
-          <AuthFeedback feedback={feedback} />
+          <AuthFeedback feedback={feedback} onRetry={() => void runCallback()} />
         </div>
       </main>
     );
