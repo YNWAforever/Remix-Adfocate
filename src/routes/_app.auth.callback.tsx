@@ -35,6 +35,7 @@ function Callback() {
   const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
   const langRef = useRef(lang);
   const startedRef = useRef(false);
+  const exchangedMethodRef = useRef<ReturnType<typeof authMethod> | null>(null);
 
   useEffect(() => {
     langRef.current = lang;
@@ -53,27 +54,32 @@ function Callback() {
     }
 
     try {
-      // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        setFeedback(feedbackForError(error));
-        return;
-      }
-      const next = params.get("next");
-      // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
-      // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
-      // from accidentally skipping bootstrap on a crafted next param.
-      if (next && /^\/admin(\/|$)/.test(next)) {
-        // Staff Google login: do not run creator bootstrap (which would create a creator row).
-        navigate({ to: next });
-        return;
+      let method = exchangedMethodRef.current;
+      if (method === null) {
+        // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          setFeedback(feedbackForError(error));
+          return;
+        }
+        const next = params.get("next");
+        // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
+        // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
+        // from accidentally skipping bootstrap on a crafted next param.
+        if (next && /^\/admin(\/|$)/.test(next)) {
+          // Staff Google login: do not run creator bootstrap (which would create a creator row).
+          navigate({ to: next });
+          return;
+        }
+        method = authMethod(data.session?.user.app_metadata.provider);
+        exchangedMethodRef.current = method;
       }
       const result = await finishAuth(navigate);
       if (result.created) {
         trackActivationEvent("signup_completed", {
           locale: langRef.current,
           deviceCategory: getDeviceCategory(),
-          method: authMethod(data.session?.user.app_metadata.provider),
+          method,
         });
       }
     } catch (error) {

@@ -141,6 +141,28 @@ describe("Auth callback (PKCE landing)", () => {
     expect(mockFinishAuth).toHaveBeenCalledTimes(1);
   });
 
+  it("retries bootstrap without replaying a successful one-time exchange", async () => {
+    mockFinishAuth
+      .mockRejectedValueOnce({ message: "bootstrap rate limited", status: 429 })
+      .mockResolvedValueOnce({
+        created: false,
+        onboardingCompleted: false,
+        destination: "/onboarding",
+      });
+    renderCallback();
+
+    const retry = await screen.findByRole("button", {
+      name: dict.zh["app.auth.action.retry"],
+    });
+    expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledTimes(1);
+    expect(mockFinishAuth).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(retry);
+
+    await waitFor(() => expect(mockFinishAuth).toHaveBeenCalledTimes(2));
+    expect(supabase.auth.exchangeCodeForSession).toHaveBeenCalledTimes(1);
+  });
+
   it("shows the recovery state when finishAuth throws", async () => {
     mockFinishAuth.mockRejectedValue(new Error("bootstrap private detail"));
     renderCallback();
