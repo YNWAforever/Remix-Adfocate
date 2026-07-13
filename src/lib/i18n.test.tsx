@@ -20,6 +20,44 @@ describe("i18n dictionary", () => {
   });
 });
 
+describe("creator acquisition and auth recovery dictionary", () => {
+  it("defines the Task 2 copy contract in both locales", () => {
+    const keys = [
+      "creators.final.cta",
+      "creators.faq.1.q",
+      "creators.faq.1.a",
+      "app.login.emailLabel",
+      "app.login.emailHelp",
+      "app.login.phoneLabel",
+      "app.login.phoneHelp",
+      "app.login.codeLabel",
+      "app.login.codeHelp",
+      "app.login.sendingStatus",
+      "app.auth.action.retry",
+      "app.auth.action.requestNewLink",
+      "app.auth.action.backToLogin",
+      "app.auth.feedback.expired.title",
+      "app.auth.feedback.expired.body",
+      "app.auth.feedback.alreadyUsed.title",
+      "app.auth.feedback.alreadyUsed.body",
+      "app.auth.feedback.malformed.title",
+      "app.auth.feedback.malformed.body",
+      "app.auth.feedback.rateLimited.title",
+      "app.auth.feedback.rateLimited.body",
+      "app.auth.feedback.deliveryFailed.title",
+      "app.auth.feedback.deliveryFailed.body",
+      "app.auth.feedback.unknown.title",
+      "app.auth.feedback.unknown.body",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) {
+        expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+      }
+    }
+  });
+});
+
 function Probe() {
   const { t } = useI18n();
   return <span>{t("app.notFound.title")}</span>;

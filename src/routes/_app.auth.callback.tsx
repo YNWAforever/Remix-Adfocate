@@ -1,84 +1,111 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { AuthFeedback } from "@/components/AuthFeedback";
 import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 import { useI18n } from "@/lib/i18n";
+import { getDeviceCategory, trackActivationEvent } from "@/lib/activationAnalytics";
+import { classifyAuthError, type AuthFeedbackState } from "@/lib/authFeedback";
 
 export const Route = createFileRoute("/_app/auth/callback")({ component: Callback });
+
+function feedbackForError(error: unknown): AuthFeedbackState {
+  if (error && typeof error === "object") {
+    const authError = error as { code?: unknown; message?: unknown; status?: unknown };
+    return classifyAuthError({
+      code: typeof authError.code === "string" ? authError.code : null,
+      message: typeof authError.message === "string" ? authError.message : null,
+      status: typeof authError.status === "number" ? authError.status : null,
+    });
+  }
+  return classifyAuthError({ message: error instanceof Error ? error.message : null });
+}
+
+function authMethod(provider: unknown): "email_magic_link" | "whatsapp" | "google" | "unknown" {
+  if (provider === "email") return "email_magic_link";
+  if (provider === "phone") return "whatsapp";
+  if (provider === "google") return "google";
+  return "unknown";
+}
 
 function Callback() {
   const { t, lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const navigate = useNavigate();
-  const [failed, setFailed] = useState(false);
-  // Supabase redirects an expired/reused magic link back here as
-  // ?error=access_denied&error_code=otp_expired (no ?code=) — worth a specific
-  // message so the user knows to request a new link, not "something broke".
-  const [linkExpired, setLinkExpired] = useState(false);
+  const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
+
   useEffect(() => {
     (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      if (!code) {
+        setFeedback(classifyAuthError({
+          code: params.get("error_code") ?? params.get("error") ?? "malformed_callback",
+          message: params.get("error_description"),
+        }));
+        return;
+      }
+
       try {
         // PKCE landing for Google / magic-link: exchange the `?code=` for a session.
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-        if (!code) {
-          if (params.get("error_code") === "otp_expired" || params.get("error") === "access_denied") {
-            setLinkExpired(true);
-          }
-          throw new Error("no auth code in callback URL");
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          setFeedback(feedbackForError(error));
+          return;
         }
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) throw error;
         const next = params.get("next");
         // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
         // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
         // from accidentally skipping bootstrap on a crafted next param.
         if (next && /^\/admin(\/|$)/.test(next)) {
-          // Staff Google login — do NOT run creator bootstrap (which would create a creator row).
+          // Staff Google login: do not run creator bootstrap (which would create a creator row).
           navigate({ to: next });
           return;
         }
-        await finishAuth(navigate);
-      } catch {
-        setFailed(true);
+        const result = await finishAuth(navigate);
+        if (result.created) {
+          trackActivationEvent("signup_completed", {
+            locale: lang,
+            deviceCategory: getDeviceCategory(),
+            method: authMethod(data.session?.user.app_metadata.provider),
+          });
+        }
+      } catch (error) {
+        setFeedback(feedbackForError(error));
       }
     })();
-  }, [navigate]);
-  if (failed) {
+  }, [lang, navigate]);
+
+  if (feedback) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center px-6">
+      <main className="relative flex min-h-screen items-center justify-center px-6">
         <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
         <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
           <span className="sticker">ADFOCATE</span>
-          <p className="font-display text-lg font-bold text-[var(--color-ink)]">
+          <h1 className="font-display text-lg font-bold text-[var(--color-ink)]">
             {t("app.auth.callbackError")}
-          </p>
-          <p className="text-sm text-[var(--color-magenta)]">
-            {linkExpired ? t("app.auth.linkExpired") : tx("Something went sideways", "登入連線出現問題")}
-          </p>
-          <Link to="/login" className="btn-primary inline-flex">
-            {t("app.auth.backToLogin")}
-          </Link>
+          </h1>
+          <AuthFeedback feedback={feedback} />
         </div>
-      </div>
+      </main>
     );
   }
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6">
+    <main className="relative flex min-h-screen items-center justify-center px-6">
       <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
       <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
         <span className="sticker">ADFOCATE</span>
         <div
-          className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent"
+          className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent motion-reduce:animate-none"
           aria-hidden="true"
         />
-        <p className="font-display text-lg font-bold text-[var(--color-ink)]">
+        <p role="status" aria-live="polite" className="font-display text-lg font-bold text-[var(--color-ink)]">
           {t("common.signingIn")}
         </p>
         <p className="tag-mono text-[var(--color-soft-ink)]">
           {tx("Securing your session", "正在建立連線")}
         </p>
       </div>
-    </div>
+    </main>
   );
 }
