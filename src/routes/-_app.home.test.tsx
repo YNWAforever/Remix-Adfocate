@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { I18nProvider } from "@/lib/i18n";
 import { dict } from "@/lib/i18n.dict";
 import type { MissionMatch, MyMission } from "@/lib/queries/kocmax";
 import type { UseCreatorActivationResult } from "@/lib/useCreatorActivation";
@@ -74,6 +75,10 @@ vi.mock("@/lib/useCreatorActivation", () => ({ useCreatorActivation: () => mocks
 vi.mock("@/lib/activationAnalytics", () => ({
   trackActivationEvent: (...args: unknown[]) => mocks.track(...args),
 }));
+vi.mock("@/lib/content", () => ({
+  contentKeys: { news: () => ["news"] },
+  fetchNews: vi.fn(async () => ({ items: [] })),
+}));
 
 import { Route } from "./_app.home";
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
@@ -82,7 +87,9 @@ function renderHome() {
   const C = Route.options.component as React.ComponentType;
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <C />
+      <I18nProvider>
+        <C />
+      </I18nProvider>
     </QueryClientProvider>,
   );
 }
@@ -125,7 +132,9 @@ function resetActivation() {
 }
 describe("Home", () => {
   beforeEach(() => {
+    window.localStorage.setItem("lang", "zh");
     mocks.track.mockClear();
+    resetActivation();
   });
 
   it("shows an avatar button linking to /profile", () => {
@@ -134,7 +143,6 @@ describe("Home", () => {
     expect(link).toHaveAttribute("href", "/profile");
   });
 
-    resetActivation();
   it("shows a level chip with the effective level label (not raw ID)", () => {
     renderHome();
     // effective_level = "L1" → emoji 🌱, label = "KOC 新手" (zh locale)
@@ -245,5 +253,23 @@ describe("Home", () => {
     expect(serialized).not.toContain("u1");
     expect(serialized).not.toContain("阿明");
     expect(serialized).not.toContain("email");
+  });
+
+  it("does not re-emit viewed analytics when the creator changes language", async () => {
+    setRecommendations([unlockedMission]);
+    renderHome();
+
+    await waitFor(() => expect(mocks.track).toHaveBeenCalledWith("dashboard_viewed", expect.any(Object)));
+    const viewCounts = () => ({
+      dashboard: mocks.track.mock.calls.filter(([event]) => event === "dashboard_viewed").length,
+      action: mocks.track.mock.calls.filter(([event]) => event === "activation_action_viewed").length,
+      recommendation: mocks.track.mock.calls.filter(([event]) => event === "mission_recommendation_viewed").length,
+    });
+    expect(viewCounts()).toEqual({ dashboard: 1, action: 1, recommendation: 1 });
+
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["common.toggleLang"] }));
+    await waitFor(() => expect(screen.getByRole("heading", { name: /Welcome back/ })).toBeInTheDocument());
+
+    expect(viewCounts()).toEqual({ dashboard: 1, action: 1, recommendation: 1 });
   });
 });

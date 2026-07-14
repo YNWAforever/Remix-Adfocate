@@ -39,23 +39,22 @@ function Home() {
     [activation.recommendations.data],
   );
   const effectiveLevel = me?.effective_level ?? me?.level;
-  const dashboardViews = useRef(new Set<string>());
+  const dashboardViewed = useRef(false);
   const actionViews = useRef(new Set<string>());
   const recommendationViews = useRef(new Set<string>());
 
   useEffect(() => {
-    const key = `${lang}:${effectiveLevel ?? ""}`;
-    if (dashboardViews.current.has(key)) return;
-    dashboardViews.current.add(key);
+    if (activation.me.loading || dashboardViewed.current) return;
+    dashboardViewed.current = true;
     trackActivationEvent("dashboard_viewed", {
       locale: lang,
       ...(effectiveLevel ? { creatorLevel: effectiveLevel } : {}),
     });
-  }, [effectiveLevel, lang]);
+  }, [activation.me.loading, effectiveLevel, lang]);
 
   useEffect(() => {
     const action = activation.snapshot.nextAction;
-    const key = `${lang}:${action.kind}:${action.missionId ?? ""}`;
+    const key = `${action.kind}:${action.missionId ?? ""}`;
     if (actionViews.current.has(key)) return;
     actionViews.current.add(key);
     trackActivationEvent("activation_action_viewed", {
@@ -65,8 +64,9 @@ function Home() {
   }, [activation.snapshot.nextAction, lang]);
 
   useEffect(() => {
+    if (activation.recommendations.loading || activation.recommendations.error) return;
     for (const mission of unlockedRecommendations) {
-      const key = `${lang}:${mission.id}`;
+      const key = mission.id;
       if (recommendationViews.current.has(key)) continue;
       recommendationViews.current.add(key);
       trackActivationEvent("mission_recommendation_viewed", {
@@ -75,7 +75,7 @@ function Home() {
         missionType: mission.mission_type,
       });
     }
-  }, [lang, unlockedRecommendations]);
+  }, [activation.recommendations.error, activation.recommendations.loading, lang, unlockedRecommendations]);
 
   const quickLinks = [
     { to: "/mission", labelKey: "app.home.quickMission" as const, icon: Target },
