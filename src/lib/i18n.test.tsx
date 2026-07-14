@@ -58,6 +58,56 @@ describe("creator acquisition and auth recovery dictionary", () => {
   });
 });
 
+describe("creator activation dictionary", () => {
+  it("defines milestone, benefit, action, and emitted next-action copy in both locales", () => {
+    const keys = [
+      "app.activation.milestone.accountCreated.label",
+      "app.activation.milestone.accountCreated.benefit",
+      "app.activation.milestone.onboardingCompleted.label",
+      "app.activation.milestone.onboardingCompleted.benefit",
+      "app.activation.milestone.interestsSelected.label",
+      "app.activation.milestone.interestsSelected.benefit",
+      "app.activation.milestone.socialAdded.label",
+      "app.activation.milestone.socialAdded.benefit",
+      "app.activation.milestone.socialVerified.label",
+      "app.activation.milestone.socialVerified.benefit",
+      "app.activation.milestone.paymentReady.label",
+      "app.activation.milestone.paymentReady.benefit",
+      "app.activation.milestone.firstMissionViewed.label",
+      "app.activation.milestone.firstMissionViewed.benefit",
+      "app.activation.milestone.firstMissionJoined.label",
+      "app.activation.milestone.firstMissionJoined.benefit",
+      "app.activation.action.createAccount",
+      "app.activation.action.resumeOnboarding",
+      "app.activation.action.setPreferences",
+      "app.activation.action.addSocial",
+      "app.activation.action.verifySocial",
+      "app.activation.action.viewMissions",
+      "app.activation.next.submitProof.title",
+      "app.activation.next.submitProof.body",
+      "app.activation.next.submitProof.cta",
+      "app.activation.next.resumeOnboarding.title",
+      "app.activation.next.resumeOnboarding.body",
+      "app.activation.next.resumeOnboarding.cta",
+      "app.activation.next.improveProfile.title",
+      "app.activation.next.improveProfile.body",
+      "app.activation.next.improveProfile.cta",
+      "app.activation.next.viewRecommendedMission.title",
+      "app.activation.next.viewRecommendedMission.body",
+      "app.activation.next.viewRecommendedMission.cta",
+      "app.activation.next.setPreferences.title",
+      "app.activation.next.setPreferences.body",
+      "app.activation.next.setPreferences.cta",
+      "app.activation.next.reviewGrowth.title",
+      "app.activation.next.reviewGrowth.body",
+      "app.activation.next.reviewGrowth.cta",
+    ];
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+    }
+  });
+});
+
 function Probe() {
   const { t } = useI18n();
   return <span>{t("app.notFound.title")}</span>;
