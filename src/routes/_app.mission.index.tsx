@@ -12,12 +12,19 @@ export const Route = createFileRoute("/_app/mission/")({ component: Missions });
 
 const CATEGORIES = [ALL_CATEGORY, ...MISSION_CATEGORIES] as const;
 
+const STATUS_LABEL_KEY: Record<SubmissionStatus, string> = {
+  applied: "app.mission.statusApplied",
+  joined: "app.mission.statusJoined",
+  submitted: "app.mission.statusApplied",
+  under_review: "app.mission.statusApplied",
+  approved: "app.mission.statusApproved",
+  rejected: "app.mission.statusRejected",
+  declined: "app.mission.statusDeclined",
+  expired: "app.mission.statusExpired",
+};
+
 function statusLabelKey(status: SubmissionStatus): string {
-  if (status === "joined") return "app.mission.statusJoined";
-  if (status === "submitted" || status === "under_review") return "app.mission.statusApplied";
-  if (status === "approved") return "app.mission.statusApproved";
-  if (status === "rejected") return "app.mission.statusRejected";
-  return "app.mission.statusExpired";
+  return STATUS_LABEL_KEY[status];
 }
 
 function Missions() {

@@ -75,9 +75,25 @@ describe("mission discovery", () => {
     expect(screen.getByText(/2026.*8.*31/)).toBeInTheDocument();
     expect(screen.getByText("中")).toBeInTheDocument();
     expect(screen.getByText("暫不可參加")).toBeInTheDocument();
+    expect(screen.queryByText("需 L1 · 你符合")).not.toBeInTheDocument();
     expect(screen.getByText("L1")).toBeInTheDocument();
     expect(screen.getByText("審批中")).toBeInTheDocument();
     expect(h.useMe).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    ["applied", "審批中"],
+    ["declined", "未獲接受"],
+  ] as const)("labels the real %s application state without calling it expired", (myStatus, label) => {
+    h.missions = {
+      data: [{ ...richMission, id: `mission-${myStatus}`, slug: myStatus, my_status: myStatus }],
+      isLoading: false,
+      isError: false,
+    };
+    renderMissions();
+
+    expect(screen.getByText(label)).toBeInTheDocument();
+    expect(screen.queryByText("已過期")).not.toBeInTheDocument();
   });
 
   it("shows an accessible loading state", () => {

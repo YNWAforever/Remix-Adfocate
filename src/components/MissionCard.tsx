@@ -81,13 +81,18 @@ export function MissionCard({
       ? t(effortLabelKey(effort)!)
       : effort
     : null;
-  const availability = quota == null || filled == null
+  const remainingSpots = quota == null || filled == null ? null : spotsLeft(quota, filled);
+  const isFull = remainingSpots === 0;
+  const availability = remainingSpots == null
     ? null
-    : spotsLeft(quota, filled) === 0
+    : isFull
       ? t("app.mission.cardUnavailable")
-      : t("app.mission.spotsLeft", { n: spotsLeft(quota, filled) });
+      : t("app.mission.spotsLeft", { n: remainingSpots });
   const creatorEligibility = requiredLevel && creatorLevel != null
     ? eligibility(requiredLevel, creatorLevel, isTrusted)
+    : null;
+  const visibleEligibility = creatorEligibility && (!isFull || !creatorEligibility.qualified)
+    ? creatorEligibility
     : null;
 
   const facts: Array<CardFact | null> = [
@@ -100,7 +105,7 @@ export function MissionCard({
     translatedEffort ? { label: t("app.mission.cardEffort"), value: translatedEffort } : null,
     availability ? { label: t("app.mission.cardAvailability"), value: availability } : null,
     requiredLevel ? { label: t("app.mission.cardRequiredLevel"), value: requiredLevel } : null,
-    creatorEligibility ? { label: t("app.mission.factEligibility"), value: t(creatorEligibility.labelKey, creatorEligibility.params) } : null,
+    visibleEligibility ? { label: t("app.mission.factEligibility"), value: t(visibleEligibility.labelKey, visibleEligibility.params) } : null,
     matchRationale ? { label: t("app.mission.cardMatchRationale"), value: matchRationale } : null,
     matchScore == null ? null : { label: t("app.mission.cardMatchScore"), value: `${Math.round(matchScore <= 1 ? matchScore * 100 : matchScore)}%` },
     status ? { label: t("app.mission.cardStatus"), value: status } : null,
