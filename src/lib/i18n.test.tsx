@@ -272,3 +272,34 @@ describe("action-led dashboard dictionary", () => {
     }
   });
 });
+
+describe("mission decision dictionary", () => {
+  it("defines commitment, availability, access, and richer card copy in both locales", () => {
+    const keys = [
+      "app.mission.commitment.heading",
+      "app.mission.commitment.deliverables",
+      "app.mission.commitment.deliverablesUnavailable",
+      "app.mission.commitment.platforms",
+      "app.mission.commitment.deadline",
+      "app.mission.commitment.reward",
+      "app.mission.commitment.effort",
+      "app.mission.loading",
+      "app.mission.access.open",
+      "app.mission.access.application",
+      "app.mission.cardBrand",
+      "app.mission.cardDeliverables",
+      "app.mission.cardAvailability",
+      "app.mission.cardAvailable",
+      "app.mission.cardUnavailable",
+      "app.mission.cardRequiredLevel",
+      "app.match.unlocked",
+      "app.match.locked",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) {
+        expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+      }
+    }
+  });
+});

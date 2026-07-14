@@ -2,6 +2,14 @@ import { Clock, Star } from "lucide-react";
 import { BadgePill } from "./BadgePill";
 import { formatCreatorCurrency, formatCreatorDate } from "@/lib/creatorFormatting";
 import { useI18n } from "@/lib/i18n";
+import {
+  effortLabelKey,
+  eligibility,
+  missionTypeLabelKey,
+  platformLabelKey,
+  spotsLeft,
+  type EffortLevel,
+} from "@/lib/missionMeta";
 
 type MissionCardProps = {
   title: string;
@@ -10,14 +18,28 @@ type MissionCardProps = {
   deadline?: string | null;
   imageUrl?: string;
   cashReward?: number | null;
+  brand?: string | null;
   missionType?: string;
   accessType?: string;
   platform?: string;
-  effort?: string;
+  platforms?: string[];
+  deliverables?: string[];
+  effort?: string | null;
+  quota?: number;
+  filled?: number;
+  requiredLevel?: string | null;
+  creatorLevel?: string | null;
+  isTrusted?: boolean;
   matchRationale?: string;
   matchScore?: number;
   status?: string;
 };
+
+type CardFact = { label: string; value: string };
+
+function isEffortLevel(value: string): value is EffortLevel {
+  return value === "low" || value === "medium" || value === "high";
+}
 
 export function MissionCard({
   title,
@@ -26,54 +48,69 @@ export function MissionCard({
   deadline,
   imageUrl,
   cashReward,
+  brand,
   missionType,
   accessType,
   platform,
+  platforms,
+  deliverables,
   effort,
+  quota,
+  filled,
+  requiredLevel,
+  creatorLevel,
+  isTrusted = true,
   matchRationale,
   matchScore,
   status,
 }: MissionCardProps) {
   const { t, lang } = useI18n();
   const formattedDeadline = formatCreatorDate(deadline, lang);
-  const facts = [
-    cashReward == null
-      ? null
-      : {
-          label: t("app.mission.cardCashReward"),
-          value: formatCreatorCurrency(cashReward, lang),
-        },
-    missionType
-      ? { label: t("app.mission.cardMissionType"), value: missionType }
-      : null,
-    accessType
-      ? { label: t("app.mission.cardAccessType"), value: accessType }
-      : null,
-    platform
-      ? { label: t("app.mission.cardPlatform"), value: platform }
-      : null,
-    effort ? { label: t("app.mission.cardEffort"), value: effort } : null,
-    matchRationale
-      ? {
-          label: t("app.mission.cardMatchRationale"),
-          value: matchRationale,
-        }
-      : null,
-    matchScore == null
-      ? null
-      : {
-          label: t("app.mission.cardMatchScore"),
-          value: `${Math.round(matchScore <= 1 ? matchScore * 100 : matchScore)}%`,
-        },
+  const platformValues = [...new Set([...(platforms ?? []), ...(platform ? [platform] : [])])];
+  const translatedPlatforms = platformValues.map((value) => t(platformLabelKey(value)));
+  const translatedMissionType = missionType ? t(missionTypeLabelKey(missionType)) : null;
+  const translatedAccessType = accessType
+    ? accessType === "open"
+      ? t("app.mission.access.open")
+      : accessType === "application"
+        ? t("app.mission.access.application")
+        : accessType
+    : null;
+  const translatedEffort = effort
+    ? isEffortLevel(effort)
+      ? t(effortLabelKey(effort)!)
+      : effort
+    : null;
+  const availability = quota == null || filled == null
+    ? null
+    : spotsLeft(quota, filled) === 0
+      ? t("app.mission.cardUnavailable")
+      : t("app.mission.spotsLeft", { n: spotsLeft(quota, filled) });
+  const creatorEligibility = requiredLevel && creatorLevel != null
+    ? eligibility(requiredLevel, creatorLevel, isTrusted)
+    : null;
+
+  const facts: Array<CardFact | null> = [
+    cashReward == null ? null : { label: t("app.mission.cardCashReward"), value: formatCreatorCurrency(cashReward, lang) },
+    brand ? { label: t("app.mission.cardBrand"), value: brand } : null,
+    translatedMissionType ? { label: t("app.mission.cardMissionType"), value: translatedMissionType } : null,
+    translatedAccessType ? { label: t("app.mission.cardAccessType"), value: translatedAccessType } : null,
+    translatedPlatforms.length ? { label: t("app.mission.cardPlatform"), value: translatedPlatforms.join(lang === "zh" ? "、" : ", ") } : null,
+    deliverables?.length ? { label: t("app.mission.cardDeliverables"), value: deliverables.join(lang === "zh" ? "、" : ", ") } : null,
+    translatedEffort ? { label: t("app.mission.cardEffort"), value: translatedEffort } : null,
+    availability ? { label: t("app.mission.cardAvailability"), value: availability } : null,
+    requiredLevel ? { label: t("app.mission.cardRequiredLevel"), value: requiredLevel } : null,
+    creatorEligibility ? { label: t("app.mission.factEligibility"), value: t(creatorEligibility.labelKey, creatorEligibility.params) } : null,
+    matchRationale ? { label: t("app.mission.cardMatchRationale"), value: matchRationale } : null,
+    matchScore == null ? null : { label: t("app.mission.cardMatchScore"), value: `${Math.round(matchScore <= 1 ? matchScore * 100 : matchScore)}%` },
     status ? { label: t("app.mission.cardStatus"), value: status } : null,
-  ].filter((fact): fact is { label: string; value: string } => fact !== null);
+  ];
+  const visibleFacts = facts.filter((fact): fact is CardFact => fact !== null);
 
   return (
     <article className="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
-        {imageUrl ? (
-          <img src={imageUrl} alt="" className="h-full w-full object-cover" />
-        ) : null}
+        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : null}
       </div>
       <div className="min-w-0 flex-1">
         {category ? <BadgePill>{category}</BadgePill> : null}
@@ -90,13 +127,11 @@ export function MissionCard({
             </span>
           ) : null}
         </div>
-        {facts.length ? (
+        {visibleFacts.length ? (
           <dl className="mt-3 grid gap-1 text-xs">
-            {facts.map((fact) => (
+            {visibleFacts.map((fact) => (
               <div key={fact.label} className="grid grid-cols-[auto_1fr] gap-2">
-                <dt className="font-semibold text-[var(--color-soft-ink)]">
-                  {fact.label}
-                </dt>
+                <dt className="font-semibold text-[var(--color-soft-ink)]">{fact.label}</dt>
                 <dd className="min-w-0">{fact.value}</dd>
               </div>
             ))}
