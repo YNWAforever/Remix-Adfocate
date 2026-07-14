@@ -56,21 +56,27 @@ function Wizard() {
   const [saveState, setSaveState] = useState<OnboardingSaveState>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const statusInitialized = useRef(false);
   const categoriesEdited = useRef(false);
   const handlesEdited = useRef(false);
   const categoryBaseline = useRef<string[]>([]);
   const handleBaseline = useRef<Handles>({});
   const connectedHandles = useRef(new Set<string>());
   const viewedSteps = useRef(new Set<string>());
+  const completedSteps = useRef(new Set<string>());
+  const abandonedSteps = useRef(new Set<string>());
 
   useEffect(() => {
-    if (!status.data || statusInitialized.current) return;
+    if (!status.data) return;
     const persisted = clampStep(status.data.onboarding_step);
-    statusInitialized.current = true;
+    if (serverConfirmedStep === null) {
+      setServerConfirmedStep(persisted);
+      setStep(persisted);
+      return;
+    }
+    if (persisted <= serverConfirmedStep) return;
+    setStep((current) => current === serverConfirmedStep ? persisted : current);
     setServerConfirmedStep(persisted);
-    setStep(persisted);
-  }, [status.data]);
+  }, [serverConfirmedStep, status.data]);
 
   useEffect(() => {
     if (!me.data) return;
@@ -112,20 +118,38 @@ function Wizard() {
     .filter(({ countsTowardReadiness, state }) => countsTowardReadiness && state !== "complete")
     .map(({ labelKey }) => t(labelKey));
 
+  function cacheOnboardingProgress(nextStep: Step, completed = false) {
+    queryClient.setQueryData(["onboarding-status"], (cached: typeof status.data) => {
+      const source = cached ?? status.data;
+      return {
+        ...source,
+        onboarding_step: Math.max(source?.onboarding_step ?? 1, nextStep),
+        onboarding_completed: completed || (source?.onboarding_completed ?? false),
+        completion_pct: completed ? 100 : (source?.completion_pct ?? 0),
+      };
+    });
+  }
+
   async function persistStep(nextStep: Step, work: () => Promise<unknown>, completionStatus: "saved" | "skipped") {
     const completedStep = step;
+    const previouslyConfirmed = serverConfirmedStep ?? 1;
     setError(null);
     setSaveState("saving");
     try {
       await work();
+      cacheOnboardingProgress(nextStep);
       setServerConfirmedStep((current) => Math.max(current ?? 1, nextStep) as Step);
       setStep(nextStep);
       setSaveState("saved");
-      trackActivationEvent("onboarding_step_completed", {
+      const eventKey = `${lang}:${completedStep}`;
+      if (nextStep > previouslyConfirmed && !completedSteps.current.has(eventKey)) {
+        completedSteps.current.add(eventKey);
+        trackActivationEvent("onboarding_step_completed", {
         locale: lang,
         step: completedStep,
         status: completionStatus,
       });
+      }
       return true;
     } catch {
       setError(t("common.saveError"));
@@ -200,6 +224,7 @@ function Wizard() {
       const result = await complete.mutateAsync();
       setReward({ referral_code: result.referral_code });
       setServerConfirmedStep(5);
+      cacheOnboardingProgress(5, true);
       setSaveState("saved");
       for (const queryKey of [["me"], ["balance"], ["onboarding-status"], ["recommended-missions"]]) {
         queryClient.invalidateQueries({ queryKey });
@@ -212,6 +237,9 @@ function Wizard() {
   }
 
   function trackBack() {
+    const eventKey = `${lang}:${step}`;
+    if (abandonedSteps.current.has(eventKey)) return;
+    abandonedSteps.current.add(eventKey);
     trackActivationEvent("onboarding_abandoned", { locale: lang, step });
   }
 

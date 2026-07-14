@@ -138,6 +138,67 @@ describe("Onboarding wizard", () => {
     expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.missionsTitle"] })).toBeInTheDocument();
   });
 
+  it("accepts newer server progress without overwriting an intentional local Back", async () => {
+    const view = renderWizard();
+    expect(screen.getByRole("heading", { name: dict.zh["app.onboarding.categoriesTitle"] })).toBeInTheDocument();
+
+    hoisted.onboardingStep = 4;
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        {(() => { const Wizard = Route.options.component as React.ComponentType; return <Wizard />; })()}
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.missionsTitle"] })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["common.back"] }));
+    expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.platformsTitle"] })).toBeInTheDocument();
+
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        {(() => { const Wizard = Route.options.component as React.ComponentType; return <Wizard />; })()}
+      </QueryClientProvider>,
+    );
+    expect(screen.getByRole("heading", { name: dict.zh["app.onboarding.platformsTitle"] })).toBeInTheDocument();
+  });
+
+  it("updates onboarding cache after successful step and completion mutations", async () => {
+    const firstView = renderWizard();
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["app.onboarding.next"] }));
+    await waitFor(() => expect(hoisted.saveProfile).toHaveBeenCalledWith({ categories: [], step: 3 }));
+    expect(firstView.queryClient.getQueryData(["onboarding-status"])).toMatchObject({ onboarding_step: 3 });
+    firstView.unmount();
+
+    hoisted.onboardingStep = 5;
+    const completionView = renderWizard();
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["app.onboarding.claimCta"] }));
+    await waitFor(() => expect(hoisted.complete).toHaveBeenCalled());
+    expect(completionView.queryClient.getQueryData(["onboarding-status"])).toMatchObject({
+      onboarding_step: 5,
+      onboarding_completed: true,
+    });
+  });
+
+  it("deduplicates analytics when revisiting a server-confirmed step", async () => {
+    hoisted.onboardingStep = 3;
+    renderWizard();
+
+    const back = () => fireEvent.click(screen.getByRole("button", { name: dict.zh["common.back"] }));
+    back();
+    expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.categoriesTitle"] })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["app.onboarding.next"] }));
+    expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.platformsTitle"] })).toBeInTheDocument();
+    back();
+
+    const completedStepTwo = hoisted.track.mock.calls.filter(
+      ([event, payload]) => event === "onboarding_step_completed" && payload.step === 2,
+    );
+    const abandonedStepThree = hoisted.track.mock.calls.filter(
+      ([event, payload]) => event === "onboarding_abandoned" && payload.step === 3,
+    );
+    expect(completedStepTwo).toHaveLength(0);
+    expect(abandonedStepThree).toHaveLength(1);
+  });
+
   it("seeds interests from /me and requires discard before dirty Back", async () => {
     hoisted.meData = { ...hoisted.meData, categories: ["美容"] };
     renderWizard();

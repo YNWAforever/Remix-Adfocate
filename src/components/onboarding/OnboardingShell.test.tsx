@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { dict } from "@/lib/i18n.dict";
 import { OnboardingShell } from "./OnboardingShell";
 
 function renderShell(overrides: Partial<React.ComponentProps<typeof OnboardingShell>> = {}) {
@@ -61,5 +62,21 @@ describe("OnboardingShell", () => {
     expect(props.onCancelDiscard).toHaveBeenCalledOnce();
     expect(props.onDiscardAndBack).not.toHaveBeenCalled();
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("moves focus into discard confirmation and restores it to Back on cancel", () => {
+    renderShell({ hasUnsavedChanges: true });
+    const back = screen.getByRole("button", { name: dict.zh["common.back"] });
+
+    fireEvent.click(back);
+
+    const confirmation = screen.getByRole("alertdialog");
+    expect(confirmation).not.toHaveAttribute("aria-modal");
+    expect(screen.getByRole("button", { name: dict.zh["app.onboarding.discardConfirm"] })).toHaveFocus();
+
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["common.cancel"] }));
+
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(back).toHaveFocus();
   });
 });

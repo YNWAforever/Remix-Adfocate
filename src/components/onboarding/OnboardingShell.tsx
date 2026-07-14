@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ProgressBar } from "@/components/ProgressBar";
 import { useI18n } from "@/lib/i18n";
 
@@ -29,8 +29,13 @@ export function OnboardingShell({
 }) {
   const { t } = useI18n();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const discardButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => setConfirmDiscard(false), [step]);
+  useEffect(() => {
+    if (confirmDiscard) discardButtonRef.current?.focus();
+  }, [confirmDiscard]);
 
   const saveText: Record<OnboardingSaveState, string> = {
     idle: t("app.onboarding.saveIdle"),
@@ -42,6 +47,12 @@ export function OnboardingShell({
   function requestBack() {
     if (hasUnsavedChanges) setConfirmDiscard(true);
     else onBack();
+  }
+
+  function cancelDiscard() {
+    setConfirmDiscard(false);
+    onCancelDiscard();
+    backButtonRef.current?.focus();
   }
 
   return (
@@ -58,7 +69,7 @@ export function OnboardingShell({
           <ProgressBar value={step} max={totalSteps} />
           <div className="flex min-h-6 items-center justify-between gap-3">
             {canGoBack ? (
-              <button type="button" onClick={requestBack} className="text-sm font-semibold underline underline-offset-4">
+              <button ref={backButtonRef} type="button" onClick={requestBack} className="text-sm font-semibold underline underline-offset-4">
                 {t("common.back")}
               </button>
             ) : <span />}
@@ -72,10 +83,10 @@ export function OnboardingShell({
             <h2 id="onboarding-discard-title" className="font-heading font-bold">{t("app.onboarding.discardTitle")}</h2>
             <p id="onboarding-discard-body" className="mt-1 text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.discardBody")}</p>
             <div className="mt-3 flex gap-2">
-              <button type="button" className="btn-primary flex-1" onClick={() => { setConfirmDiscard(false); onDiscardAndBack(); }}>
+              <button ref={discardButtonRef} type="button" className="btn-primary flex-1" onClick={() => { setConfirmDiscard(false); onDiscardAndBack(); }}>
                 {t("app.onboarding.discardConfirm")}
               </button>
-              <button type="button" className="btn-ink flex-1" onClick={() => { setConfirmDiscard(false); onCancelDiscard(); }}>
+              <button type="button" className="btn-ink flex-1" onClick={cancelDiscard}>
                 {t("common.cancel")}
               </button>
             </div>
