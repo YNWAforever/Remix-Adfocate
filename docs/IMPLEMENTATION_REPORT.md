@@ -2,7 +2,7 @@
 
 Date: 15 July 2026
 Branch: `codex/creator-activation-spine`
-Reviewed implementation range: `b0b2940..a123fc0`
+Reviewed implementation range: `b0b2940..8e196dc`
 Live URL: [https://adfocate-2.vercel.app/](https://adfocate-2.vercel.app/)
 
 ## Outcome
@@ -186,13 +186,13 @@ These checkpoints prove their recorded commits, not the final release state by t
 
 ### Current-branch focused run
 
-Command run at `a123fc0`:
+Command run at `8e196dc`:
 
 ```text
-npm.cmd test -- src/lib/activationAnalytics.test.ts src/lib/authFeedback.test.ts src/lib/creatorFormatting.test.ts src/lib/creatorActivation.test.ts src/lib/useCreatorActivation.test.tsx src/components/AuthFeedback.test.tsx src/components/creator-activation.test.tsx src/components/onboarding/OnboardingShell.test.tsx src/components/MissionCommitmentSummary.test.tsx src/routes/_site.smoke.test.tsx src/routes/-_app.login.test.tsx src/routes/-_app.auth.callback.test.tsx src/routes/-_app.onboarding.test.tsx src/routes/-_app.home.test.tsx src/routes/-_app.mission.index.test.tsx 'src/routes/-_app.mission.$missionSlug.test.tsx'
+npm.cmd test -- src/lib/activationAnalytics.test.ts src/lib/authFeedback.test.ts src/lib/creatorFormatting.test.ts src/lib/creatorActivation.test.ts src/lib/creatorActivation.statuses.test.ts src/lib/useCreatorActivation.test.tsx src/components/AuthFeedback.test.tsx src/components/creator-activation.test.tsx src/components/onboarding/OnboardingShell.test.tsx src/components/MissionCommitmentSummary.test.tsx src/routes/_site.smoke.test.tsx src/routes/-_app.login.test.tsx src/routes/-_app.auth.callback.test.tsx src/routes/-_app.onboarding.test.tsx src/routes/-_app.home.test.tsx src/routes/-_app.mission.index.test.tsx 'src/routes/-_app.mission.$missionSlug.test.tsx'
 ```
 
-Result: exit 0; all 16 test files and 146 tests passed. The review fix explicitly maps `applied` and `declined`, and the full-mission regression confirms that unavailable missions do not also display positive eligibility.
+Result: exit 0; all 17 test files and 149 tests passed. The review fixes explicitly map `applied` and `declined`, keep mission availability truthfully exclusive, and require joined evidence before marking creator activation complete.
 
 ### Release checks
 
@@ -210,7 +210,7 @@ git diff --check b0b2940..HEAD
 | --- | --- |
 | `npm.cmd run type-check` | Exit 0; existing TanStack Router warning for `_site.smoke.test.tsx` |
 | `npm.cmd run lint` | Exit 0; 0 errors and 2 `react-hooks/exhaustive-deps` warnings, one in the onboarding route and one in an ignored scratch copy |
-| `npm.cmd test -- --reporter=dot` | Exit 0; 122 files and 655 tests passed; 37 files and 248 integration-dependent tests skipped |
+| `npm.cmd test -- --reporter=dot` | Exit 0; 123 files and 658 tests passed; 37 files and 248 integration-dependent tests skipped |
 | `npm.cmd run build` | Exit 0; ESM check, route generation, TypeScript, and Vite build passed; existing route-file and chunk-size warnings noted |
 
 The relevant local Supabase integration suites should be run only when local configuration is available. Absence of that environment must be recorded rather than converted into a passing result.
