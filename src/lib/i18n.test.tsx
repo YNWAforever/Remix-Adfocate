@@ -108,6 +108,43 @@ describe("creator activation dictionary", () => {
   });
 });
 
+describe("creator activation card dictionary", () => {
+  it("defines headings, readiness semantics, states, retries, and wallet copy", () => {
+    const keys = [
+      "app.activation.next.heading",
+      "app.activation.next.deadline",
+      "app.activation.next.rewardContext",
+      "app.activation.progress.heading",
+      "app.activation.progress.explanation",
+      "app.activation.progress.summary",
+      "app.activation.state.complete",
+      "app.activation.state.recommended",
+      "app.activation.state.blocked",
+      "app.activation.state.notApplicable",
+      "app.activation.earnings.heading",
+      "app.activation.earnings.available",
+      "app.activation.earnings.pending",
+      "app.activation.earnings.loading",
+      "app.activation.earnings.error",
+      "app.activation.earnings.retry",
+      "app.activation.earnings.walletLink",
+      "app.activation.missions.heading",
+      "app.activation.missions.loading",
+      "app.activation.missions.error",
+      "app.activation.missions.retry",
+      "app.activation.missions.status.joined",
+      "app.activation.missions.status.submitted",
+      "app.activation.missions.status.underReview",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) {
+        expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+      }
+    }
+  });
+});
+
 function Probe() {
   const { t } = useI18n();
   return <span>{t("app.notFound.title")}</span>;
