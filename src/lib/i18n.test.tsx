@@ -205,3 +205,38 @@ describe("i18n provider", () => {
     expect(observed).toContain("en:true");
   });
 });
+
+describe("forgiving creator onboarding dictionary", () => {
+  it("defines shell, recovery, empty, and completion copy in both locales", () => {
+    const keys = [
+      "app.onboarding.loading",
+      "app.onboarding.stepLabel",
+      "app.onboarding.saveIdle",
+      "app.onboarding.saving",
+      "app.onboarding.saved",
+      "app.onboarding.discardTitle",
+      "app.onboarding.discardBody",
+      "app.onboarding.discardConfirm",
+      "app.onboarding.primerRewards",
+      "app.onboarding.primerSocial",
+      "app.onboarding.primerTime",
+      "app.onboarding.recommendationsLoading",
+      "app.onboarding.recommendationsError",
+      "app.onboarding.recommendationsEmptyTitle",
+      "app.onboarding.recommendationsEmptyBody",
+      "app.onboarding.preferencesAction",
+      "app.onboarding.guideAction",
+      "app.onboarding.readinessAction",
+      "app.onboarding.completionReadiness",
+      "app.onboarding.completionRemaining",
+      "app.onboarding.completionReady",
+      "app.onboarding.completionNext",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) {
+        expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+      }
+    }
+  });
+});
