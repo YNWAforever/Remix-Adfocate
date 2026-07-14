@@ -240,3 +240,35 @@ describe("forgiving creator onboarding dictionary", () => {
     }
   });
 });
+
+describe("action-led dashboard dictionary", () => {
+  it("defines dashboard states and mission fact labels in both locales", () => {
+    const keys = [
+      "app.home.welcomeBack",
+      "app.home.welcomeCompactBody",
+      "app.home.suitableMissions",
+      "app.home.recommendationsLoading",
+      "app.home.recommendationsError",
+      "app.home.recommendationsRetry",
+      "app.home.recommendationsEmpty",
+      "app.home.recommendationUnlocked",
+      "app.home.readinessLoading",
+      "app.home.readinessError",
+      "app.home.readinessRetry",
+      "app.mission.cardCashReward",
+      "app.mission.cardMissionType",
+      "app.mission.cardAccessType",
+      "app.mission.cardPlatform",
+      "app.mission.cardEffort",
+      "app.mission.cardMatchRationale",
+      "app.mission.cardMatchScore",
+      "app.mission.cardStatus",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) {
+        expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+      }
+    }
+  });
+});
