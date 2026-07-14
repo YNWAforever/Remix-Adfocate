@@ -121,34 +121,36 @@ function Wizard() {
   function cacheOnboardingProgress(nextStep: Step, completed = false) {
     queryClient.setQueryData(["onboarding-status"], (cached: typeof status.data) => {
       const source = cached ?? status.data;
+      const confirmedStep = clampStep(Math.max(source?.onboarding_step ?? 1, nextStep));
       return {
         ...source,
-        onboarding_step: Math.max(source?.onboarding_step ?? 1, nextStep),
+        onboarding_step: confirmedStep,
         onboarding_completed: completed || (source?.onboarding_completed ?? false),
-        completion_pct: completed ? 100 : (source?.completion_pct ?? 0),
+        completion_pct: completed ? 100 : (confirmedStep - 1) * 25,
       };
     });
   }
 
-  async function persistStep(nextStep: Step, work: () => Promise<unknown>, completionStatus: "saved" | "skipped") {
+  async function persistStep(nextStep: Step, work: () => Promise<{ onboarding_step: number }>, completionStatus: "saved" | "skipped") {
     const completedStep = step;
     const previouslyConfirmed = serverConfirmedStep ?? 1;
     setError(null);
     setSaveState("saving");
     try {
-      await work();
-      cacheOnboardingProgress(nextStep);
-      setServerConfirmedStep((current) => Math.max(current ?? 1, nextStep) as Step);
-      setStep(nextStep);
+      const result = await work();
+      const confirmedStep = clampStep(Math.max(previouslyConfirmed, result.onboarding_step));
+      cacheOnboardingProgress(confirmedStep);
+      setServerConfirmedStep(confirmedStep);
+      setStep(confirmedStep);
       setSaveState("saved");
       const eventKey = `${lang}:${completedStep}`;
-      if (nextStep > previouslyConfirmed && !completedSteps.current.has(eventKey)) {
+      if (confirmedStep > previouslyConfirmed && !completedSteps.current.has(eventKey)) {
         completedSteps.current.add(eventKey);
         trackActivationEvent("onboarding_step_completed", {
-        locale: lang,
-        step: completedStep,
-        status: completionStatus,
-      });
+          locale: lang,
+          step: completedStep,
+          status: completionStatus,
+        });
       }
       return true;
     } catch {
@@ -203,7 +205,7 @@ function Wizard() {
           connectedHandles.current.add(signature);
           trackActivationEvent("social_profile_added", { locale: lang, platform });
         }
-        await saveProfile.mutateAsync({ step: 4 });
+        return saveProfile.mutateAsync({ step: 4 });
       },
       skipped || entries.length === 0 ? "skipped" : "saved",
     );

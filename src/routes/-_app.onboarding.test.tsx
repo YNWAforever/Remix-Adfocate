@@ -73,7 +73,7 @@ describe("Onboarding wizard", () => {
     hoisted.recommendedData = [{ id: "1", slug: "m1", title: "美容體驗", category: "美容", points_reward: 300 }];
     hoisted.recommendedLoading = false;
     hoisted.recommendedError = null;
-    hoisted.saveProfile.mockResolvedValue({ onboarding_step: 3 });
+    hoisted.saveProfile.mockImplementation(async (body: { step: number }) => ({ onboarding_step: body.step }));
     hoisted.connectSocial.mockResolvedValue({ social_handles: [] });
     hoisted.complete.mockResolvedValue({ referral_code: "ABCD1234", onboarding_completed: true, onboarding_step: 5 });
   });
@@ -165,7 +165,10 @@ describe("Onboarding wizard", () => {
     const firstView = renderWizard();
     fireEvent.click(screen.getByRole("button", { name: dict.zh["app.onboarding.next"] }));
     await waitFor(() => expect(hoisted.saveProfile).toHaveBeenCalledWith({ categories: [], step: 3 }));
-    expect(firstView.queryClient.getQueryData(["onboarding-status"])).toMatchObject({ onboarding_step: 3 });
+    expect(firstView.queryClient.getQueryData(["onboarding-status"])).toMatchObject({
+      onboarding_step: 3,
+      completion_pct: 50,
+    });
     firstView.unmount();
 
     hoisted.onboardingStep = 5;
@@ -175,6 +178,19 @@ describe("Onboarding wizard", () => {
     expect(completionView.queryClient.getQueryData(["onboarding-status"])).toMatchObject({
       onboarding_step: 5,
       onboarding_completed: true,
+    });
+  });
+
+  it("uses an ahead-of-request server step for rendered and cached progress", async () => {
+    hoisted.saveProfile.mockResolvedValueOnce({ onboarding_step: 4 });
+    const view = renderWizard();
+
+    fireEvent.click(screen.getByRole("button", { name: dict.zh["app.onboarding.next"] }));
+
+    expect(await screen.findByRole("heading", { name: dict.zh["app.onboarding.missionsTitle"] })).toBeInTheDocument();
+    expect(view.queryClient.getQueryData(["onboarding-status"])).toMatchObject({
+      onboarding_step: 4,
+      completion_pct: 75,
     });
   });
 
