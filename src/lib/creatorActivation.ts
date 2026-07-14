@@ -63,6 +63,7 @@ export type CreatorActivationSnapshot = {
 };
 
 const ACTIVE_MISSION_STATUSES = new Set<MyMission["status"]>(["joined", "submitted", "under_review"]);
+const MISSION_JOINED_STATUSES = new Set<MyMission["status"]>(["joined", "submitted", "under_review", "approved", "rejected", "expired"]);
 
 function weightedMilestone(
   id: ActivationMilestoneId,
@@ -160,7 +161,7 @@ export function deriveCreatorActivation(input: CreatorActivationInput): CreatorA
   const interestsSelected = Boolean(input.me?.categories?.length);
   const socialAdded = Boolean(input.socialAccounts?.length || input.me?.social_handles?.length);
   const socialVerified = Boolean(input.socialAccounts?.some(({ owner_verified }) => owner_verified));
-  const missionJoined = Boolean(input.myMissions?.length);
+  const missionJoined = Boolean(input.myMissions?.some(({ status }) => MISSION_JOINED_STATUSES.has(status)));
 
   const milestones: ActivationMilestone[] = [
     weightedMilestone(
