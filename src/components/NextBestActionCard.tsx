@@ -46,22 +46,21 @@ export function NextBestActionCard({
           {formattedDeadline ? (
             <div className="flex items-center gap-2">
               <Clock3 className="h-4 w-4" aria-hidden="true" />
-              <dt className="sr-only">Deadline</dt>
-              <dd>
-                {translate(locale, "app.activation.next.deadline", {
-                  value: formattedDeadline,
-                })}
-              </dd>
+              <dt className="font-semibold">
+                {translate(locale, "app.activation.next.deadlineLabel")}
+              </dt>
+              <dd>{formattedDeadline}</dd>
             </div>
           ) : null}
           {action.rewardContext ? (
-            <div>
-              <dt className="sr-only">Reward context</dt>
-              <dd>
-                {translate(locale, "app.activation.next.rewardContext", {
-                  value: action.rewardContext,
-                })}
-              </dd>
+            <div className="flex items-baseline gap-2">
+              <dt className="font-semibold">
+                {translate(
+                  locale,
+                  "app.activation.next.rewardContextLabel",
+                )}
+              </dt>
+              <dd>{action.rewardContext}</dd>
             </div>
           ) : null}
         </dl>

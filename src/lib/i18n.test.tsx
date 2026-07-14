@@ -114,6 +114,8 @@ describe("creator activation card dictionary", () => {
       "app.activation.next.heading",
       "app.activation.next.deadline",
       "app.activation.next.rewardContext",
+      "app.activation.next.deadlineLabel",
+      "app.activation.next.rewardContextLabel",
       "app.activation.progress.heading",
       "app.activation.progress.explanation",
       "app.activation.progress.summary",

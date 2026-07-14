@@ -10,6 +10,7 @@ import type {
   NextBestAction,
 } from "../lib/creatorActivation";
 import { I18nProvider } from "../lib/i18n";
+import { dict } from "../lib/i18n.dict";
 import type { MyMission } from "../lib/queries/kocmax";
 
 const nextAction: NextBestAction = {
@@ -119,6 +120,46 @@ describe("NextBestActionCard", () => {
 
     expect(screen.queryByText(/deadline/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/reward context/i)).not.toBeInTheDocument();
+  });
+
+  it("uses English dictionary terms for optional action context", () => {
+    render(
+      <NextBestActionCard
+        action={{
+          ...nextAction,
+          deadline: "2026-08-01T00:00:00.000Z",
+          rewardContext: "HK$500 mission compensation",
+        }}
+        locale="en"
+      />,
+    );
+
+    const terms = screen.getAllByRole("term").map(({ textContent }) => textContent);
+    expect(terms).toEqual([
+      dict.en["app.activation.next.deadlineLabel"],
+      dict.en["app.activation.next.rewardContextLabel"],
+    ]);
+  });
+
+  it("uses Chinese dictionary terms without hard-coded English accessible labels", () => {
+    render(
+      <NextBestActionCard
+        action={{
+          ...nextAction,
+          deadline: "2026-08-01T00:00:00.000Z",
+          rewardContext: "港幣 500 元任務報酬",
+        }}
+        locale="zh"
+      />,
+    );
+
+    const terms = screen.getAllByRole("term").map(({ textContent }) => textContent);
+    expect(terms).toEqual([
+      dict.zh["app.activation.next.deadlineLabel"],
+      dict.zh["app.activation.next.rewardContextLabel"],
+    ]);
+    expect(terms).not.toContain("Deadline");
+    expect(terms).not.toContain("Reward context");
   });
 });
 
