@@ -4,6 +4,30 @@ const url = process.env.SUPABASE_URL ?? "";
 const serviceKey = process.env.SUPABASE_SERVICE_KEY ?? "";
 const anonKey = process.env.SUPABASE_ANON_KEY ?? "";
 
+type IntegrationEnv = Partial<Record<
+  "RUN_INTEGRATION" | "SUPABASE_URL" | "SUPABASE_SERVICE_KEY" | "SUPABASE_ANON_KEY",
+  string
+>>;
+
+export function activeMissionIntegrationSkipReason(env: IntegrationEnv = process.env): string | null {
+  if (env.RUN_INTEGRATION !== "1") return "RUN_INTEGRATION=1 is required";
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY || !env.SUPABASE_ANON_KEY) {
+    return "SUPABASE_URL, SUPABASE_SERVICE_KEY, and SUPABASE_ANON_KEY are required";
+  }
+  try {
+    const parsed = new URL(env.SUPABASE_URL);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "SUPABASE_URL must be an HTTP(S) URL";
+    }
+    if (!["localhost", "127.0.0.1"].includes(parsed.hostname)) {
+      return "SUPABASE_URL must use localhost or 127.0.0.1";
+    }
+  } catch {
+    return "SUPABASE_URL must be a valid URL";
+  }
+  return null;
+}
+
 /**
  * Integration tests need a reachable Supabase (local `supabase start` stack or cloud)
  * plus a valid URL + keys. When absent (e.g. CI without the local stack), the suite
@@ -301,6 +325,7 @@ export async function getCreatorScores(userId: string) {
   return data.scores as { influence: number | null; content: number | null; reliability: number | null; brandSafety: number | null };
 }
 
+
 export async function cleanup() {
   // Campaigns G1: delete test campaigns (slug "test-%") — cascades campaign_missions +
   // campaign_participants — then the throwaway workspaces ("test-camp-%") created by the
@@ -390,4 +415,132 @@ export async function cleanup() {
     }
     await service().from("workspaces").delete().in("id", brandWsIds);
   }
+}
+
+
+export type ActiveMissionDeliverable = {
+  title: string;
+  platform: string;
+  required?: boolean;
+  draftDueOffsetHours?: number | null;
+  requirements?: Array<{
+    category: "format" | "key_message" | "compliance" | "quality" | "other";
+    text: string;
+    required?: boolean;
+  }>;
+};
+
+/** Seed the accepted anchor and authoring templates for an active mission workflow. */
+export async function seedActiveMission(opts: {
+  email: string;
+  slug: string;
+  fulfillmentRequired?: boolean;
+  deliverables: ActiveMissionDeliverable[];
+}) {
+  const creator = await makeCreator(opts.email, 250);
+  if (!opts.slug.startsWith("test-")) {
+    throw new Error('active mission slugs must start with "test-"');
+  }
+  const { data: mission, error: createMissionError } = await service()
+    .from("missions")
+    .insert({
+      workspace_id: DEMO_WS,
+      slug: opts.slug,
+      title: opts.slug,
+      mission_type: "ugc",
+      access_type: "open",
+      points_reward: 500,
+      cash_reward: 125,
+      quota: 10,
+      filled: 0,
+      status: "active",
+      required_level: "L0",
+      category: "test",
+    })
+    .select("id, slug")
+    .single();
+  if (createMissionError) throw createMissionError;
+
+  const { data: configuredMission, error: missionError } = await service()
+    .from("missions")
+    .update({
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: opts.fulfillmentRequired ?? false,
+    })
+    .eq("id", mission.id)
+    .select("id, creator_workflow_mode, fulfillment_required")
+    .single();
+  if (missionError) throw missionError;
+
+  const { data: templates, error: templateError } = await service()
+    .from("mission_deliverable_templates")
+    .insert(opts.deliverables.map((deliverable, position) => ({
+      workspace_id: DEMO_WS,
+      mission_id: mission.id,
+      title: deliverable.title,
+      platform: deliverable.platform,
+      position,
+      required: deliverable.required ?? true,
+      draft_due_offset_hours: deliverable.draftDueOffsetHours ?? null,
+    })))
+    .select("id, position");
+  if (templateError) throw templateError;
+
+  for (const template of templates ?? []) {
+    const deliverable = opts.deliverables[template.position];
+    if (!deliverable.requirements?.length) continue;
+    const { error } = await service().from("mission_deliverable_requirements").insert(
+      deliverable.requirements.map((requirement, position) => ({
+        workspace_id: DEMO_WS,
+        mission_deliverable_template_id: template.id,
+        category: requirement.category,
+        requirement_text: requirement.text,
+        required: requirement.required ?? true,
+        position,
+      })),
+    );
+    if (error) throw error;
+  }
+
+  const { data: submission, error: submissionError } = await service()
+    .from("mission_submissions")
+    .insert({
+      mission_id: mission.id,
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      status: "joined",
+    })
+    .select("id, status")
+    .single();
+  if (submissionError) throw submissionError;
+
+  return {
+    mission: configuredMission,
+    creator: { id: creator.userId, jwt: creator.jwt },
+    submission,
+  };
+}
+
+export async function creatorRewardSnapshot(creatorId: string) {
+  const [creator, points, earnings, pointTx, earningsTx, budget, budgetTx] = await Promise.all([
+    service().from("creators").select("xp").eq("id", creatorId).single(),
+    service().from("point_balances").select("balance").eq("creator_id", creatorId).single(),
+    service().from("earnings_balances").select("available").eq("creator_id", creatorId).single(),
+    service().from("point_transactions").select("id", { count: "exact", head: true }).eq("creator_id", creatorId),
+    service().from("earnings_transactions").select("id", { count: "exact", head: true }).eq("creator_id", creatorId),
+    service().from("workspace_budgets").select("balance").eq("workspace_id", DEMO_WS).maybeSingle(),
+    service().from("workspace_budget_transactions").select("id", { count: "exact", head: true }).eq("workspace_id", DEMO_WS),
+  ]);
+  for (const result of [creator, points, earnings, pointTx, earningsTx, budget, budgetTx]) {
+    if (result.error) throw result.error;
+  }
+  return {
+    xp: creator.data!.xp,
+    points: points.data!.balance,
+    earnings: earnings.data!.available,
+    pointTransactions: pointTx.count,
+    earningsTransactions: earningsTx.count,
+    budget: budget.data?.balance ?? null,
+    budgetTransactions: budgetTx.count,
+  };
 }
