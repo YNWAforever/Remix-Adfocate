@@ -10,11 +10,14 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 vi.mock("@/components/HookPanel", () => ({ HookPanel: () => <div>HOOK_PANEL</div> }));
 
 const hoisted = vi.hoisted(() => ({
-  mission: { data: { slug: "m1", title: "美容試用", description: "d", category: "美容", access_type: "open", points_reward: 300, mission_type: "ugc", quota: 5, filled: 1, status: "active", deliverables: [] as string[], requirements: [] as string[], platforms: [] as string[] }, isLoading: false, isError: false },
+  mission: { data: { id: "mission-1", slug: "m1", title: "美容試用", description: "d", category: "美容", access_type: "open", points_reward: 300, mission_type: "ugc", quota: 5, filled: 1, status: "active", deliverables: [] as string[], requirements: [] as string[], platforms: [] as string[] }, isLoading: false, isError: false },
   my: { data: [] as unknown[], isLoading: false },
+  me: { data: { level: "L0", is_trusted: true, onboarding_completed: false } },
+  matches: { data: [] as unknown[], isLoading: false, isError: false },
   join: vi.fn(),
   submit: vi.fn(),
   apply: vi.fn(),
+  track: vi.fn(),
   joinError: null as Error | null,
   applyError: null as Error | null,
 }));
@@ -24,8 +27,10 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useJoinMission: () => ({ mutateAsync: hoisted.join, isPending: false, isError: hoisted.joinError !== null, error: hoisted.joinError }),
   useSubmitMission: () => ({ mutateAsync: hoisted.submit, isPending: false }),
   useApplyMission: () => ({ mutateAsync: hoisted.apply, isPending: false, isError: hoisted.applyError !== null, error: hoisted.applyError }),
-  useMe: () => ({ data: { level: "L0" } }),
+  useMe: () => hoisted.me,
+  useMissionMatch: () => hoisted.matches,
 }));
+vi.mock("@/lib/activationAnalytics", () => ({ trackActivationEvent: hoisted.track }));
 
 import { Route } from "./_app.mission.$missionSlug";
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo", missionSlug: "m1" } as never);
@@ -44,6 +49,9 @@ describe("Mission detail writes", () => {
     hoisted.mission.data.requirements = [];
     hoisted.mission.data.platforms = [];
     hoisted.mission.data.description = "d";
+    hoisted.me.data = { level: "L0", is_trusted: true, onboarding_completed: false };
+    hoisted.matches.data = [];
+    hoisted.matches.isError = false;
     hoisted.joinError = null;
     hoisted.applyError = null;
     hoisted.join.mockResolvedValue({ id: "s1", status: "joined" });
@@ -112,8 +120,8 @@ describe("Mission detail writes", () => {
   it("renders brief deliverables when present", () => {
     hoisted.mission.data.deliverables = ["1 條 Reel"];
     renderDetail();
-    expect(screen.getByText("交付內容")).toBeInTheDocument();
-    expect(screen.getByText("1 條 Reel")).toBeInTheDocument();
+    expect(screen.getAllByText("交付內容")).toHaveLength(2);
+    expect(screen.getAllByText("1 條 Reel")).toHaveLength(2);
   });
 
   it("shows verify copy and /profile link when join returns verification_required 409", () => {
@@ -137,5 +145,72 @@ describe("Mission detail writes", () => {
     renderDetail();
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText("操作失敗，請重試。")).toBeInTheDocument();
+  });
+
+  it("puts the commitment summary immediately before Join without replacing the join handler", async () => {
+    hoisted.mission.data.deliverables = ["1 條 Reel"];
+    renderDetail();
+
+    const summary = screen.getByRole("heading", { name: "參加前確認" }).closest("section");
+    const joinButton = screen.getByRole("button", { name: "加入任務" });
+    expect(summary).not.toBeNull();
+    expect(summary!.compareDocumentPosition(joinButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(joinButton);
+    await waitFor(() => expect(hoisted.join).toHaveBeenCalledOnce());
+  });
+
+  it("puts the commitment summary immediately before Apply without replacing the apply handler", async () => {
+    hoisted.mission.data.access_type = "application";
+    renderDetail();
+
+    const summary = screen.getByRole("heading", { name: "參加前確認" }).closest("section");
+    const applyButton = screen.getByRole("button", { name: "申請任務" });
+    expect(summary).not.toBeNull();
+    expect(summary!.compareDocumentPosition(applyButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(applyButton);
+    await waitFor(() => expect(hoisted.apply).toHaveBeenCalledOnce());
+  });
+
+  it("emits one typed PII-free mission_viewed event per mission on the mounted detail", async () => {
+    renderDetail();
+
+    await waitFor(() =>
+      expect(hoisted.track).toHaveBeenCalledWith("mission_viewed", {
+        locale: "zh",
+        missionId: "mission-1",
+        missionType: "ugc",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "生成內容靈感" }));
+    const missionViews = hoisted.track.mock.calls.filter(([name]) => name === "mission_viewed");
+    expect(missionViews).toHaveLength(1);
+    expect(JSON.stringify(missionViews[0])).not.toMatch(/美容試用|display_name|email|creator/i);
+  });
+
+  it("emits creator_activated once when onboarding is complete and the mission is a suitable unlocked match", async () => {
+    hoisted.me.data.onboarding_completed = true;
+    hoisted.matches.data = [{
+      id: "mission-1", slug: "m1", title: "美容試用", category: "美容", mission_type: "ugc",
+      required_level: "L0", points_reward: 300, cash_reward: null, deadline: null,
+      quota: 5, filled: 1, fit_score: 91, reasons: ["美容"], rationale: "符合美容興趣", locked: false,
+    }];
+    renderDetail();
+
+    await waitFor(() =>
+      expect(hoisted.track).toHaveBeenCalledWith("creator_activated", {
+        locale: "zh",
+        activationPath: "mission_viewed",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "生成內容靈感" }));
+    expect(hoisted.track.mock.calls.filter(([name]) => name === "creator_activated")).toHaveLength(1);
+  });
+
+  it("does not activate a creator for a locked match", async () => {
+    hoisted.me.data.onboarding_completed = true;
+    hoisted.matches.data = [{ id: "mission-1", locked: true }];
+    renderDetail();
+    await waitFor(() => expect(hoisted.track).toHaveBeenCalledWith("mission_viewed", expect.any(Object)));
+    expect(hoisted.track).not.toHaveBeenCalledWith("creator_activated", expect.any(Object));
   });
 });

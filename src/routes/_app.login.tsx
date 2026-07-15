@@ -4,6 +4,9 @@ import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
+import { classifyAuthError, type AuthFeedbackState } from "@/lib/authFeedback";
+import { AuthFeedback } from "@/components/AuthFeedback";
 import { BoldValue } from "@/components/RichText";
 
 export const Route = createFileRoute("/_app/login")({ component: Login });
@@ -13,6 +16,24 @@ function toHkE164(raw: string): string {
   const digits = raw.replace(/[^\d+]/g, "");
   if (digits.startsWith("+")) return digits;
   return `+852${digits}`;
+}
+
+function feedbackForError(error: unknown): AuthFeedbackState {
+  if (error && typeof error === "object") {
+    const authError = error as {
+      code?: unknown;
+      message?: unknown;
+      status?: unknown;
+    };
+    return classifyAuthError({
+      code: typeof authError.code === "string" ? authError.code : null,
+      message: typeof authError.message === "string" ? authError.message : null,
+      status: typeof authError.status === "number" ? authError.status : null,
+    });
+  }
+  return classifyAuthError({
+    message: error instanceof Error ? error.message : null,
+  });
 }
 
 /** Branded full-bleed shell: dot canvas + centered pastel card. */
@@ -57,30 +78,48 @@ function Login() {
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
 
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setError(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: toHkE164(phone),
-      options: { channel: "whatsapp" },
-    });
-    setBusy(false);
-    if (error) { setError(error.message); return; }
-    setStage("code");
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: toHkE164(phone),
+        options: { channel: "whatsapp" },
+      });
+      if (error) {
+        setFeedback(feedbackForError(error));
+        return;
+      }
+      setStage("code");
+    } catch (error) {
+      setFeedback(feedbackForError(error));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function verify(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setError(null);
-    const { error } = await supabase.auth.verifyOtp({ phone: toHkE164(phone), token: code.trim(), type: "sms" });
-    if (error) { setBusy(false); setError(error.message); return; }
+    setBusy(true);
+    setFeedback(null);
     try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: toHkE164(phone),
+        token: code.trim(),
+        type: "sms",
+      });
+      if (error) {
+        setFeedback(feedbackForError(error));
+        return;
+      }
       await finishAuth(navigate);
-    } catch {
+    } catch (error) {
+      setFeedback(feedbackForError(error));
+    } finally {
       setBusy(false);
-      setError(t("app.login.authError"));
     }
   }
 
@@ -106,14 +145,23 @@ function Login() {
       <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
         {t("app.login.title")}
       </h1>
-      {error && <p className="mt-3 text-sm text-[var(--color-magenta)]">{error}</p>}
-
       {stage === "phone" ? (
-        <form onSubmit={sendOtp} className="mt-4 space-y-3">
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.login.whatsappHint")}</p>
+        <form onSubmit={sendOtp} className="mt-4 space-y-3" aria-busy={busy}>
+          <label htmlFor="login-phone" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
+            {t("app.login.phoneLabel")}
+          </label>
+          <p id="login-phone-help" className="text-sm text-[var(--color-soft-ink)]">
+            {t("app.login.phoneHelp")}
+          </p>
+          {feedback && (
+            <div id="login-phone-error">
+              <AuthFeedback feedback={feedback} onRetry={() => setFeedback(null)} />
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 font-mono text-sm">+852</span>
             <input
+              id="login-phone"
               type="tel"
               required
               autoComplete="tel"
@@ -121,27 +169,40 @@ function Login() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="9123 4567"
-              className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-              aria-label={t("app.login.phoneAriaLabel")}
+              className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              aria-describedby="login-phone-help"
+              aria-errormessage={feedback ? "login-phone-error" : undefined}
+              aria-invalid={Boolean(feedback)}
             />
           </div>
           <button
             type="submit"
             disabled={busy}
-            className="btn-primary w-full disabled:opacity-50"
+            className="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
           >
             {busy ? t("app.login.sending") : t("app.login.sendOtpCta")}
           </button>
+          {busy && <p role="status" aria-live="polite" className="sr-only">{t("app.login.sendingStatus")}</p>}
           <p className="pt-1 text-center font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]">
             {tx("WhatsApp · No password · Hong Kong", "WhatsApp · 免密碼 · 香港")}
           </p>
         </form>
       ) : (
-        <form onSubmit={verify} className="mt-4 space-y-3">
+        <form onSubmit={verify} className="mt-4 space-y-3" aria-busy={busy}>
           <p className="text-sm text-[var(--color-soft-ink)]">
             <BoldValue template={t("app.login.otpSentTo")} value={toHkE164(phone)} />
           </p>
+          <label htmlFor="login-code" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
+            {t("app.login.codeLabel")}
+          </label>
+          <p id="login-code-help" className="text-sm text-[var(--color-soft-ink)]">{t("app.login.codeHelp")}</p>
+          {feedback && (
+            <div id="login-code-error">
+              <AuthFeedback feedback={feedback} onRetry={() => setFeedback(null)} />
+            </div>
+          )}
           <input
+            id="login-code"
             type="text"
             required
             autoComplete="one-time-code"
@@ -149,20 +210,23 @@ function Login() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder={t("app.login.codePlaceholder")}
-            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 text-center font-mono text-2xl tracking-[0.4em]"
-            aria-label={t("app.login.codeAriaLabel")}
+            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 text-center font-mono text-2xl tracking-[0.4em] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+            aria-describedby="login-code-help"
+            aria-errormessage={feedback ? "login-code-error" : undefined}
+            aria-invalid={Boolean(feedback)}
           />
           <button
             type="submit"
             disabled={busy}
-            className="btn-primary w-full disabled:opacity-50"
+            className="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
           >
             {busy ? t("common.signingIn") : t("app.login.verifyCta")}
           </button>
+          {busy && <p role="status" aria-live="polite" className="sr-only">{t("common.signingIn")}</p>}
           <button
             type="button"
-            onClick={() => { setStage("phone"); setCode(""); setError(null); }}
-            className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)]"
+            onClick={() => { setStage("phone"); setCode(""); setFeedback(null); }}
+            className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
           >
             {t("app.login.changePhone")}
           </button>
@@ -173,7 +237,7 @@ function Login() {
         <button
           type="button"
           onClick={() => setShowSecondary((s) => !s)}
-          className="w-full text-center text-sm text-[var(--color-soft-ink)] underline"
+          className="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
         >
           {t("app.login.otherMethods")}
         </button>
@@ -185,64 +249,111 @@ function Login() {
 
 /** Email magic-link (always available) + Google (only when GOOGLE_LOGIN is on). */
 function EmailAndGoogle() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
 
-  async function sendLink(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true); setError(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+  async function requestLink() {
+    setBusy(true);
+    setFeedback(null);
+    trackActivationEvent("auth_link_requested", {
+      locale: lang,
+      method: "email_magic_link",
     });
-    setBusy(false);
-    if (error) { setError(error.message); return; }
-    setSent(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) {
+        const nextFeedback = feedbackForError(error);
+        setFeedback(nextFeedback);
+        trackActivationEvent("auth_link_failed", {
+          locale: lang,
+          method: "email_magic_link",
+          errorCategory: nextFeedback.category,
+        });
+        return;
+      }
+      setSent(true);
+    } catch (error) {
+      const nextFeedback = feedbackForError(error);
+      setFeedback(nextFeedback);
+      trackActivationEvent("auth_link_failed", {
+        locale: lang,
+        method: "email_magic_link",
+        errorCategory: nextFeedback.category,
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function sendLink(e: React.FormEvent) {
+    e.preventDefault();
+    void requestLink();
   }
 
   async function google() {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    setFeedback(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) setFeedback(feedbackForError(error));
+    } catch (error) {
+      setFeedback(feedbackForError(error));
+    }
   }
 
   return (
     <div className="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4">
-      {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
+      {feedback && (
+        <div id="login-email-error">
+          <AuthFeedback feedback={feedback} onRetry={() => void requestLink()} />
+        </div>
+      )}
       {sent ? (
-        <p className="text-sm text-[var(--color-soft-ink)]">
+        <p role="status" aria-live="polite" className="text-sm text-[var(--color-soft-ink)]">
           <BoldValue template={t("app.login.magicLinkSent")} value={email.trim()} />
         </p>
       ) : (
-        <form onSubmit={sendLink} className="space-y-2">
+        <form onSubmit={sendLink} className="space-y-2" aria-busy={busy}>
+          <label htmlFor="login-email" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
+            {t("app.login.emailLabel")}
+          </label>
+          <p id="login-email-help" className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHelp")}</p>
           <input
+            id="login-email"
             type="email"
             required
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-            aria-label={t("app.login.emailAriaLabel")}
+            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+            aria-describedby="login-email-help"
+            aria-errormessage={feedback ? "login-email-error" : undefined}
+            aria-invalid={Boolean(feedback)}
           />
           <button
             type="submit"
             disabled={busy}
-            className="btn-ink w-full disabled:opacity-50"
+            className="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
           >
             {busy ? t("app.login.sending") : t("app.login.emailCta")}
           </button>
+          {busy && <p role="status" aria-live="polite" className="sr-only">{t("app.login.sendingStatus")}</p>}
         </form>
       )}
       {GOOGLE_LOGIN && (
         <button
           type="button"
           onClick={google}
-          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)]"
+          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
         >
           {t("app.login.googleCta")}
         </button>

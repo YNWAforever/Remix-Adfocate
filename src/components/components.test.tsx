@@ -26,6 +26,39 @@ describe("presentational components", () => {
     expect(screen.getByText("美容精華試用")).toBeInTheDocument();
     expect(screen.getByText(/300/)).toBeInTheDocument();
   });
+  it("MissionCard renders optional real mission facts with formatted reward and deadline", () => {
+    render(
+      <MissionCard
+        title="高匹配任務"
+        category="美容"
+        points={500}
+        cashReward={1200}
+        deadline="2026-08-31T00:00:00Z"
+        missionType="內容創作"
+        accessType="公開"
+        platform="Instagram"
+        effort="2 Reels"
+        matchRationale="符合你的美容內容經驗"
+        matchScore={0.87}
+        status="可參加"
+      />,
+    );
+    expect(screen.getByText(/1,200/)).toBeInTheDocument();
+    expect(screen.getByText(/2026/)).toBeInTheDocument();
+    expect(screen.getByText("內容創作")).toBeInTheDocument();
+    expect(screen.getByText("公開")).toBeInTheDocument();
+    expect(screen.getByText("Instagram")).toBeInTheDocument();
+    expect(screen.getByText("2 Reels")).toBeInTheDocument();
+    expect(screen.getByText("符合你的美容內容經驗")).toBeInTheDocument();
+    expect(screen.getByText("87%")).toBeInTheDocument();
+    expect(screen.getByText("可參加")).toBeInTheDocument();
+  });
+  it("MissionCard omits optional fact labels when their values are absent", () => {
+    render(<MissionCard title="基本任務" points={100} />);
+    expect(screen.queryByText("現金獎勵")).not.toBeInTheDocument();
+    expect(screen.queryByText("平台")).not.toBeInTheDocument();
+    expect(screen.queryByText("匹配原因")).not.toBeInTheDocument();
+  });
   it("RewardCard shows name, cost and a sold-out badge when out of stock", () => {
     render(<RewardCard name="HK$50 現金券" pointsCost={500} stockRemaining={0} />);
     expect(screen.getByText("HK$50 現金券")).toBeInTheDocument();

@@ -1,5 +1,6 @@
 import { Star, Users, Clock, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
+import { formatCreatorDate, formatMissionReward } from "@/lib/creatorFormatting";
 import type { Mission } from "@/lib/queries/kocmax";
 import { spotsLeft, eligibility } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
@@ -17,17 +18,16 @@ function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; valu
 }
 
 export function MissionFacts({ mission, creatorLevel, isTrusted = true }: { mission: Mission; creatorLevel?: string | null; isTrusted?: boolean }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const left = spotsLeft(mission.quota, mission.filled);
   const elig = eligibility(mission.required_level, creatorLevel, isTrusted);
-  const reward = mission.cash_reward
-    ? `${t("app.mission.factRewardValue", { pts: mission.points_reward })} · HK$${mission.cash_reward}`
-    : t("app.mission.factRewardValue", { pts: mission.points_reward });
+  const reward = formatMissionReward({ points: mission.points_reward, cash: mission.cash_reward }, lang);
+  const deadline = formatCreatorDate(mission.deadline, lang) ?? t("app.mission.noDeadline");
   return (
     <section className="grid grid-cols-2 gap-3">
       <Fact icon={<Star size={18} />} label={t("app.mission.factReward")} value={reward} />
       <Fact icon={<Users size={18} />} label={t("app.mission.factQuota")} value={left > 0 ? t("app.mission.spotsLeft", { n: left }) : t("app.mission.spotsFull")} ok={left > 0} />
-      <Fact icon={<Clock size={18} />} label={t("app.mission.factDeadline")} value={mission.deadline ? mission.deadline.slice(0, 10) : t("app.mission.noDeadline")} />
+      <Fact icon={<Clock size={18} />} label={t("app.mission.factDeadline")} value={deadline} />
       <Fact icon={<ShieldCheck size={18} />} label={t("app.mission.factEligibility")} value={t(elig.labelKey, elig.params)} ok={elig.qualified} />
     </section>
   );

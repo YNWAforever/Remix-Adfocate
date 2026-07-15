@@ -27,12 +27,14 @@ function interpolate(s: string, params?: Record<string, string | number>): strin
 
 type Ctx = {
   lang: Locale;
+  localeReady: boolean;
   setLang: (l: Locale) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
 const I18nCtx = createContext<Ctx>({
   lang: "zh",
+  localeReady: true,
   setLang: () => {},
   // Default mirrors the provider's lookup so out-of-provider renders (e.g. the
   // router-level NotFound) still show real copy at the zh default, not raw keys.
@@ -41,10 +43,12 @@ const I18nCtx = createContext<Ctx>({
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Locale>("zh");
+  const [localeReady, setLocaleReady] = useState(false);
 
   // Resolve the real initial locale after mount (avoids SSR/prerender mismatch).
   useEffect(() => {
     setLangState(detectInitial());
+    setLocaleReady(true);
   }, []);
 
   // Keep <html lang> in sync so assistive tech (and browser translate prompts)
@@ -56,13 +60,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Ctx>(
     () => ({
       lang,
+      localeReady,
       setLang: (l) => {
         setLangState(l);
         if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, l);
       },
       t: (key, params) => interpolate(dict[lang][key] ?? dict.en[key] ?? key, params),
     }),
-    [lang],
+    [lang, localeReady],
   );
 
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;

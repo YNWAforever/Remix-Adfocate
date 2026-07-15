@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { NotificationRow } from "@/lib/notifications";
 
-export type SubmissionStatus = "joined" | "submitted" | "under_review" | "approved" | "rejected" | "expired";
+export type SubmissionStatus = "applied" | "joined" | "submitted" | "under_review" | "approved" | "rejected" | "declined" | "expired";
 export type Mission = {
   id: string; slug: string; title: string; description?: string;
   category?: string; mission_type: string; access_type?: string; points_reward: number;

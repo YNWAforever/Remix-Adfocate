@@ -5,7 +5,6 @@ import {
   ArrowRight,
   Target,
   Trophy,
-  ShoppingBag,
   TrendingUp,
   Banknote,
   Star,
@@ -32,6 +31,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import {
+  getDeviceCategory,
+  trackActivationEvent,
+} from "@/lib/activationAnalytics";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -78,30 +81,12 @@ const levelAccent: Record<string, string> = {
 };
 
 const faqItems = [
-  {
-    q: "Do I need many followers?",
-    a: "No. Adfocate values content quality, reliability, and category fit more than just follower count. KOC missions are designed for everyday creators — your honest voice matters more than your numbers.",
-  },
-  {
-    q: "How do I level up?",
-    a: "Complete missions, get approved content, earn XP, unlock badges, and build your Creator Passport. Each level unlocks better missions, higher pay, and new tools. Level-ups are based on verified platform activity — not just follower count.",
-  },
-  {
-    q: "How do I earn money?",
-    a: "Through campaign fees, affiliate commissions, coupon rewards, UGC content jobs, live commerce hosting, and brand ambassador roles on Adfoplace. As you level up, your earning potential grows significantly.",
-  },
-  {
-    q: "What is Creator Passport?",
-    a: "Your Creator Passport is a live profile that grows with every mission you complete. It shows your scores (Influence, Content, Reliability, Brand Safety), badges, category expertise, brand feedback, and verified earnings history — proving your value to brands.",
-  },
-  {
-    q: "What is finance readiness?",
-    a: "Finance Readiness is a preview score based on your verified creator activity and earnings history. It assesses factors like earnings consistency, mission completion, brand safety, and affiliate performance to help you understand your potential for future capital options.",
-  },
-  {
-    q: "Is creator capital guaranteed?",
-    a: "No. Finance readiness is only a preview to help you understand your trajectory. Any capital or payout advance product would be subject to eligibility, approval, and applicable partner or licensing arrangements. Adfocate does not provide financing in this prototype.",
-  },
+  { qKey: "creators.faq.1.q", aKey: "creators.faq.1.a" },
+  { qKey: "creators.faq.2.q", aKey: "creators.faq.2.a" },
+  { qKey: "creators.faq.3.q", aKey: "creators.faq.3.a" },
+  { qKey: "creators.faq.4.q", aKey: "creators.faq.4.a" },
+  { qKey: "creators.faq.5.q", aKey: "creators.faq.5.a" },
+  { qKey: "creators.faq.6.q", aKey: "creators.faq.6.a" },
 ];
 
 function ScoreRing({
@@ -229,12 +214,24 @@ function HeroSection() {
             {t("creators.hero.sub")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/mission" className="btn-primary">
-              <Sparkles className="h-4 w-4" /> {t("creators.hero.cta2")}
+            <Link
+              to="/login"
+              onClick={() =>
+                trackActivationEvent("signup_started", {
+                  locale: lang,
+                  deviceCategory: getDeviceCategory(),
+                  source: "creators_hero",
+                })
+              }
+              className="btn-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 motion-reduce:transition-none"
+            >
+              <User className="h-4 w-4" /> {t("creators.hero.cta1")}
             </Link>
-            <Link to="/login" className="btn-ink">
-              <ShoppingBag className="h-4 w-4" />{" "}
-              {tx("Explore Adfoplace", "探索 Adfoplace")}
+            <Link
+              to="/mission"
+              className="btn-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 motion-reduce:transition-none"
+            >
+              <Target className="h-4 w-4" /> {t("creators.hero.cta2")}
             </Link>
           </div>
         </div>
@@ -861,7 +858,7 @@ function GrowResourcesSection() {
         <Accordion type="single" collapsible className="w-full space-y-2">
           {faqItems.map((item, i) => (
             <AccordionItem
-              key={item.q}
+              key={item.qKey}
               value={`faq-${i}`}
               className="overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-card)] data-[state=open]:shadow-[4px_4px_0_var(--color-ink)]"
             >
@@ -870,11 +867,11 @@ function GrowResourcesSection() {
                   <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] font-mono text-[11px] font-bold text-[var(--color-magenta)]">
                     {i + 1}
                   </span>
-                  {item.q}
+                  {t(item.qKey)}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="px-5 pb-4 pt-0 text-sm leading-relaxed text-[var(--color-soft-ink)]">
-                {item.a}
+                {t(item.aKey)}
               </AccordionContent>
             </AccordionItem>
           ))}
@@ -886,7 +883,7 @@ function GrowResourcesSection() {
 
 /* ───────────── FINAL CTA · banner (acid block, ink border) ───────────── */
 function FinalCtaSection() {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
   return (
@@ -908,8 +905,18 @@ function FinalCtaSection() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/mission" className="btn-ink">
-              <Target className="h-4 w-4" /> {tx("Browse Missions", "瀏覽任務")}
+            <Link
+              to="/login"
+              onClick={() =>
+                trackActivationEvent("signup_started", {
+                  locale: lang,
+                  deviceCategory: getDeviceCategory(),
+                  source: "creators_footer",
+                })
+              }
+              className="btn-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 motion-reduce:transition-none"
+            >
+              <User className="h-4 w-4" /> {t("creators.final.cta")}
             </Link>
             <Link
               to="/contact"
@@ -925,6 +932,18 @@ function FinalCtaSection() {
 }
 
 function CreatorsPage() {
+  const { lang, localeReady } = useI18n();
+  const trackedPageView = useRef(false);
+
+  useEffect(() => {
+    if (!localeReady || trackedPageView.current) return;
+    trackedPageView.current = true;
+    trackActivationEvent("landing_page_viewed", {
+      locale: lang,
+      deviceCategory: getDeviceCategory(),
+    });
+  }, [lang, localeReady]);
+
   return (
     <div>
       <HeroSection />

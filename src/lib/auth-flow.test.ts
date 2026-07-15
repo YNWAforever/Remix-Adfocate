@@ -18,17 +18,19 @@ describe("finishAuth", () => {
   it("bootstraps, sets the slug, and routes incomplete users to the wizard", async () => {
     apiFetch.mockResolvedValueOnce({ created: true }); // /me/bootstrap
     apiFetch.mockResolvedValueOnce({ onboarding_completed: false }); // /onboarding/status
-    await finishAuth(navigate as never);
+    const result = await finishAuth(navigate as never);
     expect(setWorkspaceSlug).toHaveBeenCalledWith("demo");
     expect(apiFetch).toHaveBeenCalledWith("/me/bootstrap", expect.objectContaining({ method: "POST" }));
     expect(navigate).toHaveBeenCalledWith({ to: "/onboarding" });
+    expect(result).toEqual({ created: true, onboardingCompleted: false, destination: "/onboarding" });
   });
 
   it("routes already-onboarded users home", async () => {
     apiFetch.mockResolvedValueOnce({ created: false });
     apiFetch.mockResolvedValueOnce({ onboarding_completed: true });
-    await finishAuth(navigate as never);
+    const result = await finishAuth(navigate as never);
     expect(navigate).toHaveBeenCalledWith({ to: "/home" });
+    expect(result).toEqual({ created: false, onboardingCompleted: true, destination: "/home" });
   });
 
   it("throws (and does not navigate) when the session refresh fails", async () => {

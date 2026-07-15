@@ -1,235 +1,348 @@
-import { useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ProgressBar } from "@/components/ProgressBar";
-import { FilterPillsMulti } from "@/components/FilterPills";
-import { MissionCard } from "@/components/MissionCard";
+import { OnboardingShell, type OnboardingSaveState } from "@/components/onboarding/OnboardingShell";
 import {
+  OnboardingCompletionStep,
+  OnboardingInterestsStep,
+  OnboardingRecommendationsStep,
+  OnboardingSocialStep,
+  OnboardingValueStep,
+} from "@/components/onboarding/OnboardingSteps";
+import {
+  useCompleteOnboarding,
+  useConnectSocial,
+  useMe,
   useOnboardingStatus,
   useRecommendedMissions,
   useSaveProfile,
-  useConnectSocial,
-  useCompleteOnboarding,
 } from "@/lib/queries/kocmax";
+import { deriveCreatorActivation } from "@/lib/creatorActivation";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { useI18n } from "@/lib/i18n";
-import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 
 export const Route = createFileRoute("/_app/onboarding")({ component: Wizard });
 
-const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", "寵物"] as const;
-const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
+type Step = 1 | 2 | 3 | 4 | 5;
+type Handles = Record<string, string>;
+
+function clampStep(value: number | undefined): Step {
+  return Math.min(5, Math.max(1, value ?? 1)) as Step;
+}
+
+function handleSignature(platform: string, handle: string): string {
+  return `${platform.toLowerCase()}:${handle.trim().toLowerCase()}`;
+}
+
+function sameValues(left: string[] | Handles, right: string[] | Handles): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
 
 function Wizard() {
   const { t, lang } = useI18n();
-  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
-  const navigate = useNavigate();
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
+  const me = useMe();
   const status = useOnboardingStatus();
   const recommended = useRecommendedMissions();
   const saveProfile = useSaveProfile();
   const connectSocial = useConnectSocial();
   const complete = useCompleteOnboarding();
 
-  // Resume at the persisted step; primer occupies step 1 (DB sentinel), wizard renders 2–5.
-  const [step, setStep] = useState<number>(() => Math.max(1, status.data?.onboarding_step ?? 1));
+  const [step, setStep] = useState<Step>(1);
+  const [serverConfirmedStep, setServerConfirmedStep] = useState<Step | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
-  const [handles, setHandles] = useState<Record<string, string>>({});
+  const [handles, setHandles] = useState<Handles>({});
   const [reward, setReward] = useState<{ referral_code: string } | null>(null);
+  const [saveState, setSaveState] = useState<OnboardingSaveState>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  async function primerNext() {
-    setError(null);
-    try {
-      // Persist step 2 so the primer is shown once: a reload now resumes at
-      // categories (seed Math.max(1, onboarding_step)) instead of re-showing it.
-      await saveProfile.mutateAsync({ step: 2 });
-      setStep(2);
-    } catch { setError(t("common.saveError")); }
+  const categoriesEdited = useRef(false);
+  const handlesEdited = useRef(false);
+  const categoryBaseline = useRef<string[]>([]);
+  const handleBaseline = useRef<Handles>({});
+  const connectedHandles = useRef(new Set<string>());
+  const viewedSteps = useRef(new Set<string>());
+  const completedSteps = useRef(new Set<string>());
+  const abandonedSteps = useRef(new Set<string>());
+
+  useEffect(() => {
+    if (!status.data) return;
+    const persisted = clampStep(status.data.onboarding_step);
+    if (serverConfirmedStep === null) {
+      setServerConfirmedStep(persisted);
+      setStep(persisted);
+      return;
+    }
+    if (persisted <= serverConfirmedStep) return;
+    setStep((current) => current === serverConfirmedStep ? persisted : current);
+    setServerConfirmedStep(persisted);
+  }, [serverConfirmedStep, status.data]);
+
+  useEffect(() => {
+    if (!me.data) return;
+
+    if (!categoriesEdited.current) {
+      const nextCategories = [...(me.data.categories ?? [])];
+      categoryBaseline.current = nextCategories;
+      setCategories(nextCategories);
+    }
+
+    if (!handlesEdited.current) {
+      const nextHandles = Object.fromEntries(
+        (me.data.social_handles ?? []).map(({ platform, handle }) => [platform, handle]),
+      );
+      handleBaseline.current = nextHandles;
+      setHandles(nextHandles);
+      connectedHandles.current = new Set(
+        Object.entries(nextHandles).map(([platform, handle]) => handleSignature(platform, handle)),
+      );
+    }
+  }, [me.data]);
+
+  useEffect(() => {
+    if (serverConfirmedStep === null) return;
+    const key = `${lang}:${step}`;
+    if (viewedSteps.current.has(key)) return;
+    viewedSteps.current.add(key);
+    trackActivationEvent("onboarding_step_viewed", { locale: lang, step });
+  }, [lang, serverConfirmedStep, step]);
+
+  const effectiveOnboarding = reward
+    ? { onboarding_step: 5, onboarding_completed: true, completion_pct: 100 }
+    : status.data;
+  const activation = useMemo(
+    () => deriveCreatorActivation({ me: me.data, onboarding: effectiveOnboarding }),
+    [effectiveOnboarding, me.data],
+  );
+  const remainingImprovements = activation.milestones
+    .filter(({ countsTowardReadiness, state }) => countsTowardReadiness && state !== "complete")
+    .map(({ labelKey }) => t(labelKey));
+
+  function cacheOnboardingProgress(nextStep: Step, completed = false) {
+    queryClient.setQueryData(["onboarding-status"], (cached: typeof status.data) => {
+      const source = cached ?? status.data;
+      const confirmedStep = clampStep(Math.max(source?.onboarding_step ?? 1, nextStep));
+      return {
+        ...source,
+        onboarding_step: confirmedStep,
+        onboarding_completed: completed || (source?.onboarding_completed ?? false),
+        completion_pct: completed ? 100 : (confirmedStep - 1) * 25,
+      };
+    });
   }
 
-  async function categoriesNext(selected: string[]) {
+  async function persistStep(nextStep: Step, work: () => Promise<{ onboarding_step: number }>, completionStatus: "saved" | "skipped") {
+    const completedStep = step;
+    const previouslyConfirmed = serverConfirmedStep ?? 1;
     setError(null);
+    setSaveState("saving");
     try {
-      await saveProfile.mutateAsync({ categories: selected, step: 3 });
-      setStep(3);
-    } catch { setError(t("common.saveError")); }
-  }
-
-  async function platformsNext() {
-    setError(null);
-    try {
-      for (const [platform, handle] of Object.entries(handles)) {
-        if (handle.trim()) await connectSocial.mutateAsync({ platform, handle: handle.trim() });
+      const result = await work();
+      const confirmedStep = clampStep(Math.max(previouslyConfirmed, result.onboarding_step));
+      cacheOnboardingProgress(confirmedStep);
+      setServerConfirmedStep(confirmedStep);
+      setStep(confirmedStep);
+      setSaveState("saved");
+      const eventKey = `${lang}:${completedStep}`;
+      if (confirmedStep > previouslyConfirmed && !completedSteps.current.has(eventKey)) {
+        completedSteps.current.add(eventKey);
+        trackActivationEvent("onboarding_step_completed", {
+          locale: lang,
+          step: completedStep,
+          status: completionStatus,
+        });
       }
-      await saveProfile.mutateAsync({ step: 4 });
-      setStep(4);
-    } catch { setError(t("common.saveError")); }
+      return true;
+    } catch {
+      setError(t("common.saveError"));
+      setSaveState("error");
+      return false;
+    }
   }
 
-  async function missionNext() {
-    setError(null);
-    try {
-      await saveProfile.mutateAsync({ step: 5 });
-      setStep(5);
-    } catch { setError(t("common.saveError")); }
+  function updateCategories(nextCategories: string[]) {
+    categoriesEdited.current = true;
+    setCategories(nextCategories);
+    setSaveState("idle");
   }
 
-  async function claim() {
-    setError(null);
-    try {
-      const res = await complete.mutateAsync();
-      setReward({ referral_code: res.referral_code });
-      // Refresh the gate's cached /me + the balance so home reflects the bonus.
-      qc.invalidateQueries({ queryKey: ["me"] });
-      qc.invalidateQueries({ queryKey: ["balance"] });
-    } catch { setError(t("app.onboarding.claimError")); }
+  function updateHandle(platform: string, value: string) {
+    handlesEdited.current = true;
+    setHandles((current) => ({ ...current, [platform]: value }));
+    setSaveState("idle");
   }
+
+  async function primerNext() {
+    await persistStep(2, () => saveProfile.mutateAsync({ step: 2 }), "saved");
+  }
+
+  async function categoriesNext(skipped: boolean) {
+    const selected = skipped ? [] : categories;
+    if (skipped) {
+      categoriesEdited.current = true;
+      setCategories([]);
+    }
+    const saved = await persistStep(
+      3,
+      () => saveProfile.mutateAsync({ categories: selected, step: 3 }),
+      skipped ? "skipped" : "saved",
+    );
+    if (saved) categoryBaseline.current = [...selected];
+  }
+
+  async function socialNext(skipped: boolean) {
+    const entries = skipped
+      ? []
+      : Object.entries(handles).filter(([, handle]) => handle.trim().length > 0);
+    const saved = await persistStep(
+      4,
+      async () => {
+        for (const [platform, handle] of entries) {
+          const trimmed = handle.trim();
+          const signature = handleSignature(platform, trimmed);
+          if (connectedHandles.current.has(signature)) continue;
+          await connectSocial.mutateAsync({ platform, handle: trimmed });
+          connectedHandles.current.add(signature);
+          trackActivationEvent("social_profile_added", { locale: lang, platform });
+        }
+        return saveProfile.mutateAsync({ step: 4 });
+      },
+      skipped || entries.length === 0 ? "skipped" : "saved",
+    );
+    if (saved) {
+      if (skipped) setHandles(handleBaseline.current);
+      else handleBaseline.current = { ...handles };
+    }
+  }
+
+  async function recommendationsNext() {
+    await persistStep(5, () => saveProfile.mutateAsync({ step: 5 }), "saved");
+  }
+
+  async function claimReward() {
+    setError(null);
+    setSaveState("saving");
+    try {
+      const result = await complete.mutateAsync();
+      setReward({ referral_code: result.referral_code });
+      setServerConfirmedStep(5);
+      cacheOnboardingProgress(5, true);
+      setSaveState("saved");
+      for (const queryKey of [["me"], ["balance"], ["onboarding-status"], ["recommended-missions"]]) {
+        queryClient.invalidateQueries({ queryKey });
+      }
+      trackActivationEvent("onboarding_completed", { locale: lang, rewardType: "welcome_points" });
+    } catch {
+      setError(t("app.onboarding.claimError"));
+      setSaveState("error");
+    }
+  }
+
+  function trackBack() {
+    const eventKey = `${lang}:${step}`;
+    if (abandonedSteps.current.has(eventKey)) return;
+    abandonedSteps.current.add(eventKey);
+    trackActivationEvent("onboarding_abandoned", { locale: lang, step });
+  }
+
+  function goBack() {
+    trackBack();
+    setError(null);
+    setSaveState("idle");
+    setStep((current) => Math.max(1, current - 1) as Step);
+  }
+
+  function discardAndBack() {
+    if (step === 2) setCategories([...categoryBaseline.current]);
+    if (step === 3) setHandles({ ...handleBaseline.current });
+    goBack();
+  }
+
+  if (status.error && !status.data) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-md items-center p-4">
+        <div className="w-full space-y-3 text-center" role="alert">
+          <p>{t("common.loadError")}</p>
+          <button type="button" className="btn-primary" onClick={() => void status.refetch()}>{t("common.retry")}</button>
+        </div>
+      </main>
+    );
+  }
+
+  if (status.isLoading || serverConfirmedStep === null) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-md items-center p-4">
+        <p className="w-full text-center text-sm text-[var(--color-soft-ink)]" role="status">{t("app.onboarding.loading")}</p>
+      </main>
+    );
+  }
+
+  const titles: Record<Step, string> = {
+    1: t("app.onboarding.primerTitle"),
+    2: t("app.onboarding.categoriesTitle"),
+    3: t("app.onboarding.platformsTitle"),
+    4: t("app.onboarding.missionsTitle"),
+    5: t("app.onboarding.rewardTitle"),
+  };
+  const hasUnsavedChanges =
+    (step === 2 && !sameValues(categories, categoryBaseline.current)) ||
+    (step === 3 && !sameValues(handles, handleBaseline.current));
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[var(--color-paper)] px-4 py-10">
-      <div className="dot-pattern pointer-events-none absolute inset-0 -z-10 opacity-[0.18]" aria-hidden />
+    <OnboardingShell
+      step={step}
+      totalSteps={5}
+      title={titles[step]}
+      saveState={saveState}
+      canGoBack={step > 1 && !reward}
+      hasUnsavedChanges={hasUnsavedChanges}
+      onBack={goBack}
+      onDiscardAndBack={discardAndBack}
+      onCancelDiscard={() => undefined}
+    >
+      {error ? <p id="onboarding-save-error" role="alert" className="text-sm text-[var(--color-magenta)]">{error}</p> : null}
 
-      <div className="pastel-card w-full max-w-md rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-6">
-        <div className="mb-5 space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="font-display text-lg font-bold text-[var(--color-ink)]">
-              Adfocate<span className="text-[var(--color-magenta)]">.</span>
-            </span>
-            <span className="tag-mono">{tx(`STEP ${step} / 5`, `第 ${step} / 5 步`)}</span>
-          </div>
-          <ProgressBar value={step - 1} max={4} />
-        </div>
-
-        {error && <p className="mb-4 text-sm text-[var(--color-magenta)]">{error}</p>}
-
-        {step === 1 && (
-          <section className="space-y-5">
-            <span className="sticker">{tx("WELCOME", "歡迎加入")}</span>
-            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.primerTitle")}</h1>
-            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.primerBody")}</p>
-            <div className="rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-lemon)] p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
-              <div className="mb-3 flex items-center gap-2" aria-hidden>
-                <span className="level-pill level-pill-l1">L1</span>
-                <span className="text-[var(--color-soft-ink)]">→</span>
-                <span className="level-pill level-pill-l3">L3</span>
-                <span className="text-[var(--color-soft-ink)]">→</span>
-                <span className="level-pill level-pill-l6">L6</span>
-              </div>
-              <p className="text-sm font-medium leading-relaxed text-[var(--color-ink)]">{t("app.onboarding.primerLadder")}</p>
-            </div>
-            <button
-              type="button"
-              onClick={primerNext}
-              className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-            >
-              {t("app.onboarding.primerCta")}
-            </button>
-            <Link to="/guide" className="block text-center text-sm text-[var(--color-soft-ink)] underline">
-              {t("app.onboarding.primerVisitGuide")}
-            </Link>
-          </section>
-        )}
-
-        {step === 2 && (
-          <section className="space-y-4">
-            <span className="sticker">{tx("INTERESTS", "興趣")}</span>
-            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.categoriesTitle")}</h1>
-            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.categoriesHint")}</p>
-            <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => categoriesNext([])}
-                className="btn-ink flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold text-[var(--color-ink)]"
-              >
-                {t("app.onboarding.skip")}
-              </button>
-              <button
-                type="button"
-                onClick={() => categoriesNext(categories)}
-                className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-              >
-                {t("app.onboarding.next")}
-              </button>
-            </div>
-          </section>
-        )}
-
-        {step === 3 && (
-          <section className="space-y-4">
-            <span className="sticker">{tx("PLATFORMS", "平台")}</span>
-            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.platformsTitle")}</h1>
-            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.platformsHint")}</p>
-            <p className="text-xs text-[var(--color-soft-ink)]">{t("app.onboarding.verifyLater")}</p>
-            <div className="space-y-2">
-              {PLATFORMS.map((p) => (
-                <input
-                  key={p}
-                  value={handles[p] ?? ""}
-                  onChange={(e) => setHandles((h) => ({ ...h, [p]: e.target.value }))}
-                  placeholder={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
-                  aria-label={t("common.platformHandleLabel", { platform: t(platformDisplayLabelKey(p)) })}
-                  className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
-                />
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button type="button" onClick={platformsNext} className="btn-ink flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.skip")}</button>
-              <button type="button" onClick={platformsNext} className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
-            </div>
-          </section>
-        )}
-
-        {step === 4 && (
-          <section className="space-y-4">
-            <span className="sticker">{tx("FOR YOU", "為你推薦")}</span>
-            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.missionsTitle")}</h1>
-            <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.missionsHint")}</p>
-            <div className="space-y-3">
-              {(recommended.data ?? []).map((m) => (
-                <MissionCard key={m.id} title={m.title} category={m.category} points={m.points_reward} deadline={m.deadline} />
-              ))}
-            </div>
-            <button type="button" onClick={missionNext} className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]">{t("app.onboarding.next")}</button>
-          </section>
-        )}
-
-        {step === 5 && (
-          <section className="space-y-4 text-center">
-            <span className="sticker">{tx("YOU'RE IN", "完成")}</span>
-            <h1 className="font-display text-2xl font-bold text-[var(--color-ink)]">{t("app.onboarding.rewardTitle")}</h1>
-            {reward ? (
-              <div className="space-y-3">
-                <p className="text-outline-ink font-display text-5xl font-bold">{t("app.onboarding.bonusPoints")}</p>
-                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralLabel")}</p>
-                <div className="rounded-xl border-2 border-[var(--color-ink)] bg-white p-4 shadow-[6px_6px_0_0_var(--color-violet)]">
-                  <p className="font-mono text-xl font-bold tracking-widest text-[var(--color-ink)]">{reward.referral_code}</p>
-                </div>
-                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.referralNote")}</p>
-                <button
-                  type="button"
-                  onClick={() => navigate({ to: "/home" })}
-                  className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)]"
-                >
-                  {t("app.onboarding.goHome")}
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.onboarding.claimHint")}</p>
-                <button
-                  type="button"
-                  onClick={claim}
-                  disabled={complete.isPending}
-                  className="btn-primary w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
-                >
-                  {complete.isPending ? t("common.processing") : t("app.onboarding.claimCta")}
-                </button>
-              </div>
-            )}
-          </section>
-        )}
-      </div>
-    </div>
+      {step === 1 ? <OnboardingValueStep onContinue={() => void primerNext()} saving={saveState === "saving"} /> : null}
+      {step === 2 ? (
+        <OnboardingInterestsStep
+          categories={categories}
+          onChange={updateCategories}
+          onContinue={() => void categoriesNext(false)}
+          onSkip={() => void categoriesNext(true)}
+          saving={saveState === "saving"}
+        />
+      ) : null}
+      {step === 3 ? (
+        <OnboardingSocialStep
+          handles={handles}
+          onChange={updateHandle}
+          onContinue={() => void socialNext(false)}
+          onSkip={() => void socialNext(true)}
+          saving={saveState === "saving"}
+          errorId={error ? "onboarding-save-error" : undefined}
+        />
+      ) : null}
+      {step === 4 ? (
+        <OnboardingRecommendationsStep
+          missions={recommended.data ?? []}
+          loading={recommended.isLoading}
+          error={recommended.error instanceof Error ? recommended.error : null}
+          onRetry={() => void recommended.refetch()}
+          onContinue={() => void recommendationsNext()}
+          saving={saveState === "saving"}
+          readinessTo={activation.nextAction.to}
+        />
+      ) : null}
+      {step === 5 ? (
+        <OnboardingCompletionStep
+          reward={reward}
+          readinessPercent={activation.readinessPercent}
+          remainingImprovements={remainingImprovements}
+          nextAction={{ to: activation.nextAction.to, label: t(activation.nextAction.ctaKey) }}
+          onComplete={() => void claimReward()}
+          completing={saveState === "saving"}
+        />
+      ) : null}
+    </OnboardingShell>
   );
 }

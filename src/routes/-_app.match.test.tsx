@@ -51,6 +51,20 @@ describe("Match page", () => {
     expect(screen.getByText("🔒 升級至 L1 解鎖")).toBeInTheDocument();
   });
 
+  it("passes typed reward, fit, availability, and required-level context into the card", () => {
+    h.match = { data: [row({ cash_reward: 800, filled: 10, required_level: "L2" })], isLoading: false, isError: false };
+    renderMatch();
+
+    expect(screen.getByText(/HK\$800\.00/)).toBeInTheDocument();
+    expect(screen.getByText("原創內容")).toBeInTheDocument();
+    expect(screen.getByText("L2")).toBeInTheDocument();
+    expect(screen.getAllByText("暫不可參加")).toHaveLength(2);
+    expect(screen.getByText("92%")).toBeInTheDocument();
+    expect(screen.getByText("啱你嘅美妝範疇")).toBeInTheDocument();
+    expect(screen.queryByText("可參加")).not.toBeInTheDocument();
+    expect(screen.queryByText("需 L2 · 你係 L0")).not.toBeInTheDocument();
+  });
+
   it("shows the empty state when there are no matches", () => {
     renderMatch();
     expect(screen.getByText("暫時冇啱你嘅任務，遲啲再嚟睇睇")).toBeInTheDocument();

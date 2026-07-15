@@ -27,4 +27,15 @@ describe("MissionFacts", () => {
     render(<MissionFacts mission={{ ...base, required_level: "L2" }} creatorLevel="L1" />);
     expect(screen.getByText("需 L2 · 你係 L1")).toBeInTheDocument();
   });
+
+  it("formats cash and deadline for the creator locale", () => {
+    render(<MissionFacts mission={{ ...base, cash_reward: 500, deadline: "2026-06-30T00:00:00Z" }} creatorLevel="L0" />);
+    expect(screen.getByText(/300 積分.*HK\$500\.00/)).toBeInTheDocument();
+    expect(screen.getByText(/2026.*6.*30/)).toBeInTheDocument();
+  });
+
+  it("uses the no-deadline fallback when the API date is invalid", () => {
+    render(<MissionFacts mission={{ ...base, deadline: "not-a-date" }} creatorLevel="L0" />);
+    expect(screen.getByText("無截止日期")).toBeInTheDocument();
+  });
 });

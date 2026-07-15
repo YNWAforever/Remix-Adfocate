@@ -1,14 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Lightbulb } from "lucide-react";
-import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe } from "@/lib/queries/kocmax";
+import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe, useMissionMatch } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { HookPanel } from "@/components/HookPanel";
 import { MissionFacts } from "@/components/MissionFacts";
 import { MissionBrief } from "@/components/MissionBrief";
+import { MissionCommitmentSummary } from "@/components/MissionCommitmentSummary";
 import { missionTypeLabelKey } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { ApiError } from "@/lib/api";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
@@ -21,13 +23,38 @@ function MissionDetail() {
   const submit = useSubmitMission(missionSlug);
   const apply = useApplyMission(missionSlug);
   const me = useMe();
-  const { t } = useI18n();
+  const matches = useMissionMatch();
+  const { t, lang } = useI18n();
   const [urls, setUrls] = useState("");
   const [showHooks, setShowHooks] = useState(false);
+  const viewedMissions = useRef(new Set<string>());
+  const activationTracked = useRef(false);
+  const missionId = m.data?.id;
+  const missionType = m.data?.mission_type;
 
-  // Map API submission status codes to display labels via i18n.
-  // submitted / under_review are server-side variants of the creator-facing
-  // "applied" state and all surface as 審批中 / "Under Review".
+  useEffect(() => {
+    if (!missionId || !missionType) return;
+
+    const viewKey = `${missionId}:${missionType}`;
+    if (!viewedMissions.current.has(viewKey)) {
+      viewedMissions.current.add(viewKey);
+      trackActivationEvent("mission_viewed", {
+        locale: lang,
+        missionId,
+        missionType,
+      });
+    }
+
+    const isSuitable = matches.data?.some((match) => match.id === missionId && !match.locked) ?? false;
+    if (!activationTracked.current && me.data?.onboarding_completed && isSuitable) {
+      activationTracked.current = true;
+      trackActivationEvent("creator_activated", {
+        locale: lang,
+        activationPath: "mission_viewed",
+      });
+    }
+  }, [lang, matches.data, me.data?.onboarding_completed, missionId, missionType]);
+
   const STATUS_LABEL = useMemo<Record<string, string>>(
     () => ({
       applied: t("app.mission.statusApplied"),
@@ -50,11 +77,11 @@ function MissionDetail() {
     </div>
   );
 
-  const sub = mine.data?.find((s) => s.missions.slug === missionSlug);
+  const sub = mine.data?.find((submission) => submission.missions.slug === missionSlug);
   const isApplication = m.data.access_type === "application";
 
   async function onSubmit() {
-    const list = urls.split("\n").map((u) => u.trim()).filter(Boolean);
+    const list = urls.split("\n").map((url) => url.trim()).filter(Boolean);
     if (list.length === 0) return;
     await submit.mutateAsync({ content_urls: list });
     setUrls("");
@@ -68,13 +95,10 @@ function MissionDetail() {
       </header>
 
       <div className="p-4 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6">
-        {/* Facts — first on mobile (reward/quota/deadline/eligibility before the long brief, as on
-            the pre-redesign single column); top of the right column on desktop. */}
         <div className="lg:col-start-2 lg:row-start-1">
           <MissionFacts mission={m.data} creatorLevel={me.data?.level} isTrusted={me.data?.is_trusted ?? true} />
         </div>
 
-        {/* Title + brief — left column on desktop, spanning both rows so the action zone tucks beside it. */}
         <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
           <div className="flex flex-wrap items-center gap-2">
             {m.data.category && <BadgePill>{m.data.category}</BadgePill>}
@@ -84,19 +108,20 @@ function MissionDetail() {
           <MissionBrief mission={m.data} />
         </div>
 
-        {/* Action zone + hooks — below Facts in the right column on desktop, after the brief on mobile */}
         <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-2 lg:row-start-2">
-          {/* Action zone */}
           {!sub ? (
-            isApplication ? (
-              <button onClick={() => apply.mutateAsync()} disabled={apply.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{apply.isPending ? t("common.processing") : t("app.mission.applyCta")}</button>
-            ) : (
-              <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? t("common.processing") : t("app.mission.joinCta")}</button>
-            )
+            <>
+              <MissionCommitmentSummary mission={m.data} locale={lang} />
+              {isApplication ? (
+                <button onClick={() => apply.mutateAsync()} disabled={apply.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{apply.isPending ? t("common.processing") : t("app.mission.applyCta")}</button>
+              ) : (
+                <button onClick={() => join.mutateAsync()} disabled={join.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{join.isPending ? t("common.processing") : t("app.mission.joinCta")}</button>
+              )}
+            </>
           ) : sub.status === "joined" ? (
             <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
               <h3 className="font-heading font-bold">{t("app.mission.submitContent")}</h3>
-              <textarea value={urls} onChange={(e) => setUrls(e.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
+              <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
               <button onClick={onSubmit} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
             </section>
           ) : (
@@ -106,7 +131,6 @@ function MissionDetail() {
             </section>
           )}
 
-          {/* Inline gate error — shown when join or apply throws */}
           {(join.isError || apply.isError) && (() => {
             const err = (join.error ?? apply.error) as ApiError | null;
             const code = err instanceof ApiError ? err.code : null;
@@ -127,16 +151,14 @@ function MissionDetail() {
               already_applied: t("app.mission.errorAlreadyApplied"),
               not_application: t("app.mission.errorNotApplication"),
             };
-            const msg = (code && messageMap[code]) ? messageMap[code] : t("app.mission.actionError");
-            return (
-              <p className="rounded-[var(--radius)] border-2 border-[var(--color-magenta)] bg-white p-3 text-sm text-[var(--color-magenta)]" role="alert">{msg}</p>
-            );
+            const msg = code && messageMap[code] ? messageMap[code] : t("app.mission.actionError");
+            return <p className="rounded-[var(--radius)] border-2 border-[var(--color-magenta)] bg-white p-3 text-sm text-[var(--color-magenta)]" role="alert">{msg}</p>;
           })()}
 
           {!isApplication && (
             <>
               <button
-                onClick={() => setShowHooks((v) => !v)}
+                onClick={() => setShowHooks((visible) => !visible)}
                 className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] py-3 text-center font-heading font-bold text-white"
               >
                 <Lightbulb size={18} aria-hidden /> {t("app.mission.hooksCta")}
