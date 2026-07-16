@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import {
   activeMissionIntegrationSkipReason,
   creatorRewardSnapshot,
+  makeCreator,
   seedActiveMission,
   serviceForTests,
   userForJwt,
@@ -81,6 +82,90 @@ describe("active mission migration contract", () => {
     expect(sql).not.toContain("update public.earnings_balances");
     expect(sql).not.toContain("update public.workspace_budgets");
     expect(sql).not.toContain("update public.creators set xp");
+  });
+
+  it("binds every active-mission relationship and creator lookup to one workspace", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260715163350_active_mission_workspace.sql"), "utf8").toLowerCase().replace(/\r\n/g, "\n");
+
+    for (const relationship of [
+      "foreign key (mission_id, workspace_id)\n    references public.missions(id, workspace_id)",
+      "foreign key (creator_id, workspace_id)\n    references public.creators(id, workspace_id)",
+      "foreign key (mission_deliverable_template_id, workspace_id)\n    references public.mission_deliverable_templates(id, workspace_id)",
+      "foreign key (mission_submission_id, workspace_id)\n    references public.mission_submissions(id, workspace_id)",
+      "foreign key (mission_workflow_id, workspace_id)\n    references public.mission_workflows(id, workspace_id)",
+      "foreign key (mission_work_item_id, mission_workflow_id, workspace_id)\n    references public.mission_work_items(id, mission_workflow_id, workspace_id)",
+      "foreign key (mission_review_round_id, workspace_id)\n    references public.mission_review_rounds(id, workspace_id)",
+    ]) {
+      expect(sql, `missing tenant relationship: ${relationship}`).toContain(relationship);
+    }
+
+    for (const policy of [
+      "mission_templates_creator_read",
+      "mission_requirements_creator_read",
+      "mission_workflows_creator_read",
+      "mission_work_items_creator_read",
+      "mission_working_drafts_creator_read",
+      "mission_versions_creator_read",
+      "mission_assets_creator_read",
+      "mission_reviews_creator_read",
+      "mission_review_items_creator_read",
+      "mission_revision_grants_creator_read",
+      "mission_fulfillments_creator_read",
+      "mission_events_creator_read",
+    ]) {
+      const start = sql.lastIndexOf(`create policy ${policy}`);
+      const end = sql.indexOf(";", start);
+      expect(start, `missing policy: ${policy}`).toBeGreaterThanOrEqual(0);
+      expect(sql.slice(start, end), `${policy} must scope ownership joins by workspace_id`).toContain("workspace_id");
+    }
+
+    for (const fn of [
+      "private.refresh_mission_workflow_state",
+      "private.create_mission_workflow",
+      "public.refresh_mission_workflow_state",
+      "public.create_mission_workflow",
+    ]) {
+      const start = sql.lastIndexOf(`create or replace function ${fn}`);
+      const end = sql.indexOf("\n$$;", start);
+      expect(sql.slice(start, end), `${fn} must scope lookups by workspace_id`).toContain("workspace_id");
+    }
+    expect(sql.match(/i\.mission_workflow_id = v_workflow\.id\s+and i\.workspace_id = v_workflow\.workspace_id/g)).toHaveLength(3);
+    expect(sql).toContain("f.mission_workflow_id = v_workflow.id\n      and f.workspace_id = v_workflow.workspace_id");
+    expect(sql).toContain("where id = v_workflow.id and workspace_id = v_workflow.workspace_id");
+  });
+
+  it("denies execution on every current and future private function", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260715163350_active_mission_workspace.sql"), "utf8").toLowerCase().replace(/\r\n/g, "\n");
+
+    expect(sql).toContain("alter default privileges for role postgres revoke execute on functions from public, anon, authenticated");
+    expect(sql).toContain("alter default privileges for role postgres in schema private revoke execute on functions from public, anon, authenticated");
+    for (const signature of [
+      "private.refresh_mission_workflow_state(uuid)",
+      "private.create_mission_workflow(uuid)",
+      "private.raise_immutable_record()",
+      "private.guard_completed_review_round()",
+      "private.guard_finalized_mission_asset()",
+    ]) {
+      expect(sql).toContain(`revoke all on function ${signature} from public, anon, authenticated, service_role`);
+    }
+    expect(sql).toContain("private_function_execute_exposed");
+  });
+
+  it("requires relationally scoped canonical draft-asset object paths", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260715163350_active_mission_workspace.sql"), "utf8").toLowerCase().replace(/\r\n/g, "\n");
+    const canonicalPath = "creator_id::text || '/' || mission_workflow_id::text || '/' || mission_work_item_id::text || '/' || id::text || '.' || file_extension";
+
+    expect(sql).toContain("mission_workflow_id uuid not null");
+    expect(sql).toContain("file_extension text not null");
+    expect(sql).toContain(`storage_object_path = ${canonicalPath}`);
+    expect(sql).toContain("foreign key (creator_id, workspace_id)\n    references public.creators(id, workspace_id)");
+    expect(sql).toContain("foreign key (mission_work_item_id, mission_workflow_id, workspace_id)\n    references public.mission_work_items(id, mission_workflow_id, workspace_id)");
+    for (const policy of ["read", "insert", "update", "delete"]) {
+      const start = sql.lastIndexOf(`create policy mission_draft_assets_storage_${policy}`);
+      const end = sql.indexOf(";", start);
+      expect(sql.slice(start, end)).toContain("a.creator_id::text || '/' || a.mission_workflow_id::text");
+      expect(sql.slice(start, end)).toContain("a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension");
+    }
   });
 });
 
@@ -241,5 +326,124 @@ suite(suiteName, () => {
       .update({ current_submitted_version_id: version.data!.id })
       .eq("id", secondItem.data!.id);
     expect(crossLink.error?.code).toBe("23503");
+  });
+});
+
+suite(suiteName, () => {
+  it("rejects cross-workspace relationships, access, and asset scopes", async () => {
+    const id = unique();
+    const svc = serviceForTests();
+    const alternateWorkspaceId = unique();
+    const workspace = await svc.from("workspaces").insert({
+      id: alternateWorkspaceId,
+      slug: `test-active-cross-${id}`,
+      name: `test-active-cross-${id}`,
+    });
+    expect(workspace.error).toBeNull();
+
+    const crossCreator = await makeCreator(`active-cross-${id}@test.local`, 0);
+    const moveCreator = await svc.from("creators")
+      .update({ workspace_id: alternateWorkspaceId })
+      .eq("id", crossCreator.userId);
+    expect(moveCreator.error).toBeNull();
+
+    const crossMission = await svc.from("missions").insert({
+      workspace_id: alternateWorkspaceId,
+      slug: `test-active-cross-${id}`,
+      title: `test-active-cross-${id}`,
+      mission_type: "ugc",
+      access_type: "open",
+      points_reward: 0,
+      quota: 1,
+      status: "active",
+      required_level: "L0",
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: false,
+    }).select("id").single();
+    expect(crossMission.error).toBeNull();
+    const crossTemplate = await svc.from("mission_deliverable_templates").insert({
+      workspace_id: alternateWorkspaceId,
+      mission_id: crossMission.data!.id,
+      title: "Cross-workspace post",
+      platform: "instagram",
+      position: 0,
+      required: true,
+    });
+    expect(crossTemplate.error).toBeNull();
+    const crossSubmission = await svc.from("mission_submissions").insert({
+      workspace_id: alternateWorkspaceId,
+      mission_id: crossMission.data!.id,
+      creator_id: crossCreator.userId,
+      status: "joined",
+    }).select("id").single();
+    expect(crossSubmission.error).toBeNull();
+    const crossWorkflow = await userForJwt(crossCreator.jwt)
+      .rpc("create_mission_workflow", { p_submission: crossSubmission.data!.id });
+    expect(crossWorkflow.error).toBeNull();
+
+    const own = await seedActiveMission({
+      email: `active-cross-owner-${id}@test.local`,
+      slug: `test-active-cross-owner-${id}`,
+      deliverables: [{ title: "Owned post", platform: "instagram" }],
+    });
+    const ownUser = userForJwt(own.creator.jwt);
+    const ownWorkflow = await ownUser.rpc("create_mission_workflow", { p_submission: own.submission.id });
+    expect(ownWorkflow.error).toBeNull();
+    const ownItem = await svc.from("mission_work_items")
+      .select("id, workspace_id")
+      .eq("mission_workflow_id", ownWorkflow.data.id)
+      .single();
+    expect(ownItem.error).toBeNull();
+
+    const hidden = await ownUser.from("mission_workflows")
+      .select("id")
+      .eq("id", crossWorkflow.data.id);
+    expect(hidden.error).toBeNull();
+    expect(hidden.data).toEqual([]);
+    const deniedRefresh = await ownUser.rpc("refresh_mission_workflow_state", {
+      p_workflow: crossWorkflow.data.id,
+    });
+    expect(deniedRefresh.error?.message).toContain("not_found");
+
+    const crossWorkspaceItem = await svc.from("mission_work_items").insert({
+      workspace_id: alternateWorkspaceId,
+      mission_workflow_id: ownWorkflow.data.id,
+      title: "Invalid cross-workspace item",
+      platform: "instagram",
+      required: true,
+      position: 99,
+      state: "drafting",
+    });
+    expect(crossWorkspaceItem.error?.code).toBe("23503");
+
+    const malformedAssetId = unique();
+    const malformedPath = await svc.from("mission_draft_assets").insert({
+      id: malformedAssetId,
+      workspace_id: ownItem.data!.workspace_id,
+      mission_workflow_id: ownWorkflow.data.id,
+      mission_work_item_id: ownItem.data!.id,
+      creator_id: own.creator.id,
+      file_extension: "png",
+      storage_object_path: `not-canonical-${malformedAssetId}.png`,
+      original_filename: "draft.png",
+      mime_type: "image/png",
+      byte_size: 1024,
+    });
+    expect(malformedPath.error?.code).toBe("23514");
+
+    const crossCreatorAssetId = unique();
+    const crossCreatorAsset = await svc.from("mission_draft_assets").insert({
+      id: crossCreatorAssetId,
+      workspace_id: ownItem.data!.workspace_id,
+      mission_workflow_id: ownWorkflow.data.id,
+      mission_work_item_id: ownItem.data!.id,
+      creator_id: crossCreator.userId,
+      file_extension: "png",
+      storage_object_path: `${crossCreator.userId}/${ownWorkflow.data.id}/${ownItem.data!.id}/${crossCreatorAssetId}.png`,
+      original_filename: "draft.png",
+      mime_type: "image/png",
+      byte_size: 1024,
+    });
+    expect(crossCreatorAsset.error?.code).toBe("23503");
   });
 });
