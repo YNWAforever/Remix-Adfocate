@@ -145,6 +145,7 @@ describe("active mission migration contract", () => {
       "private.raise_immutable_record()",
       "private.guard_completed_review_round()",
       "private.guard_finalized_mission_asset()",
+      "private.guard_mission_draft_asset_owner()",
     ]) {
       expect(sql).toContain(`revoke all on function ${signature} from public, anon, authenticated, service_role`);
     }
@@ -160,11 +161,21 @@ describe("active mission migration contract", () => {
     expect(sql).toContain(`storage_object_path = ${canonicalPath}`);
     expect(sql).toContain("foreign key (creator_id, workspace_id)\n    references public.creators(id, workspace_id)");
     expect(sql).toContain("foreign key (mission_work_item_id, mission_workflow_id, workspace_id)\n    references public.mission_work_items(id, mission_workflow_id, workspace_id)");
+    expect(sql).toContain("create constraint trigger mission_draft_assets_owner_guard");
+    expect(sql).toContain("execute function private.guard_mission_draft_asset_owner()");
+    expect(sql).toContain("s.creator_id = new.creator_id");
+    expect(sql).toContain("s.workspace_id = new.workspace_id");
     for (const policy of ["read", "insert", "update", "delete"]) {
       const start = sql.lastIndexOf(`create policy mission_draft_assets_storage_${policy}`);
       const end = sql.indexOf(";", start);
-      expect(sql.slice(start, end)).toContain("a.creator_id::text || '/' || a.mission_workflow_id::text");
-      expect(sql.slice(start, end)).toContain("a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension");
+      const definition = sql.slice(start, end);
+      expect(definition).toContain("a.creator_id::text || '/' || a.mission_workflow_id::text");
+      expect(definition).toContain("a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension");
+      expect(definition).toContain("join public.mission_work_items i");
+      expect(definition).toContain("join public.mission_workflows w");
+      expect(definition).toContain("join public.mission_submissions s");
+      expect(definition).toContain("s.creator_id = a.creator_id");
+      expect(definition).toContain("s.workspace_id = a.workspace_id");
     }
   });
 });
@@ -395,6 +406,8 @@ suite(suiteName, () => {
       .single();
     expect(ownItem.error).toBeNull();
 
+    const sameWorkspaceCreator = await makeCreator(`active-same-workspace-${id}@test.local`, 0);
+
     const hidden = await ownUser.from("mission_workflows")
       .select("id")
       .eq("id", crossWorkflow.data.id);
@@ -430,6 +443,23 @@ suite(suiteName, () => {
       byte_size: 1024,
     });
     expect(malformedPath.error?.code).toBe("23514");
+
+    const sameWorkspaceAssetId = unique();
+    const sameWorkspaceCreatorAsset = await svc.from("mission_draft_assets").insert({
+      id: sameWorkspaceAssetId,
+      workspace_id: ownItem.data!.workspace_id,
+      mission_workflow_id: ownWorkflow.data.id,
+      mission_work_item_id: ownItem.data!.id,
+      creator_id: sameWorkspaceCreator.userId,
+      file_extension: "png",
+      storage_object_path: `${sameWorkspaceCreator.userId}/${ownWorkflow.data.id}/${ownItem.data!.id}/${sameWorkspaceAssetId}.png`,
+      original_filename: "draft.png",
+      mime_type: "image/png",
+      byte_size: 1024,
+    });
+    expect(sameWorkspaceCreatorAsset.error?.code).toBe("23514");
+    expect(sameWorkspaceCreatorAsset.error?.message)
+      .toContain("mission_draft_asset_owner_mismatch");
 
     const crossCreatorAssetId = unique();
     const crossCreatorAsset = await svc.from("mission_draft_assets").insert({

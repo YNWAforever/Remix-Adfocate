@@ -1135,6 +1135,35 @@ create policy mission_events_creator_read on public.mission_workflow_events
       and s.creator_id = (select auth.uid())
   ));
 
+create or replace function private.guard_mission_draft_asset_owner()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if not exists (
+    select 1
+    from public.mission_work_items i
+    join public.mission_workflows w
+      on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+    join public.mission_submissions s
+      on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
+    where i.id = new.mission_work_item_id
+      and i.mission_workflow_id = new.mission_workflow_id
+      and i.workspace_id = new.workspace_id
+      and s.creator_id = new.creator_id
+      and s.workspace_id = new.workspace_id
+  ) then
+    raise exception 'mission_draft_asset_owner_mismatch' using errcode = '23514';
+  end if;
+  return new;
+end;
+$$;
+create constraint trigger mission_draft_assets_owner_guard
+  after insert or update on public.mission_draft_assets
+  deferrable initially immediate
+  for each row execute function private.guard_mission_draft_asset_owner();
+
 drop policy mission_draft_assets_storage_read on storage.objects;
 drop policy mission_draft_assets_storage_insert on storage.objects;
 drop policy mission_draft_assets_storage_update on storage.objects;
@@ -1143,8 +1172,16 @@ create policy mission_draft_assets_storage_read on storage.objects
   for select to authenticated using (
     bucket_id = 'mission-draft-assets' and exists (
       select 1 from public.mission_draft_assets a
+      join public.mission_work_items i
+        on i.id = a.mission_work_item_id and i.mission_workflow_id = a.mission_workflow_id and i.workspace_id = a.workspace_id
+      join public.mission_workflows w
+        on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+      join public.mission_submissions s
+        on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
       where a.storage_object_path = name
         and name = a.creator_id::text || '/' || a.mission_workflow_id::text || '/' || a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension
+        and s.creator_id = a.creator_id
+        and s.workspace_id = a.workspace_id
         and a.creator_id = (select auth.uid())
     )
   );
@@ -1152,8 +1189,16 @@ create policy mission_draft_assets_storage_insert on storage.objects
   for insert to authenticated with check (
     bucket_id = 'mission-draft-assets' and exists (
       select 1 from public.mission_draft_assets a
+      join public.mission_work_items i
+        on i.id = a.mission_work_item_id and i.mission_workflow_id = a.mission_workflow_id and i.workspace_id = a.workspace_id
+      join public.mission_workflows w
+        on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+      join public.mission_submissions s
+        on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
       where a.storage_object_path = name
         and name = a.creator_id::text || '/' || a.mission_workflow_id::text || '/' || a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension
+        and s.creator_id = a.creator_id
+        and s.workspace_id = a.workspace_id
         and a.creator_id = (select auth.uid()) and a.upload_state = 'pending'
     )
   );
@@ -1161,15 +1206,31 @@ create policy mission_draft_assets_storage_update on storage.objects
   for update to authenticated using (
     bucket_id = 'mission-draft-assets' and exists (
       select 1 from public.mission_draft_assets a
+      join public.mission_work_items i
+        on i.id = a.mission_work_item_id and i.mission_workflow_id = a.mission_workflow_id and i.workspace_id = a.workspace_id
+      join public.mission_workflows w
+        on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+      join public.mission_submissions s
+        on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
       where a.storage_object_path = name
         and name = a.creator_id::text || '/' || a.mission_workflow_id::text || '/' || a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension
+        and s.creator_id = a.creator_id
+        and s.workspace_id = a.workspace_id
         and a.creator_id = (select auth.uid()) and a.upload_state in ('pending', 'uploaded')
     )
   ) with check (
     bucket_id = 'mission-draft-assets' and exists (
       select 1 from public.mission_draft_assets a
+      join public.mission_work_items i
+        on i.id = a.mission_work_item_id and i.mission_workflow_id = a.mission_workflow_id and i.workspace_id = a.workspace_id
+      join public.mission_workflows w
+        on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+      join public.mission_submissions s
+        on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
       where a.storage_object_path = name
         and name = a.creator_id::text || '/' || a.mission_workflow_id::text || '/' || a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension
+        and s.creator_id = a.creator_id
+        and s.workspace_id = a.workspace_id
         and a.creator_id = (select auth.uid()) and a.upload_state in ('pending', 'uploaded')
     )
   );
@@ -1177,8 +1238,16 @@ create policy mission_draft_assets_storage_delete on storage.objects
   for delete to authenticated using (
     bucket_id = 'mission-draft-assets' and exists (
       select 1 from public.mission_draft_assets a
+      join public.mission_work_items i
+        on i.id = a.mission_work_item_id and i.mission_workflow_id = a.mission_workflow_id and i.workspace_id = a.workspace_id
+      join public.mission_workflows w
+        on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+      join public.mission_submissions s
+        on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
       where a.storage_object_path = name
         and name = a.creator_id::text || '/' || a.mission_workflow_id::text || '/' || a.mission_work_item_id::text || '/' || a.id::text || '.' || a.file_extension
+        and s.creator_id = a.creator_id
+        and s.workspace_id = a.workspace_id
         and a.creator_id = (select auth.uid()) and a.mission_draft_version_id is null
     )
   );
@@ -1403,6 +1472,7 @@ revoke all on function private.create_mission_workflow(uuid) from public, anon, 
 revoke all on function private.raise_immutable_record() from public, anon, authenticated, service_role;
 revoke all on function private.guard_completed_review_round() from public, anon, authenticated, service_role;
 revoke all on function private.guard_finalized_mission_asset() from public, anon, authenticated, service_role;
+revoke all on function private.guard_mission_draft_asset_owner() from public, anon, authenticated, service_role;
 revoke usage on schema private from public, anon, authenticated;
 revoke all on function public.refresh_mission_workflow_state(uuid) from public, anon;
 revoke all on function public.create_mission_workflow(uuid) from public, anon;
@@ -1420,7 +1490,8 @@ begin
         'create_mission_workflow',
         'raise_immutable_record',
         'guard_completed_review_round',
-        'guard_finalized_mission_asset'
+        'guard_finalized_mission_asset',
+        'guard_mission_draft_asset_owner'
       )
       and (
         has_function_privilege('anon', p.oid, 'EXECUTE') or
