@@ -22,7 +22,10 @@ export type FulfillmentState = "preparing" | "shipped" | "received";
 
 export interface WorkflowStateInput {
   fulfillment: FulfillmentState | null;
-  requiredStates: readonly WorkItemState[];
+  items: readonly {
+    state: WorkItemState;
+    required: boolean;
+  }[];
 }
 
 export interface DraftPatch {

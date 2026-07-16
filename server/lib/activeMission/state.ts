@@ -31,20 +31,25 @@ const ALLOWED_TRANSITIONS: Record<WorkItemState, readonly WorkItemState[]> = {
 
 export function deriveWorkflowState({
   fulfillment,
-  requiredStates,
+  items,
 }: WorkflowStateInput): WorkflowState {
   if (fulfillment !== null && fulfillment !== "received") {
     return "fulfillment_pending";
   }
-  if (requiredStates.every((state) => state === "approved_to_publish")) {
+  if (
+    items
+      .filter((item) => item.required)
+      .every((item) => item.state === "approved_to_publish")
+  ) {
     return "approved_to_publish";
   }
-  if (requiredStates.includes("revision_requested")) {
+  if (items.some((item) => item.state === "revision_requested")) {
     return "revision_requested";
   }
   if (
-    requiredStates.includes("submitted") ||
-    requiredStates.includes("under_review")
+    items.some(
+      (item) => item.state === "submitted" || item.state === "under_review",
+    )
   ) {
     return "in_review";
   }

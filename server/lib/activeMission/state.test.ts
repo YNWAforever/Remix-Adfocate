@@ -11,7 +11,10 @@ import {
 describe("active mission domain state", () => {
   it("keeps the workflow behind the fulfillment gate until receipt", () => {
     expect(
-      deriveWorkflowState({ fulfillment: "shipped", requiredStates: ["drafting"] }),
+      deriveWorkflowState({
+        fulfillment: "shipped",
+        items: [{ state: "drafting", required: true }],
+      }),
     ).toBe("fulfillment_pending");
   });
 
@@ -19,7 +22,10 @@ describe("active mission domain state", () => {
     expect(
       deriveWorkflowState({
         fulfillment: null,
-        requiredStates: ["approved_to_publish", "drafting"],
+        items: [
+          { state: "approved_to_publish", required: true },
+          { state: "drafting", required: true },
+        ],
       }),
     ).toBe("drafting");
   });
@@ -28,7 +34,31 @@ describe("active mission domain state", () => {
     expect(
       deriveWorkflowState({
         fulfillment: null,
-        requiredStates: ["approved_to_publish"],
+        items: [{ state: "approved_to_publish", required: true }],
+      }),
+    ).toBe("approved_to_publish");
+  });
+
+  it("derives revision requested from an optional item", () => {
+    expect(
+      deriveWorkflowState({
+        fulfillment: null,
+        items: [
+          { state: "drafting", required: true },
+          { state: "revision_requested", required: false },
+        ],
+      }),
+    ).toBe("revision_requested");
+  });
+
+  it("derives approved when required items are approved despite optional drafts", () => {
+    expect(
+      deriveWorkflowState({
+        fulfillment: null,
+        items: [
+          { state: "approved_to_publish", required: true },
+          { state: "drafting", required: false },
+        ],
       }),
     ).toBe("approved_to_publish");
   });
@@ -37,13 +67,19 @@ describe("active mission domain state", () => {
     expect(
       deriveWorkflowState({
         fulfillment: "received",
-        requiredStates: ["under_review", "revision_requested"],
+        items: [
+          { state: "under_review", required: true },
+          { state: "revision_requested", required: true },
+        ],
       }),
     ).toBe("revision_requested");
     expect(
       deriveWorkflowState({
         fulfillment: null,
-        requiredStates: ["submitted", "drafting"],
+        items: [
+          { state: "submitted", required: true },
+          { state: "drafting", required: true },
+        ],
       }),
     ).toBe("in_review");
   });
