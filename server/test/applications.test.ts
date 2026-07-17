@@ -1,6 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { createApp } from "../app";
-import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import {
+  makeCreator,
+  makeMission,
+  cleanup,
+  hasSupabaseEnv,
+  seedActiveMission,
+  serviceForTests,
+  creatorRewardSnapshot,
+} from "./helpers";
+
+const adminRouteSource = readFileSync(resolve(process.cwd(), "server/routes/admin.ts"), "utf8");
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -20,6 +32,20 @@ function adminReq(path: string, init: RequestInit = {}) {
     headers: { "x-admin-secret": ADMIN_SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
+
+describe("active application acceptance route contract", () => {
+  it("creates and returns a workflow after active-workspace acceptance", () => {
+    const acceptRoute = adminRouteSource.slice(
+      adminRouteSource.indexOf('adminRoutes.post("/applications/:id/accept"'),
+      adminRouteSource.indexOf('adminRoutes.post("/applications/:id/decline"'),
+    );
+
+    expect(acceptRoute).toContain('.select("creator_workflow_mode")');
+    expect(acceptRoute).toContain('.eq("id", data.mission_id)');
+    expect(acceptRoute).toMatch(/svc\.rpc\("create_mission_workflow", \{\s*p_submission: data\.id,/);
+    expect(acceptRoute).toContain('return c.json({ submission: data, workflow })');
+  });
+});
 
 suite("application-gated missions", () => {
   let koc: { userId: string; jwt: string };
@@ -81,6 +107,44 @@ suite("application-gated missions", () => {
     });
     expect(sub.status).toBe(200);
     expect((await sub.json()).status).toBe("submitted");
+  });
+
+  it("creates one workflow when an active-workspace application is accepted repeatedly", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-application@test.local",
+      slug: "test-active-route-application",
+      deliverables: [{ title: "TikTok video", platform: "tiktok" }],
+    });
+    const svc = serviceForTests();
+    expect((await svc.from("mission_submissions").delete().eq("id", active.submission.id)).error).toBeNull();
+    expect((await svc.from("missions").update({ access_type: "application" }).eq("id", active.mission.id)).error).toBeNull();
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const appliedResponse = await req("/missions/test-active-route-application/apply", active.creator.jwt, {
+      method: "POST",
+    });
+    expect(appliedResponse.status).toBe(200);
+    const applied = await appliedResponse.json();
+
+    const first = await adminReq(`/admin/applications/${applied.id}/accept`, { method: "POST" });
+    expect(first.status).toBe(200);
+    const firstBody = await first.json();
+    expect(firstBody.submission.status).toBe("joined");
+    expect(firstBody.workflow).toMatchObject({
+      mission_submission_id: applied.id,
+      state: "drafting",
+    });
+
+    const repeated = await adminReq(`/admin/applications/${applied.id}/accept`, { method: "POST" });
+    expect(repeated.status).toBe(200);
+    const repeatedBody = await repeated.json();
+    expect(repeatedBody.submission.id).toBe(firstBody.submission.id);
+    expect(repeatedBody.workflow.id).toBe(firstBody.workflow.id);
+    const after = await creatorRewardSnapshot(active.creator.id);
+    expect(after.xp - before.xp).toBe(10);
+    const mission = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(mission.error).toBeNull();
+    expect(mission.data?.filled).toBe(1);
   });
 
   it("accept fails with mission_full when the quota is reached", async () => {

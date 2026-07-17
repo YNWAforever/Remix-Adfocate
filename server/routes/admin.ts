@@ -161,6 +161,20 @@ adminRoutes.post("/applications/:id/accept", async (c) => {
   const svc = serviceClient();
   const { data, error } = await svc.rpc("accept_application", { p_submission: c.req.param("id") });
   if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  const { data: mission, error: missionError } = await svc
+    .from("missions")
+    .select("creator_workflow_mode")
+    .eq("id", data.mission_id)
+    .maybeSingle();
+  if (missionError) return c.json({ error: missionError.message, code: "db_error" }, 500);
+  if (!mission) return c.json({ error: "not_found", code: "not_found" }, 404);
+  if (mission.creator_workflow_mode === "active_workspace") {
+    const { data: workflow, error: workflowError } = await svc.rpc("create_mission_workflow", {
+      p_submission: data.id,
+    });
+    if (workflowError) return c.json({ error: workflowError.message, code: "rpc_error" }, 400);
+    return c.json({ submission: data, workflow });
+  }
   return c.json(data);
 });
 

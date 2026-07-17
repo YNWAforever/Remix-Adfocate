@@ -1,6 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { createApp } from "../app";
-import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import {
+  makeCreator,
+  makeMission,
+  cleanup,
+  hasSupabaseEnv,
+  seedActiveMission,
+  serviceForTests,
+  creatorRewardSnapshot,
+} from "./helpers";
+
+const missionRouteSource = readFileSync(resolve(process.cwd(), "server/routes/missions.ts"), "utf8");
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -16,6 +28,33 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     },
   });
 }
+
+describe("active mission assignment route contract", () => {
+  it("creates and returns a workflow after an active-workspace direct join", () => {
+    const joinRoute = missionRouteSource.slice(
+      missionRouteSource.indexOf('missionRoutes.post("/:slug/join"'),
+      missionRouteSource.indexOf('missionRoutes.put("/:slug/submit"'),
+    );
+
+    expect(joinRoute).toContain('.select("id, creator_workflow_mode")');
+    expect(joinRoute).toMatch(/supabase\.rpc\("create_mission_workflow", \{\s*p_submission: data\.id,/);
+    expect(joinRoute).toContain('return c.json({ submission: data, workflow })');
+  });
+
+  it("guards active-workspace missions before the legacy submission RPC", () => {
+    const submitRoute = missionRouteSource.slice(
+      missionRouteSource.indexOf('missionRoutes.put("/:slug/submit"'),
+      missionRouteSource.indexOf('missionRoutes.post("/:slug/apply"'),
+    );
+    const modeLookup = submitRoute.indexOf('creator_workflow_mode');
+    const mismatch = submitRoute.indexOf('WORKFLOW_MODE_MISMATCH');
+    const legacyRpc = submitRoute.indexOf('supabase.rpc("submit_mission"');
+
+    expect(modeLookup).toBeGreaterThanOrEqual(0);
+    expect(mismatch).toBeGreaterThan(modeLookup);
+    expect(legacyRpc).toBeGreaterThan(mismatch);
+  });
+});
 
 suite("mission join", () => {
   let koc: { userId: string; jwt: string };
@@ -70,6 +109,36 @@ suite("mission join", () => {
     const res = await req("/missions/test-does-not-exist/join", koc.jwt, { method: "POST" });
     expect(res.status).toBe(404);
   });
+
+  it("creates one workflow for an active-workspace direct join", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-join@test.local",
+      slug: "test-active-route-join",
+      deliverables: [{ title: "Instagram post", platform: "instagram" }],
+    });
+    const svc = serviceForTests();
+    const removed = await svc.from("mission_submissions").delete().eq("id", active.submission.id);
+    expect(removed.error).toBeNull();
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const first = await req("/missions/test-active-route-join/join", active.creator.jwt, { method: "POST" });
+    expect(first.status).toBe(200);
+    const body = await first.json();
+    expect(body.submission.status).toBe("joined");
+    expect(body.workflow).toMatchObject({
+      mission_submission_id: body.submission.id,
+      state: "drafting",
+    });
+
+    const repeated = await req("/missions/test-active-route-join/join", active.creator.jwt, { method: "POST" });
+    expect(repeated.status).toBe(409);
+    expect((await repeated.json()).code).toBe("already_joined");
+    const workflows = await svc.from("mission_workflows").select("id").eq("mission_submission_id", body.submission.id);
+    expect(workflows.error).toBeNull();
+    expect(workflows.data).toHaveLength(1);
+    const after = await creatorRewardSnapshot(active.creator.id);
+    expect(after.xp - before.xp).toBe(10);
+  });
 });
 
 suite("mission submit", () => {
@@ -114,6 +183,31 @@ suite("mission submit", () => {
     });
     expect(res.status).toBe(409);
     expect((await res.json()).code).toBe("wrong_state");
+  });
+
+  it("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-submit@test.local",
+      slug: "test-active-route-submit",
+      deliverables: [{ title: "Instagram reel", platform: "instagram" }],
+    });
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const response = await req("/missions/test-active-route-submit/submit", active.creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://example.com/post"] }),
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ code: "WORKFLOW_MODE_MISMATCH" });
+    expect(await creatorRewardSnapshot(active.creator.id)).toEqual(before);
+    const stored = await serviceForTests()
+      .from("mission_submissions")
+      .select("status, xp_awarded, points_awarded")
+      .eq("id", active.submission.id)
+      .single();
+    expect(stored.error).toBeNull();
+    expect(stored.data).toMatchObject({ status: "joined", xp_awarded: 0, points_awarded: 0 });
   });
 });
 

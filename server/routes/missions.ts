@@ -80,7 +80,7 @@ missionRoutes.post("/:slug/join", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data: m, error: mErr } = await supabase
     .from("missions")
-    .select("id")
+    .select("id, creator_workflow_mode")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .eq("status", "active")            // B1: draft/closed → 404 before the RPC round-trip
@@ -90,6 +90,13 @@ missionRoutes.post("/:slug/join", async (c) => {
 
   const { data, error } = await supabase.rpc("join_mission", { p_mission: m.id });
   if (error) return rpcError(c, error);
+  if (m.creator_workflow_mode === "active_workspace") {
+    const { data: workflow, error: workflowError } = await supabase.rpc("create_mission_workflow", {
+      p_submission: data.id,
+    });
+    if (workflowError) return rpcError(c, workflowError);
+    return c.json({ submission: data, workflow });
+  }
   return c.json(data);
 });
 
@@ -99,13 +106,16 @@ missionRoutes.put("/:slug/submit", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data: m, error: mErr } = await supabase
     .from("missions")
-    .select("id")
+    .select("id, creator_workflow_mode")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .maybeSingle();
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
+  if (m.creator_workflow_mode === "active_workspace") {
+    return c.json({ code: "WORKFLOW_MODE_MISMATCH" }, 409);
+  }
   const { data, error } = await supabase.rpc("submit_mission", {
     p_mission: m.id,
     p_urls: body.content_urls ?? [],
