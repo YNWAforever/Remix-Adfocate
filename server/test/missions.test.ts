@@ -1,7 +1,12 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createApp } from "../app";
+import {
+  joinMissionWithWorkflowRecovery,
+  submitMissionForMode,
+} from "../routes/missions";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   makeCreator,
   makeMission,
@@ -29,6 +34,131 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
   });
 }
 
+describe("mission route behavior without a live database", () => {
+  it("recovers an active-workspace join after workflow creation failed", async () => {
+    const mission = { id: "mission-1", creator_workflow_mode: "active_workspace" };
+    const submission = {
+      id: "submission-1",
+      mission_id: mission.id,
+      creator_id: "creator-1",
+      workspace_id: "workspace-1",
+      status: "joined",
+    };
+    let storedSubmission: typeof submission | null = null;
+    let xp = 0;
+    let filled = 0;
+    let workflowAttempts = 0;
+    const rpc = vi.fn(async (name: string) => {
+      if (name === "join_mission") {
+        if (storedSubmission) {
+          return { data: null, error: { message: "already_joined" } };
+        }
+        storedSubmission = submission;
+        xp += 10;
+        filled += 1;
+        return { data: submission, error: null };
+      }
+      if (name === "create_mission_workflow") {
+        workflowAttempts += 1;
+        if (workflowAttempts === 1) {
+          return { data: null, error: { message: "workflow_failed" } };
+        }
+        return {
+          data: { id: "workflow-1", mission_submission_id: submission.id },
+          error: null,
+        };
+      }
+      throw new Error(`unexpected RPC ${name}`);
+    });
+    const maybeSingle = vi.fn(async () => ({ data: storedSubmission, error: null }));
+    const eq = vi.fn(() => ({ eq, maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn((table: string) => {
+      expect(table).toBe("mission_submissions");
+      return { select };
+    });
+    const client = { rpc, from } as unknown as SupabaseClient;
+
+    const first = await joinMissionWithWorkflowRecovery(
+      client,
+      mission,
+      "creator-1",
+      "workspace-1",
+    );
+    expect(first.error?.message).toBe("workflow_failed");
+
+    const second = await joinMissionWithWorkflowRecovery(
+      client,
+      mission,
+      "creator-1",
+      "workspace-1",
+    );
+    expect(second).toEqual({
+      data: {
+        submission,
+        workflow: { id: "workflow-1", mission_submission_id: submission.id },
+      },
+      error: null,
+    });
+    expect(rpc.mock.calls.filter(([name]) => name === "join_mission")).toHaveLength(2);
+    expect(rpc.mock.calls.filter(([name]) => name === "create_mission_workflow")).toHaveLength(2);
+    expect(select).toHaveBeenCalledWith("*");
+    expect(eq.mock.calls).toEqual([
+      ["mission_id", "mission-1"],
+      ["creator_id", "creator-1"],
+      ["workspace_id", "workspace-1"],
+    ]);
+    expect({ xp, filled }).toEqual({ xp: 10, filled: 1 });
+  });
+
+  it("keeps legacy already_joined behavior unchanged", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "already_joined" } }));
+    const from = vi.fn();
+    const result = await joinMissionWithWorkflowRecovery(
+      { rpc, from } as unknown as SupabaseClient,
+      { id: "mission-legacy", creator_workflow_mode: "legacy" },
+      "creator-1",
+      "workspace-1",
+    );
+
+    expect(result.error?.message).toBe("already_joined");
+    expect(from).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not recover an active-workspace submission in the wrong state", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "already_joined" } }));
+    const maybeSingle = vi.fn(async () => ({
+      data: { id: "submission-1", status: "submitted" },
+      error: null,
+    }));
+    const eq = vi.fn(() => ({ eq, maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+    const result = await joinMissionWithWorkflowRecovery(
+      { rpc, from } as unknown as SupabaseClient,
+      { id: "mission-1", creator_workflow_mode: "active_workspace" },
+      "creator-1",
+      "workspace-1",
+    );
+
+    expect(result.error?.message).toBe("already_joined");
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("guards active-workspace submit without calling submit_mission", async () => {
+    const rpc = vi.fn();
+    const result = await submitMissionForMode(
+      { rpc } as unknown as SupabaseClient,
+      { id: "mission-1", creator_workflow_mode: "active_workspace" },
+      { content_urls: ["https://example.com/post"] },
+    );
+
+    expect(result).toEqual({ mismatch: true, data: null, error: null });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});
+
 describe("active mission assignment route contract", () => {
   it("creates and returns a workflow after an active-workspace direct join", () => {
     const joinRoute = missionRouteSource.slice(
@@ -37,8 +167,10 @@ describe("active mission assignment route contract", () => {
     );
 
     expect(joinRoute).toContain('.select("id, creator_workflow_mode")');
-    expect(joinRoute).toMatch(/supabase\.rpc\("create_mission_workflow", \{\s*p_submission: data\.id,/);
-    expect(joinRoute).toContain('return c.json({ submission: data, workflow })');
+    expect(joinRoute).toContain("joinMissionWithWorkflowRecovery(");
+    expect(joinRoute).toContain('c.get("userId")');
+    expect(joinRoute).toContain('c.get("workspaceId")');
+    expect(joinRoute).toContain("return c.json(result.data)");
   });
 
   it("guards active-workspace missions before the legacy submission RPC", () => {
@@ -47,12 +179,12 @@ describe("active mission assignment route contract", () => {
       missionRouteSource.indexOf('missionRoutes.post("/:slug/apply"'),
     );
     const modeLookup = submitRoute.indexOf('creator_workflow_mode');
+    const helperCall = submitRoute.indexOf("submitMissionForMode");
     const mismatch = submitRoute.indexOf('WORKFLOW_MODE_MISMATCH');
-    const legacyRpc = submitRoute.indexOf('supabase.rpc("submit_mission"');
 
     expect(modeLookup).toBeGreaterThanOrEqual(0);
-    expect(mismatch).toBeGreaterThan(modeLookup);
-    expect(legacyRpc).toBeGreaterThan(mismatch);
+    expect(helperCall).toBeGreaterThan(modeLookup);
+    expect(mismatch).toBeGreaterThan(helperCall);
   });
 });
 

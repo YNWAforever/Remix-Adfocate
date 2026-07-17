@@ -88,16 +88,14 @@ missionRoutes.post("/:slug/join", async (c) => {
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
-  const { data, error } = await supabase.rpc("join_mission", { p_mission: m.id });
-  if (error) return rpcError(c, error);
-  if (m.creator_workflow_mode === "active_workspace") {
-    const { data: workflow, error: workflowError } = await supabase.rpc("create_mission_workflow", {
-      p_submission: data.id,
-    });
-    if (workflowError) return rpcError(c, workflowError);
-    return c.json({ submission: data, workflow });
-  }
-  return c.json(data);
+  const result = await joinMissionWithWorkflowRecovery(
+    supabase,
+    m,
+    c.get("userId"),
+    c.get("workspaceId"),
+  );
+  if (result.error) return rpcError(c, result.error);
+  return c.json(result.data);
 });
 
 /** Submit content for a joined mission. */
@@ -113,16 +111,10 @@ missionRoutes.put("/:slug/submit", async (c) => {
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
-  if (m.creator_workflow_mode === "active_workspace") {
-    return c.json({ code: "WORKFLOW_MODE_MISMATCH" }, 409);
-  }
-  const { data, error } = await supabase.rpc("submit_mission", {
-    p_mission: m.id,
-    p_urls: body.content_urls ?? [],
-    p_data: body.submission_data ?? {},
-  });
-  if (error) return rpcError(c, error);
-  return c.json(data);
+  const result = await submitMissionForMode(supabase, m, body);
+  if (result.mismatch) return c.json({ code: "WORKFLOW_MODE_MISMATCH" }, 409);
+  if (result.error) return rpcError(c, result.error);
+  return c.json(result.data);
 });
 
 /** Apply to an application-gated mission (one-tap). Operator vets via /admin/applications. */
@@ -141,3 +133,73 @@ missionRoutes.post("/:slug/apply", async (c) => {
   if (error) return rpcError(c, error);
   return c.json(data);
 });
+type MissionMode = {
+  id: string;
+  creator_workflow_mode: string;
+};
+
+type SubmissionBody = {
+  content_urls: string[];
+  submission_data?: Record<string, unknown>;
+};
+
+export async function joinMissionWithWorkflowRecovery(
+  supabase: ReturnType<typeof makeUserClient>,
+  mission: MissionMode,
+  creatorId: string,
+  workspaceId: string,
+) {
+  const joined = await supabase.rpc("join_mission", { p_mission: mission.id });
+  let submission = joined.data;
+
+  if (joined.error) {
+    if (
+      mission.creator_workflow_mode !== "active_workspace"
+      || joined.error.message !== "already_joined"
+    ) {
+      return { data: null, error: joined.error };
+    }
+
+    const existing = await supabase
+      .from("mission_submissions")
+      .select("*")
+      .eq("mission_id", mission.id)
+      .eq("creator_id", creatorId)
+      .eq("workspace_id", workspaceId)
+      .maybeSingle();
+    if (existing.error) return { data: null, error: existing.error };
+    if (!existing.data || existing.data.status !== "joined") {
+      return { data: null, error: joined.error };
+    }
+    submission = existing.data;
+  }
+
+  if (mission.creator_workflow_mode === "active_workspace") {
+    const workflow = await supabase.rpc("create_mission_workflow", {
+      p_submission: submission.id,
+    });
+    if (workflow.error) return { data: null, error: workflow.error };
+    return {
+      data: { submission, workflow: workflow.data },
+      error: null,
+    };
+  }
+
+  return { data: submission, error: null };
+}
+
+export async function submitMissionForMode(
+  supabase: ReturnType<typeof makeUserClient>,
+  mission: MissionMode,
+  body: SubmissionBody,
+) {
+  if (mission.creator_workflow_mode === "active_workspace") {
+    return { mismatch: true, data: null, error: null };
+  }
+  const result = await supabase.rpc("submit_mission", {
+    p_mission: mission.id,
+    p_urls: body.content_urls ?? [],
+    p_data: body.submission_data ?? {},
+  });
+  return { mismatch: false, data: result.data, error: result.error };
+}
