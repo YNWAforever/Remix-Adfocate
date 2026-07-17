@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createApp } from "../app";
+import { acceptApplicationWithWorkflow } from "../routes/admin";
 import {
   makeCreator,
   makeMission,
@@ -11,8 +11,6 @@ import {
   serviceForTests,
   creatorRewardSnapshot,
 } from "./helpers";
-
-const adminRouteSource = readFileSync(resolve(process.cwd(), "server/routes/admin.ts"), "utf8");
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -33,17 +31,85 @@ function adminReq(path: string, init: RequestInit = {}) {
   });
 }
 
-describe("active application acceptance route contract", () => {
-  it("creates and returns a workflow after active-workspace acceptance", () => {
-    const acceptRoute = adminRouteSource.slice(
-      adminRouteSource.indexOf('adminRoutes.post("/applications/:id/accept"'),
-      adminRouteSource.indexOf('adminRoutes.post("/applications/:id/decline"'),
-    );
+describe("active application acceptance without a live database", () => {
+  it("recovers workflow creation on repeated acceptance without repeating rewards or quota", async () => {
+    const submission = {
+      id: "submission-application-1",
+      mission_id: "mission-application-1",
+      status: "joined",
+    };
+    const workflow = {
+      id: "workflow-application-1",
+      mission_submission_id: submission.id,
+    };
+    const events: string[] = [];
+    let accepted = false;
+    let rewardMutations = 0;
+    let quotaMutations = 0;
+    let workflowAttempts = 0;
+    const rpc = vi.fn(async (name: string, args: Record<string, string>) => {
+      events.push(`rpc:${name}:${JSON.stringify(args)}`);
+      if (name === "accept_application") {
+        if (!accepted) {
+          accepted = true;
+          rewardMutations += 1;
+          quotaMutations += 1;
+        }
+        return { data: submission, error: null };
+      }
+      if (name === "create_mission_workflow") {
+        workflowAttempts += 1;
+        if (workflowAttempts === 1) {
+          return { data: null, error: { message: "workflow_failed" } };
+        }
+        return { data: workflow, error: null };
+      }
+      throw new Error(`unexpected RPC ${name}`);
+    });
+    const maybeSingle = vi.fn(async () => {
+      events.push("query:maybeSingle");
+      return { data: { creator_workflow_mode: "active_workspace" }, error: null };
+    });
+    const eq = vi.fn((column: string, value: string) => {
+      events.push(`query:eq:${column}:${value}`);
+      return { maybeSingle };
+    });
+    const select = vi.fn((columns: string) => {
+      events.push(`query:select:${columns}`);
+      return { eq };
+    });
+    const from = vi.fn((table: string) => {
+      events.push(`query:from:${table}`);
+      return { select };
+    });
+    const client = { rpc, from } as unknown as SupabaseClient;
 
-    expect(acceptRoute).toContain('.select("creator_workflow_mode")');
-    expect(acceptRoute).toContain('.eq("id", data.mission_id)');
-    expect(acceptRoute).toMatch(/svc\.rpc\("create_mission_workflow", \{\s*p_submission: data\.id,/);
-    expect(acceptRoute).toContain('return c.json({ submission: data, workflow })');
+    const first = await acceptApplicationWithWorkflow(client, submission.id);
+    expect(first).toEqual({ data: null, error: { message: "workflow_failed" }, stage: "workflow" });
+
+    const repeated = await acceptApplicationWithWorkflow(client, submission.id);
+    expect(repeated).toEqual({ data: { submission, workflow }, error: null, stage: null });
+    expect(rpc.mock.calls).toEqual([
+      ["accept_application", { p_submission: submission.id }],
+      ["create_mission_workflow", { p_submission: submission.id }],
+      ["accept_application", { p_submission: submission.id }],
+      ["create_mission_workflow", { p_submission: submission.id }],
+    ]);
+    expect(events).toEqual([
+      `rpc:accept_application:{"p_submission":"${submission.id}"}`,
+      "query:from:missions",
+      "query:select:creator_workflow_mode",
+      `query:eq:id:${submission.mission_id}`,
+      "query:maybeSingle",
+      `rpc:create_mission_workflow:{"p_submission":"${submission.id}"}`,
+      `rpc:accept_application:{"p_submission":"${submission.id}"}`,
+      "query:from:missions",
+      "query:select:creator_workflow_mode",
+      `query:eq:id:${submission.mission_id}`,
+      "query:maybeSingle",
+      `rpc:create_mission_workflow:{"p_submission":"${submission.id}"}`,
+    ]);
+    expect({ rewardMutations, quotaMutations }).toEqual({ rewardMutations: 1, quotaMutations: 1 });
   });
 });
 

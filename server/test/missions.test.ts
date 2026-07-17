@@ -1,6 +1,4 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { createApp } from "../app";
 import {
   joinMissionWithWorkflowRecovery,
@@ -16,8 +14,6 @@ import {
   serviceForTests,
   creatorRewardSnapshot,
 } from "./helpers";
-
-const missionRouteSource = readFileSync(resolve(process.cwd(), "server/routes/missions.ts"), "utf8");
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -48,7 +44,9 @@ describe("mission route behavior without a live database", () => {
     let xp = 0;
     let filled = 0;
     let workflowAttempts = 0;
-    const rpc = vi.fn(async (name: string) => {
+    const events: string[] = [];
+    const rpc = vi.fn(async (name: string, args: Record<string, string>) => {
+      events.push(`rpc:${name}:${JSON.stringify(args)}`);
       if (name === "join_mission") {
         if (storedSubmission) {
           return { data: null, error: { message: "already_joined" } };
@@ -70,11 +68,21 @@ describe("mission route behavior without a live database", () => {
       }
       throw new Error(`unexpected RPC ${name}`);
     });
-    const maybeSingle = vi.fn(async () => ({ data: storedSubmission, error: null }));
-    const eq = vi.fn(() => ({ eq, maybeSingle }));
-    const select = vi.fn(() => ({ eq }));
+    const maybeSingle = vi.fn(async () => {
+      events.push("query:maybeSingle");
+      return { data: storedSubmission, error: null };
+    });
+    const eq = vi.fn((column: string, value: string) => {
+      events.push(`query:eq:${column}:${value}`);
+      return { eq, maybeSingle };
+    });
+    const select = vi.fn((columns: string) => {
+      events.push(`query:select:${columns}`);
+      return { eq };
+    });
     const from = vi.fn((table: string) => {
       expect(table).toBe("mission_submissions");
+      events.push(`query:from:${table}`);
       return { select };
     });
     const client = { rpc, from } as unknown as SupabaseClient;
@@ -100,6 +108,24 @@ describe("mission route behavior without a live database", () => {
       },
       error: null,
     });
+    expect(rpc.mock.calls).toEqual([
+      ["join_mission", { p_mission: "mission-1" }],
+      ["create_mission_workflow", { p_submission: "submission-1" }],
+      ["join_mission", { p_mission: "mission-1" }],
+      ["create_mission_workflow", { p_submission: "submission-1" }],
+    ]);
+    expect(events).toEqual([
+      'rpc:join_mission:{"p_mission":"mission-1"}',
+      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
+      'rpc:join_mission:{"p_mission":"mission-1"}',
+      "query:from:mission_submissions",
+      "query:select:*",
+      "query:eq:mission_id:mission-1",
+      "query:eq:creator_id:creator-1",
+      "query:eq:workspace_id:workspace-1",
+      "query:maybeSingle",
+      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
+    ]);
     expect(rpc.mock.calls.filter(([name]) => name === "join_mission")).toHaveLength(2);
     expect(rpc.mock.calls.filter(([name]) => name === "create_mission_workflow")).toHaveLength(2);
     expect(select).toHaveBeenCalledWith("*");
@@ -156,35 +182,6 @@ describe("mission route behavior without a live database", () => {
 
     expect(result).toEqual({ mismatch: true, data: null, error: null });
     expect(rpc).not.toHaveBeenCalled();
-  });
-});
-
-describe("active mission assignment route contract", () => {
-  it("creates and returns a workflow after an active-workspace direct join", () => {
-    const joinRoute = missionRouteSource.slice(
-      missionRouteSource.indexOf('missionRoutes.post("/:slug/join"'),
-      missionRouteSource.indexOf('missionRoutes.put("/:slug/submit"'),
-    );
-
-    expect(joinRoute).toContain('.select("id, creator_workflow_mode")');
-    expect(joinRoute).toContain("joinMissionWithWorkflowRecovery(");
-    expect(joinRoute).toContain('c.get("userId")');
-    expect(joinRoute).toContain('c.get("workspaceId")');
-    expect(joinRoute).toContain("return c.json(result.data)");
-  });
-
-  it("guards active-workspace missions before the legacy submission RPC", () => {
-    const submitRoute = missionRouteSource.slice(
-      missionRouteSource.indexOf('missionRoutes.put("/:slug/submit"'),
-      missionRouteSource.indexOf('missionRoutes.post("/:slug/apply"'),
-    );
-    const modeLookup = submitRoute.indexOf('creator_workflow_mode');
-    const helperCall = submitRoute.indexOf("submitMissionForMode");
-    const mismatch = submitRoute.indexOf('WORKFLOW_MODE_MISMATCH');
-
-    expect(modeLookup).toBeGreaterThanOrEqual(0);
-    expect(helperCall).toBeGreaterThan(modeLookup);
-    expect(mismatch).toBeGreaterThan(helperCall);
   });
 });
 
@@ -261,15 +258,26 @@ suite("mission join", () => {
       mission_submission_id: body.submission.id,
       state: "drafting",
     });
+    const afterFirst = await creatorRewardSnapshot(active.creator.id);
+    const missionAfterFirst = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(missionAfterFirst.error).toBeNull();
 
     const repeated = await req("/missions/test-active-route-join/join", active.creator.jwt, { method: "POST" });
-    expect(repeated.status).toBe(409);
-    expect((await repeated.json()).code).toBe("already_joined");
+    expect(repeated.status).toBe(200);
+    const repeatedBody = await repeated.json();
+    expect(repeatedBody.submission.id).toBe(body.submission.id);
+    expect(repeatedBody.workflow.id).toBe(body.workflow.id);
     const workflows = await svc.from("mission_workflows").select("id").eq("mission_submission_id", body.submission.id);
     expect(workflows.error).toBeNull();
     expect(workflows.data).toHaveLength(1);
-    const after = await creatorRewardSnapshot(active.creator.id);
-    expect(after.xp - before.xp).toBe(10);
+    const afterRepeated = await creatorRewardSnapshot(active.creator.id);
+    expect(afterFirst.xp - before.xp).toBe(10);
+    expect(afterFirst.points).toBe(before.points);
+    expect(afterRepeated).toEqual(afterFirst);
+    const missionAfterRepeated = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(missionAfterRepeated.error).toBeNull();
+    expect(missionAfterFirst.data?.filled).toBe(1);
+    expect(missionAfterRepeated.data?.filled).toBe(missionAfterFirst.data?.filled);
   });
 });
 
