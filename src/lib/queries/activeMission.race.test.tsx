@@ -53,6 +53,20 @@ function draft(queryClient: QueryClient, workItemId = "item-1") {
     ?.workItems.find((item) => item.id === workItemId)?.draft;
 }
 
+function withChecklist(): ActiveMissionWorkspace {
+  const initial = workspace();
+  initial.workItems[0].draft = {
+    ...initial.workItems[0].draft!,
+    externalUrl: "https://example.com/draft",
+    checklist: { disclosure: true },
+  };
+  return initial;
+}
+
+function savedDraft(overrides: Partial<MissionDraft>): MissionDraft {
+  return { ...workspace().workItems[0].draft!, ...overrides };
+}
+
 beforeEach(() => {
   vi.restoreAllMocks();
 });
@@ -183,4 +197,213 @@ describe("useSaveMissionDraft overlapping requests", () => {
     expect(cached?.workItems.find((item) => item.id === "item-2")?.draft?.caption).toBe("second changed elsewhere");
     expect(cached?.mission.title).toBe("refreshed title");
   });
+
+  it("keeps equal-base save B as the recoverable local conflict when A succeeds first", async () => {
+    const saveARequest = deferred<{ draft: MissionDraft }>();
+    const saveBRequest = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch")
+      .mockImplementationOnce(() => saveARequest.promise)
+      .mockImplementationOnce(() => saveBRequest.promise);
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+    const saveAInput = { workItemId: "item-1", revision: 3, caption: "local A" };
+    const saveBInput = { workItemId: "item-1", revision: 3, caption: "local B" };
+
+    let saveA!: Promise<{ draft: MissionDraft }>;
+    let saveB!: Promise<{ draft: MissionDraft }>;
+    act(() => { saveA = result.current.mutateAsync(saveAInput); });
+    await waitFor(() => expect(draft(queryClient)).toMatchObject({ caption: "local A", revision: 4 }));
+    act(() => { saveB = result.current.mutateAsync(saveBInput); });
+    await waitFor(() => expect(draft(queryClient)).toMatchObject({ caption: "local B", revision: 4 }));
+
+    const canonicalA = savedDraft({ caption: "local A", revision: 4, lastSavedAt: "2026-07-16T00:00:00Z" });
+    saveARequest.resolve({ draft: canonicalA });
+    await act(async () => { await saveA; });
+    expect(draft(queryClient)).toMatchObject({ caption: "local B", revision: 4 });
+
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", { currentDraft: canonicalA });
+    saveBRequest.reject(stale);
+    await act(async () => { await expect(saveB).rejects.toBe(stale); });
+    expect(draft(queryClient)).toEqual(canonicalA);
+    expect(result.current.conflict).toEqual({
+      workItemId: "item-1",
+      localDraft: saveBInput,
+      currentDraft: canonicalA,
+    });
+  });
+
+  it("keeps equal-base save B canonical when B succeeds before A becomes stale", async () => {
+    const saveARequest = deferred<{ draft: MissionDraft }>();
+    const saveBRequest = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch")
+      .mockImplementationOnce(() => saveARequest.promise)
+      .mockImplementationOnce(() => saveBRequest.promise);
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+
+    let saveA!: Promise<{ draft: MissionDraft }>;
+    let saveB!: Promise<{ draft: MissionDraft }>;
+    act(() => { saveA = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "local A" }); });
+    await waitFor(() => expect(draft(queryClient)?.caption).toBe("local A"));
+    act(() => { saveB = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "local B" }); });
+    await waitFor(() => expect(draft(queryClient)).toMatchObject({ caption: "local B", revision: 4 }));
+
+    const canonicalB = savedDraft({ caption: "local B", revision: 4, lastSavedAt: "2026-07-16T00:00:00Z" });
+    saveBRequest.resolve({ draft: canonicalB });
+    await act(async () => { await saveB; });
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", { currentDraft: canonicalB });
+    saveARequest.reject(stale);
+    await act(async () => { await expect(saveA).rejects.toBe(stale); });
+
+    expect(draft(queryClient)).toEqual(canonicalB);
+    expect(result.current.conflict).toBeNull();
+  });
+
+  it.each([
+    ["network", new TypeError("offline")],
+    ["validation", new ApiError(400, "VALIDATION_FAILED", "caption invalid")],
+  ])("rolls newest equal-base %s failure back to the preceding local intent", async (_kind, failure) => {
+    const saveARequest = deferred<{ draft: MissionDraft }>();
+    const saveBRequest = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch")
+      .mockImplementationOnce(() => saveARequest.promise)
+      .mockImplementationOnce(() => saveBRequest.promise);
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+
+    let saveA!: Promise<{ draft: MissionDraft }>;
+    let saveB!: Promise<{ draft: MissionDraft }>;
+    act(() => { saveA = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "local A" }); });
+    await waitFor(() => expect(draft(queryClient)?.caption).toBe("local A"));
+    act(() => { saveB = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "local B" }); });
+    await waitFor(() => expect(draft(queryClient)).toMatchObject({ caption: "local B", revision: 4 }));
+
+    saveBRequest.reject(failure);
+    await act(async () => { await expect(saveB).rejects.toBe(failure); });
+    expect(draft(queryClient)).toMatchObject({ caption: "local A", revision: 4 });
+    expect(result.current.conflict).toBeNull();
+
+    saveARequest.resolve({ draft: savedDraft({ caption: "local A", revision: 4 }) });
+    await act(async () => { await saveA; });
+    expect(draft(queryClient)).toMatchObject({ caption: "local A", revision: 4 });
+  });
+
+  it("applies already-stale input as the latest local intent before exposing its conflict", async () => {
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const initial = workspace();
+    initial.workItems[0].draft = savedDraft({ caption: "cached server", revision: 5 });
+    const { queryClient, wrapper } = setup(initial);
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+    const localInput = { workItemId: "item-1", revision: 3, caption: "latest local intent" };
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync(localInput); });
+    await waitFor(() => expect(draft(queryClient)).toMatchObject({ caption: "latest local intent", revision: 5 }));
+
+    const currentDraft = savedDraft({ caption: "newer server", revision: 6, lastSavedAt: "2026-07-17T00:00:00Z" });
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", { currentDraft });
+    request.reject(stale);
+    await act(async () => { await expect(save).rejects.toBe(stale); });
+    expect(draft(queryClient)).toEqual(currentDraft);
+    expect(result.current.conflict).toEqual({ workItemId: "item-1", localDraft: localInput, currentDraft });
+  });
+
+  it("applies canonical success for an unchanged full draft with a deep-equal checklist", async () => {
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const initial = withChecklist();
+    const { queryClient, wrapper } = setup(initial);
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+    const input = {
+      workItemId: "item-1", revision: 3, caption: "old",
+      externalUrl: "https://example.com/draft", checklist: { disclosure: true },
+    };
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync(input); });
+    await waitFor(() => expect(draft(queryClient)?.revision).toBe(4));
+    const canonical = {
+      ...initial.workItems[0].draft!, revision: 4, lastSavedAt: "2026-07-16T00:00:00Z",
+    };
+    request.resolve({ draft: canonical });
+    await act(async () => { await save; });
+
+    expect(draft(queryClient)).toEqual(canonical);
+  });
+
+  it("rolls back an unchanged full draft with a deep-equal checklist after an error", async () => {
+    const failure = new TypeError("offline");
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const initial = withChecklist();
+    const { queryClient, wrapper } = setup(initial);
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync({
+      workItemId: "item-1", revision: 3, caption: "old",
+      externalUrl: "https://example.com/draft", checklist: { disclosure: true },
+    }); });
+    await waitFor(() => expect(draft(queryClient)?.revision).toBe(4));
+    request.reject(failure);
+    await act(async () => { await expect(save).rejects.toBe(failure); });
+
+    expect(draft(queryClient)).toEqual(initial.workItems[0].draft);
+  });
+
+  it("installs stale canonical draft for an unchanged full draft with a deep-equal checklist", async () => {
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const initial = withChecklist();
+    const { queryClient, wrapper } = setup(initial);
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+    const input = {
+      workItemId: "item-1", revision: 3, caption: "old",
+      externalUrl: "https://example.com/draft", checklist: { disclosure: true },
+    };
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync(input); });
+    await waitFor(() => expect(draft(queryClient)?.revision).toBe(4));
+    const currentDraft = {
+      ...initial.workItems[0].draft!, caption: "server", revision: 4, lastSavedAt: "2026-07-16T00:00:00Z",
+    };
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", { currentDraft });
+    request.reject(stale);
+    await act(async () => { await expect(save).rejects.toBe(stale); });
+
+    expect(draft(queryClient)).toEqual(currentDraft);
+    expect(result.current.conflict).toEqual({ workItemId: "item-1", localDraft: input, currentDraft });
+  });
+
+  it.each([
+    ["newer revision", { caption: "external revision", revision: 5 }],
+    ["changed content", { caption: "external content", revision: 4 }],
+  ])("does not roll back externally refreshed %s", async (_kind, externalUpdate) => {
+    const failure = new TypeError("offline");
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useSaveMissionDraft("sub-1"), { wrapper });
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "local" }); });
+    await waitFor(() => expect(draft(queryClient)?.revision).toBe(4));
+    const externalDraft = savedDraft({ ...externalUpdate, lastSavedAt: "2026-07-18T00:00:00Z" });
+    queryClient.setQueryData<ActiveMissionWorkspace>(activeMissionQueryKey("sub-1"), (current) =>
+      current && replaceDraftForTest(current, externalDraft));
+
+    request.reject(failure);
+    await act(async () => { await expect(save).rejects.toBe(failure); });
+    expect(draft(queryClient)).toEqual(externalDraft);
+  });
 });
+
+function replaceDraftForTest(workspaceValue: ActiveMissionWorkspace, nextDraft: MissionDraft): ActiveMissionWorkspace {
+  return {
+    ...workspaceValue,
+    workItems: workspaceValue.workItems.map((item) =>
+      item.id === "item-1" ? { ...item, draft: nextDraft } : item),
+  };
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { ActiveMissionWorkspace, MissionDraft, MissionWorkflow } from "../activeMission";
@@ -20,10 +20,10 @@ export type MissionDraftConflict = {
 };
 
 type SaveMissionDraftContext = {
+  mutationToken: number;
   workItemId: string;
-  baseRevision: number;
-  optimisticRevision: number;
   previousDraft: MissionDraft | null;
+  optimisticDraft: MissionDraft | null;
   localDraft: SaveMissionDraftInput;
 };
 
@@ -51,19 +51,6 @@ export type SubmitMissionWorkItemInput = {
 export type DraftAssetMutationResult = Readonly<Record<string, unknown>>;
 export type SubmitMissionWorkItemResult = Readonly<{ version: unknown; workItem: unknown }>;
 
-function updateWorkItemDraft(
-  workspace: ActiveMissionWorkspace | undefined,
-  workItemId: string,
-  update: (draft: MissionDraft) => MissionDraft,
-): ActiveMissionWorkspace | undefined {
-  if (!workspace) return workspace;
-  return {
-    ...workspace,
-    workItems: workspace.workItems.map((item) =>
-      item.id === workItemId && item.draft ? { ...item, draft: update(item.draft) } : item),
-  };
-}
-
 function workItemDraft(
   workspace: ActiveMissionWorkspace | undefined,
   workItemId: string,
@@ -84,19 +71,33 @@ function replaceWorkItemDraft(
   };
 }
 
-function contextWasApplied(context: SaveMissionDraftContext): boolean {
-  return context.previousDraft !== null && context.previousDraft.revision <= context.baseRevision;
+function checklistsEqual(left: Record<string, boolean>, right: Record<string, boolean>): boolean {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  return leftKeys.length === rightKeys.length
+    && leftKeys.every((key) => Object.prototype.hasOwnProperty.call(right, key) && left[key] === right[key]);
 }
 
-function isCurrentOptimisticDraft(
-  draft: MissionDraft | null,
-  context: SaveMissionDraftContext,
-): boolean {
-  if (!draft || draft.revision !== context.optimisticRevision) return false;
-  const local = context.localDraft;
-  return (!Object.prototype.hasOwnProperty.call(local, "caption") || draft.caption === local.caption)
-    && (!Object.prototype.hasOwnProperty.call(local, "externalUrl") || draft.externalUrl === local.externalUrl)
-    && (!Object.prototype.hasOwnProperty.call(local, "checklist") || draft.checklist === local.checklist);
+function draftsEqual(left: MissionDraft | null, right: MissionDraft | null): boolean {
+  if (left === right) return true;
+  if (!left || !right) return false;
+  return left.id === right.id
+    && left.caption === right.caption
+    && left.externalUrl === right.externalUrl
+    && checklistsEqual(left.checklist, right.checklist)
+    && left.revision === right.revision
+    && left.lastSavedAt === right.lastSavedAt;
+}
+
+function optimisticDraft(previousDraft: MissionDraft | null, input: SaveMissionDraftInput): MissionDraft | null {
+  if (!previousDraft) return null;
+  return {
+    ...previousDraft,
+    ...(Object.prototype.hasOwnProperty.call(input, "caption") ? { caption: input.caption! } : {}),
+    ...(Object.prototype.hasOwnProperty.call(input, "externalUrl") ? { externalUrl: input.externalUrl! } : {}),
+    ...(Object.prototype.hasOwnProperty.call(input, "checklist") ? { checklist: input.checklist! } : {}),
+    revision: Math.max(previousDraft.revision, input.revision + 1),
+  };
 }
 
 function currentDraftFrom(error: unknown): MissionDraft | null {
@@ -125,6 +126,7 @@ export function useSaveMissionDraft(submissionId: string) {
   const queryClient = useQueryClient();
   const queryKey = activeMissionQueryKey(submissionId);
   const [conflict, setConflict] = useState<MissionDraftConflict | null>(null);
+  const mutationTokens = useRef(new Map<string, number>());
   const mutation = useMutation({
     mutationFn: ({ workItemId, ...draft }: SaveMissionDraftInput) =>
       apiFetch<{ draft: MissionDraft }>(`/my-missions/${submissionId}/work-items/${workItemId}/draft`, {
@@ -132,38 +134,35 @@ export function useSaveMissionDraft(submissionId: string) {
         body: JSON.stringify(draft),
       }),
     onMutate: async (input) => {
+      const mutationToken = (mutationTokens.current.get(input.workItemId) ?? 0) + 1;
+      mutationTokens.current.set(input.workItemId, mutationToken);
       await queryClient.cancelQueries({ queryKey });
       const current = queryClient.getQueryData<ActiveMissionWorkspace>(queryKey);
       const previousDraft = workItemDraft(current, input.workItemId);
+      const nextDraft = optimisticDraft(previousDraft, input);
       const context = {
+        mutationToken,
         workItemId: input.workItemId,
-        baseRevision: input.revision,
-        optimisticRevision: input.revision + 1,
         previousDraft,
+        optimisticDraft: nextDraft,
         localDraft: input,
       } satisfies SaveMissionDraftContext;
-      const applied = contextWasApplied(context);
-      if (applied) {
+      const isLatest = mutationTokens.current.get(input.workItemId) === mutationToken;
+      if (isLatest && nextDraft) {
         setConflict((currentConflict) =>
           currentConflict?.workItemId === input.workItemId ? null : currentConflict);
       }
       queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        applied ? updateWorkItemDraft(current, input.workItemId, (draft) => ({
-          ...draft,
-          ...(Object.prototype.hasOwnProperty.call(input, "caption") ? { caption: input.caption! } : {}),
-          ...(Object.prototype.hasOwnProperty.call(input, "externalUrl") ? { externalUrl: input.externalUrl! } : {}),
-          ...(Object.prototype.hasOwnProperty.call(input, "checklist") ? { checklist: input.checklist! } : {}),
-          revision: context.optimisticRevision,
-        }))! : current);
+        isLatest && nextDraft ? replaceWorkItemDraft(current, input.workItemId, nextDraft)! : current);
       return context;
     },
     onError: (error, _input, context) => {
-      if (!context || !contextWasApplied(context)) return;
+      if (!context || mutationTokens.current.get(context.workItemId) !== context.mutationToken) return;
       const cachedDraft = workItemDraft(
         queryClient.getQueryData<ActiveMissionWorkspace>(queryKey),
         context.workItemId,
       );
-      if (!isCurrentOptimisticDraft(cachedDraft, context)) return;
+      if (!draftsEqual(cachedDraft, context.optimisticDraft)) return;
       const currentDraft = currentDraftFrom(error);
       if (currentDraft) {
         queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
@@ -179,16 +178,13 @@ export function useSaveMissionDraft(submissionId: string) {
         replaceWorkItemDraft(current, context.workItemId, context.previousDraft)!);
     },
     onSuccess: ({ draft }, _input, context) => {
-      if (!context || !contextWasApplied(context)) return;
+      if (!context || mutationTokens.current.get(context.workItemId) !== context.mutationToken) return;
       queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        isCurrentOptimisticDraft(workItemDraft(current, context.workItemId), context)
+        draftsEqual(workItemDraft(current, context.workItemId), context.optimisticDraft)
           ? replaceWorkItemDraft(current, context.workItemId, draft)!
           : current);
       setConflict((currentConflict) =>
-        currentConflict?.workItemId === context.workItemId
-          && currentConflict.localDraft.revision <= context.baseRevision
-          ? null
-          : currentConflict);
+        currentConflict?.workItemId === context.workItemId ? null : currentConflict);
     },
   });
   return { ...mutation, conflict, clearConflict: () => setConflict(null) };
