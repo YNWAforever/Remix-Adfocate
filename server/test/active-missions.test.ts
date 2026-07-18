@@ -8,6 +8,7 @@ import { createApp, type Env } from "../app";
 import { ActiveMissionError } from "../lib/activeMission/errors";
 import { createActiveMissionRepository, type ActiveMissionRepository } from "../lib/activeMission/repo";
 import { createActiveMissionRoutes } from "../routes/activeMissions";
+import { createAdminActiveMissionRepository, createAdminActiveMissionRoutes, sortActiveMissionQueue, type AdminActiveMissionRepository } from "../routes/adminActiveMissions";
 import {
   activeMissionIntegrationSkipReason, cleanup, creatorRewardSnapshot, makeCreator,
   seedActiveMission, serviceForTests, userForJwt,
@@ -247,6 +248,129 @@ describe("active mission receipt migration contract", () => {
       "update public.mission_submissions", "update public.point_balances",
       "update public.earnings_balances", "update public.creators set xp",
     ]) expect(sql).not.toContain(forbidden);
+  });
+});
+
+describe("active mission operator routes without a live database", () => {
+  const urgent = { workItemId: "urgent", reviewDueAt: "2026-07-18T00:00:00.000Z", creatorDeadline: "2026-07-20T00:00:00.000Z", submittedAt: "2026-07-17T00:00:00.000Z" };
+  const later = { workItemId: "later", reviewDueAt: "2026-07-19T00:00:00.000Z", creatorDeadline: "2026-07-21T00:00:00.000Z", submittedAt: "2026-07-16T00:00:00.000Z" };
+
+  it("orders the operator queue by overdue SLA, SLA due, creator deadline, and submitted time", () => {
+    expect(sortActiveMissionQueue([later, urgent], new Date("2026-07-18T12:00:00.000Z")).map((row) => row.workItemId))
+      .toEqual(["urgent", "later"]);
+  });
+
+  it("uses the workspace header and returns queue metadata without private URLs", async () => {
+    const listQueue = vi.fn(async () => ({ items: [{ ...urgent, workflowId: "workflow-1", creatorDisplayName: "Creator", missionTitle: "Launch", state: "submitted", reviewerId: null, riskBucket: "overdue" }] }));
+    const repository = { listQueue } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.use("*", async (c, next) => { c.set("userId", "operator-1"); c.set("workspaceId", "unused"); c.set("jwt", "test"); await next(); });
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const response = await app.request("/api/admin/active-missions/queue", { headers: { "X-Workspace-Slug": "demo" } });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ items: [{ workItemId: "urgent", riskBucket: "overdue" }] });
+    expect(JSON.stringify(await listQueue.mock.results[0].value)).not.toContain("signedUrl");
+    expect(listQueue).toHaveBeenCalledWith(expect.objectContaining({ workspaceSlug: "demo" }));
+  });
+
+  it("authorizes detail before returning ten-minute signed asset URLs", async () => {
+    const getDetail = vi.fn(async () => ({ workflow: { id: "workflow-1" }, assets: [{ id: "asset-1", signedUrl: "https://signed" }] }));
+    const repository = { getDetail } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const response = await app.request("/api/admin/active-missions/workflow-1", { headers: { "X-Workspace-Slug": "demo" } });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ assets: [{ signedUrl: "https://signed" }] });
+    expect(getDetail).toHaveBeenCalledWith({ workflowId: "workflow-1", workspaceSlug: "demo", signedUrlTtlSeconds: 600 });
+  });
+
+  it("passes authenticated operator and workspace context to one start-review transition", async () => {
+    const startReview = vi.fn(async () => ({ workItem: { id: "item-1", state: "under_review" } }));
+    const repository = { startReview } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/start-review", { method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" }, body: JSON.stringify({ expectedState: "submitted" }) });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ workItem: { state: "under_review" } });
+    expect(startReview).toHaveBeenCalledWith({ workflowId: "workflow-1", workItemId: "item-1", workspaceSlug: "demo", operatorId: "operator-1", expectedState: "submitted" });
+  });
+
+  function operatorClient(rpc: ReturnType<typeof vi.fn>) {
+    const builder: Record<string, unknown> = {};
+    for (const op of ["select", "eq"]) builder[op] = () => builder;
+    builder.maybeSingle = async () => ({ data: { id: "workspace-1" }, error: null });
+    return { from: vi.fn(() => builder), rpc } as unknown as SupabaseClient;
+  }
+
+  it("maps revision limits and sends exact revision context", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "revision_limit_reached" } }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const deadline = new Date(Date.now() + 86_400_000).toISOString();
+    const items = [{ requirementId: null, category: "quality", text: "Show the product early", required: true }];
+    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/request-revision", {
+      method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+      body: JSON.stringify({ expectedState: "under_review", versionId: "version-1", deadline, items }),
+    });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "REVISION_LIMIT_REACHED" });
+    expect(rpc).toHaveBeenCalledWith("request_mission_revision", {
+      p_workflow: "workflow-1", p_work_item: "item-1", p_version: "version-1",
+      p_operator: "operator-1", p_workspace: "workspace-1", p_expected_state: "under_review",
+      p_deadline: deadline, p_items: items,
+    });
+  });
+
+  it("rejects revision feedback without a future deadline and required change", async () => {
+    const requestRevision = vi.fn();
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes({ requestRevision } as unknown as AdminActiveMissionRepository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/request-revision", {
+      method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+      body: JSON.stringify({ expectedState: "under_review", versionId: "version-1", deadline: "2020-01-01T00:00:00.000Z", items: [] }),
+    });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(requestRevision).not.toHaveBeenCalled();
+  });
+
+  it("sends exact grant, approval, and shipping RPC arguments", async () => {
+    const rpc = vi.fn(async (name: string) => ({ data: name.includes("shipped") ? { status: "shipped" } : { id: "item-1" }, error: null }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+    await repository.grantRevision({ workflowId: "workflow-1", workItemId: "item-1", operatorId: "operator-1", workspaceSlug: "demo", reason: "Brief changed", grantedCount: 1 });
+    await repository.approveVersion({ workflowId: "workflow-1", workItemId: "item-1", operatorId: "operator-1", workspaceSlug: "demo", expectedState: "under_review", versionId: "version-2" });
+    await repository.markFulfillmentShipped({ workflowId: "workflow-1", operatorId: "operator-1", workspaceSlug: "demo", note: "Courier collected" });
+    expect(rpc.mock.calls).toEqual([
+      ["grant_mission_revision", {
+        p_workflow: "workflow-1", p_work_item: "item-1", p_operator: "operator-1",
+        p_workspace: "workspace-1", p_reason: "Brief changed", p_granted_count: 1,
+      }],
+      ["approve_mission_version", {
+        p_workflow: "workflow-1", p_work_item: "item-1", p_version: "version-2",
+        p_operator: "operator-1", p_workspace: "workspace-1", p_expected_state: "under_review",
+      }],
+      ["mark_mission_fulfillment_shipped", {
+        p_workflow: "workflow-1", p_operator: "operator-1", p_workspace: "workspace-1", p_note: "Courier collected",
+      }],
+    ]);
+  });
+});
+
+describe("active mission operator lifecycle migration contract", () => {
+  it("is locked, private-backed, service-only, validated, and reward-neutral", () => {
+    const name = readdirSync(resolve("supabase/migrations")).find((file) => file.includes("active_mission_operator_lifecycle"));
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const fn of ["start_mission_review", "request_mission_revision", "grant_mission_revision", "approve_mission_version", "mark_mission_fulfillment_shipped"]) {
+      expect(sql).toContain(`function private.${fn}`);
+      expect(sql).toContain(`function public.${fn}`);
+    }
+    for (const token of ["for update", "revision_limit_reached", "creator_response_deadline", "private.refresh_mission_workflow_state", "to service_role"]) expect(sql).toContain(token);
+    expect(sql).toContain("jsonb_array_length");
+    expect(sql).toContain("current_submitted_version_id");
+    expect(sql).toContain("status <> 'preparing'");
+    for (const forbidden of ["update public.mission_submissions", "update public.point_balances", "update public.earnings_balances", "update public.creators set xp", "approve_submission("]) expect(sql).not.toContain(forbidden);
   });
 });
 
