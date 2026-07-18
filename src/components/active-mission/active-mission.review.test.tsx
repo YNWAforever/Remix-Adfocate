@@ -107,6 +107,35 @@ describe("DraftEditor race safety", () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole("alert")).toHaveTextContent(/still here/i);
   });
+
+  it("resets pending submit state on item switch and ignores the old settlement", async () => {
+    vi.useRealTimers();
+    const oldSubmit = deferred<unknown>();
+    const newSubmit = deferred<unknown>();
+    const onSave = vi.fn().mockImplementation(({ workItemId }: { workItemId: string }) =>
+      Promise.resolve(draft(workItemId === "A" ? 4 : 8)),
+    );
+    const onSubmit = vi.fn()
+      .mockReturnValueOnce(oldSubmit.promise)
+      .mockReturnValueOnce(newSubmit.promise);
+    const { rerender } = render(<DraftEditor item={item("A", 3)} onSave={onSave} onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit version" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ workItemId: "A" })));
+    expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();
+
+    rerender(<DraftEditor item={item("B", 7)} onSave={onSave} onSubmit={onSubmit} />);
+    const newSubmitButton = screen.getByRole("button", { name: "Submit version" });
+    expect(newSubmitButton).toBeEnabled();
+    fireEvent.click(newSubmitButton);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ workItemId: "B" })));
+    expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();
+
+    await act(async () => oldSubmit.resolve(undefined));
+    expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();
+    await act(async () => newSubmit.resolve(undefined));
+    expect(screen.getByRole("button", { name: "Submit version" })).toBeEnabled();
+  });
 });
 
 describe("DraftEditor asset contract", () => {
@@ -116,9 +145,14 @@ describe("DraftEditor asset contract", () => {
     const onUploadFile = vi.fn().mockResolvedValue(undefined);
     render(<DraftEditor item={item("A", 3)} onSave={vi.fn()} onSubmit={vi.fn()} onUploadFile={onUploadFile} existingAssetCount={4} />);
     const input = screen.getByLabelText("Upload draft files");
-    expect(input).toHaveAttribute("accept", "image/jpeg,image/png,image/gif,video/mp4,video/quicktime,video/webm,application/pdf");
+    expect(input).toHaveAttribute("accept", "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm");
 
-    const tooLarge = new File(["x"], "large.pdf", { type: "application/pdf" });
+    const pdf = new File(["x"], "document.pdf", { type: "application/pdf" });
+    fireEvent.change(input, { target: { files: [pdf] } });
+    expect(screen.getByRole("alert")).toHaveTextContent("document.pdf must be an accepted file type");
+    expect(onUploadFile).not.toHaveBeenCalled();
+
+    const tooLarge = new File(["x"], "large.webp", { type: "image/webp" });
     Object.defineProperty(tooLarge, "size", { value: 20 * 1024 * 1024 + 1 });
     fireEvent.change(input, { target: { files: [tooLarge] } });
     expect(screen.getByRole("alert")).toHaveTextContent("20 MB or smaller");
@@ -129,6 +163,32 @@ describe("DraftEditor asset contract", () => {
     await waitFor(() => expect(onUploadFile).toHaveBeenCalledTimes(1));
     expect(onUploadFile).toHaveBeenCalledWith(first);
     expect(screen.getByRole("alert")).toHaveTextContent(/five assets/i);
+  });
+
+  it("clears the native file input immediately while uploading copied File objects", async () => {
+    const attempt = deferred<unknown>();
+    const onUploadFile = vi.fn().mockReturnValue(attempt.promise);
+    render(<DraftEditor item={item("A", 3)} onSave={vi.fn()} onSubmit={vi.fn()} onUploadFile={onUploadFile} />);
+    const input = screen.getByLabelText("Upload draft files") as HTMLInputElement;
+    const file = new File(["a"], "draft.webp", { type: "image/webp" });
+    Object.defineProperty(input, "value", { configurable: true, writable: true, value: "C:\\\\fakepath\\\\draft.webp" });
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    expect(input.value).toBe("");
+    expect(onUploadFile).toHaveBeenCalledWith(file);
+    await act(async () => attempt.resolve(undefined));
+    expect(screen.getByText("Uploaded")).toBeVisible();
+  });
+
+  it("exposes a noninteractive upload control when the item is not editable", () => {
+    render(<DraftEditor item={item("A", 3, "under_review")} onSave={vi.fn()} onSubmit={vi.fn()} onUploadFile={vi.fn()} />);
+    const input = screen.getByLabelText("Upload draft files");
+    const label = screen.getByText("Upload draft files");
+    expect(input).toBeDisabled();
+    expect(label).toHaveAttribute("aria-disabled", "true");
+    expect(label).toHaveClass("pointer-events-none", "cursor-not-allowed");
+    expect(label).not.toHaveClass("cursor-pointer", "hover:bg-[var(--color-paper)]");
   });
 
   it("ignores an older completion after the same file is reselected", async () => {
@@ -161,10 +221,10 @@ describe("DraftEditor asset contract", () => {
     expect(screen.queryByText("draft.png")).not.toBeInTheDocument();
 
     let readingBlobNameMustFail = false;
-    const successful = new File(["b"], "success.pdf", { type: "application/pdf" });
+    const successful = new File(["b"], "success.webp", { type: "image/webp" });
     Object.defineProperty(successful, "name", { get: () => {
       if (readingBlobNameMustFail) throw new Error("successful File blob retained");
-      return "success.pdf";
+      return "success.webp";
     } });
     const upload = deferred<unknown>();
     onUploadFile.mockReturnValueOnce(upload.promise);
@@ -172,7 +232,7 @@ describe("DraftEditor asset contract", () => {
     await act(async () => upload.resolve(undefined));
     readingBlobNameMustFail = true;
     rerender(<DraftEditor item={item("B", 7)} onSave={vi.fn()} onSubmit={vi.fn()} onUploadFile={onUploadFile} />);
-    expect(screen.getByText("success.pdf")).toBeVisible();
+    expect(screen.getByText("success.webp")).toBeVisible();
     expect(screen.getByText("Uploaded")).toBeVisible();
   });
 

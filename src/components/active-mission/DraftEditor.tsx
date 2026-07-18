@@ -38,7 +38,7 @@ type UploadEntry = {
   attempt: number;
 };
 
-const DEFAULT_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/quicktime", "video/webm", "application/pdf"] as const;
+const DEFAULT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime", "video/webm"] as const;
 const DEFAULT_MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 const MAX_ASSET_COUNT = 5;
 
@@ -124,6 +124,7 @@ export function DraftEditor({
     setUploads([]);
     setFileError(null);
     setSubmitError(null);
+    setIsSubmitting(false);
   }, [item.draft, item.id, stateItemId]);
 
   const isCurrentScope = useCallback((generation: number, workItemId: string): boolean => {
@@ -231,11 +232,11 @@ export function DraftEditor({
     }
   }
 
-  function chooseFiles(files: FileList | null) {
+  function chooseFiles(files: readonly File[]) {
     setFileError(null);
-    if (!files || !canEdit) return;
+    if (files.length === 0 || !canEdit) return;
     let occupiedCount = existingAssetCount + uploads.filter(({ status }) => status === "uploading" || status === "uploaded").length;
-    for (const file of Array.from(files)) {
+    for (const file of files) {
       if (!acceptedMimeTypes.includes(file.type)) {
         setFileError(`${file.name} must be an accepted file type.`);
         continue;
@@ -350,7 +351,11 @@ export function DraftEditor({
 
       {onUploadFile ? (
         <div className="space-y-3">
-          <label htmlFor={fileInputId} className="inline-flex min-h-11 cursor-pointer touch-manipulation items-center rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold hover:bg-[var(--color-paper)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2">
+          <label
+            htmlFor={fileInputId}
+            aria-disabled={!canEdit}
+            className={`inline-flex min-h-11 touch-manipulation items-center rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold ${canEdit ? "cursor-pointer hover:bg-[var(--color-paper)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2" : "pointer-events-none cursor-not-allowed opacity-50"}`}
+          >
             Upload draft files
           </label>
           <input
@@ -360,7 +365,11 @@ export function DraftEditor({
             type="file"
             multiple
             accept={acceptedMimeTypes.join(",")}
-            onChange={(event) => chooseFiles(event.currentTarget.files)}
+            onChange={(event) => {
+              const files = Array.from(event.currentTarget.files ?? []);
+              event.currentTarget.value = "";
+              chooseFiles(files);
+            }}
             className="sr-only"
           />
           {fileError ? <p role="alert" className="break-words text-sm font-semibold text-[var(--color-magenta)]">{fileError}</p> : null}
