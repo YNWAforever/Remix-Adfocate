@@ -6,8 +6,21 @@ import { dict } from "@/lib/i18n.dict";
 import type { MissionMatch, MyMission } from "@/lib/queries/kocmax";
 import type { UseCreatorActivationResult } from "@/lib/useCreatorActivation";
 
-const mocks = vi.hoisted<{ track: ReturnType<typeof vi.fn>; activation: UseCreatorActivationResult }>(() => ({
+const mocks = vi.hoisted<{
+  track: ReturnType<typeof vi.fn>;
+  activation: UseCreatorActivationResult;
+  balance: {
+    data: { balance: number; available_to: string | null } | undefined;
+    isLoading: boolean;
+    isError: boolean;
+  };
+}>(() => ({
   track: vi.fn(),
+  balance: {
+    data: { balance: 0, available_to: null },
+    isLoading: false,
+    isError: false,
+  },
   activation: {
     snapshot: {
       readinessPercent: 60,
@@ -67,7 +80,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null, level: "L1", effective_level: "L1", is_trusted: false }, isLoading: false }),
-  useBalance: () => ({ data: { balance: 0, available_to: null }, isLoading: false, isError: false }),
+  useBalance: () => mocks.balance,
   useMissions: () => ({ data: [], isLoading: false, isError: false }),
 }));
 vi.mock("@/lib/useRealtimeBalance", () => ({ useRealtimeBalance: vi.fn() }));
@@ -104,6 +117,11 @@ function expectBefore(first: HTMLElement, second: HTMLElement) {
 }
 
 function resetActivation() {
+  mocks.balance = {
+    data: { balance: 0, available_to: null },
+    isLoading: false,
+    isError: false,
+  };
   mocks.activation.snapshot.nextAction = {
     kind: "view_recommended_mission",
     titleKey: "app.activation.next.viewRecommendedMission.title",
@@ -215,6 +233,21 @@ describe("Home", () => {
     renderHome();
     expect(screen.getByText(dict.zh["app.activation.earnings.error"])).toBeInTheDocument();
     expect(screen.getByText("推薦美容任務")).toBeInTheDocument();
+  });
+
+  it("keeps cached realtime points and recommendations visible when the points query refetch fails", () => {
+    setRecommendations([unlockedMission]);
+    mocks.balance = {
+      data: { balance: 450, available_to: "2026-09-01T00:00:00Z" },
+      isLoading: false,
+      isError: true,
+    };
+
+    renderHome();
+
+    expect(screen.getByRole("alert")).toHaveTextContent(dict.zh["common.balanceError"]);
+    expect(screen.getByText("450")).toBeInTheDocument();
+    expect(screen.getByText(unlockedMission.title)).toBeInTheDocument();
   });
 
   it("keeps readiness visible when recommendations fail", () => {

@@ -163,7 +163,7 @@ function Home() {
           <PointsBalanceCard
             balance={balance.data?.balance ?? 0}
             availableTo={balance.data?.available_to}
-            loading={balance.isLoading || balance.isError}
+            loading={balance.isLoading || (balance.isError && !balance.data)}
           />
         </div>
       </div>
