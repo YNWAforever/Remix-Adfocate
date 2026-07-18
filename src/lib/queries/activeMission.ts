@@ -19,6 +19,14 @@ export type MissionDraftConflict = {
   currentDraft: MissionDraft;
 };
 
+type SaveMissionDraftContext = {
+  workItemId: string;
+  baseRevision: number;
+  optimisticRevision: number;
+  previousDraft: MissionDraft | null;
+  localDraft: SaveMissionDraftInput;
+};
+
 export type CreateDraftAssetGrantInput = {
   workItemId: string;
   fileName: string;
@@ -56,6 +64,41 @@ function updateWorkItemDraft(
   };
 }
 
+function workItemDraft(
+  workspace: ActiveMissionWorkspace | undefined,
+  workItemId: string,
+): MissionDraft | null {
+  return workspace?.workItems.find((item) => item.id === workItemId)?.draft ?? null;
+}
+
+function replaceWorkItemDraft(
+  workspace: ActiveMissionWorkspace | undefined,
+  workItemId: string,
+  draft: MissionDraft | null,
+): ActiveMissionWorkspace | undefined {
+  if (!workspace) return workspace;
+  return {
+    ...workspace,
+    workItems: workspace.workItems.map((item) =>
+      item.id === workItemId ? { ...item, draft } : item),
+  };
+}
+
+function contextWasApplied(context: SaveMissionDraftContext): boolean {
+  return context.previousDraft !== null && context.previousDraft.revision <= context.baseRevision;
+}
+
+function isCurrentOptimisticDraft(
+  draft: MissionDraft | null,
+  context: SaveMissionDraftContext,
+): boolean {
+  if (!draft || draft.revision !== context.optimisticRevision) return false;
+  const local = context.localDraft;
+  return (!Object.prototype.hasOwnProperty.call(local, "caption") || draft.caption === local.caption)
+    && (!Object.prototype.hasOwnProperty.call(local, "externalUrl") || draft.externalUrl === local.externalUrl)
+    && (!Object.prototype.hasOwnProperty.call(local, "checklist") || draft.checklist === local.checklist);
+}
+
 function currentDraftFrom(error: unknown): MissionDraft | null {
   if (!(error instanceof ApiError) || error.code !== "WORKFLOW_STALE") return null;
   const details = error.details;
@@ -90,32 +133,62 @@ export function useSaveMissionDraft(submissionId: string) {
       }),
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey });
-      const previous = queryClient.getQueryData<ActiveMissionWorkspace>(queryKey);
-      setConflict(null);
+      const current = queryClient.getQueryData<ActiveMissionWorkspace>(queryKey);
+      const previousDraft = workItemDraft(current, input.workItemId);
+      const context = {
+        workItemId: input.workItemId,
+        baseRevision: input.revision,
+        optimisticRevision: input.revision + 1,
+        previousDraft,
+        localDraft: input,
+      } satisfies SaveMissionDraftContext;
+      const applied = contextWasApplied(context);
+      if (applied) {
+        setConflict((currentConflict) =>
+          currentConflict?.workItemId === input.workItemId ? null : currentConflict);
+      }
       queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        updateWorkItemDraft(current, input.workItemId, (draft) => ({
+        applied ? updateWorkItemDraft(current, input.workItemId, (draft) => ({
           ...draft,
           ...(Object.prototype.hasOwnProperty.call(input, "caption") ? { caption: input.caption! } : {}),
           ...(Object.prototype.hasOwnProperty.call(input, "externalUrl") ? { externalUrl: input.externalUrl! } : {}),
           ...(Object.prototype.hasOwnProperty.call(input, "checklist") ? { checklist: input.checklist! } : {}),
-          revision: input.revision + 1,
-        }))!);
-      return { previous };
+          revision: context.optimisticRevision,
+        }))! : current);
+      return context;
     },
-    onError: (error, input, context) => {
+    onError: (error, _input, context) => {
+      if (!context || !contextWasApplied(context)) return;
+      const cachedDraft = workItemDraft(
+        queryClient.getQueryData<ActiveMissionWorkspace>(queryKey),
+        context.workItemId,
+      );
+      if (!isCurrentOptimisticDraft(cachedDraft, context)) return;
       const currentDraft = currentDraftFrom(error);
       if (currentDraft) {
         queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-          updateWorkItemDraft(current, input.workItemId, () => currentDraft)!);
-        setConflict({ workItemId: input.workItemId, localDraft: input, currentDraft });
+          replaceWorkItemDraft(current, context.workItemId, currentDraft)!);
+        setConflict({
+          workItemId: context.workItemId,
+          localDraft: context.localDraft,
+          currentDraft,
+        });
         return;
       }
-      if (context?.previous) queryClient.setQueryData(queryKey, context.previous);
-    },
-    onSuccess: ({ draft }, input) => {
       queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        updateWorkItemDraft(current, input.workItemId, () => draft)!);
-      setConflict(null);
+        replaceWorkItemDraft(current, context.workItemId, context.previousDraft)!);
+    },
+    onSuccess: ({ draft }, _input, context) => {
+      if (!context || !contextWasApplied(context)) return;
+      queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
+        isCurrentOptimisticDraft(workItemDraft(current, context.workItemId), context)
+          ? replaceWorkItemDraft(current, context.workItemId, draft)!
+          : current);
+      setConflict((currentConflict) =>
+        currentConflict?.workItemId === context.workItemId
+          && currentConflict.localDraft.revision <= context.baseRevision
+          ? null
+          : currentConflict);
     },
   });
   return { ...mutation, conflict, clearConflict: () => setConflict(null) };

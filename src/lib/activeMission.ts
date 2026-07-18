@@ -175,24 +175,42 @@ export function deriveNextAction(workspace: ActiveMissionWorkspace): ActiveMissi
   }
 
   const blockedItem = firstByDeadline(workItems.filter((item) => item.state === "blocked_by_fulfillment"));
-  if (fulfillment?.status === "preparing") {
+  if (workflow.state === "fulfillment_pending") {
+    if (fulfillment?.status === "preparing") {
+      return blockedItem
+        ? actionForItem("wait_for_shipment", blockedItem, "fulfillment_not_shipped")
+        : { kind: "wait_for_shipment", workItemId: null, deadline: workflow.deadline, blockedReason: "fulfillment_not_shipped" };
+    }
+    if (fulfillment?.status === "shipped") {
+      return blockedItem
+        ? actionForItem("confirm_receipt", blockedItem, "fulfillment_receipt_required")
+        : { kind: "confirm_receipt", workItemId: null, deadline: workflow.deadline, blockedReason: "fulfillment_receipt_required" };
+    }
     return blockedItem
-      ? actionForItem("wait_for_shipment", blockedItem, "fulfillment_not_shipped")
-      : { kind: "wait_for_shipment", workItemId: null, deadline: workflow.deadline, blockedReason: "fulfillment_not_shipped" };
-  }
-  if (fulfillment?.status === "shipped") {
-    return blockedItem
-      ? actionForItem("confirm_receipt", blockedItem, "fulfillment_receipt_required")
-      : { kind: "confirm_receipt", workItemId: null, deadline: workflow.deadline, blockedReason: "fulfillment_receipt_required" };
+      ? actionForItem("contact_support", blockedItem, "fulfillment_state_inconsistent")
+      : { kind: "contact_support", workItemId: null, deadline: workflow.deadline, blockedReason: "fulfillment_state_inconsistent" };
   }
 
   const revision = firstByDeadline(workItems.filter((item) => item.state === "revision_requested"));
-  if (revision) return actionForItem("revise", revision);
-
-  const draft = firstByDeadline(workItems.filter((item) => item.state === "drafting"));
-  if (draft) return actionForItem("draft", draft);
+  if (workflow.state === "revision_requested") {
+    return revision
+      ? actionForItem("revise", revision)
+      : { kind: "contact_support", workItemId: null, deadline: workflow.deadline, blockedReason: "workflow_state_inconsistent" };
+  }
 
   const waiting = firstByDeadline(workItems.filter((item) => item.state === "submitted" || item.state === "under_review"));
+  if (workflow.state === "in_review") {
+    return waiting
+      ? actionForItem("await_review", waiting, "operator_review")
+      : { kind: "contact_support", workItemId: null, deadline: workflow.deadline, blockedReason: "workflow_state_inconsistent" };
+  }
+
+  const requiredDraft = firstByDeadline(workItems.filter((item) => item.required && item.state === "drafting"));
+  if (requiredDraft) return actionForItem("draft", requiredDraft);
+
+  const draft = firstByDeadline(workItems.filter((item) => !item.required && item.state === "drafting"));
+  if (draft) return actionForItem("draft", draft);
+
   if (waiting) return actionForItem("await_review", waiting, "operator_review");
 
   const requiredItems = workItems.filter((item) => item.required);
