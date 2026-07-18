@@ -14,6 +14,204 @@ import { shapeMissionActivity, type MissionActivityRow } from "../lib/missionAct
  *  Dashboard (B3). All relative imports carry the .js ESM extension. */
 export const adminMissionRoutes = new Hono();
 
+export type MissionWorkflowPolicyInput = {
+  creator_workflow_mode: "legacy" | "active_workspace";
+  fulfillment_required: boolean;
+  revision_limit: number;
+  review_sla_hours: number;
+  revision_response_hours: number;
+};
+
+export type MissionDeliverableTemplateInput = {
+  id?: string;
+  title: string;
+  platform: string | null;
+  position: number;
+  required: boolean;
+  draft_due_offset_hours: number;
+  requirements: {
+    id?: string;
+    category: "format" | "key_message" | "compliance" | "quality" | "other";
+    text: string;
+    required: boolean;
+    position: number;
+  }[];
+};
+
+export type MissionWorkflowAuthoringInput = Partial<MissionWorkflowPolicyInput> & {
+  deliverable_templates?: MissionDeliverableTemplateInput[];
+};
+
+type MissionAuthoringRequest = MissionInput & MissionWorkflowAuthoringInput;
+
+export const DEFAULT_MISSION_WORKFLOW_POLICY: MissionWorkflowPolicyInput = {
+  creator_workflow_mode: "legacy",
+  fulfillment_required: false,
+  revision_limit: 2,
+  review_sla_hours: 48,
+  revision_response_hours: 48,
+};
+
+const REQUIREMENT_CATEGORIES = new Set(["format", "key_message", "compliance", "quality", "other"]);
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function normalizeMissionWorkflowAuthoring(input: MissionWorkflowAuthoringInput = {}) {
+  return {
+    policy: {
+      creator_workflow_mode: input.creator_workflow_mode ?? DEFAULT_MISSION_WORKFLOW_POLICY.creator_workflow_mode,
+      fulfillment_required: input.fulfillment_required ?? DEFAULT_MISSION_WORKFLOW_POLICY.fulfillment_required,
+      revision_limit: input.revision_limit ?? DEFAULT_MISSION_WORKFLOW_POLICY.revision_limit,
+      review_sla_hours: input.review_sla_hours ?? DEFAULT_MISSION_WORKFLOW_POLICY.review_sla_hours,
+      revision_response_hours: input.revision_response_hours ?? DEFAULT_MISSION_WORKFLOW_POLICY.revision_response_hours,
+    } satisfies MissionWorkflowPolicyInput,
+    templates: input.deliverable_templates ?? [],
+  };
+}
+
+export function validateMissionWorkflowAuthoring(input: unknown) {
+  const errors: Record<string, string> = {};
+  const raw = isRecord(input) ? input : {};
+  if (!isRecord(input)) errors.root = "Must be an object";
+
+  const policy = {
+    creator_workflow_mode: raw.creator_workflow_mode === undefined
+      ? DEFAULT_MISSION_WORKFLOW_POLICY.creator_workflow_mode
+      : raw.creator_workflow_mode,
+    fulfillment_required: raw.fulfillment_required === undefined
+      ? DEFAULT_MISSION_WORKFLOW_POLICY.fulfillment_required
+      : raw.fulfillment_required,
+    revision_limit: raw.revision_limit === undefined
+      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_limit
+      : raw.revision_limit,
+    review_sla_hours: raw.review_sla_hours === undefined
+      ? DEFAULT_MISSION_WORKFLOW_POLICY.review_sla_hours
+      : raw.review_sla_hours,
+    revision_response_hours: raw.revision_response_hours === undefined
+      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_response_hours
+      : raw.revision_response_hours,
+  };
+
+  if (!(policy.creator_workflow_mode === "legacy" || policy.creator_workflow_mode === "active_workspace")) {
+    errors.creator_workflow_mode = "Invalid creator workflow";
+  }
+  if (typeof policy.fulfillment_required !== "boolean") errors.fulfillment_required = "Must be a boolean";
+  if (typeof policy.revision_limit !== "number" || !Number.isInteger(policy.revision_limit) || policy.revision_limit < 0) {
+    errors.revision_limit = "Must be a non-negative integer";
+  }
+  if (typeof policy.review_sla_hours !== "number" || !Number.isInteger(policy.review_sla_hours) || policy.review_sla_hours <= 0) errors.review_sla_hours = "Must be a positive integer";
+  if (typeof policy.revision_response_hours !== "number" || !Number.isInteger(policy.revision_response_hours) || policy.revision_response_hours <= 0) errors.revision_response_hours = "Must be a positive integer";
+
+  let templates: unknown[] = [];
+  if (raw.deliverable_templates !== undefined) {
+    if (Array.isArray(raw.deliverable_templates)) templates = raw.deliverable_templates;
+    else errors.deliverable_templates = "Must be an array";
+  }
+  if (policy.creator_workflow_mode === "active_workspace" && !templates.some((template) => isRecord(template) && template.required === true)) {
+    errors.deliverable_templates = "Add at least one required deliverable";
+  }
+  const positions = new Set<number>();
+  templates.forEach((template, templateIndex) => {
+    const key = `deliverable_templates.${templateIndex}`;
+    if (!isRecord(template)) {
+      errors[key] = "Must be an object";
+      return;
+    }
+    if (template.id !== undefined && (typeof template.id !== "string" || !UUID_PATTERN.test(template.id))) {
+      errors[`${key}.id`] = "Must be a UUID";
+    }
+    if (typeof template.title !== "string" || !template.title.trim()) errors[`${key}.title`] = "Title is required";
+    if (!(template.platform === null || (typeof template.platform === "string" && template.platform.trim()))) {
+      errors[`${key}.platform`] = "Platform must be null or a non-empty string";
+    }
+    if (typeof template.position !== "number" || !Number.isInteger(template.position) || template.position < 0) errors[`${key}.position`] = "Must be a non-negative integer";
+    else if (positions.has(template.position as number)) errors[`${key}.position`] = "Deliverable positions must be unique";
+    else positions.add(template.position as number);
+    if (typeof template.required !== "boolean") errors[`${key}.required`] = "Must be a boolean";
+    if (typeof template.draft_due_offset_hours !== "number" || !Number.isInteger(template.draft_due_offset_hours) || template.draft_due_offset_hours < 0) {
+      errors[`${key}.draft_due_offset_hours`] = "Must be a non-negative integer";
+    }
+
+    if (!Array.isArray(template.requirements)) {
+      errors[`${key}.requirements`] = "Must be an array";
+      return;
+    }
+    const requirementPositions = new Set<number>();
+    template.requirements.forEach((requirement, requirementIndex) => {
+      const requirementKey = `${key}.requirements.${requirementIndex}`;
+      if (!isRecord(requirement)) {
+        errors[requirementKey] = "Must be an object";
+        return;
+      }
+      if (requirement.id !== undefined && (typeof requirement.id !== "string" || !UUID_PATTERN.test(requirement.id))) {
+        errors[`${requirementKey}.id`] = "Must be a UUID";
+      }
+      if (typeof requirement.text !== "string" || !requirement.text.trim()) {
+        errors[`${requirementKey}.text`] = "Requirement text is required";
+      }
+      if (typeof requirement.category !== "string" || !REQUIREMENT_CATEGORIES.has(requirement.category)) errors[`${requirementKey}.category`] = "Invalid requirement category";
+      if (typeof requirement.position !== "number" || !Number.isInteger(requirement.position) || requirement.position < 0) errors[`${requirementKey}.position`] = "Must be a non-negative integer";
+      else if (requirementPositions.has(requirement.position as number)) errors[`${requirementKey}.position`] = "Requirement positions must be unique";
+      else requirementPositions.add(requirement.position as number);
+      if (typeof requirement.required !== "boolean") errors[`${requirementKey}.required`] = "Must be a boolean";
+    });
+  });
+
+  return {
+    ok: Object.keys(errors).length === 0,
+    errors,
+    policy: policy as MissionWorkflowPolicyInput,
+    templates: templates as MissionDeliverableTemplateInput[],
+  };
+}
+
+type MissionWorkflowRpcClient = {
+  rpc: (
+    name: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: { code?: string; message: string } | null }>;
+};
+
+type PersistMissionWorkflowAuthoringInput = {
+  missionId: string | null;
+  mission: Record<string, unknown>;
+  policy: MissionWorkflowPolicyInput;
+  templates: MissionDeliverableTemplateInput[];
+};
+
+export function persistMissionWorkflowAuthoring(
+  svc: MissionWorkflowRpcClient,
+  input: PersistMissionWorkflowAuthoringInput,
+) {
+  return svc.rpc("author_mission_workflow", {
+    p_mission_id: input.missionId,
+    p_mission: input.mission,
+    p_policy: input.policy,
+    p_templates: input.templates,
+  });
+}
+
+export function hydrateMissionWorkflowAuthoring(row: Record<string, unknown>) {
+  const { policy } = normalizeMissionWorkflowAuthoring(row as MissionWorkflowAuthoringInput);
+  const templates = Array.isArray(row.deliverable_templates)
+    ? row.deliverable_templates.map((template) => {
+      if (!isRecord(template)) return template;
+      return {
+        ...template,
+        requirements: Array.isArray(template.requirements) ? template.requirements : [],
+      };
+    })
+    : [];
+  return {
+    ...row,
+    ...policy,
+    deliverable_templates: templates,
+  };
+}
+
 const ENGAGED_STATUSES = ["applied", "joined", "submitted", "under_review", "approved"];
 
 const MISSION_COLS =
@@ -21,6 +219,9 @@ const MISSION_COLS =
   "points_reward, cash_reward, cpm_rate, cpm_budget_pool, deadline, quota, filled, status, " +
   "deliverables, requirements, platforms, effort, " +
   "target_audience, dos, donts, key_messages, reference_links, " +
+  "creator_workflow_mode, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, " +
+  "deliverable_templates:mission_deliverable_templates(id, title, platform, position, required, draft_due_offset_hours, " +
+  "requirements:mission_deliverable_requirements(id, category, text:requirement_text, required, position)), " +
   "created_at, updated_at, published_at, closed_at";
 
 const EDITABLE_COLS: (keyof MissionInput)[] = [
@@ -79,7 +280,10 @@ adminMissionRoutes.get("/missions", async (c) => {
     if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
     engagedSet = new Set((subs ?? []).map((s) => s.mission_id as string));
   }
-  const missions = rows.map((r) => ({ ...r, engaged: engagedSet.has(r.id) || (r.filled ?? 0) > 0 }));
+  const missions = rows.map((r) => ({
+    ...hydrateMissionWorkflowAuthoring(r),
+    engaged: engagedSet.has(r.id) || (r.filled ?? 0) > 0,
+  }));
   return c.json({ missions });
 });
 
@@ -87,14 +291,18 @@ adminMissionRoutes.get("/missions/:id", async (c) => {
   const { data, error } = await serviceClient().from("missions").select(MISSION_COLS).eq("id", c.req.param("id")).maybeSingle();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   if (!data) return c.json({ error: "not_found", code: "not_found" }, 404);
-  return c.json({ mission: data });
+  return c.json({ mission: hydrateMissionWorkflowAuthoring(data as unknown as Record<string, unknown>) });
 });
 
 adminMissionRoutes.post("/missions", async (c) => {
-  const body = await c.req.json<MissionInput>().catch(() => ({}) as MissionInput);
+  const body = await c.req.json<MissionAuthoringRequest>().catch(() => ({}) as MissionAuthoringRequest);
   const { ok, errors } = validateMission(body, "draft");
   if (!ok) return c.json({ error: "請修正欄位後再儲存", code: "validation", fields: errors }, 422);
 
+  const workflow = validateMissionWorkflowAuthoring(body);
+  if (!workflow.ok) {
+    return c.json({ error: "validation_failed", code: "validation", fields: workflow.errors }, 422);
+  }
   const insert: Record<string, unknown> = {
     workspace_id: body.workspace_id, slug: body.slug, title: body.title, mission_type: body.mission_type,
     description: body.description ?? null, category: body.category ?? null,
@@ -106,19 +314,24 @@ adminMissionRoutes.post("/missions", async (c) => {
     effort: body.effort ?? null, status: "draft",
     ...normalizeBriefForWrite(body),
   };
-  const { data, error } = await serviceClient().from("missions").insert(insert).select(MISSION_COLS).single();
+  const { data, error } = await persistMissionWorkflowAuthoring(serviceClient(), {
+    missionId: null,
+    mission: insert,
+    policy: workflow.policy,
+    templates: workflow.templates,
+  });
   if (error) {
     if (error.code === "23505") {
       return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "此 workspace 已有相同 slug 的任務" } }, 422);
     }
     return c.json({ error: error.message, code: "db_error" }, 500);
   }
-  return c.json({ mission: data }, 201);
+  return c.json({ mission: hydrateMissionWorkflowAuthoring(data as Record<string, unknown>) }, 201);
 });
 
 adminMissionRoutes.patch("/missions/:id", async (c) => {
   const id = c.req.param("id");
-  const patch = await c.req.json<MissionInput>().catch(() => ({}) as MissionInput);
+  const patch = await c.req.json<MissionAuthoringRequest>().catch(() => ({}) as MissionAuthoringRequest);
   const svc = serviceClient();
 
   const { data: existing, error: exErr } = await svc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
@@ -135,6 +348,13 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
   const { ok, errors } = validateEdit(existing as unknown as MissionRecord, patch, engaged);
   if (!ok) return c.json({ error: "請修正欄位後再儲存", code: "validation", fields: errors }, 422);
 
+  const workflow = validateMissionWorkflowAuthoring({
+    ...(existing as unknown as Record<string, unknown>),
+    ...patch,
+  });
+  if (!workflow.ok) {
+    return c.json({ error: "validation_failed", code: "validation", fields: workflow.errors }, 422);
+  }
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   for (const k of EDITABLE_COLS) if (Object.prototype.hasOwnProperty.call(patch, k)) updates[k] = patch[k];
 
@@ -144,14 +364,22 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
     if (Object.prototype.hasOwnProperty.call(patch, k)) updates[k] = briefDefaults[k];
   }
 
-  const { data, error } = await svc.from("missions").update(updates).eq("id", id).select(MISSION_COLS).single();
+  const { data, error } = await persistMissionWorkflowAuthoring(svc, {
+    missionId: id,
+    mission: updates,
+    policy: workflow.policy,
+    templates: workflow.templates,
+  });
   if (error) {
+    if (error.message.includes("mission_template_snapshotted")) {
+      return c.json({ error: "A deliverable used by an existing workflow cannot be removed", code: "MISSION_TEMPLATE_SNAPSHOTTED" }, 409);
+    }
     if (error.code === "23505") {
       return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "此 workspace 已有相同 slug 的任務" } }, 422);
     }
     return c.json({ error: error.message, code: "db_error" }, 500);
   }
-  return c.json({ mission: data });
+  return c.json({ mission: hydrateMissionWorkflowAuthoring(data as Record<string, unknown>) });
 });
 
 adminMissionRoutes.post("/missions/:id/publish", async (c) => {

@@ -364,6 +364,30 @@ export function fetchEngagedUsers(workspace = "") {
 // ---- B1 mission authoring -------------------------------------------------
 export type AdminWorkspace = { id: string; slug: string; name: string };
 
+export type MissionWorkflowPolicyInput = {
+  creator_workflow_mode: "legacy" | "active_workspace";
+  fulfillment_required: boolean;
+  revision_limit: number;
+  review_sla_hours: number;
+  revision_response_hours: number;
+};
+
+export type MissionDeliverableTemplateInput = {
+  id?: string;
+  title: string;
+  platform: string | null;
+  position: number;
+  required: boolean;
+  draft_due_offset_hours: number;
+  requirements: {
+    id?: string;
+    category: "format" | "key_message" | "compliance" | "quality" | "other";
+    text: string;
+    required: boolean;
+    position: number;
+  }[];
+};
+
 export type AdminMission = {
   id: string;
   workspace_id: string;
@@ -394,6 +418,12 @@ export type AdminMission = {
   updated_at: string;
   published_at: string | null;
   closed_at: string | null;
+  creator_workflow_mode: MissionWorkflowPolicyInput["creator_workflow_mode"];
+  fulfillment_required: boolean;
+  revision_limit: number;
+  review_sla_hours: number;
+  revision_response_hours: number;
+  deliverable_templates: MissionDeliverableTemplateInput[];
 };
 export type AdminMissionRow = AdminMission & { engaged: boolean };
 
@@ -421,7 +451,8 @@ export type MissionDraftInput = {
   donts?: string[];
   key_messages?: string[];
   reference_links?: string[];
-};
+  deliverable_templates?: MissionDeliverableTemplateInput[];
+} & Partial<MissionWorkflowPolicyInput>;
 export type MissionPatch = Partial<MissionDraftInput>;
 
 export const adminMissionKeys = {

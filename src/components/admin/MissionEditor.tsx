@@ -1,7 +1,7 @@
 // src/components/admin/MissionEditor.tsx
 import { useState } from "react";
 import { MISSION_CATEGORIES } from "@/lib/missionCategories";
-import { AdminRequestError, type AdminMission, type MissionDraftInput } from "@/lib/admin";
+import { AdminRequestError, type AdminMission, type MissionDeliverableTemplateInput, type MissionDraftInput } from "@/lib/admin";
 import { ArrayInput } from "./ArrayInput";
 import { PlatformPicker } from "./PlatformPicker";
 import { MissionBrief } from "@/components/MissionBrief";
@@ -9,6 +9,7 @@ import { MissionFacts } from "@/components/MissionFacts";
 import type { Mission } from "@/lib/queries/kocmax";
 
 const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
+const REQUIREMENT_CATEGORIES = ["format", "key_message", "compliance", "quality", "other"] as const;
 const LEVELS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"] as const;
 const EFFORTS = ["", "low", "medium", "high"] as const;
 
@@ -23,6 +24,29 @@ type Props = {
 };
 
 const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
+let editorKeySequence = 0;
+const nextEditorKey = () => `mission-workflow-editor-${editorKeySequence++}`;
+
+type EditableRequirement = MissionDeliverableTemplateInput["requirements"][number] & { editorKey: string };
+type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements"> & {
+  editorKey: string;
+  requirements: EditableRequirement[];
+};
+
+function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): EditableTemplate[] {
+  return templates.map((template) => ({
+    ...template,
+    editorKey: nextEditorKey(),
+    requirements: template.requirements.map((requirement) => ({ ...requirement, editorKey: nextEditorKey() })),
+  }));
+}
+
+function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
+  return templates.map(({ editorKey: _templateKey, requirements, ...template }) => ({
+    ...template,
+    requirements: requirements.map(({ editorKey: _requirementKey, ...requirement }) => requirement),
+  }));
+}
 
 export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
   const published = mode === "edit" && initial?.status !== "draft";
@@ -50,6 +74,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
     donts: initial?.donts ?? [],
     key_messages: initial?.key_messages ?? [],
     reference_links: initial?.reference_links ?? [],
+    creator_workflow_mode: initial?.creator_workflow_mode ?? "legacy",
+    fulfillment_required: initial?.fulfillment_required ?? false,
+    revision_limit: String(initial?.revision_limit ?? 2),
+    review_sla_hours: String(initial?.review_sla_hours ?? 48),
+    revision_response_hours: String(initial?.revision_response_hours ?? 48),
+    deliverable_templates: toEditableTemplates(initial?.deliverable_templates ?? []),
   });
   const [preview, setPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -69,6 +99,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
       cpm_rate: isCpm ? numOrNull(f.cpm_rate) : null,
       cpm_budget_pool: isCpm ? numOrNull(f.cpm_budget_pool) : null,
       deadline: f.deadline || null, quota: Number(f.quota || 0),
+      creator_workflow_mode: f.creator_workflow_mode,
+      fulfillment_required: f.fulfillment_required,
+      revision_limit: Number(f.revision_limit),
+      review_sla_hours: Number(f.review_sla_hours),
+      revision_response_hours: Number(f.revision_response_hours),
+      deliverable_templates: toTemplatePayload(f.deliverable_templates),
       deliverables: f.deliverables, requirements: f.requirements, platforms: f.platforms,
       effort: (f.effort || null) as MissionDraftInput["effort"],
       target_audience: f.target_audience.trim() || null,
@@ -190,11 +226,222 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         <label className="block text-sm">任務簡介
           <textarea aria-label="任務簡介" rows={4} className={area} value={f.description} onChange={set("description")} /><Err k="description" />
         </label>
-        <p className="block text-sm font-bold">交付內容</p>
-        <ArrayInput value={f.deliverables} onChange={(v) => setF({ ...f, deliverables: v })} placeholder="新增交付項目…" />
+        <label className="block text-sm">Creator workflow
+          <select aria-label="Creator workflow" className={input} value={f.creator_workflow_mode} onChange={set("creator_workflow_mode")}>
+            <option value="legacy">Legacy submission</option>
+            <option value="active_workspace">Active mission workspace</option>
+          </select><Err k="creator_workflow_mode" />
+        </label>
 
-        <p className="block text-sm font-bold">注意事項 / 要求</p>
-        <ArrayInput value={f.requirements} onChange={(v) => setF({ ...f, requirements: v })} placeholder="新增要求…" />
+        {f.creator_workflow_mode === "active_workspace" ? (
+          <div className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                aria-label="Fulfillment required"
+                type="checkbox"
+                checked={f.fulfillment_required}
+                onChange={(event) => setF((previous) => ({ ...previous, fulfillment_required: event.target.checked }))}
+              />
+              Fulfillment required
+            </label>
+            <label className="block text-sm">Revision limit
+              <input aria-label="Revision limit" className={input} type="number" min={0} value={f.revision_limit} onChange={set("revision_limit")} />
+            </label>
+            <label className="block text-sm">Review SLA hours
+              <input aria-label="Review SLA hours" className={input} type="number" min={1} value={f.review_sla_hours} onChange={set("review_sla_hours")} />
+            </label>
+            <label className="block text-sm">Revision response hours
+              <input aria-label="Revision response hours" className={input} type="number" min={1} value={f.revision_response_hours} onChange={set("revision_response_hours")} />
+            </label>
+            <button
+              type="button"
+              onClick={() => setF((previous) => ({
+                ...previous,
+                deliverable_templates: [...previous.deliverable_templates, {
+                  editorKey: nextEditorKey(),
+                  title: "",
+                  platform: null,
+                  position: previous.deliverable_templates.length,
+                  required: true,
+                  draft_due_offset_hours: 0,
+                  requirements: [],
+                } satisfies EditableTemplate],
+              }))}
+              className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+            >
+              Add deliverable
+            </button>
+            {f.deliverable_templates.map((template, templateIndex) => (
+              <fieldset key={template.editorKey} className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+                <legend className="px-1 text-sm font-bold">Deliverable {templateIndex + 1}</legend>
+                <label className="block text-sm">Title
+                  <input
+                    aria-label={`Deliverable title ${templateIndex + 1}`}
+                    className={input}
+                    value={template.title}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, title: event.target.value } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Platform (optional)
+                  <input
+                    aria-label={`Deliverable platform ${templateIndex + 1}`}
+                    className={input}
+                    value={template.platform ?? ""}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, platform: event.target.value.trim() || null } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    aria-label={`Deliverable required ${templateIndex + 1}`}
+                    type="checkbox"
+                    checked={template.required}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, required: event.target.checked } : item
+                      )),
+                    }))}
+                  />
+                  Required deliverable
+                </label>
+                <label className="block text-sm">Draft due offset (hours)
+                  <input
+                    aria-label={`Draft due offset ${templateIndex + 1}`}
+                    className={input}
+                    type="number"
+                    min={0}
+                    value={template.draft_due_offset_hours}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, draft_due_offset_hours: Number(event.target.value) } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <button
+                  type="button"
+                  aria-label={`Remove deliverable ${templateIndex + 1}`}
+                  className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+                  onClick={() => setF((previous) => ({
+                    ...previous,
+                    deliverable_templates: previous.deliverable_templates
+                      .filter((_, index) => index !== templateIndex)
+                      .map((item, position) => ({ ...item, position })),
+                  }))}
+                >
+                  Remove deliverable
+                </button>
+
+                <div className="space-y-3 border-l-2 border-[var(--color-ink)] pl-3">
+                  <p className="text-sm font-bold">Checklist</p>
+                  {template.requirements.map((requirement, requirementIndex) => (
+                    <fieldset key={requirement.editorKey} className="space-y-2">
+                      <legend className="text-xs font-bold">Checklist item {requirementIndex + 1}</legend>
+                      <label className="block text-sm">Category
+                        <select
+                          aria-label={`Checklist category ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          className={input}
+                          value={requirement.category}
+                          onChange={(event) => setF((previous) => ({
+                            ...previous,
+                            deliverable_templates: previous.deliverable_templates.map((item, index) => index === templateIndex
+                              ? { ...item, requirements: item.requirements.map((check, checkIndex) => checkIndex === requirementIndex
+                                ? { ...check, category: event.target.value as EditableRequirement["category"] }
+                                : check) }
+                              : item),
+                          }))}
+                        >
+                          {REQUIREMENT_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+                        </select>
+                      </label>
+                      <label className="block text-sm">Requirement
+                        <input
+                          aria-label={`Checklist text ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          className={input}
+                          value={requirement.text}
+                          onChange={(event) => setF((previous) => ({
+                            ...previous,
+                            deliverable_templates: previous.deliverable_templates.map((item, index) => index === templateIndex
+                              ? { ...item, requirements: item.requirements.map((check, checkIndex) => checkIndex === requirementIndex
+                                ? { ...check, text: event.target.value }
+                                : check) }
+                              : item),
+                          }))}
+                        />
+                      </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          aria-label={`Checklist required ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          type="checkbox"
+                          checked={requirement.required}
+                          onChange={(event) => setF((previous) => ({
+                            ...previous,
+                            deliverable_templates: previous.deliverable_templates.map((item, index) => index === templateIndex
+                              ? { ...item, requirements: item.requirements.map((check, checkIndex) => checkIndex === requirementIndex
+                                ? { ...check, required: event.target.checked }
+                                : check) }
+                              : item),
+                          }))}
+                        />
+                        Required checklist item
+                      </label>
+                      <button
+                        type="button"
+                        aria-label={`Remove checklist item ${requirementIndex + 1} from deliverable ${templateIndex + 1}`}
+                        className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+                        onClick={() => setF((previous) => ({
+                          ...previous,
+                          deliverable_templates: previous.deliverable_templates.map((item, index) => index === templateIndex
+                            ? { ...item, requirements: item.requirements
+                              .filter((_, checkIndex) => checkIndex !== requirementIndex)
+                              .map((check, position) => ({ ...check, position })) }
+                            : item),
+                        }))}
+                      >
+                        Remove checklist item
+                      </button>
+                    </fieldset>
+                  ))}
+                  <button
+                    type="button"
+                    aria-label={`Add checklist item to deliverable ${templateIndex + 1}`}
+                    className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"
+                    onClick={() => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => index === templateIndex
+                        ? { ...item, requirements: [...item.requirements, {
+                          editorKey: nextEditorKey(), category: "other", text: "", required: true, position: item.requirements.length,
+                        }] }
+                        : item),
+                    }))}
+                  >
+                    Add checklist item
+                  </button>
+                </div>
+              </fieldset>
+            ))}
+            <Err k="deliverable_templates" />
+          </div>
+        ) : (
+          <>
+            <p className="block text-sm font-bold">交付內容</p>
+            <ArrayInput value={f.deliverables} onChange={(v) => setF({ ...f, deliverables: v })} placeholder="新增交付項目…" />
+
+            <p className="block text-sm font-bold">注意事項 / 要求</p>
+            <ArrayInput value={f.requirements} onChange={(v) => setF({ ...f, requirements: v })} placeholder="新增要求…" />
+          </>
+        )}
 
         <p className="block text-sm font-bold">發佈平台</p>
         <PlatformPicker value={f.platforms} onChange={(v) => setF({ ...f, platforms: v })} />
@@ -244,7 +491,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         )}
       </div>
 
-      <button onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
+      <button aria-label="Save mission" onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
         {mode === "create" ? "儲存草稿" : "儲存變更"}
       </button>
     </div>

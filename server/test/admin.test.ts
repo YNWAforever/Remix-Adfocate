@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, makeMission, getCreatorScores, cleanup, hasSupabaseEnv } from "./helpers";
 
@@ -7,6 +9,232 @@ process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
 const { app } = createApp();
+
+describe("active mission authoring contract", () => {
+  it("exposes controlled policy validation for always-available API tests", async () => {
+    const authoring = await import("../routes/adminMissions");
+    expect(typeof (authoring as Record<string, unknown>).validateMissionWorkflowAuthoring).toBe("function");
+  });
+
+  it("normalizes legacy defaults without active templates", async () => {
+    const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    expect(validateMissionWorkflowAuthoring({})).toMatchObject({
+      ok: true,
+      policy: {
+        creator_workflow_mode: "legacy",
+        fulfillment_required: false,
+        revision_limit: 2,
+        review_sla_hours: 48,
+        revision_response_hours: 48,
+      },
+      templates: [],
+    });
+  });
+
+  it("accepts an exact active policy with nullable platform and repeated requirement categories", async () => {
+    const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    const result = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: true,
+      revision_limit: 2,
+      review_sla_hours: 48,
+      revision_response_hours: 24,
+      deliverable_templates: [{
+        title: "Social video",
+        platform: null,
+        position: 0,
+        required: true,
+        draft_due_offset_hours: 12,
+        requirements: [
+          { category: "compliance", text: "Show #ad", required: true, position: 0 },
+          { category: "compliance", text: "Show the product", required: true, position: 1 },
+        ],
+      }],
+    });
+    expect(result).toMatchObject({ ok: true, errors: {} });
+  });
+
+  it("reports exact nested shape and scalar validation without throwing", async () => {
+    const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    const result = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: "yes",
+      revision_limit: -1,
+      review_sla_hours: 0,
+      revision_response_hours: 1.5,
+      deliverable_templates: [{
+        id: "not-a-uuid",
+        title: "   ",
+        platform: "   ",
+        position: -1,
+        required: "yes",
+        draft_due_offset_hours: -2,
+        requirements: [{
+          id: "also-not-a-uuid",
+          category: "unknown",
+          text: "  ",
+          required: "yes",
+          position: -1,
+        }],
+      }],
+    } as never);
+
+    expect(result.ok).toBe(false);
+    expect(result.errors).toMatchObject({
+      fulfillment_required: "Must be a boolean",
+      revision_limit: "Must be a non-negative integer",
+      review_sla_hours: "Must be a positive integer",
+      revision_response_hours: "Must be a positive integer",
+      "deliverable_templates.0.id": "Must be a UUID",
+      "deliverable_templates.0.title": "Title is required",
+      "deliverable_templates.0.platform": "Platform must be null or a non-empty string",
+      "deliverable_templates.0.position": "Must be a non-negative integer",
+      "deliverable_templates.0.required": "Must be a boolean",
+      "deliverable_templates.0.draft_due_offset_hours": "Must be a non-negative integer",
+      "deliverable_templates.0.requirements.0.id": "Must be a UUID",
+      "deliverable_templates.0.requirements.0.category": "Invalid requirement category",
+      "deliverable_templates.0.requirements.0.text": "Requirement text is required",
+      "deliverable_templates.0.requirements.0.required": "Must be a boolean",
+      "deliverable_templates.0.requirements.0.position": "Must be a non-negative integer",
+    });
+  });
+
+  it("requires arrays and unique positions at each nesting level", async () => {
+    const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    expect(validateMissionWorkflowAuthoring({ deliverable_templates: null } as never).errors).toMatchObject({
+      deliverable_templates: "Must be an array",
+    });
+
+    const duplicate = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      deliverable_templates: [
+        { title: "A", platform: null, position: 0, required: true, draft_due_offset_hours: 0, requirements: [] },
+        { title: "B", platform: "instagram", position: 0, required: false, draft_due_offset_hours: 0, requirements: [
+          { category: "format", text: "One", required: true, position: 0 },
+          { category: "quality", text: "Two", required: true, position: 0 },
+        ] },
+      ],
+    });
+    expect(duplicate.errors).toMatchObject({
+      "deliverable_templates.1.position": "Deliverable positions must be unique",
+      "deliverable_templates.1.requirements.1.position": "Requirement positions must be unique",
+    });
+
+    expect(validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      deliverable_templates: [{
+        title: "A", platform: null, position: 0, required: true, draft_due_offset_hours: 0, requirements: null,
+      }],
+    } as never).errors).toMatchObject({
+      "deliverable_templates.0.requirements": "Must be an array",
+    });
+  });
+
+  it("persists mission, policy, templates, and requirements through one atomic RPC", async () => {
+    const { persistMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    const rpc = vi.fn().mockResolvedValue({ data: { id: "mission-1" }, error: null });
+    const request = {
+      missionId: null,
+      mission: { workspace_id: "ws-1", slug: "active-brief", title: "Active brief", status: "draft" },
+      policy: {
+        creator_workflow_mode: "active_workspace" as const,
+        fulfillment_required: true,
+        revision_limit: 2,
+        review_sla_hours: 48,
+        revision_response_hours: 24,
+      },
+      templates: [{
+        title: "Reel",
+        platform: null,
+        position: 0,
+        required: true,
+        draft_due_offset_hours: 12,
+        requirements: [{ category: "compliance" as const, text: "Use #ad", required: true, position: 0 }],
+      }],
+    };
+
+    const result = await persistMissionWorkflowAuthoring({ rpc } as never, request);
+
+    expect(result).toEqual({ data: { id: "mission-1" }, error: null });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("author_mission_workflow", {
+      p_mission_id: null,
+      p_mission: request.mission,
+      p_policy: request.policy,
+      p_templates: request.templates,
+    });
+  });
+
+  it("defines a locked service-only atomic authoring RPC and nullable template platform", () => {
+    const migrationDir = join(process.cwd(), "supabase", "migrations");
+    const migrationName = readdirSync(migrationDir).find((name) => name.includes("author_active_mission_workflow_policies"));
+    expect(migrationName).toBeTruthy();
+    const sql = readFileSync(join(migrationDir, migrationName!), "utf8");
+
+    expect(sql).toContain("alter column platform drop not null");
+    expect(sql).toMatch(/alter table public\.mission_work_items[\s\S]*alter column platform drop not null/i);
+    expect(sql).toContain("v_keep_templates := array_append(v_keep_templates, v_template_id)");
+    expect(sql).toContain("v_keep_requirements := array_append(v_keep_requirements, v_requirement_id)");
+    expect(sql).toContain("private.author_mission_workflow");
+    expect(sql).toContain("public.author_mission_workflow");
+    expect(sql).toMatch(/for update[\s\S]*mission_deliverable_templates/i);
+    expect(sql).toContain("mission_template_snapshotted");
+    expect(sql).toMatch(/revoke all on function public\.author_mission_workflow[\s\S]*from public, anon, authenticated/i);
+    expect(sql).toMatch(/grant execute on function public\.author_mission_workflow[\s\S]*to service_role/i);
+  });
+
+  it("hydrates workflow policy and nested template requirements with legacy-safe defaults", async () => {
+    const { hydrateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    const active = hydrateMissionWorkflowAuthoring({
+      id: "mission-1",
+      title: "Active mission",
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: true,
+      revision_limit: 3,
+      review_sla_hours: 36,
+      revision_response_hours: 18,
+      deliverable_templates: [{
+        id: "template-1",
+        title: "Reel",
+        platform: null,
+        position: 0,
+        required: true,
+        draft_due_offset_hours: 12,
+        requirements: [{
+          id: "requirement-1",
+          category: "compliance",
+          text: "Use #ad",
+          required: true,
+          position: 0,
+        }],
+      }],
+    });
+    expect(active).toMatchObject({
+      id: "mission-1",
+      creator_workflow_mode: "active_workspace",
+      fulfillment_required: true,
+      revision_limit: 3,
+      review_sla_hours: 36,
+      revision_response_hours: 18,
+      deliverable_templates: [{
+        id: "template-1",
+        platform: null,
+        requirements: [{ id: "requirement-1", text: "Use #ad" }],
+      }],
+    });
+
+    expect(hydrateMissionWorkflowAuthoring({ id: "legacy-1", title: "Legacy" })).toMatchObject({
+      id: "legacy-1",
+      creator_workflow_mode: "legacy",
+      fulfillment_required: false,
+      revision_limit: 2,
+      review_sla_hours: 48,
+      revision_response_hours: 48,
+      deliverable_templates: [],
+    });
+  });
+});
+
 const suite = hasSupabaseEnv ? describe : describe.skip;
 
 function koreq(path: string, jwt: string, init: RequestInit = {}) {
