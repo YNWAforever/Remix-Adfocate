@@ -11,7 +11,7 @@ export function getWorkspaceSlug() {
 }
 
 export class ApiError extends Error {
-  constructor(public status: number, public code: string, message: string) {
+  constructor(public status: number, public code: string, message: string, public details?: Record<string, unknown>) {
     super(message);
   }
 }
@@ -30,7 +30,8 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.code ?? "error", body.error ?? res.statusText);
+    const { code, error, ...details } = body;
+    throw new ApiError(res.status, code ?? "error", error ?? res.statusText, details);
   }
   return res.json() as Promise<T>;
 }
