@@ -117,6 +117,10 @@ function Wizard() {
   const remainingImprovements = activation.milestones
     .filter(({ countsTowardReadiness, state }) => countsTowardReadiness && state !== "complete")
     .map(({ labelKey }) => t(labelKey));
+  const readinessTo = activation.milestones.find(
+    ({ action, countsTowardReadiness, state }) =>
+      countsTowardReadiness && state !== "complete" && action?.to !== "/onboarding",
+  )?.action?.to ?? "/profile";
 
   function cacheOnboardingProgress(nextStep: Step, completed = false) {
     queryClient.setQueryData(["onboarding-status"], (cached: typeof status.data) => {
@@ -330,7 +334,7 @@ function Wizard() {
           onRetry={() => void recommended.refetch()}
           onContinue={() => void recommendationsNext()}
           saving={saveState === "saving"}
-          readinessTo={activation.nextAction.to}
+          readinessTo={readinessTo}
         />
       ) : null}
       {step === 5 ? (
