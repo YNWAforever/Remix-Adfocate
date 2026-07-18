@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { MissionWorkflowEvent } from "@/lib/activeMission";
 
 export type MissionVersionView = {
@@ -46,14 +47,15 @@ function eventLabel(eventType: string): string {
 }
 
 export function VersionTimeline({ versions, events }: VersionTimelineProps) {
+  const headingId = useId();
   const entries = [
     ...versions.map((version) => ({ kind: "version" as const, timestamp: version.decisionAt ?? version.submittedAt, value: version })),
     ...events.map((event) => ({ kind: "event" as const, timestamp: event.createdAt, value: event })),
   ].sort((left, right) => Date.parse(right.timestamp) - Date.parse(left.timestamp));
 
   return (
-    <section aria-labelledby="version-history-heading" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-      <h2 id="version-history-heading" className="font-heading text-lg font-bold">Version history</h2>
+    <section aria-labelledby={headingId} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+      <h2 id={headingId} className="font-heading text-lg font-bold">Version history</h2>
       {entries.length === 0 ? <p className="mt-3 text-sm text-[var(--color-soft-ink)]">No versions or activity yet.</p> : (
         <ol className="mt-4 space-y-3">
           {entries.map((entry) => entry.kind === "version" ? (

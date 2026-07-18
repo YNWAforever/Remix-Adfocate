@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { MissionDraft, MissionWorkItemView } from "@/lib/activeMission";
 import type {
   MissionDraftConflict,
@@ -22,14 +22,36 @@ type DraftEditorProps = {
   onUploadFile?: (file: File) => Promise<unknown> | unknown;
   acceptedMimeTypes?: readonly string[];
   maxFileSizeBytes?: number;
+  existingAssetCount?: number;
 };
 
 type SaveStatus = "idle" | "saving" | "saved" | "error" | "conflict";
 type UploadStatus = "uploading" | "uploaded" | "failed";
-type UploadEntry = { id: string; file: File; status: UploadStatus };
+type UploadEntry = {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  file?: File;
+  status: UploadStatus;
+  attempt: number;
+};
 
-const DEFAULT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "video/mp4"] as const;
-const DEFAULT_MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+const DEFAULT_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/quicktime", "video/webm", "application/pdf"] as const;
+const DEFAULT_MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
+const MAX_ASSET_COUNT = 5;
+
+const DATE_TIME = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "UTC",
+});
+
+function displayTime(value: string): string {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : DATE_TIME.format(parsed);
+}
 
 function revisionFrom(result: DraftSaveResult, fallback: number): number {
   if (!result) return fallback;
@@ -55,10 +77,12 @@ export function DraftEditor({
   onUploadFile,
   acceptedMimeTypes = DEFAULT_MIME_TYPES,
   maxFileSizeBytes = DEFAULT_MAX_FILE_SIZE_BYTES,
+  existingAssetCount = 0,
 }: DraftEditorProps) {
   const captionId = useId();
   const urlId = useId();
   const fileInputId = useId();
+  const headingId = useId();
   const [caption, setCaption] = useState(item.draft?.caption ?? "");
   const [externalUrl, setExternalUrl] = useState(item.draft?.externalUrl ?? "");
   const [checklist, setChecklist] = useState<Record<string, boolean>>(item.draft?.checklist ?? {});
@@ -70,7 +94,18 @@ export function DraftEditor({
   const [uploads, setUploads] = useState<UploadEntry[]>([]);
   const revisionRef = useRef(item.draft?.revision ?? 0);
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const itemIdentityRef = useRef(`${item.id}:${item.draft?.id ?? "new"}`);
+  const scopeRef = useRef({ itemId: item.id, generation: 0 });
+  const saveQueueRef = useRef<{ generation: number; promise: Promise<unknown> }>({ generation: 0, promise: Promise.resolve() });
+  const activeSaveRef = useRef<{ generation: number; promise: Promise<DraftSaveResult> } | null>(null);
+  const uploadAttemptsRef = useRef(new Map<string, number>());
+  if (scopeRef.current.itemId !== item.id) {
+    scopeRef.current = { itemId: item.id, generation: scopeRef.current.generation + 1 };
+    saveQueueRef.current = { generation: scopeRef.current.generation, promise: Promise.resolve() };
+    activeSaveRef.current = null;
+    uploadAttemptsRef.current = new Map();
+  }
+  const renderGeneration = scopeRef.current.generation;
+  const [stateItemId, setStateItemId] = useState(item.id);
   const requirements = normalizeRequirements(item.requirements);
   const requiredRequirements = requirements.filter(({ required }) => required);
   const allRequiredChecked = requiredRequirements.every(({ id }) => checklist[id] === true);
@@ -78,9 +113,8 @@ export function DraftEditor({
   const effectiveSaveStatus = conflict ? "conflict" : saveStatus;
 
   useEffect(() => {
-    const identity = `${item.id}:${item.draft?.id ?? "new"}`;
-    if (itemIdentityRef.current === identity) return;
-    itemIdentityRef.current = identity;
+    if (stateItemId === item.id) return;
+    setStateItemId(item.id);
     setCaption(item.draft?.caption ?? "");
     setExternalUrl(item.draft?.externalUrl ?? "");
     setChecklist(item.draft?.checklist ?? {});
@@ -90,10 +124,26 @@ export function DraftEditor({
     setUploads([]);
     setFileError(null);
     setSubmitError(null);
-  }, [item.draft, item.id]);
+  }, [item.draft, item.id, stateItemId]);
+
+  const isCurrentScope = useCallback((generation: number, workItemId: string): boolean => {
+    return scopeRef.current.generation === generation && scopeRef.current.itemId === workItemId;
+  }, []);
+
+  const queueSave = useCallback((input: SaveMissionDraftInput, generation: number): Promise<DraftSaveResult> => {
+    const previous = saveQueueRef.current.generation === generation ? saveQueueRef.current.promise : Promise.resolve();
+    const promise = previous.catch(() => undefined).then(async () => {
+      const result = await onSave(input);
+      if (isCurrentScope(generation, input.workItemId)) revisionRef.current = revisionFrom(result, revisionRef.current);
+      return result;
+    });
+    saveQueueRef.current = { generation, promise };
+    activeSaveRef.current = { generation, promise };
+    return promise;
+  }, [isCurrentScope, onSave]);
 
   useEffect(() => {
-    if (editSequence === 0 || !canEdit) return;
+    if (editSequence === 0 || !canEdit || stateItemId !== item.id) return;
     setSaveStatus("saving");
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     autosaveTimerRef.current = setTimeout(() => {
@@ -104,17 +154,20 @@ export function DraftEditor({
         externalUrl: externalUrl.trim() || null,
         checklist,
       };
-      void Promise.resolve(onSave(input))
-        .then((result) => {
-          revisionRef.current = revisionFrom(result, revisionRef.current);
-          setSaveStatus("saved");
+      autosaveTimerRef.current = null;
+      const generation = renderGeneration;
+      void queueSave(input, generation)
+        .then(() => {
+          if (isCurrentScope(generation, input.workItemId)) setSaveStatus("saved");
         })
-        .catch((error: unknown) => setSaveStatus(isStaleError(error) ? "conflict" : "error"));
+        .catch((error: unknown) => {
+          if (isCurrentScope(generation, input.workItemId)) setSaveStatus(isStaleError(error) ? "conflict" : "error");
+        });
     }, 800);
     return () => {
       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     };
-  }, [canEdit, caption, checklist, editSequence, externalUrl, item.id, onSave]);
+  }, [canEdit, caption, checklist, editSequence, externalUrl, isCurrentScope, item.id, queueSave, renderGeneration, stateItemId]);
 
   function markEdited() {
     setSaveStatus("saving");
@@ -126,43 +179,62 @@ export function DraftEditor({
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     setSubmitError(null);
     setIsSubmitting(true);
+    const generation = renderGeneration;
+    const workItemId = item.id;
     try {
-      const saved = await onSave({
-        workItemId: item.id,
+      const activeSave = activeSaveRef.current;
+      if (activeSave?.generation === generation) await activeSave.promise;
+      if (!isCurrentScope(generation, workItemId)) return;
+      const saved = await queueSave({
+        workItemId,
         revision: revisionRef.current,
         caption,
         externalUrl: externalUrl.trim() || null,
         checklist,
-      });
+      }, generation);
+      if (!isCurrentScope(generation, workItemId)) return;
       revisionRef.current = revisionFrom(saved, revisionRef.current);
       setSaveStatus("saved");
       await onSubmit({
-        workItemId: item.id,
+        workItemId,
         expectedRevision: revisionRef.current,
-        idempotencyKey: globalThis.crypto?.randomUUID?.() ?? `${item.id}-${revisionRef.current}-${Date.now()}`,
+        idempotencyKey: globalThis.crypto?.randomUUID?.() ?? `${workItemId}-${revisionRef.current}-${Date.now()}`,
       });
     } catch (error) {
-      if (isStaleError(error)) setSaveStatus("conflict");
-      setSubmitError("Couldn’t submit this version. Your draft is still here. Try again.");
+      if (isCurrentScope(generation, workItemId)) {
+        if (isStaleError(error)) setSaveStatus("conflict");
+        setSubmitError("Couldn’t submit this version. Your draft is still here. Try again.");
+      }
     } finally {
-      setIsSubmitting(false);
+      if (isCurrentScope(generation, workItemId)) setIsSubmitting(false);
     }
   }
 
-  async function upload(entry: UploadEntry) {
-    if (!onUploadFile) return;
-    setUploads((current) => current.map((candidate) => candidate.id === entry.id ? { ...candidate, status: "uploading" } : candidate));
+  async function upload(entry: UploadEntry, file: File) {
+    if (!onUploadFile || !canEdit) return;
+    const generation = renderGeneration;
+    const workItemId = item.id;
+    const attempt = (uploadAttemptsRef.current.get(entry.id) ?? 0) + 1;
+    uploadAttemptsRef.current.set(entry.id, attempt);
+    setUploads((current) => current.map((candidate) => candidate.id === entry.id ? { ...entry, file, status: "uploading", attempt } : candidate));
     try {
-      await onUploadFile(entry.file);
-      setUploads((current) => current.map((candidate) => candidate.id === entry.id ? { ...candidate, status: "uploaded" } : candidate));
+      await onUploadFile(file);
+      if (!isCurrentScope(generation, workItemId) || uploadAttemptsRef.current.get(entry.id) !== attempt) return;
+      setUploads((current) => current.map((candidate) => candidate.id === entry.id && candidate.attempt === attempt
+        ? { ...candidate, file: undefined, status: "uploaded" }
+        : candidate));
     } catch {
-      setUploads((current) => current.map((candidate) => candidate.id === entry.id ? { ...candidate, status: "failed" } : candidate));
+      if (!isCurrentScope(generation, workItemId) || uploadAttemptsRef.current.get(entry.id) !== attempt) return;
+      setUploads((current) => current.map((candidate) => candidate.id === entry.id && candidate.attempt === attempt
+        ? { ...candidate, file, status: "failed" }
+        : candidate));
     }
   }
 
   function chooseFiles(files: FileList | null) {
     setFileError(null);
-    if (!files) return;
+    if (!files || !canEdit) return;
+    let occupiedCount = existingAssetCount + uploads.filter(({ status }) => status === "uploading" || status === "uploaded").length;
     for (const file of Array.from(files)) {
       if (!acceptedMimeTypes.includes(file.type)) {
         setFileError(`${file.name} must be an accepted file type.`);
@@ -172,9 +244,16 @@ export function DraftEditor({
         setFileError(`${file.name} must be ${Math.floor(maxFileSizeBytes / (1024 * 1024)) || maxFileSizeBytes} ${maxFileSizeBytes >= 1024 * 1024 ? "MB" : "bytes"} or smaller.`);
         continue;
       }
-      const entry = { id: fileId(file), file, status: "uploading" as const };
+      const id = fileId(file);
+      const replacingOccupied = uploads.some((entry) => entry.id === id && (entry.status === "uploading" || entry.status === "uploaded"));
+      if (!replacingOccupied && occupiedCount >= MAX_ASSET_COUNT) {
+        setFileError("A draft can contain at most five assets.");
+        continue;
+      }
+      if (!replacingOccupied) occupiedCount += 1;
+      const entry = { id, name: file.name, size: file.size, type: file.type, lastModified: file.lastModified, file, status: "uploading" as const, attempt: 0 };
       setUploads((current) => [...current.filter(({ id }) => id !== entry.id), entry]);
-      void upload(entry);
+      void upload(entry, file);
     }
   }
 
@@ -185,16 +264,20 @@ export function DraftEditor({
           : "Draft ready";
 
   return (
-    <section aria-labelledby={`draft-heading-${item.id}`} className="space-y-5 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 sm:p-6">
+    <section aria-labelledby={headingId} className="space-y-5 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{item.platform}</p>
-          <h2 id={`draft-heading-${item.id}`} className="break-words font-heading text-xl font-bold text-pretty">{item.title}</h2>
+          <h2 id={headingId} className="break-words font-heading text-xl font-bold text-pretty">{item.title}</h2>
+          {item.state === "revision_requested" && item.deadline ? (
+            <p className="mt-1 text-sm text-[var(--color-soft-ink)]">
+              <span className="font-semibold text-[var(--color-ink)]">Revision deadline</span>{" "}
+              <time dateTime={item.deadline}>{displayTime(item.deadline)}</time>
+            </p>
+          ) : null}
         </div>
         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-semibold text-[var(--color-soft-ink)]">{statusMessage}</p>
       </div>
-
-      {requiredChanges.length > 0 ? <ReviewFeedback requirements={item.requirements} changes={requiredChanges} /> : null}
 
       <div className="grid gap-2">
         <label htmlFor={captionId} className="font-heading text-sm font-bold">Caption or copy</label>
@@ -228,24 +311,40 @@ export function DraftEditor({
       {requirements.length > 0 ? (
         <fieldset disabled={!canEdit} className="space-y-3">
           <legend className="font-heading text-sm font-bold">Requirement checklist</legend>
-          {requirements.map((requirement) => (
-            <label key={requirement.id} className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-[var(--color-ink)] p-3 hover:bg-[var(--color-paper)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2">
-              <input
-                type="checkbox"
-                name={`requirement-${requirement.id}`}
-                checked={checklist[requirement.id] === true}
-                onChange={(event) => {
-                  const checked = event.target.checked;
-                  setChecklist((current) => ({ ...current, [requirement.id]: checked }));
-                  markEdited();
-                }}
-                className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-ink)]"
-              />
-              <span className="break-words text-sm font-medium">
-                {requirement.label}{requirement.required ? <span className="ml-1 text-[var(--color-magenta)]">(required)</span> : null}
-              </span>
-            </label>
-          ))}
+          {requiredChanges.length > 0 ? <h3 className="font-heading text-lg font-bold">Changes requested</h3> : null}
+          <ul className="space-y-3">
+            {requirements.map((requirement) => {
+              const matchingChanges = requiredChanges.filter(({ requirementId }) => requirementId === requirement.id);
+              return (
+                <li key={requirement.id} className="rounded-xl border border-[var(--color-ink)] p-3">
+                  <label className="flex min-h-11 cursor-pointer items-start gap-3 hover:bg-[var(--color-paper)] focus-within:outline focus-within:outline-2 focus-within:outline-offset-2">
+                    <input
+                      type="checkbox"
+                      name={`requirement-${requirement.id}`}
+                      checked={checklist[requirement.id] === true}
+                      onChange={(event) => {
+                        const checked = event.target.checked;
+                        setChecklist((current) => ({ ...current, [requirement.id]: checked }));
+                        markEdited();
+                      }}
+                      className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-ink)]"
+                    />
+                    <span className="break-words text-sm font-medium">
+                      {requirement.label}{requirement.required ? <span className="ml-1 text-[var(--color-magenta)]">(required)</span> : null}
+                    </span>
+                  </label>
+                  {matchingChanges.length > 0 ? (
+                    <ul className="ml-8 mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--color-magenta)]">
+                      {matchingChanges.map((change) => <li key={change.id} className="break-words">{change.text}</li>)}
+                    </ul>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+          {requiredChanges.some(({ requirementId }) => !requirementId || !requirements.some(({ id }) => id === requirementId))
+            ? <ReviewFeedback requirements={[]} changes={requiredChanges.filter(({ requirementId }) => !requirementId || !requirements.some(({ id }) => id === requirementId))} />
+            : null}
         </fieldset>
       ) : null}
 
@@ -269,7 +368,7 @@ export function DraftEditor({
             <ul className="space-y-2">
               {uploads.map((entry) => (
                 <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[var(--color-ink)] p-3 text-sm">
-                  <span className="min-w-0 break-words font-medium">{entry.file.name}</span>
+                  <span className="min-w-0 break-words font-medium">{entry.name}</span>
                   {entry.status === "uploading" ? <span aria-live="polite">Uploading…</span> : null}
                   {entry.status === "uploaded" ? <span aria-live="polite">Uploaded</span> : null}
                   {entry.status === "failed" ? (
@@ -277,9 +376,10 @@ export function DraftEditor({
                       <span aria-live="polite" className="text-[var(--color-magenta)]">Upload failed. Your file is still selected.</span>
                       <button
                         type="button"
-                        aria-label={`Retry ${entry.file.name}`}
-                        onClick={() => void upload(entry)}
-                        className="min-h-11 touch-manipulation rounded-full border-2 border-[var(--color-ink)] px-3 py-2 font-bold hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                        aria-label={`Retry ${entry.name}`}
+                        disabled={!canEdit || !entry.file}
+                        onClick={() => { if (entry.file) void upload(entry, entry.file); }}
+                        className="min-h-11 touch-manipulation rounded-full border-2 border-[var(--color-ink)] px-3 py-2 font-bold hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Retry
                       </button>
