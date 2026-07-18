@@ -99,6 +99,31 @@ describe("active mission repository without a live database", () => {
     expect(scripted.remaining()).toBe(0);
   });
 
+  it("saves revision zero with one conditional update and returns revision one", async () => {
+    const saved = {
+      ...draft,
+      caption_text: "First draft",
+      external_draft_url: "https://example.com/draft",
+      revision: 1,
+    };
+    const scripted = scriptedClient([
+      ...anchor(), { table: "mission_work_items", data: item },
+      { table: "mission_working_drafts", data: saved },
+    ]);
+    const result = await createActiveMissionRepository(scripted.client).saveDraft(
+      { ...owner, workItemId: item.id },
+      { revision: 0, caption: "First draft", externalUrl: "https://example.com/draft", checklist: {} },
+    );
+    expect(result).toMatchObject({ caption: "First draft", revision: 1 });
+    expect(scripted.calls.filter((call) => call.op === "update")).toHaveLength(1);
+    expect(scripted.calls.find((call) => call.op === "update")?.args[0]).toMatchObject({
+      caption_text: "First draft", external_draft_url: "https://example.com/draft", revision: 1,
+    });
+    expect(scripted.calls.filter((call) => call.table === "mission_working_drafts" && call.op === "eq")
+      .map((call) => call.args)).toContainEqual(["revision", 0]);
+    expect(scripted.remaining()).toBe(0);
+  });
+
   it("uses one conditional update for autosave and returns the server draft on a stale revision", async () => {
     const current = { ...draft, caption_text: "First draft", revision: 1 };
     const scripted = scriptedClient([
@@ -122,6 +147,19 @@ describe("active mission repository without a live database", () => {
       revision: 0, checklist: { unknown: true },
     })).rejects.toMatchObject({ code: "VALIDATION_FAILED" });
     expect(scripted.calls.filter((c) => c.op === "update")).toHaveLength(0);
+  });
+
+  it("receives fulfillment with exactly one authenticated-context RPC", async () => {
+    const rpc = vi.fn(async () => ({ data: workflow, error: null }));
+    const repository = createActiveMissionRepository({ rpc } as unknown as SupabaseClient);
+    const result = await repository.receiveFulfillment(owner);
+    expect(result).toMatchObject({ id: workflow.id, state: "drafting" });
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("receive_mission_fulfillment", {
+      p_submission: owner.submissionId,
+      p_creator: owner.creatorId,
+      p_workspace: owner.workspaceId,
+    });
   });
 });
 
@@ -159,6 +197,24 @@ describe("active mission routes without a live database", () => {
     });
     expect(response.status).toBe(409);
     expect(await response.json()).toMatchObject({ code: "WORKFLOW_STALE", currentDraft: { revision: 1 } });
+  });
+
+  it("rejects a JSON null draft body before repository access", async () => {
+    const saveDraft = vi.fn();
+    const repo = {
+      getWorkspace: vi.fn(), saveDraft, receiveFulfillment: vi.fn(),
+    } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/draft",
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: "null",
+      },
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(saveDraft).not.toHaveBeenCalled();
   });
 
   it("returns the atomically refreshed workflow after receipt", async () => {

@@ -48,6 +48,10 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
       } catch {
         throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON");
       }
+      if (input === null || typeof input !== "object" || Array.isArray(input)) {
+        throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be a JSON object");
+      }
+
       const draft = await repository().saveDraft({
         ...owner(c),
         workItemId: c.req.param("workItemId"),
