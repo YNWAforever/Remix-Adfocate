@@ -235,7 +235,7 @@ export function DraftEditor({
   function chooseFiles(files: readonly File[]) {
     setFileError(null);
     if (files.length === 0 || !canEdit) return;
-    let occupiedCount = existingAssetCount + uploads.filter(({ status }) => status === "uploading" || status === "uploaded").length;
+    let occupiedCount = existingAssetCount + uploads.length;
     for (const file of files) {
       if (!acceptedMimeTypes.includes(file.type)) {
         setFileError(`${file.name} must be an accepted file type.`);
@@ -246,7 +246,7 @@ export function DraftEditor({
         continue;
       }
       const id = fileId(file);
-      const replacingOccupied = uploads.some((entry) => entry.id === id && (entry.status === "uploading" || entry.status === "uploaded"));
+      const replacingOccupied = uploads.some((entry) => entry.id === id);
       if (!replacingOccupied && occupiedCount >= MAX_ASSET_COUNT) {
         setFileError("A draft can contain at most five assets.");
         continue;

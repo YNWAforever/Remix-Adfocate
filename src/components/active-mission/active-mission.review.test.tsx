@@ -165,6 +165,33 @@ describe("DraftEditor asset contract", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(/five assets/i);
   });
 
+  it("reserves a failed upload slot while allowing its retry to reuse that slot", async () => {
+    const pendingUpload = new Promise<unknown>(() => undefined);
+    const failed = new File(["failed"], "failed.png", { type: "image/png" });
+    const onUploadFile = vi.fn()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockImplementation((file: File) => file === failed ? Promise.resolve() : pendingUpload);
+    render(<DraftEditor item={item("A", 3)} onSave={vi.fn()} onSubmit={vi.fn()} onUploadFile={onUploadFile} />);
+    const input = screen.getByLabelText("Upload draft files");
+
+    fireEvent.change(input, { target: { files: [failed] } });
+    const retry = await screen.findByRole("button", { name: "Retry failed.png" });
+
+    const additional = ["second.png", "third.png", "fourth.png", "fifth.png", "sixth.png"]
+      .map((name) => new File([name], name, { type: "image/png" }));
+    fireEvent.change(input, { target: { files: additional } });
+
+    expect(onUploadFile).toHaveBeenCalledTimes(5);
+    expect(screen.queryByText("sixth.png")).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(/five assets/i);
+
+    fireEvent.click(retry);
+    await waitFor(() => expect(onUploadFile).toHaveBeenCalledTimes(6));
+    expect(onUploadFile).toHaveBeenLastCalledWith(failed);
+    expect(screen.queryByText("sixth.png")).not.toBeInTheDocument();
+    expect(screen.getByText("failed.png")).toBeVisible();
+  });
+
   it("clears the native file input immediately while uploading copied File objects", async () => {
     const attempt = deferred<unknown>();
     const onUploadFile = vi.fn().mockReturnValue(attempt.promise);
