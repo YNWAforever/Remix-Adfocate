@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { ActiveMissionWorkspace, MissionDraft, MissionWorkflow } from "../activeMission";
@@ -19,7 +19,20 @@ export type MissionDraftConflict = {
   currentDraft: MissionDraft;
 };
 
+type ScopedMissionDraftConflict = MissionDraftConflict & {
+  submissionId: string;
+  generation: number;
+};
+
+type MissionDraftScope = {
+  submissionId: string;
+  generation: number;
+};
+
 type SaveMissionDraftContext = {
+  submissionId: string;
+  generation: number;
+  queryKey: ReturnType<typeof activeMissionQueryKey>;
   mutationToken: number;
   workItemId: string;
   previousDraft: MissionDraft | null;
@@ -124,70 +137,118 @@ export function useActiveMissionWorkspace(submissionId: string) {
 
 export function useSaveMissionDraft(submissionId: string) {
   const queryClient = useQueryClient();
-  const queryKey = activeMissionQueryKey(submissionId);
-  const [conflict, setConflict] = useState<MissionDraftConflict | null>(null);
+  const [conflict, setConflict] = useState<ScopedMissionDraftConflict | null>(null);
+  const scopeRef = useRef<MissionDraftScope>({ submissionId, generation: 0 });
   const mutationTokens = useRef(new Map<string, number>());
+  if (scopeRef.current.submissionId !== submissionId) {
+    scopeRef.current = {
+      submissionId,
+      generation: scopeRef.current.generation + 1,
+    };
+    mutationTokens.current.clear();
+  }
+  const renderScope = scopeRef.current;
+  const queryKey = activeMissionQueryKey(renderScope.submissionId);
+  const isCurrent = (context: SaveMissionDraftContext) =>
+    scopeRef.current.submissionId === context.submissionId
+    && scopeRef.current.generation === context.generation
+    && mutationTokens.current.get(context.workItemId) === context.mutationToken;
+
+  useEffect(() => {
+    setConflict((currentConflict) =>
+      currentConflict
+        && (currentConflict.submissionId !== renderScope.submissionId
+          || currentConflict.generation !== renderScope.generation)
+        ? null
+        : currentConflict);
+  }, [renderScope.generation, renderScope.submissionId]);
+
   const mutation = useMutation({
     mutationFn: ({ workItemId, ...draft }: SaveMissionDraftInput) =>
-      apiFetch<{ draft: MissionDraft }>(`/my-missions/${submissionId}/work-items/${workItemId}/draft`, {
+      apiFetch<{ draft: MissionDraft }>(`/my-missions/${renderScope.submissionId}/work-items/${workItemId}/draft`, {
         method: "PATCH",
         body: JSON.stringify(draft),
       }),
     onMutate: async (input) => {
       const mutationToken = (mutationTokens.current.get(input.workItemId) ?? 0) + 1;
       mutationTokens.current.set(input.workItemId, mutationToken);
-      await queryClient.cancelQueries({ queryKey });
-      const current = queryClient.getQueryData<ActiveMissionWorkspace>(queryKey);
+      const contextQueryKey = queryKey;
+      await queryClient.cancelQueries({ queryKey: contextQueryKey });
+      const current = queryClient.getQueryData<ActiveMissionWorkspace>(contextQueryKey);
       const previousDraft = workItemDraft(current, input.workItemId);
       const nextDraft = optimisticDraft(previousDraft, input);
       const context = {
+        submissionId: renderScope.submissionId,
+        generation: renderScope.generation,
+        queryKey: contextQueryKey,
         mutationToken,
         workItemId: input.workItemId,
         previousDraft,
         optimisticDraft: nextDraft,
         localDraft: input,
       } satisfies SaveMissionDraftContext;
-      const isLatest = mutationTokens.current.get(input.workItemId) === mutationToken;
-      if (isLatest && nextDraft) {
+      const contextIsCurrent = isCurrent(context);
+      if (contextIsCurrent && nextDraft) {
         setConflict((currentConflict) =>
-          currentConflict?.workItemId === input.workItemId ? null : currentConflict);
+          currentConflict?.submissionId === context.submissionId
+            && currentConflict.generation === context.generation
+            && currentConflict.workItemId === input.workItemId
+            ? null
+            : currentConflict);
       }
-      queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        isLatest && nextDraft ? replaceWorkItemDraft(current, input.workItemId, nextDraft)! : current);
+      queryClient.setQueryData<ActiveMissionWorkspace>(context.queryKey, (currentWorkspace) =>
+        contextIsCurrent && nextDraft
+          ? replaceWorkItemDraft(currentWorkspace, input.workItemId, nextDraft)!
+          : currentWorkspace);
       return context;
     },
     onError: (error, _input, context) => {
-      if (!context || mutationTokens.current.get(context.workItemId) !== context.mutationToken) return;
+      if (!context || !isCurrent(context)) return;
       const cachedDraft = workItemDraft(
-        queryClient.getQueryData<ActiveMissionWorkspace>(queryKey),
+        queryClient.getQueryData<ActiveMissionWorkspace>(context.queryKey),
         context.workItemId,
       );
       if (!draftsEqual(cachedDraft, context.optimisticDraft)) return;
       const currentDraft = currentDraftFrom(error);
       if (currentDraft) {
-        queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-          replaceWorkItemDraft(current, context.workItemId, currentDraft)!);
+        queryClient.setQueryData<ActiveMissionWorkspace>(context.queryKey, (currentWorkspace) =>
+          replaceWorkItemDraft(currentWorkspace, context.workItemId, currentDraft)!);
         setConflict({
+          submissionId: context.submissionId,
+          generation: context.generation,
           workItemId: context.workItemId,
           localDraft: context.localDraft,
           currentDraft,
         });
         return;
       }
-      queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        replaceWorkItemDraft(current, context.workItemId, context.previousDraft)!);
+      queryClient.setQueryData<ActiveMissionWorkspace>(context.queryKey, (currentWorkspace) =>
+        replaceWorkItemDraft(currentWorkspace, context.workItemId, context.previousDraft)!);
     },
     onSuccess: ({ draft }, _input, context) => {
-      if (!context || mutationTokens.current.get(context.workItemId) !== context.mutationToken) return;
-      queryClient.setQueryData<ActiveMissionWorkspace>(queryKey, (current) =>
-        draftsEqual(workItemDraft(current, context.workItemId), context.optimisticDraft)
-          ? replaceWorkItemDraft(current, context.workItemId, draft)!
-          : current);
+      if (!context || !isCurrent(context)) return;
+      queryClient.setQueryData<ActiveMissionWorkspace>(context.queryKey, (currentWorkspace) =>
+        draftsEqual(workItemDraft(currentWorkspace, context.workItemId), context.optimisticDraft)
+          ? replaceWorkItemDraft(currentWorkspace, context.workItemId, draft)!
+          : currentWorkspace);
       setConflict((currentConflict) =>
-        currentConflict?.workItemId === context.workItemId ? null : currentConflict);
+        currentConflict?.submissionId === context.submissionId
+          && currentConflict.generation === context.generation
+          && currentConflict.workItemId === context.workItemId
+          ? null
+          : currentConflict);
     },
   });
-  return { ...mutation, conflict, clearConflict: () => setConflict(null) };
+  const visibleConflict = conflict
+    && conflict.submissionId === renderScope.submissionId
+    && conflict.generation === renderScope.generation
+    ? {
+        workItemId: conflict.workItemId,
+        localDraft: conflict.localDraft,
+        currentDraft: conflict.currentDraft,
+      }
+    : null;
+  return { ...mutation, conflict: visibleConflict, clearConflict: () => setConflict(null) };
 }
 
 export function useConfirmMissionReceipt(submissionId: string) {

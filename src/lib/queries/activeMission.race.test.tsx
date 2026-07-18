@@ -398,7 +398,105 @@ describe("useSaveMissionDraft overlapping requests", () => {
     await act(async () => { await expect(save).rejects.toBe(failure); });
     expect(draft(queryClient)).toEqual(externalDraft);
   });
+
+  it("immediately hides and clears a conflict when the hook switches submissions", async () => {
+    const request = deferred<{ draft: MissionDraft }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const { queryClient, wrapper } = setup();
+    queryClient.setQueryData(activeMissionQueryKey("sub-2"), workspaceFor("sub-2", "B cached"));
+    const { result, rerender } = renderHook(
+      ({ submissionId }) => useSaveMissionDraft(submissionId),
+      { wrapper, initialProps: { submissionId: "sub-1" } },
+    );
+    const localInput = { workItemId: "item-1", revision: 3, caption: "A local" };
+
+    let save!: Promise<{ draft: MissionDraft }>;
+    act(() => { save = result.current.mutateAsync(localInput); });
+    await waitFor(() => expect(draftFor(queryClient, "sub-1")?.caption).toBe("A local"));
+    const currentDraft = savedDraft({ caption: "A server", revision: 4 });
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", { currentDraft });
+    request.reject(stale);
+    await act(async () => { await expect(save).rejects.toBe(stale); });
+    expect(result.current.conflict).toEqual({ workItemId: "item-1", localDraft: localInput, currentDraft });
+
+    act(() => { rerender({ submissionId: "sub-2" }); });
+    expect(result.current.conflict).toBeNull();
+
+    act(() => { rerender({ submissionId: "sub-1" }); });
+    expect(result.current.conflict).toBeNull();
+  });
+
+  it.each(["success", "error", "stale"] as const)(
+    "ignores a deferred submission A %s after switching to submission B",
+    async (outcome) => {
+      const request = deferred<{ draft: MissionDraft }>();
+      const fetchSpy = vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+      const { queryClient, wrapper } = setup();
+      const cancelSpy = vi.spyOn(queryClient, "cancelQueries");
+      const { result, rerender } = renderHook(
+        ({ submissionId }) => useSaveMissionDraft(submissionId),
+        { wrapper, initialProps: { submissionId: "sub-1" } },
+      );
+
+      let save!: Promise<{ draft: MissionDraft }>;
+      act(() => {
+        save = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "A local" });
+      });
+      await waitFor(() => expect(draftFor(queryClient, "sub-1")).toMatchObject({ caption: "A local", revision: 4 }));
+      expect(fetchSpy).toHaveBeenCalledWith(
+        "/my-missions/sub-1/work-items/item-1/draft",
+        expect.objectContaining({ method: "PATCH" }),
+      );
+      expect(cancelSpy).toHaveBeenCalledWith({ queryKey: activeMissionQueryKey("sub-1") });
+      const optimisticA = queryClient.getQueryData<ActiveMissionWorkspace>(activeMissionQueryKey("sub-1"));
+      const optimisticDraftA = draftFor(queryClient, "sub-1");
+      const matchingB = workspaceFor("sub-2", "B cached");
+      queryClient.setQueryData<ActiveMissionWorkspace>(activeMissionQueryKey("sub-2"), {
+        ...matchingB,
+        workItems: matchingB.workItems.map((item) =>
+          item.id === "item-1" ? { ...item, draft: optimisticDraftA ?? null } : item),
+      });
+      const cachedB = queryClient.getQueryData<ActiveMissionWorkspace>(activeMissionQueryKey("sub-2"));
+
+      act(() => { rerender({ submissionId: "sub-2" }); });
+      if (outcome === "success") {
+        request.resolve({ draft: savedDraft({ caption: "A canonical", revision: 4 }) });
+        await act(async () => { await save; });
+      } else {
+        const failure = outcome === "stale"
+          ? new ApiError(409, "WORKFLOW_STALE", "Draft revision is stale", {
+              currentDraft: savedDraft({ caption: "A server", revision: 4 }),
+            })
+          : new TypeError("offline");
+        request.reject(failure);
+        await act(async () => { await expect(save).rejects.toBe(failure); });
+      }
+
+      expect(queryClient.getQueryData(activeMissionQueryKey("sub-1"))).toEqual(optimisticA);
+      expect(queryClient.getQueryData(activeMissionQueryKey("sub-2"))).toEqual(cachedB);
+      expect(result.current.conflict).toBeNull();
+    },
+  );
 });
+
+function workspaceFor(submissionId: string, caption: string): ActiveMissionWorkspace {
+  const value = workspace();
+  return {
+    ...value,
+    workflow: { ...value.workflow, id: `workflow-${submissionId}`, submissionId },
+    mission: { ...value.mission, id: `mission-${submissionId}`, slug: `mission-${submissionId}` },
+    workItems: value.workItems.map((item) => ({
+      ...item,
+      id: "item-1",
+      draft: item.draft ? { ...item.draft, id: `draft-${submissionId}`, caption } : null,
+    })),
+  };
+}
+
+function draftFor(queryClient: QueryClient, submissionId: string) {
+  return queryClient.getQueryData<ActiveMissionWorkspace>(activeMissionQueryKey(submissionId))
+    ?.workItems.find((item) => item.id === "item-1")?.draft;
+}
 
 function replaceDraftForTest(workspaceValue: ActiveMissionWorkspace, nextDraft: MissionDraft): ActiveMissionWorkspace {
   return {
