@@ -429,8 +429,11 @@ describe("useSaveMissionDraft overlapping requests", () => {
   it.each(["success", "error", "stale"] as const)(
     "ignores a deferred submission A %s after switching to submission B",
     async (outcome) => {
-      const request = deferred<{ draft: MissionDraft }>();
-      const fetchSpy = vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+      const submissionARequest = deferred<{ draft: MissionDraft }>();
+      const submissionBRequest = deferred<{ draft: MissionDraft }>();
+      const fetchSpy = vi.spyOn(api, "apiFetch")
+        .mockImplementationOnce(() => submissionARequest.promise)
+        .mockImplementationOnce(() => submissionBRequest.promise);
       const { queryClient, wrapper } = setup();
       const cancelSpy = vi.spyOn(queryClient, "cancelQueries");
       const { result, rerender } = renderHook(
@@ -443,6 +446,7 @@ describe("useSaveMissionDraft overlapping requests", () => {
         save = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "A local" });
       });
       await waitFor(() => expect(draftFor(queryClient, "sub-1")).toMatchObject({ caption: "A local", revision: 4 }));
+      await waitFor(() => expect(result.current.status).toBe("pending"));
       expect(fetchSpy).toHaveBeenCalledWith(
         "/my-missions/sub-1/work-items/item-1/draft",
         expect.objectContaining({ method: "PATCH" }),
@@ -459,8 +463,18 @@ describe("useSaveMissionDraft overlapping requests", () => {
       const cachedB = queryClient.getQueryData<ActiveMissionWorkspace>(activeMissionQueryKey("sub-2"));
 
       act(() => { rerender({ submissionId: "sub-2" }); });
+      expect(result.current).toMatchObject({
+        status: "idle",
+        data: undefined,
+        error: null,
+        variables: undefined,
+        isIdle: true,
+        isPending: false,
+        isSuccess: false,
+        isError: false,
+      });
       if (outcome === "success") {
-        request.resolve({ draft: savedDraft({ caption: "A canonical", revision: 4 }) });
+        submissionARequest.resolve({ draft: savedDraft({ caption: "A canonical", revision: 4 }) });
         await act(async () => { await save; });
       } else {
         const failure = outcome === "stale"
@@ -468,13 +482,32 @@ describe("useSaveMissionDraft overlapping requests", () => {
               currentDraft: savedDraft({ caption: "A server", revision: 4 }),
             })
           : new TypeError("offline");
-        request.reject(failure);
+        submissionARequest.reject(failure);
         await act(async () => { await expect(save).rejects.toBe(failure); });
       }
 
       expect(queryClient.getQueryData(activeMissionQueryKey("sub-1"))).toEqual(optimisticA);
       expect(queryClient.getQueryData(activeMissionQueryKey("sub-2"))).toEqual(cachedB);
       expect(result.current.conflict).toBeNull();
+      expect(result.current).toMatchObject({
+        status: "idle",
+        data: undefined,
+        error: null,
+        variables: undefined,
+        isIdle: true,
+        isPending: false,
+        isSuccess: false,
+        isError: false,
+      });
+
+      let saveB!: Promise<{ draft: MissionDraft }>;
+      act(() => {
+        saveB = result.current.mutateAsync({ workItemId: "item-1", revision: 3, caption: "B local" });
+      });
+      await waitFor(() => expect(result.current.status).toBe("pending"));
+      submissionBRequest.resolve({ draft: savedDraft({ id: "draft-sub-2", caption: "B canonical", revision: 4 }) });
+      await act(async () => { await saveB; });
+      await waitFor(() => expect(result.current).toMatchObject({ status: "success", isSuccess: true, error: null }));
     },
   );
 });

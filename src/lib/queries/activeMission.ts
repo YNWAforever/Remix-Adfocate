@@ -139,6 +139,7 @@ export function useSaveMissionDraft(submissionId: string) {
   const queryClient = useQueryClient();
   const [conflict, setConflict] = useState<ScopedMissionDraftConflict | null>(null);
   const scopeRef = useRef<MissionDraftScope>({ submissionId, generation: 0 });
+  const activeMutationGeneration = useRef<number | null>(null);
   const mutationTokens = useRef(new Map<string, number>());
   if (scopeRef.current.submissionId !== submissionId) {
     scopeRef.current = {
@@ -148,6 +149,7 @@ export function useSaveMissionDraft(submissionId: string) {
     mutationTokens.current.clear();
   }
   const renderScope = scopeRef.current;
+  const resetGeneration = useRef(renderScope.generation);
   const queryKey = activeMissionQueryKey(renderScope.submissionId);
   const isCurrent = (context: SaveMissionDraftContext) =>
     scopeRef.current.submissionId === context.submissionId
@@ -239,6 +241,40 @@ export function useSaveMissionDraft(submissionId: string) {
           : currentConflict);
     },
   });
+
+  useEffect(() => {
+    if (resetGeneration.current === renderScope.generation) return;
+    resetGeneration.current = renderScope.generation;
+    activeMutationGeneration.current = null;
+    mutation.reset();
+  }, [mutation.reset, renderScope.generation]);
+
+  const mutate: typeof mutation.mutate = (input, options) => {
+    activeMutationGeneration.current = renderScope.generation;
+    mutation.mutate(input, options);
+  };
+  const mutateAsync: typeof mutation.mutateAsync = (input, options) => {
+    activeMutationGeneration.current = renderScope.generation;
+    return mutation.mutateAsync(input, options);
+  };
+  const observer = activeMutationGeneration.current === renderScope.generation
+    ? mutation
+    : {
+        ...mutation,
+        context: undefined,
+        data: undefined,
+        error: null,
+        failureCount: 0,
+        failureReason: null,
+        isError: false,
+        isIdle: true,
+        isPaused: false,
+        isPending: false,
+        isSuccess: false,
+        status: "idle" as const,
+        submittedAt: 0,
+        variables: undefined,
+      };
   const visibleConflict = conflict
     && conflict.submissionId === renderScope.submissionId
     && conflict.generation === renderScope.generation
@@ -248,7 +284,13 @@ export function useSaveMissionDraft(submissionId: string) {
         currentDraft: conflict.currentDraft,
       }
     : null;
-  return { ...mutation, conflict: visibleConflict, clearConflict: () => setConflict(null) };
+  return {
+    ...observer,
+    mutate,
+    mutateAsync,
+    conflict: visibleConflict,
+    clearConflict: () => setConflict(null),
+  };
 }
 
 export function useConfirmMissionReceipt(submissionId: string) {
