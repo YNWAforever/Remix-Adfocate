@@ -299,14 +299,30 @@ function text(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+const UUID_PATTERN = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+
+function uuid(value: unknown) {
+  const candidate = text(value);
+  return candidate && UUID_PATTERN.test(candidate) ? candidate : null;
+}
+
+function pathUuid(c: Context<AdminEnv>, name: "workflowId" | "workItemId") {
+  const value = uuid(c.req.param(name));
+  if (!value) throw new OperatorActiveMissionError("VALIDATION_FAILED", `${name} must be a UUID`);
+  return value;
+}
+
 function reviewItems(value: unknown): ReviewItemInput[] | null {
   if (!Array.isArray(value) || value.length === 0) return null;
   const categories = new Set(["format", "key_message", "compliance", "quality", "other"]);
   const items = value.map((row) => {
     if (!row || typeof row !== "object" || !categories.has((row as Row).category)) return null;
     const body = text((row as Row).text);
-    if (!body) return null;
-    return { requirementId: text((row as Row).requirementId), category: (row as Row).category, text: body, required: (row as Row).required !== false } as ReviewItemInput;
+    const rawRequirementId = (row as Row).requirementId;
+    const requirementId = rawRequirementId === null || rawRequirementId === undefined || rawRequirementId === ""
+      ? null : uuid(rawRequirementId);
+    if (!body || (rawRequirementId !== null && rawRequirementId !== undefined && rawRequirementId !== "" && !requirementId)) return null;
+    return { requirementId, category: (row as Row).category, text: body, required: (row as Row).required !== false } as ReviewItemInput;
   });
   return items.every(Boolean) ? items as ReviewItemInput[] : null;
 }
@@ -343,62 +359,72 @@ export function createAdminActiveMissionRoutes(
   routes.get("/:workflowId", async (c) => {
     try {
       const { workspaceSlug } = context(c);
-      return c.json(await repository().getDetail({ workflowId: c.req.param("workflowId"), workspaceSlug, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS }));
+      const workflowId = pathUuid(c, "workflowId");
+      return c.json(await repository().getDetail({ workflowId, workspaceSlug, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS }));
     } catch (error) { return routeError(c, error); }
   });
 
   routes.post("/:workflowId/work-items/:workItemId/start-review", async (c) => {
     try {
       const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       const expectedState = text(body.expectedState);
       if (!expectedState || !EXPECTED_REVIEW_STATES.has(expectedState)) throw new OperatorActiveMissionError("VALIDATION_FAILED", "expectedState is required");
-      return c.json(await repository().startReview({ workflowId: c.req.param("workflowId"), workItemId: c.req.param("workItemId"), ...ctx, expectedState }));
+      return c.json(await repository().startReview({ workflowId, workItemId, ...ctx, expectedState }));
     } catch (error) { return routeError(c, error); }
   });
 
   routes.post("/:workflowId/work-items/:workItemId/request-revision", async (c) => {
     try {
       const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       const expectedState = text(body.expectedState);
-      const versionId = text(body.versionId);
+      const versionId = uuid(body.versionId);
       const deadline = text(body.deadline);
       const items = reviewItems(body.items);
       if (!expectedState || !EXPECTED_REVIEW_STATES.has(expectedState) || !versionId || !deadline || !items || timestamp(deadline, 0) <= Date.now()) {
         throw new OperatorActiveMissionError("VALIDATION_FAILED", "A current version, state, future deadline, and feedback items are required");
       }
-      return c.json(await repository().requestRevision({ workflowId: c.req.param("workflowId"), workItemId: c.req.param("workItemId"), ...ctx, expectedState, versionId, deadline, items }));
+      return c.json(await repository().requestRevision({ workflowId, workItemId, ...ctx, expectedState, versionId, deadline, items }));
     } catch (error) { return routeError(c, error); }
   });
 
   routes.post("/:workflowId/work-items/:workItemId/grant-revision", async (c) => {
     try {
       const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       const reason = text(body.reason);
       const grantedCount = body.grantedCount ?? 1;
       if (!reason || !Number.isInteger(grantedCount) || grantedCount < 1) throw new OperatorActiveMissionError("VALIDATION_FAILED", "A reason and positive grant count are required");
-      return c.json(await repository().grantRevision({ workflowId: c.req.param("workflowId"), workItemId: c.req.param("workItemId"), ...ctx, reason, grantedCount }));
+      return c.json(await repository().grantRevision({ workflowId, workItemId, ...ctx, reason, grantedCount }));
     } catch (error) { return routeError(c, error); }
   });
 
   routes.post("/:workflowId/work-items/:workItemId/approve-to-publish", async (c) => {
     try {
       const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       const expectedState = text(body.expectedState);
-      const versionId = text(body.versionId);
+      const versionId = uuid(body.versionId);
       if (!expectedState || !EXPECTED_REVIEW_STATES.has(expectedState) || !versionId) throw new OperatorActiveMissionError("VALIDATION_FAILED", "A current version and state are required");
-      return c.json(await repository().approveVersion({ workflowId: c.req.param("workflowId"), workItemId: c.req.param("workItemId"), ...ctx, expectedState, versionId }));
+      return c.json(await repository().approveVersion({ workflowId, workItemId, ...ctx, expectedState, versionId }));
     } catch (error) { return routeError(c, error); }
   });
 
   routes.post("/:workflowId/fulfillment/shipped", async (c) => {
     try {
       const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
-      return c.json(await repository().markFulfillmentShipped({ workflowId: c.req.param("workflowId"), ...ctx, note: text(body.note) }));
+      return c.json(await repository().markFulfillmentShipped({ workflowId, ...ctx, note: text(body.note) }));
     } catch (error) { return routeError(c, error); }
   });
 

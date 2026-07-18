@@ -252,6 +252,10 @@ describe("active mission receipt migration contract", () => {
 });
 
 describe("active mission operator routes without a live database", () => {
+  const workflowId = "11111111-1111-4111-8111-111111111111";
+  const workItemId = "22222222-2222-4222-8222-222222222222";
+  const versionId = "33333333-3333-4333-8333-333333333333";
+  const requirementId = "44444444-4444-4444-8444-444444444444";
   const urgent = { workItemId: "urgent", reviewDueAt: "2026-07-18T00:00:00.000Z", creatorDeadline: "2026-07-20T00:00:00.000Z", submittedAt: "2026-07-17T00:00:00.000Z" };
   const later = { workItemId: "later", reviewDueAt: "2026-07-19T00:00:00.000Z", creatorDeadline: "2026-07-21T00:00:00.000Z", submittedAt: "2026-07-16T00:00:00.000Z" };
 
@@ -274,25 +278,25 @@ describe("active mission operator routes without a live database", () => {
   });
 
   it("authorizes detail before returning ten-minute signed asset URLs", async () => {
-    const getDetail = vi.fn(async () => ({ workflow: { id: "workflow-1" }, assets: [{ id: "asset-1", signedUrl: "https://signed" }] }));
+    const getDetail = vi.fn(async () => ({ workflow: { id: workflowId }, assets: [{ id: "asset-1", signedUrl: "https://signed" }] }));
     const repository = { getDetail } as unknown as AdminActiveMissionRepository;
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
-    const response = await app.request("/api/admin/active-missions/workflow-1", { headers: { "X-Workspace-Slug": "demo" } });
+    const response = await app.request(`/api/admin/active-missions/${workflowId}`, { headers: { "X-Workspace-Slug": "demo" } });
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ assets: [{ signedUrl: "https://signed" }] });
-    expect(getDetail).toHaveBeenCalledWith({ workflowId: "workflow-1", workspaceSlug: "demo", signedUrlTtlSeconds: 600 });
+    expect(getDetail).toHaveBeenCalledWith({ workflowId, workspaceSlug: "demo", signedUrlTtlSeconds: 600 });
   });
 
   it("passes authenticated operator and workspace context to one start-review transition", async () => {
-    const startReview = vi.fn(async () => ({ workItem: { id: "item-1", state: "under_review" } }));
+    const startReview = vi.fn(async () => ({ workItem: { id: workItemId, state: "under_review" } }));
     const repository = { startReview } as unknown as AdminActiveMissionRepository;
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
-    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/start-review", { method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" }, body: JSON.stringify({ expectedState: "submitted" }) });
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/start-review`, { method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" }, body: JSON.stringify({ expectedState: "submitted" }) });
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ workItem: { state: "under_review" } });
-    expect(startReview).toHaveBeenCalledWith({ workflowId: "workflow-1", workItemId: "item-1", workspaceSlug: "demo", operatorId: "operator-1", expectedState: "submitted" });
+    expect(startReview).toHaveBeenCalledWith({ workflowId, workItemId, workspaceSlug: "demo", operatorId: "operator-1", expectedState: "submitted" });
   });
 
   function operatorClient(rpc: ReturnType<typeof vi.fn>) {
@@ -309,14 +313,14 @@ describe("active mission operator routes without a live database", () => {
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
     const deadline = new Date(Date.now() + 86_400_000).toISOString();
     const items = [{ requirementId: null, category: "quality", text: "Show the product early", required: true }];
-    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/request-revision", {
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
       method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
-      body: JSON.stringify({ expectedState: "under_review", versionId: "version-1", deadline, items }),
+      body: JSON.stringify({ expectedState: "under_review", versionId, deadline, items }),
     });
     expect(response.status).toBe(409);
     expect(await response.json()).toMatchObject({ code: "REVISION_LIMIT_REACHED" });
     expect(rpc).toHaveBeenCalledWith("request_mission_revision", {
-      p_workflow: "workflow-1", p_work_item: "item-1", p_version: "version-1",
+      p_workflow: workflowId, p_work_item: workItemId, p_version: versionId,
       p_operator: "operator-1", p_workspace: "workspace-1", p_expected_state: "under_review",
       p_deadline: deadline, p_items: items,
     });
@@ -326,13 +330,80 @@ describe("active mission operator routes without a live database", () => {
     const requestRevision = vi.fn();
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes({ requestRevision } as unknown as AdminActiveMissionRepository, () => ({ userId: "operator-1", email: "op@example.com" })));
-    const response = await app.request("/api/admin/active-missions/workflow-1/work-items/item-1/request-revision", {
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
       method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
-      body: JSON.stringify({ expectedState: "under_review", versionId: "version-1", deadline: "2020-01-01T00:00:00.000Z", items: [] }),
+      body: JSON.stringify({ expectedState: "under_review", versionId, deadline: "2020-01-01T00:00:00.000Z", items: [] }),
     });
     expect(response.status).toBe(400);
     expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
     expect(requestRevision).not.toHaveBeenCalled();
+  });
+
+  it("rejects every malformed path UUID before repository access", async () => {
+    const repository = {
+      getDetail: vi.fn(), startReview: vi.fn(), requestRevision: vi.fn(),
+      grantRevision: vi.fn(), approveVersion: vi.fn(), markFulfillmentShipped: vi.fn(),
+    } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const deadline = new Date(Date.now() + 86_400_000).toISOString();
+    const headers = { "Content-Type": "application/json", "X-Workspace-Slug": "demo" };
+    const itemRoutes = [
+      { suffix: "start-review", body: { expectedState: "submitted" } },
+      { suffix: "request-revision", body: { expectedState: "under_review", versionId, deadline, items: [{ requirementId: null, category: "quality", text: "Fix", required: true }] } },
+      { suffix: "grant-revision", body: { reason: "Brief changed", grantedCount: 1 } },
+      { suffix: "approve-to-publish", body: { expectedState: "under_review", versionId } },
+    ];
+    const cases = [
+      { path: "/not-a-uuid", init: { headers } },
+      { path: "/not-a-uuid/fulfillment/shipped", init: { method: "POST", headers, body: "{}" } },
+      ...itemRoutes.flatMap(({ suffix, body }) => [
+        { path: `/not-a-uuid/work-items/${workItemId}/${suffix}`, init: { method: "POST", headers, body: JSON.stringify(body) } },
+        { path: `/${workflowId}/work-items/not-a-uuid/${suffix}`, init: { method: "POST", headers, body: JSON.stringify(body) } },
+      ]),
+    ];
+    for (const testCase of cases) {
+      const response = await app.request("/api/admin/active-missions" + testCase.path, testCase.init);
+      expect(response.status, testCase.path).toBe(400);
+      expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    }
+    for (const method of Object.values(repository)) expect(method).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed version and optional requirement UUIDs before repository access", async () => {
+    const requestRevision = vi.fn();
+    const approveVersion = vi.fn();
+    const repository = { requestRevision, approveVersion } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const deadline = new Date(Date.now() + 86_400_000).toISOString();
+    const headers = { "Content-Type": "application/json", "X-Workspace-Slug": "demo" };
+    const malformedFeedback = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
+      method: "POST", headers,
+      body: JSON.stringify({
+        expectedState: "under_review", versionId, deadline,
+        items: [{ requirementId: "not-a-uuid", category: "quality", text: "Fix", required: true }],
+      }),
+    });
+    expect(malformedFeedback.status).toBe(400);
+    expect(await malformedFeedback.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    const malformedVersion = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/approve-to-publish`, {
+      method: "POST", headers,
+      body: JSON.stringify({ expectedState: "under_review", versionId: "not-a-uuid" }),
+    });
+    expect(malformedVersion.status).toBe(400);
+    expect(await malformedVersion.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(requestRevision).not.toHaveBeenCalled();
+    expect(approveVersion).not.toHaveBeenCalled();
+
+    const validFeedback = [{ requirementId, category: "quality", text: "Fix", required: true }];
+    requestRevision.mockResolvedValueOnce({ workItem: { id: workItemId } });
+    const valid = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
+      method: "POST", headers,
+      body: JSON.stringify({ expectedState: "under_review", versionId, deadline, items: validFeedback }),
+    });
+    expect(valid.status).toBe(200);
+    expect(requestRevision).toHaveBeenCalledWith(expect.objectContaining({ workflowId, workItemId, versionId, items: validFeedback }));
   });
 
   it("sends exact grant, approval, and shipping RPC arguments", async () => {
@@ -371,6 +442,44 @@ describe("active mission operator lifecycle migration contract", () => {
     expect(sql).toContain("current_submitted_version_id");
     expect(sql).toContain("status <> 'preparing'");
     for (const forbidden of ["update public.mission_submissions", "update public.point_balances", "update public.earnings_balances", "update public.creators set xp", "approve_submission("]) expect(sql).not.toContain(forbidden);
+  });
+
+  it("applies the corrective lifecycle definitions in executable dependency order", () => {
+    const name = readdirSync(resolve("supabase/migrations"))
+      .find((file) => file.includes("harden_active_mission_operator_lifecycle"));
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    const definition = (qualifiedName: string) => {
+      const start = sql.indexOf(`create or replace function ${qualifiedName}(`);
+      expect(start, `${qualifiedName} definition`).toBeGreaterThanOrEqual(0);
+      const bodyStart = sql.indexOf("as $$", start);
+      const end = sql.indexOf("$$;", bodyStart);
+      expect(bodyStart, `${qualifiedName} body`).toBeGreaterThan(start);
+      expect(end, `${qualifiedName} terminator`).toBeGreaterThan(bodyStart);
+      return { start, source: sql.slice(start, end + 3) };
+    };
+    const helper = definition("private.v_item_round_limit");
+    const startReview = definition("private.start_mission_review");
+    const requestRevision = definition("private.request_mission_revision");
+    const grantRevision = definition("private.grant_mission_revision");
+
+    expect(helper.start).toBeLessThan(requestRevision.start);
+    expect(requestRevision.source).toContain("private.v_item_round_limit(");
+    expect(requestRevision.source).toContain("p_deadline <= now()");
+    expect(requestRevision.source).not.toContain("p_deadline > v_item.deadline");
+
+    expect(startReview.source).toContain("from public.mission_draft_versions");
+    expect(startReview.source).toContain("for update");
+    expect(startReview.source).toContain("insert into public.mission_review_rounds");
+    expect(startReview.source).toContain("v_completed + 1");
+    expect(startReview.source).toContain("state = 'open'");
+    expect(startReview.source).toContain("mission_draft_version_id = v_item.current_submitted_version_id");
+    expect(startReview.source.indexOf("select count(*) into v_completed"))
+      .toBeLessThan(startReview.source.indexOf("insert into public.mission_review_rounds"));
+
+    const refresh = grantRevision.source.lastIndexOf("private.refresh_mission_workflow_state");
+    expect(refresh).toBeGreaterThanOrEqual(0);
+    expect(refresh).toBeLessThan(grantRevision.source.lastIndexOf("return v_item"));
   });
 });
 
