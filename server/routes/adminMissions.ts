@@ -220,8 +220,8 @@ const MISSION_COLS =
   "deliverables, requirements, platforms, effort, " +
   "target_audience, dos, donts, key_messages, reference_links, " +
   "creator_workflow_mode, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, " +
-  "deliverable_templates:mission_deliverable_templates(id, title, platform, position, required, draft_due_offset_hours, " +
-  "requirements:mission_deliverable_requirements(id, category, text:requirement_text, required, position)), " +
+  "deliverable_templates:mission_deliverable_templates!mission_templates_mission_workspace_fk(id, title, platform, position, required, draft_due_offset_hours, " +
+  "requirements:mission_deliverable_requirements!mission_requirements_template_workspace_fk(id, category, text:requirement_text, required, position)), " +
   "created_at, updated_at, published_at, closed_at";
 
 const EDITABLE_COLS: (keyof MissionInput)[] = [

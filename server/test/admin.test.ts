@@ -165,6 +165,43 @@ describe("active mission authoring contract", () => {
     });
   });
 
+  it("uses explicit composite relationship hints for nested mission authoring reads", async () => {
+    const { MISSION_COLS } = await import("../routes/adminMissions");
+
+    expect(MISSION_COLS).toContain(
+      "deliverable_templates:mission_deliverable_templates!mission_templates_mission_workspace_fk(",
+    );
+    expect(MISSION_COLS).toContain(
+      "requirements:mission_deliverable_requirements!mission_requirements_template_workspace_fk(",
+    );
+  });
+
+  it("serializes workflow snapshots against template deletion with a guarded parent-row trigger", () => {
+    const migrationDir = join(process.cwd(), "supabase", "migrations");
+    const migrationName = readdirSync(migrationDir).find((name) =>
+      name.includes("guard_mission_authoring_snapshot_race"),
+    );
+    expect(migrationName).toBeTruthy();
+    const sql = readFileSync(join(migrationDir, migrationName!), "utf8");
+
+    expect(sql).toMatch(/create or replace function private\.guard_mission_work_item_source_template/i);
+    expect(sql).toMatch(/security definer[\s\S]*set search_path = ''/i);
+    expect(sql).toMatch(
+      /create trigger mission_work_items_source_template_guard[\s\S]*before insert or update of source_template_id[\s\S]*on public\.mission_work_items/i,
+    );
+    expect(sql).toMatch(
+      /from public\.mission_workflows workflow[\s\S]*join public\.mission_submissions submission[\s\S]*join public\.missions mission[\s\S]*join public\.mission_deliverable_templates template/i,
+    );
+    expect(sql).toMatch(/workflow\.workspace_id = new\.workspace_id/i);
+    expect(sql).toMatch(/submission\.workspace_id = new\.workspace_id/i);
+    expect(sql).toMatch(/mission\.workspace_id = new\.workspace_id/i);
+    expect(sql).toMatch(/template\.workspace_id = new\.workspace_id/i);
+    expect(sql).toMatch(/for key share of mission/i);
+    expect(sql).toMatch(
+      /revoke all on function private\.guard_mission_work_item_source_template\(\)[\s\S]*from public/i,
+    );
+  });
+
   it("defines a locked service-only atomic authoring RPC and nullable template platform", () => {
     const migrationDir = join(process.cwd(), "supabase", "migrations");
     const migrationName = readdirSync(migrationDir).find((name) => name.includes("author_active_mission_workflow_policies"));

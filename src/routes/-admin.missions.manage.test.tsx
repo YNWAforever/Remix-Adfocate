@@ -120,7 +120,7 @@ describe("MissionEditor active workflow authoring", () => {
     fireEvent.change(screen.getByLabelText("Checklist category 2 for deliverable 1"), { target: { value: "quality" } });
     fireEvent.click(screen.getByRole("button", { name: "Remove checklist item 1 from deliverable 1" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Save mission" }));
+    fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
@@ -192,7 +192,7 @@ describe("MissionEditor active workflow authoring", () => {
     );
 
     expect(screen.queryByRole("button", { name: "Add deliverable" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Save mission" }));
+    fireEvent.click(screen.getByRole("button", { name: "儲存變更" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({

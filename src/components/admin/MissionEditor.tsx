@@ -491,7 +491,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         )}
       </div>
 
-      <button aria-label="Save mission" onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
+      <button onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
         {mode === "create" ? "儲存草稿" : "儲存變更"}
       </button>
     </div>
