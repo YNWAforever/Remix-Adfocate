@@ -10,7 +10,8 @@ starting hash and the final handoff records the resulting commit hash.
 
 ## Delivered
 
-- Added `npm run test:active-missions` with the nine required focused files.
+- Added `npm run test:active-missions` with the nine required product-focused
+  files plus the collected integration-launcher contract.
 - Replaced the Unix-only integration environment prefix with a dependency-free,
   cross-platform Node launcher that preserves the exact 35-file suite and sets
   `RUN_INTEGRATION=1` only for the child Vitest process.
@@ -70,7 +71,7 @@ build passed.
 | Gate | Result | Evidence |
 | --- | --- | --- |
 | `git diff --check` | PASS | exit 0 |
-| `npm.cmd run test:active-missions` | PASS | 9/9 files; 92 passed, 20 guarded skips (112); 95.52s |
+| `npm.cmd run test:active-missions` | PASS | 10/10 files; 96 passed, 20 guarded skips (116); review-fix rerun exit 0 in 106.2s |
 | `npm.cmd run lint` | PASS with warnings | exit 0; 0 errors, 3 pre-existing hook warnings |
 | `npm.cmd run type-check` | PASS with warning | route generation and TypeScript exit 0; existing `_site.smoke.test.tsx` route warning |
 | `npm.cmd test` | PASS with warning | 140 files passed, 33 skipped (173); 846 passed, 265 skipped (1111); 202.93s; existing React `activeProps` stderr warning |
@@ -154,3 +155,52 @@ logs/patch artifacts were removed.
 3. Lint retains three non-failing hook warnings; build retains existing route
    classification and large-chunk warnings; full tests retain an existing
    `activeProps` React warning.
+
+## Review-fix RED/GREEN evidence (2026-07-20)
+
+### Async integration launcher and exact suite list
+
+After relocating the regression from `scripts/` to `server/test/`, the first
+run showed that this repository only collects `server/**/*.test.ts`; the `.mjs`
+test was still uncollected. Renaming it to `.test.ts` produced the valid RED:
+
+`npm.cmd test -- server/test/run-integration-tests.test.ts --no-file-parallelism`
+
+Exit `1`: 1 file failed; 4 failed (4). `integrationFiles` was undefined and
+`launchIntegrationTests` was not a function. After replacing `spawnSync` with
+async `spawn`, exporting the exact ordered unique 35-file list, forwarding
+SIGINT/SIGTERM to the child, cleaning parent listeners, preserving numeric child
+exit codes, and re-emitting child termination signals only after child exit,
+the same command exited `0`: 1 file passed; 4 passed (4).
+
+### Pristine migration quality-rating guard
+
+`npm.cmd test -- server/test/active-mission-schema.test.ts --no-file-parallelism`
+
+Exit `1`: 1 file failed; 1 failed, 6 passed, 6 skipped (13). The contract failed
+because the migration omitted `v_submission.quality_rating is not null`. After
+adding that single rejection predicate, the same command exited `0`: 1 file
+passed; 7 passed, 6 guarded skips (13). The guarded live case now seeds a joined
+submission with `quality_rating = 4` and expects `wrong_state`.
+
+### Exact legacy final-approval rewards
+
+`npm.cmd test -- server/test/active-missions.test.ts --no-file-parallelism`
+
+Exit `0`: 1 file passed; 31 passed, 5 guarded skips (36). The guarded legacy
+approval regression asserts an exact +100 creator XP delta and an exact +100
+`mission_submissions.xp_awarded` delta, alongside the exact 321-point award.
+
+### Review-fix completion gates
+
+- `npm.cmd run test:active-missions`: exit `0` in 106.2s; 10 files, 96 passed,
+  20 guarded skips (116). A later JSON-reporter-only count capture was stopped
+  by the command wrapper at 184.2s before writing its temporary report; it did
+  not invalidate the earlier standard aggregate or the isolated exact counts.
+- `npm.cmd run lint`: exit `0`; 0 errors and the same 3 hook warnings.
+- `npm.cmd run type-check`: initial exit `1` only because TypeScript lacked a
+  declaration for the executable `.mjs` imported by the new test; after a
+  test-local `@ts-expect-error` boundary, exit `0` with the existing route warning.
+- `npm.cmd run build`: exit `0` after ESM checking, route generation, TypeScript,
+  and Vite bundling.
+- `git diff --check`: exit `0` before report update.

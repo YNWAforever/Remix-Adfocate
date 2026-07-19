@@ -35,6 +35,7 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("v_submission.submitted_at is not null");
     expect(sql).toContain("v_submission.points_awarded <> 0");
     expect(sql).toContain("v_submission.xp_awarded <> 0");
+    expect(sql).toContain("v_submission.quality_rating is not null");
     expect(sql).toContain("from public.mission_workflows");
     expect(sql).toContain("raise exception 'wrong_state'");
     expect(sql).toContain("private.create_mission_workflow(p_submission)");

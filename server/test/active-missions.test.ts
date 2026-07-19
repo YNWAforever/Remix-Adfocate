@@ -757,7 +757,7 @@ integrationSuite("active mission API live integration", () => {
     expect(await creatorRewardSnapshot(active.creator.id)).toEqual(before);
   });
 
-  it("rejects non-joined, content-bearing, rewarded, and previously migrated submissions", async () => {
+  it("rejects non-joined, content-bearing, reviewed, rewarded, and previously migrated submissions", async () => {
     const svc = serviceForTests();
     const seed = async (label: string) => seedActiveMission({
       email: `active-rollout-${label}-${randomUUID()}@test.local`,
@@ -788,6 +788,11 @@ integrationSuite("active mission API live integration", () => {
       .eq("id", reward.submission.id)).error).toBeNull();
     await expectWrongState(reward.submission.id);
 
+    const priorReview = await seed("prior-review");
+    expect((await svc.from("mission_submissions").update({ quality_rating: 4 })
+      .eq("id", priorReview.submission.id)).error).toBeNull();
+    await expectWrongState(priorReview.submission.id);
+
     const prior = await seed("prior-workflow");
     expect((await svc.rpc("create_mission_workflow", { p_submission: prior.submission.id })).error).toBeNull();
     await expectWrongState(prior.submission.id);
@@ -811,6 +816,9 @@ integrationSuite("active mission API live integration", () => {
       submitted_at: new Date().toISOString(),
     }).select("id").single();
     expect(inserted.error).toBeNull();
+    const beforeSubmission = await svc.from("mission_submissions")
+      .select("xp_awarded").eq("id", inserted.data!.id).single();
+    expect(beforeSubmission.error).toBeNull();
     const before = await creatorRewardSnapshot(creator.userId);
 
     const approved = await svc.rpc("approve_submission", {
@@ -819,12 +827,15 @@ integrationSuite("active mission API live integration", () => {
       p_quality_rating: null,
     });
     expect(approved.error).toBeNull();
-    expect(approved.data).toMatchObject({ status: "approved", points_awarded: 321 });
+    expect(approved.data).toMatchObject({
+      status: "approved", points_awarded: 321, xp_awarded: 135, quality_rating: null,
+    });
     const after = await creatorRewardSnapshot(creator.userId);
-    expect({
-      points: after.points - before.points,
-      xp: after.xp - before.xp,
-    }).toMatchObject({ points: 321, xp: expect.any(Number) });
-    expect(after.xp - before.xp).toBeGreaterThan(0);
+    const afterSubmission = await svc.from("mission_submissions")
+      .select("xp_awarded").eq("id", inserted.data!.id).single();
+    expect(afterSubmission.error).toBeNull();
+    expect(after.points - before.points).toBe(321);
+    expect(after.xp - before.xp).toBe(100);
+    expect(afterSubmission.data!.xp_awarded - beforeSubmission.data!.xp_awarded).toBe(100);
   });
 });

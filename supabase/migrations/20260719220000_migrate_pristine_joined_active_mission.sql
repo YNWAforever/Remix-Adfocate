@@ -34,6 +34,7 @@ begin
     or v_submission.review_deadline is not null
     or v_submission.points_awarded <> 0
     or v_submission.xp_awarded <> 0
+    or v_submission.quality_rating is not null
   then
     raise exception 'wrong_state';
   end if;

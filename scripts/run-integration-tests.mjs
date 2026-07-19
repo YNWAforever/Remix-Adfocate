@@ -1,8 +1,9 @@
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
-const integrationFiles = [
+export const integrationFiles = [
   "server/test/rls.test.ts",
   "server/test/bootstrap.test.ts",
   "server/test/onboarding.test.ts",
@@ -41,18 +42,48 @@ const integrationFiles = [
 ];
 
 const vitest = resolve("node_modules/vitest/vitest.mjs");
-const result = spawnSync(
-  process.execPath,
-  [vitest, "run", "--no-file-parallelism", ...integrationFiles],
-  {
-    cwd: process.cwd(),
-    env: { ...process.env, RUN_INTEGRATION: "1" },
-    stdio: "inherit",
-  },
-);
 
-if (result.error) {
-  process.stderr.write(`${result.error}\n`);
-  process.exit(1);
+export function launchIntegrationTests({ processRef = process, spawnImpl = spawn } = {}) {
+  const child = spawnImpl(
+    processRef.execPath,
+    [vitest, "run", "--no-file-parallelism", ...integrationFiles],
+    {
+      cwd: processRef.cwd(),
+      env: { ...processRef.env, RUN_INTEGRATION: "1" },
+      stdio: "inherit",
+    },
+  );
+  const signals = ["SIGINT", "SIGTERM"];
+  const handlers = new Map(signals.map((signal) => [
+    signal,
+    () => {
+      if (!child.killed) child.kill(signal);
+    },
+  ]));
+  const cleanup = () => {
+    for (const [signal, handler] of handlers) {
+      processRef.removeListener(signal, handler);
+    }
+  };
+
+  for (const [signal, handler] of handlers) processRef.on(signal, handler);
+  child.once("error", (error) => {
+    cleanup();
+    processRef.stderr.write(`${error}\n`);
+    processRef.exit(1);
+  });
+  child.once("exit", (code, signal) => {
+    cleanup();
+    if (signal) {
+      processRef.kill(processRef.pid, signal);
+      return;
+    }
+    processRef.exit(code ?? 1);
+  });
+
+  return child;
 }
-process.exit(result.status ?? 1);
+
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  launchIntegrationTests();
+}
