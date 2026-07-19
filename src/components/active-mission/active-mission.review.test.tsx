@@ -68,6 +68,31 @@ describe("DraftEditor race safety", () => {
     expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({ workItemId: "B", revision: 7 }));
   });
 
+  it("rebases a queued autosave onto the revision returned by the active save", async () => {
+    const firstSave = deferred<MissionDraft>();
+    const onSave = vi.fn()
+      .mockReturnValueOnce(firstSave.promise)
+      .mockResolvedValueOnce(draft(5));
+    render(<DraftEditor item={item("A", 3)} onSave={onSave} onSubmit={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText("Caption or copy"), { target: { value: "Caption A" } });
+    await act(async () => vi.advanceTimersByTimeAsync(800));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({
+      workItemId: "A", revision: 3, caption: "Caption A",
+    }));
+
+    fireEvent.change(screen.getByLabelText("Caption or copy"), { target: { value: "Caption B" } });
+    await act(async () => vi.advanceTimersByTimeAsync(800));
+    expect(onSave).toHaveBeenCalledTimes(1);
+
+    await act(async () => firstSave.resolve(draft(4)));
+    expect(onSave).toHaveBeenCalledTimes(2);
+    expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({
+      workItemId: "A", revision: 4, caption: "Caption B",
+    }));
+  });
+
   it("serializes submit behind the active autosave and final-saves at the updated revision", async () => {
     const autosave = deferred<MissionDraft>();
     const finalSave = deferred<MissionDraft>();

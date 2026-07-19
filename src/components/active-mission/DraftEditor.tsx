@@ -134,7 +134,10 @@ export function DraftEditor({
   const queueSave = useCallback((input: SaveMissionDraftInput, generation: number): Promise<DraftSaveResult> => {
     const previous = saveQueueRef.current.generation === generation ? saveQueueRef.current.promise : Promise.resolve();
     const promise = previous.catch(() => undefined).then(async () => {
-      const result = await onSave(input);
+      const executionInput = isCurrentScope(generation, input.workItemId)
+        ? { ...input, revision: revisionRef.current }
+        : input;
+      const result = await onSave(executionInput);
       if (isCurrentScope(generation, input.workItemId)) revisionRef.current = revisionFrom(result, revisionRef.current);
       return result;
     });
