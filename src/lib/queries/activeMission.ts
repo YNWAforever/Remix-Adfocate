@@ -61,7 +61,11 @@ export type SubmitMissionWorkItemInput = {
 
 // Task 5's approved design locks these requests and paths, but not the response
 // property names. Keep the response opaque until the server contract lands.
-export type DraftAssetMutationResult = Readonly<Record<string, unknown>>;
+export type DraftAssetUploadGrant = Readonly<{
+  asset: Readonly<{ id: string; storageObjectPath: string }>;
+  token: string;
+}>;
+export type DraftAssetMutationResult = DraftAssetUploadGrant | Readonly<Record<string, unknown>>;
 export type SubmitMissionWorkItemResult = Readonly<{ version: unknown; workItem: unknown }>;
 
 function workItemDraft(

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMyMissions, type MyMission, type SubmissionStatus } from "@/lib/queries/kocmax";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
@@ -13,6 +13,10 @@ const GROUPS: Group[] = [
   { labelKey: "app.mission.statusApproved", statuses: ["approved"] },
   { labelKey: "app.mission.statusRejected", statuses: ["rejected", "expired"] },
 ];
+
+function usesActiveWorkspace(submission: MyMission): boolean {
+  return submission.creator_workflow_mode === "active_workspace" || submission.missions.creator_workflow_mode === "active_workspace";
+}
 
 function MyMissions() {
   const { t } = useI18n();
@@ -32,10 +36,9 @@ function MyMissions() {
             <h2 className="font-heading font-bold">{t(g.labelKey)}</h2>
             <div className="grid gap-2 lg:grid-cols-2">
             {items.map((s) => (
-              <Link
+              <a
                 key={s.id}
-                to="/mission/$missionSlug"
-                params={{ missionSlug: s.missions.slug }}
+                href={s.status === "joined" && usesActiveWorkspace(s) ? `/my/${s.id}` : `/mission/${s.missions.slug}`}
                 className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
               >
                 <span className="font-heading">{s.missions.title}</span>
@@ -44,7 +47,7 @@ function MyMissions() {
                     ? t("app.my.pointsAwarded", { n: String(s.points_awarded) })
                     : t("app.my.pointsReward", { n: String(s.missions.points_reward) })}
                 </span>
-              </Link>
+              </a>
             ))}
             </div>
           </section>

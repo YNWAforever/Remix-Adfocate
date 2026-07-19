@@ -90,6 +90,7 @@ export function DraftEditor({
   const [editSequence, setEditSequence] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const submitErrorRef = useRef<HTMLParagraphElement>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [uploads, setUploads] = useState<UploadEntry[]>([]);
   const revisionRef = useRef(item.draft?.revision ?? 0);
@@ -111,6 +112,10 @@ export function DraftEditor({
   const allRequiredChecked = requiredRequirements.every(({ id }) => checklist[id] === true);
   const canEdit = item.state === "drafting" || item.state === "revision_requested";
   const effectiveSaveStatus = conflict ? "conflict" : saveStatus;
+
+  useEffect(() => {
+    if (submitError) submitErrorRef.current?.focus();
+  }, [submitError]);
 
   useEffect(() => {
     if (stateItemId === item.id) return;
@@ -414,7 +419,7 @@ export function DraftEditor({
         >
           {isSubmitting ? "Submitting…" : "Submit version"}
         </button>
-        {submitError ? <p role="alert" className="text-sm font-semibold text-[var(--color-magenta)]">{submitError}</p> : null}
+        {submitError ? <p ref={submitErrorRef} tabIndex={-1} role="alert" className="text-sm font-semibold text-[var(--color-magenta)]">{submitError}</p> : null}
       </div>
     </section>
   );

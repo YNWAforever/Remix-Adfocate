@@ -208,6 +208,26 @@ describe("Home", () => {
     expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] })).toHaveAttribute("href", "/mission/joined-mission");
   });
 
+  it("routes active work to its workspace while legacy work keeps the mission detail link", () => {
+    const active: MyMission = {
+      id: "sub-active", status: "joined", creator_workflow_mode: "active_workspace", active_workflow_id: "workflow-1",
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "active-mission", title: "Active mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "active_workspace" },
+    };
+    const legacy: MyMission = {
+      id: "sub-legacy", status: "joined", creator_workflow_mode: "legacy", active_workflow_id: null,
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "legacy-mission", title: "Legacy mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "legacy" },
+    };
+    mocks.activation.snapshot.activeMissions = [active, legacy];
+    mocks.activation.activeMissions = { data: [active, legacy], loading: false, error: null, refetch: vi.fn() };
+    renderHome();
+
+    expect(screen.getByRole("link", { name: /Active mission/ })).toHaveAttribute("href", "/my/sub-active");
+    expect(screen.getByRole("link", { name: /Legacy mission/ })).toHaveAttribute("href", "/mission/legacy-mission");
+  });
+
+
   it("falls back to onboarding when activation says onboarding is next", () => {
     mocks.activation.snapshot.nextAction = {
       kind: "resume_onboarding", titleKey: "app.activation.next.resumeOnboarding.title", bodyKey: "app.activation.next.resumeOnboarding.body",

@@ -16,6 +16,7 @@ const hoisted = vi.hoisted(() => ({
   matches: { data: [] as unknown[], isLoading: false, isError: false },
   join: vi.fn(),
   submit: vi.fn(),
+  useSubmitMission: vi.fn(),
   apply: vi.fn(),
   track: vi.fn(),
   joinError: null as Error | null,
@@ -25,7 +26,10 @@ vi.mock("@/lib/queries/kocmax", () => ({
   useMission: () => hoisted.mission,
   useMyMissions: () => hoisted.my,
   useJoinMission: () => ({ mutateAsync: hoisted.join, isPending: false, isError: hoisted.joinError !== null, error: hoisted.joinError }),
-  useSubmitMission: () => ({ mutateAsync: hoisted.submit, isPending: false }),
+  useSubmitMission: (...args: unknown[]) => {
+    hoisted.useSubmitMission(...args);
+    return { mutateAsync: hoisted.submit, isPending: false };
+  },
   useApplyMission: () => ({ mutateAsync: hoisted.apply, isPending: false, isError: hoisted.applyError !== null, error: hoisted.applyError }),
   useMe: () => hoisted.me,
   useMissionMatch: () => hoisted.matches,
@@ -74,6 +78,20 @@ describe("Mission detail writes", () => {
     hoisted.my.data = [{ id: "s1", status: "joined", content_urls: [], points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
     renderDetail();
     expect(screen.getByPlaceholderText(/貼上你的內容連結/)).toBeInTheDocument();
+  });
+
+  it("links active joined missions to the workspace without mounting the legacy submission form", () => {
+    hoisted.my.data = [{
+      id: "sub-1", status: "joined", creator_workflow_mode: "active_workspace", active_workflow_id: "workflow-1",
+      content_urls: [], points_awarded: 0, created_at: "",
+      missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc", creator_workflow_mode: "active_workspace" },
+    }];
+
+    renderDetail();
+
+    expect(screen.getByRole("link", { name: "Continue mission" })).toHaveAttribute("href", "/my/sub-1");
+    expect(screen.queryByPlaceholderText(/貼上你的內容連結/)).not.toBeInTheDocument();
+    expect(hoisted.useSubmitMission).not.toHaveBeenCalled();
   });
 
   it("submits the entered URLs", async () => {

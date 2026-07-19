@@ -14,9 +14,15 @@ import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { contentKeys, fetchNews } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { LEVELS, levelIndex } from "@/lib/levels";
-import { useBalance } from "@/lib/queries/kocmax";
+import { useBalance, type MyMission } from "@/lib/queries/kocmax";
 import { useCreatorActivation } from "@/lib/useCreatorActivation";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
+
+function activeMissionHref(mission: MyMission): string {
+  const active = mission.creator_workflow_mode === "active_workspace"
+    || mission.missions.creator_workflow_mode === "active_workspace";
+  return active ? `/my/${mission.id}` : `/mission/${mission.missions.slug}`;
+}
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -143,6 +149,7 @@ function Home() {
         missions={activation.activeMissions.data ?? []}
         isLoading={activation.activeMissions.loading}
         isError={Boolean(activation.activeMissions.error)}
+        getMissionHref={activeMissionHref}
         onRetry={() => void activation.activeMissions.refetch()}
       />
 

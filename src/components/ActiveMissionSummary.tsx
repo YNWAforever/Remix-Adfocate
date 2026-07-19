@@ -19,11 +19,13 @@ export function ActiveMissionSummary({
   isLoading,
   isError,
   onRetry,
+  getMissionHref,
 }: {
   missions: MyMission[];
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
+  getMissionHref?: (mission: MyMission) => string;
 }) {
   const { t } = useI18n();
   const headingId = useId();
@@ -59,7 +61,7 @@ export function ActiveMissionSummary({
           {activeMissions.map((mission) => (
             <li key={mission.id}>
               <a
-                href={`/mission/${mission.missions.slug}`}
+                href={getMissionHref?.(mission) ?? `/mission/${mission.missions.slug}`}
                 className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <span className="min-w-0 font-heading text-sm font-semibold">
