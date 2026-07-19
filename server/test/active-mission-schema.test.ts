@@ -17,6 +17,60 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("defines a locked service-only migration for pristine joined legacy submissions", () => {
+    const migrationName = "20260719220000_migrate_pristine_joined_active_mission.sql";
+    const migrationPath = resolve("supabase/migrations", migrationName);
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    expect(sql).toContain("create or replace function public.migrate_pristine_joined_active_mission");
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("from public.mission_submissions");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("v_submission.status <> 'joined'");
+    expect(sql).toContain("coalesce(cardinality(v_submission.content_urls), 0) <> 0");
+    expect(sql).toContain("v_submission.submission_data <> '{}'::jsonb");
+    expect(sql).toContain("v_submission.submitted_at is not null");
+    expect(sql).toContain("v_submission.points_awarded <> 0");
+    expect(sql).toContain("v_submission.xp_awarded <> 0");
+    expect(sql).toContain("from public.mission_workflows");
+    expect(sql).toContain("raise exception 'wrong_state'");
+    expect(sql).toContain("private.create_mission_workflow(p_submission)");
+    expect(sql).toContain("'legacy_submission_migrated'");
+    expect(sql).toContain("revoke all on function public.migrate_pristine_joined_active_mission(uuid) from public, anon, authenticated, service_role");
+    expect(sql).toContain("grant execute on function public.migrate_pristine_joined_active_mission(uuid) to service_role");
+    for (const forbidden of [
+      "update public.mission_submissions",
+      "update public.point_balances",
+      "update public.earnings_balances",
+      "update public.creators set xp",
+      "approve_submission(",
+      "delete from public.mission_workflow",
+    ]) {
+      expect(sql).not.toContain(forbidden);
+    }
+  });
+
+  it("runs the guarded integration suite through a cross-platform Node launcher", () => {
+    const pkg = JSON.parse(readFileSync(resolve("package.json"), "utf8")) as {
+      scripts: Record<string, string>;
+    };
+    const runnerPath = resolve("scripts/run-integration-tests.mjs");
+    const runner = existsSync(runnerPath) ? readFileSync(runnerPath, "utf8") : "";
+
+    expect(pkg.scripts["test:integration"]).toBe("node scripts/run-integration-tests.mjs");
+    expect(runner).toContain('RUN_INTEGRATION: "1"');
+    expect(runner).toContain("node_modules/vitest/vitest.mjs");
+    expect(runner).toContain('"--no-file-parallelism"');
+    for (const file of [
+      "server/test/rls.test.ts",
+      "server/test/notifications-triggers.test.ts",
+      "server/test/academy-seed.test.ts",
+    ]) expect(runner).toContain(file);
+  });
+
   it("runs live cases only against an explicitly enabled loopback Supabase", () => {
     const localEnv = {
       RUN_INTEGRATION: "1",

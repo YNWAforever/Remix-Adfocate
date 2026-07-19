@@ -1,11 +1,11 @@
-import { ActiveMissionError } from "./errors";
+import { ActiveMissionError } from "./errors.js";
 import type {
   DraftPatch,
   QueueItem,
   WorkflowState,
   WorkflowStateInput,
   WorkItemState,
-} from "./types";
+} from "./types.js";
 
 const ALLOWED_TRANSITIONS: Record<WorkItemState, readonly WorkItemState[]> = {
   blocked_by_fulfillment: ["drafting", "cancelled", "expired"],

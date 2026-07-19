@@ -42,10 +42,16 @@ function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): Edit
 }
 
 function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
-  return templates.map(({ editorKey: _templateKey, requirements, ...template }) => ({
-    ...template,
-    requirements: requirements.map(({ editorKey: _requirementKey, ...requirement }) => requirement),
-  }));
+  return templates.map(({ editorKey: templateKey, requirements, ...template }) => {
+    void templateKey;
+    return {
+      ...template,
+      requirements: requirements.map(({ editorKey: requirementKey, ...requirement }) => {
+        void requirementKey;
+        return requirement;
+      }),
+    };
+  });
 }
 
 export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {

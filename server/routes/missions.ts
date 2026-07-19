@@ -65,6 +65,7 @@ missionRoutes.get("/my", async (c) => {
     const workflows = row.mission_workflows;
     const workflow = Array.isArray(workflows) ? workflows[0] : workflows;
     const { mission_workflows: _missionWorkflows, ...submission } = row;
+    void _missionWorkflows;
     return { ...submission, creator_workflow_mode: row.missions?.creator_workflow_mode ?? "legacy", active_workflow_id: workflow?.id ?? null };
   });
   return c.json({ submissions });

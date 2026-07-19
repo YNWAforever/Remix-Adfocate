@@ -11,8 +11,8 @@ import { createActiveMissionRepository, type ActiveMissionRepository } from "../
 import { createActiveMissionRoutes } from "../routes/activeMissions";
 import { createAdminActiveMissionRepository, createAdminActiveMissionRoutes, sortActiveMissionQueue, type AdminActiveMissionRepository } from "../routes/adminActiveMissions";
 import {
-  activeMissionIntegrationSkipReason, cleanup, creatorRewardSnapshot, makeCreator,
-  seedActiveMission, serviceForTests, userForJwt,
+  activeMissionIntegrationSkipReason, cleanup, creatorRewardSnapshot, DEMO_WS, makeCreator,
+  makeMission, seedActiveMission, serviceForTests, userForJwt,
 } from "./helpers";
 
 type Script = { table: string; data: unknown; error?: { message: string } | null };
@@ -727,5 +727,104 @@ integrationSuite("active mission API live integration", () => {
     expect(items.data?.every((row) => row.state === "drafting")).toBe(true);
     expect(submissionRow.data?.status).toBe("joined");
     expect(await creatorRewardSnapshot(active.creator.id)).toEqual(before);
+  });
+
+  it("migrates only a pristine joined submission and records the explicit rollout event", async () => {
+    const active = await seedActiveMission({
+      email: "active-rollout-" + randomUUID() + "@test.local",
+      slug: "test-active-rollout-" + randomUUID(),
+      deliverables: [{ title: "Rollout reel", platform: "instagram" }],
+    });
+    const before = await creatorRewardSnapshot(active.creator.id);
+    const svc = serviceForTests();
+
+    const migrated = await svc.rpc("migrate_pristine_joined_active_mission", {
+      p_submission: active.submission.id,
+    });
+    expect(migrated.error).toBeNull();
+    expect(migrated.data).toMatchObject({
+      mission_submission_id: active.submission.id,
+      state: "drafting",
+    });
+    const events = await svc.from("mission_workflow_events")
+      .select("event_type")
+      .eq("mission_workflow_id", migrated.data.id);
+    expect(events.error).toBeNull();
+    expect(events.data).toEqual(expect.arrayContaining([
+      { event_type: "workflow_created" },
+      { event_type: "legacy_submission_migrated" },
+    ]));
+    expect(await creatorRewardSnapshot(active.creator.id)).toEqual(before);
+  });
+
+  it("rejects non-joined, content-bearing, rewarded, and previously migrated submissions", async () => {
+    const svc = serviceForTests();
+    const seed = async (label: string) => seedActiveMission({
+      email: `active-rollout-${label}-${randomUUID()}@test.local`,
+      slug: `test-active-rollout-${label}-${randomUUID()}`,
+      deliverables: [{ title: "Rollout post", platform: "instagram" }],
+    });
+    const expectWrongState = async (submissionId: string) => {
+      const result = await svc.rpc("migrate_pristine_joined_active_mission", {
+        p_submission: submissionId,
+      });
+      expect(result.error?.message.toLowerCase()).toContain("wrong_state");
+    };
+
+    for (const status of ["submitted", "under_review", "approved", "rejected", "declined", "expired"]) {
+      const active = await seed(`status-${status}`);
+      const changed = await svc.from("mission_submissions").update({ status }).eq("id", active.submission.id);
+      expect(changed.error).toBeNull();
+      await expectWrongState(active.submission.id);
+    }
+
+    const content = await seed("content");
+    expect((await svc.from("mission_submissions").update({ content_urls: ["https://example.test/legacy"] })
+      .eq("id", content.submission.id)).error).toBeNull();
+    await expectWrongState(content.submission.id);
+
+    const reward = await seed("reward");
+    expect((await svc.from("mission_submissions").update({ points_awarded: 1 })
+      .eq("id", reward.submission.id)).error).toBeNull();
+    await expectWrongState(reward.submission.id);
+
+    const prior = await seed("prior-workflow");
+    expect((await svc.rpc("create_mission_workflow", { p_submission: prior.submission.id })).error).toBeNull();
+    await expectWrongState(prior.submission.id);
+  });
+
+  it("preserves legacy final approval and its existing points and XP rewards", async () => {
+    const svc = serviceForTests();
+    const creator = await makeCreator(`active-legacy-reward-${randomUUID()}@test.local`, 0);
+    const mission = await makeMission({
+      slug: `test-active-legacy-reward-${randomUUID()}`,
+      points_reward: 321,
+      cash_reward: 0,
+    });
+    const inserted = await svc.from("mission_submissions").insert({
+      mission_id: mission.id,
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      status: "submitted",
+      content_urls: ["https://example.test/legacy-final"],
+      xp_awarded: 35,
+      submitted_at: new Date().toISOString(),
+    }).select("id").single();
+    expect(inserted.error).toBeNull();
+    const before = await creatorRewardSnapshot(creator.userId);
+
+    const approved = await svc.rpc("approve_submission", {
+      p_submission: inserted.data!.id,
+      p_notes: "Legacy approval remains the reward boundary",
+      p_quality_rating: null,
+    });
+    expect(approved.error).toBeNull();
+    expect(approved.data).toMatchObject({ status: "approved", points_awarded: 321 });
+    const after = await creatorRewardSnapshot(creator.userId);
+    expect({
+      points: after.points - before.points,
+      xp: after.xp - before.xp,
+    }).toMatchObject({ points: 321, xp: expect.any(Number) });
+    expect(after.xp - before.xp).toBeGreaterThan(0);
   });
 });
