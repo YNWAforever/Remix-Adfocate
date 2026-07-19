@@ -117,7 +117,22 @@ export async function createUploadGrant(
   const signed = await client.storage
     .from(MISSION_DRAFT_ASSET_BUCKET)
     .createSignedUploadUrl(row.storage_object_path as string, { upsert: false });
-  if (signed.error || !signed.data) throw new ActiveMissionError("UNKNOWN", signed.error?.message ?? "Unable to create upload grant");
+  if (signed.error || !signed.data) {
+    const signingError = new ActiveMissionError("UNKNOWN", signed.error?.message ?? "Unable to create upload grant");
+    try {
+      await client.rpc("abandon_active_mission_asset", {
+        p_submission: owner.submissionId,
+        p_creator: owner.creatorId,
+        p_workspace: owner.workspaceId,
+        p_work_item: owner.workItemId,
+        p_asset: row.id,
+        p_storage_object_path: row.storage_object_path,
+      });
+    } catch {
+      // Cleanup is best-effort; preserve the actionable signing error for the caller.
+    }
+    throw signingError;
+  }
   const expiresAt = row.upload_grant_expires_at as string;
   return {
     asset: asset(row),

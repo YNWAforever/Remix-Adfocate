@@ -6,6 +6,7 @@ import { Hono } from "hono";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createApp, type Env } from "../app";
 import { ActiveMissionError } from "../lib/activeMission/errors";
+import { createUploadGrant } from "../lib/activeMission/creatorActions";
 import { createActiveMissionRepository, type ActiveMissionRepository } from "../lib/activeMission/repo";
 import { createActiveMissionRoutes } from "../routes/activeMissions";
 import { createAdminActiveMissionRepository, createAdminActiveMissionRoutes, sortActiveMissionQueue, type AdminActiveMissionRepository } from "../routes/adminActiveMissions";
@@ -160,6 +161,40 @@ describe("active mission repository without a live database", () => {
       p_submission: owner.submissionId,
       p_creator: owner.creatorId,
       p_workspace: owner.workspaceId,
+    });
+  });
+});
+
+describe("active mission creator upload service", () => {
+  it("abandons an owner/path-scoped pending asset when signed URL creation fails without masking that failure", async () => {
+    const asset = {
+      id: "asset-1",
+      storage_object_path: "creator-1/workflow-1/item-1/asset-1.jpg",
+      upload_state: "pending",
+      mime_type: "image/jpeg",
+      byte_size: 1024,
+      upload_grant_expires_at: "2026-07-19T12:10:00.000Z",
+    };
+    const rpc = vi.fn()
+      .mockResolvedValueOnce({ data: asset, error: null })
+      .mockResolvedValueOnce({ data: null, error: { message: "cleanup unavailable" } });
+    const createSignedUploadUrl = vi.fn(async () => ({ data: null, error: { message: "signing failed" } }));
+    const client = {
+      rpc,
+      storage: { from: vi.fn(() => ({ createSignedUploadUrl })) },
+    } as unknown as SupabaseClient;
+
+    await expect(createUploadGrant(client, { ...owner, workItemId: item.id }, {
+      fileName: "draft.jpg", contentType: "image/jpeg", sizeBytes: 1024,
+    })).rejects.toMatchObject({ code: "UNKNOWN", message: "signing failed" });
+
+    expect(rpc).toHaveBeenNthCalledWith(2, "abandon_active_mission_asset", {
+      p_submission: owner.submissionId,
+      p_creator: owner.creatorId,
+      p_workspace: owner.workspaceId,
+      p_work_item: item.id,
+      p_asset: asset.id,
+      p_storage_object_path: asset.storage_object_path,
     });
   });
 });
@@ -347,6 +382,24 @@ describe("active mission creator submit migration contract", () => {
       " to authenticated", "update public.mission_submissions", "update public.point_balances",
       "update public.earnings_balances", "update public.creators set xp",
     ]) expect(sql).not.toContain(forbidden);
+  });
+});
+
+describe("active mission failed upload cleanup migration contract", () => {
+  it("is service-only, owner/path-scoped, and cannot abandon finalized assets", () => {
+    const name = readdirSync(resolve("supabase/migrations"))
+      .find((file) => file.includes("abandon_active_mission_asset"));
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const token of [
+      "function private.abandon_active_mission_asset", "function public.abandon_active_mission_asset",
+      "security definer", "set search_path = ''", "for update", "a.storage_object_path = p_storage_object_path",
+      "s.id = p_submission", "s.creator_id = p_creator", "a.workspace_id = p_workspace",
+      "a.mission_work_item_id = p_work_item", "a.id = p_asset", "a.upload_state = 'pending'",
+      "a.mission_draft_version_id is null", "set upload_state = 'deleted'", "deleted_at = now()",
+      "to service_role",
+    ]) expect(sql).toContain(token);
+    expect(sql).not.toContain(" to authenticated");
   });
 });
 

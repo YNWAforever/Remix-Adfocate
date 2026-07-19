@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/lib/i18n";
 import { dict } from "@/lib/i18n.dict";
+import { deriveCreatorActivation } from "@/lib/creatorActivation";
 import type { MissionMatch, MyMission } from "@/lib/queries/kocmax";
 import type { UseCreatorActivationResult } from "@/lib/useCreatorActivation";
 
@@ -206,6 +207,22 @@ describe("Home", () => {
     ];
     headings.slice(0, -1).forEach((heading, index) => expectBefore(heading, headings[index + 1]));
     expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] })).toHaveAttribute("href", "/mission/joined-mission");
+  });
+
+  it("routes the primary action for an active joined mission to its submission workspace", () => {
+    const active: MyMission = {
+      id: "sub-active", status: "joined", creator_workflow_mode: "active_workspace", active_workflow_id: "workflow-1",
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "active-mission", title: "Active mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "active_workspace" },
+    };
+    const snapshot = deriveCreatorActivation({ me: mocks.activation.me.data, myMissions: [active] });
+    mocks.activation.snapshot = snapshot;
+    mocks.activation.activeMissions = { data: [active], loading: false, error: null, refetch: vi.fn() };
+
+    renderHome();
+
+    expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] }))
+      .toHaveAttribute("href", "/my/sub-active");
   });
 
   it("routes active work to its workspace while legacy work keeps the mission detail link", () => {

@@ -127,6 +127,23 @@ describe("deriveCreatorActivation next-best action", () => {
     });
   });
 
+  it("opens the active workspace for a joined active-workflow submission", () => {
+    const active = mission({
+      id: "sub-active",
+      creator_workflow_mode: "active_workspace",
+      active_workflow_id: "workflow-1",
+      missions: {
+        slug: "active-brief",
+        title: "Active brief",
+        points_reward: 0,
+        mission_type: "content",
+        creator_workflow_mode: "active_workspace",
+      },
+    });
+
+    expect(deriveCreatorActivation({ me: me(), myMissions: [active] }).nextAction.to).toBe("/my/sub-active");
+  });
+
   it("resumes incomplete onboarding when no mission is joined", () => {
     expect(deriveCreatorActivation({ me: me() }).nextAction).toMatchObject({
       kind: "resume_onboarding",
