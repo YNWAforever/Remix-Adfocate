@@ -64,3 +64,32 @@ GREEN: 1 focused test passed after consuming the local grant allowance on reques
 ## Concerns
 
 None. The server change is a controlled read-model extension required to render real deliverable and mission identity while preserving the Task 7 paths and canonical server order.
+
+## Review-fix TDD evidence
+
+### Review regression RED
+
+Command:
+
+`npx.cmd vitest run src/components/admin/ActiveMissionReview.test.tsx src/routes/-admin.active-missions.test.tsx src/lib/admin.test.ts`
+
+Result: RED — the admin client contract suite passed 13 tests, while five regressions failed across the review component and detail route. The failures proved that unversioned assets leaked into a submitted version, `revision_requested` and `received` states exposed invalid actions, rejected actions produced no accessible alert and an unhandled rejection, deliverable A state leaked into deliverable B, and the detail route lacked a testable auth-error binding.
+
+### Review regression GREEN
+
+The same command passed 3 files and 27 tests after the fixes:
+
+- `src/lib/admin.test.ts`: 13 passed.
+- `src/components/admin/ActiveMissionReview.test.tsx`: 10 passed.
+- `src/routes/-admin.active-missions.test.tsx`: 4 passed.
+
+### Final review-fix verification
+
+- `npx.cmd vitest run src/components/admin/ActiveMissionReview.test.tsx src/routes/-admin.active-missions.test.tsx src/lib/admin.test.ts src/components/admin/AdminSideNav.test.tsx src/components/admin/StaffAuthGate.test.tsx src/routes/-admin.test.tsx server/test/active-missions.test.ts` — 7 files passed; 66 tests passed; 2 live-integration tests skipped by the normal config.
+- `npm.cmd run type-check` — passed (`tsr generate && tsc --noEmit`); emitted only the existing warning that `_site.smoke.test.tsx` is not a route.
+- `npx.cmd eslint src/components/admin/ActiveMissionReview.tsx src/components/admin/ActiveMissionReview.test.tsx src/routes/admin.active-missions.'$workflowId'.tsx src/routes/-admin.active-missions.test.tsx src/lib/admin.test.ts` — passed with zero errors and warnings.
+- `git diff --check` — passed.
+
+## Review-fix commit
+
+`38f1c8200b5d80cd518378de5a36e81d90fdb0ab` — `fix: harden operator active mission review`.
