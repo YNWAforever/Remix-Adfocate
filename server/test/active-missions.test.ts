@@ -416,6 +416,34 @@ describe("active mission operator routes without a live database", () => {
       .toEqual(["urgent", "later"]);
   });
 
+  it("projects exact mission and deliverable identity into every queue item", async () => {
+    const { client } = scriptedClient([
+      { table: "workspaces", data: { id: "workspace-1" } },
+      { table: "mission_work_items", data: [{
+        id: workItemId,
+        mission_workflow_id: workflowId,
+        title: "Instagram reel",
+        state: "submitted",
+        deadline: "2026-07-20T00:00:00.000Z",
+        review_due_at: "2026-07-19T00:00:00.000Z",
+        current_reviewer_id: null,
+        current_submitted_version_id: null,
+      }] },
+      { table: "mission_workflows", data: [{ id: workflowId, mission_submission_id: "submission-1" }] },
+      { table: "mission_submissions", data: [{
+        id: "submission-1",
+        mission_id: "mission-1",
+        creator_id: "creator-1",
+        creators: { display_name: "Amy Wong" },
+        missions: { title: "Summer launch" },
+      }] },
+    ]);
+    const result = await createAdminActiveMissionRepository(client).listQueue({ workspaceSlug: "demo" });
+    expect(result.items).toEqual([
+      expect.objectContaining({ missionId: "mission-1", deliverableTitle: "Instagram reel" }),
+    ]);
+  });
+
   it("uses the workspace header and returns queue metadata without private URLs", async () => {
     const listQueue = vi.fn(async () => ({ items: [{ ...urgent, workflowId: "workflow-1", creatorDisplayName: "Creator", missionTitle: "Launch", state: "submitted", reviewerId: null, riskBucket: "overdue" }] }));
     const repository = { listQueue } as unknown as AdminActiveMissionRepository;

@@ -3,6 +3,7 @@ import {
   BarChart3,
   Inbox,
   FileCheck,
+  ClipboardCheck,
   Users,
   UserCheck,
   Layers,
@@ -38,6 +39,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       { to: "/admin/applications", labelKey: "app.admin.tabApplications", icon: Inbox, exact: false, countKey: "applications" },
       { to: "/admin/submissions", labelKey: "app.admin.tabSubmissions", icon: FileCheck, exact: false, countKey: "submissions" },
+      { to: "/admin/active-missions", labelKey: "app.admin.tabActiveMissions", icon: ClipboardCheck, exact: false },
       { to: "/admin/engaged", labelKey: "app.admin.tabEngaged", icon: Users, exact: false },
     ],
   },

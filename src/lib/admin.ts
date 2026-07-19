@@ -180,6 +180,213 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
   return res.json() as Promise<T>;
 }
 
+// ---- Active mission operator review --------------------------------------
+
+export type ActiveMissionRiskBucket = "overdue" | "due_soon" | "on_track" | "no_sla";
+export type ActiveMissionReviewState = "submitted" | "under_review";
+export type ActiveMissionReviewCategory = "format" | "key_message" | "compliance" | "quality" | "other";
+
+export type ActiveMissionQueueItem = {
+  workflowId: string;
+  workItemId: string;
+  missionId: string;
+  creatorDisplayName: string;
+  missionTitle: string;
+  deliverableTitle: string;
+  state: string;
+  creatorDeadline: string | null;
+  submittedAt: string | null;
+  reviewDueAt: string | null;
+  reviewerId: string | null;
+  riskBucket: ActiveMissionRiskBucket;
+};
+
+export type ActiveMissionQueueFilters = {
+  workspace: string;
+  risk?: ActiveMissionRiskBucket;
+  state?: ActiveMissionReviewState;
+  reviewer?: string;
+  mission?: string;
+};
+
+export type ActiveMissionRequirement = {
+  id?: string;
+  category?: ActiveMissionReviewCategory;
+  text: string;
+  required?: boolean;
+};
+
+export type ActiveMissionWorkItem = {
+  id: string;
+  title: string;
+  platform: string;
+  position: number;
+  state: string;
+  deadline: string | null;
+  current_reviewer_id: string | null;
+  current_submitted_version_id: string | null;
+  approved_version_id: string | null;
+  requirements_snapshot: ActiveMissionRequirement[];
+};
+
+export type ActiveMissionVersion = {
+  id: string;
+  mission_work_item_id: string;
+  version_number: number;
+  caption_snapshot: string;
+  external_draft_url_snapshot: string | null;
+  checklist_snapshot: Record<string, boolean>;
+  submitted_at: string;
+};
+
+export type ActiveMissionReviewRound = {
+  id: string;
+  mission_work_item_id: string;
+  mission_draft_version_id: string;
+  round_number: number;
+  state: string;
+  mission_review_items?: Array<Record<string, unknown>>;
+};
+
+export type ActiveMissionRevisionGrant = {
+  id: string;
+  mission_work_item_id: string;
+  reason: string;
+  granted_count: number;
+  granted_at?: string;
+};
+
+export type ActiveMissionAsset = {
+  id: string;
+  mission_work_item_id: string;
+  mission_draft_version_id: string | null;
+  original_filename: string;
+  mime_type: string;
+  signedUrl: string;
+};
+
+type ActiveMissionBrief = {
+  id: string;
+  title: string;
+  description?: string | null;
+  key_messages?: string[] | null;
+  dos?: string[] | null;
+  donts?: string[] | null;
+  [key: string]: unknown;
+};
+
+export type ActiveMissionWorkflow = {
+  workflow: { id: string; revision_limit: number; [key: string]: unknown };
+  submission: {
+    creators: { id: string; display_name: string | null } | Array<{ id: string; display_name: string | null }>;
+    missions: ActiveMissionBrief | ActiveMissionBrief[];
+    [key: string]: unknown;
+  };
+  workItems: ActiveMissionWorkItem[];
+  fulfillment: ({ status: string; [key: string]: unknown } | null);
+  versions: ActiveMissionVersion[];
+  reviews: ActiveMissionReviewRound[];
+  grants: ActiveMissionRevisionGrant[];
+  events: Array<Record<string, unknown>>;
+  assets: ActiveMissionAsset[];
+};
+
+export type ActiveMissionRevisionItem = {
+  requirementId?: string | null;
+  category: ActiveMissionReviewCategory;
+  text: string;
+  required: boolean;
+};
+
+function activeMissionWorkspaceHeader(workspace: string): HeadersInit {
+  return { "X-Workspace-Slug": workspace };
+}
+
+export function fetchActiveMissionQueue(filters: ActiveMissionQueueFilters) {
+  const qs = new URLSearchParams();
+  if (filters.risk) qs.set("risk", filters.risk);
+  if (filters.state) qs.set("state", filters.state);
+  if (filters.reviewer) qs.set("reviewer", filters.reviewer);
+  if (filters.mission) qs.set("mission", filters.mission);
+  const suffix = qs.size ? `?${qs.toString()}` : "";
+  return adminFetch<{ items: ActiveMissionQueueItem[] }>(`/admin/active-missions/queue${suffix}`, {
+    headers: activeMissionWorkspaceHeader(filters.workspace),
+  });
+}
+
+export function fetchActiveMissionWorkflow(workflowId: string, workspace: string) {
+  return adminFetch<ActiveMissionWorkflow>(`/admin/active-missions/${workflowId}`, {
+    headers: activeMissionWorkspaceHeader(workspace),
+  });
+}
+
+export function startActiveMissionReview(
+  workflowId: string,
+  workItemId: string,
+  body: { workspace: string; expectedState: string },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/start-review`, {
+    method: "POST",
+    headers: activeMissionWorkspaceHeader(body.workspace),
+    body: JSON.stringify({ expectedState: body.expectedState }),
+  });
+}
+
+export function requestActiveMissionRevision(
+  workflowId: string,
+  workItemId: string,
+  body: {
+    workspace: string;
+    expectedState: string;
+    versionId: string;
+    deadline: string;
+    items: ActiveMissionRevisionItem[];
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
+    method: "POST",
+    headers: activeMissionWorkspaceHeader(body.workspace),
+    body: JSON.stringify({
+      expectedState: body.expectedState,
+      versionId: body.versionId,
+      deadline: body.deadline,
+      items: body.items,
+    }),
+  });
+}
+
+export function grantActiveMissionRevision(
+  workflowId: string,
+  workItemId: string,
+  body: { workspace: string; reason: string; grantedCount: number },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/grant-revision`, {
+    method: "POST",
+    headers: activeMissionWorkspaceHeader(body.workspace),
+    body: JSON.stringify({ reason: body.reason, grantedCount: body.grantedCount }),
+  });
+}
+
+export function approveActiveMissionVersion(
+  workflowId: string,
+  workItemId: string,
+  body: { workspace: string; expectedState: string; versionId: string },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/approve-to-publish`, {
+    method: "POST",
+    headers: activeMissionWorkspaceHeader(body.workspace),
+    body: JSON.stringify({ expectedState: body.expectedState, versionId: body.versionId }),
+  });
+}
+
+export function markActiveMissionShipped(workflowId: string, body: { workspace: string; note?: string }) {
+  return adminFetch(`/admin/active-missions/${workflowId}/fulfillment/shipped`, {
+    method: "POST",
+    headers: activeMissionWorkspaceHeader(body.workspace),
+    body: JSON.stringify({ note: body.note }),
+  });
+}
+
 function queryString(filters: CreatorReviewQueueFilters): string {
   const qs = new URLSearchParams();
   if (filters.status) qs.set("status", filters.status);

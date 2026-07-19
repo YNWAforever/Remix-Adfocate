@@ -8,6 +8,8 @@ const SIGNED_URL_TTL_SECONDS = 10 * 60;
 const QUEUE_STATES = ["submitted", "under_review"];
 const EXPECTED_REVIEW_STATES = new Set(QUEUE_STATES);
 
+// Supabase joins and RPC JSON have endpoint-specific dynamic fields; boundary validators narrow values before use.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 type OperatorErrorCode =
   | "WORKFLOW_NOT_FOUND"
@@ -27,8 +29,10 @@ class OperatorActiveMissionError extends Error {
 export type ActiveMissionQueueItem = {
   workflowId: string;
   workItemId: string;
+  missionId: string;
   creatorDisplayName: string;
   missionTitle: string;
+  deliverableTitle: string;
   state: string;
   creatorDeadline: string | null;
   submittedAt: string | null;
@@ -143,7 +147,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
     async listQueue(input) {
       const workspace = await workspaceId(client, input.workspaceSlug);
       let query = client.from("mission_work_items")
-        .select("id, mission_workflow_id, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id")
+        .select("id, mission_workflow_id, title, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id")
         .eq("workspace_id", workspace)
         .in("state", input.state ? [input.state] : QUEUE_STATES);
       if (input.reviewerId) query = query.eq("current_reviewer_id", input.reviewerId);
@@ -185,8 +189,10 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         return [{
           workflowId: workflow.id,
           workItemId: row.id,
+          missionId: submission.mission_id,
           creatorDisplayName: creator?.display_name ?? "Creator",
           missionTitle: mission?.title ?? "Mission",
+          deliverableTitle: row.title,
           state: row.state,
           creatorDeadline: row.deadline ?? null,
           submittedAt: version?.submitted_at ?? null,
