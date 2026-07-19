@@ -16,6 +16,24 @@ function row(type: NotificationType, data: Record<string, unknown> = {}) {
 }
 
 describe("renderNotification", () => {
+  it.each([
+    ["mission_product_shipped", { mission_title: "Launch", submission_id: "sub-1" }],
+    ["mission_receipt_required", { mission_title: "Launch", submission_id: "sub-1" }],
+    ["mission_revision_requested", { mission_title: "Launch", submission_id: "sub-1", deadline: "17 Jul" }],
+    ["mission_draft_approved", { mission_title: "Launch", submission_id: "sub-1", deliverable_title: "Video", version_number: 2 }],
+    ["mission_approved_to_publish", { mission_title: "Launch", submission_id: "sub-1" }],
+    ["mission_deadline_approaching", { mission_title: "Launch", submission_id: "sub-1", deadline: "17 Jul" }],
+    ["mission_deadline_overdue", { mission_title: "Launch", submission_id: "sub-1", deadline: "17 Jul" }],
+  ] as const)("renders %s as an active-mission notification", (type, data) => {
+    const rendered = renderNotification(row(type, data), makeT("en"));
+
+    expect(rendered.title).not.toBe("app.notif." + type + ".title");
+    expect(rendered.body).toContain("Launch");
+    expect(rendered.body).not.toMatch(/\{[a-z_]+\}/);
+    expect(rendered.href).toBe("/my/sub-1");
+    expect(rendered.icon).toBeTruthy();
+  });
+
   it("renders submission_approved with points/xp and links to the mission", () => {
     const r = renderNotification(row("submission_approved", { mission_title: "夏日開箱", mission_slug: "summer", points: 200, xp: 100 }), t);
     expect(r.title).toBe("內容已通過！");

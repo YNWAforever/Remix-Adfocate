@@ -1,3 +1,5 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
   hasSupabaseEnv, serviceForTests, userForJwt, makeCreator, makeMission,
@@ -5,6 +7,41 @@ import {
 } from "./helpers";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
+
+const migrationsDir = join(process.cwd(), "supabase", "migrations");
+const migrationSql = readdirSync(migrationsDir)
+  .filter((name) => name.endsWith(".sql"))
+  .sort()
+  .map((name) => readFileSync(join(migrationsDir, name), "utf8"))
+  .join("\n");
+
+describe("active-mission notification SQL contract", () => {
+  it.each([
+    "mission_product_shipped",
+    "mission_receipt_required",
+    "mission_revision_requested",
+    "mission_draft_approved",
+    "mission_approved_to_publish",
+    "mission_deadline_approaching",
+    "mission_deadline_overdue",
+  ])("admits and emits %s", (type) => {
+    expect(migrationSql).toContain("'" + type + "'");
+  });
+
+  it("keeps the internal notifier definer-safe and unreachable from API roles", () => {
+    expect(migrationSql).toMatch(
+      /function private\.notify_mission_workflow[\s\S]*?security definer[\s\S]*?set search_path = ''/i,
+    );
+    expect(migrationSql).toMatch(
+      /revoke all on function private\.notify_mission_workflow\([^;]+\) from public, anon, authenticated, service_role;/i,
+    );
+    expect(migrationSql).not.toMatch(/grant execute on function private\.notify_mission_workflow/i);
+  });
+
+  it("swallows only best-effort notification insert failures", () => {
+    expect(migrationSql).toMatch(/begin\s+insert into public\.notifications[\s\S]*?exception\s+when others then\s+null;\s+end;/i);
+  });
+});
 
 /** Seed a submission row directly (service) in a given status; returns its id. */
 async function seedSub(creatorId: string, status: string, slug: string) {

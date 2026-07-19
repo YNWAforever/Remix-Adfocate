@@ -56,7 +56,93 @@ export type ActivationEventMap = {
     locale: string;
     activationPath: "mission_viewed" | "readiness_action";
   };
+  active_mission_workspace_viewed: {
+    locale: string;
+    missionType: string;
+    state: string;
+  };
+  active_mission_action_clicked: {
+    locale: string;
+    missionType: string;
+    state: string;
+    action: string;
+  };
+  mission_product_received_confirmed: { locale: string; missionType: string };
+  mission_draft_started: {
+    locale: string;
+    missionType: string;
+    timingBucket: string;
+  };
+  mission_draft_version_submitted: {
+    locale: string;
+    missionType: string;
+    assetCount: number;
+    versionNumber: number;
+  };
+  mission_review_started: {
+    locale: string;
+    missionType: string;
+    timingBucket: string;
+    versionNumber: number;
+    roundNumber: number;
+  };
+  mission_draft_revision_requested: {
+    locale: string;
+    missionType: string;
+    timingBucket: string;
+    roundNumber: number;
+  };
+  mission_draft_approved_to_publish: {
+    locale: string;
+    missionType: string;
+    timingBucket: string;
+    versionNumber: number;
+    roundNumber: number;
+  };
+  active_mission_approved_to_publish: {
+    locale: string;
+    missionType: string;
+    timingBucket: string;
+    requiredItemCount: number;
+    revisionRoundCount: number;
+  };
+  active_mission_recovery_used: {
+    locale: string;
+    missionType: string;
+    state: string;
+    action: string;
+    errorCategory: string;
+  };
 };
+
+const ACTIVATION_PROPERTY_KEYS = {
+  landing_page_viewed: ["locale", "deviceCategory"],
+  signup_started: ["locale", "deviceCategory", "source"],
+  signup_completed: ["locale", "deviceCategory", "method"],
+  auth_link_requested: ["locale", "method"],
+  auth_link_failed: ["locale", "method", "errorCategory"],
+  onboarding_step_viewed: ["locale", "step"],
+  onboarding_step_completed: ["locale", "step", "status"],
+  onboarding_abandoned: ["locale", "step"],
+  social_profile_added: ["locale", "platform"],
+  onboarding_completed: ["locale", "rewardType"],
+  dashboard_viewed: ["locale", "creatorLevel"],
+  activation_action_viewed: ["locale", "actionKind"],
+  activation_action_clicked: ["locale", "actionKind"],
+  mission_recommendation_viewed: ["locale", "missionId", "missionType"],
+  mission_viewed: ["locale", "missionId", "missionType"],
+  creator_activated: ["locale", "activationPath"],
+  active_mission_workspace_viewed: ["locale", "missionType", "state"],
+  active_mission_action_clicked: ["locale", "missionType", "state", "action"],
+  mission_product_received_confirmed: ["locale", "missionType"],
+  mission_draft_started: ["locale", "missionType", "timingBucket"],
+  mission_draft_version_submitted: ["locale", "missionType", "assetCount", "versionNumber"],
+  mission_review_started: ["locale", "missionType", "timingBucket", "versionNumber", "roundNumber"],
+  mission_draft_revision_requested: ["locale", "missionType", "timingBucket", "roundNumber"],
+  mission_draft_approved_to_publish: ["locale", "missionType", "timingBucket", "versionNumber", "roundNumber"],
+  active_mission_approved_to_publish: ["locale", "missionType", "timingBucket", "requiredItemCount", "revisionRoundCount"],
+  active_mission_recovery_used: ["locale", "missionType", "state", "action", "errorCategory"],
+} as const satisfies Record<keyof ActivationEventMap, readonly string[]>;
 
 type ActivationAnalyticsSink = (event: {
   name: keyof ActivationEventMap;
@@ -70,7 +156,11 @@ export function trackActivationEvent<K extends keyof ActivationEventMap>(
   name: K,
   properties: ActivationEventMap[K],
 ): void {
-  activationAnalyticsSink?.({ name, properties });
+  const allowed = new Set<string>(ACTIVATION_PROPERTY_KEYS[name]);
+  const safeProperties = Object.fromEntries(
+    Object.entries(properties).filter(([key]) => allowed.has(key)),
+  );
+  activationAnalyticsSink?.({ name, properties: safeProperties });
 }
 
 export function setActivationAnalyticsSink(
