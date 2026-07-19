@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import type {
+import {
+  AdminRequestError,
   ActiveMissionReviewCategory,
   ActiveMissionRevisionItem,
   ActiveMissionWorkflow,
@@ -19,6 +20,7 @@ type Props = {
   onGrantRevision: (input: GrantInput) => Promise<unknown>;
   onApproveVersion: (input: ApproveInput) => Promise<unknown>;
   onMarkShipped: (input: { note?: string }) => Promise<unknown>;
+  onActionError?: (error: unknown) => void;
 };
 
 const BUTTON = "rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-heading text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50";
@@ -34,6 +36,14 @@ function workItemFor(items: ActiveMissionWorkItem[], selectedWorkItemId?: string
     ?? items[0];
 }
 
+function actionErrorMessage(error: unknown) {
+  if (error instanceof AdminRequestError) {
+    return error.code ? `${error.code}: ${error.message}` : error.message;
+  }
+  if (error instanceof Error && error.message) return error.message;
+  return "The action could not be completed.";
+}
+
 export function ActiveMissionReview({
   workflow,
   selectedWorkItemId,
@@ -42,6 +52,7 @@ export function ActiveMissionReview({
   onGrantRevision,
   onApproveVersion,
   onMarkShipped,
+  onActionError,
 }: Props) {
   const [selectedId, setSelectedId] = useState(() => workItemFor(workflow.workItems, selectedWorkItemId)?.id ?? "");
   const [panel, setPanel] = useState<"revision" | "approval" | "shipping" | null>(null);
@@ -53,6 +64,7 @@ export function ActiveMissionReview({
   const [localGrantAvailable, setLocalGrantAvailable] = useState(false);
   const [shippingNote, setShippingNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const item = workItemFor(workflow.workItems, selectedId);
   const mission = one(workflow.submission.missions);
@@ -63,22 +75,43 @@ export function ActiveMissionReview({
     [item?.current_submitted_version_id, item?.id, workflow.versions],
   );
   const assets = workflow.assets.filter((asset) =>
-    asset.mission_work_item_id === item?.id && (!asset.mission_draft_version_id || asset.mission_draft_version_id === version?.id));
+    asset.mission_work_item_id === item?.id && asset.mission_draft_version_id === version?.id);
   const completedRounds = workflow.reviews.filter((review) => review.mission_work_item_id === item?.id && review.state !== "open").length;
   const grantedRounds = workflow.grants
     .filter((grant) => grant.mission_work_item_id === item?.id)
     .reduce((total, grant) => total + grant.granted_count, 0);
   const revisionExhausted = completedRounds >= workflow.workflow.revision_limit + grantedRounds && !localGrantAvailable;
+  const canDecide = item?.state === "submitted" || item?.state === "under_review";
+  const canShip = workflow.fulfillment?.status === "preparing";
 
   if (!item) return <p>No reviewable deliverable was found.</p>;
 
   const perform = async (action: () => Promise<unknown>) => {
+    setActionError(null);
     setBusy(true);
     try {
       await action();
+      return true;
+    } catch (error) {
+      setActionError(actionErrorMessage(error));
+      onActionError?.(error);
+      return false;
     } finally {
       setBusy(false);
     }
+  };
+
+  const selectWorkItem = (workItemId: string) => {
+    setPanel(null);
+    setDeadline("");
+    setChangeText("");
+    setCategory("other");
+    setValidation({ change: false, deadline: false });
+    setGrantReason("");
+    setLocalGrantAvailable(false);
+    setShippingNote("");
+    setActionError(null);
+    setSelectedId(workItemId);
   };
 
   const sendRevision = async () => {
@@ -86,22 +119,25 @@ export function ActiveMissionReview({
     const parsedDeadline = Date.parse(deadline);
     const invalid = { change: !cleanChange, deadline: !Number.isFinite(parsedDeadline) || parsedDeadline <= Date.now() };
     setValidation(invalid);
-    if (invalid.change || invalid.deadline || !version) return;
-    await perform(() => onRequestRevision({
+    if (invalid.change || invalid.deadline || !version || !canDecide) return;
+    const succeeded = await perform(() => onRequestRevision({
       workItemId: item.id,
       expectedState: item.state,
       versionId: version.id,
       deadline: new Date(parsedDeadline).toISOString(),
       items: [{ requirementId: null, category, text: cleanChange, required: true }],
     }));
-    setLocalGrantAvailable(false);
+    if (succeeded) {
+      setLocalGrantAvailable(false);
+      setPanel(null);
+    }
   };
 
   const grantRevision = async () => {
     const reason = grantReason.trim();
-    if (!reason) return;
-    await perform(() => onGrantRevision({ workItemId: item.id, reason, grantedCount: 1 }));
-    setLocalGrantAvailable(true);
+    if (!reason || !canDecide) return;
+    const succeeded = await perform(() => onGrantRevision({ workItemId: item.id, reason, grantedCount: 1 }));
+    if (succeeded) setLocalGrantAvailable(true);
   };
 
   return (
@@ -114,7 +150,7 @@ export function ActiveMissionReview({
         {workflow.workItems.length > 1 ? (
           <label className="grid gap-1 text-sm font-bold">
             Deliverable
-            <select className={FIELD} value={item.id} onChange={(event) => setSelectedId(event.target.value)}>
+            <select className={FIELD} value={item.id} disabled={busy} onChange={(event) => selectWorkItem(event.target.value)}>
               {workflow.workItems.map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.title}</option>)}
             </select>
           </label>
@@ -176,7 +212,11 @@ export function ActiveMissionReview({
         </article>
       </div>
 
-      {revisionExhausted ? (
+      {actionError ? (
+        <p role="alert" aria-live="assertive" className="rounded-[var(--radius)] border-2 border-red-700 bg-red-50 p-3 text-sm font-bold text-red-700">{actionError}</p>
+      ) : null}
+
+      {canDecide && revisionExhausted ? (
         <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sun)] p-4">
           <h3 className="font-heading font-bold">Revision limit reached</h3>
           <p className="mt-1 text-sm">Record why another revision is necessary before requesting it.</p>
@@ -196,7 +236,7 @@ export function ActiveMissionReview({
           <label className="grid gap-1 text-sm font-bold">Change category<select className={FIELD} value={category} onChange={(event) => setCategory(event.target.value as ActiveMissionReviewCategory)}><option value="format">Format</option><option value="key_message">Key message</option><option value="compliance">Compliance</option><option value="quality">Quality</option><option value="other">Other</option></select></label>
           <label className="grid gap-1 text-sm font-bold">Required change 1<textarea className={FIELD} value={changeText} onChange={(event) => setChangeText(event.target.value)} /></label>
           {validation.change ? <p role="alert" className="text-sm font-bold text-red-700">Add at least one required change</p> : null}
-          <button type="button" disabled={busy} onClick={() => void sendRevision()} className={`${BUTTON} bg-[var(--color-sun)]`}>Send revision request</button>
+          <button type="button" disabled={busy || !canDecide} onClick={() => void sendRevision()} className={`${BUTTON} bg-[var(--color-sun)]`}>Send revision request</button>
         </div>
       ) : null}
 
@@ -204,7 +244,15 @@ export function ActiveMissionReview({
         <div role="alertdialog" aria-labelledby="approval-title" aria-describedby="approval-description" className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
           <h3 id="approval-title" className="font-heading font-bold">Approve version {version.version_number}?</h3>
           <p id="approval-description" className="text-sm">This approves version {version.version_number} for publishing. No reward is issued by this action.</p>
-          <button type="button" disabled={busy} onClick={() => void perform(() => onApproveVersion({ workItemId: item.id, expectedState: item.state, versionId: version.id }))} className={`${BUTTON} bg-[var(--color-acid)]`}>Confirm approval</button>
+          <button
+            type="button"
+            disabled={busy || !canDecide}
+            onClick={() => void perform(async () => {
+              if (!canDecide) return;
+              await onApproveVersion({ workItemId: item.id, expectedState: item.state, versionId: version.id });
+            })}
+            className={`${BUTTON} bg-[var(--color-acid)]`}
+          >Confirm approval</button>
         </div>
       ) : null}
 
@@ -212,15 +260,23 @@ export function ActiveMissionReview({
         <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
           <h3 className="font-heading font-bold">Mark fulfillment shipped</h3>
           <label className="grid gap-1 text-sm font-bold">Shipping note<textarea className={FIELD} value={shippingNote} onChange={(event) => setShippingNote(event.target.value)} /></label>
-          <button type="button" disabled={busy} onClick={() => void perform(() => onMarkShipped({ note: shippingNote.trim() || undefined }))} className={`${BUTTON} bg-[var(--color-sky)]`}>Confirm shipped</button>
+          <button
+            type="button"
+            disabled={busy || !canShip}
+            onClick={() => void perform(async () => {
+              if (!canShip) return;
+              await onMarkShipped({ note: shippingNote.trim() || undefined });
+            })}
+            className={`${BUTTON} bg-[var(--color-sky)]`}
+          >Confirm shipped</button>
         </div>
       ) : null}
 
       <div data-testid="review-actions" className="sticky bottom-0 z-20 -mx-2 flex flex-wrap gap-2 border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-3 lg:static lg:mx-0">
         <button type="button" disabled={busy || item.state !== "submitted"} onClick={() => void perform(() => onStartReview({ workItemId: item.id, expectedState: item.state }))} className={`${BUTTON} bg-[var(--color-sky)]`}>Start review</button>
-        <button type="button" disabled={busy || revisionExhausted || !version} onClick={() => setPanel("revision")} className={`${BUTTON} bg-[var(--color-sun)]`}>Request revision</button>
-        <button type="button" disabled={busy || !version} onClick={() => setPanel("approval")} className={`${BUTTON} bg-[var(--color-acid)]`}>Approve version</button>
-        {workflow.fulfillment && workflow.fulfillment.status !== "shipped" ? <button type="button" disabled={busy} onClick={() => setPanel("shipping")} className={`${BUTTON} bg-white`}>Mark shipped</button> : null}
+        <button type="button" disabled={busy || !canDecide || revisionExhausted || !version} onClick={() => setPanel("revision")} className={`${BUTTON} bg-[var(--color-sun)]`}>Request revision</button>
+        <button type="button" disabled={busy || !canDecide || !version} onClick={() => setPanel("approval")} className={`${BUTTON} bg-[var(--color-acid)]`}>Approve version</button>
+        {canShip ? <button type="button" disabled={busy} onClick={() => setPanel("shipping")} className={`${BUTTON} bg-white`}>Mark shipped</button> : null}
       </div>
     </section>
   );

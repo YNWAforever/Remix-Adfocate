@@ -24,6 +24,16 @@ export const Route = createFileRoute("/admin/active-missions/$workflowId")({
 export function AdminActiveMissionReviewRoute() {
   const { workflowId } = Route.useParams();
   const { workItemId } = Route.useSearch();
+  return <AdminActiveMissionReviewView workflowId={workflowId} workItemId={workItemId} />;
+}
+
+export function AdminActiveMissionReviewView({
+  workflowId,
+  workItemId,
+}: {
+  workflowId: string;
+  workItemId?: string;
+}) {
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const queryClient = useQueryClient();
@@ -78,6 +88,9 @@ export function AdminActiveMissionReviewRoute() {
         const result = await markActiveMissionShipped(workflowId, { workspace, note: input.note });
         await refresh();
         return result;
+      }}
+      onActionError={(error) => {
+        if (error instanceof AdminAuthError) reportAuthError(error);
       }}
     />
   );

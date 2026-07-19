@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActiveMissionReview } from "./ActiveMissionReview";
+import { AdminRequestError } from "@/lib/admin";
 import type { ActiveMissionWorkflow } from "@/lib/admin";
 
 const workflow = (revisionLimit = 2): ActiveMissionWorkflow => ({
@@ -78,6 +79,23 @@ function renderReview(overrides: Partial<React.ComponentProps<typeof ActiveMissi
   return handlers;
 }
 
+function twoDeliverableWorkflow(): ActiveMissionWorkflow {
+  const result = workflow(0);
+  result.workItems[0] = { ...result.workItems[0], title: "Deliverable A" };
+  result.workItems.push({
+    ...result.workItems[0],
+    id: "work-item-b",
+    title: "Deliverable B",
+    current_submitted_version_id: "version-b",
+  });
+  result.versions.push({
+    ...result.versions[0],
+    id: "version-b",
+    mission_work_item_id: "work-item-b",
+  });
+  return result;
+}
+
 describe("ActiveMissionReview", () => {
   beforeEach(() => vi.clearAllMocks());
 
@@ -90,6 +108,22 @@ describe("ActiveMissionReview", () => {
     expect(screen.getByText("Ready for summer.")).toBeVisible();
     expect(screen.getByRole("link", { name: "reel.mp4" })).toHaveAttribute("href", "https://example.com/signed/reel.mp4");
     expect(screen.getByTestId("review-actions")).toHaveClass("sticky", "bottom-0");
+  });
+
+  it("shows assets attached to the exact submitted version only", () => {
+    const activeWorkflow = workflow();
+    activeWorkflow.assets.push({
+      ...activeWorkflow.assets[0],
+      id: "working-asset",
+      mission_draft_version_id: null,
+      original_filename: "working-copy.mp4",
+      signedUrl: "https://example.com/signed/working-copy.mp4",
+    });
+
+    renderReview({ workflow: activeWorkflow });
+
+    expect(screen.getByRole("link", { name: "reel.mp4" })).toBeVisible();
+    expect(screen.queryByText("working-copy.mp4")).not.toBeInTheDocument();
   });
 
   it("starts review for the exact selected work item", async () => {
@@ -175,5 +209,84 @@ describe("ActiveMissionReview", () => {
     fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
     await waitFor(() => expect(handlers.onRequestRevision).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("button", { name: "Request revision" })).toBeDisabled();
+  });
+
+  it("blocks review decisions after revision_requested and shipping after received", () => {
+    const closed = workflow();
+    closed.workItems[0] = { ...closed.workItems[0], state: "revision_requested" };
+    closed.fulfillment = { status: "received" };
+    const handlers = renderReview({ workflow: closed });
+
+    expect(screen.getByRole("button", { name: "Request revision" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Approve version" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Mark shipped" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
+    fireEvent.click(screen.getByRole("button", { name: "Approve version" }));
+    expect(handlers.onRequestRevision).not.toHaveBeenCalled();
+    expect(handlers.onApproveVersion).not.toHaveBeenCalled();
+    expect(handlers.onMarkShipped).not.toHaveBeenCalled();
+  });
+
+  it("allows shipping only while fulfillment is preparing", () => {
+    const preparing = workflow();
+    preparing.fulfillment = { status: "preparing" };
+    renderReview({ workflow: preparing });
+
+    expect(screen.getByRole("button", { name: "Mark shipped" })).toBeEnabled();
+  });
+
+  it("announces action failures and preserves the original error for auth handling", async () => {
+    const error = new AdminRequestError("The workflow changed", "WORKFLOW_STALE");
+    const onActionError = vi.fn();
+    renderReview({
+      onApproveVersion: vi.fn().mockRejectedValue(error),
+      onActionError,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Approve version" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("WORKFLOW_STALE: The workflow changed");
+    expect(onActionError).toHaveBeenCalledWith(error);
+  });
+
+  it("clears action state when switching deliverables", async () => {
+    const handlers = renderReview({ workflow: twoDeliverableWorkflow() });
+
+    fireEvent.change(screen.getByLabelText("Grant reason"), {
+      target: { value: "Brief changed for A" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Grant another revision" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Request revision" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
+    fireEvent.change(screen.getByLabelText("Required change 1"), {
+      target: { value: "A-only feedback" },
+    });
+    fireEvent.change(screen.getByLabelText("Revision deadline"), {
+      target: { value: "2099-07-21T10:00" },
+    });
+
+    fireEvent.change(screen.getByLabelText("Deliverable"), {
+      target: { value: "work-item-b" },
+    });
+
+    expect(screen.getByRole("heading", { name: "Deliverable B" })).toBeVisible();
+    expect(screen.queryByLabelText("Required change 1")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Grant reason")).toHaveValue("");
+    expect(screen.getByRole("button", { name: "Request revision" })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Grant reason"), {
+      target: { value: "Brief changed for B" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Grant another revision" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Request revision" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
+    expect(screen.getByLabelText("Required change 1")).toHaveValue("");
+    expect(screen.getByLabelText("Revision deadline")).toHaveValue("");
+    fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
+
+    expect(screen.getByText("Add at least one required change")).toBeVisible();
+    expect(handlers.onRequestRevision).not.toHaveBeenCalled();
   });
 });

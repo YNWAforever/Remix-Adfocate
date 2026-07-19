@@ -1,19 +1,30 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActiveMissionQueueItem } from "@/lib/admin";
+import { AdminAuthError } from "@/lib/admin";
+import type { ActiveMissionQueueItem, ActiveMissionWorkflow } from "@/lib/admin";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
 
-const h = vi.hoisted(() => ({ fetchActiveMissionQueue: vi.fn() }));
+const h = vi.hoisted(() => ({
+  fetchActiveMissionQueue: vi.fn(),
+  fetchActiveMissionWorkflow: vi.fn(),
+  startActiveMissionReview: vi.fn(),
+  reportAuthError: vi.fn(),
+}));
 vi.mock("@/components/admin/AdminAuthContext", () => ({
-  useAdminAuth: () => ({ authed: true, staff: { userId: "reviewer-1", email: "op@example.com" }, reportAuthError: vi.fn() }),
+  useAdminAuth: () => ({ authed: true, staff: { userId: "reviewer-1", email: "op@example.com" }, reportAuthError: h.reportAuthError }),
 }));
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({
   useAdminWorkspace: () => ({ workspace: "demo", setWorkspace: vi.fn() }),
 }));
 vi.mock("@/lib/admin", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/admin")>();
-  return { ...original, fetchActiveMissionQueue: h.fetchActiveMissionQueue };
+  return {
+    ...original,
+    fetchActiveMissionQueue: h.fetchActiveMissionQueue,
+    fetchActiveMissionWorkflow: h.fetchActiveMissionWorkflow,
+    startActiveMissionReview: h.startActiveMissionReview,
+  };
 });
 
 const items: ActiveMissionQueueItem[] = [
@@ -46,6 +57,55 @@ const items: ActiveMissionQueueItem[] = [
     riskBucket: "on_track",
   },
 ];
+
+const detailWorkflow: ActiveMissionWorkflow = {
+  workflow: { id: "workflow-today", revision_limit: 2 },
+  submission: {
+    creators: { id: "creator-1", display_name: "Amy Wong" },
+    missions: {
+      id: "mission-1",
+      title: "Summer launch",
+      description: null,
+      key_messages: [],
+      dos: [],
+      donts: [],
+    },
+  },
+  workItems: [{
+    id: "item-today",
+    title: "Instagram reel",
+    platform: "instagram",
+    position: 0,
+    state: "submitted",
+    deadline: "2099-07-20T12:00:00.000Z",
+    current_reviewer_id: null,
+    current_submitted_version_id: "version-1",
+    approved_version_id: null,
+    requirements_snapshot: [],
+  }],
+  fulfillment: null,
+  versions: [{
+    id: "version-1",
+    mission_work_item_id: "item-today",
+    version_number: 1,
+    caption_snapshot: "Ready.",
+    external_draft_url_snapshot: null,
+    checklist_snapshot: {},
+    submitted_at: "2026-07-19T02:00:00.000Z",
+  }],
+  reviews: [],
+  grants: [],
+  events: [],
+  assets: [],
+};
+
+function renderWithQueryClient(ui: React.ReactNode) {
+  return render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {ui}
+    </QueryClientProvider>,
+  );
+}
 
 describe("ActiveMissionQueue", () => {
   it("keeps server order and shows the required review metadata", () => {
@@ -84,15 +144,33 @@ describe("admin active missions route", () => {
   it("loads the canonical queue for the current workspace", async () => {
     const { Route } = await import("./admin.active-missions");
     const Component = Route.options.component as React.ComponentType;
-    render(
-      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-        <Component />
-      </QueryClientProvider>,
-    );
+    renderWithQueryClient(<Component />);
     await screen.findByText("Amy Wong");
     await waitFor(() => expect(h.fetchActiveMissionQueue).toHaveBeenCalledWith({ workspace: "demo" }));
     const cards = screen.getAllByTestId("queue-item");
     expect(cards[0]).toHaveTextContent("Amy Wong");
     expect(cards[1]).toHaveTextContent("Ben Lee");
+  });
+
+  it("binds detail actions and routes auth failures through the admin auth context", async () => {
+    const authError = new AdminAuthError("unauthorized");
+    h.fetchActiveMissionWorkflow.mockResolvedValue(detailWorkflow);
+    h.startActiveMissionReview.mockRejectedValue(authError);
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+
+    await screen.findByRole("heading", { name: "Instagram reel" });
+    fireEvent.click(screen.getByRole("button", { name: "Start review" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("unauthorized");
+    expect(h.startActiveMissionReview).toHaveBeenCalledWith(
+      "workflow-today",
+      "item-today",
+      { workspace: "demo", expectedState: "submitted" },
+    );
+    expect(h.reportAuthError).toHaveBeenCalledWith(authError);
   });
 });
