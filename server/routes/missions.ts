@@ -5,6 +5,9 @@ import { makeUserClient } from "../lib/supabase.js";
 import type { PostgrestError } from "@supabase/supabase-js";
 
 export const missionRoutes = new Hono<Env>();
+export const MY_MISSIONS_SELECT =
+  "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+
 
 // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
 const RPC_409 = new Set([
@@ -48,15 +51,25 @@ missionRoutes.get("/my", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   let q = supabase
     .from("mission_submissions")
-    .select(
-      "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)",
-    )
+    .select(MY_MISSIONS_SELECT)
     .eq("creator_id", c.get("userId"))
     .order("created_at", { ascending: false });
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ submissions: data ?? [] });
+  const submissions = (data ?? []).map((value) => {
+    const row = value as typeof value & {
+      mission_workflows?: { id: string } | Array<{ id: string }> | null;
+      missions?: { creator_workflow_mode?: "legacy" | "active_workspace" };
+    };
+    const workflows = row.mission_workflows;
+    const workflow = Array.isArray(workflows) ? workflows[0] : workflows;
+    const { mission_workflows: _missionWorkflows, ...submission } = row;
+    return { ...submission, creator_workflow_mode: row.missions?.creator_workflow_mode ?? "legacy", active_workflow_id: workflow?.id ?? null };
+  });
+  return c.json({ submissions });
+
+
 });
 
 missionRoutes.get("/:slug", async (c) => {

@@ -3,6 +3,11 @@ import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { ActiveMissionError, statusFor } from "../lib/activeMission/errors.js";
 import {
+  validateFinalizeInput,
+  validateSubmitInput,
+  validateUploadGrantInput,
+} from "../lib/activeMission/creatorActions.js";
+import {
   createActiveMissionRepository,
   type ActiveMissionOwner,
   type ActiveMissionRepository,
@@ -57,6 +62,46 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
         workItemId: c.req.param("workItemId"),
       }, input);
       return c.json({ draft });
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.post("/:submissionId/work-items/:workItemId/assets/upload-grant", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const result = await repository().createUploadGrant(
+        { ...owner(c), workItemId: c.req.param("workItemId") },
+        validateUploadGrantInput(body),
+      );
+      return c.json(result);
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.post("/:submissionId/work-items/:workItemId/assets/:assetId/finalize", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const asset = await repository().finalizeAsset(
+        { ...owner(c), workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") },
+        validateFinalizeInput(body),
+      );
+      return c.json({ asset });
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.post("/:submissionId/work-items/:workItemId/submit", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const input = validateSubmitInput(body, c.req.header("Idempotency-Key"));
+      const result = await repository().submitDraft(
+        { ...owner(c), workItemId: c.req.param("workItemId") },
+        input,
+      );
+      return c.json(result);
     } catch (error) {
       return errorResponse(c, error);
     }

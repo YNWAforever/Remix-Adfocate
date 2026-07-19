@@ -3,6 +3,7 @@ import { createApp } from "../app";
 import {
   joinMissionWithWorkflowRecovery,
   submitMissionForMode,
+  MY_MISSIONS_SELECT,
 } from "../routes/missions";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -31,6 +32,14 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
 }
 
 describe("mission route behavior without a live database", () => {
+  it("selects workflow mode and active workflow id for creator mission entry points", () => {
+    expect(MY_MISSIONS_SELECT).toContain("creator_workflow_mode");
+    expect(MY_MISSIONS_SELECT).toContain("mission_workflows(id)");
+    expect(MY_MISSIONS_SELECT).toContain("missions!inner");
+  });
+
+
+
   it("recovers an active-workspace join after workflow creation failed", async () => {
     const mission = { id: "mission-1", creator_workflow_mode: "active_workspace" };
     const submission = {

@@ -2,6 +2,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { ActiveMissionError } from "./errors.js";
 import { validateDraftPatch } from "./state.js";
 import type { DraftPatch, FulfillmentState, WorkflowState, WorkItemState } from "./types.js";
+import {
+  createUploadGrant as createCreatorUploadGrant,
+  finalizeAsset as finalizeCreatorAsset,
+  submitDraft as submitCreatorDraft,
+  type FinalizeAssetInput,
+  type SubmitDraftInput,
+  type UploadGrantInput,
+} from "./creatorActions.js";
+
+
 
 export type ActiveMissionOwner = {
   submissionId: string;
@@ -95,6 +105,9 @@ export type ActiveMissionWorkspace = {
 export interface ActiveMissionRepository {
   getWorkspace(owner: ActiveMissionOwner): Promise<ActiveMissionWorkspace>;
   saveDraft(owner: ActiveMissionOwner & { workItemId: string }, input: DraftSaveInput): Promise<MissionDraft>;
+  createUploadGrant(owner: ActiveMissionOwner & { workItemId: string }, input: UploadGrantInput): ReturnType<typeof createCreatorUploadGrant>;
+  finalizeAsset(owner: ActiveMissionOwner & { workItemId: string; assetId: string }, input: FinalizeAssetInput): ReturnType<typeof finalizeCreatorAsset>;
+  submitDraft(owner: ActiveMissionOwner & { workItemId: string }, input: SubmitDraftInput): ReturnType<typeof submitCreatorDraft>;
   receiveFulfillment(owner: ActiveMissionOwner): Promise<MissionWorkflow>;
 }
 
@@ -111,6 +124,7 @@ const FULFILLMENT_SELECT =
 const EVENT_SELECT =
   "id, workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id, event_type, entity_type, entity_id, metadata, created_at";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase dynamic select rows are normalized at module boundaries.
 type JsonRow = Record<string, any>;
 
 function notFound(): never {
@@ -393,6 +407,18 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
       throw new ActiveMissionError("WORKFLOW_STALE", "Draft revision is stale", {
         currentDraft: toDraft(current.data as JsonRow),
       });
+    },
+
+    async createUploadGrant(owner, input) {
+      return createCreatorUploadGrant(client, owner, input);
+    },
+
+    async finalizeAsset(owner, input) {
+      return finalizeCreatorAsset(client, owner, input);
+    },
+
+    async submitDraft(owner, input) {
+      return submitCreatorDraft(client, owner, input);
     },
 
     async receiveFulfillment(owner) {

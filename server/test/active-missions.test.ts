@@ -228,6 +228,83 @@ describe("active mission routes without a live database", () => {
     expect(await response.json()).toMatchObject({ workflow: { state: "drafting" } });
     expect(receiveFulfillment).toHaveBeenCalledWith(owner);
   });
+
+  it("returns a private signed upload grant for an owned editable work item", async () => {
+    const createUploadGrant = vi.fn(async () => ({
+      asset: { id: "asset-1", path: "creator-1/workflow-1/item-1/asset-1.jpg", uploadState: "pending" },
+      upload: { path: "creator-1/workflow-1/item-1/asset-1.jpg", token: "signed-token" },
+    }));
+    const repo = { createUploadGrant } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/assets/upload-grant",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        fileName: "draft.JPG", contentType: "image/jpeg", sizeBytes: 1024,
+      }) },
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      asset: { id: "asset-1", uploadState: "pending" },
+      upload: { path: "creator-1/workflow-1/item-1/asset-1.jpg", token: "signed-token" },
+    });
+    expect(createUploadGrant).toHaveBeenCalledWith({ ...owner, workItemId: item.id }, {
+      fileName: "draft.JPG", contentType: "image/jpeg", sizeBytes: 1024,
+    });
+  });
+
+  it("rejects unsupported upload metadata before creating an asset", async () => {
+    const createUploadGrant = vi.fn();
+    const repo = { createUploadGrant } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/assets/upload-grant",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fileName: "draft.pdf", contentType: "application/pdf", sizeBytes: 20_971_521 }) },
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(createUploadGrant).not.toHaveBeenCalled();
+  });
+
+  it("finalizes an owned asset after metadata verification", async () => {
+    const finalizeAsset = vi.fn(async () => ({ id: "asset-1", uploadState: "ready", checksum: "sha256-value" }));
+    const repo = { finalizeAsset } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/assets/asset-1/finalize",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ checksum: "sha256-value" }) },
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ asset: { id: "asset-1", uploadState: "ready" } });
+    expect(finalizeAsset).toHaveBeenCalledWith(
+      { ...owner, workItemId: item.id, assetId: "asset-1" },
+      { checksum: "sha256-value" },
+    );
+  });
+
+  it("requires an idempotency key before submitting a draft", async () => {
+    const submitDraft = vi.fn();
+    const repo = { submitDraft } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/submit",
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ expectedRevision: 2 }) },
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(submitDraft).not.toHaveBeenCalled();
+  });
+
+  it("submits a draft with revision and idempotency key", async () => {
+    const submitDraft = vi.fn(async () => ({ version: { id: "version-1" }, workItem: { id: "item-1", state: "submitted" } }));
+    const repo = { submitDraft } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/work-items/item-1/submit",
+      { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "submission-key-1" }, body: JSON.stringify({ expectedRevision: 2 }) },
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ version: { id: "version-1" }, workItem: { state: "submitted" } });
+    expect(submitDraft).toHaveBeenCalledWith(
+      { ...owner, workItemId: item.id },
+      { expectedRevision: 2, idempotencyKey: "submission-key-1" },
+    );
+  });
+
 });
 
 describe("active mission receipt migration contract", () => {
@@ -246,6 +323,28 @@ describe("active mission receipt migration contract", () => {
     expect(sql).toContain("revoke all on function public.receive_mission_fulfillment");
     for (const forbidden of [
       "update public.mission_submissions", "update public.point_balances",
+      "update public.earnings_balances", "update public.creators set xp",
+    ]) expect(sql).not.toContain(forbidden);
+  });
+});
+
+describe("active mission creator submit migration contract", () => {
+  it("is atomic, service-only, idempotent, asset-scoped, and reward-neutral", () => {
+    const name = readdirSync(resolve("supabase/migrations"))
+      .find((file) => file.includes("submit_active_mission_draft"));
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const token of [
+      "function private.submit_active_mission_draft", "function public.submit_active_mission_draft",
+      "security definer", "set search_path = ''", "for update", "p_idempotency_key",
+      "mission_submission_idempotency_key", "mission_draft_versions", "mission_draft_assets",
+      "mission_review_rounds", "review_due_at", "least(", "mission_workflow_events",
+      "private.refresh_mission_workflow_state", "to service_role",
+    ]) expect(sql).toContain(token);
+    expect(sql).toContain("revoke all on function private.submit_active_mission_draft");
+    expect(sql).toContain("revoke all on function public.submit_active_mission_draft");
+    for (const forbidden of [
+      " to authenticated", "update public.mission_submissions", "update public.point_balances",
       "update public.earnings_balances", "update public.creators set xp",
     ]) expect(sql).not.toContain(forbidden);
   });
