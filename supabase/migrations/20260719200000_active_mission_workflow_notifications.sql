@@ -14,6 +14,31 @@ alter table public.notifications add constraint notifications_type_check
     'mission_deadline_overdue'
   ));
 
+alter table public.notifications drop constraint if exists notifications_workflow_payload_size_check;
+alter table public.notifications add constraint notifications_workflow_payload_size_check
+  check (
+    type not in (
+      'mission_product_shipped','mission_receipt_required',
+      'mission_revision_requested','mission_draft_approved',
+      'mission_approved_to_publish','mission_deadline_approaching',
+      'mission_deadline_overdue'
+    )
+    or octet_length(data::text) <= 8192
+  );
+
+create table private.mission_workflow_notification_dedupe (
+  recipient_id uuid not null,
+  notification_type text not null,
+  entity_type text not null,
+  entity_id uuid not null,
+  semantic_key text not null,
+  created_at timestamptz not null default now(),
+  primary key (recipient_id, notification_type, entity_type, entity_id, semantic_key)
+);
+
+revoke all on table private.mission_workflow_notification_dedupe
+  from public, anon, authenticated, service_role;
+
 create or replace function private.notify_mission_workflow(
   p_type text,
   p_workflow uuid,
@@ -22,7 +47,7 @@ create or replace function private.notify_mission_workflow(
   p_version_number integer default null,
   p_reason_category text default null
 )
-returns void
+returns boolean
 language plpgsql
 security definer
 set search_path = ''
@@ -38,6 +63,8 @@ declare
   v_version_number integer;
   v_entity_type text;
   v_entity_id uuid;
+  v_semantic_key text;
+  v_claimed integer;
   v_data jsonb;
 begin
   if p_type not in (
@@ -46,7 +73,7 @@ begin
     'mission_approved_to_publish','mission_deadline_approaching',
     'mission_deadline_overdue'
   ) then
-    return;
+    return false;
   end if;
 
   select
@@ -85,7 +112,7 @@ begin
   where w.id = p_workflow;
 
   if v_user is null then
-    return;
+    return false;
   end if;
 
   v_entity_type := case when p_work_item is null then 'mission_workflow' else 'mission_work_item' end;
@@ -100,28 +127,45 @@ begin
     'reason_category', p_reason_category
   ));
 
+  if p_type in ('mission_deadline_approaching', 'mission_deadline_overdue') then
+    v_semantic_key := coalesce(v_deadline::text, '');
+  else
+    v_semantic_key := concat_ws(
+      '|',
+      coalesce(v_deadline::text, ''),
+      coalesce(v_version_number::text, ''),
+      coalesce(p_reason_category, '')
+    );
+  end if;
+
   begin
+    insert into private.mission_workflow_notification_dedupe (
+      recipient_id, notification_type, entity_type, entity_id, semantic_key
+    ) values (
+      v_user, p_type, v_entity_type, v_entity_id, v_semantic_key
+    )
+    on conflict do nothing;
+
+    get diagnostics v_claimed = row_count;
+    if v_claimed = 0 then
+      return false;
+    end if;
+
     insert into public.notifications (
       user_id, workspace_id, type, entity_type, entity_id, data
     )
-    select
+    values (
       v_user, v_workspace, p_type, v_entity_type, v_entity_id, v_data
-    where not exists (
-      select 1
-      from public.notifications n
-      where n.user_id = v_user
-        and n.workspace_id = v_workspace
-        and n.type = p_type
-        and n.entity_type = v_entity_type
-        and n.entity_id = v_entity_id
-        and coalesce(n.data ->> 'deadline', '') = coalesce(v_data ->> 'deadline', '')
-        and coalesce(n.data ->> 'version_number', '') = coalesce(v_data ->> 'version_number', '')
-        and coalesce(n.data ->> 'reason_category', '') = coalesce(v_data ->> 'reason_category', '')
     );
+
+    return true;
   exception
     when others then
-      null;
+      return false;
   end;
+exception
+  when others then
+    return false;
 end;
 $$;
 
@@ -265,13 +309,14 @@ begin
       when v_item.deadline < p_now then 'mission_deadline_overdue'
       else 'mission_deadline_approaching'
     end;
-    perform private.notify_mission_workflow(
+    if private.notify_mission_workflow(
       v_type,
       v_item.mission_workflow_id,
       v_item.id,
       v_item.deadline
-    );
-    v_count := v_count + 1;
+    ) then
+      v_count := v_count + 1;
+    end if;
   end loop;
 
   return v_count;

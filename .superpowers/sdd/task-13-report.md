@@ -35,8 +35,8 @@ Additional verification:
 - Every Task 13 SECURITY DEFINER function has `search_path = ''` and schema-qualified relations.
 - The internal notifier and trigger functions revoke EXECUTE from PUBLIC, anon, authenticated, and service_role, with no re-grant.
 - The deadline emitter is intentionally service-only: it validates the service-role JWT, revokes all roles, then grants only service_role.
-- The notification INSERT is isolated in a tight `exception when others then null` block after workflow transition row writes; payload keys are limited to mission title/slug, submission ID, deliverable title, deadline, version number, and reason category.
-- Deadline notifications are idempotent by notification type, entity, deadline, version, and reason category. No scheduler or cloud resource was provisioned.
+- The dedupe claim and notification INSERT share a tight PL/pgSQL exception subtransaction; a failed notification rolls back its claim and returns `false` without rolling back the durable workflow transition. Payload keys remain limited to mission title/slug, submission ID, deliverable title, deadline, version number, and reason category, with an 8 KiB workflow-payload constraint.
+- Deadline notifications are atomically idempotent by recipient, notification type, entity, and deadline only. The emitter increments its result only after an inserted notification. No scheduler or cloud resource was provisioned.
 - The ten Phase 2 analytics event payloads contain only locale, mission type, state/action/error/timing categories, counts, and version/round numbers. A runtime allowlist strips untyped creator content and identifiers.
 
 ## Concerns
@@ -44,3 +44,22 @@ Additional verification:
 - Supabase-backed integration tests remain guarded because the test environment variables are unavailable.
 - The running local database has substantially divergent migration history; it was inspected but not reset or mutated.
 - The implementation commit hash is reported in the Task 13 handoff because a report cannot embed the hash of the same commit that contains it without changing that hash.
+
+## Final-review hardening evidence
+
+RED command:
+
+```text
+npx.cmd vitest run server/test/notifications-triggers.test.ts --no-file-parallelism
+```
+
+Result before the SQL change: exit 1; 5 failed, 1 passed, 6 guarded live tests skipped. The five failures covered the boolean notifier, private atomic dedupe/rollback boundary, deadline-only semantic key, truthful emitter count, and payload failure boundary.
+
+Final focused command (the four-file command above): exit 0; 4 passed files, 36 passed tests, and 9 guarded live tests skipped. The three new local-only integration cases cover transition recipient/type/exact payload, creator-JWT rejection plus repeated-deadline suppression, and a forced notification failure that preserves the transition and permits a successful retry.
+
+Additional final-review verification:
+
+- Related notification API and active-mission schema suites: exit 0; 5 passed, 11 guarded live tests skipped.
+- `npm.cmd run type-check`: exit 0 with the same pre-existing `_site.smoke.test.tsx` route-file warning.
+- Touched-file ESLint and `git diff --check`: exit 0.
+- `npx.cmd supabase db lint --local --schema public,private --level warning --fail-on error`: connected, then exited 1 only on the same baseline `public.redeem_perk` ambiguous-column error plus the two previously recorded baseline warnings. This divergent local database still does not contain the Task 13 migration, so the report does not claim a local live run.

@@ -25,13 +25,15 @@ describe("renderNotification", () => {
     ["mission_deadline_approaching", { mission_title: "Launch", submission_id: "sub-1", deadline: "17 Jul" }],
     ["mission_deadline_overdue", { mission_title: "Launch", submission_id: "sub-1", deadline: "17 Jul" }],
   ] as const)("renders %s as an active-mission notification", (type, data) => {
-    const rendered = renderNotification(row(type, data), makeT("en"));
+    for (const locale of ["en", "zh"] as const) {
+      const rendered = renderNotification(row(type, data), makeT(locale));
 
-    expect(rendered.title).not.toBe("app.notif." + type + ".title");
-    expect(rendered.body).toContain("Launch");
-    expect(rendered.body).not.toMatch(/\{[a-z_]+\}/);
-    expect(rendered.href).toBe("/my/sub-1");
-    expect(rendered.icon).toBeTruthy();
+      expect(rendered.title).not.toBe("app.notif." + type + ".title");
+      expect(rendered.body).toContain("Launch");
+      expect(rendered.body).not.toMatch(/\{[a-z_]+\}/);
+      expect(rendered.href).toBe("/my/sub-1");
+      expect(rendered.icon).toBeTruthy();
+    }
   });
 
   it("renders submission_approved with points/xp and links to the mission", () => {
