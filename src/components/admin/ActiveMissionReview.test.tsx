@@ -4,8 +4,22 @@ import { ActiveMissionReview } from "./ActiveMissionReview";
 import { AdminRequestError } from "@/lib/admin";
 import type { ActiveMissionWorkflow } from "@/lib/admin";
 
+vi.mock("@/lib/i18n", async () => {
+  const { dict } = await import("@/lib/i18n.dict");
+  const t = (key: string, params?: Record<string, string | number>) =>
+    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+  return {
+    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+  };
+});
+
 const workflow = (revisionLimit = 2): ActiveMissionWorkflow => ({
-  workflow: { id: "workflow-1", revision_limit: revisionLimit },
+  workflow: {
+    id: "workflow-1",
+    revision_limit: revisionLimit,
+    revision_response_hours: 1_000_000,
+    deadline: "2099-07-21T12:00:00.000Z",
+  },
   submission: {
     creators: { id: "creator-1", display_name: "Amy Wong" },
     missions: {
@@ -23,9 +37,9 @@ const workflow = (revisionLimit = 2): ActiveMissionWorkflow => ({
       title: "Instagram reel",
       platform: "instagram",
       position: 0,
-      state: "submitted",
-      deadline: "2099-07-20T12:00:00.000Z",
-      current_reviewer_id: null,
+      state: "under_review",
+      deadline: "2099-07-21T12:00:00.000Z",
+      current_reviewer_id: "reviewer-1",
       current_submitted_version_id: "version-2",
       approved_version_id: null,
       requirements_snapshot: [
@@ -127,7 +141,15 @@ describe("ActiveMissionReview", () => {
   });
 
   it("starts review for the exact selected work item", async () => {
-    const handlers = renderReview();
+    const submitted = workflow();
+    submitted.workItems[0] = {
+      ...submitted.workItems[0],
+      state: "submitted",
+      current_reviewer_id: null,
+    };
+    const handlers = renderReview({ workflow: submitted });
+    expect(screen.getByRole("button", { name: "Request revision" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Approve version" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Start review" }));
     await waitFor(() => expect(handlers.onStartReview).toHaveBeenCalledWith({
       workItemId: "work-item-2",
@@ -140,7 +162,7 @@ describe("ActiveMissionReview", () => {
     fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
     fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
     expect(screen.getByText("Add at least one required change")).toBeVisible();
-    expect(screen.getByText("Choose a future revision deadline")).toBeVisible();
+    expect(screen.getByLabelText("Revision deadline")).not.toHaveValue("");
 
     fireEvent.change(screen.getByLabelText("Required change 1"), {
       target: { value: "Use the approved disclosure wording" },
@@ -152,7 +174,7 @@ describe("ActiveMissionReview", () => {
 
     await waitFor(() => expect(handlers.onRequestRevision).toHaveBeenCalledWith(expect.objectContaining({
       workItemId: "work-item-2",
-      expectedState: "submitted",
+      expectedState: "under_review",
       versionId: "version-2",
       items: [expect.objectContaining({
         category: "other",
@@ -170,7 +192,7 @@ describe("ActiveMissionReview", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
     await waitFor(() => expect(handlers.onApproveVersion).toHaveBeenCalledWith({
       workItemId: "work-item-2",
-      expectedState: "submitted",
+      expectedState: "under_review",
       versionId: "version-2",
     }));
   });
@@ -283,10 +305,38 @@ describe("ActiveMissionReview", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Request revision" })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
     expect(screen.getByLabelText("Required change 1")).toHaveValue("");
-    expect(screen.getByLabelText("Revision deadline")).toHaveValue("");
+    expect(screen.getByLabelText("Revision deadline")).not.toHaveValue("");
     fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
 
     expect(screen.getByText("Add at least one required change")).toBeVisible();
     expect(handlers.onRequestRevision).not.toHaveBeenCalled();
+  });
+
+  it("defaults and caps the revision deadline at the strictest workflow contract", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-20T00:00:00.000Z"));
+    try {
+      const constrained = workflow();
+      constrained.workflow.revision_response_hours = 48;
+      constrained.workflow.deadline = "2026-07-21T12:00:00.000Z";
+      constrained.workItems[0] = {
+        ...constrained.workItems[0],
+        deadline: "2026-07-22T12:00:00.000Z",
+      };
+      const handlers = renderReview({ workflow: constrained });
+
+      fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
+      const input = screen.getByLabelText("Revision deadline") as HTMLInputElement;
+      expect(input.value).toBe(input.max);
+      expect(new Date(input.value).toISOString()).toBe("2026-07-21T12:00:00.000Z");
+
+      fireEvent.change(screen.getByLabelText("Required change 1"), { target: { value: "Tighten the opening" } });
+      fireEvent.change(input, { target: { value: "2026-07-22T10:00" } });
+      fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
+      expect(screen.getByText("Choose a deadline within the allowed response window")).toBeVisible();
+      expect(handlers.onRequestRevision).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

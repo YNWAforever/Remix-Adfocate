@@ -13,6 +13,7 @@ import {
   requestActiveMissionRevision,
   startActiveMissionReview,
 } from "@/lib/admin";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/active-missions/$workflowId")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -38,6 +39,7 @@ export function AdminActiveMissionReviewView({
   const { workspace } = useAdminWorkspace();
   const queryClient = useQueryClient();
   const key = ["admin-active-mission", workspace, workflowId] as const;
+  const { t } = useI18n();
   const detail = useQuery({
     queryKey: key,
     queryFn: () => fetchActiveMissionWorkflow(workflowId, workspace),
@@ -56,9 +58,9 @@ export function AdminActiveMissionReviewView({
     ]);
   };
 
-  if (!workspace) return <p className="text-sm text-[var(--color-soft-ink)]">Select a workspace to review this active mission.</p>;
-  if (detail.isLoading) return <p className="text-sm">Loading active mission workflow…</p>;
-  if (detail.isError || !detail.data) return <p role="alert" className="text-sm font-bold text-red-700">Unable to load this active mission workflow.</p>;
+  if (!workspace) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectReview")}</p>;
+  if (detail.isLoading) return <p className="text-sm">{t("app.admin.activeMission.route.loadingWorkflow")}</p>;
+  if (detail.isError || !detail.data) return <p role="alert" className="text-sm font-bold text-red-700">{t("app.admin.activeMission.route.workflowError")}</p>;
 
   return (
     <ActiveMissionReview

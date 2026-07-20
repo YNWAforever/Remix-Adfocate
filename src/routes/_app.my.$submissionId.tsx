@@ -7,6 +7,7 @@ import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
 import { WorkspaceHeader } from "@/components/active-mission/WorkspaceHeader";
 import { deriveNextAction } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
+import { useI18n } from "@/lib/i18n";
 import {
   useActiveMissionWorkspace,
   useConfirmMissionReceipt,
@@ -39,6 +40,7 @@ function errorKind(error: unknown): "missing" | "forbidden" | "recoverable" {
 }
 
 export function CreatorMissionWorkspace() {
+  const { t } = useI18n();
   const { submissionId } = Route.useParams();
   const search = useSearch({ from: "/_app/my/$submissionId" });
   const navigate = useNavigate({ from: "/my/$submissionId" });
@@ -70,7 +72,7 @@ export function CreatorMissionWorkspace() {
 
   if (workspaceQuery.isLoading) {
     return (
-      <main aria-label="Loading active mission" role="status" className="mx-auto w-full max-w-6xl p-4 sm:p-6">
+      <main aria-label={t("app.activeMission.route.loading")} role="status" className="mx-auto w-full max-w-6xl p-4 sm:p-6">
         <div className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" />
       </main>
     );
@@ -78,17 +80,17 @@ export function CreatorMissionWorkspace() {
 
   if (workspaceQuery.isError || !workspace) {
     const kind = errorKind(workspaceQuery.error);
-    if (kind === "missing") return <WorkspaceProblem title="Mission not found" body="This active mission is unavailable or no longer belongs to your account." />;
-    if (kind === "forbidden") return <WorkspaceProblem title="Access denied" body="You do not have access to this active mission." />;
+    if (kind === "missing") return <WorkspaceProblem title={t("app.activeMission.route.notFoundTitle")} body={t("app.activeMission.route.notFoundBody")} />;
+    if (kind === "forbidden") return <WorkspaceProblem title={t("app.activeMission.route.deniedTitle")} body={t("app.activeMission.route.deniedBody")} />;
     return (
-      <WorkspaceProblem title="We couldn’t load this mission" body="Your work is still safe. Try loading the workspace again.">
-        <button type="button" onClick={() => void workspaceQuery.refetch()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] px-5 py-2 font-bold">Try again</button>
+      <WorkspaceProblem title={t("app.activeMission.route.loadErrorTitle")} body={t("app.activeMission.route.loadErrorBody")}>
+        <button type="button" onClick={() => void workspaceQuery.refetch()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] px-5 py-2 font-bold">{t("app.activeMission.route.tryAgain")}</button>
       </WorkspaceProblem>
     );
   }
 
   if (workspace.workItems.length === 0 || !activeItem || !nextAction) {
-    return <WorkspaceProblem title="Mission setup needs attention" body="No deliverables are available for this active mission. Contact support before continuing." alert />;
+    return <WorkspaceProblem title={t("app.activeMission.route.setupTitle")} body={t("app.activeMission.route.setupBody")} alert />;
   }
 
   function selectItem(workItemId: string) {
@@ -116,7 +118,7 @@ export function CreatorMissionWorkspace() {
       }} />
 
       {workspace.workflow.state === "approved_to_publish" ? (
-        <p role="status" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-4 font-heading font-bold">Approved to publish — rewards are not issued yet</p>
+        <p role="status" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-4 font-heading font-bold">{t("app.activeMission.route.approvedRewardNeutral")}</p>
       ) : null}
 
       <FulfillmentCard fulfillment={workspace.fulfillment} isConfirming={confirmReceipt.isPending} onConfirmReceipt={() => confirmReceipt.mutateAsync()} />
@@ -124,21 +126,33 @@ export function CreatorMissionWorkspace() {
       <div className="grid min-w-0 gap-5 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start">
         <DeliverableNavigator items={workspace.workItems} selectedId={activeItem.id} onSelect={selectItem} />
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
-          <DraftEditor key={activeItem.id} item={activeItem} conflict={saveDraft.conflict?.workItemId === activeItem.id ? saveDraft.conflict : null} onSave={(input) => saveDraft.mutateAsync(input)} onSubmit={(input) => submitItem.mutateAsync(input)} onUploadFile={uploadFile} />
-          <VersionTimeline versions={[]} events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)} />
+          <DraftEditor
+            key={activeItem.id}
+            item={activeItem}
+            requiredChanges={activeItem.requiredChanges ?? []}
+            revisionDeadline={activeItem.revisionDeadline ?? null}
+            existingAssetCount={(activeItem.draftAssets ?? []).length}
+            conflict={saveDraft.conflict?.workItemId === activeItem.id ? saveDraft.conflict : null}
+            onSave={(input) => saveDraft.mutateAsync(input)}
+            onSubmit={(input) => submitItem.mutateAsync(input)}
+            onReconcileSubmit={() => workspaceQuery.refetch()}
+            onUploadFile={uploadFile}
+          />
+          <VersionTimeline versions={activeItem.versions ?? []} events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)} />
         </div>
       </div>
     </main>
   );
 }
 
-function WorkspaceProblem({ title, body, alert = false, children }: { title: string; body: string; alert?: boolean; children?: React.ReactNode }) {
+export function WorkspaceProblem({ title, body, alert = false, children }: { title: string; body: string; alert?: boolean; children?: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <main role={alert ? "alert" : undefined} className="mx-auto flex min-h-[50vh] w-full max-w-lg flex-col items-start justify-center gap-4 p-6">
       <h1 className="font-heading text-2xl font-bold">{title}</h1>
       <p className="text-sm text-[var(--color-soft-ink)]">{body}</p>
       {children}
-      <Link to="/my" className="min-h-11 py-2 font-bold underline">Back to my missions</Link>
+      <Link to="/my" className="min-h-11 py-2 font-bold underline">{t("app.activeMission.route.back")}</Link>
     </main>
   );
 }

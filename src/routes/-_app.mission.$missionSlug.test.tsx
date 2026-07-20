@@ -5,7 +5,16 @@ import { ApiError } from "@/lib/api";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
-  return { ...actual, Link: (p: { children: React.ReactNode; to: string }) => <a href={p.to}>{p.children}</a> };
+  return {
+    ...actual,
+    Link: ({ to, params, children }: { children: React.ReactNode; to: string; params?: Record<string, string> }) => {
+      const href = Object.entries(params ?? {}).reduce(
+        (path, [key, value]) => path.replace(`$${key}`, encodeURIComponent(value)),
+        to,
+      );
+      return <a href={href}>{children}</a>;
+    },
+  };
 });
 vi.mock("@/components/HookPanel", () => ({ HookPanel: () => <div>HOOK_PANEL</div> }));
 
@@ -89,7 +98,7 @@ describe("Mission detail writes", () => {
 
     renderDetail();
 
-    expect(screen.getByRole("link", { name: "Continue mission" })).toHaveAttribute("href", "/my/sub-1");
+    expect(screen.getByRole("link", { name: "繼續任務" })).toHaveAttribute("href", "/my/sub-1");
     expect(screen.queryByPlaceholderText(/貼上你的內容連結/)).not.toBeInTheDocument();
     expect(hoisted.useSubmitMission).not.toHaveBeenCalled();
   });

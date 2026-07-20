@@ -12,6 +12,15 @@ import { ReviewFeedback } from "./ReviewFeedback";
 import { VersionTimeline } from "./VersionTimeline";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 
+vi.mock("@/lib/i18n", async () => {
+  const { dict } = await import("@/lib/i18n.dict");
+  const t = (key: string, params?: Record<string, string | number>) =>
+    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+  return {
+    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+  };
+});
+
 const draftItem: MissionWorkItemView = {
   id: "item-1",
   title: "Instagram Reel",

@@ -197,9 +197,10 @@ function Home() {
         ) : unlockedRecommendations.length ? (
           <div className="grid gap-3 lg:grid-cols-2">
             {unlockedRecommendations.map((mission) => (
-              <a
+              <Link
                 key={mission.id}
-                href={`/mission/${mission.slug}`}
+                to="/mission/$missionSlug"
+                params={{ missionSlug: mission.slug }}
                 className="block rounded-[var(--radius)] no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <MissionCard
@@ -213,7 +214,7 @@ function Home() {
                   matchScore={mission.fit_score}
                   status={t("app.home.recommendationUnlocked")}
                 />
-              </a>
+              </Link>
             ))}
           </div>
         ) : (

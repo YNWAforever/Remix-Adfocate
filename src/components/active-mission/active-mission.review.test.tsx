@@ -4,6 +4,15 @@ import type { MissionDraft, MissionWorkItemView } from "@/lib/activeMission";
 import { DraftEditor } from "./DraftEditor";
 import { VersionTimeline } from "./VersionTimeline";
 
+vi.mock("@/lib/i18n", async () => {
+  const { dict } = await import("@/lib/i18n.dict");
+  const t = (key: string, params?: Record<string, string | number>) =>
+    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+  return {
+    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+  };
+});
+
 function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason?: unknown) => void;
@@ -131,6 +140,32 @@ describe("DraftEditor race safety", () => {
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole("alert")).toHaveTextContent(/still here/i);
+  });
+
+  it("reconciles a lost submit response and retries once with the same idempotency key", async () => {
+    vi.useRealTimers();
+    const onSave = vi.fn().mockResolvedValue(draft(4));
+    const onSubmit = vi.fn()
+      .mockRejectedValueOnce(new TypeError("Failed to fetch"))
+      .mockResolvedValueOnce(undefined);
+    const onReconcileSubmit = vi.fn().mockResolvedValue(undefined);
+    render(
+      <DraftEditor
+        item={item("A", 3)}
+        onSave={onSave}
+        onSubmit={onSubmit}
+        onReconcileSubmit={onReconcileSubmit}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit version" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+    expect(onReconcileSubmit).toHaveBeenCalledTimes(1);
+    const first = onSubmit.mock.calls[0][0];
+    const retry = onSubmit.mock.calls[1][0];
+    expect(first).toMatchObject({ workItemId: "A", expectedRevision: 4, idempotencyKey: expect.any(String) });
+    expect(retry).toEqual(first);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("resets pending submit state on item switch and ignores the old settlement", async () => {
@@ -302,7 +337,7 @@ describe("DraftEditor asset contract", () => {
 
 describe("DraftEditor review context and reusable IDs", () => {
   it("places feedback beside its matching checkbox and displays the revision deadline", () => {
-    render(<DraftEditor item={item("A", 3)} requiredChanges={[{
+    render(<DraftEditor item={item("A", 3)} revisionDeadline="2026-07-22T09:30:00.000Z" requiredChanges={[{
       id: "change-1",
       requirementId: "required",
       text: "Keep the product visible for 3 seconds",

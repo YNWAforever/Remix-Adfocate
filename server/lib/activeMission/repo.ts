@@ -57,6 +57,52 @@ export type MissionDraft = {
   lastSavedAt: string;
 };
 
+export type MissionDraftAssetView = {
+  id: string;
+  versionId: string | null;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  checksum: string | null;
+  uploadState: string;
+  signedUrl: string | null;
+};
+
+export type MissionRequiredChangeView = {
+  id: string;
+  requirementId: string | null;
+  category: string;
+  text: string;
+  required: boolean;
+  position: number;
+  createdAt: string;
+};
+
+export type MissionReviewRoundView = {
+  id: string;
+  versionId: string;
+  roundNumber: number;
+  state: string;
+  reviewerId: string | null;
+  reviewStartedAt: string | null;
+  decisionAt: string | null;
+  creatorResponseDeadline: string | null;
+  requiredChanges: MissionRequiredChangeView[];
+};
+
+export type MissionDraftVersionView = {
+  id: string;
+  versionNumber: number;
+  caption: string;
+  externalUrl: string | null;
+  checklist: Record<string, boolean>;
+  contentChecksum: string;
+  submittedAt: string;
+  state: "submitted" | "under_review" | "revision_requested" | "approved_to_publish";
+  decisionAt: string | null;
+  assets: MissionDraftAssetView[];
+};
+
 export type MissionWorkItemView = {
   id: string;
   title: string;
@@ -71,6 +117,11 @@ export type MissionWorkItemView = {
   approvedVersionId: string | null;
   reviewStartedAt: string | null;
   reviewDueAt: string | null;
+  draftAssets: MissionDraftAssetView[];
+  versions: MissionDraftVersionView[];
+  reviewRounds: MissionReviewRoundView[];
+  requiredChanges: MissionRequiredChangeView[];
+  revisionDeadline: string | null;
 };
 
 export type MissionFulfillment = {
@@ -123,6 +174,14 @@ const FULFILLMENT_SELECT =
   "id, workspace_id, mission_workflow_id, status, shipped_at, received_at, operational_note";
 const EVENT_SELECT =
   "id, workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id, event_type, entity_type, entity_id, metadata, created_at";
+const VERSION_SELECT =
+  "id, workspace_id, mission_work_item_id, version_number, caption_snapshot, external_draft_url_snapshot, checklist_snapshot, submitted_at, content_checksum";
+const REVIEW_SELECT =
+  "id, workspace_id, mission_work_item_id, mission_draft_version_id, round_number, state, reviewer_id, review_started_at, decision_at, creator_response_deadline, mission_review_items(id, requirement_id, category, required_change_text, required, position, created_at)";
+const ASSET_SELECT =
+  "id, workspace_id, mission_workflow_id, mission_work_item_id, creator_id, mission_draft_version_id, storage_object_path, original_filename, mime_type, byte_size, checksum, upload_state, created_at, deleted_at";
+const ASSET_BUCKET = "mission-draft-assets";
+const CREATOR_ASSET_SIGNED_URL_TTL_SECONDS = 600;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase dynamic select rows are normalized at module boundaries.
 type JsonRow = Record<string, any>;
@@ -188,6 +247,82 @@ function toDraft(row: JsonRow): MissionDraft {
   };
 }
 
+function toRequiredChange(row: JsonRow): MissionRequiredChangeView {
+  return {
+    id: row.id,
+    requirementId: row.requirement_id ?? null,
+    category: row.category,
+    text: row.required_change_text,
+    required: row.required,
+    position: row.position,
+    createdAt: row.created_at,
+  };
+}
+
+function requiredChanges(row: JsonRow): MissionRequiredChangeView[] {
+  if (!Array.isArray(row.mission_review_items)) return [];
+  return (row.mission_review_items as JsonRow[])
+    .map(toRequiredChange)
+    .sort((left, right) => left.position - right.position || left.id.localeCompare(right.id));
+}
+
+function toReviewRound(row: JsonRow): MissionReviewRoundView {
+  return {
+    id: row.id,
+    versionId: row.mission_draft_version_id,
+    roundNumber: row.round_number,
+    state: row.state,
+    reviewerId: row.reviewer_id ?? null,
+    reviewStartedAt: row.review_started_at ?? null,
+    decisionAt: row.decision_at ?? null,
+    creatorResponseDeadline: row.creator_response_deadline ?? null,
+    requiredChanges: requiredChanges(row),
+  };
+}
+
+function toAsset(row: JsonRow, signedUrl: string | null): MissionDraftAssetView {
+  return {
+    id: row.id,
+    versionId: row.mission_draft_version_id ?? null,
+    originalFilename: row.original_filename,
+    mimeType: row.mime_type,
+    sizeBytes: Number(row.byte_size),
+    checksum: row.checksum ?? null,
+    uploadState: row.upload_state,
+    signedUrl,
+  };
+}
+
+function versionState(round: JsonRow | undefined): MissionDraftVersionView["state"] {
+  if (!round || round.state === "open") {
+    return round?.review_started_at ? "under_review" : "submitted";
+  }
+  if (round.state === "revision_requested" || round.state === "approved_to_publish") {
+    return round.state;
+  }
+  return "submitted";
+}
+
+function toVersion(
+  row: JsonRow,
+  rounds: JsonRow[],
+  assets: MissionDraftAssetView[],
+): MissionDraftVersionView {
+  const round = rounds.find((candidate) => candidate.mission_draft_version_id === row.id);
+  return {
+    id: row.id,
+    versionNumber: row.version_number,
+    caption: row.caption_snapshot ?? "",
+    externalUrl: row.external_draft_url_snapshot ?? null,
+    checklist: row.checklist_snapshot ?? {},
+    contentChecksum: row.content_checksum,
+    submittedAt: row.submitted_at,
+    state: versionState(round),
+    decisionAt: round?.decision_at ?? null,
+    assets: assets.filter((asset) => asset.versionId === row.id),
+  };
+}
+
 function missionRow(value: unknown): JsonRow {
   const row = Array.isArray(value) ? value[0] : value;
   if (!row || typeof row !== "object") notFound();
@@ -218,20 +353,31 @@ function nextAction(items: MissionWorkItemView[]) {
   return { kind: kind[item.state] ?? "continue", workItemId: item.id, deadline: item.deadline, blockedReason: null };
 }
 
-function requirementIds(row: JsonRow): string[] {
-  if (!Array.isArray(row.requirements_snapshot)) return [];
-  return row.requirements_snapshot
-    .map((requirement: unknown) =>
-      requirement && typeof requirement === "object" && typeof (requirement as JsonRow).id === "string"
-        ? (requirement as JsonRow).id as string
-        : null)
-    .filter((id: string | null): id is string => id !== null);
-}
-
 function assertRevision(value: unknown): asserts value is number {
   if (!Number.isInteger(value) || (value as number) < 0) {
     throw new ActiveMissionError("VALIDATION_FAILED", "revision must be a non-negative integer");
   }
+}
+
+function mapDraftRpcError(error: { message?: string | null }): never {
+  const message = error.message ?? "active_mission_draft_save_failed";
+  if (message.includes("not_found")) notFound();
+  if (message.includes("validation_failed")) {
+    throw new ActiveMissionError("VALIDATION_FAILED", "Draft changes are invalid");
+  }
+  if (message.includes("not_authorized")) {
+    throw new ActiveMissionError("NOT_AUTHORIZED", "Draft changes are not authorized");
+  }
+  if (message.includes("stale_revision")) {
+    throw new ActiveMissionError("WORKFLOW_STALE", "Draft revision is stale");
+  }
+  if (message.includes("wrong_state")) {
+    throw new ActiveMissionError("WRONG_STATE", "Draft is no longer editable");
+  }
+  if (message.includes("deadline_passed")) {
+    throw new ActiveMissionError("DEADLINE_PASSED", "The mission deadline has passed");
+  }
+  dbFailure(error);
 }
 
 function mapRpcError(error: { message?: string | null }): never {
@@ -281,11 +427,35 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
         .eq("mission_workflow_id", workflow.id)
         .eq("workspace_id", owner.workspaceId)
         .order("created_at", { ascending: true });
+      const versionsQuery = itemIds.length === 0
+        ? Promise.resolve({ data: [] as JsonRow[], error: null })
+        : client.from("mission_draft_versions")
+          .select(VERSION_SELECT)
+          .eq("workspace_id", owner.workspaceId)
+          .in("mission_work_item_id", itemIds)
+          .order("version_number", { ascending: true });
+      const reviewsQuery = itemIds.length === 0
+        ? Promise.resolve({ data: [] as JsonRow[], error: null })
+        : client.from("mission_review_rounds")
+          .select(REVIEW_SELECT)
+          .eq("workspace_id", owner.workspaceId)
+          .in("mission_work_item_id", itemIds)
+          .order("round_number", { ascending: true });
+      const assetsQuery = itemIds.length === 0
+        ? Promise.resolve({ data: [] as JsonRow[], error: null })
+        : client.from("mission_draft_assets")
+          .select(ASSET_SELECT)
+          .eq("mission_workflow_id", workflow.id)
+          .eq("workspace_id", owner.workspaceId)
+          .eq("creator_id", owner.creatorId)
+          .in("mission_work_item_id", itemIds)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: true });
 
-      const [draftsResult, eventsResult] = await Promise.all([
-        draftsQuery, eventsQuery,
+      const [draftsResult, eventsResult, versionsResult, reviewsResult, assetsResult] = await Promise.all([
+        draftsQuery, eventsQuery, versionsQuery, reviewsQuery, assetsQuery,
       ]);
-      for (const result of [draftsResult, eventsResult]) {
+      for (const result of [draftsResult, eventsResult, versionsResult, reviewsResult, assetsResult]) {
         if (result.error) dbFailure(result.error);
       }
 
@@ -295,21 +465,71 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
           .filter((row) => itemIdSet.has(row.mission_work_item_id))
           .map((row) => [row.mission_work_item_id as string, row]),
       );
-      const workItems: MissionWorkItemView[] = itemRows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        platform: row.platform,
-        requirements: Array.isArray(row.requirements_snapshot) ? row.requirements_snapshot : [],
-        required: row.required,
-        position: row.position,
-        deadline: row.deadline ?? null,
-        state: row.state,
-        draft: draftByItem.has(row.id) ? toDraft(draftByItem.get(row.id)!) : null,
-        currentSubmittedVersionId: row.current_submitted_version_id ?? null,
-        approvedVersionId: row.approved_version_id ?? null,
-        reviewStartedAt: row.review_started_at ?? null,
-        reviewDueAt: row.review_due_at ?? null,
+      const childRows = (value: unknown) => ((value ?? []) as JsonRow[])
+        .filter((row) => itemIdSet.has(row.mission_work_item_id));
+      const groupByItem = (rows: JsonRow[]) => {
+        const grouped = new Map<string, JsonRow[]>();
+        for (const row of rows) {
+          const workItemId = row.mission_work_item_id as string;
+          const siblings = grouped.get(workItemId);
+          if (siblings) siblings.push(row);
+          else grouped.set(workItemId, [row]);
+        }
+        return grouped;
+      };
+      const versionRowsByItem = groupByItem(childRows(versionsResult.data));
+      const reviewRowsByItem = groupByItem(childRows(reviewsResult.data));
+      const assetRows = childRows(assetsResult.data)
+        .filter((row) => row.creator_id === owner.creatorId && row.mission_workflow_id === workflow.id);
+      const signedAssetRows = await Promise.all(assetRows.map(async (row) => {
+        let signedUrl: string | null = null;
+        if (row.upload_state === "ready") {
+          const signed = await client.storage.from(ASSET_BUCKET)
+            .createSignedUrl(row.storage_object_path, CREATOR_ASSET_SIGNED_URL_TTL_SECONDS);
+          if (signed.error || !signed.data?.signedUrl) dbFailure(signed.error);
+          signedUrl = signed.data.signedUrl;
+        }
+        return {
+          workItemId: row.mission_work_item_id as string,
+          asset: toAsset(row, signedUrl),
+        };
       }));
+      const assetsByItem = new Map<string, MissionDraftAssetView[]>();
+      for (const entry of signedAssetRows) {
+        const siblings = assetsByItem.get(entry.workItemId);
+        if (siblings) siblings.push(entry.asset);
+        else assetsByItem.set(entry.workItemId, [entry.asset]);
+      }
+      const workItems: MissionWorkItemView[] = itemRows.map((row) => {
+        const itemReviews = reviewRowsByItem.get(row.id) ?? [];
+        const itemAssets = assetsByItem.get(row.id) ?? [];
+        const latestRound = itemReviews.at(-1);
+        return {
+          id: row.id,
+          title: row.title,
+          platform: row.platform,
+          requirements: Array.isArray(row.requirements_snapshot) ? row.requirements_snapshot : [],
+          required: row.required,
+          position: row.position,
+          deadline: row.deadline ?? null,
+          state: row.state,
+          draft: draftByItem.has(row.id) ? toDraft(draftByItem.get(row.id)!) : null,
+          currentSubmittedVersionId: row.current_submitted_version_id ?? null,
+          approvedVersionId: row.approved_version_id ?? null,
+          reviewStartedAt: row.review_started_at ?? null,
+          reviewDueAt: row.review_due_at ?? null,
+          draftAssets: itemAssets.filter((asset) => asset.versionId === null),
+          versions: (versionRowsByItem.get(row.id) ?? [])
+            .map((version) => toVersion(version, itemReviews, itemAssets)),
+          reviewRounds: itemReviews.map(toReviewRound),
+          requiredChanges: latestRound?.state === "revision_requested"
+            ? requiredChanges(latestRound)
+            : [],
+          revisionDeadline: latestRound?.state === "revision_requested"
+            ? latestRound.creator_response_deadline ?? null
+            : null,
+        };
+      });
       const rawMission = missionRow(submission.missions);
       const fulfillment = fulfillmentResult.data as JsonRow | null;
 
@@ -358,55 +578,43 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
 
     async saveDraft(owner, input) {
       assertRevision(input.revision);
-      const { workflow } = await ownedAnchor(client, owner);
-      const itemResult = await client
-        .from("mission_work_items")
-        .select(ITEM_SELECT)
-        .eq("id", owner.workItemId)
-        .eq("mission_workflow_id", workflow.id)
-        .eq("workspace_id", owner.workspaceId)
-        .maybeSingle();
-      if (itemResult.error) dbFailure(itemResult.error);
-      if (!itemResult.data) notFound();
-
       const patch: DraftPatch = {};
       if (Object.prototype.hasOwnProperty.call(input, "caption")) patch.caption = input.caption;
       if (Object.prototype.hasOwnProperty.call(input, "externalUrl")) patch.externalUrl = input.externalUrl;
       if (Object.prototype.hasOwnProperty.call(input, "checklist")) patch.checklist = input.checklist;
-      validateDraftPatch(patch, requirementIds(itemResult.data as JsonRow));
+      const checklistKeys = patch.checklist && typeof patch.checklist === "object" && !Array.isArray(patch.checklist)
+        ? Object.keys(patch.checklist)
+        : [];
+      validateDraftPatch(patch, checklistKeys);
 
-      const update: Record<string, unknown> = {
-        revision: input.revision + 1,
-        last_saved_at: new Date().toISOString(),
-      };
-      if (Object.prototype.hasOwnProperty.call(patch, "caption")) update.caption_text = patch.caption;
-      if (Object.prototype.hasOwnProperty.call(patch, "externalUrl")) update.external_draft_url = patch.externalUrl;
-      if (Object.prototype.hasOwnProperty.call(patch, "checklist")) update.checklist_answers = patch.checklist;
-
-      const saved = await client
-        .from("mission_working_drafts")
-        .update(update)
-        .eq("mission_work_item_id", owner.workItemId)
-        .eq("workspace_id", owner.workspaceId)
-        .eq("revision", input.revision)
-        .is("archived_at", null)
-        .select(DRAFT_SELECT)
-        .maybeSingle();
-      if (saved.error) dbFailure(saved.error);
-      if (saved.data) return toDraft(saved.data as JsonRow);
-
-      const current = await client
-        .from("mission_working_drafts")
-        .select(DRAFT_SELECT)
-        .eq("mission_work_item_id", owner.workItemId)
-        .eq("workspace_id", owner.workspaceId)
-        .is("archived_at", null)
-        .maybeSingle();
-      if (current.error) dbFailure(current.error);
-      if (!current.data) notFound();
-      throw new ActiveMissionError("WORKFLOW_STALE", "Draft revision is stale", {
-        currentDraft: toDraft(current.data as JsonRow),
+      const result = await client.rpc("save_active_mission_draft", {
+        p_submission: owner.submissionId,
+        p_creator: owner.creatorId,
+        p_workspace: owner.workspaceId,
+        p_work_item: owner.workItemId,
+        p_expected_revision: input.revision,
+        p_patch: patch,
       });
+      if (result.error) mapDraftRpcError(result.error);
+      const payload = result.data;
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        dbFailure({ message: "Invalid save_active_mission_draft response" });
+      }
+      const row = payload as JsonRow;
+      if (row.code === "WORKFLOW_STALE" || row.code === "WRONG_STATE") {
+        if (!row.current_draft || typeof row.current_draft !== "object" || Array.isArray(row.current_draft)) {
+          dbFailure({ message: "Invalid save_active_mission_draft conflict response" });
+        }
+        throw new ActiveMissionError(
+          row.code,
+          row.code === "WORKFLOW_STALE" ? "Draft revision is stale" : "Draft is no longer editable",
+          { currentDraft: toDraft(row.current_draft as JsonRow) },
+        );
+      }
+      if (!row.draft || typeof row.draft !== "object" || Array.isArray(row.draft)) {
+        dbFailure({ message: "Invalid save_active_mission_draft success response" });
+      }
+      return toDraft(row.draft as JsonRow);
     },
 
     async createUploadGrant(owner, input) {

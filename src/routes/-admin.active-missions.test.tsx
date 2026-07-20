@@ -5,12 +5,28 @@ import { AdminAuthError } from "@/lib/admin";
 import type { ActiveMissionQueueItem, ActiveMissionWorkflow } from "@/lib/admin";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
 
+vi.mock("@/lib/i18n", async () => {
+  const { dict } = await import("@/lib/i18n.dict");
+  const t = (key: string, params?: Record<string, string | number>) =>
+    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+  return {
+    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+  };
+});
+
 const h = vi.hoisted(() => ({
   fetchActiveMissionQueue: vi.fn(),
   fetchActiveMissionWorkflow: vi.fn(),
   startActiveMissionReview: vi.fn(),
   reportAuthError: vi.fn(),
 }));
+vi.mock("@tanstack/react-router", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@tanstack/react-router")>();
+  return {
+    ...original,
+    Link: ({ children, className }: { children: React.ReactNode; className?: string }) => <a href="/" className={className}>{children}</a>,
+  };
+});
 vi.mock("@/components/admin/AdminAuthContext", () => ({
   useAdminAuth: () => ({ authed: true, staff: { userId: "reviewer-1", email: "op@example.com" }, reportAuthError: h.reportAuthError }),
 }));
@@ -120,17 +136,19 @@ describe("ActiveMissionQueue", () => {
     expect(cards[1]).toHaveTextContent("reviewer-1");
   });
 
-  it("emits SLA risk, state, reviewer, and mission filters without sorting locally", () => {
+  it("waits for an explicit apply before emitting UUID filters", () => {
     const onFiltersChange = vi.fn();
     render(<ActiveMissionQueue items={items} filters={{}} onFiltersChange={onFiltersChange} />);
     fireEvent.change(screen.getByLabelText("SLA risk"), { target: { value: "overdue" } });
-    expect(onFiltersChange).toHaveBeenLastCalledWith({ risk: "overdue" });
     fireEvent.change(screen.getByLabelText("State"), { target: { value: "under_review" } });
-    expect(onFiltersChange).toHaveBeenLastCalledWith({ state: "under_review" });
     fireEvent.change(screen.getByLabelText("Reviewer"), { target: { value: "reviewer-1" } });
-    expect(onFiltersChange).toHaveBeenLastCalledWith({ reviewer: "reviewer-1" });
     fireEvent.change(screen.getByLabelText("Mission"), { target: { value: "mission-1" } });
-    expect(onFiltersChange).toHaveBeenLastCalledWith({ mission: "mission-1" });
+    expect(onFiltersChange).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onFiltersChange).toHaveBeenCalledTimes(1);
+    expect(onFiltersChange).toHaveBeenCalledWith({
+      risk: "overdue", state: "under_review", reviewer: "reviewer-1", mission: "mission-1",
+    });
     expect(within(screen.getAllByTestId("queue-item")[0]).getByText("Amy Wong")).toBeVisible();
   });
 });
@@ -163,6 +181,7 @@ describe("admin active missions route", () => {
     );
 
     await screen.findByRole("heading", { name: "Instagram reel" });
+    expect(h.fetchActiveMissionWorkflow).toHaveBeenCalledWith("workflow-today", "demo");
     fireEvent.click(screen.getByRole("button", { name: "Start review" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("unauthorized");

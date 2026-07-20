@@ -339,7 +339,7 @@ export function requestActiveMissionRevision(
     workspace: string;
     expectedState: string;
     versionId: string;
-    deadline: string;
+    deadline?: string | null;
     items: ActiveMissionRevisionItem[];
   },
 ) {

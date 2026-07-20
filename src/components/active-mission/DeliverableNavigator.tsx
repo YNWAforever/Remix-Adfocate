@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type { KeyboardEvent } from "react";
 import type { MissionWorkItemView, WorkItemState } from "@/lib/activeMission";
+import { useI18n } from "@/lib/i18n";
 
 type DeliverableNavigatorProps = {
   items: MissionWorkItemView[];
@@ -8,19 +9,20 @@ type DeliverableNavigatorProps = {
   onSelect: (workItemId: string) => void;
 };
 
-const STATUS_LABELS: Record<WorkItemState, string> = {
-  blocked_by_fulfillment: "Blocked by delivery",
-  drafting: "Drafting",
-  submitted: "Submitted",
-  under_review: "Under review",
-  revision_requested: "Changes requested",
-  approved_to_publish: "Approved to publish",
-  cancelled: "Cancelled",
-  expired: "Expired",
+const STATUS_KEYS: Record<WorkItemState, string> = {
+  blocked_by_fulfillment: "app.activeMission.deliverable.status.blockedByDelivery",
+  drafting: "app.activeMission.deliverable.status.drafting",
+  submitted: "app.activeMission.deliverable.status.submitted",
+  under_review: "app.activeMission.deliverable.status.underReview",
+  revision_requested: "app.activeMission.deliverable.status.changesRequested",
+  approved_to_publish: "app.activeMission.deliverable.status.approvedToPublish",
+  cancelled: "app.activeMission.deliverable.status.cancelled",
+  expired: "app.activeMission.deliverable.status.expired",
 };
 
 export function DeliverableNavigator({ items, selectedId, onSelect }: DeliverableNavigatorProps) {
   const buttonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const { t } = useI18n();
 
   function selectAt(index: number) {
     const item = items[index];
@@ -41,11 +43,11 @@ export function DeliverableNavigator({ items, selectedId, onSelect }: Deliverabl
   }
 
   return (
-    <nav aria-label="Mission deliverables" className="min-w-0">
+    <nav aria-label={t("app.activeMission.deliverable.aria")} className="min-w-0">
       <ul className="flex snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 md:flex-col md:overflow-visible md:pb-0">
         {items.map((item, index) => {
           const selected = item.id === selectedId;
-          const status = STATUS_LABELS[item.state];
+          const status = t(STATUS_KEYS[item.state]);
           return (
             <li key={item.id} className="min-w-[12rem] snap-start md:min-w-0">
               <button

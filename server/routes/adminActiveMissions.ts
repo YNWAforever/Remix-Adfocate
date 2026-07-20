@@ -88,7 +88,7 @@ export type AdminActiveMissionRepository = {
   requestRevision(input: TransitionBase & {
     expectedState: string;
     versionId: string;
-    deadline: string;
+    deadline: string | null;
     items: ReviewItemInput[];
   }): Promise<unknown>;
   grantRevision(input: TransitionBase & { reason: string; grantedCount: number }): Promise<unknown>;
@@ -390,10 +390,10 @@ export function createAdminActiveMissionRoutes(
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       const expectedState = text(body.expectedState);
       const versionId = uuid(body.versionId);
-      const deadline = text(body.deadline);
+      const deadline = text(body.deadline) ?? null;
       const items = reviewItems(body.items);
-      if (!expectedState || !EXPECTED_REVIEW_STATES.has(expectedState) || !versionId || !deadline || !items || timestamp(deadline, 0) <= Date.now()) {
-        throw new OperatorActiveMissionError("VALIDATION_FAILED", "A current version, state, future deadline, and feedback items are required");
+      if (!expectedState || !EXPECTED_REVIEW_STATES.has(expectedState) || !versionId || !items || (deadline !== null && timestamp(deadline, 0) <= Date.now())) {
+        throw new OperatorActiveMissionError("VALIDATION_FAILED", "A current version, state, optional future deadline, and feedback items are required");
       }
       return c.json(await repository().requestRevision({ workflowId, workItemId, ...ctx, expectedState, versionId, deadline, items }));
     } catch (error) { return routeError(c, error); }

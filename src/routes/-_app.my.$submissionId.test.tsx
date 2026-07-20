@@ -3,6 +3,15 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ActiveMissionWorkspace } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
 
+vi.mock("@/lib/i18n", async () => {
+  const { dict } = await import("@/lib/i18n.dict");
+  const t = (key: string, params?: Record<string, string | number>) =>
+    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+  return {
+    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+  };
+});
+
 const mocks = vi.hoisted(() => ({
   search: {} as { item?: string },
   query: { data: undefined as ActiveMissionWorkspace | undefined, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
@@ -107,6 +116,50 @@ describe("creator active mission workspace route", () => {
     mocks.search = { item: "item-2" };
     renderRoute();
     expect(screen.getByRole("heading", { name: "Story" })).toBeInTheDocument();
+  });
+
+  it("binds persisted assets, immutable versions, and latest required changes after reload", async () => {
+    const rich = workspace();
+    Object.assign(rich.workItems[0], {
+      draftAssets: Array.from({ length: 5 }, (_, index) => ({
+        id: `asset-${index + 1}`,
+        versionId: null,
+        originalFilename: `draft-${index + 1}.png`,
+        mimeType: "image/png",
+        sizeBytes: 100,
+        checksum: `checksum-${index + 1}`,
+        uploadState: "ready",
+        signedUrl: `https://signed.test/draft-${index + 1}.png`,
+      })),
+      versions: [{
+        id: "version-1",
+        versionNumber: 1,
+        caption: "Submitted caption",
+        externalUrl: null,
+        checklist: { "req-1": true },
+        submittedAt: "2026-07-18T02:00:00.000Z",
+        state: "revision_requested",
+        decisionAt: "2026-07-18T04:00:00.000Z",
+        assets: [],
+      }],
+      requiredChanges: [{
+        id: "change-1",
+        requirementId: "req-1",
+        text: "Keep the product visible for three seconds",
+        createdAt: "2026-07-18T04:00:00.000Z",
+      }],
+      reviewRounds: [],
+      revisionDeadline: "2026-07-20T04:00:00.000Z",
+    });
+    Object.assign(mocks.query, { data: rich });
+    renderRoute();
+    expect(screen.getByText("Keep the product visible for three seconds")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Version 1" })).toBeInTheDocument();
+
+    const extra = new File(["draft"], "sixth.png", { type: "image/png", lastModified: 2 });
+    fireEvent.change(screen.getByLabelText("Upload draft files"), { target: { files: [extra] } });
+    expect(await screen.findByRole("alert")).toHaveTextContent(/at most five assets/i);
+    expect(mocks.grant.mutateAsync).not.toHaveBeenCalled();
   });
 
   it("wires receipt, autosave, signed upload finalize, and immutable submit", async () => {

@@ -56,6 +56,52 @@ export type MissionDraft = {
   lastSavedAt: string;
 };
 
+export type MissionDraftAssetView = {
+  id: string;
+  versionId: string | null;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  checksum: string | null;
+  uploadState: string;
+  signedUrl: string | null;
+};
+
+export type MissionRequiredChangeView = {
+  id: string;
+  requirementId: string | null;
+  category: string;
+  text: string;
+  required: boolean;
+  position: number;
+  createdAt: string;
+};
+
+export type MissionReviewRoundView = {
+  id: string;
+  versionId: string;
+  roundNumber: number;
+  state: string;
+  reviewerId: string | null;
+  reviewStartedAt: string | null;
+  decisionAt: string | null;
+  creatorResponseDeadline: string | null;
+  requiredChanges: MissionRequiredChangeView[];
+};
+
+export type MissionDraftVersionView = {
+  id: string;
+  versionNumber: number;
+  caption: string;
+  externalUrl: string | null;
+  checklist: Record<string, boolean>;
+  contentChecksum: string;
+  submittedAt: string;
+  state: "submitted" | "under_review" | "revision_requested" | "approved_to_publish";
+  decisionAt: string | null;
+  assets: MissionDraftAssetView[];
+};
+
 export type MissionWorkItemView = {
   id: string;
   title: string;
@@ -70,6 +116,11 @@ export type MissionWorkItemView = {
   approvedVersionId: string | null;
   reviewStartedAt: string | null;
   reviewDueAt: string | null;
+  draftAssets?: MissionDraftAssetView[];
+  versions?: MissionDraftVersionView[];
+  reviewRounds?: MissionReviewRoundView[];
+  requiredChanges?: MissionRequiredChangeView[];
+  revisionDeadline?: string | null;
 };
 
 export type MissionFulfillment = {

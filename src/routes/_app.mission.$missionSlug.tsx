@@ -117,7 +117,7 @@ function MissionDetail() {
             </>
           ) : sub.status === "joined" ? (
             usesActiveWorkspace(sub) ? (
-              <a href={`/my/${sub.id}`} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">Continue mission</a>
+              <Link to="/my/$submissionId" params={{ submissionId: sub.id }} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{t("app.activeMission.route.continueMission")}</Link>
             ) : (
               <LegacySubmissionForm missionSlug={missionSlug} />
             )

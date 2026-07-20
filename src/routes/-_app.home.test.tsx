@@ -71,11 +71,13 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
-    Link: ({ to, children, ...rest }: { to: string; children?: React.ReactNode } & Record<string, unknown>) => (
-      <a href={to} {...rest}>
-        {children}
-      </a>
-    ),
+    Link: ({ to, params, children, ...rest }: { to: string; params?: Record<string, string>; children?: React.ReactNode } & Record<string, unknown>) => {
+      const href = Object.entries(params ?? {}).reduce(
+        (path, [key, value]) => path.replace(`$${key}`, encodeURIComponent(value)),
+        to,
+      );
+      return <a href={href} {...rest}>{children}</a>;
+    },
   };
 });
 

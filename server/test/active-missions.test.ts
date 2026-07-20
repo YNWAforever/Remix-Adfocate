@@ -12,7 +12,7 @@ import { createActiveMissionRoutes } from "../routes/activeMissions";
 import { createAdminActiveMissionRepository, createAdminActiveMissionRoutes, sortActiveMissionQueue, type AdminActiveMissionRepository } from "../routes/adminActiveMissions";
 import {
   activeMissionIntegrationSkipReason, cleanup, creatorRewardSnapshot, DEMO_WS, makeCreator,
-  makeMission, seedActiveMission, serviceForTests, userForJwt,
+  makeMission, makeStaff, seedActiveMission, serviceForTests, userForJwt,
 } from "./helpers";
 
 type Script = { table: string; data: unknown; error?: { message: string } | null };
@@ -36,10 +36,18 @@ function scriptedClient(scripts: Script[]) {
       Promise.resolve(result).then(yes, no);
     return builder;
   });
-  return { client: { from } as unknown as SupabaseClient, calls, remaining: () => scripts.length - cursor };
+  const createSignedUrl = vi.fn(async (path: string) => ({
+    data: { signedUrl: `https://signed.test/${path}` }, error: null,
+  }));
+  const storage = { from: vi.fn(() => ({ createSignedUrl })) };
+  return { client: { from, storage } as unknown as SupabaseClient, calls, createSignedUrl, remaining: () => scripts.length - cursor };
 }
 
 const owner = { submissionId: "sub-1", creatorId: "creator-1", workspaceId: "workspace-1" };
+const finalReviewMigration = () => readdirSync(resolve("supabase/migrations"))
+  .filter((file) => file.includes("final_review_active_mission_contracts"))
+  .sort()
+  .at(-1);
 const mission = {
   id: "mission-1", slug: "test-active-api", title: "Creator mission", mission_type: "ugc",
   description: "Make a short video", deliverables: ["One video"], requirements: ["Show product"],
@@ -69,6 +77,37 @@ const draft = {
   caption_text: "", external_draft_url: null, checklist_answers: {}, revision: 0,
   last_saved_at: "2026-07-01T00:00:00.000Z", archived_at: null,
 };
+const version = {
+  id: "version-1", workspace_id: owner.workspaceId, mission_work_item_id: item.id,
+  version_number: 1, caption_snapshot: "First submitted version", external_draft_url_snapshot: null,
+  checklist_snapshot: { "req-1": true }, submitted_at: "2026-07-18T02:00:00.000Z",
+};
+const review = {
+  id: "review-1", workspace_id: owner.workspaceId, mission_work_item_id: item.id,
+  mission_draft_version_id: version.id, round_number: 1, state: "revision_requested",
+  reviewer_id: "operator-1", review_started_at: "2026-07-18T03:00:00.000Z",
+  decision_at: "2026-07-18T04:00:00.000Z", creator_response_deadline: "2026-07-20T04:00:00.000Z",
+  mission_review_items: [{
+    id: "change-1", requirement_id: "req-1", required_change_text: "Keep the product visible",
+    category: "quality", required: true, position: 0, created_at: "2026-07-18T04:00:00.000Z",
+  }],
+};
+const assets = [
+  {
+    id: "asset-draft", workspace_id: owner.workspaceId, mission_workflow_id: workflow.id,
+    mission_work_item_id: item.id, creator_id: owner.creatorId, mission_draft_version_id: null,
+    original_filename: "working.png", mime_type: "image/png", byte_size: 1024,
+    storage_object_path: "creator-1/workflow-1/item-1/working.png", checksum: "abc", upload_state: "ready",
+    created_at: "2026-07-18T01:00:00.000Z", deleted_at: null,
+  },
+  {
+    id: "asset-version", workspace_id: owner.workspaceId, mission_workflow_id: workflow.id,
+    mission_work_item_id: item.id, creator_id: owner.creatorId, mission_draft_version_id: version.id,
+    original_filename: "submitted.mp4", mime_type: "video/mp4", byte_size: 2048,
+    storage_object_path: "creator-1/workflow-1/item-1/submitted.mp4", checksum: "def", upload_state: "ready",
+    created_at: "2026-07-18T02:00:00.000Z", deleted_at: null,
+  },
+];
 const anchor = (): Script[] => [
   { table: "mission_submissions", data: submission },
   { table: "mission_workflows", data: workflow },
@@ -79,18 +118,42 @@ describe("active mission repository without a live database", () => {
     const scripted = scriptedClient([
       ...anchor(), { table: "mission_fulfillments", data: null },
       { table: "mission_work_items", data: [item] }, { table: "mission_working_drafts", data: [draft] },
-      { table: "mission_workflow_events", data: [] },
+      { table: "mission_workflow_events", data: [] }, { table: "mission_draft_versions", data: [version] },
+      { table: "mission_review_rounds", data: [review] }, { table: "mission_draft_assets", data: assets },
     ]);
     const result = await createActiveMissionRepository(scripted.client).getWorkspace(owner);
     expect(result.mission).toMatchObject({
       id: mission.id, missionType: "ugc", brief: { targetAudience: "HK creators", keyMessages: ["Fast setup"] },
     });
     expect(result.workItems[0]).toMatchObject({ id: item.id, draft: { caption: "", revision: 0 } });
+    expect(result.workItems[0]).toMatchObject({
+      draftAssets: [{ id: "asset-draft", signedUrl: expect.stringContaining("working.png") }],
+      versions: [{
+        id: version.id,
+        versionNumber: 1,
+        state: "revision_requested",
+        decisionAt: review.decision_at,
+        assets: [{ id: "asset-version", signedUrl: expect.stringContaining("submitted.mp4") }],
+      }],
+      reviewRounds: [{ id: review.id, state: "revision_requested" }],
+      requiredChanges: [{
+        id: "change-1", requirementId: "req-1", text: "Keep the product visible",
+        createdAt: "2026-07-18T04:00:00.000Z",
+      }],
+      revisionDeadline: review.creator_response_deadline,
+    });
     expect(result.nextAction).toMatchObject({ kind: "continue_draft", workItemId: item.id });
     expect(scripted.calls.filter((c) => c.table === "mission_submissions" && c.op === "eq").map((c) => c.args))
       .toEqual([["id", owner.submissionId], ["creator_id", owner.creatorId], ["workspace_id", owner.workspaceId]]);
     expect(scripted.calls.filter((c) => c.table === "mission_working_drafts" && c.op === "in").map((c) => c.args))
       .toEqual([["mission_work_item_id", [item.id]]]);
+    expect(scripted.calls.filter((c) => c.table === "mission_draft_assets" && c.op === "eq").map((c) => c.args))
+      .toEqual(expect.arrayContaining([
+        ["mission_workflow_id", workflow.id], ["workspace_id", owner.workspaceId], ["creator_id", owner.creatorId],
+      ]));
+    expect(scripted.createSignedUrl).toHaveBeenCalledTimes(2);
+    expect(scripted.createSignedUrl).toHaveBeenNthCalledWith(1, assets[0].storage_object_path, 600);
+    expect(scripted.createSignedUrl).toHaveBeenNthCalledWith(2, assets[1].storage_object_path, 600);
     expect(scripted.remaining()).toBe(0);
   });
 
@@ -101,54 +164,67 @@ describe("active mission repository without a live database", () => {
     expect(scripted.remaining()).toBe(0);
   });
 
-  it("saves revision zero with one conditional update and returns revision one", async () => {
+  it("saves a draft with exactly one service RPC using every route-derived owner anchor", async () => {
     const saved = {
       ...draft,
       caption_text: "First draft",
       external_draft_url: "https://example.com/draft",
       revision: 1,
     };
-    const scripted = scriptedClient([
-      ...anchor(), { table: "mission_work_items", data: item },
-      { table: "mission_working_drafts", data: saved },
-    ]);
-    const result = await createActiveMissionRepository(scripted.client).saveDraft(
+    const rpc = vi.fn(async () => ({ data: { draft: saved }, error: null }));
+    const result = await createActiveMissionRepository({ rpc } as unknown as SupabaseClient).saveDraft(
       { ...owner, workItemId: item.id },
       { revision: 0, caption: "First draft", externalUrl: "https://example.com/draft", checklist: {} },
     );
     expect(result).toMatchObject({ caption: "First draft", revision: 1 });
-    expect(scripted.calls.filter((call) => call.op === "update")).toHaveLength(1);
-    expect(scripted.calls.find((call) => call.op === "update")?.args[0]).toMatchObject({
-      caption_text: "First draft", external_draft_url: "https://example.com/draft", revision: 1,
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("save_active_mission_draft", {
+      p_submission: owner.submissionId,
+      p_creator: owner.creatorId,
+      p_workspace: owner.workspaceId,
+      p_work_item: item.id,
+      p_expected_revision: 0,
+      p_patch: { caption: "First draft", externalUrl: "https://example.com/draft", checklist: {} },
     });
-    expect(scripted.calls.filter((call) => call.table === "mission_working_drafts" && call.op === "eq")
-      .map((call) => call.args)).toContainEqual(["revision", 0]);
-    expect(scripted.remaining()).toBe(0);
   });
 
-  it("uses one conditional update for autosave and returns the server draft on a stale revision", async () => {
+  it("maps a stale atomic autosave payload without issuing a compensating read", async () => {
     const current = { ...draft, caption_text: "First draft", revision: 1 };
-    const scripted = scriptedClient([
-      ...anchor(), { table: "mission_work_items", data: item },
-      { table: "mission_working_drafts", data: null }, { table: "mission_working_drafts", data: current },
-    ]);
-    const repo = createActiveMissionRepository(scripted.client);
+    const rpc = vi.fn(async () => ({
+      data: { code: "WORKFLOW_STALE", current_draft: current },
+      error: null,
+    }));
+    const repo = createActiveMissionRepository({ rpc } as unknown as SupabaseClient);
     await expect(repo.saveDraft({ ...owner, workItemId: item.id }, {
       revision: 0, caption: "stale", externalUrl: null, checklist: {},
     })).rejects.toMatchObject({
       code: "WORKFLOW_STALE", details: { currentDraft: { caption: "First draft", revision: 1 } },
     });
-    expect(scripted.calls.filter((c) => c.op === "update")).toHaveLength(1);
-    expect(scripted.calls.some((c) => c.table === "mission_working_drafts" && c.op === "eq"
-      && c.args[0] === "revision" && c.args[1] === 0)).toBe(true);
+    expect(rpc).toHaveBeenCalledTimes(1);
   });
 
-  it("validates draft checklist keys before any update", async () => {
-    const scripted = scriptedClient([...anchor(), { table: "mission_work_items", data: item }]);
-    await expect(createActiveMissionRepository(scripted.client).saveDraft({ ...owner, workItemId: item.id }, {
-      revision: 0, checklist: { unknown: true },
-    })).rejects.toMatchObject({ code: "VALIDATION_FAILED" });
-    expect(scripted.calls.filter((c) => c.op === "update")).toHaveLength(0);
+  it("maps a non-editable atomic autosave payload to WRONG_STATE", async () => {
+    const rpc = vi.fn(async () => ({ data: { code: "WRONG_STATE", current_draft: draft }, error: null }));
+    await expect(createActiveMissionRepository({ rpc } as unknown as SupabaseClient).saveDraft(
+      { ...owner, workItemId: item.id }, { revision: 0, caption: "too late" },
+    )).rejects.toMatchObject({ code: "WRONG_STATE", details: { currentDraft: { revision: 0 } } });
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("validates malformed autosave fields before any RPC", async () => {
+    const rpc = vi.fn();
+    await expect(createActiveMissionRepository({ rpc } as unknown as SupabaseClient).saveDraft(
+      { ...owner, workItemId: item.id }, { revision: 0, externalUrl: "javascript:alert(1)" },
+    )).rejects.toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it("maps database-side checklist validation failures without leaking SQL errors", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "validation_failed" } }));
+    await expect(createActiveMissionRepository({ rpc } as unknown as SupabaseClient).saveDraft(
+      { ...owner, workItemId: item.id }, { revision: 0, checklist: { unknown: true } },
+    )).rejects.toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(rpc).toHaveBeenCalledTimes(1);
   });
 
   it("receives fulfillment with exactly one authenticated-context RPC", async () => {
@@ -234,6 +310,36 @@ describe("active mission routes without a live database", () => {
     expect(response.status).toBe(409);
     expect(await response.json()).toMatchObject({ code: "WORKFLOW_STALE", currentDraft: { revision: 1 } });
   });
+
+  it.each(["submitted", "under_review", "approved_to_publish"])(
+    "returns controlled 409 WRONG_STATE when autosave reaches a %s item",
+    async (state) => {
+      const repo = {
+        getWorkspace: vi.fn(),
+        saveDraft: vi.fn(async () => {
+          throw new ActiveMissionError("WRONG_STATE", "Draft is no longer editable", {
+            state,
+            currentDraft: { caption: "", externalUrl: null, checklist: {}, revision: 2 },
+          });
+        }),
+        receiveFulfillment: vi.fn(),
+      } as unknown as ActiveMissionRepository;
+      const response = await controlledApp(repo).request(
+        "/api/my-missions/sub-1/work-items/item-1/draft",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ revision: 1, caption: "too late" }),
+        },
+      );
+      expect(response.status).toBe(409);
+      expect(await response.json()).toMatchObject({
+        code: "WRONG_STATE",
+        state,
+        currentDraft: { revision: 2 },
+      });
+    },
+  );
 
   it("rejects a JSON null draft body before repository access", async () => {
     const saveDraft = vi.fn();
@@ -385,6 +491,56 @@ describe("active mission creator submit migration contract", () => {
   });
 });
 
+describe("active mission final-review forward migration contract", () => {
+  it("submits canonical immutable content without claiming operator review", () => {
+    const name = finalReviewMigration();
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const token of [
+      "function private.submit_active_mission_draft", "function public.submit_active_mission_draft",
+      "extensions.digest", "sha256", "regexp_replace", "jsonb_agg", "order by",
+      "checklist_incomplete", "submission_content_required", "deadline_passed", "duplicate_content",
+      "set state = 'submitted'", "current_reviewer_id = null", "review_started_at = null", "review_due_at = null",
+      "review_started_at, decision_at, creator_response_deadline", "null, null, null",
+      "function private.start_mission_review", "set state = 'under_review'", "'mission_review_started'",
+      "grant execute on function public.submit_active_mission_draft", "to service_role",
+    ]) expect(sql).toContain(token);
+    expect(sql.indexOf("select w.* into v_workflow")).toBeLessThan(sql.indexOf("select i.* into v_item"));
+    expect(sql.indexOf("select i.* into v_item")).toBeLessThan(sql.indexOf("select d.* into v_draft"));
+    for (const forbidden of [
+      "set state = 'under_review',\n      current_submitted_version_id",
+      "update public.mission_submissions", "update public.point_balances",
+      "update public.earnings_balances", "update public.creators set xp", " to authenticated",
+    ]) expect(sql).not.toContain(forbidden);
+  });
+
+  it("saves drafts atomically through one service-only owner-scoped RPC", () => {
+    const name = finalReviewMigration();
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const token of [
+      "function private.save_active_mission_draft", "function public.save_active_mission_draft",
+      "p_submission uuid", "p_creator uuid", "p_workspace uuid", "p_work_item uuid",
+      "p_expected_revision integer", "for update", "('drafting', 'revision_requested')",
+      "stale_revision", "wrong_state", "current_draft", "set search_path = ''",
+      "revoke all on function public.save_active_mission_draft", "to service_role",
+    ]) expect(sql).toContain(token);
+    expect(sql).not.toContain("grant execute on function public.save_active_mission_draft(uuid, uuid, uuid, uuid, integer, text, text, jsonb) to authenticated");
+  });
+
+  it("caps revision requests at the snapshotted response policy and hard deadline", () => {
+    const name = finalReviewMigration();
+    expect(name).toBeTruthy();
+    const sql = readFileSync(resolve("supabase/migrations", name!), "utf8").toLowerCase();
+    for (const token of [
+      "function private.request_mission_revision", "revision_response_hours", "make_interval",
+      "v_allowed_deadline", "p_deadline > v_allowed_deadline", "creator_response_deadline = v_effective_deadline",
+      "'deadline', v_effective_deadline", "function public.request_mission_revision",
+      "revoke all on function public.request_mission_revision", "to service_role",
+    ]) expect(sql).toContain(token);
+  });
+});
+
 describe("active mission failed upload cleanup migration contract", () => {
   it("is service-only, owner/path-scoped, and cannot abandon finalized assets", () => {
     const name = readdirSync(resolve("supabase/migrations"))
@@ -506,7 +662,7 @@ describe("active mission operator routes without a live database", () => {
     });
   });
 
-  it("rejects revision feedback without a future deadline and required change", async () => {
+  it("rejects revision feedback with an invalid supplied deadline and no required change", async () => {
     const requestRevision = vi.fn();
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes({ requestRevision } as unknown as AdminActiveMissionRepository, () => ({ userId: "operator-1", email: "op@example.com" })));
@@ -517,6 +673,23 @@ describe("active mission operator routes without a live database", () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
     expect(requestRevision).not.toHaveBeenCalled();
+  });
+
+  it("allows the database contract to default an omitted revision deadline", async () => {
+    const requestRevision = vi.fn(async () => ({ workItem: { id: workItemId } }));
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes({ requestRevision } as unknown as AdminActiveMissionRepository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const items = [{ requirementId: null, category: "quality", text: "Tighten the opening", required: true }];
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/request-revision`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+      body: JSON.stringify({ expectedState: "under_review", versionId, items }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(requestRevision).toHaveBeenCalledWith(expect.objectContaining({
+      workflowId, workItemId, deadline: null, items,
+    }));
   });
 
   it("rejects every malformed path UUID before repository access", async () => {
@@ -673,6 +846,90 @@ function request(path: string, jwt: string, init: RequestInit = {}) {
   } });
 }
 
+async function seedLiveDraft(
+  label: string,
+  requirements: Array<{
+    category: "format" | "key_message" | "compliance" | "quality" | "other";
+    text: string;
+    required?: boolean;
+  }> = [],
+) {
+  const active = await seedActiveMission({
+    email: `active-${label}-${randomUUID()}@test.local`,
+    slug: `test-active-${label}-${randomUUID()}`,
+    deliverables: [{ title: "Review reel", platform: "instagram", requirements }],
+  });
+  const created = await userForJwt(active.creator.jwt).rpc("create_mission_workflow", {
+    p_submission: active.submission.id,
+  });
+  expect(created.error).toBeNull();
+  const svc = serviceForTests();
+  const [itemResult, workflowResult] = await Promise.all([
+    svc.from("mission_work_items")
+      .select("id, state, requirements_snapshot, deadline, current_submitted_version_id")
+      .eq("mission_workflow_id", created.data.id)
+      .single(),
+    svc.from("mission_workflows")
+      .select("id, deadline, revision_response_hours")
+      .eq("id", created.data.id)
+      .single(),
+  ]);
+  expect(itemResult.error).toBeNull();
+  expect(workflowResult.error).toBeNull();
+  const draftResult = await svc.from("mission_working_drafts")
+    .select("id, revision")
+    .eq("mission_work_item_id", itemResult.data!.id)
+    .single();
+  expect(draftResult.error).toBeNull();
+  return { active, svc, workflow: workflowResult.data!, item: itemResult.data!, draft: draftResult.data! };
+}
+
+async function seedLiveReview(label: string) {
+  const ctx = await seedLiveDraft(label);
+  const saved = await ctx.svc.rpc("save_active_mission_draft", {
+    p_submission: ctx.active.submission.id,
+    p_creator: ctx.active.creator.id,
+    p_workspace: DEMO_WS,
+    p_work_item: ctx.item.id,
+    p_expected_revision: 0,
+    p_patch: { caption: "Ready for review" },
+  });
+  expect(saved.error).toBeNull();
+  const submitted = await ctx.svc.rpc("submit_active_mission_draft", {
+    p_submission: ctx.active.submission.id,
+    p_creator: ctx.active.creator.id,
+    p_workspace: DEMO_WS,
+    p_work_item: ctx.item.id,
+    p_expected_revision: 1,
+    p_idempotency_key: randomUUID(),
+  });
+  expect(submitted.error).toBeNull();
+  const operator = await makeStaff(`active-${label}-reviewer-${randomUUID()}@test.local`);
+  const started = await ctx.svc.rpc("start_mission_review", {
+    p_workflow: ctx.workflow.id,
+    p_work_item: ctx.item.id,
+    p_operator: operator.userId,
+    p_workspace: DEMO_WS,
+    p_expected_state: "submitted",
+  });
+  expect(started.error).toBeNull();
+  return {
+    ...ctx,
+    operator,
+    versionId: submitted.data.version.id as string,
+    requestRevision: (deadline: string | null) => ctx.svc.rpc("request_mission_revision", {
+      p_workflow: ctx.workflow.id,
+      p_work_item: ctx.item.id,
+      p_version: submitted.data.version.id,
+      p_operator: operator.userId,
+      p_workspace: DEMO_WS,
+      p_expected_state: "under_review",
+      p_deadline: deadline,
+      p_items: [{ category: "quality", text: "Tighten the opening", required: true }],
+    }),
+  };
+}
+
 integrationSuite("active mission API live integration", () => {
   beforeAll(cleanup);
   afterAll(cleanup);
@@ -700,6 +957,191 @@ integrationSuite("active mission API live integration", () => {
     }) });
     expect(stale.status).toBe(409);
     expect(await stale.json()).toMatchObject({ code: "WORKFLOW_STALE", currentDraft: { revision: 1 } });
+  });
+
+  it("enforces submit content/checklist, preserves idempotency, and separates operator review claim", async () => {
+    const ctx = await seedLiveDraft("submit-contract", [
+      { category: "format", text: "Use a vertical frame", required: true },
+    ]);
+    const requirementId = (ctx.item.requirements_snapshot as Array<{ id: string }>)[0]?.id;
+    expect(requirementId).toBeTruthy();
+    const submit = (expectedRevision: number, key: string) => ctx.svc.rpc("submit_active_mission_draft", {
+      p_submission: ctx.active.submission.id,
+      p_creator: ctx.active.creator.id,
+      p_workspace: DEMO_WS,
+      p_work_item: ctx.item.id,
+      p_expected_revision: expectedRevision,
+      p_idempotency_key: key,
+    });
+    const save = (expectedRevision: number, patch: Record<string, unknown>) =>
+      ctx.svc.rpc("save_active_mission_draft", {
+        p_submission: ctx.active.submission.id,
+        p_creator: ctx.active.creator.id,
+        p_workspace: DEMO_WS,
+        p_work_item: ctx.item.id,
+        p_expected_revision: expectedRevision,
+        p_patch: patch,
+      });
+
+    const empty = await submit(0, randomUUID());
+    expect(empty.error?.message.toLowerCase()).toContain("checklist_incomplete");
+    const captionOnly = await save(0, {
+      caption: "First line\r\nSecond line",
+      checklist: { [requirementId]: false },
+    });
+    expect(captionOnly.error).toBeNull();
+    expect(captionOnly.data).toMatchObject({ draft: { revision: 1 } });
+    const incomplete = await submit(1, randomUUID());
+    expect(incomplete.error?.message.toLowerCase()).toContain("checklist_incomplete");
+
+    const ready = await save(1, { checklist: { [requirementId]: true } });
+    expect(ready.error).toBeNull();
+    expect(ready.data).toMatchObject({ draft: { revision: 2 } });
+    const key = randomUUID();
+    const submitted = await submit(2, key);
+    expect(submitted.error).toBeNull();
+    expect(submitted.data).toMatchObject({
+      work_item: {
+        state: "submitted",
+        current_reviewer_id: null,
+        review_started_at: null,
+        review_due_at: null,
+      },
+      version: { version_number: 1 },
+    });
+    const versionId = submitted.data.version.id as string;
+
+    const sameKey = await submit(999, key);
+    expect(sameKey.error).toBeNull();
+    expect(sameKey.data.version.id).toBe(versionId);
+    const sameContentNewKey = await submit(2, randomUUID());
+    expect(sameContentNewKey.error).toBeNull();
+    expect(sameContentNewKey.data.version.id).toBe(versionId);
+    const versions = await ctx.svc.from("mission_draft_versions")
+      .select("id, content_checksum")
+      .eq("mission_work_item_id", ctx.item.id);
+    expect(versions.error).toBeNull();
+    expect(versions.data).toHaveLength(1);
+    expect(versions.data![0].content_checksum).toMatch(/^[a-f0-9]{64}$/);
+
+    const submittedRound = await ctx.svc.from("mission_review_rounds")
+      .select("state, reviewer_id, review_started_at, decision_at, creator_response_deadline")
+      .eq("mission_work_item_id", ctx.item.id)
+      .single();
+    expect(submittedRound.error).toBeNull();
+    expect(submittedRound.data).toEqual({
+      state: "open",
+      reviewer_id: null,
+      review_started_at: null,
+      decision_at: null,
+      creator_response_deadline: null,
+    });
+    expect((await save(2, { caption: "blocked while submitted" })).data)
+      .toMatchObject({ code: "WRONG_STATE", current_draft: { revision: 2 } });
+
+    const operator = await makeStaff(`active-reviewer-${randomUUID()}@test.local`);
+    const started = await ctx.svc.rpc("start_mission_review", {
+      p_workflow: ctx.workflow.id,
+      p_work_item: ctx.item.id,
+      p_operator: operator.userId,
+      p_workspace: DEMO_WS,
+      p_expected_state: "submitted",
+    });
+    expect(started.error).toBeNull();
+    expect(started.data).toMatchObject({ state: "under_review", current_reviewer_id: operator.userId });
+    expect(started.data.review_started_at).toBeTruthy();
+    expect(started.data.review_due_at).toBeTruthy();
+    expect((await save(2, { caption: "blocked while under review" })).data)
+      .toMatchObject({ code: "WRONG_STATE" });
+    const reviewEvent = await ctx.svc.from("mission_workflow_events")
+      .select("event_type, actor_id")
+      .eq("mission_work_item_id", ctx.item.id)
+      .eq("event_type", "mission_review_started")
+      .single();
+    expect(reviewEvent.error).toBeNull();
+    expect(reviewEvent.data).toEqual({ event_type: "mission_review_started", actor_id: operator.userId });
+
+    const approved = await ctx.svc.rpc("approve_mission_version", {
+      p_workflow: ctx.workflow.id,
+      p_work_item: ctx.item.id,
+      p_version: versionId,
+      p_operator: operator.userId,
+      p_workspace: DEMO_WS,
+      p_expected_state: "under_review",
+    });
+    expect(approved.error).toBeNull();
+    expect(approved.data).toMatchObject({ state: "approved_to_publish" });
+    expect((await save(2, { caption: "blocked after approval" })).data)
+      .toMatchObject({ code: "WRONG_STATE" });
+  });
+
+  it("rejects empty submissions and submissions after the item deadline", async () => {
+    const ctx = await seedLiveDraft("submit-deadline");
+    const submit = (expectedRevision: number) => ctx.svc.rpc("submit_active_mission_draft", {
+      p_submission: ctx.active.submission.id,
+      p_creator: ctx.active.creator.id,
+      p_workspace: DEMO_WS,
+      p_work_item: ctx.item.id,
+      p_expected_revision: expectedRevision,
+      p_idempotency_key: randomUUID(),
+    });
+    const empty = await submit(0);
+    expect(empty.error?.message.toLowerCase()).toContain("submission_content_required");
+    const saved = await ctx.svc.rpc("save_active_mission_draft", {
+      p_submission: ctx.active.submission.id,
+      p_creator: ctx.active.creator.id,
+      p_workspace: DEMO_WS,
+      p_work_item: ctx.item.id,
+      p_expected_revision: 0,
+      p_patch: { caption: "Late draft" },
+    });
+    expect(saved.error).toBeNull();
+    const expiredAt = new Date(Date.now() - 60_000).toISOString();
+    const expiredItem = await ctx.svc.from("mission_work_items")
+      .update({ deadline: expiredAt })
+      .eq("id", ctx.item.id);
+    expect(expiredItem.error).toBeNull();
+    const expired = await submit(1);
+    expect(expired.error?.message.toLowerCase()).toContain("deadline_passed");
+  });
+
+  it("rejects overlong revision deadlines and persists defaulted or stricter effective deadlines", async () => {
+    const defaulted = await seedLiveReview("revision-default");
+    const overlong = await defaulted.requestRevision("2099-01-01T00:00:00.000Z");
+    expect(overlong.error?.message.toLowerCase()).toContain("validation_failed");
+
+    const beforeDefault = Date.now();
+    const acceptedDefault = await defaulted.requestRevision(null);
+    const afterDefault = Date.now();
+    expect(acceptedDefault.error).toBeNull();
+    expect(acceptedDefault.data).toMatchObject({ state: "revision_requested" });
+    const defaultRound = await defaulted.svc.from("mission_review_rounds")
+      .select("state, creator_response_deadline")
+      .eq("mission_work_item_id", defaulted.item.id)
+      .single();
+    expect(defaultRound.error).toBeNull();
+    expect(defaultRound.data!.state).toBe("revision_requested");
+    const defaultDeadline = Date.parse(defaultRound.data!.creator_response_deadline!);
+    const policyCeiling = afterDefault + defaulted.workflow.revision_response_hours * 3_600_000;
+    const hardCeilings = [defaulted.item.deadline, defaulted.workflow.deadline]
+      .filter((value): value is string => typeof value === "string")
+      .map(Date.parse);
+    const expectedCeiling = Math.min(policyCeiling, ...hardCeilings);
+    expect(defaultDeadline).toBeGreaterThan(beforeDefault);
+    expect(defaultDeadline).toBeLessThanOrEqual(expectedCeiling + 1_000);
+
+    const explicit = await seedLiveReview("revision-explicit");
+    const stricterDeadline = new Date(Date.now() + 15 * 60_000).toISOString();
+    const acceptedExplicit = await explicit.requestRevision(stricterDeadline);
+    expect(acceptedExplicit.error).toBeNull();
+    expect(acceptedExplicit.data).toMatchObject({ state: "revision_requested" });
+    const explicitRound = await explicit.svc.from("mission_review_rounds")
+      .select("creator_response_deadline")
+      .eq("mission_work_item_id", explicit.item.id)
+      .single();
+    expect(explicitRound.error).toBeNull();
+    expect(Date.parse(explicitRound.data!.creator_response_deadline!))
+      .toBe(Date.parse(stricterDeadline));
   });
 
   it("receives shipped fulfilment atomically without rewards or legacy status changes", async () => {
