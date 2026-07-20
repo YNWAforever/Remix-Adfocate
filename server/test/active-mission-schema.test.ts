@@ -17,6 +17,15 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("loads workflow and work-item composite rows separately in draft RPCs", () => {
+    const migrationPath = resolve("supabase/migrations/20260719133000_submit_active_mission_draft.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+
+    expect(sql).not.toMatch(/select\s+i,\s*w\s+into\s+v_item,\s*v_workflow/);
+    expect(sql.match(/select w\.\* into v_workflow/g)).toHaveLength(2);
+    expect(sql.match(/select i\.\* into v_item/g)).toHaveLength(2);
+  });
+
   it("defines a locked service-only migration for pristine joined legacy submissions", () => {
     const migrationName = "20260719220000_migrate_pristine_joined_active_mission.sql";
     const migrationPath = resolve("supabase/migrations", migrationName);

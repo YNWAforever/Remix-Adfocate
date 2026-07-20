@@ -40,16 +40,21 @@ begin
   end if;
   if p_byte_size < 1 or p_byte_size > 20971520 then raise exception 'invalid_byte_size'; end if;
 
-  select i, w into v_item, v_workflow
-  from public.mission_work_items i
-  join public.mission_workflows w
-    on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+  select w.* into v_workflow
+  from public.mission_workflows w
   join public.mission_submissions s
     on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
-  where s.id = p_submission
+  where w.mission_submission_id = p_submission
+    and w.workspace_id = p_workspace
     and s.creator_id = p_creator
     and s.workspace_id = p_workspace
-    and i.id = p_work_item
+  for update of w;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+
+  select i.* into v_item
+  from public.mission_work_items i
+  where i.id = p_work_item
+    and i.mission_workflow_id = v_workflow.id
     and i.workspace_id = p_workspace
   for update of i;
   if v_item.id is null then raise exception 'not_found'; end if;
@@ -193,18 +198,23 @@ declare
 begin
   if btrim(coalesce(p_idempotency_key, '')) = '' then raise exception 'idempotency_key_required'; end if;
 
-  select i, w into v_item, v_workflow
-  from public.mission_work_items i
-  join public.mission_workflows w
-    on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+  select w.* into v_workflow
+  from public.mission_workflows w
   join public.mission_submissions s
     on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
-  where s.id = p_submission
+  where w.mission_submission_id = p_submission
+    and w.workspace_id = p_workspace
     and s.creator_id = p_creator
     and s.workspace_id = p_workspace
-    and i.id = p_work_item
+  for update of w;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+
+  select i.* into v_item
+  from public.mission_work_items i
+  where i.id = p_work_item
+    and i.mission_workflow_id = v_workflow.id
     and i.workspace_id = p_workspace
-  for update of i, w;
+  for update of i;
   if v_item.id is null then raise exception 'not_found'; end if;
 
   select v.* into v_version

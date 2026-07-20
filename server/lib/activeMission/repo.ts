@@ -177,7 +177,7 @@ const EVENT_SELECT =
 const VERSION_SELECT =
   "id, workspace_id, mission_work_item_id, version_number, caption_snapshot, external_draft_url_snapshot, checklist_snapshot, submitted_at, content_checksum";
 const REVIEW_SELECT =
-  "id, workspace_id, mission_work_item_id, mission_draft_version_id, round_number, state, reviewer_id, review_started_at, decision_at, creator_response_deadline, mission_review_items(id, requirement_id, category, required_change_text, required, position, created_at)";
+  "id, workspace_id, mission_work_item_id, mission_draft_version_id, round_number, state, reviewer_id, review_started_at, decision_at, creator_response_deadline, mission_review_items!mission_review_items_round_workspace_fk(id, requirement_id, category, required_change_text, required, position, created_at)";
 const ASSET_SELECT =
   "id, workspace_id, mission_workflow_id, mission_work_item_id, creator_id, mission_draft_version_id, storage_object_path, original_filename, mime_type, byte_size, checksum, upload_state, created_at, deleted_at";
 const ASSET_BUCKET = "mission-draft-assets";

@@ -151,6 +151,9 @@ describe("active mission repository without a live database", () => {
       .toEqual(expect.arrayContaining([
         ["mission_workflow_id", workflow.id], ["workspace_id", owner.workspaceId], ["creator_id", owner.creatorId],
       ]));
+    expect(scripted.calls.filter((c) => c.table === "mission_review_rounds" && c.op === "select").map((c) => c.args))
+      .toEqual([[expect.stringContaining("mission_review_items!mission_review_items_round_workspace_fk")]]);
+
     expect(scripted.createSignedUrl).toHaveBeenCalledTimes(2);
     expect(scripted.createSignedUrl).toHaveBeenNthCalledWith(1, assets[0].storage_object_path, 600);
     expect(scripted.createSignedUrl).toHaveBeenNthCalledWith(2, assets[1].storage_object_path, 600);
@@ -946,7 +949,7 @@ integrationSuite("active mission API live integration", () => {
     expect((await request("/my-missions/" + active.submission.id + "/workspace", other.jwt)).status).toBe(404);
     const workspaceResponse = await request("/my-missions/" + active.submission.id + "/workspace", active.creator.jwt);
     const workspace = await workspaceResponse.json();
-    expect(workspaceResponse.status).toBe(200);
+    expect(workspaceResponse.status, JSON.stringify(workspace)).toBe(200);
     const path = "/my-missions/" + active.submission.id + "/work-items/" + workspace.workItems[0].id + "/draft";
     const saved = await request(path, active.creator.jwt, { method: "PATCH", body: JSON.stringify({
       revision: 0, caption: "First draft", externalUrl: null, checklist: {},
