@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   activeMissionIntegrationSkipReason,
@@ -25,6 +25,20 @@ describe("active mission migration contract", () => {
     expect(sql.match(/select w\.\* into v_workflow/g)).toHaveLength(2);
     expect(sql.match(/select i\.\* into v_item/g)).toHaveLength(2);
   });
+  it("preserves cross-workspace campaign creators without weakening mission tenant integrity", () => {
+    const migrationDir = resolve("supabase/migrations");
+    const sql = readdirSync(migrationDir)
+      .filter((name) => name.endsWith(".sql"))
+      .map((name) => readFileSync(resolve(migrationDir, name), "utf8"))
+      .join("\n")
+      .toLowerCase()
+      .replace(/\r\n/g, "\n");
+
+    expect(sql).toContain("drop constraint if exists mission_submissions_creator_workspace_fk");
+    expect(sql).toContain("drop constraint if exists mission_submissions_mission_id_fkey");
+    expect(sql).toContain("constraint mission_submissions_mission_workspace_fk");
+  });
+
 
   it("defines a locked service-only migration for pristine joined legacy submissions", () => {
     const migrationName = "20260719220000_migrate_pristine_joined_active_mission.sql";
