@@ -36,6 +36,8 @@ describe("active mission migration contract", () => {
 
     expect(sql).toContain("drop constraint if exists mission_submissions_creator_workspace_fk");
     expect(sql).toContain("drop constraint if exists mission_submissions_mission_id_fkey");
+    expect(sql).toContain("drop constraint if exists mission_workflows_mission_submission_id_fkey");
+    expect(sql).toContain("constraint mission_workflows_submission_workspace_fk");
     expect(sql).toContain("constraint mission_submissions_mission_workspace_fk");
   });
 
