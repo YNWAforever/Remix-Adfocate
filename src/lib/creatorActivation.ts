@@ -96,7 +96,9 @@ function nextAction(
       kind: "submit_proof",
       titleKey: "app.activation.next.submitProof.title",
       bodyKey: "app.activation.next.submitProof.body",
-      to: `/mission/${joinedMission.missions.slug}`,
+      to: joinedMission.creator_workflow_mode === "active_workspace"
+        || joinedMission.missions.creator_workflow_mode === "active_workspace"
+        ? `/my/${joinedMission.id}` : `/mission/${joinedMission.missions.slug}`,
       ctaKey: "app.activation.next.submitProof.cta",
       missionType: joinedMission.missions.mission_type,
     };

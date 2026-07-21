@@ -3,11 +3,25 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/lib/i18n";
 import { dict } from "@/lib/i18n.dict";
+import { deriveCreatorActivation } from "@/lib/creatorActivation";
 import type { MissionMatch, MyMission } from "@/lib/queries/kocmax";
 import type { UseCreatorActivationResult } from "@/lib/useCreatorActivation";
 
-const mocks = vi.hoisted<{ track: ReturnType<typeof vi.fn>; activation: UseCreatorActivationResult }>(() => ({
+const mocks = vi.hoisted<{
+  track: ReturnType<typeof vi.fn>;
+  activation: UseCreatorActivationResult;
+  balance: {
+    data: { balance: number; available_to: string | null } | undefined;
+    isLoading: boolean;
+    isError: boolean;
+  };
+}>(() => ({
   track: vi.fn(),
+  balance: {
+    data: { balance: 0, available_to: null },
+    isLoading: false,
+    isError: false,
+  },
   activation: {
     snapshot: {
       readinessPercent: 60,
@@ -57,17 +71,19 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...actual,
-    Link: ({ to, children, ...rest }: { to: string; children?: React.ReactNode } & Record<string, unknown>) => (
-      <a href={to} {...rest}>
-        {children}
-      </a>
-    ),
+    Link: ({ to, params, children, ...rest }: { to: string; params?: Record<string, string>; children?: React.ReactNode } & Record<string, unknown>) => {
+      const href = Object.entries(params ?? {}).reduce(
+        (path, [key, value]) => path.replace(`$${key}`, encodeURIComponent(value)),
+        to,
+      );
+      return <a href={href} {...rest}>{children}</a>;
+    },
   };
 });
 
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => ({ data: { id: "u1", display_name: "阿明", avatar_url: null, level: "L1", effective_level: "L1", is_trusted: false }, isLoading: false }),
-  useBalance: () => ({ data: { balance: 0, available_to: null }, isLoading: false, isError: false }),
+  useBalance: () => mocks.balance,
   useMissions: () => ({ data: [], isLoading: false, isError: false }),
 }));
 vi.mock("@/lib/useRealtimeBalance", () => ({ useRealtimeBalance: vi.fn() }));
@@ -104,6 +120,11 @@ function expectBefore(first: HTMLElement, second: HTMLElement) {
 }
 
 function resetActivation() {
+  mocks.balance = {
+    data: { balance: 0, available_to: null },
+    isLoading: false,
+    isError: false,
+  };
   mocks.activation.snapshot.nextAction = {
     kind: "view_recommended_mission",
     titleKey: "app.activation.next.viewRecommendedMission.title",
@@ -190,6 +211,42 @@ describe("Home", () => {
     expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] })).toHaveAttribute("href", "/mission/joined-mission");
   });
 
+  it("routes the primary action for an active joined mission to its submission workspace", () => {
+    const active: MyMission = {
+      id: "sub-active", status: "joined", creator_workflow_mode: "active_workspace", active_workflow_id: "workflow-1",
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "active-mission", title: "Active mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "active_workspace" },
+    };
+    const snapshot = deriveCreatorActivation({ me: mocks.activation.me.data, myMissions: [active] });
+    mocks.activation.snapshot = snapshot;
+    mocks.activation.activeMissions = { data: [active], loading: false, error: null, refetch: vi.fn() };
+
+    renderHome();
+
+    expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] }))
+      .toHaveAttribute("href", "/my/sub-active");
+  });
+
+  it("routes active work to its workspace while legacy work keeps the mission detail link", () => {
+    const active: MyMission = {
+      id: "sub-active", status: "joined", creator_workflow_mode: "active_workspace", active_workflow_id: "workflow-1",
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "active-mission", title: "Active mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "active_workspace" },
+    };
+    const legacy: MyMission = {
+      id: "sub-legacy", status: "joined", creator_workflow_mode: "legacy", active_workflow_id: null,
+      content_urls: [], points_awarded: 0, created_at: "2026-07-14T00:00:00Z",
+      missions: { slug: "legacy-mission", title: "Legacy mission", mission_type: "content_creation", points_reward: 300, creator_workflow_mode: "legacy" },
+    };
+    mocks.activation.snapshot.activeMissions = [active, legacy];
+    mocks.activation.activeMissions = { data: [active, legacy], loading: false, error: null, refetch: vi.fn() };
+    renderHome();
+
+    expect(screen.getByRole("link", { name: /Active mission/ })).toHaveAttribute("href", "/my/sub-active");
+    expect(screen.getByRole("link", { name: /Legacy mission/ })).toHaveAttribute("href", "/mission/legacy-mission");
+  });
+
+
   it("falls back to onboarding when activation says onboarding is next", () => {
     mocks.activation.snapshot.nextAction = {
       kind: "resume_onboarding", titleKey: "app.activation.next.resumeOnboarding.title", bodyKey: "app.activation.next.resumeOnboarding.body",
@@ -215,6 +272,21 @@ describe("Home", () => {
     renderHome();
     expect(screen.getByText(dict.zh["app.activation.earnings.error"])).toBeInTheDocument();
     expect(screen.getByText("推薦美容任務")).toBeInTheDocument();
+  });
+
+  it("keeps cached realtime points and recommendations visible when the points query refetch fails", () => {
+    setRecommendations([unlockedMission]);
+    mocks.balance = {
+      data: { balance: 450, available_to: "2026-09-01T00:00:00Z" },
+      isLoading: false,
+      isError: true,
+    };
+
+    renderHome();
+
+    expect(screen.getByRole("alert")).toHaveTextContent(dict.zh["common.balanceError"]);
+    expect(screen.getByText("450")).toBeInTheDocument();
+    expect(screen.getByText(unlockedMission.title)).toBeInTheDocument();
   });
 
   it("keeps readiness visible when recommendations fail", () => {

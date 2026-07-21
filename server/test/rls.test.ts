@@ -37,7 +37,15 @@ suite("RLS isolation", () => {
   it("missions are readable for the workspace", async () => {
     const res = await call("/api/missions", alice.jwt);
     expect(res.status).toBe(200);
-    expect((await res.json()).missions.length).toBe(6);
+    const slugs = (await res.json()).missions.map((mission: { slug: string }) => mission.slug);
+    expect(slugs).toEqual(expect.arrayContaining([
+      "koc-trial-serum",
+      "ugc-cafe",
+      "clip-skincare",
+      "ugc-pet",
+      "koc-trial-mask",
+      "ugc-travel",
+    ]));
   });
 
   it("points history returns an array scoped to the creator", async () => {

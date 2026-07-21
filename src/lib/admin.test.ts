@@ -3,15 +3,21 @@ import {
   AdminAuthError,
   AdminRequestError,
   adminFetch,
+  approveActiveMissionVersion,
   approveSubmission,
   createMission,
   fetchAdminMissions,
+  fetchActiveMissionQueue,
   fetchCreatorDetail,
   fetchCreatorReviewQueue,
   fetchEngagedUsers,
   fetchMissionShortlist,
   fetchSubmissions,
+  grantActiveMissionRevision,
+  markActiveMissionShipped,
   postCreatorReview,
+  requestActiveMissionRevision,
+  startActiveMissionReview,
 } from "./admin";
 import { supabase } from "@/lib/supabase";
 
@@ -229,6 +235,91 @@ describe("admin client helpers", () => {
     );
     await fetchEngagedUsers();
     expect(fetchMock).toHaveBeenCalledWith("/api/admin/engaged", expect.any(Object));
+  });
+
+  it("uses the canonical active-mission queue query and workspace header", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ items: [] }), { status: 200 }),
+    );
+
+    await fetchActiveMissionQueue({
+      workspace: "demo",
+      risk: "overdue",
+      state: "under_review",
+      reviewer: "reviewer-1",
+      mission: "mission-1",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/admin/active-missions/queue?risk=overdue&state=under_review&reviewer=reviewer-1&mission=mission-1",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer jwt-123",
+          "X-Workspace-Slug": "demo",
+        }),
+      }),
+    );
+  });
+
+  it("sends exact active-mission transition paths and bodies", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(
+      async () => new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    );
+    const revision = {
+      workspace: "demo",
+      expectedState: "under_review",
+      versionId: "version-2",
+      deadline: "2099-07-21T10:00:00.000Z",
+      items: [{ requirementId: null, category: "other" as const, text: "Update opening", required: true }],
+    };
+
+    await startActiveMissionReview("workflow-1", "item-1", { workspace: "demo", expectedState: "submitted" });
+    await requestActiveMissionRevision("workflow-1", "item-1", revision);
+    await grantActiveMissionRevision("workflow-1", "item-1", {
+      workspace: "demo",
+      reason: "Brief changed",
+      grantedCount: 1,
+    });
+    await approveActiveMissionVersion("workflow-1", "item-1", {
+      workspace: "demo",
+      expectedState: "under_review",
+      versionId: "version-2",
+    });
+    await markActiveMissionShipped("workflow-1", { workspace: "demo", note: "Tracking 123" });
+
+    const request = (path: string, body: unknown) => [
+      path,
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({ "X-Workspace-Slug": "demo" }),
+        body: JSON.stringify(body),
+      }),
+    ] as const;
+    expect(fetchMock).toHaveBeenNthCalledWith(1, ...request(
+      "/api/admin/active-missions/workflow-1/work-items/item-1/start-review",
+      { expectedState: "submitted" },
+    ));
+    expect(fetchMock).toHaveBeenNthCalledWith(2, ...request(
+      "/api/admin/active-missions/workflow-1/work-items/item-1/request-revision",
+      {
+        expectedState: "under_review",
+        versionId: "version-2",
+        deadline: "2099-07-21T10:00:00.000Z",
+        items: revision.items,
+      },
+    ));
+    expect(fetchMock).toHaveBeenNthCalledWith(3, ...request(
+      "/api/admin/active-missions/workflow-1/work-items/item-1/grant-revision",
+      { reason: "Brief changed", grantedCount: 1 },
+    ));
+    expect(fetchMock).toHaveBeenNthCalledWith(4, ...request(
+      "/api/admin/active-missions/workflow-1/work-items/item-1/approve-to-publish",
+      { expectedState: "under_review", versionId: "version-2" },
+    ));
+    expect(fetchMock).toHaveBeenNthCalledWith(5, ...request(
+      "/api/admin/active-missions/workflow-1/fulfillment/shipped",
+      { note: "Tracking 123" },
+    ));
   });
 });
 

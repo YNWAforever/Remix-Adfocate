@@ -5,6 +5,9 @@ import { makeUserClient } from "../lib/supabase.js";
 import type { PostgrestError } from "@supabase/supabase-js";
 
 export const missionRoutes = new Hono<Env>();
+export const MY_MISSIONS_SELECT =
+  "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+
 
 // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
 const RPC_409 = new Set([
@@ -48,15 +51,26 @@ missionRoutes.get("/my", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   let q = supabase
     .from("mission_submissions")
-    .select(
-      "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)",
-    )
+    .select(MY_MISSIONS_SELECT)
     .eq("creator_id", c.get("userId"))
     .order("created_at", { ascending: false });
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ submissions: data ?? [] });
+  const submissions = (data ?? []).map((value) => {
+    const row = value as typeof value & {
+      mission_workflows?: { id: string } | Array<{ id: string }> | null;
+      missions?: { creator_workflow_mode?: "legacy" | "active_workspace" };
+    };
+    const workflows = row.mission_workflows;
+    const workflow = Array.isArray(workflows) ? workflows[0] : workflows;
+    const { mission_workflows: _missionWorkflows, ...submission } = row;
+    void _missionWorkflows;
+    return { ...submission, creator_workflow_mode: row.missions?.creator_workflow_mode ?? "legacy", active_workflow_id: workflow?.id ?? null };
+  });
+  return c.json({ submissions });
+
+
 });
 
 missionRoutes.get("/:slug", async (c) => {
@@ -80,7 +94,7 @@ missionRoutes.post("/:slug/join", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data: m, error: mErr } = await supabase
     .from("missions")
-    .select("id")
+    .select("id, creator_workflow_mode")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .eq("status", "active")            // B1: draft/closed → 404 before the RPC round-trip
@@ -88,9 +102,14 @@ missionRoutes.post("/:slug/join", async (c) => {
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
-  const { data, error } = await supabase.rpc("join_mission", { p_mission: m.id });
-  if (error) return rpcError(c, error);
-  return c.json(data);
+  const result = await joinMissionWithWorkflowRecovery(
+    supabase,
+    m,
+    c.get("userId"),
+    c.get("workspaceId"),
+  );
+  if (result.error) return rpcError(c, result.error);
+  return c.json(result.data);
 });
 
 /** Submit content for a joined mission. */
@@ -99,20 +118,17 @@ missionRoutes.put("/:slug/submit", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const { data: m, error: mErr } = await supabase
     .from("missions")
-    .select("id")
+    .select("id, creator_workflow_mode")
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .maybeSingle();
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
-  const { data, error } = await supabase.rpc("submit_mission", {
-    p_mission: m.id,
-    p_urls: body.content_urls ?? [],
-    p_data: body.submission_data ?? {},
-  });
-  if (error) return rpcError(c, error);
-  return c.json(data);
+  const result = await submitMissionForMode(supabase, m, body);
+  if (result.mismatch) return c.json({ code: "WORKFLOW_MODE_MISMATCH" }, 409);
+  if (result.error) return rpcError(c, result.error);
+  return c.json(result.data);
 });
 
 /** Apply to an application-gated mission (one-tap). Operator vets via /admin/applications. */
@@ -131,3 +147,73 @@ missionRoutes.post("/:slug/apply", async (c) => {
   if (error) return rpcError(c, error);
   return c.json(data);
 });
+type MissionMode = {
+  id: string;
+  creator_workflow_mode: string;
+};
+
+type SubmissionBody = {
+  content_urls: string[];
+  submission_data?: Record<string, unknown>;
+};
+
+export async function joinMissionWithWorkflowRecovery(
+  supabase: ReturnType<typeof makeUserClient>,
+  mission: MissionMode,
+  creatorId: string,
+  workspaceId: string,
+) {
+  const joined = await supabase.rpc("join_mission", { p_mission: mission.id });
+  let submission = joined.data;
+
+  if (joined.error) {
+    if (
+      mission.creator_workflow_mode !== "active_workspace"
+      || joined.error.message !== "already_joined"
+    ) {
+      return { data: null, error: joined.error };
+    }
+
+    const existing = await supabase
+      .from("mission_submissions")
+      .select("*")
+      .eq("mission_id", mission.id)
+      .eq("creator_id", creatorId)
+      .eq("workspace_id", workspaceId)
+      .maybeSingle();
+    if (existing.error) return { data: null, error: existing.error };
+    if (!existing.data || existing.data.status !== "joined") {
+      return { data: null, error: joined.error };
+    }
+    submission = existing.data;
+  }
+
+  if (mission.creator_workflow_mode === "active_workspace") {
+    const workflow = await supabase.rpc("create_mission_workflow", {
+      p_submission: submission.id,
+    });
+    if (workflow.error) return { data: null, error: workflow.error };
+    return {
+      data: { submission, workflow: workflow.data },
+      error: null,
+    };
+  }
+
+  return { data: submission, error: null };
+}
+
+export async function submitMissionForMode(
+  supabase: ReturnType<typeof makeUserClient>,
+  mission: MissionMode,
+  body: SubmissionBody,
+) {
+  if (mission.creator_workflow_mode === "active_workspace") {
+    return { mismatch: true, data: null, error: null };
+  }
+  const result = await supabase.rpc("submit_mission", {
+    p_mission: mission.id,
+    p_urls: body.content_urls ?? [],
+    p_data: body.submission_data ?? {},
+  });
+  return { mismatch: false, data: result.data, error: result.error };
+}

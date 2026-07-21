@@ -300,6 +300,7 @@ describe("Onboarding wizard", () => {
     expect(await screen.findByText(dict.zh["app.onboarding.recommendationsEmptyTitle"])).toBeInTheDocument();
     expect(screen.getByRole("link", { name: dict.zh["app.onboarding.preferencesAction"] })).toHaveAttribute("href", "/profile");
     expect(screen.getByRole("link", { name: dict.zh["app.onboarding.guideAction"] })).toHaveAttribute("href", "/guide");
+    expect(screen.getByRole("link", { name: dict.zh["app.onboarding.readinessAction"] })).toHaveAttribute("href", "/profile");
 
     hoisted.recommendedData = [{ id: "real-1", slug: "real", title: "Real API mission", category: "美容", points_reward: 42 }];
     view.rerender(<QueryClientProvider client={view.queryClient}>{(() => { const Wizard = Route.options.component as React.ComponentType; return <Wizard />; })()}</QueryClientProvider>);

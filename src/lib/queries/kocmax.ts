@@ -13,6 +13,7 @@ export type Mission = {
   dos?: string[]; donts?: string[]; key_messages?: string[]; reference_links?: string[];
   deadline?: string; quota: number; filled: number; status: string;
   my_status?: SubmissionStatus | null;
+  creator_workflow_mode?: "legacy" | "active_workspace";
 };
 export type Gift = {
   id: string; name: string; category?: string; points_cost: number;
@@ -404,7 +405,9 @@ export type MyMission = {
   submitted_at?: string | null;
   reviewed_at?: string | null;
   created_at: string;
-  missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string };
+  creator_workflow_mode?: "legacy" | "active_workspace";
+  active_workflow_id?: string | null;
+  missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string; creator_workflow_mode?: "legacy" | "active_workspace" };
 };
 
 export function useMyMissions(status?: SubmissionStatus) {
@@ -627,3 +630,5 @@ export function useCampaignLeaderboard(slug: string) {
       (await apiFetch<{ leaderboard: LeaderboardEntry[] }>(`/campaigns/${slug}/leaderboard`)).leaderboard,
   });
 }
+
+export * from "./activeMission";

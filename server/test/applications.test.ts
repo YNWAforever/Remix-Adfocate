@@ -1,6 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createApp } from "../app";
-import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import { acceptApplicationWithWorkflow } from "../routes/admin";
+import {
+  makeCreator,
+  makeMission,
+  cleanup,
+  hasSupabaseEnv,
+  seedActiveMission,
+  serviceForTests,
+  creatorRewardSnapshot,
+} from "./helpers";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET;
@@ -20,6 +30,88 @@ function adminReq(path: string, init: RequestInit = {}) {
     headers: { "x-admin-secret": ADMIN_SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
+
+describe("active application acceptance without a live database", () => {
+  it("recovers workflow creation on repeated acceptance without repeating rewards or quota", async () => {
+    const submission = {
+      id: "submission-application-1",
+      mission_id: "mission-application-1",
+      status: "joined",
+    };
+    const workflow = {
+      id: "workflow-application-1",
+      mission_submission_id: submission.id,
+    };
+    const events: string[] = [];
+    let accepted = false;
+    let rewardMutations = 0;
+    let quotaMutations = 0;
+    let workflowAttempts = 0;
+    const rpc = vi.fn(async (name: string, args: Record<string, string>) => {
+      events.push(`rpc:${name}:${JSON.stringify(args)}`);
+      if (name === "accept_application") {
+        if (!accepted) {
+          accepted = true;
+          rewardMutations += 1;
+          quotaMutations += 1;
+        }
+        return { data: submission, error: null };
+      }
+      if (name === "create_mission_workflow") {
+        workflowAttempts += 1;
+        if (workflowAttempts === 1) {
+          return { data: null, error: { message: "workflow_failed" } };
+        }
+        return { data: workflow, error: null };
+      }
+      throw new Error(`unexpected RPC ${name}`);
+    });
+    const maybeSingle = vi.fn(async () => {
+      events.push("query:maybeSingle");
+      return { data: { creator_workflow_mode: "active_workspace" }, error: null };
+    });
+    const eq = vi.fn((column: string, value: string) => {
+      events.push(`query:eq:${column}:${value}`);
+      return { maybeSingle };
+    });
+    const select = vi.fn((columns: string) => {
+      events.push(`query:select:${columns}`);
+      return { eq };
+    });
+    const from = vi.fn((table: string) => {
+      events.push(`query:from:${table}`);
+      return { select };
+    });
+    const client = { rpc, from } as unknown as SupabaseClient;
+
+    const first = await acceptApplicationWithWorkflow(client, submission.id);
+    expect(first).toEqual({ data: null, error: { message: "workflow_failed" }, stage: "workflow" });
+
+    const repeated = await acceptApplicationWithWorkflow(client, submission.id);
+    expect(repeated).toEqual({ data: { submission, workflow }, error: null, stage: null });
+    expect(rpc.mock.calls).toEqual([
+      ["accept_application", { p_submission: submission.id }],
+      ["create_mission_workflow", { p_submission: submission.id }],
+      ["accept_application", { p_submission: submission.id }],
+      ["create_mission_workflow", { p_submission: submission.id }],
+    ]);
+    expect(events).toEqual([
+      `rpc:accept_application:{"p_submission":"${submission.id}"}`,
+      "query:from:missions",
+      "query:select:creator_workflow_mode",
+      `query:eq:id:${submission.mission_id}`,
+      "query:maybeSingle",
+      `rpc:create_mission_workflow:{"p_submission":"${submission.id}"}`,
+      `rpc:accept_application:{"p_submission":"${submission.id}"}`,
+      "query:from:missions",
+      "query:select:creator_workflow_mode",
+      `query:eq:id:${submission.mission_id}`,
+      "query:maybeSingle",
+      `rpc:create_mission_workflow:{"p_submission":"${submission.id}"}`,
+    ]);
+    expect({ rewardMutations, quotaMutations }).toEqual({ rewardMutations: 1, quotaMutations: 1 });
+  });
+});
 
 suite("application-gated missions", () => {
   let koc: { userId: string; jwt: string };
@@ -81,6 +173,44 @@ suite("application-gated missions", () => {
     });
     expect(sub.status).toBe(200);
     expect((await sub.json()).status).toBe("submitted");
+  });
+
+  it("creates one workflow when an active-workspace application is accepted repeatedly", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-application@test.local",
+      slug: "test-active-route-application",
+      deliverables: [{ title: "TikTok video", platform: "tiktok" }],
+    });
+    const svc = serviceForTests();
+    expect((await svc.from("mission_submissions").delete().eq("id", active.submission.id)).error).toBeNull();
+    expect((await svc.from("missions").update({ access_type: "application" }).eq("id", active.mission.id)).error).toBeNull();
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const appliedResponse = await req("/missions/test-active-route-application/apply", active.creator.jwt, {
+      method: "POST",
+    });
+    expect(appliedResponse.status).toBe(200);
+    const applied = await appliedResponse.json();
+
+    const first = await adminReq(`/admin/applications/${applied.id}/accept`, { method: "POST" });
+    expect(first.status).toBe(200);
+    const firstBody = await first.json();
+    expect(firstBody.submission.status).toBe("joined");
+    expect(firstBody.workflow).toMatchObject({
+      mission_submission_id: applied.id,
+      state: "drafting",
+    });
+
+    const repeated = await adminReq(`/admin/applications/${applied.id}/accept`, { method: "POST" });
+    expect(repeated.status).toBe(200);
+    const repeatedBody = await repeated.json();
+    expect(repeatedBody.submission.id).toBe(firstBody.submission.id);
+    expect(repeatedBody.workflow.id).toBe(firstBody.workflow.id);
+    const after = await creatorRewardSnapshot(active.creator.id);
+    expect(after.xp - before.xp).toBe(10);
+    const mission = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(mission.error).toBeNull();
+    expect(mission.data?.filled).toBe(1);
   });
 
   it("accept fails with mission_full when the quota is reached", async () => {

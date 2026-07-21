@@ -3,7 +3,10 @@ import { CheckCircle2, XCircle, Gift, TrendingUp, UserCheck, UserX, Trophy, Awar
 export type NotificationType =
   | "submission_approved" | "submission_rejected" | "redemption_ready"
   | "level_up" | "application_accepted" | "application_declined"
-  | "campaign_goal_reached" | "campaign_prize_awarded" | "campaign_started";
+  | "campaign_goal_reached" | "campaign_prize_awarded" | "campaign_started"
+  | "mission_product_shipped" | "mission_receipt_required"
+  | "mission_revision_requested" | "mission_draft_approved" | "mission_approved_to_publish"
+  | "mission_deadline_approaching" | "mission_deadline_overdue";
 
 export type NotificationRow = {
   id: string;
@@ -29,6 +32,13 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   campaign_goal_reached: Trophy,
   campaign_prize_awarded: Award,
   campaign_started: Megaphone,
+  mission_product_shipped: Gift,
+  mission_receipt_required: Bell,
+  mission_revision_requested: XCircle,
+  mission_draft_approved: CheckCircle2,
+  mission_approved_to_publish: Trophy,
+  mission_deadline_approaching: TrendingUp,
+  mission_deadline_overdue: Bell,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {
@@ -51,6 +61,10 @@ function paramsFor(data: Record<string, unknown>): Record<string, string | numbe
     campaign: s("campaign_title"),
     rank: n("rank"),
     cash: n("cash"),
+    deliverable: s("deliverable_title"),
+    deadline: s("deadline"),
+    version: n("version_number"),
+    reasonCategory: s("reason_category"),
   };
 }
 
@@ -63,6 +77,18 @@ function hrefFor(row: NotificationRow): string {
     case "campaign_started": {
       const slug = row.data.campaign_slug;
       return typeof slug === "string" && slug ? `/campaigns/${slug}` : "/campaigns";
+    }
+    case "mission_product_shipped":
+    case "mission_receipt_required":
+    case "mission_revision_requested":
+    case "mission_draft_approved":
+    case "mission_approved_to_publish":
+    case "mission_deadline_approaching":
+    case "mission_deadline_overdue": {
+      const submissionId = row.data.submission_id;
+      return typeof submissionId === "string" && submissionId
+        ? `/my/${submissionId}`
+        : "/home";
     }
     default: {
       const slug = row.data.mission_slug;

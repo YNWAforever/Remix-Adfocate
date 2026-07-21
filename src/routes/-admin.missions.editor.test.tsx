@@ -15,6 +15,9 @@ const active: AdminMission = {
   deliverables: [], requirements: [], platforms: [], effort: null,
   target_audience: null, dos: [], donts: [], key_messages: [], reference_links: [],
   updated_at: "", published_at: "", closed_at: null,
+  creator_workflow_mode: "legacy", fulfillment_required: false,
+  revision_limit: 2, review_sla_hours: 48, revision_response_hours: 48,
+  deliverable_templates: [],
 };
 
 type EditorProps = React.ComponentProps<typeof MissionEditor>;

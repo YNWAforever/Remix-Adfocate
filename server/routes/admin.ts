@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
@@ -13,6 +14,7 @@ import { adminRadarRoutes } from "./adminRadar.js";
 import { adminBrandInviteRoutes } from "./adminBrandInvites.js";
 import { adminCampaignRoutes } from "./adminCampaigns.js";
 import { adminAcademyRoutes } from "./adminAcademy.js";
+import { adminActiveMissionRoutes } from "./adminActiveMissions.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -63,6 +65,7 @@ adminRoutes.route("/", adminRadarRoutes);
 adminRoutes.route("/", adminBrandInviteRoutes);
 adminRoutes.route("/", adminCampaignRoutes);
 adminRoutes.route("/", adminAcademyRoutes);
+adminRoutes.route("/active-missions", adminActiveMissionRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand
@@ -157,11 +160,46 @@ adminRoutes.get("/engaged", async (c) => {
   return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });
 
+export async function acceptApplicationWithWorkflow(svc: SupabaseClient, submissionId: string) {
+  const accepted = await svc.rpc("accept_application", { p_submission: submissionId });
+  if (accepted.error) return { data: null, error: accepted.error, stage: "accept" as const };
+
+  const submission = accepted.data;
+  const missionResult = await svc
+    .from("missions")
+    .select("creator_workflow_mode")
+    .eq("id", submission.mission_id)
+    .maybeSingle();
+  if (missionResult.error) return { data: null, error: missionResult.error, stage: "mission" as const };
+  if (!missionResult.data) return { data: null, error: null, stage: "not_found" as const };
+
+  if (missionResult.data.creator_workflow_mode === "active_workspace") {
+    const workflow = await svc.rpc("create_mission_workflow", {
+      p_submission: submission.id,
+    });
+    if (workflow.error) return { data: null, error: workflow.error, stage: "workflow" as const };
+    return {
+      data: { submission, workflow: workflow.data },
+      error: null,
+      stage: null,
+    };
+  }
+
+  return { data: submission, error: null, stage: null };
+}
+
 adminRoutes.post("/applications/:id/accept", async (c) => {
-  const svc = serviceClient();
-  const { data, error } = await svc.rpc("accept_application", { p_submission: c.req.param("id") });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
-  return c.json(data);
+  const result = await acceptApplicationWithWorkflow(serviceClient(), c.req.param("id"));
+  if (result.stage === "accept" || result.stage === "workflow") {
+    return c.json({ error: result.error!.message, code: "rpc_error" }, 400);
+  }
+  if (result.stage === "mission") {
+    return c.json({ error: result.error!.message, code: "db_error" }, 500);
+  }
+  if (result.stage === "not_found") {
+    return c.json({ error: "not_found", code: "not_found" }, 404);
+  }
+  return c.json(result.data);
 });
 
 adminRoutes.post("/applications/:id/decline", async (c) => {

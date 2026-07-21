@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Lightbulb } from "lucide-react";
-import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe, useMissionMatch } from "@/lib/queries/kocmax";
+import { useMission, useMyMissions, useJoinMission, useSubmitMission, useApplyMission, useMe, useMissionMatch, type MyMission } from "@/lib/queries/kocmax";
 import { BadgePill } from "@/components/BadgePill";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { HookPanel } from "@/components/HookPanel";
@@ -14,18 +14,21 @@ import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { ApiError } from "@/lib/api";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
+function usesActiveWorkspace(submission: MyMission): boolean {
+  return submission.creator_workflow_mode === "active_workspace"
+    || submission.missions.creator_workflow_mode === "active_workspace";
+}
+
 
 function MissionDetail() {
   const { missionSlug } = Route.useParams();
   const m = useMission(missionSlug);
   const mine = useMyMissions();
   const join = useJoinMission(missionSlug);
-  const submit = useSubmitMission(missionSlug);
   const apply = useApplyMission(missionSlug);
   const me = useMe();
   const matches = useMissionMatch();
   const { t, lang } = useI18n();
-  const [urls, setUrls] = useState("");
   const [showHooks, setShowHooks] = useState(false);
   const viewedMissions = useRef(new Set<string>());
   const activationTracked = useRef(false);
@@ -80,12 +83,6 @@ function MissionDetail() {
   const sub = mine.data?.find((submission) => submission.missions.slug === missionSlug);
   const isApplication = m.data.access_type === "application";
 
-  async function onSubmit() {
-    const list = urls.split("\n").map((url) => url.trim()).filter(Boolean);
-    if (list.length === 0) return;
-    await submit.mutateAsync({ content_urls: list });
-    setUrls("");
-  }
 
   return (
     <div className="mx-auto max-w-lg pb-6 lg:max-w-5xl">
@@ -119,11 +116,11 @@ function MissionDetail() {
               )}
             </>
           ) : sub.status === "joined" ? (
-            <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-              <h3 className="font-heading font-bold">{t("app.mission.submitContent")}</h3>
-              <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
-              <button onClick={onSubmit} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
-            </section>
+            usesActiveWorkspace(sub) ? (
+              <Link to="/my/$submissionId" params={{ submissionId: sub.id }} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{t("app.activeMission.route.continueMission")}</Link>
+            ) : (
+              <LegacySubmissionForm missionSlug={missionSlug} />
+            )
           ) : (
             <section className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
               <span className="font-heading font-bold">{t("app.mission.statusLabel")}</span>
@@ -169,5 +166,26 @@ function MissionDetail() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LegacySubmissionForm({ missionSlug }: { missionSlug: string }) {
+  const submit = useSubmitMission(missionSlug);
+  const { t } = useI18n();
+  const [urls, setUrls] = useState("");
+
+  async function submitUrls() {
+    const list = urls.split("\n").map((url) => url.trim()).filter(Boolean);
+    if (list.length === 0) return;
+    await submit.mutateAsync({ content_urls: list });
+    setUrls("");
+  }
+
+  return (
+    <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+      <h3 className="font-heading font-bold">{t("app.mission.submitContent")}</h3>
+      <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
+      <button onClick={submitUrls} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
+    </section>
   );
 }

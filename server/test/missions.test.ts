@@ -1,6 +1,20 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createApp } from "../app";
-import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import {
+  joinMissionWithWorkflowRecovery,
+  submitMissionForMode,
+  MY_MISSIONS_SELECT,
+} from "../routes/missions";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  makeCreator,
+  makeMission,
+  cleanup,
+  hasSupabaseEnv,
+  seedActiveMission,
+  serviceForTests,
+  creatorRewardSnapshot,
+} from "./helpers";
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -16,6 +30,169 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     },
   });
 }
+
+describe("mission route behavior without a live database", () => {
+  it("selects workflow mode and active workflow id for creator mission entry points", () => {
+    expect(MY_MISSIONS_SELECT).toContain("creator_workflow_mode");
+    expect(MY_MISSIONS_SELECT).toContain("mission_workflows(id)");
+    expect(MY_MISSIONS_SELECT).toContain("missions!inner");
+  });
+
+
+
+  it("recovers an active-workspace join after workflow creation failed", async () => {
+    const mission = { id: "mission-1", creator_workflow_mode: "active_workspace" };
+    const submission = {
+      id: "submission-1",
+      mission_id: mission.id,
+      creator_id: "creator-1",
+      workspace_id: "workspace-1",
+      status: "joined",
+    };
+    let storedSubmission: typeof submission | null = null;
+    let xp = 0;
+    let filled = 0;
+    let workflowAttempts = 0;
+    const events: string[] = [];
+    const rpc = vi.fn(async (name: string, args: Record<string, string>) => {
+      events.push(`rpc:${name}:${JSON.stringify(args)}`);
+      if (name === "join_mission") {
+        if (storedSubmission) {
+          return { data: null, error: { message: "already_joined" } };
+        }
+        storedSubmission = submission;
+        xp += 10;
+        filled += 1;
+        return { data: submission, error: null };
+      }
+      if (name === "create_mission_workflow") {
+        workflowAttempts += 1;
+        if (workflowAttempts === 1) {
+          return { data: null, error: { message: "workflow_failed" } };
+        }
+        return {
+          data: { id: "workflow-1", mission_submission_id: submission.id },
+          error: null,
+        };
+      }
+      throw new Error(`unexpected RPC ${name}`);
+    });
+    const maybeSingle = vi.fn(async () => {
+      events.push("query:maybeSingle");
+      return { data: storedSubmission, error: null };
+    });
+    const eq = vi.fn((column: string, value: string) => {
+      events.push(`query:eq:${column}:${value}`);
+      return { eq, maybeSingle };
+    });
+    const select = vi.fn((columns: string) => {
+      events.push(`query:select:${columns}`);
+      return { eq };
+    });
+    const from = vi.fn((table: string) => {
+      expect(table).toBe("mission_submissions");
+      events.push(`query:from:${table}`);
+      return { select };
+    });
+    const client = { rpc, from } as unknown as SupabaseClient;
+
+    const first = await joinMissionWithWorkflowRecovery(
+      client,
+      mission,
+      "creator-1",
+      "workspace-1",
+    );
+    expect(first.error?.message).toBe("workflow_failed");
+
+    const second = await joinMissionWithWorkflowRecovery(
+      client,
+      mission,
+      "creator-1",
+      "workspace-1",
+    );
+    expect(second).toEqual({
+      data: {
+        submission,
+        workflow: { id: "workflow-1", mission_submission_id: submission.id },
+      },
+      error: null,
+    });
+    expect(rpc.mock.calls).toEqual([
+      ["join_mission", { p_mission: "mission-1" }],
+      ["create_mission_workflow", { p_submission: "submission-1" }],
+      ["join_mission", { p_mission: "mission-1" }],
+      ["create_mission_workflow", { p_submission: "submission-1" }],
+    ]);
+    expect(events).toEqual([
+      'rpc:join_mission:{"p_mission":"mission-1"}',
+      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
+      'rpc:join_mission:{"p_mission":"mission-1"}',
+      "query:from:mission_submissions",
+      "query:select:*",
+      "query:eq:mission_id:mission-1",
+      "query:eq:creator_id:creator-1",
+      "query:eq:workspace_id:workspace-1",
+      "query:maybeSingle",
+      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
+    ]);
+    expect(rpc.mock.calls.filter(([name]) => name === "join_mission")).toHaveLength(2);
+    expect(rpc.mock.calls.filter(([name]) => name === "create_mission_workflow")).toHaveLength(2);
+    expect(select).toHaveBeenCalledWith("*");
+    expect(eq.mock.calls).toEqual([
+      ["mission_id", "mission-1"],
+      ["creator_id", "creator-1"],
+      ["workspace_id", "workspace-1"],
+    ]);
+    expect({ xp, filled }).toEqual({ xp: 10, filled: 1 });
+  });
+
+  it("keeps legacy already_joined behavior unchanged", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "already_joined" } }));
+    const from = vi.fn();
+    const result = await joinMissionWithWorkflowRecovery(
+      { rpc, from } as unknown as SupabaseClient,
+      { id: "mission-legacy", creator_workflow_mode: "legacy" },
+      "creator-1",
+      "workspace-1",
+    );
+
+    expect(result.error?.message).toBe("already_joined");
+    expect(from).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not recover an active-workspace submission in the wrong state", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "already_joined" } }));
+    const maybeSingle = vi.fn(async () => ({
+      data: { id: "submission-1", status: "submitted" },
+      error: null,
+    }));
+    const eq = vi.fn(() => ({ eq, maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+    const result = await joinMissionWithWorkflowRecovery(
+      { rpc, from } as unknown as SupabaseClient,
+      { id: "mission-1", creator_workflow_mode: "active_workspace" },
+      "creator-1",
+      "workspace-1",
+    );
+
+    expect(result.error?.message).toBe("already_joined");
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("guards active-workspace submit without calling submit_mission", async () => {
+    const rpc = vi.fn();
+    const result = await submitMissionForMode(
+      { rpc } as unknown as SupabaseClient,
+      { id: "mission-1", creator_workflow_mode: "active_workspace" },
+      { content_urls: ["https://example.com/post"] },
+    );
+
+    expect(result).toEqual({ mismatch: true, data: null, error: null });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});
 
 suite("mission join", () => {
   let koc: { userId: string; jwt: string };
@@ -70,6 +247,47 @@ suite("mission join", () => {
     const res = await req("/missions/test-does-not-exist/join", koc.jwt, { method: "POST" });
     expect(res.status).toBe(404);
   });
+
+  it("creates one workflow for an active-workspace direct join", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-join@test.local",
+      slug: "test-active-route-join",
+      deliverables: [{ title: "Instagram post", platform: "instagram" }],
+    });
+    const svc = serviceForTests();
+    const removed = await svc.from("mission_submissions").delete().eq("id", active.submission.id);
+    expect(removed.error).toBeNull();
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const first = await req("/missions/test-active-route-join/join", active.creator.jwt, { method: "POST" });
+    expect(first.status).toBe(200);
+    const body = await first.json();
+    expect(body.submission.status).toBe("joined");
+    expect(body.workflow).toMatchObject({
+      mission_submission_id: body.submission.id,
+      state: "drafting",
+    });
+    const afterFirst = await creatorRewardSnapshot(active.creator.id);
+    const missionAfterFirst = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(missionAfterFirst.error).toBeNull();
+
+    const repeated = await req("/missions/test-active-route-join/join", active.creator.jwt, { method: "POST" });
+    expect(repeated.status).toBe(200);
+    const repeatedBody = await repeated.json();
+    expect(repeatedBody.submission.id).toBe(body.submission.id);
+    expect(repeatedBody.workflow.id).toBe(body.workflow.id);
+    const workflows = await svc.from("mission_workflows").select("id").eq("mission_submission_id", body.submission.id);
+    expect(workflows.error).toBeNull();
+    expect(workflows.data).toHaveLength(1);
+    const afterRepeated = await creatorRewardSnapshot(active.creator.id);
+    expect(afterFirst.xp - before.xp).toBe(10);
+    expect(afterFirst.points).toBe(before.points);
+    expect(afterRepeated).toEqual(afterFirst);
+    const missionAfterRepeated = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
+    expect(missionAfterRepeated.error).toBeNull();
+    expect(missionAfterFirst.data?.filled).toBe(1);
+    expect(missionAfterRepeated.data?.filled).toBe(missionAfterFirst.data?.filled);
+  });
 });
 
 suite("mission submit", () => {
@@ -114,6 +332,31 @@ suite("mission submit", () => {
     });
     expect(res.status).toBe(409);
     expect((await res.json()).code).toBe("wrong_state");
+  });
+
+  it("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
+    const active = await seedActiveMission({
+      email: "active-route-submit@test.local",
+      slug: "test-active-route-submit",
+      deliverables: [{ title: "Instagram reel", platform: "instagram" }],
+    });
+    const before = await creatorRewardSnapshot(active.creator.id);
+
+    const response = await req("/missions/test-active-route-submit/submit", active.creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://example.com/post"] }),
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ code: "WORKFLOW_MODE_MISMATCH" });
+    expect(await creatorRewardSnapshot(active.creator.id)).toEqual(before);
+    const stored = await serviceForTests()
+      .from("mission_submissions")
+      .select("status, xp_awarded, points_awarded")
+      .eq("id", active.submission.id)
+      .single();
+    expect(stored.error).toBeNull();
+    expect(stored.data).toMatchObject({ status: "joined", xp_awarded: 0, points_awarded: 0 });
   });
 });
 

@@ -14,9 +14,15 @@ import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { contentKeys, fetchNews } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { LEVELS, levelIndex } from "@/lib/levels";
-import { useBalance } from "@/lib/queries/kocmax";
+import { useBalance, type MyMission } from "@/lib/queries/kocmax";
 import { useCreatorActivation } from "@/lib/useCreatorActivation";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
+
+function activeMissionHref(mission: MyMission): string {
+  const active = mission.creator_workflow_mode === "active_workspace"
+    || mission.missions.creator_workflow_mode === "active_workspace";
+  return active ? `/my/${mission.id}` : `/mission/${mission.missions.slug}`;
+}
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -143,6 +149,7 @@ function Home() {
         missions={activation.activeMissions.data ?? []}
         isLoading={activation.activeMissions.loading}
         isError={Boolean(activation.activeMissions.error)}
+        getMissionHref={activeMissionHref}
         onRetry={() => void activation.activeMissions.refetch()}
       />
 
@@ -163,7 +170,7 @@ function Home() {
           <PointsBalanceCard
             balance={balance.data?.balance ?? 0}
             availableTo={balance.data?.available_to}
-            loading={balance.isLoading || balance.isError}
+            loading={balance.isLoading || (balance.isError && !balance.data)}
           />
         </div>
       </div>
@@ -190,9 +197,10 @@ function Home() {
         ) : unlockedRecommendations.length ? (
           <div className="grid gap-3 lg:grid-cols-2">
             {unlockedRecommendations.map((mission) => (
-              <a
+              <Link
                 key={mission.id}
-                href={`/mission/${mission.slug}`}
+                to="/mission/$missionSlug"
+                params={{ missionSlug: mission.slug }}
                 className="block rounded-[var(--radius)] no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <MissionCard
@@ -206,7 +214,7 @@ function Home() {
                   matchScore={mission.fit_score}
                   status={t("app.home.recommendationUnlocked")}
                 />
-              </a>
+              </Link>
             ))}
           </div>
         ) : (
