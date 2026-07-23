@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-22
 
-**Status:** Draft for written-spec review
+**Status:** Approved
 **Predecessor:** `2026-07-15-adfocate-active-mission-workspace-design.md`
 
 ## 1. Outcome
