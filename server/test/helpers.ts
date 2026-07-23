@@ -423,6 +423,11 @@ export type ActiveMissionDeliverable = {
   platform: string;
   required?: boolean;
   draftDueOffsetHours?: number | null;
+  publicationInstructions?: string;
+  publicationWindowHours?: number;
+  requiredDisclosures?: string[];
+  expectedAccount?: string | null;
+  proofEvidencePolicy?: Record<string, unknown>;
   requirements?: Array<{
     category: "format" | "key_message" | "compliance" | "quality" | "other";
     text: string;
@@ -482,6 +487,11 @@ export async function seedActiveMission(opts: {
       position,
       required: deliverable.required ?? true,
       draft_due_offset_hours: deliverable.draftDueOffsetHours ?? null,
+      publication_instructions: deliverable.publicationInstructions ?? "Publish the approved content",
+      publication_window_hours: deliverable.publicationWindowHours ?? 72,
+      required_disclosures: deliverable.requiredDisclosures ?? [],
+      expected_account: deliverable.expectedAccount ?? null,
+      proof_evidence_policy: deliverable.proofEvidencePolicy ?? {},
     })))
     .select("id, position");
   if (templateError) throw templateError;

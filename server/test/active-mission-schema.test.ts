@@ -17,6 +17,87 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("defines the publication proof schema and tenant-safe immutable boundary", () => {
+    const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const field of [
+      "publication_instructions text",
+      "publication_window_hours integer",
+      "required_disclosures jsonb",
+      "expected_account text",
+      "proof_evidence_policy jsonb",
+    ]) {
+      expect(sql, `missing publication template field: ${field}`).toContain(field);
+    }
+
+    for (const table of [
+      "mission_publication_instructions",
+      "mission_publication_proof_attempts",
+      "mission_publication_proof_assets",
+      "mission_publication_proof_reviews",
+      "mission_publication_proof_review_items",
+    ]) {
+      expect(sql).toContain(`create table public.${table}`);
+      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(`on public.${table}`);
+    }
+
+    expect(sql).toContain("unique (workspace_id, mission_work_item_id, attempt_number)");
+    expect(sql).toContain("unique (workspace_id, mission_work_item_id)");
+    expect(sql).toContain("current_proof_attempt_id uuid");
+    expect(sql).toContain("verified_proof_attempt_id uuid");
+    expect(sql).toContain("foreign key (mission_work_item_id, workspace_id)\n    references public.mission_work_items(id, workspace_id)");
+    expect(sql).toContain("foreign key (mission_publication_proof_attempt_id, workspace_id)\n    references public.mission_publication_proof_attempts(id, workspace_id)");
+    expect(sql).toContain("foreign key (mission_publication_proof_review_id, workspace_id)\n    references public.mission_publication_proof_reviews(id, workspace_id)");
+    expect(sql).toContain("mission_publication_proof_reviews_one_terminal_decision_idx");
+
+    for (const policy of [
+      "mission_publication_instructions_creator_read",
+      "mission_publication_proof_attempts_creator_read",
+      "mission_publication_proof_assets_creator_read",
+      "mission_publication_proof_reviews_creator_read",
+      "mission_publication_proof_review_items_creator_read",
+    ]) {
+      const start = sql.lastIndexOf(`create policy ${policy}`);
+      const end = sql.indexOf(";", start);
+      expect(start, `missing policy: ${policy}`).toBeGreaterThanOrEqual(0);
+      const definition = sql.slice(start, end);
+      expect(definition).toContain("workspace_id");
+      expect(definition).toContain("auth.uid()");
+    }
+
+    expect(sql).toContain("grant select on");
+    expect(sql).toContain("to authenticated");
+    expect(sql).toContain("grant all on");
+    expect(sql).toContain("to service_role");
+    expect(sql).not.toMatch(/grant\s+(insert|update|delete|all)[^;]*to\s+authenticated/i);
+
+    for (const table of [
+      "mission_publication_instructions",
+      "mission_publication_proof_attempts",
+      "mission_publication_proof_assets",
+      "mission_publication_proof_reviews",
+      "mission_publication_proof_review_items",
+    ]) {
+      expect(sql).toContain(`before update or delete on public.${table}`);
+      expect(sql).toContain("execute function private.raise_immutable_record()");
+    }
+
+    expect(sql).toContain("'mission-publication-proof-assets'");
+    expect(sql).toContain("public = false");
+    expect(sql).toContain("mission_publication_proof_assets_storage_read");
+    expect(sql).toContain("mission_publication_proof_assets_storage_insert");
+    expect(sql).toContain("mission_publication_instructions_due_at_idx");
+    expect(sql).toContain("mission_publication_proof_attempts_late_idx");
+    expect(sql).toContain("mission_publication_proof_attempts_metadata_status_idx");
+    expect(sql).toContain("mission_publication_proof_reviews_reviewer_idx");
+    expect(sql).toContain("mission_work_items_current_proof_attempt_idx");
+    expect(sql).not.toMatch(/update\s+public\.mission_submissions\s+set\s+status/i);
+  });
+
   it("loads workflow and work-item composite rows separately in draft RPCs", () => {
     const migrationPath = resolve("supabase/migrations/20260719133000_submit_active_mission_draft.sql");
     const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
@@ -555,5 +636,198 @@ suite(suiteName, () => {
       byte_size: 1024,
     });
     expect(crossCreatorAsset.error?.code).toBe("23503");
+  });
+});
+
+suite(suiteName, () => {
+  it("enforces publication proof tenant ownership, immutability, privacy, and relationships", async () => {
+    const id = unique();
+    const svc = serviceForTests();
+    const own = await seedActiveMission({
+      email: `publication-owner-${id}@test.local`,
+      slug: `test-publication-owner-${id}`,
+      deliverables: [{
+        title: "Publication proof post",
+        platform: "instagram",
+        publicationInstructions: "Publish the approved reel with the required disclosure",
+        publicationWindowHours: 48,
+        requiredDisclosures: ["#ad"],
+        expectedAccount: "@test_creator",
+        proofEvidencePolicy: { screenshots: 1 },
+      }],
+    });
+    const ownUser = userForJwt(own.creator.jwt);
+    const workflow = await ownUser.rpc("create_mission_workflow", { p_submission: own.submission.id });
+    expect(workflow.error).toBeNull();
+    const item = await svc.from("mission_work_items")
+      .select("id, workspace_id")
+      .eq("mission_workflow_id", workflow.data.id)
+      .single();
+    expect(item.error).toBeNull();
+
+    const alternateWorkspaceId = unique();
+    const alternateWorkspace = await svc.from("workspaces").insert({
+      id: alternateWorkspaceId,
+      slug: `test-publication-cross-${id}`,
+      name: `test-publication-cross-${id}`,
+    });
+    expect(alternateWorkspace.error).toBeNull();
+    const other = await makeCreator(`publication-other-${id}@test.local`, 0);
+    const moveCreator = await svc.from("creators")
+      .update({ workspace_id: alternateWorkspaceId })
+      .eq("id", other.userId);
+    expect(moveCreator.error).toBeNull();
+    const otherUser = userForJwt(other.jwt);
+
+    const instruction = await svc.from("mission_publication_instructions").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_work_item_id: item.data!.id,
+      publication_instructions: "Publish the approved reel with the required disclosure",
+      publication_window_hours: 48,
+      required_disclosures: ["#ad"],
+      expected_account: "@test_creator",
+      proof_evidence_policy: { screenshots: 1 },
+      publication_due_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    }).select("id").single();
+    expect(instruction.error).toBeNull();
+    const duplicateInstruction = await svc.from("mission_publication_instructions").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_work_item_id: item.data!.id,
+      publication_instructions: "Duplicate",
+      publication_window_hours: 48,
+      required_disclosures: [],
+      proof_evidence_policy: {},
+      publication_due_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    });
+    expect(duplicateInstruction.error?.code).toBe("23505");
+
+    const attempt = await svc.from("mission_publication_proof_attempts").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_work_item_id: item.data!.id,
+      attempt_number: 1,
+      primary_url: "https://example.com/proof",
+      additional_urls: [],
+      submitted_by: own.creator.id,
+      submitted_late: false,
+      metadata_status: "available",
+      metadata_snapshot: { account: "@test_creator" },
+      content_checksum: `publication-proof-${id}`,
+    }).select("id").single();
+    expect(attempt.error).toBeNull();
+    const crossWorkspaceAttempt = await svc.from("mission_publication_proof_attempts").insert({
+      workspace_id: alternateWorkspaceId,
+      mission_work_item_id: item.data!.id,
+      attempt_number: 2,
+      primary_url: "https://example.com/cross-workspace-proof",
+      additional_urls: [],
+      submitted_by: other.userId,
+      submitted_late: false,
+      metadata_status: "unavailable",
+      metadata_snapshot: {},
+      content_checksum: `publication-cross-${id}`,
+    });
+    expect(crossWorkspaceAttempt.error?.code).toBe("23503");
+
+    const pointAtAttempt = await svc.from("mission_work_items")
+      .update({ current_proof_attempt_id: attempt.data!.id })
+      .eq("id", item.data!.id);
+    expect(pointAtAttempt.error).toBeNull();
+
+    const assetId = unique();
+    const objectPath = `${own.creator.id}/${attempt.data!.id}/${assetId}.jpg`;
+    const asset = await svc.from("mission_publication_proof_assets").insert({
+      id: assetId,
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      storage_object_path: objectPath,
+      original_filename: "proof.jpg",
+      mime_type: "image/jpeg",
+      byte_size: 5,
+      content_checksum: `asset-${id}`,
+    });
+    expect(asset.error).toBeNull();
+    const crossWorkspaceAsset = await svc.from("mission_publication_proof_assets").insert({
+      workspace_id: alternateWorkspaceId,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      storage_object_path: `${other.userId}/${attempt.data!.id}/${unique()}.jpg`,
+      original_filename: "cross-proof.jpg",
+      mime_type: "image/jpeg",
+      byte_size: 5,
+      content_checksum: `cross-asset-${id}`,
+    });
+    expect(crossWorkspaceAsset.error?.code).toBe("23503");
+
+    const review = await svc.from("mission_publication_proof_reviews").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      decision: "verified",
+      reviewer_id: own.creator.id,
+      summary: "Publication proof verified",
+    }).select("id").single();
+    expect(review.error).toBeNull();
+    const duplicateTerminalReview = await svc.from("mission_publication_proof_reviews").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      decision: "rejected",
+      reviewer_id: own.creator.id,
+      summary: "Duplicate terminal decision",
+    });
+    expect(duplicateTerminalReview.error?.code).toBe("23505");
+    const reviewItem = await svc.from("mission_publication_proof_review_items").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_review_id: review.data!.id,
+      category: "disclosure",
+      finding_text: "Required disclosure is visible",
+      passed: true,
+      position: 0,
+    });
+    expect(reviewItem.error).toBeNull();
+
+    const [ownAttempts, hiddenAttempts, relationship] = await Promise.all([
+      ownUser.from("mission_publication_proof_attempts").select("id"),
+      otherUser.from("mission_publication_proof_attempts").select("id"),
+      svc.from("mission_publication_proof_attempts").select(
+        "id, mission_work_items!mission_publication_proof_attempts_work_item_workspace_fk(id), mission_publication_proof_reviews(id)",
+      ).eq("id", attempt.data!.id).single(),
+    ]);
+    expect(ownAttempts.error).toBeNull();
+    expect(ownAttempts.data).toEqual([{ id: attempt.data!.id }]);
+    expect(hiddenAttempts.error).toBeNull();
+    expect(hiddenAttempts.data).toEqual([]);
+    expect(relationship.error).toBeNull();
+    expect(relationship.data).toMatchObject({ id: attempt.data!.id });
+
+    const [authenticatedAttemptUpdate, authenticatedAttemptDelete, authenticatedReviewUpdate, authenticatedReviewDelete] = await Promise.all([
+      ownUser.from("mission_publication_proof_attempts").update({ content_checksum: "tampered" }).eq("id", attempt.data!.id),
+      ownUser.from("mission_publication_proof_attempts").delete().eq("id", attempt.data!.id),
+      ownUser.from("mission_publication_proof_reviews").update({ summary: "tampered" }).eq("id", review.data!.id),
+      ownUser.from("mission_publication_proof_reviews").delete().eq("id", review.data!.id),
+    ]);
+    for (const mutation of [authenticatedAttemptUpdate, authenticatedAttemptDelete, authenticatedReviewUpdate, authenticatedReviewDelete]) {
+      expect(mutation.error).not.toBeNull();
+    }
+    const serviceAttemptMutation = await svc.from("mission_publication_proof_attempts")
+      .update({ content_checksum: "service-tampered" })
+      .eq("id", attempt.data!.id);
+    expect(serviceAttemptMutation.error?.message).toContain("immutable_record");
+    const serviceReviewDeletion = await svc.from("mission_publication_proof_reviews")
+      .delete()
+      .eq("id", review.data!.id);
+    expect(serviceReviewDeletion.error?.message).toContain("immutable_record");
+
+    const bucket = await svc.storage.getBucket("mission-publication-proof-assets");
+    expect(bucket.error).toBeNull();
+    expect(bucket.data).toMatchObject({ public: false });
+    const deniedUpload = await otherUser.storage.from("mission-publication-proof-assets")
+      .upload(objectPath, new Blob(["proof"], { type: "image/jpeg" }));
+    expect(deniedUpload.error).not.toBeNull();
+    const upload = await ownUser.storage.from("mission-publication-proof-assets")
+      .upload(objectPath, new Blob(["proof"], { type: "image/jpeg" }));
+    expect(upload.error).toBeNull();
+    const ownEvidence = await ownUser.storage.from("mission-publication-proof-assets").download(objectPath);
+    expect(ownEvidence.error).toBeNull();
+    const hiddenEvidence = await otherUser.storage.from("mission-publication-proof-assets").download(objectPath);
+    expect(hiddenEvidence.error).not.toBeNull();
+    await svc.storage.from("mission-publication-proof-assets").remove([objectPath]);
   });
 });
