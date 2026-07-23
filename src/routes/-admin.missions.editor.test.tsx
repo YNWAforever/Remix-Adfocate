@@ -80,4 +80,27 @@ describe("MissionEditor", () => {
     const matches = screen.getAllByText("受眾甲");
     expect(matches.some((el) => el.tagName !== "TEXTAREA")).toBe(true);
   });
+  it("authors complete publication defaults on active-workspace deliverables", async () => {
+    const onSave = vi.fn().mockResolvedValue({});
+    renderEditor({ mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+
+    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
+    fireEvent.change(screen.getByLabelText("Publication instructions 1"), { target: { value: "Publish the approved reel" } });
+    fireEvent.change(screen.getByLabelText("Publication window hours 1"), { target: { value: "48" } });
+    fireEvent.change(screen.getByLabelText("Required disclosures 1"), { target: { value: "#ad\nPaid partnership" } });
+    fireEvent.change(screen.getByLabelText("Expected account 1"), { target: { value: "@creator" } });
+    fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":1}' } });
+    fireEvent.click(screen.getAllByRole("button").at(-1)!);
+
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(onSave.mock.calls[0][0].deliverable_templates[0]).toMatchObject({
+      publication_instructions: "Publish the approved reel",
+      publication_window_hours: 48,
+      required_disclosures: ["#ad", "Paid partnership"],
+      expected_account: "@creator",
+      proof_evidence_policy: { screenshots: 1 },
+    });
+  });
 });

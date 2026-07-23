@@ -18,6 +18,32 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("snapshots complete publication policy, guards overrides, and freezes the approval deadline", () => {
+    const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+
+    for (const token of [
+      "source_template_id uuid", "override_reason text", "overridden_by uuid", "overridden_at timestamptz",
+      "frozen_at timestamptz", "revision integer", "idempotency_keys uuid[]",
+      "function private.snapshot_publication_instructions", "after insert on public.mission_work_items",
+      "function private.set_publication_instructions", "function public.set_publication_instructions",
+      "p_expected_state text", "p_expected_revision integer", "p_idempotency_key uuid", "p_instructions jsonb",
+      "override_reason_required", "mission_publication_instructions_frozen",
+      "function private.approve_mission_version", "function public.approve_mission_version",
+      "publication_setup_required", "make_interval(hours => v_instruction.publication_window_hours)",
+      "least(", "frozen_at = coalesce(frozen_at, v_now)", "to service_role",
+    ]) expect(sql, `missing publication instruction lifecycle token: ${token}`).toContain(token);
+
+    expect(sql).toMatch(/creator_workflow_mode[\s\S]*active_workspace[\s\S]*publication_instructions/);
+    expect(sql).toMatch(/jsonb_array_elements\([^)]*required_disclosures[^)]*\)[\s\S]*btrim/);
+    expect(sql).toMatch(/proof_evidence_policy[\s\S]*jsonb_typeof/);
+    expect(sql).toMatch(/p_idempotency_key\s*=\s*any\(v_instruction\.idempotency_keys\)/);
+    expect(sql).toMatch(/idempotency_keys\s*=\s*array_append\(idempotency_keys, p_idempotency_key\)/);
+    expect(sql).toMatch(/old\.frozen_at is not null[\s\S]*mission_publication_instructions_frozen/);
+    expect(sql).not.toMatch(/update\s+public\.mission_submissions\s+set\s+status/i);
+    expect(sql).not.toMatch(/update\s+public\.(point_balances|earnings_balances)/i);
+    expect(sql).not.toMatch(/update\s+public\.creators\s+set\s+xp/i);
+  });
   it("defines the publication proof schema and tenant-safe immutable boundary", () => {
     const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
     const sql = existsSync(migrationPath)

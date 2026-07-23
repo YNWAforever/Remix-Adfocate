@@ -10,6 +10,7 @@ import { createUploadGrant } from "../lib/activeMission/creatorActions";
 import { createActiveMissionRepository, type ActiveMissionRepository } from "../lib/activeMission/repo";
 import { createActiveMissionRoutes } from "../routes/activeMissions";
 import { createAdminActiveMissionRepository, createAdminActiveMissionRoutes, sortActiveMissionQueue, type AdminActiveMissionRepository } from "../routes/adminActiveMissions";
+import { validateMissionWorkflowAuthoring } from "../routes/adminMissions";
 import {
   activeMissionIntegrationSkipReason, cleanup, creatorRewardSnapshot, DEMO_WS, makeCreator,
   makeMission, makeStaff, seedActiveMission, serviceForTests, userForJwt,
@@ -567,6 +568,7 @@ describe("active mission operator routes without a live database", () => {
   const workItemId = "22222222-2222-4222-8222-222222222222";
   const versionId = "33333333-3333-4333-8333-333333333333";
   const requirementId = "44444444-4444-4444-8444-444444444444";
+  const idempotencyKey = "55555555-5555-4555-8555-555555555555";
   const urgent = { workItemId: "urgent", reviewDueAt: "2026-07-18T00:00:00.000Z", creatorDeadline: "2026-07-20T00:00:00.000Z", submittedAt: "2026-07-17T00:00:00.000Z" };
   const later = { workItemId: "later", reviewDueAt: "2026-07-19T00:00:00.000Z", creatorDeadline: "2026-07-21T00:00:00.000Z", submittedAt: "2026-07-16T00:00:00.000Z" };
 
@@ -781,6 +783,132 @@ describe("active mission operator routes without a live database", () => {
         p_workflow: "workflow-1", p_operator: "operator-1", p_workspace: "workspace-1", p_note: "Courier collected",
       }],
     ]);
+  });
+  it("validates and sends one guarded pre-freeze publication instruction override", async () => {
+    const setPublicationInstructions = vi.fn(async () => ({ instruction: { mission_work_item_id: workItemId, revision: 1 } }));
+    const repository = { setPublicationInstructions } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const body = {
+      expectedState: "under_review", expectedRevision: 0, idempotencyKey,
+      overrideReason: "Creator account changed before approval",
+      instructions: {
+        publicationInstructions: "Publish the approved reel", publicationWindowHours: 36,
+        requiredDisclosures: ["#ad", "Paid partnership"], expectedAccount: "@creator",
+        proofEvidencePolicy: { screenshots: 1 },
+      },
+    };
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-instructions`, {
+      method: "PUT", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" }, body: JSON.stringify(body),
+    });
+    expect(response.status).toBe(200);
+    expect(setPublicationInstructions).toHaveBeenCalledWith({ workflowId, workItemId, workspaceSlug: "demo", operatorId: "operator-1", ...body });
+  });
+
+  it("sends exact guarded publication instruction RPC arguments", async () => {
+    const rpc = vi.fn(async () => ({ data: { instruction: { revision: 1 } }, error: null }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+    await repository.setPublicationInstructions({
+      workflowId: "workflow-1", workItemId: "item-1", operatorId: "operator-1", workspaceSlug: "demo",
+      expectedState: "under_review", expectedRevision: 0, idempotencyKey,
+      overrideReason: "Account changed",
+      instructions: {
+        publicationInstructions: "Publish approved content", publicationWindowHours: 48,
+        requiredDisclosures: ["#ad"], expectedAccount: null, proofEvidencePolicy: {},
+      },
+    });
+    expect(rpc).toHaveBeenCalledWith("set_publication_instructions", {
+      p_workflow: "workflow-1", p_work_item: "item-1", p_operator: "operator-1", p_workspace: "workspace-1",
+      p_expected_state: "under_review", p_expected_revision: 0, p_idempotency_key: idempotencyKey,
+      p_instructions: {
+        publication_instructions: "Publish approved content", publication_window_hours: 48,
+        required_disclosures: ["#ad"], expected_account: null, proof_evidence_policy: {}, override_reason: "Account changed",
+      },
+    });
+  });
+
+  it.each([
+    ["missing reason", { overrideReason: " " }],
+    ["non-positive publication window", { instructions: { publicationWindowHours: 0 } }],
+    ["blank disclosure", { instructions: { requiredDisclosures: ["#ad", " "] } }],
+    ["invalid evidence policy", { instructions: { proofEvidencePolicy: [] } }],
+    ["negative expected revision", { expectedRevision: -1 }],
+    ["malformed idempotency key", { idempotencyKey: "not-a-uuid" }],
+    ["missing expected state", { expectedState: " " }],
+  ])("rejects a publication instruction override with %s", async (_label, patch) => {
+    const setPublicationInstructions = vi.fn();
+    const repository = { setPublicationInstructions } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const base = {
+      expectedState: "under_review", expectedRevision: 0, idempotencyKey, overrideReason: "Operator override",
+      instructions: {
+        publicationInstructions: "Publish the approved reel", publicationWindowHours: 36,
+        requiredDisclosures: ["#ad"], expectedAccount: null, proofEvidencePolicy: {},
+      },
+    };
+    const instructionsPatch = "instructions" in patch ? patch.instructions : undefined;
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-instructions`, {
+      method: "PUT", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+      body: JSON.stringify({ ...base, ...patch, instructions: instructionsPatch ? { ...base.instructions, ...instructionsPatch } : base.instructions }),
+    });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(setPublicationInstructions).not.toHaveBeenCalled();
+  });
+
+  it("maps publication setup failures to the stable conflict response", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "PUBLICATION_SETUP_REQUIRED" } }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(repository, () => ({ userId: "operator-1", email: "op@example.com" })));
+    const response = await app.request(`/api/admin/active-missions/${workflowId}/work-items/${workItemId}/approve-to-publish`, {
+      method: "POST", headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+      body: JSON.stringify({ expectedState: "under_review", versionId }),
+    });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "PUBLICATION_SETUP_REQUIRED" });
+  });
+});
+
+describe("active mission publication authoring validation", () => {
+  const completeTemplate = {
+    title: "Reel", platform: "instagram", position: 0, required: true, draft_due_offset_hours: 0,
+    publication_instructions: "Publish the approved reel", publication_window_hours: 48,
+    required_disclosures: ["#ad", "Paid partnership"], expected_account: null,
+    proof_evidence_policy: { screenshots: 1 }, requirements: [],
+  };
+
+  it("requires complete publication defaults only for active-workspace deliverables", () => {
+    const active = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      deliverable_templates: [{ title: "Reel", platform: "instagram", position: 0, required: true, draft_due_offset_hours: 0, requirements: [] }],
+    });
+    expect(active.ok).toBe(false);
+    expect(active.errors).toMatchObject({
+      "deliverable_templates.0.publication_instructions": expect.any(String),
+      "deliverable_templates.0.publication_window_hours": expect.any(String),
+      "deliverable_templates.0.required_disclosures": expect.any(String),
+      "deliverable_templates.0.proof_evidence_policy": expect.any(String),
+    });
+    expect(validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "legacy",
+      deliverable_templates: [{ title: "Legacy", platform: null, position: 0, required: false, draft_due_offset_hours: 0, requirements: [] }],
+    }).ok).toBe(true);
+  });
+
+  it("accepts ordered disclosures and rejects blank entries or invalid evidence policy", () => {
+    expect(validateMissionWorkflowAuthoring({ creator_workflow_mode: "active_workspace", deliverable_templates: [completeTemplate] }))
+      .toMatchObject({ ok: true, errors: {} });
+    const invalid = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      deliverable_templates: [{ ...completeTemplate, publication_window_hours: 0, required_disclosures: ["#ad", " "], proof_evidence_policy: [] }],
+    } as never);
+    expect(invalid.errors).toMatchObject({
+      "deliverable_templates.0.publication_window_hours": "Must be a positive integer",
+      "deliverable_templates.0.required_disclosures.1": "Disclosure is required",
+      "deliverable_templates.0.proof_evidence_policy": "Must be an object",
+    });
   });
 });
 

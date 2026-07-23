@@ -28,8 +28,10 @@ let editorKeySequence = 0;
 const nextEditorKey = () => `mission-workflow-editor-${editorKeySequence++}`;
 
 type EditableRequirement = MissionDeliverableTemplateInput["requirements"][number] & { editorKey: string };
-type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements"> & {
+type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements" | "proof_evidence_policy"> & {
   editorKey: string;
+  proof_evidence_policy: Record<string, unknown>;
+  proofEvidencePolicyText: string;
   requirements: EditableRequirement[];
 };
 
@@ -37,15 +39,26 @@ function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): Edit
   return templates.map((template) => ({
     ...template,
     editorKey: nextEditorKey(),
+    proofEvidencePolicyText: JSON.stringify(template.proof_evidence_policy),
     requirements: template.requirements.map((requirement) => ({ ...requirement, editorKey: nextEditorKey() })),
   }));
 }
 
+function parsedEvidencePolicy(value: string, fallback: Record<string, unknown>) {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
-  return templates.map(({ editorKey: templateKey, requirements, ...template }) => {
+  return templates.map(({ editorKey: templateKey, proofEvidencePolicyText, requirements, ...template }) => {
     void templateKey;
     return {
       ...template,
+      proof_evidence_policy: parsedEvidencePolicy(proofEvidencePolicyText, template.proof_evidence_policy),
       requirements: requirements.map(({ editorKey: requirementKey, ...requirement }) => {
         void requirementKey;
         return requirement;
@@ -270,6 +283,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                   position: previous.deliverable_templates.length,
                   required: true,
                   draft_due_offset_hours: 0,
+                  publication_instructions: "",
+                  publication_window_hours: 72,
+                  required_disclosures: [],
+                  expected_account: null,
+                  proof_evidence_policy: {},
+                  proofEvidencePolicyText: "{}",
                   requirements: [],
                 } satisfies EditableTemplate],
               }))}
@@ -331,6 +350,79 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                       ...previous,
                       deliverable_templates: previous.deliverable_templates.map((item, index) => (
                         index === templateIndex ? { ...item, draft_due_offset_hours: Number(event.target.value) } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Publication instructions
+                  <textarea
+                    aria-label={`Publication instructions ${templateIndex + 1}`}
+                    rows={3}
+                    className={area}
+                    value={template.publication_instructions}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, publication_instructions: event.target.value } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Publication window (hours)
+                  <input
+                    aria-label={`Publication window hours ${templateIndex + 1}`}
+                    className={input}
+                    type="number"
+                    min={1}
+                    value={template.publication_window_hours}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, publication_window_hours: Number(event.target.value) } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Required disclosures (one per line)
+                  <textarea
+                    aria-label={`Required disclosures ${templateIndex + 1}`}
+                    rows={3}
+                    className={area}
+                    value={template.required_disclosures.join("\n")}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? {
+                          ...item,
+                          required_disclosures: event.target.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
+                        } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Expected account (optional)
+                  <input
+                    aria-label={`Expected account ${templateIndex + 1}`}
+                    className={input}
+                    value={template.expected_account ?? ""}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, expected_account: event.target.value.trim() || null } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                <label className="block text-sm">Proof evidence policy (JSON object)
+                  <textarea
+                    aria-label={`Proof evidence policy ${templateIndex + 1}`}
+                    rows={2}
+                    className={area}
+                    value={template.proofEvidencePolicyText}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, proofEvidencePolicyText: event.target.value } : item
                       )),
                     }))}
                   />

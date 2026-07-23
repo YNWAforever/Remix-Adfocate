@@ -329,3 +329,349 @@ create policy mission_publication_proof_assets_storage_insert on storage.objects
         and s.creator_id = (select auth.uid())
     )
   );
+-- Phase 3 publication policy authoring, per-work-item snapshots, guarded override, and approval freeze.
+alter table public.mission_publication_instructions
+  alter column publication_due_at drop not null,
+  add column platform text,
+  add column source_template_id uuid,
+  add column override_reason text check (override_reason is null or btrim(override_reason) <> ''),
+  add column overridden_by uuid,
+  add column overridden_at timestamptz,
+  add column frozen_at timestamptz,
+  add column revision integer not null default 0 check (revision >= 0),
+  add column idempotency_keys uuid[] not null default '{}'::uuid[],
+  add constraint mission_publication_instructions_source_template_workspace_fk
+    foreign key (source_template_id, workspace_id)
+    references public.mission_deliverable_templates(id, workspace_id) on delete set null (source_template_id),
+  add constraint mission_publication_instructions_overridden_by_workspace_fk
+    foreign key (overridden_by, workspace_id)
+    references public.brand_users(user_id, workspace_id);
+
+
+alter function private.author_mission_workflow(uuid, jsonb, jsonb, jsonb)
+  rename to author_mission_workflow_phase2;
+
+create or replace function private.author_mission_workflow(
+  p_mission_id uuid, p_mission jsonb, p_policy jsonb, p_templates jsonb
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_result jsonb;
+  v_mission_id uuid;
+  v_template_json jsonb;
+begin
+  if jsonb_typeof(p_templates) <> 'array' then raise exception 'invalid_mission_authoring_payload'; end if;
+  if p_policy->>'creator_workflow_mode' = 'active_workspace' and exists (
+    select 1 from jsonb_array_elements(p_templates) template
+    where not (template ? 'publication_instructions')
+       or nullif(btrim(template->>'publication_instructions'), '') is null
+       or not (template ? 'publication_window_hours')
+       or coalesce((template->>'publication_window_hours') ~ '^[1-9][0-9]*$', false) is not true
+       or not (template ? 'required_disclosures')
+       or case when jsonb_typeof(template->'required_disclosures') = 'array' then exists (
+            select 1 from jsonb_array_elements(template->'required_disclosures') disclosure
+            where jsonb_typeof(disclosure) <> 'string' or nullif(btrim(disclosure #>> '{}'), '') is null
+          ) else true end
+       or (template ? 'expected_account' and jsonb_typeof(template->'expected_account') not in ('null', 'string'))
+       or (jsonb_typeof(template->'expected_account') = 'string' and nullif(btrim(template->>'expected_account'), '') is null)
+       or not (template ? 'proof_evidence_policy')
+       or jsonb_typeof(template->'proof_evidence_policy') <> 'object'
+  ) then raise exception 'active_publication_policy_incomplete'; end if;
+
+  v_result := private.author_mission_workflow_phase2(p_mission_id, p_mission, p_policy, p_templates);
+  v_mission_id := (v_result->>'id')::uuid;
+  if p_policy->>'creator_workflow_mode' = 'active_workspace' then
+    for v_template_json in select value from jsonb_array_elements(p_templates) loop
+      update public.mission_deliverable_templates
+      set publication_instructions = btrim(v_template_json->>'publication_instructions'),
+          publication_window_hours = (v_template_json->>'publication_window_hours')::integer,
+          required_disclosures = v_template_json->'required_disclosures',
+          expected_account = nullif(btrim(v_template_json->>'expected_account'), ''),
+          proof_evidence_policy = v_template_json->'proof_evidence_policy', updated_at = now()
+      where mission_id = v_mission_id and (
+        (v_template_json ? 'id' and id = (v_template_json->>'id')::uuid)
+        or (not (v_template_json ? 'id') and position = (v_template_json->>'position')::integer)
+      );
+    end loop;
+  end if;
+
+  return v_result || jsonb_build_object('deliverable_templates', coalesce((
+    select jsonb_agg(
+      to_jsonb(template_row) - 'workspace_id' - 'mission_id' - 'created_at' - 'updated_at'
+      || jsonb_build_object('requirements', coalesce((
+        select jsonb_agg(jsonb_build_object(
+          'id', requirement_row.id, 'category', requirement_row.category,
+          'text', requirement_row.requirement_text, 'required', requirement_row.required,
+          'position', requirement_row.position
+        ) order by requirement_row.position)
+        from public.mission_deliverable_requirements requirement_row
+        where requirement_row.mission_deliverable_template_id = template_row.id
+      ), '[]'::jsonb)) order by template_row.position
+    ) from public.mission_deliverable_templates template_row
+    where template_row.mission_id = v_mission_id
+  ), '[]'::jsonb));
+end;
+$$;
+
+create or replace function public.author_mission_workflow(
+  p_mission_id uuid, p_mission jsonb, p_policy jsonb, p_templates jsonb
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce(auth.jwt()->>'role', '') <> 'service_role' then
+    raise exception 'service_role_required' using errcode = '42501';
+  end if;
+  return private.author_mission_workflow(p_mission_id, p_mission, p_policy, p_templates);
+end;
+$$;
+revoke all on function private.author_mission_workflow(uuid, jsonb, jsonb, jsonb) from public, anon, authenticated, service_role;
+revoke all on function public.author_mission_workflow(uuid, jsonb, jsonb, jsonb) from public, anon, authenticated;
+grant execute on function public.author_mission_workflow(uuid, jsonb, jsonb, jsonb) to service_role;
+create or replace function private.snapshot_publication_instructions()
+returns trigger
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_template public.mission_deliverable_templates;
+begin
+  if new.source_template_id is null then return new; end if;
+  select template.* into v_template
+  from public.mission_deliverable_templates template
+  join public.mission_workflows workflow
+    on workflow.id = new.mission_workflow_id and workflow.workspace_id = new.workspace_id
+  join public.mission_submissions submission
+    on submission.id = workflow.mission_submission_id and submission.workspace_id = workflow.workspace_id
+  join public.missions mission
+    on mission.id = submission.mission_id and mission.workspace_id = submission.workspace_id
+  where template.id = new.source_template_id
+    and template.workspace_id = new.workspace_id
+    and mission.creator_workflow_mode = 'active_workspace';
+  if v_template.id is null then return new; end if;
+  insert into public.mission_publication_instructions (
+    workspace_id, mission_work_item_id, platform, source_template_id,
+    publication_instructions, publication_window_hours, required_disclosures,
+    expected_account, proof_evidence_policy, publication_due_at
+  ) values (
+    new.workspace_id, new.id, coalesce(new.platform, v_template.platform), v_template.id,
+    v_template.publication_instructions, v_template.publication_window_hours,
+    v_template.required_disclosures, v_template.expected_account, v_template.proof_evidence_policy, null
+  );
+  return new;
+end;
+$$;
+create trigger mission_work_items_snapshot_publication_instructions
+  after insert on public.mission_work_items
+  for each row execute function private.snapshot_publication_instructions();
+
+drop trigger mission_publication_instructions_immutable on public.mission_publication_instructions;
+create or replace function private.guard_publication_instruction_mutation()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  if tg_op = 'DELETE' then raise exception 'mission_publication_instructions_immutable'; end if;
+  if old.frozen_at is not null then raise exception 'mission_publication_instructions_frozen'; end if;
+  return new;
+end;
+$$;
+create trigger mission_publication_instructions_immutable
+  before update or delete on public.mission_publication_instructions
+  for each row execute function private.guard_publication_instruction_mutation();
+create or replace function private.set_publication_instructions(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_operator uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_idempotency_key uuid, p_instructions jsonb
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_reason text := nullif(btrim(p_instructions->>'override_reason'), '');
+  v_changed boolean;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  if p_expected_state is null or btrim(p_expected_state) = ''
+    or p_expected_revision is null or p_expected_revision < 0 or p_idempotency_key is null
+    or jsonb_typeof(p_instructions) <> 'object'
+    or nullif(btrim(p_instructions->>'publication_instructions'), '') is null
+    or coalesce((p_instructions->>'publication_window_hours') ~ '^[1-9][0-9]*$', false) is not true
+    or case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
+      select 1 from jsonb_array_elements(p_instructions->'required_disclosures') disclosure
+      where jsonb_typeof(disclosure) <> 'string' or nullif(btrim(disclosure #>> '{}'), '') is null
+    ) else true end
+    or (p_instructions ? 'expected_account' and jsonb_typeof(p_instructions->'expected_account') not in ('null', 'string'))
+    or (jsonb_typeof(p_instructions->'expected_account') = 'string' and nullif(btrim(p_instructions->>'expected_account'), '') is null)
+    or jsonb_typeof(p_instructions->'proof_evidence_policy') <> 'object'
+  then return jsonb_build_object('code', 'VALIDATION_FAILED'); end if;
+
+  select workflow.* into v_workflow from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace for update;
+  if v_workflow.id is null then return jsonb_build_object('code', 'WORKFLOW_NOT_FOUND'); end if;
+  select item.* into v_item from public.mission_work_items item
+  where item.id = p_work_item and item.mission_workflow_id = p_workflow and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then return jsonb_build_object('code', 'WORKFLOW_NOT_FOUND'); end if;
+  select instruction.* into v_instruction from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item and instruction.workspace_id = p_workspace for update;
+  if v_instruction.id is null then return jsonb_build_object('code', 'PUBLICATION_SETUP_REQUIRED'); end if;
+  if p_idempotency_key = any(v_instruction.idempotency_keys) then
+    return jsonb_build_object('instruction', to_jsonb(v_instruction));
+  end if;
+  if v_instruction.frozen_at is not null then return jsonb_build_object('code', 'WRONG_STATE'); end if;
+  if v_item.state <> p_expected_state or v_instruction.revision <> p_expected_revision then
+    return jsonb_build_object('code', 'WORKFLOW_STALE', 'current_instruction', to_jsonb(v_instruction));
+  end if;
+  if v_item.state = 'approved_to_publish' then return jsonb_build_object('code', 'WRONG_STATE'); end if;
+
+  v_changed := v_instruction.publication_instructions is distinct from btrim(p_instructions->>'publication_instructions')
+    or v_instruction.publication_window_hours is distinct from (p_instructions->>'publication_window_hours')::integer
+    or v_instruction.required_disclosures is distinct from p_instructions->'required_disclosures'
+    or v_instruction.expected_account is distinct from nullif(btrim(p_instructions->>'expected_account'), '')
+    or v_instruction.proof_evidence_policy is distinct from p_instructions->'proof_evidence_policy';
+  if v_changed and v_reason is null then raise exception 'override_reason_required'; end if;
+
+  update public.mission_publication_instructions
+  set publication_instructions = btrim(p_instructions->>'publication_instructions'),
+      publication_window_hours = (p_instructions->>'publication_window_hours')::integer,
+      required_disclosures = p_instructions->'required_disclosures',
+      expected_account = nullif(btrim(p_instructions->>'expected_account'), ''),
+      proof_evidence_policy = p_instructions->'proof_evidence_policy',
+      override_reason = case when v_changed then v_reason else override_reason end,
+      overridden_by = case when v_changed then p_operator else overridden_by end,
+      overridden_at = case when v_changed then now() else overridden_at end,
+      revision = revision + 1,
+      idempotency_keys = array_append(idempotency_keys, p_idempotency_key)
+  where id = v_instruction.id and workspace_id = p_workspace
+  returning * into v_instruction;
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_instructions_overridden', 'mission_publication_instruction', v_instruction.id,
+    jsonb_build_object('revision', v_instruction.revision, 'override_reason', v_reason)
+  );
+  return jsonb_build_object('instruction', to_jsonb(v_instruction));
+end;
+$$;
+
+create or replace function public.set_publication_instructions(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_operator uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_idempotency_key uuid, p_instructions jsonb
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true then raise exception 'not_authorized'; end if;
+  perform private.assert_active_mission_operator(p_operator);
+  return private.set_publication_instructions(
+    p_workspace, p_workflow, p_work_item, p_operator, p_expected_state,
+    p_expected_revision, p_idempotency_key, p_instructions
+  );
+end;
+$$;
+revoke all on function private.set_publication_instructions(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb) from public, anon, authenticated, service_role;
+revoke all on function public.set_publication_instructions(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb) from public, anon, authenticated;
+grant execute on function public.set_publication_instructions(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb) to service_role;
+create or replace function private.approve_mission_version(
+  p_workflow uuid, p_work_item uuid, p_version uuid,
+  p_operator uuid, p_workspace uuid, p_expected_state text
+) returns public.mission_work_items
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_now timestamptz := now();
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_version public.mission_draft_versions;
+  v_round public.mission_review_rounds;
+  v_instruction public.mission_publication_instructions;
+  v_publish_due_at timestamptz;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  select workflow.* into v_workflow from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace for update;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+  select item.* into v_item from public.mission_work_items item
+  where item.id = p_work_item and item.mission_workflow_id = p_workflow and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+  if v_item.state <> p_expected_state or v_item.current_submitted_version_id <> p_version then raise exception 'stale'; end if;
+  if v_item.state not in ('submitted', 'under_review') then raise exception 'wrong_state'; end if;
+
+  select version.* into v_version from public.mission_draft_versions version
+  where version.id = p_version and version.mission_work_item_id = p_work_item and version.workspace_id = p_workspace
+  for update;
+  if v_version.id is null then raise exception 'stale'; end if;
+  if exists (
+    select 1 from public.mission_draft_versions newer
+    where newer.mission_work_item_id = p_work_item and newer.workspace_id = p_workspace
+      and newer.version_number > v_version.version_number
+  ) then raise exception 'stale'; end if;
+  select round.* into v_round from public.mission_review_rounds round
+  where round.mission_work_item_id = p_work_item and round.mission_draft_version_id = p_version
+    and round.workspace_id = p_workspace and round.state = 'open' for update;
+  if v_round.id is null then raise exception 'wrong_state'; end if;
+
+  select instruction.* into v_instruction from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item and instruction.workspace_id = p_workspace for update;
+  if v_instruction.id is null
+     or nullif(btrim(v_instruction.publication_instructions), '') is null
+     or v_instruction.publication_window_hours <= 0
+     or jsonb_typeof(v_instruction.required_disclosures) <> 'array'
+     or exists (
+       select 1 from jsonb_array_elements(v_instruction.required_disclosures) disclosure
+       where jsonb_typeof(disclosure) <> 'string' or nullif(btrim(disclosure #>> '{}'), '') is null
+     )
+     or jsonb_typeof(v_instruction.proof_evidence_policy) <> 'object'
+  then raise exception 'PUBLICATION_SETUP_REQUIRED'; end if;
+
+  v_publish_due_at := v_now + make_interval(hours => v_instruction.publication_window_hours);
+  if v_workflow.deadline is not null then v_publish_due_at := least(v_publish_due_at, v_workflow.deadline); end if;
+  update public.mission_publication_instructions
+  set publication_due_at = v_publish_due_at, frozen_at = coalesce(frozen_at, v_now)
+  where id = v_instruction.id and frozen_at is null
+  returning * into v_instruction;
+  if v_instruction.publication_due_at is null then raise exception 'PUBLICATION_SETUP_REQUIRED'; end if;
+
+  update public.mission_review_rounds
+  set state = 'approved_to_publish', reviewer_id = p_operator,
+      review_started_at = coalesce(review_started_at, v_now), decision_at = v_now
+  where id = v_round.id and workspace_id = p_workspace;
+  update public.mission_work_items
+  set state = 'approved_to_publish', approved_version_id = p_version,
+      current_reviewer_id = p_operator, updated_at = v_now
+  where id = p_work_item and mission_workflow_id = p_workflow and workspace_id = p_workspace
+  returning * into v_item;
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_version_approved_to_publish', 'mission_draft_version', p_version,
+    jsonb_build_object('publication_due_at', v_instruction.publication_due_at)
+  );
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_instructions_frozen', 'mission_publication_instruction', v_instruction.id,
+    jsonb_build_object('publication_due_at', v_instruction.publication_due_at)
+  );
+  perform private.refresh_mission_workflow_state(p_workflow);
+  return v_item;
+end;
+$$;
+
+create or replace function public.approve_mission_version(
+  p_workflow uuid, p_work_item uuid, p_version uuid,
+  p_operator uuid, p_workspace uuid, p_expected_state text
+) returns public.mission_work_items
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true then raise exception 'not_authorized'; end if;
+  perform private.assert_active_mission_operator(p_operator);
+  return private.approve_mission_version(p_workflow, p_work_item, p_version, p_operator, p_workspace, p_expected_state);
+end;
+$$;
+revoke all on function private.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) from public, anon, authenticated, service_role;
+revoke all on function public.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) from public, anon, authenticated;
+grant execute on function public.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) to service_role;

@@ -112,6 +112,11 @@ describe("MissionEditor active workflow authoring", () => {
     expect(screen.queryByDisplayValue("Reel")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Story post" } });
     fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
+    fireEvent.change(screen.getByLabelText("Publication instructions 1"), { target: { value: "Publish the approved story" } });
+    fireEvent.change(screen.getByLabelText("Publication window hours 1"), { target: { value: "24" } });
+    fireEvent.change(screen.getByLabelText("Required disclosures 1"), { target: { value: "#ad" } });
+    fireEvent.change(screen.getByLabelText("Expected account 1"), { target: { value: "@creator" } });
+    fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":1}' } });
     fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
     fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
     fireEvent.change(screen.getByLabelText("Checklist category 1 for deliverable 1"), { target: { value: "compliance" } });
@@ -135,6 +140,11 @@ describe("MissionEditor active workflow authoring", () => {
         position: 0,
         required: true,
         draft_due_offset_hours: 0,
+        publication_instructions: "Publish the approved story",
+        publication_window_hours: 24,
+        required_disclosures: ["#ad"],
+        expected_account: "@creator",
+        proof_evidence_policy: { screenshots: 1 },
         requirements: [{
           category: "quality",
           text: "Show product",

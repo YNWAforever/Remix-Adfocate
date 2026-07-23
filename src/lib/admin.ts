@@ -586,6 +586,11 @@ export type MissionDeliverableTemplateInput = {
   position: number;
   required: boolean;
   draft_due_offset_hours: number;
+  publication_instructions: string;
+  publication_window_hours: number;
+  required_disclosures: string[];
+  expected_account: string | null;
+  proof_evidence_policy: Record<string, unknown>;
   requirements: {
     id?: string;
     category: "format" | "key_message" | "compliance" | "quality" | "other";

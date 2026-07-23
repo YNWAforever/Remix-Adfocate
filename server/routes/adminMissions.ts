@@ -29,6 +29,11 @@ export type MissionDeliverableTemplateInput = {
   position: number;
   required: boolean;
   draft_due_offset_hours: number;
+  publication_instructions: string;
+  publication_window_hours: number;
+  required_disclosures: string[];
+  expected_account: string | null;
+  proof_evidence_policy: Record<string, unknown>;
   requirements: {
     id?: string;
     category: "format" | "key_message" | "compliance" | "quality" | "other";
@@ -134,6 +139,26 @@ export function validateMissionWorkflowAuthoring(input: unknown) {
     if (typeof template.draft_due_offset_hours !== "number" || !Number.isInteger(template.draft_due_offset_hours) || template.draft_due_offset_hours < 0) {
       errors[`${key}.draft_due_offset_hours`] = "Must be a non-negative integer";
     }
+    if (policy.creator_workflow_mode === "active_workspace") {
+      if (typeof template.publication_instructions !== "string" || !template.publication_instructions.trim()) {
+        errors[`${key}.publication_instructions`] = "Publication instructions are required";
+      }
+      if (typeof template.publication_window_hours !== "number" || !Number.isInteger(template.publication_window_hours) || template.publication_window_hours <= 0) {
+        errors[`${key}.publication_window_hours`] = "Must be a positive integer";
+      }
+      if (!Array.isArray(template.required_disclosures)) {
+        errors[`${key}.required_disclosures`] = "Must be an array";
+      } else {
+        template.required_disclosures.forEach((disclosure, disclosureIndex) => {
+          if (typeof disclosure !== "string" || !disclosure.trim()) errors[`${key}.required_disclosures.${disclosureIndex}`] = "Disclosure is required";
+        });
+      }
+      if (!(template.expected_account === null || template.expected_account === undefined
+        || (typeof template.expected_account === "string" && template.expected_account.trim()))) {
+        errors[`${key}.expected_account`] = "Must be null or a non-empty string";
+      }
+      if (!isRecord(template.proof_evidence_policy)) errors[`${key}.proof_evidence_policy`] = "Must be an object";
+    }
 
     if (!Array.isArray(template.requirements)) {
       errors[`${key}.requirements`] = "Must be an array";
@@ -220,7 +245,7 @@ const MISSION_COLS =
   "deliverables, requirements, platforms, effort, " +
   "target_audience, dos, donts, key_messages, reference_links, " +
   "creator_workflow_mode, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, " +
-  "deliverable_templates:mission_deliverable_templates!mission_templates_mission_workspace_fk(id, title, platform, position, required, draft_due_offset_hours, " +
+  "deliverable_templates:mission_deliverable_templates!mission_templates_mission_workspace_fk(id, title, platform, position, required, draft_due_offset_hours, publication_instructions, publication_window_hours, required_disclosures, expected_account, proof_evidence_policy, " +
   "requirements:mission_deliverable_requirements!mission_requirements_template_workspace_fk(id, category, text:requirement_text, required, position)), " +
   "created_at, updated_at, published_at, closed_at";
 

@@ -45,6 +45,11 @@ describe("active mission authoring contract", () => {
         position: 0,
         required: true,
         draft_due_offset_hours: 12,
+        publication_instructions: "Publish the approved social video",
+        publication_window_hours: 48,
+        required_disclosures: ["#ad"],
+        expected_account: null,
+        proof_evidence_policy: {},
         requirements: [
           { category: "compliance", text: "Show #ad", required: true, position: 0 },
           { category: "compliance", text: "Show the product", required: true, position: 1 },
@@ -149,6 +154,11 @@ describe("active mission authoring contract", () => {
         position: 0,
         required: true,
         draft_due_offset_hours: 12,
+        publication_instructions: "Publish the approved reel",
+        publication_window_hours: 48,
+        required_disclosures: ["#ad"],
+        expected_account: null,
+        proof_evidence_policy: {},
         requirements: [{ category: "compliance" as const, text: "Use #ad", required: true, position: 0 }],
       }],
     };
