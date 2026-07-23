@@ -41,6 +41,15 @@ describe("active mission domain state", () => {
     ).toBe("approved_to_publish");
   });
 
+  it("preserves approved to publish when there are no required items", () => {
+    expect(
+      deriveWorkflowState({
+        fulfillment: null,
+        items: [],
+      }),
+    ).toBe("approved_to_publish");
+  });
+
   it("derives revision requested from an optional item", () => {
     expect(
       deriveWorkflowState({

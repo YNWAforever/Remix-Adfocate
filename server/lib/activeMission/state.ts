@@ -49,7 +49,10 @@ export function deriveWorkflowState({
   }
 
   const requiredItems = items.filter((item) => item.required);
-  if (requiredItems.every((item) => item.state === "proof_verified")) {
+  if (
+    requiredItems.length > 0 &&
+    requiredItems.every((item) => item.state === "proof_verified")
+  ) {
     return "proof_verified";
   }
   if (
