@@ -86,12 +86,25 @@ create table public.mission_publication_proof_assets (
   unique (id, workspace_id)
 );
 
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conrelid = 'public.brand_users'::regclass
+      and conname = 'brand_users_user_workspace_unique'
+  ) then
+    alter table public.brand_users
+      add constraint brand_users_user_workspace_unique unique (user_id, workspace_id);
+  end if;
+end;
+$$;
 create table public.mission_publication_proof_reviews (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null,
   mission_publication_proof_attempt_id uuid not null,
   decision text not null check (decision in ('verified', 'rejected')),
-  reviewer_id uuid not null references auth.users(id),
+  reviewer_id uuid not null,
   reviewed_at timestamptz not null default now(),
   summary text not null check (btrim(summary) <> ''),
   created_at timestamptz not null default now(),
@@ -100,6 +113,9 @@ create table public.mission_publication_proof_reviews (
   constraint mission_publication_proof_reviews_attempt_workspace_fk
     foreign key (mission_publication_proof_attempt_id, workspace_id)
     references public.mission_publication_proof_attempts(id, workspace_id) on delete cascade,
+  constraint mission_publication_proof_reviews_reviewer_workspace_fk
+    foreign key (reviewer_id, workspace_id)
+    references public.brand_users(user_id, workspace_id),
   unique (workspace_id, id),
   unique (id, workspace_id)
 );

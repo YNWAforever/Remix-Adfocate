@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import {
   activeMissionIntegrationSkipReason,
   creatorRewardSnapshot,
+  makeBrand,
   makeCreator,
   seedActiveMission,
   serviceForTests,
@@ -52,6 +53,8 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("foreign key (mission_work_item_id, workspace_id)\n    references public.mission_work_items(id, workspace_id)");
     expect(sql).toContain("foreign key (mission_publication_proof_attempt_id, workspace_id)\n    references public.mission_publication_proof_attempts(id, workspace_id)");
     expect(sql).toContain("foreign key (mission_publication_proof_review_id, workspace_id)\n    references public.mission_publication_proof_reviews(id, workspace_id)");
+    expect(sql).toContain("add constraint brand_users_user_workspace_unique unique (user_id, workspace_id)");
+    expect(sql).toContain("foreign key (reviewer_id, workspace_id)\n    references public.brand_users(user_id, workspace_id)");
     expect(sql).toContain("mission_publication_proof_reviews_one_terminal_decision_idx");
 
     for (const policy of [
@@ -757,11 +760,35 @@ suite(suiteName, () => {
     });
     expect(crossWorkspaceAsset.error?.code).toBe("23503");
 
-    const review = await svc.from("mission_publication_proof_reviews").insert({
+    const creatorReview = await svc.from("mission_publication_proof_reviews").insert({
       workspace_id: item.data!.workspace_id,
       mission_publication_proof_attempt_id: attempt.data!.id,
       decision: "verified",
       reviewer_id: own.creator.id,
+      summary: "Creator identities cannot review publication proof",
+    });
+    expect(creatorReview.error?.code).toBe("23503");
+
+    const foreignWorkspaceOperator = await makeBrand(`publication-foreign-reviewer-${id}@test.local`);
+    const foreignWorkspaceReview = await svc.from("mission_publication_proof_reviews").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      decision: "verified",
+      reviewer_id: foreignWorkspaceOperator.userId,
+      summary: "Foreign-workspace operators cannot review publication proof",
+    });
+    expect(foreignWorkspaceReview.error?.code).toBe("23503");
+
+    const sameWorkspaceOperator = await makeBrand(
+      `publication-reviewer-${id}@test.local`,
+      item.data!.workspace_id,
+      "member",
+    );
+    const review = await svc.from("mission_publication_proof_reviews").insert({
+      workspace_id: item.data!.workspace_id,
+      mission_publication_proof_attempt_id: attempt.data!.id,
+      decision: "verified",
+      reviewer_id: sameWorkspaceOperator.userId,
       summary: "Publication proof verified",
     }).select("id").single();
     expect(review.error).toBeNull();
