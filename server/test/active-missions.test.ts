@@ -905,9 +905,9 @@ describe("active mission publication authoring validation", () => {
       deliverable_templates: [{ ...completeTemplate, publication_window_hours: 0, required_disclosures: ["#ad", " "], proof_evidence_policy: [] }],
     } as never);
     expect(invalid.errors).toMatchObject({
-      "deliverable_templates.0.publication_window_hours": "Must be a positive integer",
-      "deliverable_templates.0.required_disclosures.1": "Disclosure is required",
-      "deliverable_templates.0.proof_evidence_policy": "Must be an object",
+      "deliverable_templates.0.publication_window_hours": "PUBLICATION_WINDOW_HOURS_INVALID",
+      "deliverable_templates.0.required_disclosures.1": "REQUIRED_DISCLOSURE_REQUIRED",
+      "deliverable_templates.0.proof_evidence_policy": "PROOF_EVIDENCE_POLICY_INVALID",
     });
   });
 });

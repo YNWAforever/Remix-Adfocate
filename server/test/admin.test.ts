@@ -59,6 +59,26 @@ describe("active mission authoring contract", () => {
     expect(result).toMatchObject({ ok: true, errors: {} });
   });
 
+  it("returns stable codes for every active publication-policy field", async () => {
+    const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
+    const result = validateMissionWorkflowAuthoring({
+      creator_workflow_mode: "active_workspace",
+      deliverable_templates: [{
+        title: "Reel", platform: null, position: 0, required: true, draft_due_offset_hours: 0,
+        publication_instructions: " ", publication_window_hours: 0,
+        required_disclosures: [" "], expected_account: " ", proof_evidence_policy: [], requirements: [],
+      }],
+    } as never);
+
+    expect(result.errors).toMatchObject({
+      "deliverable_templates.0.publication_instructions": "PUBLICATION_INSTRUCTIONS_REQUIRED",
+      "deliverable_templates.0.publication_window_hours": "PUBLICATION_WINDOW_HOURS_INVALID",
+      "deliverable_templates.0.required_disclosures.0": "REQUIRED_DISCLOSURE_REQUIRED",
+      "deliverable_templates.0.expected_account": "EXPECTED_ACCOUNT_INVALID",
+      "deliverable_templates.0.proof_evidence_policy": "PROOF_EVIDENCE_POLICY_INVALID",
+    });
+  });
+
   it("reports exact nested shape and scalar validation without throwing", async () => {
     const { validateMissionWorkflowAuthoring } = await import("../routes/adminMissions");
     const result = validateMissionWorkflowAuthoring({

@@ -141,23 +141,23 @@ export function validateMissionWorkflowAuthoring(input: unknown) {
     }
     if (policy.creator_workflow_mode === "active_workspace") {
       if (typeof template.publication_instructions !== "string" || !template.publication_instructions.trim()) {
-        errors[`${key}.publication_instructions`] = "Publication instructions are required";
+        errors[`${key}.publication_instructions`] = "PUBLICATION_INSTRUCTIONS_REQUIRED";
       }
       if (typeof template.publication_window_hours !== "number" || !Number.isInteger(template.publication_window_hours) || template.publication_window_hours <= 0) {
-        errors[`${key}.publication_window_hours`] = "Must be a positive integer";
+        errors[`${key}.publication_window_hours`] = "PUBLICATION_WINDOW_HOURS_INVALID";
       }
       if (!Array.isArray(template.required_disclosures)) {
-        errors[`${key}.required_disclosures`] = "Must be an array";
+        errors[`${key}.required_disclosures`] = "REQUIRED_DISCLOSURES_INVALID";
       } else {
         template.required_disclosures.forEach((disclosure, disclosureIndex) => {
-          if (typeof disclosure !== "string" || !disclosure.trim()) errors[`${key}.required_disclosures.${disclosureIndex}`] = "Disclosure is required";
+          if (typeof disclosure !== "string" || !disclosure.trim()) errors[`${key}.required_disclosures.${disclosureIndex}`] = "REQUIRED_DISCLOSURE_REQUIRED";
         });
       }
       if (!(template.expected_account === null || template.expected_account === undefined
         || (typeof template.expected_account === "string" && template.expected_account.trim()))) {
-        errors[`${key}.expected_account`] = "Must be null or a non-empty string";
+        errors[`${key}.expected_account`] = "EXPECTED_ACCOUNT_INVALID";
       }
-      if (!isRecord(template.proof_evidence_policy)) errors[`${key}.proof_evidence_policy`] = "Must be an object";
+      if (!isRecord(template.proof_evidence_policy)) errors[`${key}.proof_evidence_policy`] = "PROOF_EVIDENCE_POLICY_INVALID";
     }
 
     if (!Array.isArray(template.requirements)) {

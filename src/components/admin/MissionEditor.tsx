@@ -27,6 +27,15 @@ type Props = {
 const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
 let editorKeySequence = 0;
 const nextEditorKey = () => `mission-workflow-editor-${editorKeySequence++}`;
+const PUBLICATION_POLICY_ERROR_MESSAGE_KEYS: Record<string, string> = {
+  PUBLICATION_INSTRUCTIONS_REQUIRED: "app.admin.missionEditor.publicationInstructionsRequired",
+  PUBLICATION_WINDOW_HOURS_INVALID: "app.admin.missionEditor.publicationWindowInvalid",
+  REQUIRED_DISCLOSURES_INVALID: "app.admin.missionEditor.requiredDisclosuresInvalid",
+  REQUIRED_DISCLOSURE_REQUIRED: "app.admin.missionEditor.requiredDisclosuresInvalid",
+  EXPECTED_ACCOUNT_INVALID: "app.admin.missionEditor.expectedAccountInvalid",
+  PROOF_EVIDENCE_POLICY_INVALID: "app.admin.missionEditor.proofEvidencePolicyInvalid",
+};
+
 
 type EditableRequirement = MissionDeliverableTemplateInput["requirements"][number] & { editorKey: string };
 type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements" | "proof_evidence_policy"> & {
@@ -117,7 +126,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
       : -1;
     if (invalidEvidencePolicyIndex >= 0) {
       setErrors({
-        [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: t("app.admin.missionEditor.proofEvidencePolicyInvalid"),
+        [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: "PROOF_EVIDENCE_POLICY_INVALID",
       });
       return;
     }
@@ -150,7 +159,14 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
     }
   };
 
-  const Err = ({ k }: { k: string }) => (errors[k] ? <p className="text-xs font-bold text-red-600">{errors[k]}</p> : null);
+  const Err = ({ k, nested = false }: { k: string; nested?: boolean }) => {
+    const raw = errors[k] ?? (nested
+      ? Object.entries(errors).find(([field]) => field.startsWith(`${k}.`))?.[1]
+      : undefined);
+    if (!raw) return null;
+    const messageKey = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw];
+    return <p className="text-xs font-bold text-red-600">{messageKey ? t(messageKey) : raw}</p>;
+  };
   const input = "h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50";
   const area = "w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm";
   const lockNote = (reason: string) => <span className="ml-2 text-xs text-[var(--color-soft-ink)]">{reason}</span>;
@@ -381,6 +397,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                  <Err k={`deliverable_templates.${templateIndex}.publication_instructions`} />
                 <label className="block text-sm">{t("app.admin.missionEditor.publicationWindow")}
                   <input
                     aria-label={t("app.admin.missionEditor.publicationWindowAria", { position: templateIndex + 1 })}
@@ -396,6 +413,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                  <Err k={`deliverable_templates.${templateIndex}.publication_window_hours`} />
                 <label className="block text-sm">{t("app.admin.missionEditor.requiredDisclosures")}
                   <textarea
                     aria-label={t("app.admin.missionEditor.requiredDisclosuresAria", { position: templateIndex + 1 })}
@@ -413,6 +431,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                  <Err k={`deliverable_templates.${templateIndex}.required_disclosures`} nested />
                 <label className="block text-sm">{t("app.admin.missionEditor.expectedAccount")}
                   <input
                     aria-label={t("app.admin.missionEditor.expectedAccountAria", { position: templateIndex + 1 })}
@@ -426,6 +445,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                  <Err k={`deliverable_templates.${templateIndex}.expected_account`} />
                 <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
                   <textarea
                     aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position: templateIndex + 1 })}

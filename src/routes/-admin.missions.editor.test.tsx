@@ -147,4 +147,52 @@ describe("MissionEditor", () => {
     expect(await screen.findByText("Proof evidence policy must be a valid JSON object.")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["en", [
+      "Publication instructions are required.",
+      "Publication window must be a positive whole number.",
+      "Required disclosures cannot contain blank entries.",
+      "Expected account must be blank or a non-empty value.",
+      "Proof evidence policy must be a valid JSON object.",
+    ]],
+    ["zh", [
+      "請輸入發佈指示。",
+      "發佈時限必須是正整數。",
+      "必須披露字句不可包含空白項目。",
+      "預期帳戶必須留空或輸入非空白內容。",
+      "發佈證明要求必須是有效的 JSON 物件。",
+    ]],
+  ] as const)("localizes every publication-policy server error in %s", async (locale, messages) => {
+    const onSave = vi.fn().mockRejectedValue(new AdminRequestError("bad", "VALIDATION_ERROR", {
+      "deliverable_templates.0.publication_instructions": "PUBLICATION_INSTRUCTIONS_REQUIRED",
+      "deliverable_templates.0.publication_window_hours": "PUBLICATION_WINDOW_HOURS_INVALID",
+      "deliverable_templates.0.required_disclosures.0": "REQUIRED_DISCLOSURE_REQUIRED",
+      "deliverable_templates.0.expected_account": "EXPECTED_ACCOUNT_INVALID",
+      "deliverable_templates.0.proof_evidence_policy": "PROOF_EVIDENCE_POLICY_INVALID",
+    }));
+    renderLocalizedEditor(locale, { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+    await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
+    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    fireEvent.click(screen.getAllByRole("button").at(-1)!);
+
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    for (const message of messages) expect(await screen.findByText(message)).toBeInTheDocument();
+  });
+
+  it("preserves unknown Task 3 and legacy server field messages", async () => {
+    const onSave = vi.fn().mockRejectedValue(new AdminRequestError("bad", "VALIDATION_ERROR", {
+      title: "Legacy title detail",
+      "deliverable_templates.0.publication_instructions": "Unrecognized publication detail",
+    }));
+    renderLocalizedEditor("zh", { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+    await waitFor(() => expect(document.documentElement.lang).toBe("zh-Hant-HK"));
+    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    fireEvent.click(screen.getAllByRole("button").at(-1)!);
+
+    expect(await screen.findByText("Legacy title detail")).toBeInTheDocument();
+    expect(screen.getByText("Unrecognized publication detail")).toBeInTheDocument();
+  });
 });

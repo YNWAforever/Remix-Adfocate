@@ -33,6 +33,10 @@ describe("mission publication policy dictionary", () => {
       "app.admin.missionEditor.expectedAccountAria",
       "app.admin.missionEditor.proofEvidencePolicy",
       "app.admin.missionEditor.proofEvidencePolicyAria",
+      "app.admin.missionEditor.publicationInstructionsRequired",
+      "app.admin.missionEditor.publicationWindowInvalid",
+      "app.admin.missionEditor.requiredDisclosuresInvalid",
+      "app.admin.missionEditor.expectedAccountInvalid",
       "app.admin.missionEditor.proofEvidencePolicyInvalid",
     ];
 
