@@ -125,8 +125,12 @@ export async function createProofEvidenceUploadGrant(
   const row = result.data as AssetRow | null;
   if (!row) throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "Publication evidence work item not found");
 
-  const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
-    .createSignedUploadUrl(row.storage_object_path, { upsert: false });
+  let signed: { data: { token: string } | null; error: { message: string } | null };
+  try {
+    signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET).createSignedUploadUrl(row.storage_object_path, { upsert: false });
+  } catch (error) {
+    signed = { data: null, error: { message: error instanceof Error ? error.message : "Unable to create upload grant" } };
+  }
   if (signed.error || !signed.data) {
     try {
       await client.rpc("abandon_publication_proof_asset", {
