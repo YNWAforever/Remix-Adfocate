@@ -7,6 +7,7 @@ import {
   validateSubmitInput,
   validateUploadGrantInput,
 } from "../lib/activeMission/creatorActions.js";
+import { validateProofEvidenceFinalizeInput, validateProofEvidenceUploadInput } from "../lib/activeMission/publicationProof.js";
 import {
   createActiveMissionRepository,
   type ActiveMissionOwner,
@@ -65,6 +66,22 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
     } catch (error) {
       return errorResponse(c, error);
     }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/assets/upload-grant", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const result = await (repository() as any).createProofEvidenceUploadGrant({ ...owner(c), workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body));
+      return c.json(result);
+    } catch (error) { return errorResponse(c, error); }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/assets/:assetId/finalize", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const asset = await (repository() as any).finalizeProofEvidence({ ...owner(c), workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body));
+      return c.json({ asset });
+    } catch (error) { return errorResponse(c, error); }
   });
 
   routes.post("/:submissionId/work-items/:workItemId/assets/upload-grant", async (c) => {
