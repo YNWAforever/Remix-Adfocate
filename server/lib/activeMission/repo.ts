@@ -1,8 +1,8 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+﻿import type { SupabaseClient } from "@supabase/supabase-js";
 import { ActiveMissionError } from "./errors.js";
 import { validateDraftPatch } from "./state.js";
 import type { DraftPatch, FulfillmentState, WorkflowState, WorkItemState } from "./types.js";
-import { createProofEvidenceUploadGrant, finalizeProofEvidence, type ProofEvidenceFinalizeInput, type ProofEvidenceUploadInput, type PublicationProofOwner } from "./publicationProof.js";
+import { createProofEvidenceUploadGrant, finalizeProofEvidence, type ProofEvidenceFinalizeInput, type ProofEvidenceUploadInput, type PublicationProofOwner, type ProofMutationContext } from "./publicationProof.js";
 import {
   createUploadGrant as createCreatorUploadGrant,
   finalizeAsset as finalizeCreatorAsset,
@@ -159,8 +159,8 @@ export interface ActiveMissionRepository {
   saveDraft(owner: ActiveMissionOwner & { workItemId: string }, input: DraftSaveInput): Promise<MissionDraft>;
   createUploadGrant(owner: ActiveMissionOwner & { workItemId: string }, input: UploadGrantInput): ReturnType<typeof createCreatorUploadGrant>;
   finalizeAsset(owner: ActiveMissionOwner & { workItemId: string; assetId: string }, input: FinalizeAssetInput): ReturnType<typeof finalizeCreatorAsset>;
-  createProofEvidenceUploadGrant(owner: PublicationProofOwner, input: ProofEvidenceUploadInput): ReturnType<typeof createProofEvidenceUploadGrant>;
-  finalizeProofEvidence(owner: PublicationProofOwner & { assetId: string }, input: ProofEvidenceFinalizeInput): ReturnType<typeof finalizeProofEvidence>;
+  createProofEvidenceUploadGrant(owner: PublicationProofOwner, input: ProofEvidenceUploadInput, context?: ProofMutationContext): ReturnType<typeof createProofEvidenceUploadGrant>;
+  finalizeProofEvidence(owner: PublicationProofOwner & { assetId: string }, input: ProofEvidenceFinalizeInput, context?: ProofMutationContext): ReturnType<typeof finalizeProofEvidence>;
   submitDraft(owner: ActiveMissionOwner & { workItemId: string }, input: SubmitDraftInput): ReturnType<typeof submitCreatorDraft>;
   receiveFulfillment(owner: ActiveMissionOwner): Promise<MissionWorkflow>;
 }
@@ -628,12 +628,12 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
       return finalizeCreatorAsset(client, owner, input);
     },
 
-    async createProofEvidenceUploadGrant(owner, input) {
-      return createProofEvidenceUploadGrant(client, owner, input);
+    async createProofEvidenceUploadGrant(owner, input, context) {
+      return createProofEvidenceUploadGrant(client, owner, input, context);
     },
 
-    async finalizeProofEvidence(owner, input) {
-      return finalizeProofEvidence(client, owner, input);
+    async finalizeProofEvidence(owner, input, context) {
+      return finalizeProofEvidence(client, owner, input, context);
     },
 
     async submitDraft(owner, input) {

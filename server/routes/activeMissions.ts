@@ -1,4 +1,4 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
+﻿import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { ActiveMissionError, statusFor } from "../lib/activeMission/errors.js";
@@ -71,7 +71,7 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
   routes.post("/:submissionId/publication/:workItemId/assets/upload-grant", async (c) => {
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
-      const result = await (repository() as any).createProofEvidenceUploadGrant({ ...owner(c), workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body));
+      const result = await (repository() as any).createProofEvidenceUploadGrant({ ...owner(c), workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), { expectedState: body.expectedState, expectedRevision: body.expectedRevision, idempotencyKey: c.req.header("Idempotency-Key") ?? undefined });
       return c.json(result);
     } catch (error) { return errorResponse(c, error); }
   });
@@ -79,7 +79,7 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
   routes.post("/:submissionId/publication/:workItemId/assets/:assetId/finalize", async (c) => {
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
-      const asset = await (repository() as any).finalizeProofEvidence({ ...owner(c), workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body));
+      const asset = await (repository() as any).finalizeProofEvidence({ ...owner(c), workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), { expectedState: body.expectedState, expectedRevision: body.expectedRevision, idempotencyKey: c.req.header("Idempotency-Key") ?? undefined });
       return c.json({ asset });
     } catch (error) { return errorResponse(c, error); }
   });

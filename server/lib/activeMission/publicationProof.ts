@@ -24,6 +24,8 @@ export type PublicationProofOwner = {
   workItemId: string;
 };
 
+export type ProofMutationContext = { expectedState?: string; expectedRevision?: number; idempotencyKey?: string };
+
 export type ProofEvidenceUploadInput = {
   fileName: string;
   contentType: keyof typeof EXTENSIONS;
@@ -99,9 +101,12 @@ export async function createProofEvidenceUploadGrant(
   client: SupabaseClient,
   owner: PublicationProofOwner,
   input: ProofEvidenceUploadInput,
+  context: ProofMutationContext = {},
 ) {
   const extension = EXTENSIONS[input.contentType];
-  const storageObjectPath = `${owner.creatorId}/${owner.submissionId}/${owner.workItemId}/proof-evidence/${randomUUID()}.${extension}`;
+  const workflowNamespace = owner.workflowId ?? owner.submissionId;
+  const storageObjectPath = `${owner.creatorId}/${workflowNamespace}/${owner.workItemId}/proof-evidence/${randomUUID()}.${extension}`;
+  const idempotencyKey = context.idempotencyKey ?? randomUUID();
   const result = await client.rpc("create_publication_proof_asset", {
     p_submission: owner.submissionId,
     p_creator: owner.creatorId,
@@ -112,6 +117,9 @@ export async function createProofEvidenceUploadGrant(
     p_byte_size: input.sizeBytes,
     p_storage_object_path: storageObjectPath,
     p_grant_seconds: PUBLICATION_PROOF_UPLOAD_GRANT_SECONDS,
+    p_expected_state: context.expectedState ?? null,
+    p_expected_revision: context.expectedRevision ?? null,
+    p_idempotency_key: idempotencyKey,
   });
   if (result.error) rpcFailure(result.error);
   const row = result.data as AssetRow | null;
@@ -154,6 +162,7 @@ export async function finalizeProofEvidence(
   client: SupabaseClient,
   owner: PublicationProofOwner & { assetId: string },
   input: ProofEvidenceFinalizeInput,
+  context: ProofMutationContext = {},
 ) {
   const result = await client.rpc("finalize_publication_proof_asset", {
     p_submission: owner.submissionId,
@@ -162,6 +171,9 @@ export async function finalizeProofEvidence(
     p_work_item: owner.workItemId,
     p_asset: owner.assetId,
     p_checksum: input.checksum,
+    p_expected_state: context.expectedState ?? null,
+    p_expected_revision: context.expectedRevision ?? null,
+    p_idempotency_key: context.idempotencyKey ?? randomUUID(),
   });
   if (result.error) rpcFailure(result.error);
   if (!result.data) throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "Publication evidence asset not found");
