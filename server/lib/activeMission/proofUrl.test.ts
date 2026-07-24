@@ -379,7 +379,7 @@ describe("inspectProofUrl DNS and redirects", () => {
     expect(result).toMatchObject({
       status: "unavailable",
       errorCategory: "too_many_redirects",
-      metadata: { httpStatusCategory: "unknown" },
+      metadata: { httpStatusCategory: "redirect" },
     });
     expect(fetch).toHaveBeenCalledTimes(4);
   });
@@ -470,6 +470,38 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
     expect(result).toMatchObject({
       status: "unavailable",
       errorCategory: "timeout",
+      metadata: { httpStatusCategory: "success" },
+    });
+  });
+
+  it("returns a network fallback when the response body connection resets", async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.error(
+          new TypeError("terminated", {
+            cause: { code: "ECONNRESET" },
+          }),
+        );
+      },
+    });
+    const deps = createDeps({
+      fetch: vi.fn(async () =>
+        new Response(body, {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        }),
+      ),
+    });
+
+    const result = await inspectProofUrl(
+      { url: "https://www.instagram.com/p/1", platform: "instagram" },
+      deps,
+    );
+
+    expect(result).toMatchObject({
+      status: "unavailable",
+      errorCategory: "network",
+      metadata: { httpStatusCategory: "success" },
     });
   });
 
@@ -515,7 +547,7 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
     expect(result).toMatchObject({
       status: "unavailable",
       errorCategory: "response_too_large",
-      metadata: { httpStatusCategory: "unknown" },
+      metadata: { httpStatusCategory: "success" },
     });
   });
 
@@ -545,6 +577,36 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
     );
 
     expect(result.errorCategory).toBe("response_too_large");
+    expect(bodyRead).toBe(false);
+  });
+
+  it("rejects Content-Length above Number.MAX_SAFE_INTEGER before reading", async () => {
+    let bodyRead = false;
+    const response = {
+      status: 200,
+      headers: new Headers({
+        "content-type": "text/html",
+        "content-length": "900719925474099200000",
+      }),
+      body: {
+        cancel: vi.fn(async () => undefined),
+        getReader() {
+          bodyRead = true;
+          throw new Error("body must not be read");
+        },
+      },
+    } as unknown as Response;
+    const deps = createDeps({
+      fetch: vi.fn(async () => response),
+    });
+
+    const result = await inspectProofUrl(
+      { url: "https://www.instagram.com/p/1", platform: "instagram" },
+      deps,
+    );
+
+    expect(result.errorCategory).toBe("response_too_large");
+    expect(result.metadata.httpStatusCategory).toBe("success");
     expect(bodyRead).toBe(false);
   });
 
@@ -614,6 +676,7 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
       status: "unavailable",
       errorCategory: "unsupported_content_type",
       metadata: {
+        httpStatusCategory: "success",
         pageTitle: null,
         openGraphType: null,
         declaredPublicationTime: null,
@@ -643,7 +706,7 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
       errorCategory: "malformed_metadata",
       metadata: {
         finalCanonicalUrl: "https://www.instagram.com/p/1",
-        httpStatusCategory: "unknown",
+        httpStatusCategory: "success",
         pageTitle: "Still bounded",
         openGraphType: null,
         declaredPublicationTime: null,
@@ -675,7 +738,7 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
         errorCategory: "platform_blocked",
         metadata: {
           finalCanonicalUrl: "https://www.instagram.com/p/1",
-          httpStatusCategory: "unknown",
+          httpStatusCategory: "client_error",
           pageTitle: null,
           openGraphType: null,
           declaredPublicationTime: null,
@@ -684,4 +747,33 @@ describe("inspectProofUrl bounded fetch and metadata", () => {
       });
     },
   );
+
+  it.each([
+    [404, "client_error"],
+    [500, "server_error"],
+  ] as const)(
+    "preserves the HTTP status category for unavailable HTTP %s",
+    async (status, httpStatusCategory) => {
+      const deps = createDeps({
+        fetch: vi.fn(async () =>
+          new Response(null, {
+            status,
+            headers: { "content-type": "text/html" },
+          }),
+        ),
+      });
+
+      const result = await inspectProofUrl(
+        { url: "https://www.instagram.com/p/1", platform: "instagram" },
+        deps,
+      );
+
+      expect(result).toMatchObject({
+        status: "unavailable",
+        errorCategory: "network",
+        metadata: { httpStatusCategory },
+      });
+    },
+  );
+
 });

@@ -140,6 +140,7 @@ export async function inspectProofUrl(
           currentUrl.toString(),
           "too_many_redirects",
           deps,
+          httpStatusCategory(response.status),
         );
       }
 
@@ -151,6 +152,7 @@ export async function inspectProofUrl(
           currentUrl.toString(),
           "network",
           deps,
+          httpStatusCategory(response.status),
         );
       }
 
@@ -196,6 +198,7 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "platform_blocked",
         deps,
+        httpStatusCategory(response.status),
       );
     }
 
@@ -206,6 +209,7 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "network",
         deps,
+        httpStatusCategory(response.status),
       );
     }
 
@@ -216,6 +220,7 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "unsupported_content_type",
         deps,
+        httpStatusCategory(response.status),
       );
     }
 
@@ -224,7 +229,7 @@ export async function inspectProofUrl(
     );
     if (
       declaredLength !== null &&
-      declaredLength > MAX_RESPONSE_BYTES
+      declaredLength > BigInt(MAX_RESPONSE_BYTES)
     ) {
       await cancelBody(response);
       return unavailable(
@@ -232,6 +237,7 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "response_too_large",
         deps,
+        httpStatusCategory(response.status),
       );
     }
 
@@ -242,6 +248,7 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "response_too_large",
         deps,
+        httpStatusCategory(response.status),
       );
     }
     if (body.kind === "timeout") {
@@ -250,6 +257,16 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "timeout",
         deps,
+        httpStatusCategory(response.status),
+      );
+    }
+    if (body.kind === "network") {
+      return unavailable(
+        normalizedUrl,
+        currentUrl.toString(),
+        "network",
+        deps,
+        httpStatusCategory(response.status),
       );
     }
     if (body.kind === "malformed") {
@@ -258,13 +275,14 @@ export async function inspectProofUrl(
         currentUrl.toString(),
         "malformed_metadata",
         deps,
+        httpStatusCategory(response.status),
       );
     }
 
     const extracted = extractMetadata(body.html);
     const metadata = metadataSnapshot(
       currentUrl.toString(),
-      extracted.malformed ? "unknown" : "success",
+      httpStatusCategory(response.status),
       deps,
       extracted,
     );
@@ -500,13 +518,32 @@ function unavailable(
     "unsafe_destination"
   >,
   deps: ProofUrlDependencies,
+  statusCategory: ProofMetadataSnapshot["httpStatusCategory"] = "unknown",
 ): ProofUrlInspection {
   return {
     normalizedUrl,
     status: "unavailable",
     errorCategory: category,
-    metadata: metadataSnapshot(finalUrl, "unknown", deps),
+    metadata: metadataSnapshot(finalUrl, statusCategory, deps),
   };
+}
+
+function httpStatusCategory(
+  status: number,
+): ProofMetadataSnapshot["httpStatusCategory"] {
+  if (status >= 200 && status < 300) {
+    return "success";
+  }
+  if (status >= 300 && status < 400) {
+    return "redirect";
+  }
+  if (status >= 400 && status < 500) {
+    return "client_error";
+  }
+  if (status >= 500 && status < 600) {
+    return "server_error";
+  }
+  return "unknown";
 }
 
 function metadataSnapshot(
@@ -567,13 +604,12 @@ function isHtml(contentType: string | null): boolean {
   return mediaType === "text/html" || mediaType === "application/xhtml+xml";
 }
 
-function parseContentLength(value: string | null): number | null {
+function parseContentLength(value: string | null): bigint | null {
   if (value === null || !/^\d+$/.test(value.trim())) {
     return null;
   }
 
-  const length = Number(value);
-  return Number.isSafeInteger(length) ? length : null;
+  return BigInt(value.trim());
 }
 
 async function readBoundedBody(
@@ -583,6 +619,7 @@ async function readBoundedBody(
   | { kind: "ok"; html: string }
   | { kind: "too_large" }
   | { kind: "timeout" }
+  | { kind: "network" }
   | { kind: "malformed" }
 > {
   if (!response.body) {
@@ -609,7 +646,7 @@ async function readBoundedBody(
     }
   } catch (error) {
     return {
-      kind: isTimeout(error, signal) ? "timeout" : "malformed",
+      kind: isTimeout(error, signal) ? "timeout" : "network",
     };
   } finally {
     reader.releaseLock();
