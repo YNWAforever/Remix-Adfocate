@@ -10,13 +10,17 @@ const EXTENSIONS = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
-  "application/pdf": "pdf",
+  "image/gif": "gif",
+  "video/mp4": "mp4",
+  "video/quicktime": "mov",
+  "video/webm": "webm",
 } as const;
 
 export type PublicationProofOwner = {
   submissionId: string;
   creatorId: string;
   workspaceId: string;
+  workflowId?: string;
   workItemId: string;
 };
 
@@ -36,7 +40,6 @@ type AssetRow = {
   byte_size: number | string;
   content_checksum?: string | null;
   upload_grant_expires_at?: string | null;
-  content_checksum?: string | null;
 };
 
 function validation(message: string): never {
