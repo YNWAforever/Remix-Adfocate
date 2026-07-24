@@ -5,6 +5,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { AdminRequestError } from "@/lib/admin";
 import type { AdminMission } from "@/lib/admin";
+import { I18nProvider } from "@/lib/i18n";
 
 vi.mock("@/lib/missionCategories", () => ({ MISSION_CATEGORIES: ["美容", "餐飲"], ALL_CATEGORY: "全部" }));
 
@@ -22,9 +23,16 @@ const active: AdminMission = {
 
 type EditorProps = React.ComponentProps<typeof MissionEditor>;
 const renderEditor = (props: EditorProps) => render(<MissionEditor {...props} />);
+const renderLocalizedEditor = (locale: "en" | "zh", props: EditorProps) => {
+  window.localStorage.setItem("lang", locale);
+  return render(<I18nProvider><MissionEditor {...props} /></I18nProvider>);
+};
 
 describe("MissionEditor", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.clear();
+  });
 
   it("shows CPM fields only for performance_cpm", () => {
     render(<MissionEditor mode="create" workspaces={[{ id: "w1", name: "Demo" }]} onSave={vi.fn()} />);
@@ -87,11 +95,11 @@ describe("MissionEditor", () => {
     fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
     fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
     fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
-    fireEvent.change(screen.getByLabelText("Publication instructions 1"), { target: { value: "Publish the approved reel" } });
-    fireEvent.change(screen.getByLabelText("Publication window hours 1"), { target: { value: "48" } });
-    fireEvent.change(screen.getByLabelText("Required disclosures 1"), { target: { value: "#ad\nPaid partnership" } });
-    fireEvent.change(screen.getByLabelText("Expected account 1"), { target: { value: "@creator" } });
-    fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":1}' } });
+    fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved reel" } });
+    fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "48" } });
+    fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad\nPaid partnership" } });
+    fireEvent.change(screen.getByLabelText("預期帳戶 1"), { target: { value: "@creator" } });
+    fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"screenshots":1}' } });
     fireEvent.click(screen.getAllByRole("button").at(-1)!);
 
     await waitFor(() => expect(onSave).toHaveBeenCalled());
@@ -102,5 +110,41 @@ describe("MissionEditor", () => {
       expected_account: "@creator",
       proof_evidence_policy: { screenshots: 1 },
     });
+  });
+
+  it.each([
+    ["en", "Publication instructions 1", "Proof evidence policy 1"],
+    ["zh", "發佈指示 1", "發佈證明要求 1"],
+  ] as const)("renders publication policy authoring copy in %s", async (locale, instructionsName, evidenceName) => {
+    renderLocalizedEditor(locale, {
+      mode: "create",
+      workspaces: [{ id: "w1", name: "W" }],
+      onSave: vi.fn(),
+    });
+    await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
+
+    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+
+    expect(screen.getByLabelText(instructionsName)).toBeInTheDocument();
+    expect(screen.getByLabelText(evidenceName)).toBeInTheDocument();
+  });
+
+  it("blocks save and shows localized validation when proof evidence policy JSON is malformed", async () => {
+    const onSave = vi.fn().mockResolvedValue({});
+    renderLocalizedEditor("en", {
+      mode: "create",
+      workspaces: [{ id: "w1", name: "W" }],
+      onSave,
+    });
+    await waitFor(() => expect(document.documentElement.lang).toBe("en"));
+
+    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":' } });
+    fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
+
+    expect(await screen.findByText("Proof evidence policy must be a valid JSON object.")).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
   });
 });

@@ -44,6 +44,35 @@ describe("active mission migration contract", () => {
     expect(sql).not.toMatch(/update\s+public\.(point_balances|earnings_balances)/i);
     expect(sql).not.toMatch(/update\s+public\.creators\s+set\s+xp/i);
   });
+  it("keeps operator override prose out of workflow event metadata", () => {
+    const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+    const eventStart = sql.indexOf("'mission_publication_instructions_overridden'");
+    const eventEnd = sql.indexOf("return jsonb_build_object", eventStart);
+    const eventWrite = sql.slice(eventStart, eventEnd);
+    const metadata = eventWrite.slice(eventWrite.indexOf("jsonb_build_object"));
+
+    expect(eventStart).toBeGreaterThanOrEqual(0);
+    expect(metadata).toContain("jsonb_build_object('revision', v_instruction.revision)");
+    expect(metadata).not.toMatch(
+      /override_reason|v_reason|publication_instructions|required_disclosures|expected_account|proof_evidence_policy/,
+    );
+  });
+
+  it("records no-op idempotency without incrementing revision or emitting an override event", () => {
+    const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+    const setterStart = sql.indexOf("create or replace function private.set_publication_instructions");
+    const setterEnd = sql.indexOf("create or replace function public.set_publication_instructions", setterStart);
+    const setter = sql.slice(setterStart, setterEnd);
+
+    expect(setter).toMatch(
+      /if not v_changed then[\s\S]*idempotency_keys\s*=\s*array_append\(idempotency_keys, p_idempotency_key\)[\s\S]*return jsonb_build_object\('instruction', to_jsonb\(v_instruction\)\);[\s\S]*end if;/,
+    );
+    expect(setter.indexOf("if not v_changed then")).toBeLessThan(
+      setter.indexOf("'mission_publication_instructions_overridden'"),
+    );
+  });
   it("defines the publication proof schema and tenant-safe immutable boundary", () => {
     const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
     const sql = existsSync(migrationPath)
@@ -708,17 +737,18 @@ suite(suiteName, () => {
     expect(moveCreator.error).toBeNull();
     const otherUser = userForJwt(other.jwt);
 
-    const instruction = await svc.from("mission_publication_instructions").insert({
-      workspace_id: item.data!.workspace_id,
-      mission_work_item_id: item.data!.id,
+    const instruction = await svc.from("mission_publication_instructions")
+      .select("id, publication_instructions, publication_window_hours, required_disclosures, expected_account, proof_evidence_policy")
+      .eq("mission_work_item_id", item.data!.id)
+      .single();
+    expect(instruction.error).toBeNull();
+    expect(instruction.data).toMatchObject({
       publication_instructions: "Publish the approved reel with the required disclosure",
       publication_window_hours: 48,
       required_disclosures: ["#ad"],
       expected_account: "@test_creator",
       proof_evidence_policy: { screenshots: 1 },
-      publication_due_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-    }).select("id").single();
-    expect(instruction.error).toBeNull();
+    });
     const duplicateInstruction = await svc.from("mission_publication_instructions").insert({
       workspace_id: item.data!.workspace_id,
       mission_work_item_id: item.data!.id,

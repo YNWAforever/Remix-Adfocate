@@ -7,6 +7,7 @@ import { PlatformPicker } from "./PlatformPicker";
 import { MissionBrief } from "@/components/MissionBrief";
 import { MissionFacts } from "@/components/MissionFacts";
 import type { Mission } from "@/lib/queries/kocmax";
+import { useI18n } from "@/lib/i18n";
 
 const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
 const REQUIREMENT_CATEGORIES = ["format", "key_message", "compliance", "quality", "other"] as const;
@@ -44,21 +45,23 @@ function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): Edit
   }));
 }
 
-function parsedEvidencePolicy(value: string, fallback: Record<string, unknown>) {
+function parsedEvidencePolicy(value: string): Record<string, unknown> | null {
   try {
     const parsed: unknown = JSON.parse(value);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : fallback;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
   } catch {
-    return fallback;
+    return null;
   }
 }
 
 function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
   return templates.map(({ editorKey: templateKey, proofEvidencePolicyText, requirements, ...template }) => {
     void templateKey;
+    const proofEvidencePolicy = parsedEvidencePolicy(proofEvidencePolicyText);
+    if (!proofEvidencePolicy) throw new Error("invalid_proof_evidence_policy");
     return {
       ...template,
-      proof_evidence_policy: parsedEvidencePolicy(proofEvidencePolicyText, template.proof_evidence_policy),
+      proof_evidence_policy: proofEvidencePolicy,
       requirements: requirements.map(({ editorKey: requirementKey, ...requirement }) => {
         void requirementKey;
         return requirement;
@@ -68,6 +71,7 @@ function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTem
 }
 
 export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
+  const { t } = useI18n();
   const published = mode === "edit" && initial?.status !== "draft";
   const [f, setF] = useState({
     workspace_id: initial?.workspace_id ?? workspaces[0]?.id ?? "",
@@ -108,6 +112,15 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
 
   const submit = async () => {
     setErrors({});
+    const invalidEvidencePolicyIndex = f.creator_workflow_mode === "active_workspace"
+      ? f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null)
+      : -1;
+    if (invalidEvidencePolicyIndex >= 0) {
+      setErrors({
+        [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: t("app.admin.missionEditor.proofEvidencePolicyInvalid"),
+      });
+      return;
+    }
     const body: MissionDraftInput = {
       workspace_id: f.workspace_id, slug: f.slug, title: f.title, mission_type: f.mission_type,
       description: f.description || null, category: f.category || null,
@@ -354,9 +367,9 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Publication instructions
+                <label className="block text-sm">{t("app.admin.missionEditor.publicationInstructions")}
                   <textarea
-                    aria-label={`Publication instructions ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.publicationInstructionsAria", { position: templateIndex + 1 })}
                     rows={3}
                     className={area}
                     value={template.publication_instructions}
@@ -368,9 +381,9 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Publication window (hours)
+                <label className="block text-sm">{t("app.admin.missionEditor.publicationWindow")}
                   <input
-                    aria-label={`Publication window hours ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.publicationWindowAria", { position: templateIndex + 1 })}
                     className={input}
                     type="number"
                     min={1}
@@ -383,9 +396,9 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Required disclosures (one per line)
+                <label className="block text-sm">{t("app.admin.missionEditor.requiredDisclosures")}
                   <textarea
-                    aria-label={`Required disclosures ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.requiredDisclosuresAria", { position: templateIndex + 1 })}
                     rows={3}
                     className={area}
                     value={template.required_disclosures.join("\n")}
@@ -400,9 +413,9 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Expected account (optional)
+                <label className="block text-sm">{t("app.admin.missionEditor.expectedAccount")}
                   <input
-                    aria-label={`Expected account ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.expectedAccountAria", { position: templateIndex + 1 })}
                     className={input}
                     value={template.expected_account ?? ""}
                     onChange={(event) => setF((previous) => ({
@@ -413,9 +426,9 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Proof evidence policy (JSON object)
+                <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
                   <textarea
-                    aria-label={`Proof evidence policy ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position: templateIndex + 1 })}
                     rows={2}
                     className={area}
                     value={template.proofEvidencePolicyText}
@@ -426,6 +439,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                       )),
                     }))}
                   />
+                  <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
                 </label>
                 <button
                   type="button"

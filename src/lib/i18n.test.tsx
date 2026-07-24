@@ -20,6 +20,27 @@ describe("i18n dictionary", () => {
   });
 });
 
+describe("mission publication policy dictionary", () => {
+  it("defines all authoring labels, accessible names, and validation copy in both locales", () => {
+    const keys = [
+      "app.admin.missionEditor.publicationInstructions",
+      "app.admin.missionEditor.publicationInstructionsAria",
+      "app.admin.missionEditor.publicationWindow",
+      "app.admin.missionEditor.publicationWindowAria",
+      "app.admin.missionEditor.requiredDisclosures",
+      "app.admin.missionEditor.requiredDisclosuresAria",
+      "app.admin.missionEditor.expectedAccount",
+      "app.admin.missionEditor.expectedAccountAria",
+      "app.admin.missionEditor.proofEvidencePolicy",
+      "app.admin.missionEditor.proofEvidencePolicyAria",
+      "app.admin.missionEditor.proofEvidencePolicyInvalid",
+    ];
+
+    for (const locale of ["en", "zh"] as const) {
+      for (const key of keys) expect(dict[locale][key], `${locale}.${key}`).toBeDefined();
+    }
+  });
+});
 describe("creator acquisition and auth recovery dictionary", () => {
   it("defines the Task 2 copy contract in both locales", () => {
     const keys = [

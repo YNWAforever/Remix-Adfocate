@@ -112,11 +112,11 @@ describe("MissionEditor active workflow authoring", () => {
     expect(screen.queryByDisplayValue("Reel")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Story post" } });
     fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
-    fireEvent.change(screen.getByLabelText("Publication instructions 1"), { target: { value: "Publish the approved story" } });
-    fireEvent.change(screen.getByLabelText("Publication window hours 1"), { target: { value: "24" } });
-    fireEvent.change(screen.getByLabelText("Required disclosures 1"), { target: { value: "#ad" } });
-    fireEvent.change(screen.getByLabelText("Expected account 1"), { target: { value: "@creator" } });
-    fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":1}' } });
+    fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved story" } });
+    fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "24" } });
+    fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad" } });
+    fireEvent.change(screen.getByLabelText("預期帳戶 1"), { target: { value: "@creator" } });
+    fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"screenshots":1}' } });
     fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
     fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
     fireEvent.change(screen.getByLabelText("Checklist category 1 for deliverable 1"), { target: { value: "compliance" } });

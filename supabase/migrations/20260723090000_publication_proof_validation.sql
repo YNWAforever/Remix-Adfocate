@@ -526,7 +526,14 @@ begin
     or v_instruction.required_disclosures is distinct from p_instructions->'required_disclosures'
     or v_instruction.expected_account is distinct from nullif(btrim(p_instructions->>'expected_account'), '')
     or v_instruction.proof_evidence_policy is distinct from p_instructions->'proof_evidence_policy';
-  if v_changed and v_reason is null then raise exception 'override_reason_required'; end if;
+  if not v_changed then
+    update public.mission_publication_instructions
+    set idempotency_keys = array_append(idempotency_keys, p_idempotency_key)
+    where id = v_instruction.id and workspace_id = p_workspace
+    returning * into v_instruction;
+    return jsonb_build_object('instruction', to_jsonb(v_instruction));
+  end if;
+  if v_reason is null then raise exception 'override_reason_required'; end if;
 
   update public.mission_publication_instructions
   set publication_instructions = btrim(p_instructions->>'publication_instructions'),
@@ -534,9 +541,9 @@ begin
       required_disclosures = p_instructions->'required_disclosures',
       expected_account = nullif(btrim(p_instructions->>'expected_account'), ''),
       proof_evidence_policy = p_instructions->'proof_evidence_policy',
-      override_reason = case when v_changed then v_reason else override_reason end,
-      overridden_by = case when v_changed then p_operator else overridden_by end,
-      overridden_at = case when v_changed then now() else overridden_at end,
+      override_reason = v_reason,
+      overridden_by = p_operator,
+      overridden_at = now(),
       revision = revision + 1,
       idempotency_keys = array_append(idempotency_keys, p_idempotency_key)
   where id = v_instruction.id and workspace_id = p_workspace
@@ -547,7 +554,7 @@ begin
   ) values (
     p_workspace, p_workflow, p_work_item, 'operator', p_operator,
     'mission_publication_instructions_overridden', 'mission_publication_instruction', v_instruction.id,
-    jsonb_build_object('revision', v_instruction.revision, 'override_reason', v_reason)
+    jsonb_build_object('revision', v_instruction.revision)
   );
   return jsonb_build_object('instruction', to_jsonb(v_instruction));
 end;
