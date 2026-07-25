@@ -103,10 +103,11 @@ export async function createProofEvidenceUploadGrant(
   input: ProofEvidenceUploadInput,
   context: ProofMutationContext = {},
 ) {
+  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !context.idempotencyKey.trim()) validation("expectedState, expectedRevision, and Idempotency-Key are required");
   const extension = EXTENSIONS[input.contentType];
   const workflowNamespace = owner.workflowId ?? owner.submissionId;
   const storageObjectPath = `${owner.creatorId}/${workflowNamespace}/${owner.workItemId}/proof-evidence/${randomUUID()}.${extension}`;
-  const idempotencyKey = context.idempotencyKey ?? randomUUID();
+  const idempotencyKey = context.idempotencyKey;
   const result = await client.rpc("create_publication_proof_asset", {
     p_submission: owner.submissionId,
     p_creator: owner.creatorId,
@@ -117,8 +118,8 @@ export async function createProofEvidenceUploadGrant(
     p_byte_size: input.sizeBytes,
     p_storage_object_path: storageObjectPath,
     p_grant_seconds: PUBLICATION_PROOF_UPLOAD_GRANT_SECONDS,
-    p_expected_state: context.expectedState ?? null,
-    p_expected_revision: context.expectedRevision ?? null,
+    p_expected_state: context.expectedState,
+    p_expected_revision: context.expectedRevision,
     p_idempotency_key: idempotencyKey,
   });
   if (result.error) rpcFailure(result.error);
@@ -168,6 +169,7 @@ export async function finalizeProofEvidence(
   input: ProofEvidenceFinalizeInput,
   context: ProofMutationContext = {},
 ) {
+  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !context.idempotencyKey.trim()) validation("expectedState, expectedRevision, and Idempotency-Key are required");
   const result = await client.rpc("finalize_publication_proof_asset", {
     p_submission: owner.submissionId,
     p_creator: owner.creatorId,
@@ -175,9 +177,9 @@ export async function finalizeProofEvidence(
     p_work_item: owner.workItemId,
     p_asset: owner.assetId,
     p_checksum: input.checksum,
-    p_expected_state: context.expectedState ?? null,
-    p_expected_revision: context.expectedRevision ?? null,
-    p_idempotency_key: context.idempotencyKey ?? randomUUID(),
+    p_expected_state: context.expectedState,
+    p_expected_revision: context.expectedRevision,
+    p_idempotency_key: context.idempotencyKey,
   });
   if (result.error) rpcFailure(result.error);
   if (!result.data) throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "Publication evidence asset not found");

@@ -30,7 +30,7 @@ describe("publication proof evidence", () => {
 
   it("creates an owner-scoped ten-minute grant at the canonical proof-evidence path", async () => {
     const mocked = clientFor();
-    const result = await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.jpg", contentType: "image/jpeg", sizeBytes: 1024 });
+    const result = await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.jpg", contentType: "image/jpeg", sizeBytes: 1024 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" });
     expect(result).toMatchObject({ token: "proof-token", expiresInSeconds: PUBLICATION_PROOF_UPLOAD_GRANT_SECONDS, asset: { uploadState: "pending" } });
     expect(result.upload.path).toMatch(/^creator-1\/submission-1\/item-1\/proof-evidence\/.+\.jpg$/);
     expect(mocked.rpc).toHaveBeenCalledWith("create_publication_proof_asset", expect.objectContaining({
@@ -43,25 +43,25 @@ describe("publication proof evidence", () => {
   it("cleans up the pending row when signing fails", async () => {
     const mocked = clientFor();
     mocked.createSignedUploadUrl.mockResolvedValue({ data: null, error: { message: "storage unavailable" } });
-    await expect(createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }))
+    await expect(createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" }))
       .rejects.toMatchObject({ code: "UNKNOWN", message: "storage unavailable" });
     expect(mocked.rpc).toHaveBeenNthCalledWith(2, "abandon_publication_proof_asset", expect.objectContaining({ p_asset: "asset-1", p_work_item: owner.workItemId }));
   });
 
   it("finalizes only through the owner/path-scoped RPC and is retry-safe", async () => {
     const mocked = clientFor({ id: "asset-1", storage_object_path: "path", upload_state: "ready", mime_type: "image/png", byte_size: 22, content_checksum: "sha256" });
-    const result = await finalizeProofEvidence(mocked.client, { ...owner, assetId: "asset-1" }, { checksum: "sha256" });
+    const result = await finalizeProofEvidence(mocked.client, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" });
     expect(result).toMatchObject({ id: "asset-1", uploadState: "ready", checksum: "sha256" });
     expect(mocked.rpc).toHaveBeenCalledWith("finalize_publication_proof_asset", expect.objectContaining({
       p_submission: owner.submissionId, p_creator: owner.creatorId, p_workspace: owner.workspaceId,
       p_work_item: owner.workItemId, p_asset: "asset-1", p_checksum: "sha256",
-      p_expected_state: null, p_expected_revision: null, p_idempotency_key: expect.any(String),
+      p_expected_state: "approved_to_publish", p_expected_revision: 0, p_idempotency_key: "idem-1",
     }));
   });
 
   it.each(["already_finalized", "already_assigned", "wrong_state"])("maps %s to a controlled state error", async (message) => {
     const rpc = vi.fn(async () => ({ data: null, error: { message } }));
-    await expect(finalizeProofEvidence({ rpc } as unknown as SupabaseClient, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }))
+    await expect(finalizeProofEvidence({ rpc } as unknown as SupabaseClient, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" }))
       .rejects.toMatchObject({ code: "WRONG_STATE" });
   });
 });
