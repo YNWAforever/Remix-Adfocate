@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -912,5 +912,15 @@ suite(suiteName, () => {
     const hiddenEvidence = await otherUser.storage.from("mission-publication-proof-assets").download(objectPath);
     expect(hiddenEvidence.error).not.toBeNull();
     await svc.storage.from("mission-publication-proof-assets").remove([objectPath]);
+  });
+});
+
+describe("publication proof asset rollout policy", () => {
+  it("uses the Phase 2 MIME map and workflow-scoped canonical path", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260725110000_publication_proof_asset_policy.sql"), "utf8");
+    expect(sql).toContain("video/quicktime");
+    expect(sql).toContain("video/webm");
+    expect(sql).toContain("v_workflow.id::text||'/'||p_work_item::text");
+    expect(sql).toContain("if v_asset.id is not null then return v_asset");
   });
 });
