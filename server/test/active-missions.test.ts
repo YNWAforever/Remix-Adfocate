@@ -1442,3 +1442,70 @@ describe("active mission publication proof finalize route", () => {
     expect(finalizeProofEvidence).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id, assetId: "asset-1" }), expect.objectContaining({ checksum: "sha256" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "55555555-5555-4555-8555-555555555555" });
   });
 });
+
+describe("active mission publication proof submit routes", () => {
+  it("returns the creator-safe publication projection for the requested work item", async () => {
+    const publication = {
+      workItemId: "item-1",
+      state: "approved_to_publish",
+      revision: 2,
+      instructions: { platform: "instagram", publicationInstructions: "Publish the approved reel" },
+      attempts: [],
+      currentAttempt: null,
+      acceptedAttempt: null,
+    };
+    const getPublication = vi.fn(async () => publication);
+    const repo = { getPublication } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ publication });
+    expect(getPublication).toHaveBeenCalledWith(owner, "item-1");
+  });
+
+  it("passes guarded immutable proof input to the repository", async () => {
+    const submitted = {
+      attempt: { id: "attempt-1", attemptNumber: 1, primaryUrl: "https://www.instagram.com/p/example/" },
+      publication: { workItemId: "item-1", state: "proof_submitted", revision: 3 },
+    };
+    const submitProof = vi.fn(async () => submitted);
+    const repo = { submitProof } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/proofs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": "66666666-6666-4666-8666-666666666666" },
+      body: JSON.stringify({
+        expectedState: "approved_to_publish", expectedRevision: 2,
+        primaryUrl: " https://www.instagram.com/p/example/ ",
+        additionalUrls: ["https://www.instagram.com/reel/other/"],
+        evidenceAssetIds: ["77777777-7777-4777-8777-777777777777"],
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(submitted);
+    expect(submitProof).toHaveBeenCalledWith(owner, "item-1", {
+      expectedState: "approved_to_publish", expectedRevision: 2,
+      idempotencyKey: "66666666-6666-4666-8666-666666666666",
+      primaryUrl: "https://www.instagram.com/p/example/",
+      additionalUrls: ["https://www.instagram.com/reel/other/"],
+      evidenceAssetIds: ["77777777-7777-4777-8777-777777777777"],
+    });
+  });
+
+  it("returns the current proof summary for a differing stale submission", async () => {
+    const currentPublication = {
+      workItemId: "item-1", state: "proof_submitted", revision: 3,
+      currentAttempt: { id: "attempt-1", attemptNumber: 1 },
+    };
+    const repo = {
+      submitProof: vi.fn(async () => {
+        throw new ActiveMissionError("WORKFLOW_STALE", "Publication proof state is stale", { currentPublication });
+      }),
+    } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/proofs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": "88888888-8888-4888-8888-888888888888" },
+      body: JSON.stringify({ expectedState: "approved_to_publish", expectedRevision: 2, primaryUrl: "https://www.instagram.com/p/different/" }),
+    });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "WORKFLOW_STALE", currentPublication });
+  });
+});

@@ -70,7 +70,9 @@ describe("publication proof evidence", () => {
     const context = { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "44444444-4444-4444-8444-444444444444" };
     await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, context);
     await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, context);
-    expect(mocked.rpc.mock.calls[0][1].p_storage_object_path).toBe(mocked.rpc.mock.calls[1][1].p_storage_object_path);
+    const calls = mocked.rpc.mock.calls as unknown as Array<[string, Record<string, unknown>]>;
+    expect(calls[0]?.[1].p_storage_object_path)
+      .toBe(calls[1]?.[1].p_storage_object_path);
   });
 });
 

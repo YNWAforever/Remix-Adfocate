@@ -13,7 +13,7 @@ begin
   if v_workflow.id is null then raise exception 'not_found'; end if;
   select item.* into v_item from public.mission_work_items item where item.id=p_work_item and item.mission_workflow_id=v_workflow.id and item.workspace_id=p_workspace;
   if v_item.id is null then raise exception 'not_found'; end if;
-  if v_item.state not in ('approved_to_publish','proof_correction_required') then raise exception 'wrong_state'; end if;
+  if v_item.state not in ('approved_to_publish','proof_correction_requested') then raise exception 'wrong_state'; end if;
   v_extension := case p_mime_type when 'image/jpeg' then 'jpg' when 'image/png' then 'png' when 'image/webp' then 'webp' when 'image/gif' then 'gif' when 'video/mp4' then 'mp4' when 'video/quicktime' then 'mov' else 'webm' end;
   if p_storage_object_path !~ ('^'||p_creator::text||'/'||v_workflow.id::text||'/'||p_work_item::text||'/proof-evidence/[0-9a-f-]+\\.'||v_extension||'$') then raise exception 'validation_failed'; end if;
   insert into public.mission_publication_proof_assets (workspace_id,mission_submission_id,mission_workflow_id,mission_work_item_id,creator_id,storage_object_path,original_filename,mime_type,byte_size,upload_state,upload_grant_expires_at)

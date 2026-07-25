@@ -13,7 +13,16 @@ begin
     if old.upload_state <> 'pending' then raise exception 'publication_proof_asset_immutable'; end if;
     return old;
   end if;
-  if old.upload_state <> 'pending' then raise exception 'publication_proof_asset_immutable'; end if;
+  if old.upload_state <> 'pending' then
+    if old.upload_state = 'finalized'
+       and old.mission_publication_proof_attempt_id is null
+       and new.mission_publication_proof_attempt_id is not null
+       and new.upload_state = old.upload_state
+       and (to_jsonb(new) - 'mission_publication_proof_attempt_id')
+           = (to_jsonb(old) - 'mission_publication_proof_attempt_id')
+    then return new; end if;
+    raise exception 'publication_proof_asset_immutable';
+  end if;
   if new.id <> old.id or new.workspace_id <> old.workspace_id or new.storage_object_path <> old.storage_object_path
      or new.original_filename <> old.original_filename or new.mime_type <> old.mime_type or new.byte_size <> old.byte_size
      or new.creator_id <> old.creator_id or new.mission_work_item_id <> old.mission_work_item_id

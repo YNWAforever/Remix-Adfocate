@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -928,7 +928,7 @@ describe("publication proof asset rollout policy", () => {
 describe("publication proof lifecycle guards", () => {
   it("restricts states and makes staging concurrent-safe", () => {
     const sql = readFileSync(resolve("supabase/migrations/20260725130000_publication_proof_asset_guards.sql"), "utf8");
-    expect(sql).toContain("v_item.state not in ('approved_to_publish','proof_correction_required')");
+    expect(sql).toContain("v_item.state not in ('approved_to_publish','proof_correction_requested')");
     expect(sql).toContain("on conflict (storage_object_path) do nothing");
     expect(sql).toContain("idempotency_conflict");
   });
@@ -939,6 +939,35 @@ describe("publication proof public RPC guards", () => {
     const sql = readFileSync(resolve("supabase/migrations/20260725143000_publication_proof_public_guards.sql"), "utf8");
     expect(sql).toContain("create or replace function public.create_publication_proof_asset");
     expect(sql).toContain("create or replace function public.finalize_publication_proof_asset");
-    expect(sql).toContain("proof_correction_required");
+    expect(sql).toContain("proof_correction_requested");
+  });
+});
+
+describe("publication proof immutable submit transaction", () => {
+  it("defines one guarded atomic submit RPC without reward or legacy mutations", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260723090000_publication_proof_validation.sql"),
+      "utf8",
+    ).toLowerCase().replace(/\r\n/g, "\n");
+    const start = sql.indexOf("create or replace function public.submit_mission_publication_proof");
+    const submit = sql.slice(start);
+    expect(start).toBeGreaterThanOrEqual(0);
+    for (const token of [
+      "p_submission uuid", "p_creator uuid", "p_workspace uuid", "p_work_item uuid",
+      "p_expected_state text", "p_expected_revision integer", "p_idempotency_key uuid",
+      "p_proof jsonb", "p_evidence_asset_ids uuid[]", "for update",
+      "mission_publication_proof_attempts", "mission_publication_proof_reviews",
+      "current_proof_attempt_id", "submitted_late", "content_checksum",
+      "mission_publication_proof_submitted", "refresh_mission_workflow_state",
+      "proof_correction_requested", "publication_due_at", "evidence_required",
+      "creator_id = p_creator", "submission_idempotency_key",
+      "current_publication",
+    ]) expect(submit, `missing immutable submit token: ${token}`).toContain(token);
+    expect(submit).toMatch(/attempt_number[\s\S]*coalesce\(max\([^)]*attempt_number/);
+    expect(submit).toMatch(/upload_state\s*=\s*'finalized'/);
+    expect(submit).toMatch(/mission_publication_proof_attempt_id\s+is\s+null/);
+    expect(submit).not.toMatch(/update\s+public\.mission_submissions\s+set\s+status/);
+    expect(submit).not.toMatch(/update\s+public\.(point_balances|earnings_balances)/);
+    expect(submit).not.toMatch(/update\s+public\.creators\s+set\s+xp/);
   });
 });

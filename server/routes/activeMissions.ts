@@ -7,7 +7,7 @@ import {
   validateSubmitInput,
   validateUploadGrantInput,
 } from "../lib/activeMission/creatorActions.js";
-import { validateProofEvidenceFinalizeInput, validateProofEvidenceUploadInput } from "../lib/activeMission/publicationProof.js";
+import { validateProofEvidenceFinalizeInput, validateProofEvidenceUploadInput, validateSubmitPublicationProofInput } from "../lib/activeMission/publicationProof.js";
 import {
   createActiveMissionRepository,
   type ActiveMissionOwner,
@@ -51,6 +51,33 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
   routes.get("/:submissionId/workspace", async (c) => {
     try {
       return c.json(await repository().getWorkspace(owner(c)));
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.get("/:submissionId/publication/:workItemId", async (c) => {
+    try {
+      const publication = await repository().getPublication(owner(c), c.req.param("workItemId"));
+      return c.json({ publication });
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/proofs", async (c) => {
+    try {
+      const body = await c.req.json<Record<string, unknown>>().catch(() => {
+        throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON");
+      });
+      const mutation = proofMutation(c, body);
+      const input = validateSubmitPublicationProofInput(body, mutation);
+      const result = await repository().submitProof(
+        owner(c),
+        c.req.param("workItemId"),
+        input,
+      );
+      return c.json(result);
     } catch (error) {
       return errorResponse(c, error);
     }

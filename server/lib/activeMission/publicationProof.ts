@@ -1,6 +1,8 @@
-﻿import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ActiveMissionError } from "./errors.js";
+import { inspectProofUrl, type PLATFORM_HOSTS, type ProofUrlDependencies } from "./proofUrl.js";
+import { normalizeProofInput } from "./state.js";
+import type { ProofInput } from "./types.js";
 
 export const PUBLICATION_PROOF_ASSET_BUCKET = "mission-publication-proof-assets";
 export const PUBLICATION_PROOF_UPLOAD_GRANT_SECONDS = 600;
@@ -185,6 +187,56 @@ export async function finalizeProofEvidence(
   if (result.error) rpcFailure(result.error);
   if (!result.data) throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "Publication evidence asset not found");
   return asset(result.data as AssetRow);
+}
+
+export type SubmitPublicationProofInput = ProofInput & {
+  expectedState: string;
+  expectedRevision: number;
+  idempotencyKey: string;
+};
+
+export type InspectedPublicationProof = {
+  primary_url: string;
+  additional_urls: string[];
+  metadata_status: "available" | "unavailable";
+  metadata_snapshot: Record<string, unknown>;
+  metadata_error_category: string | null;
+};
+
+export async function inspectPublicationProof(
+  input: ProofInput,
+  platform: keyof typeof PLATFORM_HOSTS,
+  deps?: ProofUrlDependencies,
+): Promise<{ proof: InspectedPublicationProof; evidenceAssetIds: string[] }> {
+  const normalized = normalizeProofInput(input);
+  const urls = [normalized.primaryUrl, ...(normalized.additionalUrls ?? [])];
+  const inspections = await Promise.all(
+    urls.map((url) => inspectProofUrl({ url, platform }, deps)),
+  );
+  const primary = inspections[0];
+  if (!primary) validation("primaryUrl is required");
+  return {
+    proof: {
+      primary_url: primary.normalizedUrl,
+      additional_urls: inspections.slice(1).map((inspection) => inspection.normalizedUrl),
+      metadata_status: primary.status === "available" ? "available" : "unavailable",
+      metadata_snapshot: primary.metadata as unknown as Record<string, unknown>,
+      metadata_error_category: primary.errorCategory,
+    },
+    evidenceAssetIds: normalized.evidenceAssetIds ?? [],
+  };
+}
+
+export function validateSubmitPublicationProofInput(
+  value: unknown,
+  context: ProofMutationContext,
+): SubmitPublicationProofInput {
+  if (!value || typeof value !== "object" || Array.isArray(value)) validation("Request body must be a JSON object");
+  if (typeof context.expectedState !== "string" || !context.expectedState.trim() ||
+      !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 ||
+      typeof context.idempotencyKey !== "string") validation("expectedState, expectedRevision, and Idempotency-Key are required");
+  const proof = normalizeProofInput(value);
+  return { ...proof, expectedState: context.expectedState.trim(), expectedRevision: context.expectedRevision as number, idempotencyKey: context.idempotencyKey };
 }
 
 

@@ -53,6 +53,7 @@ create table public.mission_publication_proof_attempts (
     check (jsonb_typeof(metadata_snapshot) = 'object'),
   metadata_error_category text check (metadata_error_category is null or btrim(metadata_error_category) <> ''),
   content_checksum text not null check (btrim(content_checksum) <> ''),
+  submission_idempotency_key uuid not null,
   constraint mission_publication_proof_attempts_workspace_fk
     foreign key (workspace_id) references public.workspaces(id) on delete cascade,
   constraint mission_publication_proof_attempts_work_item_workspace_fk
@@ -62,6 +63,7 @@ create table public.mission_publication_proof_attempts (
     foreign key (submitted_by, workspace_id)
     references public.creators(id, workspace_id),
   unique (workspace_id, mission_work_item_id, attempt_number),
+  unique (workspace_id, mission_work_item_id, submission_idempotency_key),
   unique (workspace_id, id),
   unique (id, workspace_id),
   unique (id, mission_work_item_id, workspace_id)
@@ -103,10 +105,12 @@ create table public.mission_publication_proof_reviews (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null,
   mission_publication_proof_attempt_id uuid not null,
-  decision text not null check (decision in ('verified', 'rejected')),
-  reviewer_id uuid not null,
-  reviewed_at timestamptz not null default now(),
-  summary text not null check (btrim(summary) <> ''),
+  review_number integer not null default 1 check (review_number > 0),
+  state text not null default 'open' check (state in ('open', 'correction_requested', 'verified')),
+  decision text check (decision is null or decision in ('verified', 'rejected')),
+  reviewer_id uuid,
+  reviewed_at timestamptz,
+  summary text check (summary is null or btrim(summary) <> ''),
   created_at timestamptz not null default now(),
   constraint mission_publication_proof_reviews_workspace_fk
     foreign key (workspace_id) references public.workspaces(id) on delete cascade,
@@ -117,7 +121,8 @@ create table public.mission_publication_proof_reviews (
     foreign key (reviewer_id, workspace_id)
     references public.brand_users(user_id, workspace_id),
   unique (workspace_id, id),
-  unique (id, workspace_id)
+  unique (id, workspace_id),
+  unique (workspace_id, mission_publication_proof_attempt_id, review_number)
 );
 create unique index mission_publication_proof_reviews_one_terminal_decision_idx
   on public.mission_publication_proof_reviews (workspace_id, mission_publication_proof_attempt_id)
@@ -682,3 +687,207 @@ $$;
 revoke all on function private.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) from public, anon, authenticated, service_role;
 revoke all on function public.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) from public, anon, authenticated;
 grant execute on function public.approve_mission_version(uuid, uuid, uuid, uuid, uuid, text) to service_role;
+
+create or replace function public.submit_mission_publication_proof(
+  p_submission uuid,
+  p_creator uuid,
+  p_workspace uuid,
+  p_work_item uuid,
+  p_expected_state text,
+  p_expected_revision integer,
+  p_idempotency_key uuid,
+  p_proof jsonb,
+  p_evidence_asset_ids uuid[]
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_now timestamptz := now();
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_attempt public.mission_publication_proof_attempts;
+  v_attempt_number integer;
+  v_evidence_count integer;
+  v_unassigned_evidence_count integer;
+  v_required_evidence boolean;
+  v_evidence_checksums jsonb;
+  v_content_checksum text;
+  v_submitted_late boolean;
+  v_canonical jsonb;
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true then
+    raise exception 'not_authorized';
+  end if;
+  if p_submission is null or p_creator is null or p_workspace is null or p_work_item is null
+     or p_expected_revision is null or p_expected_revision < 0 or p_idempotency_key is null
+     or p_expected_state not in ('approved_to_publish', 'proof_correction_requested')
+     or jsonb_typeof(p_proof) <> 'object'
+     or jsonb_typeof(p_proof->'primary_url') <> 'string'
+     or nullif(btrim(p_proof->>'primary_url'), '') is null
+     or jsonb_typeof(p_proof->'additional_urls') <> 'array'
+     or jsonb_array_length(p_proof->'additional_urls') > 4
+     or jsonb_typeof(p_proof->'metadata_snapshot') <> 'object'
+     or jsonb_typeof(p_proof->'metadata_status') <> 'string'
+     or p_proof->>'metadata_status' not in ('available', 'unavailable')
+  then raise exception 'validation_failed'; end if;
+
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  join public.mission_submissions submission
+    on submission.id = workflow.mission_submission_id
+   and submission.workspace_id = workflow.workspace_id
+  where workflow.mission_submission_id = p_submission
+    and workflow.workspace_id = p_workspace
+    and submission.creator_id = p_creator
+  for update of workflow;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+
+  select item.* into v_item
+  from public.mission_work_items item
+  where item.id = p_work_item
+    and item.mission_workflow_id = v_workflow.id
+    and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+
+  select instruction.* into v_instruction
+  from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item
+    and instruction.workspace_id = p_workspace
+  for update;
+  if v_instruction.id is null or v_instruction.frozen_at is null then
+    return jsonb_build_object('code', 'PUBLICATION_SETUP_REQUIRED');
+  end if;
+
+  if exists (
+    select 1 from unnest(coalesce(p_evidence_asset_ids, '{}'::uuid[])) left_id
+    group by left_id having count(*) > 1
+  ) then raise exception 'validation_failed'; end if;
+
+  with locked_assets as (
+    select asset.*
+    from public.mission_publication_proof_assets asset
+    where asset.id = any(coalesce(p_evidence_asset_ids, '{}'::uuid[]))
+      and asset.workspace_id = p_workspace
+      and asset.mission_submission_id = p_submission
+      and asset.mission_workflow_id = v_workflow.id
+      and asset.mission_work_item_id = p_work_item
+      and asset.creator_id = p_creator
+      and asset.upload_state = 'finalized'
+      and asset.content_checksum is not null
+    for update
+  )
+  select coalesce(jsonb_agg(asset.content_checksum order by asset.id), '[]'::jsonb),
+         count(*)::integer,
+         count(*) filter (where asset.mission_publication_proof_attempt_id is null)::integer
+  into v_evidence_checksums, v_evidence_count, v_unassigned_evidence_count
+  from locked_assets asset;
+  if v_evidence_count <> cardinality(coalesce(p_evidence_asset_ids, '{}'::uuid[])) then
+    raise exception 'evidence_invalid';
+  end if;
+  v_required_evidence := v_instruction.proof_evidence_policy <> '{}'::jsonb;
+  if v_required_evidence and v_evidence_count = 0 then raise exception 'evidence_required'; end if;
+
+  v_canonical := jsonb_build_object(
+    'primary_url', p_proof->>'primary_url',
+    'additional_urls', p_proof->'additional_urls',
+    'evidence_checksums', v_evidence_checksums
+  );
+  v_content_checksum := encode(
+    extensions.digest(convert_to(v_canonical::text, 'UTF8'), 'sha256'),
+    'hex'
+  );
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.workspace_id = p_workspace
+    and attempt.mission_work_item_id = p_work_item
+    and attempt.submission_idempotency_key = p_idempotency_key;
+  if v_attempt.id is not null then
+    if v_attempt.content_checksum <> v_content_checksum then raise exception 'idempotency_conflict'; end if;
+    return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', true);
+  end if;
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.workspace_id = p_workspace
+    and attempt.mission_work_item_id = p_work_item
+    and attempt.content_checksum = v_content_checksum
+  order by attempt.attempt_number desc limit 1;
+  if v_attempt.id is not null then
+    return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', true);
+  end if;
+
+  if v_unassigned_evidence_count <> v_evidence_count then
+    raise exception 'evidence_invalid';
+  end if;
+
+  if v_item.state <> p_expected_state or v_instruction.revision <> p_expected_revision then
+    return jsonb_build_object(
+      'code', 'WORKFLOW_STALE',
+      'current_publication', jsonb_build_object(
+        'workItemId', v_item.id,
+        'state', v_item.state,
+        'revision', v_instruction.revision,
+        'currentAttemptId', v_item.current_proof_attempt_id
+      )
+    );
+  end if;
+
+  select coalesce(max(attempt.attempt_number), 0) + 1 into v_attempt_number
+  from public.mission_publication_proof_attempts attempt
+  where attempt.workspace_id = p_workspace and attempt.mission_work_item_id = p_work_item;
+  v_submitted_late := v_now > v_instruction.publication_due_at;
+
+  insert into public.mission_publication_proof_attempts (
+    workspace_id, mission_work_item_id, attempt_number, primary_url, additional_urls,
+    submitted_by, submitted_at, submitted_late, metadata_status, metadata_snapshot,
+    metadata_error_category, content_checksum, submission_idempotency_key
+  ) values (
+    p_workspace, p_work_item, v_attempt_number, p_proof->>'primary_url', p_proof->'additional_urls',
+    p_creator, v_now, v_submitted_late, p_proof->>'metadata_status', p_proof->'metadata_snapshot',
+    nullif(p_proof->>'metadata_error_category', ''), v_content_checksum, p_idempotency_key
+  ) returning * into v_attempt;
+
+  update public.mission_publication_proof_assets
+  set mission_publication_proof_attempt_id = v_attempt.id
+  where id = any(coalesce(p_evidence_asset_ids, '{}'::uuid[]))
+    and workspace_id = p_workspace
+    and creator_id = p_creator
+    and upload_state = 'finalized'
+    and mission_publication_proof_attempt_id is null;
+
+  insert into public.mission_publication_proof_reviews (
+    workspace_id, mission_publication_proof_attempt_id, review_number, state
+  ) values (p_workspace, v_attempt.id, v_attempt_number, 'open');
+
+  update public.mission_work_items
+  set current_proof_attempt_id = v_attempt.id,
+      state = 'proof_submitted',
+      current_reviewer_id = null,
+      review_started_at = null,
+      review_due_at = null,
+      updated_at = v_now
+  where id = p_work_item and workspace_id = p_workspace;
+  perform private.refresh_mission_workflow_state(v_workflow.id);
+
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, v_workflow.id, p_work_item, 'creator', p_creator,
+    'mission_publication_proof_submitted', 'mission_publication_proof_attempt', v_attempt.id,
+    jsonb_build_object(
+      'platform', v_item.platform, 'attempt_number', v_attempt_number,
+      'submitted_late', v_submitted_late, 'evidence_count', v_evidence_count,
+      'url_count', 1 + jsonb_array_length(p_proof->'additional_urls'),
+      'metadata_status', p_proof->>'metadata_status'
+    )
+  );
+  return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', false);
+end;
+$$;
+revoke all on function public.submit_mission_publication_proof(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb, uuid[])
+  from public, anon, authenticated;
+grant execute on function public.submit_mission_publication_proof(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb, uuid[])
+  to service_role;

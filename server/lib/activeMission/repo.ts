@@ -2,6 +2,7 @@
 import { ActiveMissionError } from "./errors.js";
 import { validateDraftPatch } from "./state.js";
 import type { DraftPatch, FulfillmentState, WorkflowState, WorkItemState } from "./types.js";
+import { inspectPublicationProof, PUBLICATION_PROOF_ASSET_BUCKET, type SubmitPublicationProofInput } from "./publicationProof.js";
 import { createProofEvidenceUploadGrant, finalizeProofEvidence, type ProofEvidenceFinalizeInput, type ProofEvidenceUploadInput, type PublicationProofOwner, type ProofMutationContext } from "./publicationProof.js";
 import {
   createUploadGrant as createCreatorUploadGrant,
@@ -154,8 +155,55 @@ export type ActiveMissionWorkspace = {
   nextAction: { kind: string; workItemId: string | null; deadline: string | null; blockedReason: string | null };
 };
 
+export type PublicationInstructionView = {
+  publicationInstructions: string;
+  requiredDisclosures: string[];
+  expectedAccount: string | null;
+  proofEvidencePolicy: Record<string, unknown>;
+  publishDueAt: string;
+  frozenAt: string | null;
+};
+
+export type PublicationProofEvidenceView = {
+  id: string;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  checksum: string;
+  signedUrl: string;
+};
+
+export type PublicationProofAttemptView = {
+  id: string;
+  attemptNumber: number;
+  primaryUrl: string;
+  additionalUrls: string[];
+  submittedAt: string;
+  submittedLate: boolean;
+  metadataStatus: string;
+  metadataSnapshot: Record<string, unknown>;
+  metadataErrorCategory: string | null;
+  evidence: PublicationProofEvidenceView[];
+  review: Record<string, unknown> | null;
+  corrections: Array<Record<string, unknown>>;
+};
+
+export type CreatorPublicationView = {
+  workItemId: string;
+  platform: string;
+  state: WorkItemState;
+  revision: number;
+  approvedVersionId: string | null;
+  instructions: PublicationInstructionView;
+  attempts: PublicationProofAttemptView[];
+  currentAttempt: PublicationProofAttemptView | null;
+  acceptedAttempt: PublicationProofAttemptView | null;
+};
+
 export interface ActiveMissionRepository {
   getWorkspace(owner: ActiveMissionOwner): Promise<ActiveMissionWorkspace>;
+  getPublication(owner: ActiveMissionOwner, workItemId: string): Promise<CreatorPublicationView>;
+  submitProof(owner: ActiveMissionOwner, workItemId: string, input: SubmitPublicationProofInput): Promise<{ attempt: PublicationProofAttemptView; publication: CreatorPublicationView }>;
   saveDraft(owner: ActiveMissionOwner & { workItemId: string }, input: DraftSaveInput): Promise<MissionDraft>;
   createUploadGrant(owner: ActiveMissionOwner & { workItemId: string }, input: UploadGrantInput): ReturnType<typeof createCreatorUploadGrant>;
   finalizeAsset(owner: ActiveMissionOwner & { workItemId: string; assetId: string }, input: FinalizeAssetInput): ReturnType<typeof finalizeCreatorAsset>;
@@ -391,8 +439,182 @@ function mapRpcError(error: { message?: string | null }): never {
   dbFailure(error);
 }
 
+async function creatorPublication(
+  client: SupabaseClient,
+  owner: ActiveMissionOwner,
+  workItemId: string,
+): Promise<CreatorPublicationView> {
+  const { workflow } = await ownedAnchor(client, owner);
+  const itemResult = await client.from("mission_work_items")
+    .select("id, platform, state, approved_version_id, current_proof_attempt_id, verified_proof_attempt_id")
+    .eq("id", workItemId)
+    .eq("mission_workflow_id", workflow.id)
+    .eq("workspace_id", owner.workspaceId)
+    .maybeSingle();
+  if (itemResult.error) dbFailure(itemResult.error);
+  if (!itemResult.data) notFound();
+  const item = itemResult.data as JsonRow;
+
+  const instructionResult = await client.from("mission_publication_instructions")
+    .select("publication_instructions, required_disclosures, expected_account, proof_evidence_policy, publication_due_at, frozen_at, revision")
+    .eq("mission_work_item_id", workItemId)
+    .eq("workspace_id", owner.workspaceId)
+    .maybeSingle();
+  if (instructionResult.error) dbFailure(instructionResult.error);
+  if (!instructionResult.data) {
+    throw new ActiveMissionError("PUBLICATION_SETUP_REQUIRED", "Publication instructions are not ready");
+  }
+  const instruction = instructionResult.data as JsonRow;
+  const attemptsResult = await client.from("mission_publication_proof_attempts")
+    .select("id, attempt_number, primary_url, additional_urls, submitted_at, submitted_late, metadata_status, metadata_snapshot, metadata_error_category")
+    .eq("mission_work_item_id", workItemId)
+    .eq("workspace_id", owner.workspaceId)
+    .eq("submitted_by", owner.creatorId)
+    .order("attempt_number", { ascending: true });
+  if (attemptsResult.error) dbFailure(attemptsResult.error);
+  const attempts = (attemptsResult.data ?? []) as JsonRow[];
+  const attemptIds = attempts.map((attempt) => attempt.id as string);
+  const [assetsResult, reviewsResult] = attemptIds.length === 0
+    ? [{ data: [] as JsonRow[], error: null }, { data: [] as JsonRow[], error: null }]
+    : await Promise.all([
+      client.from("mission_publication_proof_assets")
+        .select("id, mission_publication_proof_attempt_id, storage_object_path, original_filename, mime_type, byte_size, content_checksum")
+        .eq("workspace_id", owner.workspaceId)
+        .eq("creator_id", owner.creatorId)
+        .in("mission_publication_proof_attempt_id", attemptIds),
+      client.from("mission_publication_proof_reviews")
+        .select("id, mission_publication_proof_attempt_id, state, decision, reviewer_id, reviewed_at, summary, created_at")
+        .eq("workspace_id", owner.workspaceId)
+        .in("mission_publication_proof_attempt_id", attemptIds),
+    ]);
+  if (assetsResult.error) dbFailure(assetsResult.error);
+  if (reviewsResult.error) dbFailure(reviewsResult.error);
+  const reviews = (reviewsResult.data ?? []) as JsonRow[];
+  const reviewIds = reviews.map((review) => review.id as string);
+  const correctionResult = reviewIds.length === 0
+    ? { data: [] as JsonRow[], error: null }
+    : await client.from("mission_publication_proof_review_items")
+      .select("id, mission_publication_proof_review_id, category, finding_text, passed, position, created_at")
+      .eq("workspace_id", owner.workspaceId)
+      .in("mission_publication_proof_review_id", reviewIds)
+      .order("position", { ascending: true });
+  if (correctionResult.error) dbFailure(correctionResult.error);
+  const corrections = (correctionResult.data ?? []) as JsonRow[];
+  const signedAssets = await Promise.all(((assetsResult.data ?? []) as JsonRow[]).map(async (row) => {
+    const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
+      .createSignedUrl(row.storage_object_path, CREATOR_ASSET_SIGNED_URL_TTL_SECONDS);
+    if (signed.error || !signed.data?.signedUrl) dbFailure(signed.error);
+    return {
+      attemptId: row.mission_publication_proof_attempt_id as string,
+      value: {
+        id: row.id,
+        originalFilename: row.original_filename,
+        mimeType: row.mime_type,
+        sizeBytes: Number(row.byte_size),
+        checksum: row.content_checksum,
+        signedUrl: signed.data.signedUrl,
+      } as PublicationProofEvidenceView,
+    };
+  }));
+  const views = attempts.map((row): PublicationProofAttemptView => {
+    const review = reviews.find((candidate) => candidate.mission_publication_proof_attempt_id === row.id);
+    return {
+      id: row.id,
+      attemptNumber: row.attempt_number,
+      primaryUrl: row.primary_url,
+      additionalUrls: Array.isArray(row.additional_urls) ? row.additional_urls : [],
+      submittedAt: row.submitted_at,
+      submittedLate: row.submitted_late,
+      metadataStatus: row.metadata_status,
+      metadataSnapshot: row.metadata_snapshot ?? {},
+      metadataErrorCategory: row.metadata_error_category ?? null,
+      evidence: signedAssets.filter((entry) => entry.attemptId === row.id).map((entry) => entry.value),
+      review: review ? {
+        id: review.id,
+        state: review.state ?? (review.decision ?? "open"),
+        decision: review.decision ?? null,
+        reviewedAt: review.reviewed_at ?? null,
+        createdAt: review.created_at,
+      } : null,
+      corrections: review
+        ? corrections.filter((entry) => entry.mission_publication_proof_review_id === review.id).map((entry) => ({
+          id: entry.id, category: entry.category, text: entry.finding_text,
+          passed: entry.passed, position: entry.position, createdAt: entry.created_at,
+        }))
+        : [],
+    };
+  });
+  const currentAttempt = views.find((attempt) => attempt.id === item.current_proof_attempt_id) ?? null;
+  const acceptedAttempt = views.find((attempt) => attempt.id === item.verified_proof_attempt_id) ?? null;
+  return {
+    workItemId,
+    platform: item.platform,
+    state: item.state,
+    revision: instruction.revision,
+    approvedVersionId: item.approved_version_id ?? null,
+    instructions: {
+      publicationInstructions: instruction.publication_instructions,
+      requiredDisclosures: Array.isArray(instruction.required_disclosures) ? instruction.required_disclosures : [],
+      expectedAccount: instruction.expected_account ?? null,
+      proofEvidencePolicy: instruction.proof_evidence_policy ?? {},
+      publishDueAt: instruction.publication_due_at,
+      frozenAt: instruction.frozen_at ?? null,
+    },
+    attempts: views,
+    currentAttempt,
+    acceptedAttempt,
+  };
+}
+
+function proofRpcFailure(error: { message?: string | null }): never {
+  const message = (error.message ?? "").toLowerCase();
+  if (message.includes("not_found") || message.includes("not_authorized")) notFound();
+  if (message.includes("publication_setup_required")) throw new ActiveMissionError("PUBLICATION_SETUP_REQUIRED", "Publication instructions are not ready");
+  if (message.includes("workflow_stale")) throw new ActiveMissionError("WORKFLOW_STALE", "Publication proof state is stale");
+  if (message.includes("wrong_state")) throw new ActiveMissionError("WRONG_STATE", "Publication proof cannot be submitted in this state");
+  if (message.includes("validation_failed") || message.includes("evidence_")) throw new ActiveMissionError("VALIDATION_FAILED", "Publication proof is invalid");
+  if (message.includes("idempotency_conflict")) throw new ActiveMissionError("WORKFLOW_STALE", "Publication proof state is stale");
+  dbFailure(error);
+}
+
 export function createActiveMissionRepository(client: SupabaseClient): ActiveMissionRepository {
   return {
+    async getPublication(owner, workItemId) {
+      return creatorPublication(client, owner, workItemId);
+    },
+
+    async submitProof(owner, workItemId, input) {
+      const current = await creatorPublication(client, owner, workItemId);
+      const inspected = await inspectPublicationProof(input, current.platform as never);
+      const result = await client.rpc("submit_mission_publication_proof", {
+        p_submission: owner.submissionId,
+        p_creator: owner.creatorId,
+        p_workspace: owner.workspaceId,
+        p_work_item: workItemId,
+        p_expected_state: input.expectedState,
+        p_expected_revision: input.expectedRevision,
+        p_idempotency_key: input.idempotencyKey,
+        p_proof: inspected.proof,
+        p_evidence_asset_ids: inspected.evidenceAssetIds,
+      });
+      if (result.error) proofRpcFailure(result.error);
+      const payload = result.data as JsonRow | null;
+      if (!payload) notFound();
+      if (payload.code === "WORKFLOW_STALE") {
+        throw new ActiveMissionError("WORKFLOW_STALE", "Publication proof state is stale", {
+          currentPublication: payload.current_publication ?? await creatorPublication(client, owner, workItemId),
+        });
+      }
+      if (payload.code === "PUBLICATION_SETUP_REQUIRED") throw new ActiveMissionError("PUBLICATION_SETUP_REQUIRED", "Publication instructions are not ready");
+      if (payload.code === "WRONG_STATE") throw new ActiveMissionError("WRONG_STATE", "Publication proof cannot be submitted in this state");
+      if (payload.code === "VALIDATION_FAILED") throw new ActiveMissionError("VALIDATION_FAILED", "Publication proof is invalid");
+      const publication = await creatorPublication(client, owner, workItemId);
+      const attempt = publication.attempts.find((entry) => entry.id === (payload.attempt?.id ?? payload.id))
+        ?? publication.currentAttempt;
+      if (!attempt) dbFailure({ message: "Invalid submit_mission_publication_proof response" });
+      return { attempt, publication };
+    },
+
     async getWorkspace(owner) {
       const { submission, workflow } = await ownedAnchor(client, owner);
       const fulfillmentQuery = client

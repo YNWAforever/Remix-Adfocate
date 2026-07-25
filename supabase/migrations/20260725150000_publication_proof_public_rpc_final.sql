@@ -14,7 +14,7 @@ declare
 begin
   if coalesce((select auth.jwt()->>'role')='service_role',false) is not true then raise exception 'not_authorized'; end if;
   begin v_key:=p_idempotency_key::uuid; exception when others then raise exception 'validation_failed'; end;
-  if p_expected_state not in ('approved_to_publish','proof_correction_required') or p_expected_revision is null or p_expected_revision<0 then raise exception 'workflow_stale'; end if;
+  if p_expected_state not in ('approved_to_publish','proof_correction_requested') or p_expected_revision is null or p_expected_revision<0 then raise exception 'workflow_stale'; end if;
   select workflow.* into v_workflow from public.mission_workflows workflow
     join public.mission_submissions submission on submission.id=workflow.mission_submission_id and submission.workspace_id=workflow.workspace_id
     where workflow.mission_submission_id=p_submission and workflow.workspace_id=p_workspace and submission.creator_id=p_creator;
@@ -58,7 +58,7 @@ declare
 begin
   if coalesce((select auth.jwt()->>'role')='service_role',false) is not true then raise exception 'not_authorized'; end if;
   begin v_key:=p_idempotency_key::uuid; exception when others then raise exception 'validation_failed'; end;
-  if p_expected_state not in ('approved_to_publish','proof_correction_required') or p_expected_revision is null or p_expected_revision<0 or nullif(btrim(p_checksum),'') is null then raise exception 'workflow_stale'; end if;
+  if p_expected_state not in ('approved_to_publish','proof_correction_requested') or p_expected_revision is null or p_expected_revision<0 or nullif(btrim(p_checksum),'') is null then raise exception 'workflow_stale'; end if;
   select * into v_item from public.mission_work_items where id=p_work_item and workspace_id=p_workspace;
   select * into v_instruction from public.mission_publication_instructions where workspace_id=p_workspace and mission_work_item_id=p_work_item;
   if v_item.id is null or v_instruction.id is null then raise exception 'not_found'; end if;
