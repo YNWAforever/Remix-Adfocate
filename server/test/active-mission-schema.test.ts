@@ -933,3 +933,12 @@ describe("publication proof lifecycle guards", () => {
     expect(sql).toContain("idempotency_conflict");
   });
 });
+
+describe("publication proof public RPC guards", () => {
+  it("guards the active callable create and finalize functions", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260725143000_publication_proof_public_guards.sql"), "utf8");
+    expect(sql).toContain("create or replace function public.create_publication_proof_asset");
+    expect(sql).toContain("create or replace function public.finalize_publication_proof_asset");
+    expect(sql).toContain("proof_correction_required");
+  });
+});
