@@ -85,13 +85,14 @@ function asset(row: AssetRow) {
 
 function rpcFailure(error: { message?: string | null }): never {
   const message = error.message ?? "publication_proof_asset_failed";
+  if (message.includes("workflow_stale")) throw new ActiveMissionError("WORKFLOW_STALE", "Publication proof state is stale");
   if (message.includes("not_found") || message.includes("not_authorized")) {
     throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "Publication evidence asset not found");
   }
-  if (message.includes("wrong_state") || message.includes("already_finalized") || message.includes("already_assigned")) {
+  if (message.includes("wrong_state") || message.includes("already_finalized") || message.includes("already_assigned") || message.includes("upload_grant_expired") || message.includes("asset_not_uploaded")) {
     throw new ActiveMissionError("WRONG_STATE", "Publication evidence asset is no longer available");
   }
-  if (message.includes("validation_failed") || message.includes("asset_limit")) {
+  if (message.includes("validation_failed") || message.includes("asset_limit") || message.includes("invalid_upload_metadata")) {
     throw new ActiveMissionError("VALIDATION_FAILED", "Publication evidence asset is invalid");
   }
   throw new ActiveMissionError("UNKNOWN", "Publication evidence request failed", error);

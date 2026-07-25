@@ -1433,3 +1433,12 @@ describe("active mission publication proof routes", () => {
     expect(createProofEvidenceUploadGrant).not.toHaveBeenCalled();
   });
 });
+describe("active mission publication proof finalize route", () => {
+  it("passes workflow and guarded mutation context to finalize", async () => {
+    const finalizeProofEvidence = vi.fn(async () => ({ id: "asset-1", uploadState: "finalized" }));
+    const repo = { getWorkspace: vi.fn(async () => ({ workflow })), finalizeProofEvidence } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/asset-1/finalize", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "55555555-5555-4555-8555-555555555555" }, body: JSON.stringify({ checksum: "sha256", expectedState: "approved_to_publish", expectedRevision: 0 }) });
+    expect(response.status).toBe(200);
+    expect(finalizeProofEvidence).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id, assetId: "asset-1" }), expect.objectContaining({ checksum: "sha256" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "55555555-5555-4555-8555-555555555555" });
+  });
+});
