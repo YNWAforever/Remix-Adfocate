@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+﻿import { randomUUID } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -1410,5 +1410,26 @@ integrationSuite("active mission API live integration", () => {
     expect(after.points - before.points).toBe(321);
     expect(after.xp - before.xp).toBe(100);
     expect(afterSubmission.data!.xp_awarded - beforeSubmission.data!.xp_awarded).toBe(100);
+  });
+});
+
+describe("active mission publication proof routes", () => {
+  const publicationBody = { fileName: "proof.png", contentType: "image/png", sizeBytes: 1024, expectedState: "approved_to_publish", expectedRevision: 0 };
+  it("requires guarded mutation headers and workflow context", async () => {
+    const createProofEvidenceUploadGrant = vi.fn(async () => ({ asset: { id: "asset-1" }, token: "token" }));
+    const repo = { getWorkspace: vi.fn(async () => ({ workflow })), createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
+    const missing = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...publicationBody }) });
+    expect(missing.status).toBe(400);
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "proof-idem-1" }, body: JSON.stringify(publicationBody) });
+    expect(response.status).toBe(200);
+    expect(createProofEvidenceUploadGrant).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id }), expect.objectContaining({ contentType: "image/png" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "proof-idem-1" });
+  });
+
+  it("maps tenant/not-found errors without invoking the proof mutation", async () => {
+    const createProofEvidenceUploadGrant = vi.fn();
+    const repo = { getWorkspace: vi.fn(async () => { throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "not found"); }), createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
+    const response = await controlledApp(repo, "other").request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "proof-idem-2" }, body: JSON.stringify(publicationBody) });
+    expect(response.status).toBe(404);
+    expect(createProofEvidenceUploadGrant).not.toHaveBeenCalled();
   });
 });
