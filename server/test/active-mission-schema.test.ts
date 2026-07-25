@@ -1082,6 +1082,21 @@ describe("publication proof operator review lifecycle", () => {
       expect(source).not.toMatch(/update\s+public\.creators\s+set\s+xp/);
     }
   });
+
+  it("keeps mixed required verified and approved items in publication progress", () => {
+    const refresh = functionSource(
+      migrationSql(),
+      "private.refresh_mission_workflow_state",
+    );
+    const allVerified = refresh.indexOf("v_state := 'proof_verified'");
+    const inProgress = refresh.indexOf("v_state := 'publication_in_progress'");
+    const approved = refresh.indexOf("v_state := 'approved_to_publish'");
+    expect(allVerified).toBeGreaterThanOrEqual(0);
+    expect(allVerified).toBeLessThan(inProgress);
+    expect(inProgress).toBeLessThan(approved);
+    const progressGuard = refresh.slice(refresh.lastIndexOf("elsif exists", inProgress), inProgress);
+    expect(progressGuard).toContain("'proof_verified'");
+  });
 });
 
 describe("publication proof correction checksum replay contract", () => {

@@ -1049,7 +1049,10 @@ begin
     where item.mission_workflow_id = v_workflow.id
       and item.workspace_id = v_workflow.workspace_id
       and item.required
-      and item.state in ('proof_submitted', 'proof_under_review', 'proof_correction_requested')
+      and item.state in (
+        'proof_submitted', 'proof_under_review',
+        'proof_correction_requested', 'proof_verified'
+      )
   ) then
     v_state := 'publication_in_progress';
   elsif not exists (
