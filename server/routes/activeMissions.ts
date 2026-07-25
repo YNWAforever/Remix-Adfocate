@@ -20,7 +20,7 @@ function proofMutation(c: any, body: any) {
   const expectedState = body?.expectedState;
   const expectedRevision = body?.expectedRevision;
   const idempotencyKey = c.req.header("Idempotency-Key");
-  if (typeof expectedState !== "string" || !expectedState.trim() || !Number.isInteger(expectedRevision) || expectedRevision < 0 || typeof idempotencyKey !== "string" || !idempotencyKey.trim()) {
+  if (typeof expectedState !== "string" || !expectedState.trim() || !Number.isInteger(expectedRevision) || expectedRevision < 0 || typeof idempotencyKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
     throw new ActiveMissionError("VALIDATION_FAILED", "expectedState, expectedRevision, and Idempotency-Key are required");
   }
   return { expectedState: expectedState.trim(), expectedRevision, idempotencyKey: idempotencyKey.trim() };

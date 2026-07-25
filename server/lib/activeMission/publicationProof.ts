@@ -103,10 +103,10 @@ export async function createProofEvidenceUploadGrant(
   input: ProofEvidenceUploadInput,
   context: ProofMutationContext = {},
 ) {
-  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !context.idempotencyKey.trim()) validation("expectedState, expectedRevision, and Idempotency-Key are required");
+  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(context.idempotencyKey)) validation("expectedState, expectedRevision, and Idempotency-Key are required");
   const extension = EXTENSIONS[input.contentType];
   const workflowNamespace = owner.workflowId;
-  const storageObjectPath = `${owner.creatorId}/${workflowNamespace}/${owner.workItemId}/proof-evidence/${randomUUID()}.${extension}`;
+  const storageObjectPath = `${owner.creatorId}/${workflowNamespace}/${owner.workItemId}/proof-evidence/${context.idempotencyKey}.${extension}`;
   const idempotencyKey = context.idempotencyKey;
   const result = await client.rpc("create_publication_proof_asset", {
     p_submission: owner.submissionId,
@@ -169,7 +169,7 @@ export async function finalizeProofEvidence(
   input: ProofEvidenceFinalizeInput,
   context: ProofMutationContext = {},
 ) {
-  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !context.idempotencyKey.trim()) validation("expectedState, expectedRevision, and Idempotency-Key are required");
+  if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(context.idempotencyKey)) validation("expectedState, expectedRevision, and Idempotency-Key are required");
   const result = await client.rpc("finalize_publication_proof_asset", {
     p_submission: owner.submissionId,
     p_creator: owner.creatorId,

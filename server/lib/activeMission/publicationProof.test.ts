@@ -30,7 +30,7 @@ describe("publication proof evidence", () => {
 
   it("creates an owner-scoped ten-minute grant at the canonical proof-evidence path", async () => {
     const mocked = clientFor();
-    const result = await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.jpg", contentType: "image/jpeg", sizeBytes: 1024 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" });
+    const result = await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.jpg", contentType: "image/jpeg", sizeBytes: 1024 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "11111111-1111-4111-8111-111111111111" });
     expect(result).toMatchObject({ token: "proof-token", expiresInSeconds: PUBLICATION_PROOF_UPLOAD_GRANT_SECONDS, asset: { uploadState: "pending" } });
     expect(result.upload.path).toMatch(/^creator-1\/submission-1\/item-1\/proof-evidence\/.+\.jpg$/);
     expect(mocked.rpc).toHaveBeenCalledWith("create_publication_proof_asset", expect.objectContaining({
@@ -43,26 +43,34 @@ describe("publication proof evidence", () => {
   it("cleans up the pending row when signing fails", async () => {
     const mocked = clientFor();
     mocked.createSignedUploadUrl.mockResolvedValue({ data: null, error: { message: "storage unavailable" } });
-    await expect(createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" }))
+    await expect(createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "11111111-1111-4111-8111-111111111111" }))
       .rejects.toMatchObject({ code: "UNKNOWN", message: "storage unavailable" });
     expect(mocked.rpc).toHaveBeenNthCalledWith(2, "abandon_publication_proof_asset", expect.objectContaining({ p_asset: "asset-1", p_work_item: owner.workItemId }));
   });
 
   it("finalizes only through the owner/path-scoped RPC and is retry-safe", async () => {
     const mocked = clientFor({ id: "asset-1", storage_object_path: "path", upload_state: "ready", mime_type: "image/png", byte_size: 22, content_checksum: "sha256" });
-    const result = await finalizeProofEvidence(mocked.client, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" });
+    const result = await finalizeProofEvidence(mocked.client, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "11111111-1111-4111-8111-111111111111" });
     expect(result).toMatchObject({ id: "asset-1", uploadState: "ready", checksum: "sha256" });
     expect(mocked.rpc).toHaveBeenCalledWith("finalize_publication_proof_asset", expect.objectContaining({
       p_submission: owner.submissionId, p_creator: owner.creatorId, p_workspace: owner.workspaceId,
       p_work_item: owner.workItemId, p_asset: "asset-1", p_checksum: "sha256",
-      p_expected_state: "approved_to_publish", p_expected_revision: 0, p_idempotency_key: "idem-1",
+      p_expected_state: "approved_to_publish", p_expected_revision: 0, p_idempotency_key: "11111111-1111-4111-8111-111111111111",
     }));
   });
 
   it.each(["already_finalized", "already_assigned", "wrong_state"])("maps %s to a controlled state error", async (message) => {
     const rpc = vi.fn(async () => ({ data: null, error: { message } }));
-    await expect(finalizeProofEvidence({ rpc } as unknown as SupabaseClient, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "idem-1" }))
+    await expect(finalizeProofEvidence({ rpc } as unknown as SupabaseClient, { ...owner, assetId: "asset-1" }, { checksum: "sha256" }, { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "11111111-1111-4111-8111-111111111111" }))
       .rejects.toMatchObject({ code: "WRONG_STATE" });
+  });
+
+  it("reuses a deterministic path for the same idempotency key", async () => {
+    const mocked = clientFor();
+    const context = { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "44444444-4444-4444-8444-444444444444" };
+    await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, context);
+    await createProofEvidenceUploadGrant(mocked.client, owner, { fileName: "proof.png", contentType: "image/png", sizeBytes: 10 }, context);
+    expect(mocked.rpc.mock.calls[0][1].p_storage_object_path).toBe(mocked.rpc.mock.calls[1][1].p_storage_object_path);
   });
 });
 

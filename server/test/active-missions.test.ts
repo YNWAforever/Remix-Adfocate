@@ -1420,15 +1420,15 @@ describe("active mission publication proof routes", () => {
     const repo = { getWorkspace: vi.fn(async () => ({ workflow })), createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
     const missing = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...publicationBody }) });
     expect(missing.status).toBe(400);
-    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "proof-idem-1" }, body: JSON.stringify(publicationBody) });
+    const response = await controlledApp(repo).request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "22222222-2222-4222-8222-222222222222" }, body: JSON.stringify(publicationBody) });
     expect(response.status).toBe(200);
-    expect(createProofEvidenceUploadGrant).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id }), expect.objectContaining({ contentType: "image/png" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "proof-idem-1" });
+    expect(createProofEvidenceUploadGrant).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id }), expect.objectContaining({ contentType: "image/png" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "22222222-2222-4222-8222-222222222222" });
   });
 
   it("maps tenant/not-found errors without invoking the proof mutation", async () => {
     const createProofEvidenceUploadGrant = vi.fn();
     const repo = { getWorkspace: vi.fn(async () => { throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "not found"); }), createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
-    const response = await controlledApp(repo, "other").request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "proof-idem-2" }, body: JSON.stringify(publicationBody) });
+    const response = await controlledApp(repo, "other").request("/api/my-missions/sub-1/publication/item-1/assets/upload-grant", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": "33333333-3333-4333-8333-333333333333" }, body: JSON.stringify(publicationBody) });
     expect(response.status).toBe(404);
     expect(createProofEvidenceUploadGrant).not.toHaveBeenCalled();
   });
