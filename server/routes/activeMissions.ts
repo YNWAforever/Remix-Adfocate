@@ -16,6 +16,16 @@ import {
 } from "../lib/activeMission/repo.js";
 import { serviceClient } from "../lib/supabase.js";
 
+function proofMutation(c: any, body: any) {
+  const expectedState = body?.expectedState;
+  const expectedRevision = body?.expectedRevision;
+  const idempotencyKey = c.req.header("Idempotency-Key");
+  if (typeof expectedState !== "string" || !expectedState.trim() || !Number.isInteger(expectedRevision) || expectedRevision < 0 || typeof idempotencyKey !== "string" || !idempotencyKey.trim()) {
+    throw new ActiveMissionError("VALIDATION_FAILED", "expectedState, expectedRevision, and Idempotency-Key are required");
+  }
+  return { expectedState: expectedState.trim(), expectedRevision, idempotencyKey: idempotencyKey.trim() };
+}
+
 function errorResponse(c: Parameters<Parameters<Hono<Env>["onError"]>[0]>[1], error: unknown) {
   if (error instanceof ActiveMissionError) {
     const details = error.details && typeof error.details === "object" && !Array.isArray(error.details)
@@ -71,7 +81,9 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
   routes.post("/:submissionId/publication/:workItemId/assets/upload-grant", async (c) => {
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
-      const result = await (repository() as any).createProofEvidenceUploadGrant({ ...owner(c), workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), { expectedState: body.expectedState, expectedRevision: body.expectedRevision, idempotencyKey: c.req.header("Idempotency-Key") ?? undefined });
+      const mutation = proofMutation(c, body);
+      const workspace = await repository().getWorkspace(owner(c));
+      const result = await (repository() as any).createProofEvidenceUploadGrant({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), mutation);
       return c.json(result);
     } catch (error) { return errorResponse(c, error); }
   });
@@ -79,7 +91,9 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
   routes.post("/:submissionId/publication/:workItemId/assets/:assetId/finalize", async (c) => {
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
-      const asset = await (repository() as any).finalizeProofEvidence({ ...owner(c), workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), { expectedState: body.expectedState, expectedRevision: body.expectedRevision, idempotencyKey: c.req.header("Idempotency-Key") ?? undefined });
+      const mutation = proofMutation(c, body);
+      const workspace = await repository().getWorkspace(owner(c));
+      const asset = await (repository() as any).finalizeProofEvidence({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), mutation);
       return c.json({ asset });
     } catch (error) { return errorResponse(c, error); }
   });
