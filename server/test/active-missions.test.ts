@@ -967,6 +967,49 @@ describe("active mission operator lifecycle migration contract", () => {
   });
 });
 
+describe("publication proof operator review migration contract", () => {
+  it("keeps canonical lock order, exact-attempt guards, and terminal decisions atomic", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260723090000_publication_proof_validation.sql"),
+      "utf8",
+    ).toLowerCase().replace(/\r\n/g, "\n");
+    const body = (name: string) => {
+      const start = sql.indexOf(`create or replace function private.${name}(`);
+      const end = sql.indexOf("create or replace function ", start + 1);
+      expect(start).toBeGreaterThanOrEqual(0);
+      return sql.slice(start, end);
+    };
+
+    for (const name of [
+      "start_publication_proof_review",
+      "request_publication_proof_correction",
+      "verify_publication_proof",
+    ]) {
+      const source = body(name);
+      const locks = [
+        "from public.mission_workflows",
+        "from public.mission_work_items",
+        "from public.mission_publication_instructions",
+        "from public.mission_publication_proof_attempts",
+        "from public.mission_publication_proof_reviews",
+      ].map((token) => source.indexOf(token));
+      expect(locks.every((position) => position >= 0)).toBe(true);
+      expect(locks).toEqual([...locks].sort((left, right) => left - right));
+      expect(source).toContain("current_proof_attempt_id");
+      expect(source).toContain("p_idempotency_key");
+    }
+
+    const correction = body("request_publication_proof_correction");
+    expect(correction).toContain("v_workflow.revision_response_hours");
+    expect(correction).toContain("mission_publication_proof_review_items");
+    expect(correction).toContain("state = 'proof_correction_requested'");
+    const verify = body("verify_publication_proof");
+    expect(verify).toContain("verified_proof_attempt_id = p_attempt");
+    expect(verify).toContain("state = 'proof_verified'");
+    expect(verify).toContain("mission_publication_proof_verified");
+  });
+});
+
 const skipReason = activeMissionIntegrationSkipReason();
 const integrationSuite = skipReason === null ? describe : describe.skip;
 const { app } = createApp();

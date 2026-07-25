@@ -973,6 +973,117 @@ describe("publication proof immutable submit transaction", () => {
   });
 });
 
+describe("publication proof operator review lifecycle", () => {
+  const migrationSql = () => readFileSync(
+    resolve("supabase/migrations/20260723090000_publication_proof_validation.sql"),
+    "utf8",
+  ).toLowerCase().replace(/\r\n/g, "\n");
+  const functionSource = (sql: string, qualifiedName: string) => {
+    const start = sql.indexOf(`create or replace function ${qualifiedName}(`);
+    const next = sql.indexOf("create or replace function ", start + 1);
+    expect(start, `${qualifiedName} definition`).toBeGreaterThanOrEqual(0);
+    return sql.slice(start, next < 0 ? undefined : next);
+  };
+
+  it("defines guarded exact-attempt claim, correction, and verification RPCs", () => {
+    const sql = migrationSql();
+    for (const name of [
+      "start_publication_proof_review",
+      "request_publication_proof_correction",
+      "verify_publication_proof",
+    ]) {
+      const rpc = functionSource(sql, `public.${name}`);
+      for (const parameter of [
+        "p_workspace uuid",
+        "p_workflow uuid",
+        "p_work_item uuid",
+        "p_attempt uuid",
+        "p_expected_state text",
+        "p_expected_revision integer",
+        "p_operator uuid",
+        "p_idempotency_key uuid",
+      ]) expect(rpc, `${name} missing ${parameter}`).toContain(parameter);
+      expect(rpc).toContain("security definer set search_path = ''");
+      expect(rpc).toContain("auth.jwt()");
+      expect(rpc).toContain("private.assert_active_mission_operator");
+      expect(sql).toContain(`grant execute on function public.${name}`);
+      expect(sql).toContain(`revoke all on function public.${name}`);
+    }
+  });
+
+  it("locks the canonical rows and enforces current-attempt claim ownership", () => {
+    const sql = migrationSql();
+    const start = functionSource(sql, "private.start_publication_proof_review");
+    const correction = functionSource(sql, "private.request_publication_proof_correction");
+    const verify = functionSource(sql, "private.verify_publication_proof");
+    for (const source of [start, correction, verify]) {
+      expect(source).toContain("from public.mission_workflows");
+      expect(source).toContain("from public.mission_work_items");
+      expect(source).toContain("from public.mission_publication_instructions");
+      expect(source).toContain("from public.mission_publication_proof_attempts");
+      expect(source).toContain("from public.mission_publication_proof_reviews");
+      expect(source.match(/for update/g)?.length).toBeGreaterThanOrEqual(5);
+      expect(source).toContain("current_proof_attempt_id");
+      expect(source).toContain("p_attempt");
+      expect(source).toContain("p_expected_revision");
+    }
+    expect(start).toContain("state = 'proof_under_review'");
+    expect(start).toContain("current_reviewer_id = p_operator");
+    expect(start).toContain("claim_idempotency_key");
+    expect(correction).toContain("reviewer_id <> p_operator");
+    expect(verify).toContain("reviewer_id <> p_operator");
+  });
+
+  it("requires the six-key checklist and categorized non-blank corrections", () => {
+    const sql = migrationSql();
+    const correction = functionSource(sql, "private.request_publication_proof_correction");
+    const verify = functionSource(sql, "private.verify_publication_proof");
+    for (const key of [
+      "publicly_accessible",
+      "platform_matches",
+      "account_matches",
+      "content_matches_approved_version",
+      "timing_acceptable",
+      "disclosures_present",
+    ]) {
+      expect(correction).toContain(`'${key}'`);
+      expect(verify).toContain(`'${key}'`);
+    }
+    for (const category of [
+      "access", "platform", "account", "content", "timing", "disclosure", "evidence", "other",
+    ]) expect(correction).toContain(`'${category}'`);
+    expect(correction).toContain("coalesce(item->>'category', '') not in");
+    expect(correction).toContain("jsonb_array_length(p_items) = 0");
+    expect(correction).toContain("select count(*) from jsonb_object_keys(p_checklist)");
+    expect(correction + verify).not.toContain("jsonb_object_length");
+    expect(correction).toContain("p_checklist is null");
+    expect(correction).toContain("p_items is null");
+    expect(correction).toContain("case when jsonb_typeof(item->'position') = 'number'");
+    expect(correction).toContain("nullif(btrim(item->>'text'), '') is null");
+    expect(verify).toContain("value <> 'true'::jsonb");
+  });
+
+  it("uses snapshotted SLAs, completes required aggregates, and stays reward-neutral", () => {
+    const sql = migrationSql();
+    const start = functionSource(sql, "private.start_publication_proof_review");
+    const correction = functionSource(sql, "private.request_publication_proof_correction");
+    const verify = functionSource(sql, "private.verify_publication_proof");
+    expect(start).toContain("make_interval(hours => v_workflow.review_sla_hours)");
+    expect(correction).toContain("v_now + make_interval(hours => v_workflow.revision_response_hours)");
+    expect(correction).not.toContain("least(");
+    expect(correction).toContain("state = 'proof_correction_requested'");
+    expect(verify).toContain("verified_proof_attempt_id = p_attempt");
+    expect(verify).toContain("state = 'proof_verified'");
+    expect(verify).toContain("private.refresh_mission_workflow_state");
+    expect(sql).toContain("v_state := 'proof_verified'");
+    for (const source of [start, correction, verify]) {
+      expect(source).not.toMatch(/update\s+public\.mission_submissions/);
+      expect(source).not.toMatch(/update\s+public\.(point_balances|earnings_balances|workspace_budgets)/);
+      expect(source).not.toMatch(/update\s+public\.creators\s+set\s+xp/);
+    }
+  });
+});
+
 describe("publication proof correction checksum replay contract", () => {
   it("limits checksum replay to the current submitted attempt and emits a resubmission event", () => {
     const sql = readFileSync(

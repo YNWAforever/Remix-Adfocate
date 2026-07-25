@@ -896,3 +896,701 @@ revoke all on function public.submit_mission_publication_proof(uuid, uuid, uuid,
   from public, anon, authenticated;
 grant execute on function public.submit_mission_publication_proof(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb, uuid[])
   to service_role;
+
+-- Exact-attempt publication proof review lifecycle.
+alter table public.mission_workflows
+  drop constraint if exists mission_workflows_state_check,
+  add constraint mission_workflows_state_check check (
+    state in (
+      'accepted', 'fulfillment_pending', 'drafting', 'in_review', 'revision_requested',
+      'approved_to_publish', 'publication_in_progress', 'proof_verified', 'cancelled', 'expired'
+    )
+  );
+
+alter table public.mission_work_items
+  drop constraint if exists mission_work_items_state_check,
+  add constraint mission_work_items_state_check check (
+    state in (
+      'blocked_by_fulfillment', 'drafting', 'submitted', 'under_review', 'revision_requested',
+      'approved_to_publish', 'proof_submitted', 'proof_under_review',
+      'proof_correction_requested', 'proof_verified', 'cancelled', 'expired'
+    )
+  );
+
+alter table public.mission_publication_proof_reviews
+  add column claimed_at timestamptz,
+  add column review_due_at timestamptz,
+  add column creator_response_deadline timestamptz,
+  add column checklist jsonb not null default '{}'::jsonb check (jsonb_typeof(checklist) = 'object'),
+  add column claim_idempotency_key uuid,
+  add column decision_idempotency_key uuid;
+
+create unique index mission_publication_proof_reviews_claim_idempotency_idx
+  on public.mission_publication_proof_reviews (workspace_id, claim_idempotency_key)
+  where claim_idempotency_key is not null;
+create unique index mission_publication_proof_reviews_decision_idempotency_idx
+  on public.mission_publication_proof_reviews (workspace_id, decision_idempotency_key)
+  where decision_idempotency_key is not null;
+
+alter table public.mission_publication_proof_review_items
+  drop constraint if exists mission_publication_proof_review_items_category_check,
+  add constraint mission_publication_proof_review_items_category_check check (
+    category in ('access', 'platform', 'account', 'content', 'timing', 'disclosure', 'evidence', 'other')
+  );
+
+create or replace function private.guard_publication_proof_review_mutation()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if tg_op = 'DELETE' then raise exception 'immutable_record'; end if;
+  if old.state <> 'open' or old.decision is not null
+     or new.id is distinct from old.id
+     or new.workspace_id is distinct from old.workspace_id
+     or new.mission_publication_proof_attempt_id is distinct from old.mission_publication_proof_attempt_id
+     or new.review_number is distinct from old.review_number
+     or new.created_at is distinct from old.created_at
+  then raise exception 'immutable_record'; end if;
+
+  if old.reviewer_id is null
+     and new.state = 'open'
+     and new.decision is null
+     and new.reviewer_id is not null
+     and new.claimed_at is not null
+     and new.review_due_at is not null
+     and new.claim_idempotency_key is not null
+     and new.reviewed_at is null
+     and new.decision_idempotency_key is null
+     and new.creator_response_deadline is null
+     and new.checklist = old.checklist
+  then return new; end if;
+
+  if old.reviewer_id is not null
+     and new.reviewer_id = old.reviewer_id
+     and new.claimed_at = old.claimed_at
+     and new.review_due_at = old.review_due_at
+     and new.claim_idempotency_key = old.claim_idempotency_key
+     and new.reviewed_at is not null
+     and new.decision_idempotency_key is not null
+     and (
+       (new.state = 'correction_requested' and new.decision = 'rejected'
+         and new.creator_response_deadline is not null)
+       or
+       (new.state = 'verified' and new.decision = 'verified'
+         and new.creator_response_deadline is null)
+     )
+  then return new; end if;
+
+  raise exception 'immutable_record';
+end;
+$$;
+revoke all on function private.guard_publication_proof_review_mutation()
+  from public, anon, authenticated, service_role;
+drop trigger if exists mission_publication_proof_reviews_immutable
+  on public.mission_publication_proof_reviews;
+create trigger mission_publication_proof_reviews_immutable
+  before update or delete on public.mission_publication_proof_reviews
+  for each row execute function private.guard_publication_proof_review_mutation();
+
+create or replace function private.refresh_mission_workflow_state(p_workflow uuid)
+returns public.mission_workflows
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_workflow public.mission_workflows;
+  v_state text;
+  v_actor uuid := (select auth.uid());
+  v_service boolean := coalesce((select auth.jwt() ->> 'role') = 'service_role', false);
+  v_required_count integer;
+begin
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  join public.mission_submissions submission
+    on submission.id = workflow.mission_submission_id
+   and submission.workspace_id = workflow.workspace_id
+  where workflow.id = p_workflow
+    and (v_service or exists (
+      select 1 from public.creators creator
+      where creator.id = v_actor
+        and creator.id = submission.creator_id
+        and creator.workspace_id = workflow.workspace_id
+    ))
+  for update of workflow;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+  if v_workflow.state in ('cancelled', 'expired') then return v_workflow; end if;
+
+  select count(*) into v_required_count
+  from public.mission_work_items item
+  where item.mission_workflow_id = v_workflow.id
+    and item.workspace_id = v_workflow.workspace_id
+    and item.required;
+
+  if exists (
+    select 1 from public.mission_fulfillments fulfillment
+    where fulfillment.mission_workflow_id = v_workflow.id
+      and fulfillment.workspace_id = v_workflow.workspace_id
+      and fulfillment.status <> 'received'
+  ) then
+    v_state := 'fulfillment_pending';
+  elsif v_required_count > 0 and not exists (
+    select 1 from public.mission_work_items item
+    where item.mission_workflow_id = v_workflow.id
+      and item.workspace_id = v_workflow.workspace_id
+      and item.required
+      and item.state <> 'proof_verified'
+  ) then
+    v_state := 'proof_verified';
+  elsif exists (
+    select 1 from public.mission_work_items item
+    where item.mission_workflow_id = v_workflow.id
+      and item.workspace_id = v_workflow.workspace_id
+      and item.required
+      and item.state in ('proof_submitted', 'proof_under_review', 'proof_correction_requested')
+  ) then
+    v_state := 'publication_in_progress';
+  elsif not exists (
+    select 1 from public.mission_work_items item
+    where item.mission_workflow_id = v_workflow.id
+      and item.workspace_id = v_workflow.workspace_id
+      and item.required
+      and item.state <> 'approved_to_publish'
+  ) then
+    v_state := 'approved_to_publish';
+  elsif exists (
+    select 1 from public.mission_work_items item
+    where item.mission_workflow_id = v_workflow.id
+      and item.workspace_id = v_workflow.workspace_id
+      and item.state = 'revision_requested'
+  ) then
+    v_state := 'revision_requested';
+  elsif exists (
+    select 1 from public.mission_work_items item
+    where item.mission_workflow_id = v_workflow.id
+      and item.workspace_id = v_workflow.workspace_id
+      and item.state in ('submitted', 'under_review')
+  ) then
+    v_state := 'in_review';
+  else
+    v_state := 'drafting';
+  end if;
+
+  update public.mission_workflows
+  set state = v_state, updated_at = now()
+  where id = v_workflow.id and workspace_id = v_workflow.workspace_id
+  returning * into v_workflow;
+  return v_workflow;
+end;
+$$;
+
+create or replace function private.start_publication_proof_review(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_now timestamptz := now();
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_attempt public.mission_publication_proof_attempts;
+  v_review public.mission_publication_proof_reviews;
+  v_review_due timestamptz;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  if p_idempotency_key is null or p_expected_revision is null or p_expected_revision < 0
+     or p_expected_state is null or btrim(p_expected_state) = ''
+  then raise exception 'validation_failed'; end if;
+
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace
+  for update;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+  if not exists (
+    select 1 from public.brand_users operator
+    where operator.user_id = p_operator and operator.workspace_id = p_workspace and operator.active
+  ) then raise exception 'not_authorized'; end if;
+
+  select item.* into v_item
+  from public.mission_work_items item
+  where item.id = p_work_item
+    and item.mission_workflow_id = p_workflow
+    and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+
+  select instruction.* into v_instruction
+  from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item
+    and instruction.workspace_id = p_workspace
+  for update;
+  if v_instruction.id is null then raise exception 'publication_setup_required'; end if;
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.id = p_attempt
+    and attempt.mission_work_item_id = p_work_item
+    and attempt.workspace_id = p_workspace
+  for update;
+  if v_attempt.id is null then raise exception 'workflow_stale'; end if;
+
+  select review.* into v_review
+  from public.mission_publication_proof_reviews review
+  where review.mission_publication_proof_attempt_id = p_attempt
+    and review.workspace_id = p_workspace
+  order by review.review_number desc
+  limit 1
+  for update;
+  if v_review.id is null then raise exception 'workflow_stale'; end if;
+
+  if v_review.claim_idempotency_key = p_idempotency_key
+     and v_review.reviewer_id = p_operator
+  then
+    return jsonb_build_object(
+      'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', true
+    );
+  end if;
+  if v_item.state <> p_expected_state
+     or v_instruction.revision <> p_expected_revision
+     or v_item.current_proof_attempt_id <> p_attempt
+  then raise exception 'workflow_stale'; end if;
+  if v_item.state <> 'proof_submitted' or v_review.state <> 'open'
+     or v_review.decision is not null
+  then raise exception 'wrong_state'; end if;
+  if v_review.reviewer_id is not null or v_review.claim_idempotency_key is not null
+  then raise exception 'workflow_stale'; end if;
+
+  v_review_due := v_now + make_interval(hours => v_workflow.review_sla_hours);
+  begin
+    update public.mission_publication_proof_reviews
+    set reviewer_id = p_operator,
+        claimed_at = v_now,
+        review_due_at = v_review_due,
+        claim_idempotency_key = p_idempotency_key
+    where id = v_review.id and workspace_id = p_workspace
+    returning * into v_review;
+  exception when unique_violation then
+    raise exception 'idempotency_conflict';
+  end;
+
+  update public.mission_work_items
+  set state = 'proof_under_review',
+      current_reviewer_id = p_operator,
+      review_started_at = v_now,
+      review_due_at = v_review_due,
+      updated_at = v_now
+  where id = p_work_item and mission_workflow_id = p_workflow and workspace_id = p_workspace
+  returning * into v_item;
+  perform private.refresh_mission_workflow_state(p_workflow);
+
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_proof_review_started', 'mission_publication_proof_review', v_review.id,
+    jsonb_build_object('attempt_number', v_attempt.attempt_number, 'review_due_at', v_review_due)
+  );
+  return jsonb_build_object(
+    'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', false
+  );
+end;
+$$;
+
+create or replace function public.start_publication_proof_review(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true
+  then raise exception 'not_authorized'; end if;
+  perform private.assert_active_mission_operator(p_operator);
+  return private.start_publication_proof_review(
+    p_workspace, p_workflow, p_work_item, p_attempt, p_expected_state,
+    p_expected_revision, p_operator, p_idempotency_key
+  );
+end;
+$$;
+
+create or replace function private.request_publication_proof_correction(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid,
+  p_checklist jsonb, p_items jsonb, p_summary text default null
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_now timestamptz := now();
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_attempt public.mission_publication_proof_attempts;
+  v_review public.mission_publication_proof_reviews;
+  v_creator_response_deadline timestamptz;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  if p_idempotency_key is null or p_expected_revision is null or p_expected_revision < 0
+     or p_expected_state is null or btrim(p_expected_state) = ''
+     or p_checklist is null or jsonb_typeof(p_checklist) <> 'object'
+     or p_items is null or jsonb_typeof(p_items) <> 'array'
+     or (p_summary is not null and nullif(btrim(p_summary), '') is null)
+  then raise exception 'validation_failed'; end if;
+  if (select count(*) from jsonb_object_keys(p_checklist)) <> 6
+     or not (p_checklist ? 'publicly_accessible')
+     or not (p_checklist ? 'platform_matches')
+     or not (p_checklist ? 'account_matches')
+     or not (p_checklist ? 'content_matches_approved_version')
+     or not (p_checklist ? 'timing_acceptable')
+     or not (p_checklist ? 'disclosures_present')
+     or exists (
+       select 1 from jsonb_each(p_checklist) checklist_entry
+       where jsonb_typeof(checklist_entry.value) <> 'boolean'
+     )
+  then raise exception 'validation_failed'; end if;
+  if jsonb_array_length(p_items) = 0
+     or exists (
+       select 1 from jsonb_array_elements(p_items) item
+       where jsonb_typeof(item) <> 'object'
+          or coalesce(item->>'category', '') not in (
+            'access', 'platform', 'account', 'content',
+            'timing', 'disclosure', 'evidence', 'other'
+          )
+          or nullif(btrim(item->>'text'), '') is null
+          or case when jsonb_typeof(item->'position') = 'number'
+            then (item->>'position')::numeric < 0
+              or mod((item->>'position')::numeric, 1) <> 0
+              or (item->>'position')::numeric > 2147483647
+            else true
+          end
+     )
+     or exists (
+       select 1
+       from jsonb_array_elements(p_items) item
+       group by (item->>'position')::integer
+       having count(*) > 1
+     )
+  then raise exception 'validation_failed'; end if;
+
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace
+  for update;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+  if not exists (
+    select 1 from public.brand_users operator
+    where operator.user_id = p_operator and operator.workspace_id = p_workspace and operator.active
+  ) then raise exception 'not_authorized'; end if;
+
+  select item.* into v_item
+  from public.mission_work_items item
+  where item.id = p_work_item
+    and item.mission_workflow_id = p_workflow
+    and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+
+  select instruction.* into v_instruction
+  from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item
+    and instruction.workspace_id = p_workspace
+  for update;
+  if v_instruction.id is null then raise exception 'publication_setup_required'; end if;
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.id = p_attempt
+    and attempt.mission_work_item_id = p_work_item
+    and attempt.workspace_id = p_workspace
+  for update;
+  if v_attempt.id is null then raise exception 'workflow_stale'; end if;
+
+  select review.* into v_review
+  from public.mission_publication_proof_reviews review
+  where review.mission_publication_proof_attempt_id = p_attempt
+    and review.workspace_id = p_workspace
+  order by review.review_number desc
+  limit 1
+  for update;
+  if v_review.id is null then raise exception 'workflow_stale'; end if;
+
+  if v_review.decision_idempotency_key = p_idempotency_key
+     and v_review.reviewer_id = p_operator
+     and v_review.state = 'correction_requested'
+  then
+    return jsonb_build_object(
+      'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', true
+    );
+  end if;
+  if v_item.state <> p_expected_state
+     or v_instruction.revision <> p_expected_revision
+     or v_item.current_proof_attempt_id <> p_attempt
+  then raise exception 'workflow_stale'; end if;
+  if v_review.state <> 'open' or v_review.decision is not null
+  then raise exception 'wrong_state'; end if;
+  if v_item.state <> 'proof_under_review'
+     or v_item.current_reviewer_id <> p_operator
+     or v_review.reviewer_id <> p_operator
+  then raise exception 'workflow_stale'; end if;
+
+  v_creator_response_deadline :=
+    v_now + make_interval(hours => v_workflow.revision_response_hours);
+  begin
+    update public.mission_publication_proof_reviews
+    set state = 'correction_requested',
+        decision = 'rejected',
+        reviewed_at = v_now,
+        creator_response_deadline = v_creator_response_deadline,
+        checklist = p_checklist,
+        summary = nullif(btrim(p_summary), ''),
+        decision_idempotency_key = p_idempotency_key
+    where id = v_review.id and workspace_id = p_workspace
+    returning * into v_review;
+  exception when unique_violation then
+    raise exception 'idempotency_conflict';
+  end;
+
+  insert into public.mission_publication_proof_review_items (
+    workspace_id, mission_publication_proof_review_id, category,
+    finding_text, passed, position
+  )
+  select p_workspace, v_review.id, item->>'category',
+    btrim(item->>'text'), false, (item->>'position')::integer
+  from jsonb_array_elements(p_items) item
+  order by (item->>'position')::integer;
+
+  update public.mission_work_items
+  set state = 'proof_correction_requested',
+      current_reviewer_id = null,
+      review_started_at = null,
+      review_due_at = null,
+      updated_at = v_now
+  where id = p_work_item and mission_workflow_id = p_workflow and workspace_id = p_workspace
+  returning * into v_item;
+  perform private.refresh_mission_workflow_state(p_workflow);
+
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_proof_correction_requested', 'mission_publication_proof_review', v_review.id,
+    jsonb_build_object(
+      'attempt_number', v_attempt.attempt_number,
+      'correction_count', jsonb_array_length(p_items),
+      'creator_response_deadline', v_creator_response_deadline
+    )
+  );
+  return jsonb_build_object(
+    'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', false
+  );
+end;
+$$;
+
+create or replace function public.request_publication_proof_correction(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid,
+  p_checklist jsonb, p_items jsonb, p_summary text default null
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true
+  then raise exception 'not_authorized'; end if;
+  perform private.assert_active_mission_operator(p_operator);
+  return private.request_publication_proof_correction(
+    p_workspace, p_workflow, p_work_item, p_attempt, p_expected_state,
+    p_expected_revision, p_operator, p_idempotency_key, p_checklist, p_items, p_summary
+  );
+end;
+$$;
+
+create or replace function private.verify_publication_proof(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid,
+  p_checklist jsonb, p_summary text default null
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_now timestamptz := now();
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_attempt public.mission_publication_proof_attempts;
+  v_review public.mission_publication_proof_reviews;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  if p_idempotency_key is null or p_expected_revision is null or p_expected_revision < 0
+     or p_expected_state is null or btrim(p_expected_state) = ''
+     or p_checklist is null or jsonb_typeof(p_checklist) <> 'object'
+     or (p_summary is not null and nullif(btrim(p_summary), '') is null)
+  then raise exception 'validation_failed'; end if;
+  if (select count(*) from jsonb_object_keys(p_checklist)) <> 6
+     or not (p_checklist ? 'publicly_accessible')
+     or not (p_checklist ? 'platform_matches')
+     or not (p_checklist ? 'account_matches')
+     or not (p_checklist ? 'content_matches_approved_version')
+     or not (p_checklist ? 'timing_acceptable')
+     or not (p_checklist ? 'disclosures_present')
+     or exists (
+       select 1 from jsonb_each(p_checklist) checklist_entry
+       where jsonb_typeof(checklist_entry.value) <> 'boolean'
+          or checklist_entry.value <> 'true'::jsonb
+     )
+  then raise exception 'validation_failed'; end if;
+
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace
+  for update;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+  if not exists (
+    select 1 from public.brand_users operator
+    where operator.user_id = p_operator and operator.workspace_id = p_workspace and operator.active
+  ) then raise exception 'not_authorized'; end if;
+
+  select item.* into v_item
+  from public.mission_work_items item
+  where item.id = p_work_item
+    and item.mission_workflow_id = p_workflow
+    and item.workspace_id = p_workspace
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+
+  select instruction.* into v_instruction
+  from public.mission_publication_instructions instruction
+  where instruction.mission_work_item_id = p_work_item
+    and instruction.workspace_id = p_workspace
+  for update;
+  if v_instruction.id is null then raise exception 'publication_setup_required'; end if;
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.id = p_attempt
+    and attempt.mission_work_item_id = p_work_item
+    and attempt.workspace_id = p_workspace
+  for update;
+  if v_attempt.id is null then raise exception 'workflow_stale'; end if;
+
+  select review.* into v_review
+  from public.mission_publication_proof_reviews review
+  where review.mission_publication_proof_attempt_id = p_attempt
+    and review.workspace_id = p_workspace
+  order by review.review_number desc
+  limit 1
+  for update;
+  if v_review.id is null then raise exception 'workflow_stale'; end if;
+
+  if v_review.decision_idempotency_key = p_idempotency_key
+     and v_review.reviewer_id = p_operator
+     and v_review.state = 'verified'
+  then
+    return jsonb_build_object(
+      'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', true
+    );
+  end if;
+  if v_item.state <> p_expected_state
+     or v_instruction.revision <> p_expected_revision
+     or v_item.current_proof_attempt_id <> p_attempt
+  then raise exception 'workflow_stale'; end if;
+  if v_review.state <> 'open' or v_review.decision is not null
+  then raise exception 'wrong_state'; end if;
+  if v_item.state <> 'proof_under_review'
+     or v_item.current_reviewer_id <> p_operator
+     or v_review.reviewer_id <> p_operator
+  then raise exception 'workflow_stale'; end if;
+
+  begin
+    update public.mission_publication_proof_reviews
+    set state = 'verified',
+        decision = 'verified',
+        reviewed_at = v_now,
+        creator_response_deadline = null,
+        checklist = p_checklist,
+        summary = nullif(btrim(p_summary), ''),
+        decision_idempotency_key = p_idempotency_key
+    where id = v_review.id and workspace_id = p_workspace
+    returning * into v_review;
+  exception when unique_violation then
+    raise exception 'idempotency_conflict';
+  end;
+
+  update public.mission_work_items
+  set verified_proof_attempt_id = p_attempt,
+      state = 'proof_verified',
+      current_reviewer_id = null,
+      review_started_at = null,
+      review_due_at = null,
+      updated_at = v_now
+  where id = p_work_item and mission_workflow_id = p_workflow and workspace_id = p_workspace
+  returning * into v_item;
+  perform private.refresh_mission_workflow_state(p_workflow);
+
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id, actor_type, actor_id,
+    event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_proof_verified', 'mission_publication_proof_review', v_review.id,
+    jsonb_build_object('attempt_number', v_attempt.attempt_number)
+  );
+  return jsonb_build_object(
+    'review', to_jsonb(v_review), 'work_item', to_jsonb(v_item), 'idempotent', false
+  );
+end;
+$$;
+
+create or replace function public.verify_publication_proof(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid,
+  p_checklist jsonb, p_summary text default null
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true
+  then raise exception 'not_authorized'; end if;
+  perform private.assert_active_mission_operator(p_operator);
+  return private.verify_publication_proof(
+    p_workspace, p_workflow, p_work_item, p_attempt, p_expected_state,
+    p_expected_revision, p_operator, p_idempotency_key, p_checklist, p_summary
+  );
+end;
+$$;
+
+revoke all on function private.start_publication_proof_review(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid
+) from public, anon, authenticated, service_role;
+revoke all on function private.request_publication_proof_correction(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, jsonb, text
+) from public, anon, authenticated, service_role;
+revoke all on function private.verify_publication_proof(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, text
+) from public, anon, authenticated, service_role;
+
+revoke all on function public.start_publication_proof_review(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid
+) from public, anon, authenticated;
+revoke all on function public.request_publication_proof_correction(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, jsonb, text
+) from public, anon, authenticated;
+revoke all on function public.verify_publication_proof(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, text
+) from public, anon, authenticated;
+
+grant execute on function public.start_publication_proof_review(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid
+) to service_role;
+grant execute on function public.request_publication_proof_correction(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, jsonb, text
+) to service_role;
+grant execute on function public.verify_publication_proof(
+  uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, text
+) to service_role;
