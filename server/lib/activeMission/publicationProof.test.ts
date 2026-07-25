@@ -8,7 +8,7 @@ import {
   validateProofEvidenceUploadInput,
 } from "./publicationProof";
 
-const owner = { submissionId: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", workItemId: "item-1" };
+const owner = { submissionId: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", workflowId: "workflow-1", workItemId: "item-1" };
 
 function clientFor(asset: any = {
   id: "asset-1", storage_object_path: "creator-1/submission-1/item-1/proof-evidence/asset-1.jpg",

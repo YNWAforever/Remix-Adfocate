@@ -20,7 +20,7 @@ export type PublicationProofOwner = {
   submissionId: string;
   creatorId: string;
   workspaceId: string;
-  workflowId?: string;
+  workflowId: string;
   workItemId: string;
 };
 
@@ -105,7 +105,7 @@ export async function createProofEvidenceUploadGrant(
 ) {
   if (typeof context.expectedState !== "string" || !context.expectedState.trim() || !Number.isInteger(context.expectedRevision) || (context.expectedRevision as number) < 0 || typeof context.idempotencyKey !== "string" || !context.idempotencyKey.trim()) validation("expectedState, expectedRevision, and Idempotency-Key are required");
   const extension = EXTENSIONS[input.contentType];
-  const workflowNamespace = owner.workflowId ?? owner.submissionId;
+  const workflowNamespace = owner.workflowId;
   const storageObjectPath = `${owner.creatorId}/${workflowNamespace}/${owner.workItemId}/proof-evidence/${randomUUID()}.${extension}`;
   const idempotencyKey = context.idempotencyKey;
   const result = await client.rpc("create_publication_proof_asset", {
