@@ -355,9 +355,15 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
           .createSignedUrl(proofAsset.storage_object_path, input.signedUrlTtlSeconds);
         if (signed.error || !signed.data) dbError(signed.error);
-        const safeAsset = { ...proofAsset };
-        delete safeAsset.storage_object_path;
-        return { ...safeAsset, signedUrl: signed.data.signedUrl };
+        return {
+          id: proofAsset.id,
+          attemptId: proofAsset.mission_publication_proof_attempt_id,
+          originalFilename: proofAsset.original_filename,
+          contentType: proofAsset.mime_type,
+          sizeBytes: Number(proofAsset.byte_size),
+          createdAt: proofAsset.created_at,
+          signedUrl: signed.data.signedUrl,
+        };
       }));
 
       const assets = await Promise.all(((assetsResult.data ?? []) as Row[]).map(async (asset) => {
@@ -376,9 +382,43 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         grants: grantsResult.data ?? [],
         events: eventsResult.data ?? [],
         assets,
-        publicationInstructions: publicationInstructionsResult.data ?? [],
-        proofAttempts: proofAttemptsResult.data ?? [],
-        proofReviews,
+        publicationInstructions: ((publicationInstructionsResult.data ?? []) as Row[]).map((instruction) => ({
+          id: instruction.id, workItemId: instruction.mission_work_item_id,
+          publicationInstructions: instruction.publication_instructions,
+          publicationWindowHours: instruction.publication_window_hours,
+          requiredDisclosures: instruction.required_disclosures,
+          expectedAccount: instruction.expected_account,
+          proofEvidencePolicy: instruction.proof_evidence_policy,
+          publicationDueAt: instruction.publication_due_at,
+          frozenAt: instruction.frozen_at ?? null,
+          revision: instruction.revision ?? 0,
+        })),
+        proofAttempts: ((proofAttemptsResult.data ?? []) as Row[]).map((attempt) => ({
+          id: attempt.id, workItemId: attempt.mission_work_item_id,
+          attemptNumber: attempt.attempt_number,
+          primaryUrl: attempt.primary_url, additionalUrls: attempt.additional_urls,
+          submittedAt: attempt.submitted_at, submittedLate: attempt.submitted_late,
+          metadataStatus: attempt.metadata_status,
+          metadataSnapshot: attempt.metadata_snapshot,
+          metadataErrorCategory: attempt.metadata_error_category,
+        })),
+        proofReviews: proofReviews.map((proofReview) => ({
+          id: proofReview.id,
+          attemptId: proofReview.mission_publication_proof_attempt_id,
+          reviewNumber: proofReview.review_number,
+          state: proofReview.state, decision: proofReview.decision,
+          reviewerId: proofReview.reviewer_id,
+          reviewedAt: proofReview.reviewed_at,
+          decisionAt: proofReview.decision_at ?? proofReview.reviewed_at,
+          creatorResponseDeadline: proofReview.creator_response_deadline ?? null,
+          checklist: proofReview.checklist ?? null,
+          summary: proofReview.summary,
+          items: (proofReview.mission_publication_proof_review_items ?? []).map((reviewItem: Row) => ({
+            id: reviewItem.id, category: reviewItem.category,
+            text: reviewItem.finding_text ?? reviewItem.text,
+            passed: reviewItem.passed, position: reviewItem.position,
+          })),
+        })),
         proofAssets,
       };
     },
