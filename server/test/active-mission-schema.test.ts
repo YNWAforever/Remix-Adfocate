@@ -771,6 +771,7 @@ suite(suiteName, () => {
       metadata_status: "available",
       metadata_snapshot: { account: "@test_creator" },
       content_checksum: `publication-proof-${id}`,
+      submission_idempotency_key: unique(),
     }).select("id").single();
     expect(attempt.error).toBeNull();
     const crossWorkspaceAttempt = await svc.from("mission_publication_proof_attempts").insert({
@@ -969,5 +970,142 @@ describe("publication proof immutable submit transaction", () => {
     expect(submit).not.toMatch(/update\s+public\.mission_submissions\s+set\s+status/);
     expect(submit).not.toMatch(/update\s+public\.(point_balances|earnings_balances)/);
     expect(submit).not.toMatch(/update\s+public\.creators\s+set\s+xp/);
+  });
+});
+
+describe("publication proof correction checksum replay contract", () => {
+  it("limits checksum replay to the current submitted attempt and emits a resubmission event", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260723090000_publication_proof_validation.sql"),
+      "utf8",
+    ).toLowerCase().replace(/\r\n/g, "\n");
+    const start = sql.indexOf("create or replace function public.submit_mission_publication_proof");
+    const submit = sql.slice(start);
+    const keyReplay = submit.indexOf("submission_idempotency_key = p_idempotency_key");
+    const checksumReplay = submit.indexOf("attempt.content_checksum = v_content_checksum");
+    const staleGuard = submit.indexOf("if v_item.state <> p_expected_state");
+
+    expect(keyReplay).toBeGreaterThanOrEqual(0);
+    expect(keyReplay).toBeLessThan(checksumReplay);
+    expect(checksumReplay).toBeLessThan(staleGuard);
+    expect(submit).toMatch(
+      /attempt\.content_checksum\s*=\s*v_content_checksum[\s\S]*v_item\.state\s*=\s*'proof_submitted'[\s\S]*attempt\.id\s*=\s*v_item\.current_proof_attempt_id/,
+    );
+    expect(submit).toContain("'mission_publication_proof_resubmitted'");
+    expect(submit).toMatch(
+      /case\s+when\s+v_item\.state\s*=\s*'proof_correction_requested'[\s\S]*mission_publication_proof_resubmitted/,
+    );
+  });
+});
+
+suite(suiteName, () => {
+  it("creates a new attempt when a correction resubmits an unchanged checksum", async () => {
+    const id = unique();
+    const svc = serviceForTests();
+    const active = await seedActiveMission({
+      email: `publication-resubmit-${id}@test.local`,
+      slug: `test-publication-resubmit-${id}`,
+      deliverables: [{
+        title: "Correction checksum proof",
+        platform: "instagram",
+        publicationInstructions: "Publish the approved post",
+        publicationWindowHours: 48,
+        requiredDisclosures: [],
+        proofEvidencePolicy: {},
+      }],
+    });
+    const created = await userForJwt(active.creator.jwt).rpc(
+      "create_mission_workflow",
+      { p_submission: active.submission.id },
+    );
+    expect(created.error).toBeNull();
+    const item = await svc.from("mission_work_items")
+      .select("id, workspace_id")
+      .eq("mission_workflow_id", created.data.id)
+      .single();
+    expect(item.error).toBeNull();
+    const dueAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+    expect((await svc.from("mission_publication_instructions").update({
+      publication_due_at: dueAt,
+      frozen_at: new Date().toISOString(),
+    }).eq("mission_work_item_id", item.data!.id)).error).toBeNull();
+    expect((await svc.from("mission_work_items").update({
+      state: "approved_to_publish",
+    }).eq("id", item.data!.id)).error).toBeNull();
+
+    const proof = {
+      primary_url: "https://www.instagram.com/p/unchanged/",
+      additional_urls: [],
+      metadata_status: "unavailable",
+      metadata_snapshot: {
+        finalCanonicalUrl: "https://www.instagram.com/p/unchanged/",
+        httpStatusCategory: "unknown",
+        pageTitle: null,
+        openGraphType: null,
+        declaredPublicationTime: null,
+        fetchedAt: new Date().toISOString(),
+      },
+      metadata_error_category: "platform_blocked",
+    };
+    const beforeRewards = await creatorRewardSnapshot(active.creator.id);
+    const firstKey = unique();
+    const submit = (state: string, key: string) => svc.rpc(
+      "submit_mission_publication_proof",
+      {
+        p_submission: active.submission.id,
+        p_creator: active.creator.id,
+        p_workspace: item.data!.workspace_id,
+        p_work_item: item.data!.id,
+        p_expected_state: state,
+        p_expected_revision: 0,
+        p_idempotency_key: key,
+        p_proof: proof,
+        p_evidence_asset_ids: [],
+      },
+    );
+
+    const first = await submit("approved_to_publish", firstKey);
+    expect(first.error).toBeNull();
+    expect(first.data).toMatchObject({ attempt: { attempt_number: 1 }, idempotent: false });
+    const exactRetry = await submit("approved_to_publish", firstKey);
+    expect(exactRetry.error).toBeNull();
+    expect(exactRetry.data).toMatchObject({
+      attempt: { id: first.data.attempt.id, attempt_number: 1 },
+      idempotent: true,
+    });
+
+    expect((await svc.from("mission_work_items").update({
+      state: "proof_correction_requested",
+    }).eq("id", item.data!.id)).error).toBeNull();
+    const correction = await submit("proof_correction_requested", unique());
+    expect(correction.error).toBeNull();
+    expect(correction.data).toMatchObject({ attempt: { attempt_number: 2 }, idempotent: false });
+    expect(correction.data.attempt.id).not.toBe(first.data.attempt.id);
+
+    const [attempts, reviews, current, events] = await Promise.all([
+      svc.from("mission_publication_proof_attempts").select("id, attempt_number, content_checksum")
+        .eq("mission_work_item_id", item.data!.id).order("attempt_number"),
+      svc.from("mission_publication_proof_reviews").select("mission_publication_proof_attempt_id, state")
+        .eq("workspace_id", item.data!.workspace_id).order("review_number"),
+      svc.from("mission_work_items").select("state, current_proof_attempt_id").eq("id", item.data!.id).single(),
+      svc.from("mission_workflow_events").select("event_type").eq("mission_work_item_id", item.data!.id)
+        .in("event_type", ["mission_publication_proof_submitted", "mission_publication_proof_resubmitted"]),
+    ]);
+    expect(attempts.error).toBeNull();
+    expect(attempts.data).toHaveLength(2);
+    expect(attempts.data![0].content_checksum).toBe(attempts.data![1].content_checksum);
+    expect(reviews.data).toEqual([
+      { mission_publication_proof_attempt_id: first.data.attempt.id, state: "open" },
+      { mission_publication_proof_attempt_id: correction.data.attempt.id, state: "open" },
+    ]);
+    expect(current.data).toEqual({
+      state: "proof_submitted",
+      current_proof_attempt_id: correction.data.attempt.id,
+    });
+    expect(events.data).toEqual(expect.arrayContaining([
+      { event_type: "mission_publication_proof_submitted" },
+      { event_type: "mission_publication_proof_resubmitted" },
+    ]));
+    expect(await creatorRewardSnapshot(active.creator.id)).toEqual(beforeRewards);
   });
 });

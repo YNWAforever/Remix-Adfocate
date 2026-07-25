@@ -813,6 +813,8 @@ begin
   where attempt.workspace_id = p_workspace
     and attempt.mission_work_item_id = p_work_item
     and attempt.content_checksum = v_content_checksum
+    and v_item.state = 'proof_submitted'
+    and attempt.id = v_item.current_proof_attempt_id
   order by attempt.attempt_number desc limit 1;
   if v_attempt.id is not null then
     return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', true);
@@ -876,7 +878,10 @@ begin
     event_type, entity_type, entity_id, metadata
   ) values (
     p_workspace, v_workflow.id, p_work_item, 'creator', p_creator,
-    'mission_publication_proof_submitted', 'mission_publication_proof_attempt', v_attempt.id,
+    case when v_item.state = 'proof_correction_requested'
+      then 'mission_publication_proof_resubmitted'
+      else 'mission_publication_proof_submitted'
+    end, 'mission_publication_proof_attempt', v_attempt.id,
     jsonb_build_object(
       'platform', v_item.platform, 'attempt_number', v_attempt_number,
       'submitted_late', v_submitted_late, 'evidence_count', v_evidence_count,
