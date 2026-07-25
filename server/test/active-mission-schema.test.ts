@@ -924,3 +924,12 @@ describe("publication proof asset rollout policy", () => {
     expect(sql).toContain("if v_asset.id is not null then return v_asset");
   });
 });
+
+describe("publication proof lifecycle guards", () => {
+  it("restricts states and makes staging concurrent-safe", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260725130000_publication_proof_asset_guards.sql"), "utf8");
+    expect(sql).toContain("v_item.state not in ('approved_to_publish','proof_correction_required')");
+    expect(sql).toContain("on conflict (storage_object_path) do nothing");
+    expect(sql).toContain("idempotency_conflict");
+  });
+});
