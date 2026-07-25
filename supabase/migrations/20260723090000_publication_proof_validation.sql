@@ -1597,3 +1597,210 @@ grant execute on function public.request_publication_proof_correction(
 grant execute on function public.verify_publication_proof(
   uuid, uuid, uuid, uuid, text, integer, uuid, uuid, jsonb, text
 ) to service_role;
+
+-- Metadata refresh preserves immutable creator proof while permitting only bounded fetch fields.
+create or replace function private.guard_publication_proof_attempt()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  if tg_op = 'DELETE' then raise exception 'immutable_record'; end if;
+  if (to_jsonb(new) - array['metadata_status', 'metadata_snapshot', 'metadata_error_category'])
+     is distinct from
+     (to_jsonb(old) - array['metadata_status', 'metadata_snapshot', 'metadata_error_category'])
+  then raise exception 'immutable_record'; end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists mission_publication_proof_attempts_immutable
+  on public.mission_publication_proof_attempts;
+create trigger mission_publication_proof_attempts_immutable
+  before update or delete on public.mission_publication_proof_attempts
+  for each row execute function private.guard_publication_proof_attempt();
+revoke all on function private.guard_publication_proof_attempt()
+  from public, anon, authenticated, service_role;
+
+create or replace function private.request_publication_proof_metadata_refresh(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_workflow public.mission_workflows;
+  v_item public.mission_work_items;
+  v_instruction public.mission_publication_instructions;
+  v_attempt public.mission_publication_proof_attempts;
+begin
+  perform private.assert_active_mission_operator(p_operator);
+  if p_workspace is null or p_workflow is null or p_work_item is null
+     or p_attempt is null or p_idempotency_key is null
+     or p_expected_revision is null or p_expected_revision < 0
+     or p_expected_state not in (
+       'proof_submitted', 'proof_under_review',
+       'proof_correction_requested', 'proof_verified'
+     )
+  then raise exception 'validation_failed'; end if;
+
+  select workflow.* into v_workflow
+  from public.mission_workflows workflow
+  where workflow.id = p_workflow and workflow.workspace_id = p_workspace
+  for update;
+  if v_workflow.id is null then raise exception 'not_found'; end if;
+
+  select item.* into v_item
+  from public.mission_work_items item
+  where item.id = p_work_item and item.workspace_id = p_workspace
+    and item.mission_workflow_id = p_workflow
+  for update;
+  if v_item.id is null then raise exception 'not_found'; end if;
+
+  select instruction.* into v_instruction
+  from public.mission_publication_instructions instruction
+  where instruction.workspace_id = p_workspace
+    and instruction.mission_work_item_id = p_work_item
+  for update;
+
+  select attempt.* into v_attempt
+  from public.mission_publication_proof_attempts attempt
+  where attempt.id = p_attempt and attempt.workspace_id = p_workspace
+    and attempt.mission_work_item_id = p_work_item
+  for update;
+  if v_attempt.id is null then raise exception 'not_found'; end if;
+  if v_item.state <> p_expected_state
+     or v_instruction.revision <> p_expected_revision
+     or v_item.current_proof_attempt_id <> p_attempt
+  then
+    return jsonb_build_object(
+      'code', 'WORKFLOW_STALE',
+      'current_publication', jsonb_build_object(
+        'workItemId', v_item.id, 'state', v_item.state,
+        'revision', v_instruction.revision,
+        'currentAttemptId', v_item.current_proof_attempt_id
+      )
+    );
+  end if;
+
+  if exists (
+    select 1 from public.mission_workflow_events event
+    where event.workspace_id = p_workspace
+      and event.mission_workflow_id = p_workflow
+      and event.mission_work_item_id = p_work_item
+      and event.entity_id = p_attempt
+      and event.event_type = 'mission_publication_metadata_refresh_completed'
+      and event.metadata->>'idempotency_key' = p_idempotency_key::text
+  ) then
+    return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', true);
+  end if;
+
+  if not exists (
+    select 1 from public.mission_workflow_events event
+    where event.workspace_id = p_workspace
+      and event.mission_workflow_id = p_workflow
+      and event.mission_work_item_id = p_work_item
+      and event.entity_id = p_attempt
+      and event.event_type = 'mission_publication_metadata_refresh_requested'
+      and event.metadata->>'idempotency_key' = p_idempotency_key::text
+  ) then
+    insert into public.mission_workflow_events (
+      workspace_id, mission_workflow_id, mission_work_item_id,
+      actor_type, actor_id, event_type, entity_type, entity_id, metadata
+    ) values (
+      p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+      'mission_publication_metadata_refresh_requested',
+      'mission_publication_proof_attempt', p_attempt,
+      jsonb_build_object(
+        'platform', v_item.platform,
+        'attempt_number', v_attempt.attempt_number,
+        'metadata_status', v_attempt.metadata_status,
+        'idempotency_key', p_idempotency_key
+      )
+    );
+  end if;
+  return jsonb_build_object(
+    'primary_url', v_attempt.primary_url,
+    'platform', v_item.platform,
+    'idempotent', false
+  );
+end;
+$$;
+
+create or replace function public.request_publication_proof_metadata_refresh(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true
+  then raise exception 'not_authorized'; end if;
+  return private.request_publication_proof_metadata_refresh(
+    p_workspace, p_workflow, p_work_item, p_attempt, p_expected_state,
+    p_expected_revision, p_operator, p_idempotency_key
+  );
+end;
+$$;
+
+create or replace function public.complete_publication_proof_metadata_refresh(
+  p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid,
+  p_expected_state text, p_expected_revision integer,
+  p_operator uuid, p_idempotency_key uuid,
+  p_metadata_status text, p_metadata_snapshot jsonb,
+  p_metadata_error_category text default null
+) returns jsonb
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_target jsonb;
+  v_attempt public.mission_publication_proof_attempts;
+begin
+  if coalesce((select auth.jwt() ->> 'role') = 'service_role', false) is not true
+  then raise exception 'not_authorized'; end if;
+  if p_metadata_status not in ('available', 'unavailable')
+     or jsonb_typeof(p_metadata_snapshot) <> 'object'
+     or (p_metadata_error_category is not null
+       and nullif(btrim(p_metadata_error_category), '') is null)
+  then raise exception 'validation_failed'; end if;
+  v_target := private.request_publication_proof_metadata_refresh(
+    p_workspace, p_workflow, p_work_item, p_attempt, p_expected_state,
+    p_expected_revision, p_operator, p_idempotency_key
+  );
+  if v_target ? 'code' or coalesce((v_target->>'idempotent')::boolean, false)
+  then return v_target; end if;
+
+  update public.mission_publication_proof_attempts
+  set metadata_status = p_metadata_status,
+      metadata_snapshot = p_metadata_snapshot,
+      metadata_error_category = p_metadata_error_category
+  where id = p_attempt and workspace_id = p_workspace
+    and mission_work_item_id = p_work_item
+  returning * into v_attempt;
+
+  insert into public.mission_workflow_events (
+    workspace_id, mission_workflow_id, mission_work_item_id,
+    actor_type, actor_id, event_type, entity_type, entity_id, metadata
+  ) values (
+    p_workspace, p_workflow, p_work_item, 'operator', p_operator,
+    'mission_publication_metadata_refresh_completed',
+    'mission_publication_proof_attempt', p_attempt,
+    jsonb_build_object(
+      'attempt_number', v_attempt.attempt_number,
+      'metadata_status', v_attempt.metadata_status,
+      'idempotency_key', p_idempotency_key
+    )
+  );
+  return jsonb_build_object('attempt', to_jsonb(v_attempt), 'idempotent', false);
+end;
+$$;
+
+revoke all on function public.request_publication_proof_metadata_refresh(uuid, uuid, uuid, uuid, text, integer, uuid, uuid)
+  from public, anon, authenticated;
+grant execute on function public.request_publication_proof_metadata_refresh(uuid, uuid, uuid, uuid, text, integer, uuid, uuid)
+  to service_role;
+revoke all on function public.complete_publication_proof_metadata_refresh(uuid, uuid, uuid, uuid, text, integer, uuid, uuid, text, jsonb, text)
+  from public, anon, authenticated;
+grant execute on function public.complete_publication_proof_metadata_refresh(uuid, uuid, uuid, uuid, text, integer, uuid, uuid, text, jsonb, text)
+  to service_role;
+revoke all on function private.request_publication_proof_metadata_refresh(uuid, uuid, uuid, uuid, text, integer, uuid, uuid)
+  from public, anon, authenticated, service_role;
+revoke all on function private.guard_publication_proof_attempt()
+  from public, anon, authenticated, service_role;
+revoke usage on schema private from public, anon, authenticated;

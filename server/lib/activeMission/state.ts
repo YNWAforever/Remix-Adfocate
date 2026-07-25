@@ -150,6 +150,25 @@ export function compareQueueItems(left: QueueItem, right: QueueItem): number {
   );
 }
 
+export function comparePublicationProofQueueItems(
+  left: QueueItem,
+  right: QueueItem,
+  now = Date.now(),
+): number {
+  const deadline = (item: QueueItem) => Math.min(
+    timestampOrInfinity(item.reviewDueAt),
+    timestampOrInfinity(item.creatorResponseDeadline),
+    timestampOrInfinity(item.publicationDueAt),
+    timestampOrInfinity(item.deadline),
+  );
+  const leftDue = deadline(left);
+  const rightDue = deadline(right);
+  return Number(Boolean(right.submittedLate) || rightDue < now) - Number(Boolean(left.submittedLate) || leftDue < now)
+    || (leftDue === rightDue ? 0 : leftDue < rightDue ? -1 : 1)
+    || compareTimestamp(left.submittedAt, right.submittedAt)
+    || (left.workItemId ?? "").localeCompare(right.workItemId ?? "");
+}
+
 export function validateProofChecklist(
   checklist: unknown,
 ): asserts checklist is ProofChecklist {

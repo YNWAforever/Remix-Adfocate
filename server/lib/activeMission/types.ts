@@ -90,4 +90,7 @@ export interface QueueItem {
   deadline?: string | null;
   reviewDueAt?: string | null;
   submittedAt?: string | null;
+  publicationDueAt?: string | null;
+  creatorResponseDeadline?: string | null;
+  workItemId?: string;
 }

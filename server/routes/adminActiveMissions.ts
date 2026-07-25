@@ -2,10 +2,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { Hono, type Context } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import type { AdminEnv, StaffIdentity } from "../lib/staffAuth.js";
+import { PUBLICATION_PROOF_ASSET_BUCKET, refreshPublicationProofMetadata } from "../lib/activeMission/publicationProof.js";
+import { inspectProofUrl, PLATFORM_HOSTS } from "../lib/activeMission/proofUrl.js";
+import { validateProofChecklist } from "../lib/activeMission/state.js";
+import type { ProofChecklist, ProofReviewItemInput } from "../lib/activeMission/types.js";
 
 const ASSET_BUCKET = "mission-draft-assets";
 const SIGNED_URL_TTL_SECONDS = 10 * 60;
 const QUEUE_STATES = ["submitted", "under_review"];
+const PROOF_QUEUE_STATES = ["proof_submitted", "proof_under_review", "proof_correction_requested"];
+const ALL_QUEUE_STATES = [...QUEUE_STATES, ...PROOF_QUEUE_STATES];
 const EXPECTED_REVIEW_STATES = new Set(QUEUE_STATES);
 
 // Supabase joins and RPC JSON have endpoint-specific dynamic fields; boundary validators narrow values before use.
@@ -40,6 +46,14 @@ export type ActiveMissionQueueItem = {
   reviewDueAt: string | null;
   reviewerId: string | null;
   riskBucket: "overdue" | "due_soon" | "on_track" | "no_sla";
+  proofAttemptId?: string | null;
+  proofAttemptNumber?: number | null;
+  submittedLate?: boolean;
+  metadataStatus?: string | null;
+  platform?: string | null;
+  publicationDueAt?: string | null;
+  creatorResponseDeadline?: string | null;
+  proofReviewerId?: string | null;
 };
 
 type QueueSortFields = {
@@ -47,6 +61,10 @@ type QueueSortFields = {
   reviewDueAt: string | null;
   creatorDeadline: string | null;
   submittedAt: string | null;
+  publicationDueAt?: string | null;
+  creatorResponseDeadline?: string | null;
+  submittedLate?: boolean;
+  proofAttemptNumber?: number | null;
 };
 
 function timestamp(value: string | null | undefined, fallback = Number.POSITIVE_INFINITY) {
@@ -57,13 +75,18 @@ function timestamp(value: string | null | undefined, fallback = Number.POSITIVE_
 
 export function sortActiveMissionQueue<T extends QueueSortFields>(items: T[], now = new Date()): T[] {
   const current = now.getTime();
+  const due = (item: T) => Math.min(
+    timestamp(item.reviewDueAt),
+    timestamp(item.creatorResponseDeadline),
+    timestamp(item.publicationDueAt),
+    timestamp(item.creatorDeadline),
+  );
   return [...items].sort((a, b) => {
-    const aDue = timestamp(a.reviewDueAt);
-    const bDue = timestamp(b.reviewDueAt);
-    const overdue = Number(bDue < current) - Number(aDue < current);
+    const aDue = due(a);
+    const bDue = due(b);
+    const overdue = Number(Boolean(b.submittedLate) || bDue < current) - Number(Boolean(a.submittedLate) || aDue < current);
     if (overdue !== 0) return overdue;
     return aDue - bDue
-      || timestamp(a.creatorDeadline) - timestamp(b.creatorDeadline)
       || timestamp(a.submittedAt) - timestamp(b.submittedAt)
       || a.workItemId.localeCompare(b.workItemId);
   });
@@ -83,6 +106,11 @@ export type AdminActiveMissionRepository = {
     reviewerId?: string;
     missionId?: string;
     risk?: string;
+    proofState?: string;
+    late?: boolean;
+    metadataStatus?: string;
+    platform?: string;
+    publicationDeadline?: string;
   }): Promise<{ items: ActiveMissionQueueItem[] }>;
   getDetail(input: { workflowId: string; workspaceSlug: string; signedUrlTtlSeconds: number }): Promise<unknown>;
   startReview(input: TransitionBase & { expectedState: string }): Promise<unknown>;
@@ -96,6 +124,17 @@ export type AdminActiveMissionRepository = {
   setPublicationInstructions(input: TransitionBase & PublicationInstructionMutation): Promise<unknown>;
   approveVersion(input: TransitionBase & { expectedState: string; versionId: string }): Promise<unknown>;
   markFulfillmentShipped(input: Omit<TransitionBase, "workItemId"> & { note: string | null }): Promise<unknown>;
+  startProofReview(input: ProofTransitionInput): Promise<unknown>;
+  requestProofCorrection(input: ProofTransitionInput & {
+    checklist: ProofChecklist;
+    corrections: ProofReviewItemInput[];
+    summary: string | null;
+  }): Promise<unknown>;
+  verifyProof(input: ProofTransitionInput & {
+    checklist: ProofChecklist;
+    summary: string | null;
+  }): Promise<unknown>;
+  refreshProofMetadata(input: ProofTransitionInput): Promise<unknown>;
 };
 
 type TransitionBase = {
@@ -103,6 +142,13 @@ type TransitionBase = {
   workItemId: string;
   workspaceSlug: string;
   operatorId: string;
+};
+
+type ProofTransitionInput = TransitionBase & {
+  attemptId: string;
+  expectedState: string;
+  expectedRevision: number;
+  idempotencyKey: string;
 };
 
 type ReviewItemInput = {
@@ -135,6 +181,7 @@ function dbError(error: { message?: string | null } | null): never {
     not_authorized: "NOT_AUTHORIZED",
     validation_failed: "VALIDATION_FAILED",
     stale: "WORKFLOW_STALE",
+    workflow_stale: "WORKFLOW_STALE",
     wrong_state: "WRONG_STATE",
     revision_limit_reached: "REVISION_LIMIT_REACHED",
     publication_setup_required: "PUBLICATION_SETUP_REQUIRED",
@@ -161,19 +208,44 @@ function rpcData(result: { data: unknown; error: { message?: string | null } | n
   return { workItem: result.data };
 }
 
+function publicationRpcData(result: { data: unknown; error: { message?: string | null } | null }) {
+  if (result.error) dbError(result.error);
+  const payload = result.data as Row | null;
+  if (!payload) throw new OperatorActiveMissionError("WORKFLOW_NOT_FOUND", "not_found");
+  if (payload.code) throw new OperatorActiveMissionError(payload.code as OperatorErrorCode, payload.code, payload.current_publication);
+  return payload;
+}
+
 export function createAdminActiveMissionRepository(client: SupabaseClient): AdminActiveMissionRepository {
   return {
     async listQueue(input) {
       const workspace = await workspaceId(client, input.workspaceSlug);
       let query = client.from("mission_work_items")
-        .select("id, mission_workflow_id, title, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id")
+        .select("id, mission_workflow_id, title, platform, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id, current_proof_attempt_id")
         .eq("workspace_id", workspace)
-        .in("state", input.state ? [input.state] : QUEUE_STATES);
-      if (input.reviewerId) query = query.eq("current_reviewer_id", input.reviewerId);
+        .in("state", input.proofState ? [input.proofState] : input.state ? [input.state] : ALL_QUEUE_STATES);
+      if (input.reviewerId && !input.proofState) query = query.eq("current_reviewer_id", input.reviewerId);
       const itemsResult = await query;
       if (itemsResult.error) dbError(itemsResult.error);
       const itemRows = (itemsResult.data ?? []) as Row[];
       if (itemRows.length === 0) return { items: [] };
+
+      const proofItemIds = itemRows.filter((row) => PROOF_QUEUE_STATES.includes(row.state)).map((row) => row.id as string);
+      const [attemptsResult, instructionsResult, proofReviewsResult] = proofItemIds.length ? await Promise.all([
+        client.from("mission_publication_proof_attempts")
+          .select("id, mission_work_item_id, attempt_number, submitted_at, submitted_late, metadata_status")
+          .eq("workspace_id", workspace).in("mission_work_item_id", proofItemIds),
+        client.from("mission_publication_instructions")
+          .select("mission_work_item_id, publication_due_at")
+          .eq("workspace_id", workspace).in("mission_work_item_id", proofItemIds),
+        client.from("mission_publication_proof_reviews")
+          .select("mission_publication_proof_attempt_id, reviewer_id, creator_response_deadline")
+          .eq("workspace_id", workspace),
+      ]) : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
+      for (const result of [attemptsResult, instructionsResult, proofReviewsResult]) if (result.error) dbError(result.error);
+      const attemptById = new Map(((attemptsResult.data ?? []) as Row[]).map((row) => [row.id, row]));
+      const instructionByItem = new Map(((instructionsResult.data ?? []) as Row[]).map((row) => [row.mission_work_item_id, row]));
+      const proofReviewByAttempt = new Map(((proofReviewsResult.data ?? []) as Row[]).map((row) => [row.mission_publication_proof_attempt_id, row]));
 
       const workflowIds = [...new Set(itemRows.map((row) => row.mission_workflow_id as string))];
       const versionIds = itemRows.map((row) => row.current_submitted_version_id as string).filter(Boolean);
@@ -205,6 +277,9 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         const mission = Array.isArray(submission.missions) ? submission.missions[0] : submission.missions;
         if (input.missionId && submission.mission_id !== input.missionId) return [];
         const version = versionById.get(row.current_submitted_version_id);
+        const attempt = attemptById.get(row.current_proof_attempt_id);
+        const instruction = instructionByItem.get(row.id);
+        const proofReview = attempt ? proofReviewByAttempt.get(attempt.id) : null;
         return [{
           workflowId: workflow.id,
           workItemId: row.id,
@@ -214,13 +289,34 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
           deliverableTitle: row.title,
           state: row.state,
           creatorDeadline: row.deadline ?? null,
-          submittedAt: version?.submitted_at ?? null,
+          submittedAt: attempt?.submitted_at ?? version?.submitted_at ?? null,
           reviewDueAt: row.review_due_at ?? null,
           reviewerId: row.current_reviewer_id ?? null,
           riskBucket: riskBucket(row.review_due_at ?? null, now),
+          proofAttemptId: attempt?.id ?? null,
+          proofAttemptNumber: attempt?.attempt_number ?? null,
+          submittedLate: attempt?.submitted_late ?? false,
+          metadataStatus: attempt?.metadata_status ?? null,
+          platform: row.platform ?? null,
+          publicationDueAt: instruction?.publication_due_at ?? null,
+          creatorResponseDeadline: proofReview?.creator_response_deadline ?? null,
+          proofReviewerId: proofReview?.reviewer_id ?? null,
         }];
       });
       if (input.risk) items = items.filter((item) => item.riskBucket === input.risk);
+      if (input.late !== undefined) items = items.filter((item) => item.submittedLate === input.late);
+      if (input.metadataStatus) items = items.filter((item) => item.metadataStatus === input.metadataStatus);
+      if (input.platform) items = items.filter((item) => item.platform === input.platform);
+      if (input.reviewerId) items = items.filter((item) =>
+        (item.proofAttemptId ? item.proofReviewerId : item.reviewerId) === input.reviewerId);
+      if (input.publicationDeadline) {
+        const current = Date.now();
+        items = items.filter((item) => input.publicationDeadline === "overdue"
+          ? timestamp(item.publicationDueAt) < current
+          : input.publicationDeadline === "upcoming"
+            ? timestamp(item.publicationDueAt) >= current
+            : true);
+      }
       return { items: sortActiveMissionQueue(items, new Date(now)) };
     },
 
@@ -246,6 +342,24 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       ]) : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
       for (const result of [versionsResult, reviewsResult, grantsResult]) if (result.error) dbError(result.error);
 
+      const [publicationInstructionsResult, proofAttemptsResult, proofReviewsResult, proofAssetsResult] = itemIds.length ? await Promise.all([
+        client.from("mission_publication_instructions").select("*").eq("workspace_id", workspace).in("mission_work_item_id", itemIds),
+        client.from("mission_publication_proof_attempts").select("*").eq("workspace_id", workspace).in("mission_work_item_id", itemIds).order("attempt_number"),
+        client.from("mission_publication_proof_reviews").select("*, mission_publication_proof_review_items(*)").eq("workspace_id", workspace),
+        client.from("mission_publication_proof_assets").select("*").eq("workspace_id", workspace).in("mission_work_item_id", itemIds),
+      ]) : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
+      for (const result of [publicationInstructionsResult, proofAttemptsResult, proofReviewsResult, proofAssetsResult]) if (result.error) dbError(result.error);
+      const proofAttemptIds = new Set(((proofAttemptsResult.data ?? []) as Row[]).map((attempt) => attempt.id));
+      const proofReviews = ((proofReviewsResult.data ?? []) as Row[]).filter((proofReview) => proofAttemptIds.has(proofReview.mission_publication_proof_attempt_id));
+      const proofAssets = await Promise.all(((proofAssetsResult.data ?? []) as Row[]).map(async (proofAsset) => {
+        const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
+          .createSignedUrl(proofAsset.storage_object_path, input.signedUrlTtlSeconds);
+        if (signed.error || !signed.data) dbError(signed.error);
+        const safeAsset = { ...proofAsset };
+        delete safeAsset.storage_object_path;
+        return { ...safeAsset, signedUrl: signed.data.signedUrl };
+      }));
+
       const assets = await Promise.all(((assetsResult.data ?? []) as Row[]).map(async (asset) => {
         const signed = await client.storage.from(ASSET_BUCKET)
           .createSignedUrl(asset.storage_object_path, input.signedUrlTtlSeconds);
@@ -262,6 +376,10 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         grants: grantsResult.data ?? [],
         events: eventsResult.data ?? [],
         assets,
+        publicationInstructions: publicationInstructionsResult.data ?? [],
+        proofAttempts: proofAttemptsResult.data ?? [],
+        proofReviews,
+        proofAssets,
       };
     },
 
@@ -328,6 +446,68 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       if (!result.data) throw new OperatorActiveMissionError("WORKFLOW_NOT_FOUND", "not_found");
       return { fulfillment: result.data };
     },
+    async startProofReview(input) {
+      const workspace = await workspaceId(client, input.workspaceSlug);
+      return publicationRpcData(await client.rpc("start_publication_proof_review", {
+        p_workspace: workspace, p_workflow: input.workflowId, p_work_item: input.workItemId,
+        p_attempt: input.attemptId, p_expected_state: input.expectedState,
+        p_expected_revision: input.expectedRevision, p_operator: input.operatorId,
+        p_idempotency_key: input.idempotencyKey,
+      }));
+    },
+    async requestProofCorrection(input) {
+      const workspace = await workspaceId(client, input.workspaceSlug);
+      return publicationRpcData(await client.rpc("request_publication_proof_correction", {
+        p_workspace: workspace, p_workflow: input.workflowId, p_work_item: input.workItemId,
+        p_attempt: input.attemptId, p_expected_state: input.expectedState,
+        p_expected_revision: input.expectedRevision, p_operator: input.operatorId,
+        p_idempotency_key: input.idempotencyKey, p_checklist: input.checklist,
+        p_items: input.corrections, p_summary: input.summary,
+      }));
+    },
+    async verifyProof(input) {
+      const workspace = await workspaceId(client, input.workspaceSlug);
+      return publicationRpcData(await client.rpc("verify_publication_proof", {
+        p_workspace: workspace, p_workflow: input.workflowId, p_work_item: input.workItemId,
+        p_attempt: input.attemptId, p_expected_state: input.expectedState,
+        p_expected_revision: input.expectedRevision, p_operator: input.operatorId,
+        p_idempotency_key: input.idempotencyKey, p_checklist: input.checklist,
+        p_summary: input.summary,
+      }));
+    },
+    async refreshProofMetadata(input) {
+      const workspace = await workspaceId(client, input.workspaceSlug);
+      return refreshPublicationProofMetadata({
+        workspaceId: workspace, workflowId: input.workflowId, workItemId: input.workItemId,
+        attemptId: input.attemptId, operatorId: input.operatorId,
+        expectedState: input.expectedState, expectedRevision: input.expectedRevision,
+        idempotencyKey: input.idempotencyKey,
+      }, {
+        prepare: async (context) => {
+          const payload = publicationRpcData(await client.rpc("request_publication_proof_metadata_refresh", {
+            p_workspace: context.workspaceId, p_workflow: context.workflowId,
+            p_work_item: context.workItemId, p_attempt: context.attemptId,
+            p_expected_state: context.expectedState, p_expected_revision: context.expectedRevision,
+            p_operator: context.operatorId, p_idempotency_key: context.idempotencyKey,
+          })) as Row;
+          if (payload.idempotent) return { primaryUrl: "", platform: "instagram", idempotent: true, result: payload };
+          if (typeof payload.platform !== "string" || !(payload.platform in PLATFORM_HOSTS) || typeof payload.primary_url !== "string") {
+            throw new OperatorActiveMissionError("VALIDATION_FAILED", "Invalid publication proof refresh target");
+          }
+          return { primaryUrl: payload.primary_url, platform: payload.platform as keyof typeof PLATFORM_HOSTS };
+        },
+        inspect: (target) => inspectProofUrl(target),
+        complete: async (metadata) => publicationRpcData(await client.rpc("complete_publication_proof_metadata_refresh", {
+          p_workspace: workspace, p_workflow: input.workflowId, p_work_item: input.workItemId,
+          p_attempt: input.attemptId, p_expected_state: input.expectedState,
+          p_expected_revision: input.expectedRevision, p_operator: input.operatorId,
+          p_idempotency_key: input.idempotencyKey,
+          p_metadata_status: metadata.metadataStatus,
+          p_metadata_snapshot: metadata.metadataSnapshot,
+          p_metadata_error_category: metadata.metadataErrorCategory,
+        })),
+      });
+    },
   };
 }
 
@@ -356,7 +536,7 @@ function uuid(value: unknown) {
   return candidate && UUID_PATTERN.test(candidate) ? candidate : null;
 }
 
-function pathUuid(c: Context<AdminEnv>, name: "workflowId" | "workItemId") {
+function pathUuid(c: Context<AdminEnv>, name: "workflowId" | "workItemId" | "attemptId") {
   const value = uuid(c.req.param(name));
   if (!value) throw new OperatorActiveMissionError("VALIDATION_FAILED", `${name} must be a UUID`);
   return value;
@@ -399,6 +579,47 @@ function publicationInstructionInput(value: unknown): PublicationInstructionInpu
   };
 }
 
+function proofReviewItems(value: unknown): ProofReviewItemInput[] | null {
+  if (!Array.isArray(value) || value.length === 0) return null;
+  const categories = new Set(["access", "platform", "account", "content", "timing", "disclosure", "evidence", "other"]);
+  const items = value.map((entry, index) => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return null;
+    const row = entry as Row;
+    const body = text(row.text);
+    const position = row.position ?? index;
+    if (!categories.has(row.category) || !body || !Number.isInteger(position) || position < 0) return null;
+    return { category: row.category, text: body, position } as ProofReviewItemInput;
+  });
+  return items.every(Boolean) ? items as ProofReviewItemInput[] : null;
+}
+
+function proofMutation(c: Context<AdminEnv>, body: Row, expectedState: string) {
+  const attemptId = uuid(body.attemptId);
+  const state = text(body.expectedState);
+  const expectedRevision = body.expectedRevision;
+  const idempotencyKey = uuid(c.req.header("Idempotency-Key") ?? body.idempotencyKey);
+  if (!attemptId || state !== expectedState || !Number.isInteger(expectedRevision) || expectedRevision < 0 || !idempotencyKey) {
+    throw new OperatorActiveMissionError("VALIDATION_FAILED", "Exact attempt, expected state/revision, and Idempotency-Key are required");
+  }
+  return { attemptId, expectedState: state, expectedRevision, idempotencyKey };
+}
+
+function proofChecklist(value: unknown): ProofChecklist {
+  try {
+    validateProofChecklist(value);
+    return value;
+  } catch {
+    throw new OperatorActiveMissionError("VALIDATION_FAILED", "A complete six-item proof checklist is required");
+  }
+}
+
+function optionalSummary(value: unknown) {
+  if (value === undefined || value === null || value === "") return null;
+  const summary = text(value);
+  if (!summary || summary.length > 2000) throw new OperatorActiveMissionError("VALIDATION_FAILED", "summary must be at most 2000 characters");
+  return summary;
+}
+
 type IdentityProvider = (c: Context<AdminEnv>) => StaffIdentity;
 
 export function createAdminActiveMissionRoutes(
@@ -424,6 +645,11 @@ export function createAdminActiveMissionRoutes(
         reviewerId: text(c.req.query("reviewer")) ?? undefined,
         missionId: text(c.req.query("mission")) ?? undefined,
         risk: text(c.req.query("risk")) ?? undefined,
+        proofState: text(c.req.query("proofState")) ?? undefined,
+        late: c.req.query("late") === undefined ? undefined : c.req.query("late") === "true",
+        metadataStatus: text(c.req.query("metadataStatus")) ?? undefined,
+        platform: text(c.req.query("platform")) ?? undefined,
+        publicationDeadline: text(c.req.query("publicationDeadline")) ?? undefined,
       }));
     } catch (error) { return routeError(c, error); }
   });
@@ -518,6 +744,64 @@ export function createAdminActiveMissionRoutes(
       const workflowId = pathUuid(c, "workflowId");
       const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
       return c.json(await repository().markFulfillmentShipped({ workflowId, ...ctx, note: text(body.note) }));
+    } catch (error) { return routeError(c, error); }
+  });
+
+  routes.post("/:workflowId/work-items/:workItemId/proof-review/start", async (c) => {
+    try {
+      const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
+      const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
+      const mutation = proofMutation(c, body, "proof_submitted");
+      return c.json(await repository().startProofReview({ workflowId, workItemId, ...ctx, ...mutation }));
+    } catch (error) { return routeError(c, error); }
+  });
+
+  routes.post("/:workflowId/work-items/:workItemId/proof-review/corrections", async (c) => {
+    try {
+      const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
+      const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
+      const mutation = proofMutation(c, body, "proof_under_review");
+      const checklist = proofChecklist(body.checklist);
+      const corrections = proofReviewItems(body.corrections);
+      if (!corrections) throw new OperatorActiveMissionError("VALIDATION_FAILED", "At least one categorized correction is required");
+      return c.json(await repository().requestProofCorrection({
+        workflowId, workItemId, ...ctx, ...mutation, checklist, corrections, summary: optionalSummary(body.summary),
+      }));
+    } catch (error) { return routeError(c, error); }
+  });
+
+  routes.post("/:workflowId/work-items/:workItemId/proof-review/verify", async (c) => {
+    try {
+      const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
+      const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
+      const mutation = proofMutation(c, body, "proof_under_review");
+      const checklist = proofChecklist(body.checklist);
+      if (Object.values(checklist).some((answer) => !answer)) throw new OperatorActiveMissionError("VALIDATION_FAILED", "Every proof checklist item must pass before verification");
+      return c.json(await repository().verifyProof({
+        workflowId, workItemId, ...ctx, ...mutation, checklist, summary: optionalSummary(body.summary),
+      }));
+    } catch (error) { return routeError(c, error); }
+  });
+
+  routes.post("/:workflowId/work-items/:workItemId/proofs/:attemptId/metadata-refresh", async (c) => {
+    try {
+      const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
+      const attemptId = pathUuid(c, "attemptId");
+      const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
+      const expectedState = text(body.expectedState);
+      if (!expectedState || (!PROOF_QUEUE_STATES.includes(expectedState) && expectedState !== "proof_verified")) {
+        throw new OperatorActiveMissionError("VALIDATION_FAILED", "Proof metadata cannot be refreshed in this state");
+      }
+      const mutation = proofMutation(c, { ...body, attemptId }, expectedState);
+      return c.json(await repository().refreshProofMetadata({ workflowId, workItemId, ...ctx, ...mutation }));
     } catch (error) { return routeError(c, error); }
   });
 

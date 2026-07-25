@@ -240,3 +240,64 @@ export function validateSubmitPublicationProofInput(
 }
 
 
+
+export type PublicationProofMetadataRefreshInput = {
+  workspaceId: string;
+  workflowId: string;
+  workItemId: string;
+  attemptId: string;
+  operatorId: string;
+  expectedState: string;
+  expectedRevision: number;
+  idempotencyKey: string;
+};
+
+type MetadataRefreshTarget = {
+  primaryUrl: string;
+  platform: keyof typeof PLATFORM_HOSTS;
+  idempotent?: boolean;
+  result?: unknown;
+};
+
+export type PublicationProofMetadataRefreshDependencies = {
+  prepare(input: PublicationProofMetadataRefreshInput): Promise<MetadataRefreshTarget>;
+  inspect(input: {
+    url: string;
+    platform: keyof typeof PLATFORM_HOSTS;
+  }): ReturnType<typeof inspectProofUrl>;
+  complete(input: {
+    metadataStatus: "available" | "unavailable";
+    metadataSnapshot: Record<string, unknown>;
+    metadataErrorCategory: string | null;
+  }): Promise<unknown>;
+};
+
+export async function refreshPublicationProofMetadata(
+  input: PublicationProofMetadataRefreshInput,
+  dependencies: PublicationProofMetadataRefreshDependencies,
+) {
+  if (
+    !input.workspaceId ||
+    !input.workflowId ||
+    !input.workItemId ||
+    !input.attemptId ||
+    !input.operatorId ||
+    !input.expectedState.trim() ||
+    !Number.isInteger(input.expectedRevision) ||
+    input.expectedRevision < 0 ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.idempotencyKey)
+  ) {
+    validation("Complete metadata refresh context is required");
+  }
+  const target = await dependencies.prepare(input);
+  if (target.idempotent) return target.result;
+  const inspected = await dependencies.inspect({
+    url: target.primaryUrl,
+    platform: target.platform,
+  });
+  return dependencies.complete({
+    metadataStatus: inspected.status === "available" ? "available" : "unavailable",
+    metadataSnapshot: inspected.metadata as unknown as Record<string, unknown>,
+    metadataErrorCategory: inspected.errorCategory,
+  });
+}
