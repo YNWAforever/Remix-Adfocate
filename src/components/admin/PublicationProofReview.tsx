@@ -111,6 +111,7 @@ const COPY = {
     noReward: "No reward is issued by this action.",
     typeAttempt: (number: number) => `Type attempt number ${number} to confirm`,
     confirmVerification: "Confirm verification",
+    cancelVerification: "Cancel verification",
     actionFailed: "The proof review action could not be completed.",
     instructionsRequired: "Publication setup required",
     instructionText: "Publication instructions",
@@ -167,6 +168,7 @@ const COPY = {
     noReward: "此操作不會發放任何獎賞。",
     typeAttempt: (number: number) => `輸入提交次數 ${number} 以確認`,
     confirmVerification: "確認核實",
+    cancelVerification: "取消核實",
     actionFailed: "未能完成發佈證明審批操作。",
     instructionsRequired: "需要設定發佈資料",
     instructionText: "發佈指示",
@@ -238,6 +240,10 @@ export function PublicationProofReview({
   });
   const [setupError, setSetupError] = useState(false);
   const firstCorrectionRef = useRef<HTMLTextAreaElement>(null);
+  const focusCorrectionAfterAddRef = useRef(false);
+  const verifyInputRef = useRef<HTMLInputElement>(null);
+  const verifyTriggerRef = useRef<HTMLButtonElement>(null);
+  const restoreVerifyFocusRef = useRef(false);
 
   useEffect(() => {
     const saved = review?.checklist;
@@ -255,6 +261,24 @@ export function PublicationProofReview({
     setAttemptConfirmation("");
     setActionError(null);
   }, [attempt?.id, review?.id]);
+
+  useEffect(() => {
+    if (focusCorrectionAfterAddRef.current && corrections.length) {
+      focusCorrectionAfterAddRef.current = false;
+      firstCorrectionRef.current?.focus();
+    }
+  }, [corrections.length]);
+
+  useEffect(() => {
+    if (confirming) {
+      verifyInputRef.current?.focus();
+      return;
+    }
+    if (restoreVerifyFocusRef.current) {
+      restoreVerifyFocusRef.current = false;
+      verifyTriggerRef.current?.focus();
+    }
+  }, [confirming]);
 
   if (!item) return null;
 
@@ -291,6 +315,25 @@ export function PublicationProofReview({
     await perform(() => onRequestCorrection({ ...base, checklist, corrections: clean, summary: summary.trim() || null }));
   }
 
+  function focusCorrection() {
+    if (corrections.length) {
+      firstCorrectionRef.current?.focus();
+      return;
+    }
+    focusCorrectionAfterAddRef.current = true;
+    setCorrections([{ category: "other", text: "", position: 0 }]);
+  }
+
+  function openVerification() {
+    restoreVerifyFocusRef.current = true;
+    setConfirming(true);
+  }
+
+  function closeVerification() {
+    setConfirming(false);
+    setAttemptConfirmation("");
+  }
+
   async function saveInstructions() {
     const text = setup.publicationInstructions.trim();
     const reason = setup.overrideReason.trim();
@@ -307,7 +350,7 @@ export function PublicationProofReview({
         publicationInstructions: text, publicationWindowHours: hours,
         requiredDisclosures: setup.requiredDisclosures.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
         expectedAccount: setup.expectedAccount.trim() || null,
-        proofEvidencePolicy: { required: setup.evidenceRequired },
+        proofEvidencePolicy: setup.evidenceRequired ? { required: true } : {},
       },
     }));
   }
@@ -411,18 +454,31 @@ export function PublicationProofReview({
       </section>
 
       {actionError ? <p role="alert" aria-live="assertive" className="rounded-xl border-2 border-red-700 bg-red-50 p-3 font-bold text-red-700">{actionError}</p> : null}
-      {confirming ? <div role="alertdialog" aria-labelledby="verify-proof-title" className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+      {confirming ? <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="verify-proof-title"
+        aria-describedby="verify-proof-description"
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeVerification();
+          }
+        }}
+        className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
+      >
         <h3 id="verify-proof-title" className="font-heading font-bold">{c.verifyTitle(attempt.attemptNumber)}</h3>
-        <p>{c.noReward}</p>
-        <label className="grid gap-1 font-bold">{c.typeAttempt(attempt.attemptNumber)}<input className={FIELD} inputMode="numeric" value={attemptConfirmation} onChange={(event) => setAttemptConfirmation(event.target.value)} /></label>
+        <p id="verify-proof-description">{c.noReward}</p>
+        <label className="grid gap-1 font-bold">{c.typeAttempt(attempt.attemptNumber)}<input ref={verifyInputRef} className={FIELD} inputMode="numeric" value={attemptConfirmation} onChange={(event) => setAttemptConfirmation(event.target.value)} /></label>
+        <button type="button" onClick={closeVerification} className={`${BUTTON} bg-white`}>{c.cancelVerification}</button>
         <button type="button" disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(() => onVerify({ ...base, checklist, summary: summary.trim() || null }))} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.confirmVerification}</button>
       </div> : null}
 
       <div data-testid="proof-review-actions" className="sticky bottom-0 z-20 -mx-2 flex flex-wrap gap-2 border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-3 lg:static lg:mx-0">
         <button type="button" disabled={isBusy || item.state !== "proof_submitted" || !base} onClick={() => base && void perform(() => onClaim(base))} className={`${BUTTON} bg-[var(--color-sky)]`}>{c.claim}</button>
         <span className="self-center text-sm font-bold">{review?.reviewerId ? `${c.claimedBy}: ${review.reviewerId}` : null}</span>
-        <button type="button" disabled={isBusy || !claimedByCurrent} onClick={() => firstCorrectionRef.current?.focus()} className={`${BUTTON} bg-[var(--color-sun)]`}>{c.requestCorrection}</button>
-        <button type="button" disabled={isBusy || !claimedByCurrent || !allPassed} onClick={() => setConfirming(true)} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.verify}</button>
+        <button type="button" disabled={isBusy || !claimedByCurrent} onClick={focusCorrection} className={`${BUTTON} bg-[var(--color-sun)]`}>{c.requestCorrection}</button>
+        <button ref={verifyTriggerRef} type="button" disabled={isBusy || !claimedByCurrent || !allPassed} onClick={openVerification} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.verify}</button>
       </div>
     </section>
   );

@@ -452,6 +452,47 @@ describe("PublicationProofReview", () => {
     })));
   });
 
+  it("treats exact-attempt verification as an alert dialog with keyboard-safe focus restoration", async () => {
+    renderProof();
+    [
+      "Publicly accessible",
+      "Platform matches",
+      "Account matches",
+      "Content matches approved version",
+      "Timing acceptable",
+      "Disclosures present",
+    ].forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    const trigger = screen.getByRole("button", { name: "Verify proof" });
+
+    fireEvent.click(trigger);
+
+    const dialog = screen.getByRole("alertdialog", { name: "Verify publication proof attempt 2?" });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(screen.getByLabelText("Type attempt number 2 to confirm")).toHaveFocus();
+
+    fireEvent.keyDown(dialog, { key: "Escape" });
+
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole("button", { name: "Cancel verification" }));
+
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+    expect(trigger).toHaveFocus();
+  });
+
+  it("creates and focuses the first categorized correction from the empty sticky action", async () => {
+    renderProof();
+    expect(screen.queryByLabelText("Correction 1")).not.toBeInTheDocument();
+    expect(screen.getByTestId("proof-review-actions")).toHaveClass("sticky", "bottom-0");
+
+    fireEvent.click(screen.getByRole("button", { name: "Request correction" }));
+
+    expect(await screen.findByLabelText("Correction 1")).toHaveFocus();
+    expect(screen.getByLabelText("Correction category 1")).toHaveValue("other");
+  });
+
   it("validates categorized corrections and claims an unowned submitted attempt", async () => {
     const handlers = renderProof({ workflow: proofWorkflow("proof_submitted") });
     expect(screen.getByRole("button", { name: "Request correction" })).toBeDisabled();
@@ -506,6 +547,29 @@ describe("PublicationProofReview localization and setup", () => {
         publicationInstructions: "Publish exactly as approved.",
         requiredDisclosures: ["#ad", "Paid partnership"], expectedAccount: "@amy",
         proofEvidencePolicy: { required: true },
+      }),
+    })));
+  });
+
+  it("omits a false private-evidence flag from legacy publication setup", async () => {
+    const setupWorkflow = proofWorkflow();
+    setupWorkflow.workItems[0] = {
+      ...setupWorkflow.workItems[0],
+      state: "approved_to_publish",
+      current_proof_attempt_id: null,
+    };
+    setupWorkflow.publicationInstructions = [];
+    setupWorkflow.proofAttempts = [];
+    setupWorkflow.proofReviews = [];
+    const handlers = renderProof({ workflow: setupWorkflow });
+    fireEvent.change(screen.getByLabelText("Publication instructions"), { target: { value: "Publish exactly as approved." } });
+    fireEvent.change(screen.getByLabelText("Setup reason"), { target: { value: "Explicit Phase 3 setup" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
+
+    await waitFor(() => expect(handlers.onSetInstructions).toHaveBeenCalledWith(expect.objectContaining({
+      instructions: expect.objectContaining({
+        proofEvidencePolicy: {},
       }),
     })));
   });
