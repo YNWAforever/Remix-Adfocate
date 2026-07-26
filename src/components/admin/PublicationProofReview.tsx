@@ -460,6 +460,18 @@ export function PublicationProofReview({
         aria-labelledby="verify-proof-title"
         aria-describedby="verify-proof-description"
         onKeyDown={(event) => {
+          if (event.key === "Tab") {
+            const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+              'button:not(:disabled), input:not(:disabled)',
+            ));
+            const first = focusable[0];
+            const last = focusable.at(-1);
+            if (first && last && ((!event.shiftKey && document.activeElement === last)
+              || (event.shiftKey && document.activeElement === first))) {
+              event.preventDefault();
+              (event.shiftKey ? last : first).focus();
+            }
+          }
           if (event.key === "Escape") {
             event.preventDefault();
             closeVerification();

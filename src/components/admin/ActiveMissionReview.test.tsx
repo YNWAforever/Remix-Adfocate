@@ -482,6 +482,25 @@ describe("PublicationProofReview", () => {
     expect(trigger).toHaveFocus();
   });
 
+  it("keeps keyboard focus within the verification confirmation", () => {
+    renderProof();
+    [
+      "Publicly accessible",
+      "Platform matches",
+      "Account matches",
+      "Content matches approved version",
+      "Timing acceptable",
+      "Disclosures present",
+    ].forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    fireEvent.change(screen.getByLabelText("Type attempt number 2 to confirm"), { target: { value: "2" } });
+
+    const confirmation = screen.getByRole("button", { name: "Confirm verification" });
+    confirmation.focus();
+    expect(fireEvent.keyDown(confirmation, { key: "Tab" })).toBe(false);
+    expect(screen.getByLabelText("Type attempt number 2 to confirm")).toHaveFocus();
+  });
+
   it("creates and focuses the first categorized correction from the empty sticky action", async () => {
     renderProof();
     expect(screen.queryByLabelText("Correction 1")).not.toBeInTheDocument();
