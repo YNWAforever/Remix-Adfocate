@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AdminAuthError } from "@/lib/admin";
+import { AdminAuthError, AdminRequestError } from "@/lib/admin";
 import type { ActiveMissionQueueItem, ActiveMissionWorkflow } from "@/lib/admin";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
 
@@ -18,6 +18,11 @@ const h = vi.hoisted(() => ({
   fetchActiveMissionQueue: vi.fn(),
   fetchActiveMissionWorkflow: vi.fn(),
   startActiveMissionReview: vi.fn(),
+  startProofReview: vi.fn(),
+  requestProofCorrection: vi.fn(),
+  verifyProof: vi.fn(),
+  refreshProofMetadata: vi.fn(),
+  setPublicationInstructions: vi.fn(),
   reportAuthError: vi.fn(),
 }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -40,6 +45,17 @@ vi.mock("@/lib/admin", async (importOriginal) => {
     fetchActiveMissionQueue: h.fetchActiveMissionQueue,
     fetchActiveMissionWorkflow: h.fetchActiveMissionWorkflow,
     startActiveMissionReview: h.startActiveMissionReview,
+    setActiveMissionPublicationInstructions: h.setPublicationInstructions,
+  };
+});
+vi.mock("@/lib/queries/activeMission", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/queries/activeMission")>();
+  return {
+    ...original,
+    useStartProofReview: () => ({ mutateAsync: h.startProofReview, isPending: false }),
+    useRequestProofCorrection: () => ({ mutateAsync: h.requestProofCorrection, isPending: false }),
+    useVerifyProof: () => ({ mutateAsync: h.verifyProof, isPending: false }),
+    useRefreshProofMetadata: () => ({ mutateAsync: h.refreshProofMetadata, isPending: false }),
   };
 });
 
@@ -57,6 +73,10 @@ const items: ActiveMissionQueueItem[] = [
     reviewDueAt: "2026-07-19T18:00:00.000Z",
     reviewerId: null,
     riskBucket: "due_soon",
+    proofAttemptId: "attempt-today",
+    proofAttemptNumber: 2,
+    submittedLate: true,
+    metadataStatus: "unavailable",
   },
   {
     workflowId: "workflow-later",
@@ -132,6 +152,8 @@ describe("ActiveMissionQueue", () => {
     expect(cards[0]).toHaveTextContent("Summer launch");
     expect(cards[0]).toHaveTextContent("Amy Wong");
     expect(cards[0]).toHaveTextContent("Unassigned");
+    expect(cards[0]).toHaveTextContent("Submitted late");
+    expect(cards[0]).toHaveTextContent("unavailable");
     expect(cards[0]).toHaveTextContent("Submitted 7 hours ago");
     expect(cards[1]).toHaveTextContent("reviewer-1");
   });
@@ -191,5 +213,107 @@ describe("admin active missions route", () => {
       { workspace: "demo", expectedState: "submitted" },
     );
     expect(h.reportAuthError).toHaveBeenCalledWith(authError);
+  });
+});
+
+describe("publication proof queue filters", () => {
+  it("applies proof state, lateness, metadata, platform, deadline, mission, and reviewer only after Apply", () => {
+    const onFiltersChange = vi.fn();
+    render(<ActiveMissionQueue items={items} filters={{}} onFiltersChange={onFiltersChange} />);
+    fireEvent.change(screen.getByLabelText("Proof state"), { target: { value: "proof_submitted" } });
+    fireEvent.change(screen.getByLabelText("Lateness"), { target: { value: "true" } });
+    fireEvent.change(screen.getByLabelText("Metadata status"), { target: { value: "unavailable" } });
+    fireEvent.change(screen.getByLabelText("Platform"), { target: { value: "instagram" } });
+    fireEvent.change(screen.getByLabelText("Publication deadline"), { target: { value: "overdue" } });
+    fireEvent.change(screen.getByLabelText("Reviewer"), { target: { value: "reviewer-1" } });
+    fireEvent.change(screen.getByLabelText("Mission"), { target: { value: "mission-1" } });
+    expect(onFiltersChange).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onFiltersChange).toHaveBeenCalledWith({
+      proofState: "proof_submitted",
+      late: true,
+      metadataStatus: "unavailable",
+      platform: "instagram",
+      publicationDeadline: "overdue",
+      reviewer: "reviewer-1",
+      mission: "mission-1",
+    });
+    expect(screen.getAllByTestId("queue-item")[0]).toHaveTextContent("Amy Wong");
+    fireEvent.change(screen.getByLabelText("Lateness"), { target: { value: "false" } });
+    fireEvent.click(screen.getByRole("button", { name: "Apply filters" }));
+    expect(onFiltersChange).toHaveBeenLastCalledWith(expect.objectContaining({ late: false }));
+  });
+});
+
+function operatorProofWorkflow(): ActiveMissionWorkflow {
+  const value = structuredClone(detailWorkflow);
+  value.workItems[0] = {
+    ...value.workItems[0], state: "proof_under_review", approved_version_id: "version-1",
+    current_proof_attempt_id: "attempt-current", revision: 4,
+  };
+  value.publicationInstructions = [{
+    id: "instruction-1", workItemId: "item-today", publicationInstructions: "Publish exactly as approved.",
+    publicationWindowHours: 24, requiredDisclosures: ["#ad"], expectedAccount: "@amy",
+    proofEvidencePolicy: {}, publicationDueAt: "2099-07-21T12:00:00.000Z",
+    frozenAt: "2099-07-20T12:00:00.000Z", revision: 1,
+  }];
+  value.proofAttempts = [{
+    id: "attempt-current", workItemId: "item-today", attemptNumber: 3,
+    primaryUrl: "https://www.instagram.com/p/current", additionalUrls: [],
+    submittedAt: "2099-07-20T13:00:00.000Z", submittedLate: false,
+    metadataStatus: "available", metadataSnapshot: { pageTitle: "Current proof" },
+    metadataErrorCategory: null,
+  }];
+  value.proofReviews = [{
+    id: "review-current", attemptId: "attempt-current", reviewNumber: 1, state: "open",
+    decision: null, reviewerId: "reviewer-1", reviewedAt: "2099-07-20T14:00:00.000Z",
+    decisionAt: null, creatorResponseDeadline: null, checklist: null, summary: null, items: [],
+  }];
+  value.proofAssets = [];
+  return value;
+}
+
+describe("admin publication proof review route", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    h.fetchActiveMissionWorkflow.mockResolvedValue(operatorProofWorkflow());
+    h.startProofReview.mockResolvedValue({});
+    h.requestProofCorrection.mockResolvedValue({});
+    h.verifyProof.mockResolvedValue({});
+    h.refreshProofMetadata.mockResolvedValue({});
+  });
+
+  it("binds Task 9 proof hooks to the exact current attempt", async () => {
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(<AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />);
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    ["Publicly accessible", "Platform matches", "Account matches",
+      "Content matches approved version", "Timing acceptable", "Disclosures present"]
+      .forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    fireEvent.change(screen.getByLabelText("Type attempt number 3 to confirm"), { target: { value: "3" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+    await waitFor(() => expect(h.verifyProof).toHaveBeenCalledWith(expect.objectContaining({
+      workflowId: "workflow-today", workItemId: "item-today", workspace: "demo",
+      attemptId: "attempt-current", expectedState: "proof_under_review",
+      expectedRevision: 4, idempotencyKey: expect.any(String),
+    })));
+  });
+
+  it("reloads stale proof state and routes proof auth failures through AdminAuthContext", async () => {
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    const stale = operatorProofWorkflow();
+    stale.workItems[0] = { ...stale.workItems[0], state: "proof_submitted" };
+    stale.proofReviews![0] = { ...stale.proofReviews![0], reviewerId: null };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(stale);
+    h.startProofReview.mockRejectedValueOnce(new AdminRequestError("changed", "WORKFLOW_STALE"));
+    renderWithQueryClient(<AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />);
+    await screen.findByRole("button", { name: "Claim review" });
+    fireEvent.click(screen.getByRole("button", { name: "Claim review" }));
+    await waitFor(() => expect(h.fetchActiveMissionWorkflow.mock.calls.length).toBeGreaterThan(1));
+
+    h.startProofReview.mockRejectedValueOnce(new AdminAuthError("unauthorized"));
+    fireEvent.click(screen.getByRole("button", { name: "Claim review" }));
+    await waitFor(() => expect(h.reportAuthError).toHaveBeenCalledWith(expect.any(AdminAuthError)));
   });
 });

@@ -1,17 +1,22 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActiveMissionReview } from "./ActiveMissionReview";
+import { PublicationProofReview } from "./PublicationProofReview";
 import { AdminRequestError } from "@/lib/admin";
 import type { ActiveMissionWorkflow } from "@/lib/admin";
+
+const localeState = vi.hoisted(() => ({ lang: "en" as "en" | "zh" }));
 
 vi.mock("@/lib/i18n", async () => {
   const { dict } = await import("@/lib/i18n.dict");
   const t = (key: string, params?: Record<string, string | number>) =>
-    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+    (dict[localeState.lang][key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
   return {
-    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+    useI18n: () => ({ lang: localeState.lang, localeReady: true, setLang: vi.fn(), t }),
   };
 });
+
+beforeEach(() => { localeState.lang = "en"; });
 
 const workflow = (revisionLimit = 2): ActiveMissionWorkflow => ({
   workflow: {
@@ -339,4 +344,170 @@ describe("ActiveMissionReview", () => {
       vi.useRealTimers();
     }
   });
+});
+
+function proofWorkflow(state: "proof_submitted" | "proof_under_review" | "proof_verified" = "proof_under_review"): ActiveMissionWorkflow {
+  const result = workflow();
+  result.workItems[0] = {
+    ...result.workItems[0], state, approved_version_id: "version-2",
+    current_proof_attempt_id: "attempt-2", revision: 7,
+  } as ActiveMissionWorkflow["workItems"][number];
+  result.publicationInstructions = [{
+    id: "instructions-1", workItemId: "work-item-2",
+    publicationInstructions: "Publish the approved reel without edits.",
+    publicationWindowHours: 48, requiredDisclosures: ["#ad"], expectedAccount: "@amy",
+    proofEvidencePolicy: { required: true }, publicationDueAt: "2099-07-21T12:00:00.000Z",
+    frozenAt: "2099-07-19T12:00:00.000Z", revision: 1,
+  }];
+  result.proofAttempts = [{
+    id: "attempt-1", workItemId: "work-item-2", attemptNumber: 1,
+    primaryUrl: "https://www.instagram.com/p/first", additionalUrls: [],
+    submittedAt: "2099-07-19T13:00:00.000Z", submittedLate: false,
+    metadataStatus: "unavailable", metadataSnapshot: { privilegedFetchTrace: "must-not-render" },
+    metadataErrorCategory: "network",
+  }, {
+    id: "attempt-2", workItemId: "work-item-2", attemptNumber: 2,
+    primaryUrl: "https://www.instagram.com/p/current",
+    additionalUrls: ["https://www.instagram.com/reel/current"],
+    submittedAt: "2099-07-20T13:00:00.000Z", submittedLate: true,
+    metadataStatus: "available",
+    metadataSnapshot: {
+      pageTitle: "Amy's approved reel", finalCanonicalUrl: "https://www.instagram.com/p/current",
+      httpStatusCategory: "success", fetchedAt: "2099-07-20T13:00:01.000Z",
+      privilegedFetchTrace: "must-not-render",
+    },
+    metadataErrorCategory: null,
+  }];
+  result.proofReviews = [{
+    id: "proof-review-1", attemptId: "attempt-1", reviewNumber: 1,
+    state: "correction_requested", decision: "correction_requested", reviewerId: "reviewer-1",
+    reviewedAt: "2099-07-19T14:00:00.000Z", decisionAt: "2099-07-19T14:00:00.000Z",
+    creatorResponseDeadline: "2099-07-20T14:00:00.000Z", checklist: null,
+    summary: "Update the disclosure.",
+    items: [{ id: "proof-item-1", category: "disclosure", text: "Add #ad.", passed: false, position: 0 }],
+  }, {
+    id: "proof-review-2", attemptId: "attempt-2", reviewNumber: 2,
+    state: state === "proof_verified" ? "verified" : "open",
+    decision: state === "proof_verified" ? "verified" : null,
+    reviewerId: state === "proof_submitted" ? null : "reviewer-1",
+    reviewedAt: "2099-07-20T14:00:00.000Z",
+    decisionAt: state === "proof_verified" ? "2099-07-20T15:00:00.000Z" : null,
+    creatorResponseDeadline: null, checklist: null, summary: null, items: [],
+  }];
+  result.proofAssets = [{
+    id: "proof-asset-1", attemptId: "attempt-2", originalFilename: "analytics.png",
+    contentType: "image/png", sizeBytes: 1024, createdAt: "2099-07-20T13:00:00.000Z",
+    signedUrl: "https://signed.example.com/evidence",
+  }];
+  return result;
+}
+
+function renderProof(overrides: Partial<React.ComponentProps<typeof PublicationProofReview>> = {}) {
+  const handlers = {
+    onClaim: vi.fn().mockResolvedValue({}), onRequestCorrection: vi.fn().mockResolvedValue({}),
+    onVerify: vi.fn().mockResolvedValue({}), onRefreshMetadata: vi.fn().mockResolvedValue({}),
+    onSetInstructions: vi.fn().mockResolvedValue({}),
+  };
+  render(<PublicationProofReview workflow={proofWorkflow()} selectedWorkItemId="work-item-2"
+    currentOperatorId="reviewer-1" {...handlers} {...overrides} />);
+  return handlers;
+}
+
+describe("PublicationProofReview", () => {
+  it("shows approved content, safe proof links, bounded metadata, signed evidence, and history", () => {
+    renderProof();
+    expect(screen.getByRole("heading", { name: "Publication proof attempt 2" })).toBeVisible();
+    expect(screen.getByText("Ready for summer.")).toBeVisible();
+    expect(screen.getByRole("link", { name: "reel.mp4" })).toHaveAttribute("href", "https://example.com/signed/reel.mp4");
+    expect(screen.getByText("Publish the approved reel without edits.")).toBeVisible();
+    expect(screen.getByText("#ad")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Primary published URL" })).toHaveAttribute("rel", expect.stringContaining("noreferrer"));
+    expect(screen.getByText("Amy's approved reel")).toBeVisible();
+    expect(screen.queryByText("must-not-render")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "analytics.png" })).toHaveAttribute("href", "https://signed.example.com/evidence");
+    expect(screen.getByText("Update the disclosure.")).toBeVisible();
+    expect(screen.queryByRole("button", { name: /reward/i })).not.toBeInTheDocument();
+    expect(screen.getByTestId("proof-review-actions")).toHaveClass("sticky", "bottom-0");
+  });
+
+  it("requires all six checklist answers and the exact attempt number before verification", async () => {
+    const handlers = renderProof();
+    const labels = ["Publicly accessible", "Platform matches", "Account matches",
+      "Content matches approved version", "Timing acceptable", "Disclosures present"];
+    expect(screen.getByRole("button", { name: "Verify proof" })).toBeDisabled();
+    labels.forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    expect(screen.getByRole("button", { name: "Verify proof" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    expect(screen.getByText("Verify publication proof attempt 2?")).toBeVisible();
+    expect(screen.getByText("No reward is issued by this action.")).toBeVisible();
+    fireEvent.change(screen.getByLabelText("Type attempt number 2 to confirm"), { target: { value: "2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+    await waitFor(() => expect(handlers.onVerify).toHaveBeenCalledWith(expect.objectContaining({
+      workItemId: "work-item-2", attemptId: "attempt-2",
+      expectedState: "proof_under_review", expectedRevision: 7,
+      checklist: {
+        publiclyAccessible: true, platformMatches: true, accountMatches: true,
+        contentMatchesApprovedVersion: true, timingAcceptable: true, disclosuresPresent: true,
+      },
+    })));
+  });
+
+  it("validates categorized corrections and claims an unowned submitted attempt", async () => {
+    const handlers = renderProof({ workflow: proofWorkflow("proof_submitted") });
+    expect(screen.getByRole("button", { name: "Request correction" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Claim review" }));
+    await waitFor(() => expect(handlers.onClaim).toHaveBeenCalledWith(expect.objectContaining({
+      attemptId: "attempt-2", expectedState: "proof_submitted", expectedRevision: 7,
+    })));
+    const claimedHandlers = renderProof({ workflow: proofWorkflow("proof_under_review") });
+    fireEvent.click(screen.getByRole("button", { name: "Add correction" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send correction request" }));
+    expect(screen.getByText("Add at least one categorized correction.")).toBeVisible();
+    fireEvent.change(screen.getByLabelText("Correction category 1"), { target: { value: "disclosure" } });
+    fireEvent.change(screen.getByLabelText("Correction 1"), { target: { value: "Add the approved #ad disclosure." } });
+    fireEvent.click(screen.getByRole("button", { name: "Send correction request" }));
+    await waitFor(() => expect(claimedHandlers.onRequestCorrection).toHaveBeenCalledWith(expect.objectContaining({
+      corrections: [{ category: "disclosure", text: "Add the approved #ad disclosure.", position: 0 }],
+    })));
+  });
+
+describe("PublicationProofReview localization and setup", () => {
+  it("renders the operator proof experience in Traditional Chinese", () => {
+    localeState.lang = "zh";
+    renderProof();
+    expect(screen.getByRole("heading", { name: "發佈證明第 2 次提交" })).toBeVisible();
+    expect(screen.getByText("已凍結的發佈指示")).toBeVisible();
+    expect(screen.getByRole("button", { name: "核實證明" })).toBeVisible();
+  });
+
+  it("validates and submits explicit publication setup for approved legacy work", async () => {
+    const setupWorkflow = proofWorkflow();
+    setupWorkflow.workItems[0] = {
+      ...setupWorkflow.workItems[0],
+      state: "approved_to_publish",
+      current_proof_attempt_id: null,
+    };
+    setupWorkflow.publicationInstructions = [];
+    setupWorkflow.proofAttempts = [];
+    setupWorkflow.proofReviews = [];
+    const handlers = renderProof({ workflow: setupWorkflow });
+    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
+    expect(screen.getByText("Complete the publication instructions, window, and setup reason.")).toBeVisible();
+    fireEvent.change(screen.getByLabelText("Publication instructions"), { target: { value: "Publish exactly as approved." } });
+    fireEvent.change(screen.getByLabelText("Required disclosures (one per line)"), { target: { value: "#ad\nPaid partnership" } });
+    fireEvent.change(screen.getByLabelText("Expected account (optional)"), { target: { value: "@amy" } });
+    fireEvent.click(screen.getByLabelText("Require private evidence"));
+    fireEvent.change(screen.getByLabelText("Setup reason"), { target: { value: "Explicit Phase 3 setup" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
+    await waitFor(() => expect(handlers.onSetInstructions).toHaveBeenCalledWith(expect.objectContaining({
+      expectedState: "approved_to_publish", expectedRevision: 7,
+      overrideReason: "Explicit Phase 3 setup",
+      instructions: expect.objectContaining({
+        publicationInstructions: "Publish exactly as approved.",
+        requiredDisclosures: ["#ad", "Paid partnership"], expectedAccount: "@amy",
+        proofEvidencePolicy: { required: true },
+      }),
+    })));
+  });
+});
 });

@@ -197,6 +197,14 @@ export type ActiveMissionQueueItem = {
   creatorDeadline: string | null;
   submittedAt: string | null;
   reviewDueAt: string | null;
+  proofAttemptId?: string | null;
+  proofAttemptNumber?: number | null;
+  submittedLate?: boolean;
+  metadataStatus?: string | null;
+  platform?: string | null;
+  publicationDueAt?: string | null;
+  creatorResponseDeadline?: string | null;
+  proofReviewerId?: string | null;
   reviewerId: string | null;
   riskBucket: ActiveMissionRiskBucket;
 };
@@ -232,6 +240,8 @@ export type ActiveMissionWorkItem = {
   current_submitted_version_id: string | null;
   approved_version_id: string | null;
   requirements_snapshot: ActiveMissionRequirement[];
+  current_proof_attempt_id?: string | null;
+  revision?: number;
 };
 
 export type ActiveMissionVersion = {
@@ -559,6 +569,40 @@ export function refreshPublicationProofMetadata(
     method: "POST",
     headers: proofMutationHeaders(body),
     body: JSON.stringify(proofMutationBody(body)),
+  });
+}
+
+export function setActiveMissionPublicationInstructions(
+  workflowId: string,
+  workItemId: string,
+  body: {
+    workspace: string;
+    expectedState: string;
+    expectedRevision: number;
+    idempotencyKey: string;
+    overrideReason: string;
+    instructions: {
+      publicationInstructions: string;
+      publicationWindowHours: number;
+      requiredDisclosures: string[];
+      expectedAccount: string | null;
+      proofEvidencePolicy: Record<string, unknown>;
+    };
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-instructions`, {
+    method: "PUT",
+    headers: {
+      ...activeMissionWorkspaceHeader(body.workspace),
+      "Idempotency-Key": body.idempotencyKey,
+    },
+    body: JSON.stringify({
+      expectedState: body.expectedState,
+      expectedRevision: body.expectedRevision,
+      idempotencyKey: body.idempotencyKey,
+      overrideReason: body.overrideReason,
+      instructions: body.instructions,
+    }),
   });
 }
 

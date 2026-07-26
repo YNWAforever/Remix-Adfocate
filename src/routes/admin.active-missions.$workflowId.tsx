@@ -1,19 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+import { PublicationProofReview } from "@/components/admin/PublicationProofReview";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
   AdminAuthError,
+  AdminRequestError,
   approveActiveMissionVersion,
   fetchActiveMissionWorkflow,
   grantActiveMissionRevision,
   markActiveMissionShipped,
   requestActiveMissionRevision,
+  setActiveMissionPublicationInstructions,
   startActiveMissionReview,
 } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
+import {
+  useRefreshProofMetadata,
+  useRequestProofCorrection,
+  useStartProofReview,
+  useVerifyProof,
+} from "@/lib/queries/activeMission";
 
 export const Route = createFileRoute("/admin/active-missions/$workflowId")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -21,6 +30,18 @@ export const Route = createFileRoute("/admin/active-missions/$workflowId")({
   }),
   component: AdminActiveMissionReviewRoute,
 });
+
+const PUBLICATION_STATES = new Set([
+  "approved_to_publish",
+  "proof_submitted",
+  "proof_under_review",
+  "proof_correction_requested",
+  "proof_verified",
+]);
+
+function idempotencyKey() {
+  return globalThis.crypto.randomUUID();
+}
 
 export function AdminActiveMissionReviewRoute() {
   const { workflowId } = Route.useParams();
@@ -35,11 +56,16 @@ export function AdminActiveMissionReviewView({
   workflowId: string;
   workItemId?: string;
 }) {
-  const { authed, reportAuthError } = useAdminAuth();
+  const { authed, staff, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const queryClient = useQueryClient();
   const key = ["admin-active-mission", workspace, workflowId] as const;
   const { t } = useI18n();
+  const [selectedAttemptId, setSelectedAttemptId] = useState<string>();
+  const startProofReview = useStartProofReview();
+  const requestProofCorrection = useRequestProofCorrection();
+  const verifyProof = useVerifyProof();
+  const refreshProofMetadata = useRefreshProofMetadata();
   const detail = useQuery({
     queryKey: key,
     queryFn: () => fetchActiveMissionWorkflow(workflowId, workspace),
@@ -61,6 +87,62 @@ export function AdminActiveMissionReviewView({
   if (!workspace) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectReview")}</p>;
   if (detail.isLoading) return <p className="text-sm">{t("app.admin.activeMission.route.loadingWorkflow")}</p>;
   if (detail.isError || !detail.data) return <p role="alert" className="text-sm font-bold text-red-700">{t("app.admin.activeMission.route.workflowError")}</p>;
+
+  const handleProofError = (error: unknown) => {
+    if (error instanceof AdminAuthError) reportAuthError(error);
+    if (error instanceof AdminRequestError && error.code === "WORKFLOW_STALE") {
+      void detail.refetch().then(({ data }) => {
+        const selected = data?.workItems.find((item) => item.id === workItemId)
+          ?? data?.workItems.find((item) => PUBLICATION_STATES.has(item.state));
+        setSelectedAttemptId(selected?.current_proof_attempt_id ?? undefined);
+      });
+    }
+  };
+
+  const selectedItem = detail.data.workItems.find((item) => item.id === workItemId)
+    ?? detail.data.workItems.find((item) => PUBLICATION_STATES.has(item.state));
+  const isPublicationReview = Boolean(selectedItem && PUBLICATION_STATES.has(selectedItem.state)
+    && (selectedItem.state === "approved_to_publish"
+      || detail.data.proofAttempts?.some((attempt) => attempt.workItemId === selectedItem.id)));
+  const proofBusy = startProofReview.isPending || requestProofCorrection.isPending
+    || verifyProof.isPending || refreshProofMetadata.isPending;
+
+  if (isPublicationReview && staff?.userId && selectedItem) {
+    return (
+      <PublicationProofReview
+        workflow={detail.data}
+        selectedWorkItemId={selectedItem.id}
+        selectedAttemptId={selectedAttemptId}
+        currentOperatorId={staff.userId}
+        busy={proofBusy}
+        onClaim={(input) => startProofReview.mutateAsync({
+          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+        })}
+        onRequestCorrection={(input) => requestProofCorrection.mutateAsync({
+          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+        })}
+        onVerify={(input) => verifyProof.mutateAsync({
+          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+        })}
+        onRefreshMetadata={(input) => refreshProofMetadata.mutateAsync({
+          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+        })}
+        onSetInstructions={async (input) => {
+          const result = await setActiveMissionPublicationInstructions(workflowId, input.workItemId, {
+            workspace,
+            expectedState: input.expectedState,
+            expectedRevision: input.expectedRevision,
+            idempotencyKey: idempotencyKey(),
+            overrideReason: input.overrideReason,
+            instructions: input.instructions,
+          });
+          await refresh();
+          return result;
+        }}
+        onActionError={handleProofError}
+      />
+    );
+  }
 
   return (
     <ActiveMissionReview
