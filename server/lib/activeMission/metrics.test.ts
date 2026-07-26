@@ -149,4 +149,17 @@ describe("calculatePublicationProofOperationalMetrics", () => {
       "staleRecovery",
     ]);
   });
+
+  it("excludes malformed attempt counts from the verified-attempt average", () => {
+    const metrics = calculatePublicationProofOperationalMetrics([
+      metricRow({ attemptCount: Number.NaN }),
+      metricRow({ attemptCount: Number.POSITIVE_INFINITY }),
+      metricRow({ attemptCount: -1 }),
+      metricRow({ attemptCount: 0 }),
+      metricRow({ attemptCount: 1.5 }),
+      metricRow({ attemptCount: 2 }),
+    ]);
+
+    expect(metrics.averageAttemptsPerVerifiedItem).toBe(2);
+  });
 });

@@ -117,10 +117,11 @@ export function calculatePublicationProofOperationalMetrics(
     submittedRows.filter((row) => Number.isFinite(row.correctionCount) && row.correctionCount > 0).length,
     submittedRows.length,
   );
-  const attemptTotal = verifiedRows.reduce(
-    (total, row) => total + (
-      Number.isFinite(row.attemptCount) && row.attemptCount >= 0 ? row.attemptCount : 0
-    ),
+  const verifiedRowsWithValidAttemptCount = verifiedRows.filter(
+    (row) => Number.isInteger(row.attemptCount) && row.attemptCount >= 1,
+  );
+  const attemptTotal = verifiedRowsWithValidAttemptCount.reduce(
+    (total, row) => total + row.attemptCount,
     0,
   );
   const reviewDurations = requiredRows.flatMap((row) => {
@@ -136,8 +137,9 @@ export function calculatePublicationProofOperationalMetrics(
     onTimePublication,
     firstAttemptVerification,
     correctionRequest,
-    averageAttemptsPerVerifiedItem:
-      verifiedRows.length === 0 ? 0 : attemptTotal / verifiedRows.length,
+    averageAttemptsPerVerifiedItem: verifiedRowsWithValidAttemptCount.length === 0
+      ? 0
+      : attemptTotal / verifiedRowsWithValidAttemptCount.length,
     medianReviewTimeMs: median(reviewDurations),
     metadataFailure: rateMetric(
       metadataRows.filter((row) => row.metadataStatus === "unavailable").length,

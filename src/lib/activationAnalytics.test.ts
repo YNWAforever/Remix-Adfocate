@@ -137,87 +137,87 @@ describe("activation analytics", () => {
     setActivationAnalyticsSink(sink);
 
     trackActivationEvent("publication_instructions_viewed", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "approved_to_publish",
+      locale: "zh", missionType: "ugc", platform: "instagram", state: "approved_to_publish",
     });
     trackActivationEvent("publication_proof_form_started", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram",
+      locale: "zh", missionType: "ugc", platform: "instagram",
       state: "approved_to_publish", timingBucket: "within_24h", attemptNumber: 1,
     });
     trackActivationEvent("publication_proof_submitted", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_submitted",
+      locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_submitted",
       timingBucket: "on_time", attemptNumber: 1, urlCount: 1, evidenceCount: 2,
       lateness: "on_time", metadataStatus: "available",
     });
     trackActivationEvent("publication_proof_metadata_unavailable", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram",
+      locale: "zh", missionType: "ugc", platform: "instagram",
       state: "proof_submitted", attemptNumber: 1, metadataStatus: "unavailable",
     });
     trackActivationEvent("publication_proof_review_started", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_under_review",
+      locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_under_review",
       timingBucket: "within_sla", attemptNumber: 1, reviewNumber: 1,
       metadataStatus: "available",
     });
     trackActivationEvent("publication_proof_correction_requested", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram",
+      locale: "zh", missionType: "ugc", platform: "instagram",
       state: "proof_correction_requested", timingBucket: "within_sla",
       attemptNumber: 1, reviewNumber: 1,
       checklistFailureCategories: ["content", "disclosure"],
     });
     trackActivationEvent("publication_proof_resubmitted", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_submitted",
+      locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_submitted",
       timingBucket: "late", attemptNumber: 2, urlCount: 1, evidenceCount: 1,
       lateness: "late", metadataStatus: "available",
     });
     trackActivationEvent("publication_proof_verified", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_verified",
+      locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_verified",
       timingBucket: "within_sla", attemptNumber: 2, reviewNumber: 2,
       metadataStatus: "available",
     });
     trackActivationEvent("publication_proof_recovery_used", {
-      locale: "zh-HK", missionType: "ugc", platform: "instagram",
+      locale: "zh", missionType: "ugc", platform: "instagram",
       state: "proof_correction_requested", attemptNumber: 2, recoveryCategory: "stale_conflict",
     });
 
     expect(sink.mock.calls.map(([event]) => event)).toEqual([
       { name: "publication_instructions_viewed", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "approved_to_publish",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "approved_to_publish",
       } },
       { name: "publication_proof_form_started", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram",
+        locale: "zh", missionType: "ugc", platform: "instagram",
         state: "approved_to_publish", timingBucket: "within_24h", attemptNumber: 1,
       } },
       { name: "publication_proof_submitted", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_submitted",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_submitted",
         timingBucket: "on_time", attemptNumber: 1, urlCount: 1, evidenceCount: 2,
         lateness: "on_time", metadataStatus: "available",
       } },
       { name: "publication_proof_metadata_unavailable", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_submitted",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_submitted",
         attemptNumber: 1, metadataStatus: "unavailable",
       } },
       { name: "publication_proof_review_started", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_under_review",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_under_review",
         timingBucket: "within_sla", attemptNumber: 1, reviewNumber: 1,
         metadataStatus: "available",
       } },
       { name: "publication_proof_correction_requested", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram",
+        locale: "zh", missionType: "ugc", platform: "instagram",
         state: "proof_correction_requested", timingBucket: "within_sla",
         attemptNumber: 1, reviewNumber: 1,
         checklistFailureCategories: ["content", "disclosure"],
       } },
       { name: "publication_proof_resubmitted", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_submitted",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_submitted",
         timingBucket: "late", attemptNumber: 2, urlCount: 1, evidenceCount: 1,
         lateness: "late", metadataStatus: "available",
       } },
       { name: "publication_proof_verified", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram", state: "proof_verified",
+        locale: "zh", missionType: "ugc", platform: "instagram", state: "proof_verified",
         timingBucket: "within_sla", attemptNumber: 2, reviewNumber: 2,
         metadataStatus: "available",
       } },
       { name: "publication_proof_recovery_used", properties: {
-        locale: "zh-HK", missionType: "ugc", platform: "instagram",
+        locale: "zh", missionType: "ugc", platform: "instagram",
         state: "proof_correction_requested", attemptNumber: 2, recoveryCategory: "stale_conflict",
       } },
     ]);
@@ -256,6 +256,53 @@ describe("activation analytics", () => {
     expect(JSON.stringify(delivered)).not.toContain("@creator-handle");
     expect(JSON.stringify(delivered)).not.toContain("private evidence");
     expect(JSON.stringify(delivered)).not.toContain("operator-authored");
+  });
+
+  it("drops unsafe values even when they use allowlisted property names", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent("publication_instructions_viewed", {
+      locale: "en", missionType: "ugc", platform: "instagram",
+      state: "https://creator.example/private",
+    } as never);
+    trackActivationEvent("publication_instructions_viewed", {
+      locale: "zh", missionType: "ugc", platform: "@creator_handle",
+      state: "approved_to_publish",
+    } as never);
+    trackActivationEvent("publication_proof_form_started", {
+      locale: "en", missionType: "ugc", platform: "instagram",
+      state: "approved_to_publish", timingBucket: "creator wrote this prose", attemptNumber: 1,
+    } as never);
+    trackActivationEvent("publication_proof_correction_requested", {
+      locale: "en", missionType: "ugc", platform: "instagram",
+      state: "proof_correction_requested", timingBucket: "within_sla",
+      attemptNumber: 1, reviewNumber: 1,
+      checklistFailureCategories: ["content", "550e8400-e29b-41d4-a716-446655440000"],
+    } as never);
+    trackActivationEvent("publication_proof_recovery_used", {
+      locale: "en", missionType: "ugc", platform: "instagram",
+      state: "proof_correction_requested", attemptNumber: 2,
+      recoveryCategory: "C:\\Users\\creator\\proof.txt",
+    } as never);
+
+    expect(sink.mock.calls.map(([event]) => event.properties)).toEqual([
+      { locale: "en", missionType: "ugc", platform: "instagram" },
+      { locale: "zh", missionType: "ugc", state: "approved_to_publish" },
+      {
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "approved_to_publish", attemptNumber: 1,
+      },
+      {
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "proof_correction_requested", timingBucket: "within_sla",
+        attemptNumber: 1, reviewNumber: 1,
+      },
+      {
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "proof_correction_requested", attemptNumber: 2,
+      },
+    ]);
   });
 });
 

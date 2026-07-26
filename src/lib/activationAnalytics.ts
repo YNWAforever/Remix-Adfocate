@@ -8,6 +8,39 @@ export type ActivationAuthErrorCategory =
   | "delivery_failed"
   | "unknown";
 
+const PUBLICATION_ANALYTICS_LOCALES = ["en", "zh"] as const;
+const PUBLICATION_MISSION_TYPES = [
+  "koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce",
+  "brand_ambassador",
+] as const;
+const PUBLICATION_PLATFORMS = [
+  "instagram", "threads", "facebook", "tiktok", "youtube", "linkedin", "x", "other",
+] as const;
+const PUBLICATION_STATES = [
+  "approved_to_publish", "proof_submitted", "proof_under_review",
+  "proof_correction_requested", "proof_verified",
+] as const;
+const PUBLICATION_TIMING_BUCKETS = ["within_24h", "on_time", "within_sla", "late"] as const;
+const PUBLICATION_LATENESS = ["on_time", "late"] as const;
+const PUBLICATION_METADATA_STATUSES = ["available", "unavailable"] as const;
+const PUBLICATION_CHECKLIST_FAILURE_CATEGORIES = [
+  "access", "platform", "account", "content", "timing", "disclosure", "evidence", "other",
+] as const;
+const PUBLICATION_RECOVERY_CATEGORIES = [
+  "stale_conflict", "upload_failed", "metadata_unavailable", "other",
+] as const;
+
+export type PublicationAnalyticsLocale = (typeof PUBLICATION_ANALYTICS_LOCALES)[number];
+export type PublicationMissionType = (typeof PUBLICATION_MISSION_TYPES)[number];
+export type PublicationPlatform = (typeof PUBLICATION_PLATFORMS)[number];
+export type PublicationAnalyticsState = (typeof PUBLICATION_STATES)[number];
+export type PublicationTimingBucket = (typeof PUBLICATION_TIMING_BUCKETS)[number];
+export type PublicationLateness = (typeof PUBLICATION_LATENESS)[number];
+export type PublicationMetadataStatus = (typeof PUBLICATION_METADATA_STATUSES)[number];
+export type PublicationChecklistFailureCategory =
+  (typeof PUBLICATION_CHECKLIST_FAILURE_CATEGORIES)[number];
+export type PublicationRecoveryCategory = (typeof PUBLICATION_RECOVERY_CATEGORIES)[number];
+
 /**
  * The allowed activation analytics payloads and their PII boundary.
  * Do not add direct creator identifiers or creator-authored content here.
@@ -113,43 +146,58 @@ export type ActivationEventMap = {
     action: string;
     errorCategory: string;
   };
-  publication_instructions_viewed: { locale: string; missionType: string; platform: string; state: string };
+  publication_instructions_viewed: {
+    locale: PublicationAnalyticsLocale;
+    missionType: PublicationMissionType;
+    platform: PublicationPlatform;
+    state: PublicationAnalyticsState;
+  };
   publication_proof_form_started: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number;
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number;
   };
   publication_proof_submitted: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number; urlCount: number; evidenceCount: number;
-    lateness: string; metadataStatus: "available" | "unavailable";
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number;
+    urlCount: number; evidenceCount: number;
+    lateness: PublicationLateness; metadataStatus: PublicationMetadataStatus;
   };
   publication_proof_metadata_unavailable: {
-    locale: string; missionType: string; platform: string; state: string;
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
     attemptNumber: number; metadataStatus: "unavailable";
   };
   publication_proof_review_started: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number; reviewNumber: number;
-    metadataStatus: "available" | "unavailable";
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number; reviewNumber: number;
+    metadataStatus: PublicationMetadataStatus;
   };
   publication_proof_correction_requested: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number; reviewNumber: number;
-    checklistFailureCategories: string[];
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number; reviewNumber: number;
+    checklistFailureCategories: readonly PublicationChecklistFailureCategory[];
   };
   publication_proof_resubmitted: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number; urlCount: number; evidenceCount: number;
-    lateness: string; metadataStatus: "available" | "unavailable";
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number;
+    urlCount: number; evidenceCount: number;
+    lateness: PublicationLateness; metadataStatus: PublicationMetadataStatus;
   };
   publication_proof_verified: {
-    locale: string; missionType: string; platform: string; state: string;
-    timingBucket: string; attemptNumber: number; reviewNumber: number;
-    metadataStatus: "available" | "unavailable";
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    timingBucket: PublicationTimingBucket; attemptNumber: number; reviewNumber: number;
+    metadataStatus: PublicationMetadataStatus;
   };
   publication_proof_recovery_used: {
-    locale: string; missionType: string; platform: string; state: string;
-    attemptNumber: number; recoveryCategory: string;
+    locale: PublicationAnalyticsLocale; missionType: PublicationMissionType;
+    platform: PublicationPlatform; state: PublicationAnalyticsState;
+    attemptNumber: number; recoveryCategory: PublicationRecoveryCategory;
   };
 };
 
@@ -191,6 +239,64 @@ const ACTIVATION_PROPERTY_KEYS = {
   publication_proof_recovery_used: ["locale", "missionType", "platform", "state", "attemptNumber", "recoveryCategory"],
 } as const satisfies Record<keyof ActivationEventMap, readonly string[]>;
 
+const PUBLICATION_ANALYTICS_EVENT_NAMES = [
+  "publication_instructions_viewed",
+  "publication_proof_form_started",
+  "publication_proof_submitted",
+  "publication_proof_metadata_unavailable",
+  "publication_proof_review_started",
+  "publication_proof_correction_requested",
+  "publication_proof_resubmitted",
+  "publication_proof_verified",
+  "publication_proof_recovery_used",
+] as const satisfies readonly (keyof ActivationEventMap)[];
+
+type PublicationAnalyticsEventName = (typeof PUBLICATION_ANALYTICS_EVENT_NAMES)[number];
+
+const PUBLICATION_ANALYTICS_EVENT_SET: ReadonlySet<keyof ActivationEventMap> =
+  new Set(PUBLICATION_ANALYTICS_EVENT_NAMES);
+
+function isAllowedString(value: unknown, allowed: readonly string[]): boolean {
+  return typeof value === "string" && allowed.includes(value);
+}
+
+function isPositiveInteger(value: unknown): boolean {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1;
+}
+
+function isNonNegativeInteger(value: unknown): boolean {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
+
+function isSafePublicationProperty(key: string, value: unknown): boolean {
+  switch (key) {
+    case "locale": return isAllowedString(value, PUBLICATION_ANALYTICS_LOCALES);
+    case "missionType": return isAllowedString(value, PUBLICATION_MISSION_TYPES);
+    case "platform": return isAllowedString(value, PUBLICATION_PLATFORMS);
+    case "state": return isAllowedString(value, PUBLICATION_STATES);
+    case "timingBucket": return isAllowedString(value, PUBLICATION_TIMING_BUCKETS);
+    case "attemptNumber":
+    case "reviewNumber": return isPositiveInteger(value);
+    case "urlCount":
+    case "evidenceCount": return isNonNegativeInteger(value);
+    case "lateness": return isAllowedString(value, PUBLICATION_LATENESS);
+    case "metadataStatus": return isAllowedString(value, PUBLICATION_METADATA_STATUSES);
+    case "checklistFailureCategories":
+      return Array.isArray(value)
+        && value.length > 0
+        && value.every((category) =>
+          isAllowedString(category, PUBLICATION_CHECKLIST_FAILURE_CATEGORIES));
+    case "recoveryCategory": return isAllowedString(value, PUBLICATION_RECOVERY_CATEGORIES);
+    default: return false;
+  }
+}
+
+function isPublicationAnalyticsEvent(
+  name: keyof ActivationEventMap,
+): name is PublicationAnalyticsEventName {
+  return PUBLICATION_ANALYTICS_EVENT_SET.has(name);
+}
+
 type ActivationAnalyticsSink = (event: {
   name: keyof ActivationEventMap;
   properties: object;
@@ -205,7 +311,9 @@ export function trackActivationEvent<K extends keyof ActivationEventMap>(
 ): void {
   const allowed = new Set<string>(ACTIVATION_PROPERTY_KEYS[name]);
   const safeProperties = Object.fromEntries(
-    Object.entries(properties).filter(([key]) => allowed.has(key)),
+    Object.entries(properties).filter(([key, value]) =>
+      allowed.has(key)
+      && (!isPublicationAnalyticsEvent(name) || isSafePublicationProperty(key, value))),
   );
   activationAnalyticsSink?.({ name, properties: safeProperties });
 }
