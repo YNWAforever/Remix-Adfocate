@@ -266,3 +266,75 @@ describe("active mission bilingual UI", () => {
       expect(dict[locale][`app.notif.${type}.body`]).toBeTruthy();
     },
   );
+
+describe("publication proof operational copy", () => {
+  const publicationProofKeys = [
+    "app.activeMission.publication.status.ready",
+    "app.activeMission.publication.status.submitted",
+    "app.activeMission.publication.status.underReview",
+    "app.activeMission.publication.status.correctionRequested",
+    "app.activeMission.publication.status.verified",
+    "app.activeMission.publication.validation.urlRequired",
+    "app.activeMission.publication.validation.urlInvalid",
+    "app.activeMission.publication.validation.evidenceRequired",
+    "app.activeMission.publication.validation.acknowledgementRequired",
+    "app.activeMission.publication.checklist.title",
+    "app.activeMission.publication.checklist.platform",
+    "app.activeMission.publication.checklist.account",
+    "app.activeMission.publication.checklist.disclosures",
+    "app.activeMission.publication.checklist.metadata",
+    "app.activeMission.publication.checklist.evidence",
+    "app.activeMission.publication.correction.title",
+    "app.activeMission.publication.correction.deadline",
+    "app.activeMission.publication.correction.category",
+    "app.activeMission.publication.correction.details",
+    "app.activeMission.publication.metadata.available",
+    "app.activeMission.publication.metadata.unavailable",
+    "app.activeMission.publication.metadata.retry",
+    "app.activeMission.publication.metadata.unavailableHelp",
+    "app.activeMission.publication.recovery.title",
+    "app.activeMission.publication.recovery.stale",
+    "app.activeMission.publication.recovery.uploadFailed",
+    "app.activeMission.publication.recovery.retryPreserved",
+    "app.activeMission.publication.recovery.reviewSubmission",
+    "app.activeMission.publication.confirmation.submitTitle",
+    "app.activeMission.publication.confirmation.submitBody",
+    "app.activeMission.publication.confirmation.submitAction",
+    "app.admin.activeMission.publication.confirmation.verifyTitle",
+    "app.admin.activeMission.publication.confirmation.verifyBody",
+    "app.admin.activeMission.publication.confirmation.rewardNeutral",
+    "app.admin.activeMission.publication.confirmation.verifyAction",
+    "app.notif.mission_publication_ready.title",
+    "app.notif.mission_publication_ready.body",
+    "app.notif.mission_publication_deadline_approaching.title",
+    "app.notif.mission_publication_deadline_approaching.body",
+    "app.notif.mission_publication_deadline_overdue.title",
+    "app.notif.mission_publication_deadline_overdue.body",
+    "app.notif.mission_publication_correction_requested.title",
+    "app.notif.mission_publication_correction_requested.body",
+    "app.notif.mission_publication_verified.title",
+    "app.notif.mission_publication_verified.body",
+    "app.admin.activeMission.metrics.submissionConversion",
+    "app.admin.activeMission.metrics.onTimePublication",
+    "app.admin.activeMission.metrics.firstAttemptVerification",
+    "app.admin.activeMission.metrics.correctionRequest",
+    "app.admin.activeMission.metrics.averageAttemptsPerVerifiedItem",
+    "app.admin.activeMission.metrics.medianReviewTime",
+    "app.admin.activeMission.metrics.metadataFailure",
+    "app.admin.activeMission.metrics.staleRecovery",
+  ] as const;
+
+  it("keeps English and Traditional Chinese key sets identical", () => {
+    expect(Object.keys(dict.en).sort()).toEqual(Object.keys(dict.zh).sort());
+  });
+
+  it.each(["en", "zh"] as const)(
+    "provides non-blank %s publication proof operational strings",
+    (locale) => {
+      for (const key of publicationProofKeys) {
+        expect.soft(dict[locale][key], `${locale}:${key}`).toEqual(expect.any(String));
+        expect.soft(dict[locale][key]?.trim(), `${locale}:${key}`).not.toBe("");
+      }
+    },
+  );
+});

@@ -113,6 +113,44 @@ export type ActivationEventMap = {
     action: string;
     errorCategory: string;
   };
+  publication_instructions_viewed: { locale: string; missionType: string; platform: string; state: string };
+  publication_proof_form_started: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number;
+  };
+  publication_proof_submitted: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number; urlCount: number; evidenceCount: number;
+    lateness: string; metadataStatus: "available" | "unavailable";
+  };
+  publication_proof_metadata_unavailable: {
+    locale: string; missionType: string; platform: string; state: string;
+    attemptNumber: number; metadataStatus: "unavailable";
+  };
+  publication_proof_review_started: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number; reviewNumber: number;
+    metadataStatus: "available" | "unavailable";
+  };
+  publication_proof_correction_requested: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number; reviewNumber: number;
+    checklistFailureCategories: string[];
+  };
+  publication_proof_resubmitted: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number; urlCount: number; evidenceCount: number;
+    lateness: string; metadataStatus: "available" | "unavailable";
+  };
+  publication_proof_verified: {
+    locale: string; missionType: string; platform: string; state: string;
+    timingBucket: string; attemptNumber: number; reviewNumber: number;
+    metadataStatus: "available" | "unavailable";
+  };
+  publication_proof_recovery_used: {
+    locale: string; missionType: string; platform: string; state: string;
+    attemptNumber: number; recoveryCategory: string;
+  };
 };
 
 const ACTIVATION_PROPERTY_KEYS = {
@@ -142,6 +180,15 @@ const ACTIVATION_PROPERTY_KEYS = {
   mission_draft_approved_to_publish: ["locale", "missionType", "timingBucket", "versionNumber", "roundNumber"],
   active_mission_approved_to_publish: ["locale", "missionType", "timingBucket", "requiredItemCount", "revisionRoundCount"],
   active_mission_recovery_used: ["locale", "missionType", "state", "action", "errorCategory"],
+  publication_instructions_viewed: ["locale", "missionType", "platform", "state"],
+  publication_proof_form_started: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber"],
+  publication_proof_submitted: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "urlCount", "evidenceCount", "lateness", "metadataStatus"],
+  publication_proof_metadata_unavailable: ["locale", "missionType", "platform", "state", "attemptNumber", "metadataStatus"],
+  publication_proof_review_started: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "reviewNumber", "metadataStatus"],
+  publication_proof_correction_requested: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "reviewNumber", "checklistFailureCategories"],
+  publication_proof_resubmitted: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "urlCount", "evidenceCount", "lateness", "metadataStatus"],
+  publication_proof_verified: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "reviewNumber", "metadataStatus"],
+  publication_proof_recovery_used: ["locale", "missionType", "platform", "state", "attemptNumber", "recoveryCategory"],
 } as const satisfies Record<keyof ActivationEventMap, readonly string[]>;
 
 type ActivationAnalyticsSink = (event: {
