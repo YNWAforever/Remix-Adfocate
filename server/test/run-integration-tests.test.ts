@@ -51,6 +51,8 @@ const expectedIntegrationFiles = [
   "server/test/assistant.test.ts",
   "server/test/adminContent.test.ts",
   "server/test/content.test.ts",
+  "server/test/active-mission-schema.test.ts",
+  "server/test/active-missions.test.ts",
   "server/test/notifications-triggers.test.ts",
   "server/test/notifications-api.test.ts",
   "server/test/insights.test.ts",
