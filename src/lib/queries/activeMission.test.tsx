@@ -4,15 +4,30 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api";
 import * as api from "@/lib/api";
 import { supabase } from "@/lib/supabase";
-import type { ActiveMissionWorkspace, MissionDraft } from "../activeMission";
+import {
+  refreshPublicationProofMetadata,
+  requestPublicationProofCorrection,
+  startPublicationProofReview,
+  fetchActiveMissionQueue,
+  verifyPublicationProof,
+} from "@/lib/admin";
+import type { ActiveMissionWorkspace, MissionDraft, MissionPublicationView } from "../activeMission";
 import {
   activeMissionQueryKey,
+  missionPublicationQueryKey,
   useActiveMissionWorkspace,
   useConfirmMissionReceipt,
   useCreateDraftAssetGrant,
   useFinalizeDraftAsset,
+  useMissionPublication,
+  useProofEvidenceUpload,
+  useRefreshProofMetadata,
+  useRequestProofCorrection,
   useSaveMissionDraft,
+  useStartProofReview,
+  useSubmitPublicationProof,
   useSubmitMissionWorkItem,
+  useVerifyProof,
 } from "./activeMission";
 
 function workspace(): ActiveMissionWorkspace {
@@ -189,5 +204,185 @@ describe("active mission action mutations", () => {
       ["active-mission", "sub-1"], ["my-missions"], ["missions"],
     ]);
     expect(invalidate).not.toHaveBeenCalledWith(expect.objectContaining({ queryKey: ["me"] }));
+  });
+
+  it("loads the exact creator publication route", async () => {
+    const publication = { workItemId: "item-1", attempts: [] } as unknown as MissionPublicationView;
+    vi.spyOn(api, "apiFetch").mockResolvedValue({ publication });
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useMissionPublication("sub-1", "item-1"), { wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(api.apiFetch).toHaveBeenCalledWith("/my-missions/sub-1/publication/item-1");
+    expect(result.current.data).toBe(publication);
+  });
+
+  it("uses exact publication evidence routes and mutation guards", async () => {
+    const fetch = vi.spyOn(api, "apiFetch").mockResolvedValue({});
+    const { wrapper } = setup();
+    const upload = renderHook(() => useProofEvidenceUpload("sub-1"), { wrapper });
+    const context = {
+      workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
+      idempotencyKey: "11111111-1111-4111-8111-111111111111",
+    };
+    await act(async () => { await upload.result.current.createGrant.mutateAsync({
+      ...context, fileName: "proof.png", contentType: "image/png", sizeBytes: 123,
+    }); });
+    expect(fetch).toHaveBeenLastCalledWith("/my-missions/sub-1/publication/item-1/assets/upload-grant", {
+      method: "POST",
+      headers: { "Idempotency-Key": context.idempotencyKey },
+      body: JSON.stringify({
+        expectedState: context.expectedState, expectedRevision: 4,
+        fileName: "proof.png", contentType: "image/png", sizeBytes: 123,
+      }),
+    });
+    await act(async () => { await upload.result.current.finalize.mutateAsync({
+      ...context, assetId: "asset-1", checksum: "sha256",
+    }); });
+    expect(fetch).toHaveBeenLastCalledWith("/my-missions/sub-1/publication/item-1/assets/asset-1/finalize", {
+      method: "POST",
+      headers: { "Idempotency-Key": context.idempotencyKey },
+      body: JSON.stringify({ expectedState: context.expectedState, expectedRevision: 4, checksum: "sha256" }),
+    });
+  });
+
+  it("submits proof, invalidates scoped collections, and never invalidates me", async () => {
+    vi.spyOn(api, "apiFetch").mockResolvedValue({ attempt: { id: "attempt-1" } });
+    const { queryClient, wrapper } = setup();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const { result } = renderHook(() => useSubmitPublicationProof("sub-1"), { wrapper });
+    const input = {
+      workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
+      idempotencyKey: "11111111-1111-4111-8111-111111111111",
+      primaryUrl: "https://instagram.com/p/one", additionalUrls: [], evidenceAssetIds: [],
+    };
+    await act(async () => { await result.current.mutateAsync(input); });
+    expect(api.apiFetch).toHaveBeenCalledWith("/my-missions/sub-1/publication/item-1/proofs", {
+      method: "POST",
+      headers: { "Idempotency-Key": input.idempotencyKey },
+      body: JSON.stringify({
+        expectedState: input.expectedState, expectedRevision: 4,
+        primaryUrl: input.primaryUrl, additionalUrls: [], evidenceAssetIds: [],
+      }),
+    });
+    expect(invalidate.mock.calls.map(([filter]) => filter?.queryKey)).toEqual([
+      ["mission-publication", "sub-1", "item-1"], ["active-mission", "sub-1"],
+      ["my-missions"], ["missions"],
+    ]);
+    expect(invalidate).not.toHaveBeenCalledWith(expect.objectContaining({ queryKey: ["me"] }));
+  });
+
+  it("replaces stale publication cache and exposes the untouched submitted form", async () => {
+    const currentPublication = {
+      workItemId: "item-1", revision: 5, attempts: [{ id: "server-attempt" }],
+    } as unknown as MissionPublicationView;
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Proof state is stale", { currentPublication });
+    vi.spyOn(api, "apiFetch").mockRejectedValue(stale);
+    const { queryClient, wrapper } = setup();
+    const { result } = renderHook(() => useSubmitPublicationProof("sub-1"), { wrapper });
+    const localProof = {
+      workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
+      idempotencyKey: "11111111-1111-4111-8111-111111111111",
+      primaryUrl: "https://instagram.com/p/local", additionalUrls: ["https://instagram.com/p/two"],
+      evidenceAssetIds: ["asset-1"],
+    };
+    await act(async () => { await expect(result.current.mutateAsync(localProof)).rejects.toBe(stale); });
+    expect(queryClient.getQueryData(missionPublicationQueryKey("sub-1", "item-1"))).toBe(currentPublication);
+    expect(result.current.conflict).toEqual({ localProof, currentPublication });
+  });
+});
+
+describe("operator publication proof mutations", () => {
+  it("sends exact-attempt guarded start, correction, verify, and refresh requests", async () => {
+    vi.spyOn(supabase.auth, "getSession").mockResolvedValue({ data: { session: null }, error: null } as never);
+    const fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetch);
+    const base = {
+      workspace: "acme", expectedState: "proof_under_review", expectedRevision: 7,
+      attemptId: "22222222-2222-4222-8222-222222222222",
+      idempotencyKey: "11111111-1111-4111-8111-111111111111",
+    };
+
+    await startPublicationProofReview("workflow-1", "item-1", {
+      ...base, expectedState: "proof_submitted",
+    });
+    expect(fetch).toHaveBeenLastCalledWith("/api/admin/active-missions/workflow-1/work-items/item-1/proof-review/start", expect.objectContaining({
+      method: "POST",
+      headers: expect.objectContaining({ "X-Workspace-Slug": "acme", "Idempotency-Key": base.idempotencyKey }),
+      body: JSON.stringify({
+        expectedState: "proof_submitted", expectedRevision: 7, attemptId: base.attemptId,
+      }),
+    }));
+
+    const checklist = {
+      publiclyAccessible: true, platformMatches: true, accountMatches: false,
+      contentMatchesApprovedVersion: true, timingAcceptable: true, disclosuresPresent: true,
+    };
+    const corrections = [{ category: "account" as const, text: "Use the approved account", position: 0 }];
+    await requestPublicationProofCorrection("workflow-1", "item-1", {
+      ...base, checklist, corrections, summary: "Correction required",
+    });
+    expect(fetch).toHaveBeenLastCalledWith("/api/admin/active-missions/workflow-1/work-items/item-1/proof-review/corrections", expect.objectContaining({
+      body: JSON.stringify({
+        expectedState: "proof_under_review", expectedRevision: 7, attemptId: base.attemptId,
+        checklist: {
+          publicly_accessible: true,
+          platform_matches: true,
+          account_matches: false,
+          content_matches_approved_version: true,
+          timing_acceptable: true,
+          disclosures_present: true,
+        },
+        corrections, summary: "Correction required",
+      }),
+    }));
+
+    await verifyPublicationProof("workflow-1", "item-1", {
+      ...base, checklist: { ...checklist, accountMatches: true }, summary: "Verified",
+    });
+    expect(fetch).toHaveBeenLastCalledWith("/api/admin/active-missions/workflow-1/work-items/item-1/proof-review/verify", expect.objectContaining({
+      headers: expect.objectContaining({ "Idempotency-Key": base.idempotencyKey }),
+    }));
+
+    await refreshPublicationProofMetadata("workflow-1", "item-1", {
+      ...base, expectedState: "proof_verified",
+    });
+    expect(fetch).toHaveBeenLastCalledWith(
+      `/api/admin/active-missions/workflow-1/work-items/item-1/proofs/${base.attemptId}/metadata-refresh`,
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          expectedState: "proof_verified", expectedRevision: 7, attemptId: base.attemptId,
+        }),
+      }),
+    );
+  });
+});
+describe("publication proof queue filters", () => {
+  it("sends every proof queue filter without exposing creator content", async () => {
+    vi.spyOn(supabase.auth, "getSession").mockResolvedValue({ data: { session: null }, error: null } as never);
+    const fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ items: [] }) });
+    vi.stubGlobal("fetch", fetch);
+    await fetchActiveMissionQueue({
+      workspace: "acme", proofState: "proof_submitted", late: true,
+      metadataStatus: "unavailable", platform: "instagram",
+      publicationDeadline: "overdue",
+    });
+    expect(fetch).toHaveBeenLastCalledWith(
+      "/api/admin/active-missions/queue?proofState=proof_submitted&late=true&metadataStatus=unavailable&platform=instagram&publicationDeadline=overdue",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Workspace-Slug": "acme" }),
+      }),
+    );
+  });
+});
+
+describe("operator publication proof hooks", () => {
+  it("exports the four exact operator mutation hooks", () => {
+    expect([
+      useStartProofReview,
+      useRequestProofCorrection,
+      useVerifyProof,
+      useRefreshProofMetadata,
+    ]).toSatisfy((hooks: unknown[]) => hooks.every((hook) => typeof hook === "function"));
   });
 });

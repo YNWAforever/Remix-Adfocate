@@ -36,6 +36,24 @@ function workspace(
 }
 
 describe("deriveNextAction mixed workflow states", () => {
+  it("prioritizes required proof corrections over optional proof review", () => {
+    expect(deriveNextAction(workspace("publication_in_progress", [
+      { id: "optional-review", state: "proof_under_review", required: false, deadline: "2026-07-15T00:00:00Z" },
+      { id: "required-correction", state: "proof_correction_requested", required: true, deadline: "2026-07-17T00:00:00Z" },
+    ]))).toMatchObject({
+      kind: "revise_publication_proof",
+      owner: "creator",
+      workItemId: "required-correction",
+    });
+  });
+
+  it("does not treat optional unverified proof as blocking a verified required set", () => {
+    expect(deriveNextAction(workspace("proof_verified", [
+      { id: "required", state: "proof_verified", required: true, deadline: null },
+      { id: "optional", state: "approved_to_publish", required: false, deadline: null },
+    ]))).toMatchObject({ kind: "proof_verified", owner: "none", workItemId: "required" });
+  });
+
   it("keeps review as the overall action when an optional item is still drafting", () => {
     expect(deriveNextAction(workspace("in_review", [
       { id: "required-review", state: "submitted", required: true, deadline: "2026-07-18T00:00:00Z" },
@@ -57,7 +75,7 @@ describe("deriveNextAction mixed workflow states", () => {
   });
 
   it.each([
-    ["approved_to_publish", "await_publication", null],
+    ["approved_to_publish", "publish_and_submit_proof", "overall"],
     ["cancelled", "contact_support", null],
     ["expired", "contact_support", null],
     ["revision_requested", "revise", "revision"],
