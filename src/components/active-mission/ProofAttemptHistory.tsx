@@ -1,10 +1,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { MissionPublicationView, PublicationProofAttemptView } from "@/lib/activeMission";
 
-type Props = {
-  publication: MissionPublicationView;
-  correctionResponseDeadline?: string | null;
-};
+type Props = { publication: MissionPublicationView };
 
 const CATEGORY_LABELS: Record<string, string> = {
   access: "Access",
@@ -34,11 +31,9 @@ function Metadata({ attempt }: { attempt: PublicationProofAttemptView }) {
 function AttemptCard({
   attempt,
   accepted,
-  correctionResponseDeadline,
 }: {
   attempt: PublicationProofAttemptView;
   accepted: boolean;
-  correctionResponseDeadline?: string | null;
 }) {
   const headingId = useId();
   return (
@@ -88,10 +83,10 @@ function AttemptCard({
       {attempt.corrections.length > 0 ? (
         <div className="mt-4 rounded-xl bg-[var(--color-paper)] p-4">
           <h4 className="font-heading text-sm font-bold">Required corrections</h4>
-          {correctionResponseDeadline ? (
+          {attempt.review?.creatorResponseDeadline ? (
             <dl className="mt-2 text-sm">
               <dt className="font-bold">Response deadline</dt>
-              <dd><time dateTime={correctionResponseDeadline}>{new Date(correctionResponseDeadline).toLocaleString()}</time></dd>
+              <dd><time dateTime={attempt.review.creatorResponseDeadline}>{new Date(attempt.review.creatorResponseDeadline).toLocaleString()}</time></dd>
             </dl>
           ) : null}
           <ol className="mt-3 space-y-3">
@@ -108,7 +103,7 @@ function AttemptCard({
   );
 }
 
-export function ProofAttemptHistory({ publication, correctionResponseDeadline = null }: Props) {
+export function ProofAttemptHistory({ publication }: Props) {
   const headingId = useId();
   const attempts = [...publication.attempts].sort((left, right) => right.attemptNumber - left.attemptNumber);
   const verifiedHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -134,7 +129,6 @@ export function ProofAttemptHistory({ publication, correctionResponseDeadline = 
             key={attempt.id}
             attempt={attempt}
             accepted={attempt.id === publication.acceptedAttempt?.id}
-            correctionResponseDeadline={attempt.id === publication.currentAttempt?.id ? correctionResponseDeadline : null}
           />
         ))
       )}

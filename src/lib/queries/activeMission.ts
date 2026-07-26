@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
 import {
@@ -542,12 +542,13 @@ export function useSubmitPublicationProof(submissionId: string) {
     && conflict.generation === renderScope.generation
     ? { localProof: conflict.localProof, currentPublication: conflict.currentPublication }
     : null;
+  const clearConflict = useCallback(() => setConflict(null), []);
   return {
     ...observer,
     mutate,
     mutateAsync,
     conflict: visibleConflict,
-    clearConflict: () => setConflict(null),
+    clearConflict,
   };
 }
 

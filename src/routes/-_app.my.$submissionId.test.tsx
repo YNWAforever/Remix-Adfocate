@@ -23,7 +23,7 @@ const mocks = vi.hoisted(() => ({
   upload: vi.fn(),
   publication: { data: undefined as MissionPublicationView | undefined, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
   proofEvidence: { createGrant: { mutateAsync: vi.fn() }, finalize: { mutateAsync: vi.fn() } },
-  proofSubmit: { mutateAsync: vi.fn(), isPending: false, conflict: null, clearConflict: vi.fn() },
+  proofSubmit: { mutateAsync: vi.fn(), isPending: false, conflict: null as null | { localProof: Record<string, unknown>; currentPublication: MissionPublicationView }, clearConflict: vi.fn() },
   proofUpload: vi.fn(),
 }));
 
@@ -114,6 +114,7 @@ describe("creator active mission workspace route", () => {
     mocks.proofUpload.mockResolvedValue({ data: { path: "creator/wf-1/item-1/proof-evidence/proof-asset-1.webp" }, error: null });
     mocks.proofEvidence.finalize.mutateAsync.mockResolvedValue({});
     mocks.proofSubmit.mutateAsync.mockResolvedValue({});
+    mocks.proofSubmit.conflict = null;
     mocks.upload.mockResolvedValue({ data: { path: "creator/wf-1/item-1/asset-1.png" }, error: null });
     mocks.finalize.mutateAsync.mockResolvedValue({});
     mocks.submit.mutateAsync.mockResolvedValue({});
@@ -310,7 +311,7 @@ describe("creator active mission workspace route", () => {
     expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
     waiting.unmount();
 
-    const accepted = { id: "attempt-2", attemptNumber: 2, primaryUrl: "https://www.instagram.com/p/final", additionalUrls: [], submittedAt: "2026-07-27T08:00:00.000Z", submittedLate: false, metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null, evidence: [], review: { id: "review-2", state: "verified" as const, decision: "verified" as const, reviewedAt: "2026-07-27T10:00:00.000Z", createdAt: "2026-07-27T08:00:00.000Z" }, corrections: [] };
+    const accepted = { id: "attempt-2", attemptNumber: 2, primaryUrl: "https://www.instagram.com/p/final", additionalUrls: [], submittedAt: "2026-07-27T08:00:00.000Z", submittedLate: false, metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null, evidence: [], review: { id: "review-2", state: "verified" as const, decision: "verified" as const, reviewedAt: "2026-07-27T10:00:00.000Z", createdAt: "2026-07-27T08:00:00.000Z", creatorResponseDeadline: null }, corrections: [] };
     submitted.workItems[0].state = "proof_verified";
     Object.assign(mocks.publication, { data: publication({ state: "proof_verified", attempts: [accepted], currentAttempt: accepted, acceptedAttempt: accepted }) });
     renderRoute();
@@ -318,4 +319,59 @@ describe("creator active mission workspace route", () => {
     expect(verified).toBeVisible();
     await waitFor(() => expect(verified).toHaveFocus());
     expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
+  });
+  it("requires explicit review of a stale proof while preserving the confirmed local submission for retry", async () => {
+    const approved = workspace();
+    approved.workflow.state = "approved_to_publish";
+    approved.workItems[0].state = "approved_to_publish";
+    Object.assign(mocks.query, { data: approved });
+    const correctionAttempt = {
+      id: "attempt-1", attemptNumber: 1, primaryUrl: "https://www.instagram.com/p/server",
+      additionalUrls: [], submittedAt: "2026-07-27T08:00:00.000Z", submittedLate: false,
+      metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null,
+      evidence: [],
+      review: {
+        id: "review-1", state: "correction_requested" as const, decision: "rejected" as const,
+        reviewedAt: "2026-07-28T08:00:00.000Z", createdAt: "2026-07-28T07:00:00.000Z",
+        creatorResponseDeadline: "2026-07-29T08:00:00.000Z",
+      },
+      corrections: [{ id: "fix-1", category: "disclosure" as const, text: "Add #Ad", position: 0 }],
+    };
+    const currentPublication = publication({
+      state: "proof_correction_requested",
+      revision: 5,
+      attempts: [correctionAttempt],
+      currentAttempt: correctionAttempt,
+    });
+    const localProof = {
+      workItemId: "item-1",
+      expectedState: "approved_to_publish",
+      expectedRevision: 4,
+      idempotencyKey: "old-key",
+      primaryUrl: "https://www.instagram.com/p/local",
+      additionalUrls: ["https://www.instagram.com/p/local-story"],
+      evidenceAssetIds: ["asset-1"],
+    };
+    Object.assign(mocks.publication, { data: currentPublication });
+    mocks.proofSubmit.conflict = { localProof, currentPublication };
+
+    renderRoute();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Your proof was not submitted because the publication changed.",
+    );
+    expect(screen.getByText("proof_correction_requested")).toBeVisible();
+    expect(screen.getByText(localProof.primaryUrl)).toBeVisible();
+    expect(screen.getByText("Your confirmed URL and evidence selection are preserved.")).toBeVisible();
+    expect(screen.getByText("Response deadline").nextElementSibling?.querySelector("time"))
+      .toHaveAttribute("datetime", "2026-07-29T08:00:00.000Z");
+
+    fireEvent.click(screen.getByRole("button", { name: "Retry preserved proof" }));
+    await waitFor(() => expect(mocks.proofSubmit.mutateAsync).toHaveBeenCalledWith({
+      ...localProof,
+      expectedState: "proof_correction_requested",
+      expectedRevision: 5,
+      idempotencyKey: expect.any(String),
+    }));
+    fireEvent.click(screen.getByRole("button", { name: "Review and edit submission" }));
+    expect(mocks.proofSubmit.clearConflict).toHaveBeenCalled();
   });

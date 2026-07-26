@@ -132,6 +132,7 @@ export type PublicationProofReviewView = Readonly<{
   decision: "rejected" | "verified" | null;
   reviewedAt: string | null;
   createdAt: string;
+  creatorResponseDeadline: string | null;
 }>;
 
 export type PublicationProofEvidenceView = Readonly<{
@@ -178,6 +179,10 @@ export type MissionPublicationView = Readonly<{
   currentAttempt: PublicationProofAttemptView | null;
   acceptedAttempt: PublicationProofAttemptView | null;
 }>;
+export function publicationEvidenceRequired(policy: Readonly<Record<string, unknown>>): boolean {
+  return Object.keys(policy).length > 0;
+}
+
 
 export type PublicationStateOwner = "creator" | "operator" | "none";
 

@@ -173,6 +173,15 @@ export type PublicationProofEvidenceView = {
   signedUrl: string;
 };
 
+export type PublicationProofReviewView = {
+  id: string;
+  state: string;
+  decision: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  creatorResponseDeadline: string | null;
+};
+
 export type PublicationProofAttemptView = {
   id: string;
   attemptNumber: number;
@@ -184,7 +193,7 @@ export type PublicationProofAttemptView = {
   metadataSnapshot: Record<string, unknown>;
   metadataErrorCategory: string | null;
   evidence: PublicationProofEvidenceView[];
-  review: Record<string, unknown> | null;
+  review: PublicationProofReviewView | null;
   corrections: Array<Record<string, unknown>>;
 };
 
@@ -483,7 +492,7 @@ async function creatorPublication(
         .eq("creator_id", owner.creatorId)
         .in("mission_publication_proof_attempt_id", attemptIds),
       client.from("mission_publication_proof_reviews")
-        .select("id, mission_publication_proof_attempt_id, state, decision, reviewer_id, reviewed_at, summary, created_at")
+        .select("id, mission_publication_proof_attempt_id, state, decision, reviewed_at, creator_response_deadline, created_at")
         .eq("workspace_id", owner.workspaceId)
         .in("mission_publication_proof_attempt_id", attemptIds),
     ]);
@@ -534,6 +543,7 @@ async function creatorPublication(
         state: review.state ?? (review.decision ?? "open"),
         decision: review.decision ?? null,
         reviewedAt: review.reviewed_at ?? null,
+        creatorResponseDeadline: review.creator_response_deadline ?? null,
         createdAt: review.created_at,
       } : null,
       corrections: review

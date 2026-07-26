@@ -91,6 +91,7 @@ describe("deriveNextAction", () => {
       decision: "rejected",
       reviewedAt: "2026-07-26T00:00:00Z",
       createdAt: "2026-07-25T00:00:00Z",
+      creatorResponseDeadline: null,
     };
     expect(review.decision).toBe("rejected");
   });

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { MissionPublicationView } from "@/lib/activeMission";
+import { publicationEvidenceRequired, type MissionPublicationView } from "@/lib/activeMission";
 
 const MAX_ADDITIONAL_URLS = 4;
 const MAX_EVIDENCE_SIZE_BYTES = 20 * 1024 * 1024;
@@ -33,13 +33,6 @@ type Props = {
   onUploadFile?: (file: File) => Promise<void>;
   onSubmit: (value: ProofFormValue) => Promise<unknown>;
 };
-
-function evidenceRequired(publication: MissionPublicationView): boolean {
-  const policy = publication.instructions.proofEvidencePolicy;
-  return policy.required === true
-    || policy.evidenceRequired === true
-    || (typeof policy.minimumCount === "number" && policy.minimumCount > 0);
-}
 
 function validPublicUrl(value: string): boolean {
   try {
@@ -90,7 +83,7 @@ export function ProofSubmissionForm({
   }, [success]);
 
   const busy = isSubmitting || submitting;
-  const needsEvidence = evidenceRequired(publication);
+  const needsEvidence = publicationEvidenceRequired(publication.instructions.proofEvidencePolicy);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();

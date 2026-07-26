@@ -196,6 +196,22 @@ export function CreatorMissionWorkspace() {
 
   const showPublicationForm = publication?.state === "approved_to_publish"
     || publication?.state === "proof_correction_requested";
+  const proofConflict = proofSubmit.conflict;
+
+  async function retryPreservedProof() {
+    if (!proofConflict) return;
+    await proofSubmit.mutateAsync({
+      ...proofConflict.localProof,
+      expectedState: proofConflict.currentPublication.state,
+      expectedRevision: proofConflict.currentPublication.revision,
+      idempotencyKey: crypto.randomUUID(),
+    });
+  }
+
+  function reviewPreservedProof() {
+    clearProofConflict();
+  }
+
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-5 p-4 pb-8 sm:p-6">
@@ -230,12 +246,41 @@ export function CreatorMissionWorkspace() {
                     Adfocate is reviewing your publication proof.
                   </p>
                 ) : null}
+                {proofConflict ? (
+                  <section role="alert" className="rounded-[var(--radius)] border-2 border-amber-800 bg-amber-50 p-5">
+                    <h2 className="font-heading text-xl font-bold text-amber-950">Publication changed</h2>
+                    <p className="mt-2 text-sm text-amber-950">
+                      Your proof was not submitted because the publication changed.
+                    </p>
+                    <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="font-bold">Current server state</dt>
+                        <dd>{proofConflict.currentPublication.state}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-bold">Preserved primary URL</dt>
+                        <dd className="break-all">{proofConflict.localProof.primaryUrl}</dd>
+                      </div>
+                    </dl>
+                    <p className="mt-4 text-sm font-semibold">
+                      Your confirmed URL and evidence selection are preserved.
+                    </p>
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                      <button type="button" onClick={() => void retryPreservedProof()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-bold">
+                        Retry preserved proof
+                      </button>
+                      <button type="button" onClick={reviewPreservedProof} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-bold">
+                        Review and edit submission
+                      </button>
+                    </div>
+                  </section>
+                ) : null}
                 {showPublicationForm ? (
                   <ProofSubmissionForm
                     key={publication.workItemId}
                     publication={publication}
                     evidenceAssets={proofEvidence}
-                    isSubmitting={proofSubmit.isPending}
+                    isSubmitting={proofSubmit.isPending || Boolean(proofConflict)}
                     onUploadFile={uploadProofEvidence}
                     onSubmit={(value) => proofSubmit.mutateAsync({
                       workItemId: publication.workItemId,

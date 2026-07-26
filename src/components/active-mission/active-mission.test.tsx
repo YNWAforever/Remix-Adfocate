@@ -108,7 +108,7 @@ function publication(overrides: Partial<MissionPublicationView> = {}): MissionPu
       publicationInstructions: "Publish the approved reel without editing the caption.",
       requiredDisclosures: ["#Ad", "Paid partnership"],
       expectedAccount: "@creator",
-      proofEvidencePolicy: { required: true },
+      proofEvidencePolicy: { screenshots: 1 },
       publishDueAt: "2026-07-27T08:00:00.000Z",
       frozenAt: "2026-07-24T08:00:00.000Z",
     },
@@ -193,13 +193,16 @@ describe("ProofSubmissionForm", () => {
 
   it("preserves entered values after a recoverable submit error", async () => {
     const onSubmit = vi.fn().mockRejectedValue(new Error("offline"));
-    render(<ProofSubmissionForm publication={publication({ instructions: { ...publication().instructions, proofEvidencePolicy: {} } })} onSubmit={onSubmit} />);
+    render(<ProofSubmissionForm publication={publication()} evidenceAssets={[{ id: "asset-1", name: "proof.webp", status: "uploaded" }]} onSubmit={onSubmit} />);
 
+    fireEvent.click(screen.getByRole("checkbox", { name: "Use proof.webp as evidence" }));
     fireEvent.change(screen.getByLabelText("Primary public URL"), { target: { value: "https://www.instagram.com/p/keep-me" } });
     fireEvent.click(screen.getByRole("checkbox", { name: /I confirm this is the published content/ }));
     fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Couldn’t submit proof. Your entries are still here.");
+    expect(screen.getByRole("checkbox", { name: "Use proof.webp as evidence" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /I confirm this is the published content/ })).toBeChecked();
     expect(screen.getByLabelText("Primary public URL")).toHaveValue("https://www.instagram.com/p/keep-me");
   });
 });
@@ -223,6 +226,7 @@ describe("ProofAttemptHistory", () => {
         decision: "rejected" as const,
         reviewedAt: "2026-07-26T10:00:00.000Z",
         createdAt: "2026-07-26T08:00:00.000Z",
+        creatorResponseDeadline: "2026-07-28T10:00:00.000Z",
       },
       corrections: [
         { id: "fix-1", category: "disclosure" as const, text: "Add #Ad", position: 1 },
@@ -235,7 +239,6 @@ describe("ProofAttemptHistory", () => {
           attempts: [attempt],
           currentAttempt: attempt,
         })}
-        correctionResponseDeadline="2026-07-28T10:00:00.000Z"
       />,
     );
 
@@ -265,6 +268,7 @@ describe("ProofAttemptHistory", () => {
         decision: "verified" as const,
         reviewedAt: "2026-07-27T10:00:00.000Z",
         createdAt: "2026-07-27T08:00:00.000Z",
+        creatorResponseDeadline: null,
       },
       corrections: [],
     };

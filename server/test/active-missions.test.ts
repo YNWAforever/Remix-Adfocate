@@ -160,6 +160,48 @@ describe("active mission repository without a live database", () => {
     expect(scripted.createSignedUrl).toHaveBeenNthCalledWith(2, assets[1].storage_object_path, 600);
     expect(scripted.remaining()).toBe(0);
   });
+  it("exposes only the creator-safe correction response deadline in publication history", async () => {
+    const responseDeadline = "2026-07-29T08:00:00.000Z";
+    const proofItem = {
+      ...item,
+      state: "proof_correction_requested",
+      approved_version_id: "version-3",
+      current_proof_attempt_id: "attempt-1",
+      verified_proof_attempt_id: null,
+    };
+    const proofReview = {
+      id: "proof-review-1", mission_publication_proof_attempt_id: "attempt-1",
+      state: "correction_requested", decision: "rejected", reviewer_id: "operator-private",
+      reviewed_at: "2026-07-28T08:00:00.000Z", creator_response_deadline: responseDeadline,
+      summary: "Private operator summary", created_at: "2026-07-28T07:00:00.000Z",
+    };
+    const scripted = scriptedClient([
+      ...anchor(),
+      { table: "mission_work_items", data: proofItem },
+      { table: "mission_publication_instructions", data: {
+        publication_instructions: "Publish exactly", required_disclosures: ["#Ad"],
+        expected_account: "@creator", proof_evidence_policy: { screenshots: 1 },
+        publication_due_at: "2026-07-27T08:00:00.000Z",
+        frozen_at: "2026-07-24T08:00:00.000Z", revision: 4,
+      } },
+      { table: "mission_publication_proof_attempts", data: [{
+        id: "attempt-1", attempt_number: 1, primary_url: "https://instagram.com/p/one",
+        additional_urls: [], submitted_at: "2026-07-27T08:00:00.000Z", submitted_late: false,
+        metadata_status: "available", metadata_snapshot: {}, metadata_error_category: null,
+      }] },
+      { table: "mission_publication_proof_assets", data: [] },
+      { table: "mission_publication_proof_reviews", data: [proofReview] },
+      { table: "mission_publication_proof_review_items", data: [] },
+    ]);
+
+    const result = await createActiveMissionRepository(scripted.client).getPublication(owner, item.id);
+    expect(result.currentAttempt?.review).toMatchObject({ creatorResponseDeadline: responseDeadline });
+    expect(result.currentAttempt?.review).not.toHaveProperty("reviewerId");
+    expect(scripted.calls.find((call) =>
+      call.table === "mission_publication_proof_reviews" && call.op === "select")?.args[0])
+      .toContain("creator_response_deadline");
+  });
+
 
   it("stops at a 404 ownership anchor for another creator or workspace", async () => {
     const scripted = scriptedClient([{ table: "mission_submissions", data: null }]);

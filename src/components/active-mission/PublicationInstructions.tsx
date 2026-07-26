@@ -1,5 +1,5 @@
 import { useId } from "react";
-import type { MissionPublicationView } from "@/lib/activeMission";
+import { publicationEvidenceRequired, type MissionPublicationView } from "@/lib/activeMission";
 
 type Props = {
   publication: MissionPublicationView;
@@ -13,12 +13,6 @@ function approvedVersionLabel(id: string | null): string {
   if (!id) return "Approved version";
   const match = id.match(/(\d+)$/);
   return match ? `Approved version ${match[1]}` : "Approved version";
-}
-
-function evidenceRequired(policy: Readonly<Record<string, unknown>>): boolean {
-  return policy.required === true
-    || policy.evidenceRequired === true
-    || policy.minimumCount === 1;
 }
 
 export function PublicationInstructions({ publication }: Props) {
@@ -67,7 +61,7 @@ export function PublicationInstructions({ publication }: Props) {
       ) : null}
 
       <p className="mt-5 rounded-xl border border-[var(--color-ink)] px-3 py-2 text-sm font-semibold">
-        {evidenceRequired(instructions.proofEvidencePolicy) ? "Evidence is required" : "Evidence is optional"}
+        {publicationEvidenceRequired(instructions.proofEvidencePolicy) ? "Evidence is required" : "Evidence is optional"}
       </p>
     </section>
   );

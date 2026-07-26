@@ -278,7 +278,7 @@ describe("active mission action mutations", () => {
     const stale = new ApiError(409, "WORKFLOW_STALE", "Proof state is stale", { currentPublication });
     vi.spyOn(api, "apiFetch").mockRejectedValue(stale);
     const { queryClient, wrapper } = setup();
-    const { result } = renderHook(() => useSubmitPublicationProof("sub-1"), { wrapper });
+    const { result, rerender } = renderHook(() => useSubmitPublicationProof("sub-1"), { wrapper });
     const localProof = {
       workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
       idempotencyKey: "11111111-1111-4111-8111-111111111111",
@@ -288,6 +288,9 @@ describe("active mission action mutations", () => {
     await act(async () => { await expect(result.current.mutateAsync(localProof)).rejects.toBe(stale); });
     expect(queryClient.getQueryData(missionPublicationQueryKey("sub-1", "item-1"))).toBe(currentPublication);
     expect(result.current.conflict).toEqual({ localProof, currentPublication });
+    const clearConflict = result.current.clearConflict;
+    rerender();
+    expect(result.current.clearConflict).toBe(clearConflict);
   });
 });
 
