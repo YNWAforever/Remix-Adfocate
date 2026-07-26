@@ -8,6 +8,7 @@ import {
   serviceForTests,
 } from "../helpers";
 import {
+  assertNoPublicationProofReleaseAuthResidue,
   assertPublicationProofReleaseInvariant,
   PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC,
   publicationProofReleaseSummary,
@@ -134,11 +135,11 @@ function invariantSnapshot(): PublicationProofReleaseInvariantSnapshot {
       versionNumber: 1,
       submittedBy: "creator-id",
     })),
-    reviewRounds: items.slice(0, 3).map((item, index) => ({
+    reviewRounds: items.map((item, index) => ({
       workItemId: item.id,
       versionId: `version-${index + 1}`,
-      state: "approved_to_publish",
-      reviewerId: "operator-id",
+      state: index === 3 ? "open" : "approved_to_publish",
+      reviewerId: index === 3 ? null : "operator-id",
     })),
     instructions: [
       {
@@ -219,6 +220,21 @@ describe("publication proof release output", () => {
   });
 });
 
+describe("publication proof release auth-only residue", () => {
+  it.each([
+    ["creator", CREATOR_EMAIL],
+    ["operator", OPERATOR_EMAIL],
+  ])("rejects a stable %s auth user without fixture app rows", (_label, email) => {
+    expect(() => assertNoPublicationProofReleaseAuthResidue([{ email }]))
+      .toThrow(RESET_DIAGNOSTIC);
+  });
+
+  it("ignores unrelated auth users", () => {
+    expect(() => assertNoPublicationProofReleaseAuthResidue([{ email: "other@test.local" }]))
+      .not.toThrow();
+  });
+});
+
 describe("publication proof release replay invariant", () => {
   it("returns all four stable named item IDs for a clean pre-action fixture", () => {
     expect(PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC).toBe(RESET_DIAGNOSTIC);
@@ -251,6 +267,12 @@ describe("publication proof release replay invariant", () => {
     }],
     ["mismatched evidence policy", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
       snapshot.instructions[0].proofEvidencePolicy = {};
+    }],
+    ["missing compatibility review round", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.reviewRounds.pop();
+    }],
+    ["wrong compatibility review round", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.reviewRounds[3].state = "approved_to_publish";
     }],
   ])("rejects partial replay state: %s", (_label, mutate) => {
     const snapshot = invariantSnapshot();

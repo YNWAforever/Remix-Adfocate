@@ -152,6 +152,14 @@ function resetFixture(): never {
   throw new Error(PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC);
 }
 
+export function assertNoPublicationProofReleaseAuthResidue(
+  users: Array<{ email?: string | null }>,
+): void {
+  if (users.some(({ email }) => email === CREATOR_EMAIL || email === OPERATOR_EMAIL)) {
+    resetFixture();
+  }
+}
+
 function canonicalJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
   if (value && typeof value === "object") {
@@ -230,8 +238,8 @@ export function assertPublicationProofReleaseInvariant(
     || snapshot.drafts.length !== 4
     || versionsByItem.size !== 4
     || snapshot.versions.length !== 4
-    || roundsByItem.size !== 3
-    || snapshot.reviewRounds.length !== 3
+    || roundsByItem.size !== 4
+    || snapshot.reviewRounds.length !== 4
     || instructionsByItem.size !== 3
     || snapshot.instructions.length !== 3
   ) {
@@ -281,7 +289,15 @@ export function assertPublicationProofReleaseInvariant(
 
     const round = roundsByItem.get(item.id);
     if (isCompatibilityItem) {
-      if (round || instructionsByItem.has(item.id)) resetFixture();
+      if (
+        !round
+        || round.versionId !== version.id
+        || round.state !== "open"
+        || round.reviewerId !== null
+        || instructionsByItem.has(item.id)
+      ) {
+        resetFixture();
+      }
     } else {
       if (
         !round
@@ -330,6 +346,24 @@ export function publicationProofReleaseSummary(fixture: PublicationProofReleaseF
 
 function failure(context: string, error: { message?: string | null } | null): never {
   throw new Error(`${context}: ${error?.message ?? "missing data"}`);
+}
+
+async function assertNoFixtureAuthResidue(): Promise<void> {
+  const svc = serviceForTests();
+  const perPage = 1000;
+  let page = 1;
+  while (true) {
+    const listed = await svc.auth.admin.listUsers({ page, perPage });
+    if (listed.error) {
+      failure("read publication proof fixture auth users", listed.error);
+    }
+    const users = listed.data.users;
+    assertNoPublicationProofReleaseAuthResidue(users);
+    if (users.length < perPage) {
+      return;
+    }
+    page += 1;
+  }
 }
 
 async function signInFixtureUser(email: string) {
@@ -468,6 +502,7 @@ async function assembleExistingFixture(): Promise<PublicationProofReleaseFixture
     && !operatorStaff.data
     && !operatorMembership.data
   ) {
+    await assertNoFixtureAuthResidue();
     return null;
   }
   if (
