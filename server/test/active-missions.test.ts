@@ -580,6 +580,7 @@ describe("active mission operator routes without a live database", () => {
   it("projects exact mission and deliverable identity into every queue item", async () => {
     const { client } = scriptedClient([
       { table: "workspaces", data: { id: "workspace-1" } },
+      { table: "brand_users", data: { user_id: "operator-1" } },
       { table: "mission_work_items", data: [{
         id: workItemId,
         mission_workflow_id: workflowId,
@@ -599,10 +600,20 @@ describe("active mission operator routes without a live database", () => {
         missions: { title: "Summer launch" },
       }] },
     ]);
-    const result = await createAdminActiveMissionRepository(client).listQueue({ workspaceSlug: "demo" });
+    const result = await createAdminActiveMissionRepository(client).listQueue({ workspaceSlug: "demo", operatorId: "operator-1" });
     expect(result.items).toEqual([
       expect.objectContaining({ missionId: "mission-1", deliverableTitle: "Instagram reel" }),
     ]);
+  });
+
+  it("rejects operator queue reads without active workspace membership", async () => {
+    const { client } = scriptedClient([
+      { table: "workspaces", data: { id: "workspace-1" } },
+      { table: "brand_users", data: null },
+    ]);
+    await expect(createAdminActiveMissionRepository(client).listQueue({
+      workspaceSlug: "demo", operatorId: "operator-1",
+    })).rejects.toMatchObject({ code: "NOT_AUTHORIZED" });
   });
 
   it("uses the workspace header and returns queue metadata without private URLs", async () => {
@@ -626,7 +637,7 @@ describe("active mission operator routes without a live database", () => {
     const response = await app.request(`/api/admin/active-missions/${workflowId}`, { headers: { "X-Workspace-Slug": "demo" } });
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ assets: [{ signedUrl: "https://signed" }] });
-    expect(getDetail).toHaveBeenCalledWith({ workflowId, workspaceSlug: "demo", signedUrlTtlSeconds: 600 });
+    expect(getDetail).toHaveBeenCalledWith({ workflowId, workspaceSlug: "demo", operatorId: "operator-1", signedUrlTtlSeconds: 600 });
   });
 
   it("passes authenticated operator and workspace context to one start-review transition", async () => {

@@ -1632,6 +1632,13 @@ declare
   v_attempt public.mission_publication_proof_attempts;
 begin
   perform private.assert_active_mission_operator(p_operator);
+  if not exists (
+    select 1 from public.brand_users membership
+    where membership.user_id = p_operator
+      and membership.workspace_id = p_workspace
+      and membership.active
+  ) then raise exception 'not_authorized'; end if;
+
   if p_workspace is null or p_workflow is null or p_work_item is null
      or p_attempt is null or p_idempotency_key is null
      or p_expected_revision is null or p_expected_revision < 0

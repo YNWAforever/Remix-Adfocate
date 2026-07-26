@@ -44,7 +44,7 @@ describe("publication proof operator routes", () => {
     );
     expect(response.status).toBe(200);
     expect(listQueue).toHaveBeenCalledWith({
-      workspaceSlug: "demo", state: undefined, reviewerId, missionId,
+      workspaceSlug: "demo", operatorId: "operator-1", state: undefined, reviewerId, missionId,
       risk: undefined, proofState: "proof_submitted", late: true,
       metadataStatus: "unavailable", platform: "instagram",
       publicationDeadline: "overdue",

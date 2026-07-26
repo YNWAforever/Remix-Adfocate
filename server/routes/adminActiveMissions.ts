@@ -101,6 +101,7 @@ function riskBucket(reviewDueAt: string | null, now = Date.now()): ActiveMission
 
 export type AdminActiveMissionRepository = {
   listQueue(input: {
+    operatorId: string;
     workspaceSlug: string;
     state?: string;
     reviewerId?: string;
@@ -112,7 +113,7 @@ export type AdminActiveMissionRepository = {
     platform?: string;
     publicationDeadline?: string;
   }): Promise<{ items: ActiveMissionQueueItem[] }>;
-  getDetail(input: { workflowId: string; workspaceSlug: string; signedUrlTtlSeconds: number }): Promise<unknown>;
+  getDetail(input: { workflowId: string; workspaceSlug: string; operatorId: string; signedUrlTtlSeconds: number }): Promise<unknown>;
   startReview(input: TransitionBase & { expectedState: string }): Promise<unknown>;
   requestRevision(input: TransitionBase & {
     expectedState: string;
@@ -178,6 +179,7 @@ function dbError(error: { message?: string | null } | null): never {
   const message = error?.message ?? "Operator active mission database error";
   const mapped: Record<string, OperatorErrorCode> = {
     not_found: "WORKFLOW_NOT_FOUND",
+    idempotency_conflict: "WORKFLOW_STALE",
     not_authorized: "NOT_AUTHORIZED",
     validation_failed: "VALIDATION_FAILED",
     stale: "WORKFLOW_STALE",
@@ -189,11 +191,19 @@ function dbError(error: { message?: string | null } | null): never {
   throw new OperatorActiveMissionError(mapped[message.toLowerCase()] ?? "UNKNOWN", message);
 }
 
-async function workspaceId(client: SupabaseClient, slug: string) {
+async function workspaceId(client: SupabaseClient, slug: string, operatorId?: string) {
   const result = await client.from("workspaces").select("id").eq("slug", slug).maybeSingle();
   if (result.error) dbError(result.error);
   if (!result.data) throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
-  return result.data.id as string;
+  const resolvedWorkspaceId = result.data.id as string;
+  if (operatorId) {
+    const membership = await client.from("brand_users").select("user_id")
+      .eq("workspace_id", resolvedWorkspaceId).eq("user_id", operatorId).eq("active", true).maybeSingle();
+    if (membership.error || !membership.data) {
+      throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
+    }
+  }
+  return resolvedWorkspaceId;
 }
 
 function requireData<T>(result: { data: T | null; error: { message?: string | null } | null }): T {
@@ -219,12 +229,11 @@ function publicationRpcData(result: { data: unknown; error: { message?: string |
 export function createAdminActiveMissionRepository(client: SupabaseClient): AdminActiveMissionRepository {
   return {
     async listQueue(input) {
-      const workspace = await workspaceId(client, input.workspaceSlug);
+      const workspace = await workspaceId(client, input.workspaceSlug, input.operatorId);
       let query = client.from("mission_work_items")
         .select("id, mission_workflow_id, title, platform, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id, current_proof_attempt_id")
         .eq("workspace_id", workspace)
         .in("state", input.proofState ? [input.proofState] : input.state ? [input.state] : ALL_QUEUE_STATES);
-      if (input.reviewerId && !input.proofState) query = query.eq("current_reviewer_id", input.reviewerId);
       const itemsResult = await query;
       if (itemsResult.error) dbError(itemsResult.error);
       const itemRows = (itemsResult.data ?? []) as Row[];
@@ -321,7 +330,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
     },
 
     async getDetail(input) {
-      const workspace = await workspaceId(client, input.workspaceSlug);
+      const workspace = await workspaceId(client, input.workspaceSlug, input.operatorId);
       const workflow = requireData<Row>(await client.from("mission_workflows")
         .select("*").eq("id", input.workflowId).eq("workspace_id", workspace).maybeSingle());
       const submission = requireData<Row>(await client.from("mission_submissions")
@@ -351,7 +360,9 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       for (const result of [publicationInstructionsResult, proofAttemptsResult, proofReviewsResult, proofAssetsResult]) if (result.error) dbError(result.error);
       const proofAttemptIds = new Set(((proofAttemptsResult.data ?? []) as Row[]).map((attempt) => attempt.id));
       const proofReviews = ((proofReviewsResult.data ?? []) as Row[]).filter((proofReview) => proofAttemptIds.has(proofReview.mission_publication_proof_attempt_id));
-      const proofAssets = await Promise.all(((proofAssetsResult.data ?? []) as Row[]).map(async (proofAsset) => {
+      const authorizedProofAssets = ((proofAssetsResult.data ?? []) as Row[]).filter((proofAsset) =>
+        proofAsset.upload_state === "finalized" && proofAttemptIds.has(proofAsset.mission_publication_proof_attempt_id));
+      const proofAssets = await Promise.all(authorizedProofAssets.map(async (proofAsset) => {
         const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
           .createSignedUrl(proofAsset.storage_object_path, input.signedUrlTtlSeconds);
         if (signed.error || !signed.data) dbError(signed.error);
@@ -678,11 +689,12 @@ export function createAdminActiveMissionRoutes(
 
   routes.get("/queue", async (c) => {
     try {
-      const { workspaceSlug } = context(c);
+      const { workspaceSlug, operatorId } = context(c);
       return c.json(await repository().listQueue({
         workspaceSlug,
         state: text(c.req.query("state")) ?? undefined,
         reviewerId: text(c.req.query("reviewer")) ?? undefined,
+        operatorId,
         missionId: text(c.req.query("mission")) ?? undefined,
         risk: text(c.req.query("risk")) ?? undefined,
         proofState: text(c.req.query("proofState")) ?? undefined,
@@ -696,9 +708,9 @@ export function createAdminActiveMissionRoutes(
 
   routes.get("/:workflowId", async (c) => {
     try {
-      const { workspaceSlug } = context(c);
+      const { workspaceSlug, operatorId } = context(c);
       const workflowId = pathUuid(c, "workflowId");
-      return c.json(await repository().getDetail({ workflowId, workspaceSlug, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS }));
+      return c.json(await repository().getDetail({ workflowId, workspaceSlug, operatorId, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS }));
     } catch (error) { return routeError(c, error); }
   });
 
