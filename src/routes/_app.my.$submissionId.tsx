@@ -3,6 +3,9 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { DeliverableNavigator } from "@/components/active-mission/DeliverableNavigator";
 import { DraftEditor } from "@/components/active-mission/DraftEditor";
 import { FulfillmentCard } from "@/components/active-mission/FulfillmentCard";
+import { ProofAttemptHistory } from "@/components/active-mission/ProofAttemptHistory";
+import { ProofSubmissionForm, type ProofEvidenceAsset } from "@/components/active-mission/ProofSubmissionForm";
+import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
 import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
 import { WorkspaceHeader } from "@/components/active-mission/WorkspaceHeader";
 import { deriveNextAction } from "@/lib/activeMission";
@@ -13,13 +16,34 @@ import {
   useConfirmMissionReceipt,
   useCreateDraftAssetGrant,
   useFinalizeDraftAsset,
+  useMissionPublication,
+  useProofEvidenceUpload,
+  useSubmitPublicationProof,
   useSaveMissionDraft,
   useSubmitMissionWorkItem,
   type DraftAssetUploadGrant,
+  type CreateProofEvidenceGrantInput,
 } from "@/lib/queries/activeMission";
 import { supabase } from "@/lib/supabase";
 
 type CreatorWorkspaceSearch = { item?: string };
+
+const PUBLICATION_STATES = new Set([
+  "approved_to_publish",
+  "proof_submitted",
+  "proof_under_review",
+  "proof_correction_requested",
+  "proof_verified",
+]);
+
+type ProofEvidenceGrant = {
+  asset: { id: string; storageObjectPath: string };
+  token: string;
+};
+
+function isProofEvidenceMimeType(value: string): value is CreateProofEvidenceGrantInput["contentType"] {
+  return ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime", "video/webm"].includes(value);
+}
 
 export const Route = createFileRoute("/_app/my/$submissionId")({
   validateSearch: (search: Record<string, unknown>): CreatorWorkspaceSearch => ({
@@ -51,6 +75,11 @@ export function CreatorMissionWorkspace() {
   const finalizeAsset = useFinalizeDraftAsset(submissionId);
   const submitItem = useSubmitMissionWorkItem(submissionId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const evidenceUpload = useProofEvidenceUpload(submissionId);
+  const proofSubmit = useSubmitPublicationProof(submissionId);
+  const [proofEvidence, setProofEvidence] = useState<ProofEvidenceAsset[]>([]);
+  const clearProofConflict = proofSubmit.clearConflict;
+  const proofEvidenceScope = useRef<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const workspace = workspaceQuery.data;
 
@@ -64,14 +93,27 @@ export function CreatorMissionWorkspace() {
     : null;
   const activeId = validSearchId ?? validSelectedId ?? defaultId;
   const activeItem = workspace?.workItems.find(({ id }) => id === activeId) ?? null;
+  const publicationWorkItemId = activeItem && PUBLICATION_STATES.has(activeItem.state) ? activeItem.id : "";
+  const publicationQuery = useMissionPublication(submissionId, publicationWorkItemId);
+  const publication = publicationQuery.data;
 
   useEffect(() => {
     if (!activeId || selectedId === activeId) return;
     setSelectedId(activeId);
   }, [activeId, selectedId]);
+  useEffect(() => {
+    if (proofEvidenceScope.current === publicationWorkItemId) return;
+    proofEvidenceScope.current = publicationWorkItemId;
+    setProofEvidence([]);
+  }, [publicationWorkItemId]);
+
+  useEffect(() => {
+    clearProofConflict?.();
+  }, [publicationWorkItemId, clearProofConflict]);
 
   if (workspaceQuery.isLoading) {
     return (
+
       <main aria-label={t("app.activeMission.route.loading")} role="status" className="mx-auto w-full max-w-6xl p-4 sm:p-6">
         <div className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" />
       </main>
@@ -110,9 +152,55 @@ export function CreatorMissionWorkspace() {
     await finalizeAsset.mutateAsync({ workItemId: activeItem!.id, assetId: grant.asset.id, checksum: await sha256(file) });
   }
 
+  async function uploadProofEvidence(file: File) {
+    if (!publication || !isProofEvidenceMimeType(file.type)) throw new Error("Unsupported proof evidence");
+    const temporaryId = `upload-${crypto.randomUUID()}`;
+    setProofEvidence((current) => [...current, { id: temporaryId, name: file.name, status: "uploading" }]);
+    try {
+      const grant = await evidenceUpload.createGrant.mutateAsync({
+        workItemId: publication.workItemId,
+        expectedState: publication.state,
+        expectedRevision: publication.revision,
+        idempotencyKey: crypto.randomUUID(),
+        fileName: file.name,
+        contentType: file.type,
+        sizeBytes: file.size,
+      }) as ProofEvidenceGrant;
+      const uploaded = await supabase.storage.from("mission-publication-proof-assets").uploadToSignedUrl(
+        grant.asset.storageObjectPath,
+        grant.token,
+        file,
+        { contentType: file.type, upsert: false },
+      );
+      if (uploaded.error) throw uploaded.error;
+      await evidenceUpload.finalize.mutateAsync({
+        workItemId: publication.workItemId,
+        assetId: grant.asset.id,
+        expectedState: publication.state,
+        expectedRevision: publication.revision,
+        idempotencyKey: crypto.randomUUID(),
+        checksum: await sha256(file),
+      });
+      setProofEvidence((current) => current.map((asset) =>
+        asset.id === temporaryId
+          ? { id: grant.asset.id, name: file.name, status: "uploaded" }
+          : asset));
+    } catch (error) {
+      setProofEvidence((current) => current.map((asset) =>
+        asset.id === temporaryId
+          ? { ...asset, status: "failed", error: "Upload failed" }
+          : asset));
+      throw error;
+    }
+  }
+
+  const showPublicationForm = publication?.state === "approved_to_publish"
+    || publication?.state === "proof_correction_requested";
+
   return (
     <main className="mx-auto w-full max-w-6xl space-y-5 p-4 pb-8 sm:p-6">
       <WorkspaceHeader workspace={workspace} nextAction={nextAction} onPrimaryAction={(action) => {
+
         if (action.workItemId) selectItem(action.workItemId);
         editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }} />
@@ -126,19 +214,58 @@ export function CreatorMissionWorkspace() {
       <div className="grid min-w-0 gap-5 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start">
         <DeliverableNavigator items={workspace.workItems} selectedId={activeItem.id} onSelect={selectItem} />
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
-          <DraftEditor
-            key={activeItem.id}
-            item={activeItem}
-            requiredChanges={activeItem.requiredChanges ?? []}
-            revisionDeadline={activeItem.revisionDeadline ?? null}
-            existingAssetCount={(activeItem.draftAssets ?? []).length}
-            conflict={saveDraft.conflict?.workItemId === activeItem.id ? saveDraft.conflict : null}
-            onSave={(input) => saveDraft.mutateAsync(input)}
-            onSubmit={(input) => submitItem.mutateAsync(input)}
-            onReconcileSubmit={() => workspaceQuery.refetch()}
-            onUploadFile={uploadFile}
-          />
-          <VersionTimeline versions={activeItem.versions ?? []} events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)} />
+          {publicationWorkItemId ? (
+            publicationQuery.isLoading ? (
+              <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" aria-label="Loading publication proof" />
+            ) : publicationQuery.isError || !publication ? (
+              <div role="alert" className="rounded-[var(--radius)] border-2 border-red-700 bg-red-50 p-4">
+                <p className="font-bold">Couldn’t load publication details.</p>
+                <button type="button" onClick={() => void publicationQuery.refetch()} className="mt-3 min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold">Try again</button>
+              </div>
+            ) : (
+              <>
+                <PublicationInstructions publication={publication} />
+                {publication.state === "proof_submitted" || publication.state === "proof_under_review" ? (
+                  <p role="status" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4 font-semibold">
+                    Adfocate is reviewing your publication proof.
+                  </p>
+                ) : null}
+                {showPublicationForm ? (
+                  <ProofSubmissionForm
+                    key={publication.workItemId}
+                    publication={publication}
+                    evidenceAssets={proofEvidence}
+                    isSubmitting={proofSubmit.isPending}
+                    onUploadFile={uploadProofEvidence}
+                    onSubmit={(value) => proofSubmit.mutateAsync({
+                      workItemId: publication.workItemId,
+                      expectedState: publication.state,
+                      expectedRevision: publication.revision,
+                      idempotencyKey: crypto.randomUUID(),
+                      ...value,
+                    })}
+                  />
+                ) : null}
+                <ProofAttemptHistory publication={publication} />
+              </>
+            )
+          ) : (
+            <>
+              <DraftEditor
+                key={activeItem.id}
+                item={activeItem}
+                requiredChanges={activeItem.requiredChanges ?? []}
+                revisionDeadline={activeItem.revisionDeadline ?? null}
+                existingAssetCount={(activeItem.draftAssets ?? []).length}
+                conflict={saveDraft.conflict?.workItemId === activeItem.id ? saveDraft.conflict : null}
+                onSave={(input) => saveDraft.mutateAsync(input)}
+                onSubmit={(input) => submitItem.mutateAsync(input)}
+                onReconcileSubmit={() => workspaceQuery.refetch()}
+                onUploadFile={uploadFile}
+              />
+              <VersionTimeline versions={activeItem.versions ?? []} events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)} />
+            </>
+          )}
         </div>
       </div>
     </main>

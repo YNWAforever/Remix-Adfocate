@@ -3,11 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   ActiveMissionNextAction,
   ActiveMissionWorkspace,
+  MissionPublicationView,
   MissionWorkItemView,
 } from "@/lib/activeMission";
 import { DeliverableNavigator } from "./DeliverableNavigator";
 import { DraftEditor } from "./DraftEditor";
 import { FulfillmentCard } from "./FulfillmentCard";
+import { ProofAttemptHistory } from "./ProofAttemptHistory";
+import { ProofSubmissionForm } from "./ProofSubmissionForm";
+import { PublicationInstructions } from "./PublicationInstructions";
 import { ReviewFeedback } from "./ReviewFeedback";
 import { VersionTimeline } from "./VersionTimeline";
 import { WorkspaceHeader } from "./WorkspaceHeader";
@@ -92,6 +96,186 @@ function workspace(nextAction: ActiveMissionNextAction): ActiveMissionWorkspace 
     nextAction,
   };
 }
+
+function publication(overrides: Partial<MissionPublicationView> = {}): MissionPublicationView {
+  return {
+    workItemId: "item-1",
+    platform: "instagram",
+    state: "approved_to_publish",
+    revision: 4,
+    approvedVersionId: "version-3",
+    instructions: {
+      publicationInstructions: "Publish the approved reel without editing the caption.",
+      requiredDisclosures: ["#Ad", "Paid partnership"],
+      expectedAccount: "@creator",
+      proofEvidencePolicy: { required: true },
+      publishDueAt: "2026-07-27T08:00:00.000Z",
+      frozenAt: "2026-07-24T08:00:00.000Z",
+    },
+    attempts: [],
+    currentAttempt: null,
+    acceptedAttempt: null,
+    ...overrides,
+  };
+}
+
+describe("PublicationInstructions", () => {
+  it("shows the frozen platform, account, approved version, instructions, disclosures, evidence rule, and deadline", () => {
+    render(<PublicationInstructions publication={publication()} />);
+
+    expect(screen.getByRole("heading", { name: "Publication instructions" })).toBeVisible();
+    expect(screen.getByText("Instagram")).toBeVisible();
+    expect(screen.getByText("@creator")).toBeVisible();
+    expect(screen.getByText("Approved version 3")).toBeVisible();
+    expect(screen.getByText("Publish the approved reel without editing the caption.")).toBeVisible();
+    expect(screen.getByText("#Ad")).toBeVisible();
+    expect(screen.getByText("Paid partnership")).toBeVisible();
+    expect(screen.getByText("Evidence is required")).toBeVisible();
+    expect(screen.getByText("Publication deadline").nextElementSibling?.querySelector("time")).toHaveAttribute(
+      "datetime",
+      "2026-07-27T08:00:00.000Z",
+    );
+  });
+});
+
+describe("ProofSubmissionForm", () => {
+  it("validates and focuses the required primary URL, then adds and removes optional URLs", async () => {
+    const onSubmit = vi.fn();
+    render(<ProofSubmissionForm publication={publication({ instructions: { ...publication().instructions, proofEvidencePolicy: {} } })} onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+    expect(await screen.findByText("Enter the public URL for your published content.")).toBeVisible();
+    expect(screen.getByLabelText("Primary public URL")).toHaveFocus();
+
+    fireEvent.click(screen.getByRole("button", { name: "Add another URL" }));
+    const additional = screen.getByLabelText("Additional public URL 1");
+    fireEvent.change(additional, { target: { value: "https://www.instagram.com/p/extra" } });
+    fireEvent.click(screen.getByRole("button", { name: "Remove additional URL 1" }));
+    expect(screen.queryByLabelText("Additional public URL 1")).not.toBeInTheDocument();
+  });
+
+  it("requires evidence when policy demands it and submits normalized form values with explicit reward-neutral confirmation", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    render(
+      <ProofSubmissionForm
+        publication={publication()}
+        evidenceAssets={[{ id: "asset-1", name: "proof.webp", status: "uploaded" }]}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    expect(screen.getByText("Proof validation does not issue rewards.")).toBeVisible();
+    fireEvent.change(screen.getByLabelText("Primary public URL"), {
+      target: { value: "  https://www.instagram.com/p/launch  " },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+    expect(await screen.findByText("Select at least one evidence file.")).toBeVisible();
+    expect(screen.getByRole("group", { name: "Private evidence · required" })).toHaveFocus();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Use proof.webp as evidence" }));
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+    const confirmation = screen.getByRole("checkbox", {
+      name: "I confirm this is the published content and understand rewards are handled later.",
+    });
+    expect(await screen.findByText("Confirm that this is the published content before submitting.")).toBeVisible();
+    expect(confirmation).toHaveFocus();
+
+    fireEvent.click(confirmation);
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({
+      primaryUrl: "https://www.instagram.com/p/launch",
+      additionalUrls: [],
+      evidenceAssetIds: ["asset-1"],
+    }));
+    expect(screen.getByRole("status")).toHaveTextContent("Proof submitted for review.");
+  });
+
+  it("preserves entered values after a recoverable submit error", async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error("offline"));
+    render(<ProofSubmissionForm publication={publication({ instructions: { ...publication().instructions, proofEvidencePolicy: {} } })} onSubmit={onSubmit} />);
+
+    fireEvent.change(screen.getByLabelText("Primary public URL"), { target: { value: "https://www.instagram.com/p/keep-me" } });
+    fireEvent.click(screen.getByRole("checkbox", { name: /I confirm this is the published content/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn’t submit proof. Your entries are still here.");
+    expect(screen.getByLabelText("Primary public URL")).toHaveValue("https://www.instagram.com/p/keep-me");
+  });
+});
+
+describe("ProofAttemptHistory", () => {
+  it("renders immutable attempts, safe external links, unavailable metadata warning, and categorized corrections with deadline", () => {
+    const attempt = {
+      id: "attempt-1",
+      attemptNumber: 1,
+      primaryUrl: "https://www.instagram.com/p/launch",
+      additionalUrls: ["https://www.instagram.com/p/story"],
+      submittedAt: "2026-07-26T08:00:00.000Z",
+      submittedLate: true,
+      metadataStatus: "unavailable" as const,
+      metadataSnapshot: {},
+      metadataErrorCategory: "platform_blocked",
+      evidence: [],
+      review: {
+        id: "review-1",
+        state: "correction_requested" as const,
+        decision: "rejected" as const,
+        reviewedAt: "2026-07-26T10:00:00.000Z",
+        createdAt: "2026-07-26T08:00:00.000Z",
+      },
+      corrections: [
+        { id: "fix-1", category: "disclosure" as const, text: "Add #Ad", position: 1 },
+      ],
+    };
+    render(
+      <ProofAttemptHistory
+        publication={publication({
+          state: "proof_correction_requested",
+          attempts: [attempt],
+          currentAttempt: attempt,
+        })}
+        correctionResponseDeadline="2026-07-28T10:00:00.000Z"
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "Proof attempt 1" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Primary published URL" })).toHaveAttribute("rel", "noreferrer");
+    expect(screen.getByText("Automatic preview is unavailable. Your proof is still ready for manual review.")).toBeVisible();
+    expect(screen.getByText("Disclosure")).toBeVisible();
+    expect(screen.getByText("Add #Ad")).toBeVisible();
+    expect(screen.getByText("Response deadline").nextElementSibling?.querySelector("time")).toHaveAttribute("datetime", "2026-07-28T10:00:00.000Z");
+  });
+
+  it("shows the accepted exact attempt and the reward boundary after verification", () => {
+    const accepted = {
+      id: "attempt-2",
+      attemptNumber: 2,
+      primaryUrl: "https://www.instagram.com/p/final",
+      additionalUrls: [],
+      submittedAt: "2026-07-27T08:00:00.000Z",
+      submittedLate: false,
+      metadataStatus: "available" as const,
+      metadataSnapshot: { pageTitle: "Launch reel" },
+      metadataErrorCategory: null,
+      evidence: [],
+      review: {
+        id: "review-2",
+        state: "verified" as const,
+        decision: "verified" as const,
+        reviewedAt: "2026-07-27T10:00:00.000Z",
+        createdAt: "2026-07-27T08:00:00.000Z",
+      },
+      corrections: [],
+    };
+    render(<ProofAttemptHistory publication={publication({ state: "proof_verified", attempts: [accepted], currentAttempt: accepted, acceptedAttempt: accepted })} />);
+
+    expect(screen.getByRole("heading", { name: "Proof verified" })).toBeVisible();
+    expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
+    expect(screen.getByText("Accepted attempt 2")).toBeVisible();
+    expect(screen.getByText("Launch reel")).toBeVisible();
+  });
+});
 
 describe("WorkspaceHeader", () => {
   it("renders one action from nextAction with truthful ownership and blocking context", () => {
