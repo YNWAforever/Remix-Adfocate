@@ -1,10 +1,16 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActiveMissionNextAction, ActiveMissionWorkspace, MissionWorkItemView } from "@/lib/activeMission";
 import type { ActiveMissionWorkflow } from "@/lib/admin";
 import { I18nProvider } from "@/lib/i18n";
 import { dict, type Locale } from "@/lib/i18n.dict";
+import {
+  renderNotification,
+  type NotificationRow,
+  type NotificationType,
+} from "@/lib/notifications";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
 import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
 import { DeliverableNavigator } from "./DeliverableNavigator";
@@ -88,6 +94,37 @@ async function renderLocale(ui: React.ReactNode, locale: Locale) {
   );
   await waitFor(() => expect(document.documentElement.lang).toBe(locale === "zh" ? "zh-Hant-HK" : "en"));
   return result;
+}
+
+function renderOutcomeNotification(
+  type: NotificationType,
+  locale: Locale,
+) {
+  const row: NotificationRow = {
+    id: "notification-1",
+    type,
+    data: {
+      mission_title: "Summer launch",
+      mission_slug: "summer-launch",
+      submission_id: "submission-1",
+      deliverable_title: "Instagram Reel",
+      deadline: "29 Jul",
+      attempt_number: 2,
+      reason_categories: ["content", "disclosure"],
+    },
+    entity_type: "mission_work_item",
+    entity_id: "work-item-1",
+    read_at: null,
+    created_at: "2026-07-27T00:00:00.000Z",
+  };
+  const t = (key: string, params: Record<string, string | number> = {}) => {
+    let value = (dict[locale] as Record<string, string>)[key] ?? key;
+    for (const [param, replacement] of Object.entries(params)) {
+      value = value.replaceAll(`{${param}}`, String(replacement));
+    }
+    return value;
+  };
+  return renderNotification(row, t);
 }
 
 describe("active mission bilingual UI", () => {
@@ -185,3 +222,47 @@ describe("active mission bilingual UI", () => {
     expect(dict.zh["app.activeMission.timeline.state.approvedToPublish"]).toBe("已批准發佈 — 尚未發放獎賞");
   });
 });
+  it.each([
+    [
+      "en",
+      "mission_publication_correction_requested",
+      "Publication proof needs correction",
+      "\"Instagram Reel\" publication proof (attempt 2) needs correction. Reason categories: content,disclosure.",
+      XCircle,
+    ],
+    [
+      "zh",
+      "mission_publication_correction_requested",
+      "發佈證明需要修正",
+      "「Instagram Reel」的發佈證明（第 2 次提交）需要修正。原因類別：content,disclosure。",
+      XCircle,
+    ],
+    [
+      "en",
+      "mission_publication_verified",
+      "Publication proof verified",
+      "\"Instagram Reel\" publication proof (attempt 2) has been verified.",
+      CheckCircle2,
+    ],
+    [
+      "zh",
+      "mission_publication_verified",
+      "發佈證明已核實",
+      "「Instagram Reel」的發佈證明（第 2 次提交）已核實。",
+      CheckCircle2,
+    ],
+  ] as const)(
+    "renders the %s %s notification with bilingual copy, creator link, and icon",
+    (locale, type, title, body, icon) => {
+      const rendered = renderOutcomeNotification(type, locale);
+
+      expect(rendered).toMatchObject({
+        title,
+        body,
+        href: "/my/submission-1",
+        icon,
+      });
+      expect(dict[locale][`app.notif.${type}.title`]).toBe(title);
+      expect(dict[locale][`app.notif.${type}.body`]).toBeTruthy();
+    },
+  );

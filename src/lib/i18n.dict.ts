@@ -979,6 +979,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.mission_deadline_approaching.body": "\"{mission}\" is due {deadline}.",
     "app.notif.mission_deadline_overdue.title": "Mission deadline overdue",
     "app.notif.mission_deadline_overdue.body": "\"{mission}\" passed its {deadline} deadline.",
+    "app.notif.mission_publication_correction_requested.title": "Publication proof needs correction",
+    "app.notif.mission_publication_correction_requested.body": "\"{deliverable}\" publication proof (attempt {attempt}) needs correction. Reason categories: {reasonCategories}.",
+    "app.notif.mission_publication_verified.title": "Publication proof verified",
+    "app.notif.mission_publication_verified.body": "\"{deliverable}\" publication proof (attempt {attempt}) has been verified.",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "Challenges",
@@ -2096,6 +2100,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.mission_deadline_approaching.body": "「{mission}」將於 {deadline} 到期。",
     "app.notif.mission_deadline_overdue.title": "任務已逾期",
     "app.notif.mission_deadline_overdue.body": "「{mission}」已超過 {deadline} 限期。",
+    "app.notif.mission_publication_correction_requested.title": "發佈證明需要修正",
+    "app.notif.mission_publication_correction_requested.body": "「{deliverable}」的發佈證明（第 {attempt} 次提交）需要修正。原因類別：{reasonCategories}。",
+    "app.notif.mission_publication_verified.title": "發佈證明已核實",
+    "app.notif.mission_publication_verified.body": "「{deliverable}」的發佈證明（第 {attempt} 次提交）已核實。",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "挑戰",

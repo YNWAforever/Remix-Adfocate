@@ -6,7 +6,8 @@ export type NotificationType =
   | "campaign_goal_reached" | "campaign_prize_awarded" | "campaign_started"
   | "mission_product_shipped" | "mission_receipt_required"
   | "mission_revision_requested" | "mission_draft_approved" | "mission_approved_to_publish"
-  | "mission_deadline_approaching" | "mission_deadline_overdue";
+  | "mission_deadline_approaching" | "mission_deadline_overdue"
+  | "mission_publication_correction_requested" | "mission_publication_verified";
 
 export type NotificationRow = {
   id: string;
@@ -39,6 +40,8 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   mission_approved_to_publish: Trophy,
   mission_deadline_approaching: TrendingUp,
   mission_deadline_overdue: Bell,
+  mission_publication_correction_requested: XCircle,
+  mission_publication_verified: CheckCircle2,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {
@@ -50,6 +53,8 @@ export function iconFor(type: NotificationType): LucideIcon {
 function paramsFor(data: Record<string, unknown>): Record<string, string | number> {
   const s = (k: string) => (data[k] == null ? "" : String(data[k]));
   const n = (k: string) => (typeof data[k] === "number" ? (data[k] as number) : 0);
+  const list = (k: string) => Array.isArray(data[k])
+    ? (data[k] as unknown[]).map(String).join(",") : s(k);
   return {
     mission: s("mission_title"),
     level: s("level"),
@@ -65,6 +70,8 @@ function paramsFor(data: Record<string, unknown>): Record<string, string | numbe
     deadline: s("deadline"),
     version: n("version_number"),
     reasonCategory: s("reason_category"),
+    attempt: n("attempt_number"),
+    reasonCategories: list("reason_categories"),
   };
 }
 
@@ -84,7 +91,9 @@ function hrefFor(row: NotificationRow): string {
     case "mission_draft_approved":
     case "mission_approved_to_publish":
     case "mission_deadline_approaching":
-    case "mission_deadline_overdue": {
+    case "mission_deadline_overdue":
+    case "mission_publication_correction_requested":
+    case "mission_publication_verified": {
       const submissionId = row.data.submission_id;
       return typeof submissionId === "string" && submissionId
         ? `/my/${submissionId}`
