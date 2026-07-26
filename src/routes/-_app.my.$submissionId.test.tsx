@@ -375,3 +375,37 @@ describe("creator active mission workspace route", () => {
     fireEvent.click(screen.getByRole("button", { name: "Review and edit submission" }));
     expect(mocks.proofSubmit.clearConflict).toHaveBeenCalled();
   });
+
+  it("keeps an operator-owned stale proof read-only without offering retry", () => {
+    vi.clearAllMocks();
+    const submitted = workspace();
+    submitted.workflow.state = "publication_in_progress";
+    submitted.workItems[0].state = "proof_submitted";
+    Object.assign(mocks.query, { data: submitted });
+    const currentPublication = publication({
+      state: "proof_submitted",
+      revision: 5,
+    });
+    const localProof = {
+      workItemId: "item-1",
+      expectedState: "approved_to_publish",
+      expectedRevision: 4,
+      idempotencyKey: "old-key",
+      primaryUrl: "https://www.instagram.com/p/local",
+      additionalUrls: [],
+      evidenceAssetIds: ["asset-1"],
+    };
+    Object.assign(mocks.publication, { data: currentPublication });
+    mocks.proofSubmit.conflict = { localProof, currentPublication };
+
+    renderRoute();
+    expect(screen.getByText("Adfocate is reviewing your publication proof.")).toBeVisible();
+    expect(screen.getByText(localProof.primaryUrl)).toBeVisible();
+    expect(screen.getByText("Your confirmed URL and evidence selection are preserved.")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Retry preserved proof" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Dismiss and view current state" })).toBeVisible();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss and view current state" }));
+    expect(mocks.proofSubmit.clearConflict).toHaveBeenCalled();
+    expect(mocks.proofSubmit.mutateAsync).not.toHaveBeenCalled();
+  });

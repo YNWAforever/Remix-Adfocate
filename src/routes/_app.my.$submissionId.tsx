@@ -197,9 +197,11 @@ export function CreatorMissionWorkspace() {
   const showPublicationForm = publication?.state === "approved_to_publish"
     || publication?.state === "proof_correction_requested";
   const proofConflict = proofSubmit.conflict;
+  const canRetryPreservedProof = proofConflict?.currentPublication.state === "approved_to_publish"
+    || proofConflict?.currentPublication.state === "proof_correction_requested";
 
   async function retryPreservedProof() {
-    if (!proofConflict) return;
+    if (!proofConflict || !canRetryPreservedProof) return;
     await proofSubmit.mutateAsync({
       ...proofConflict.localProof,
       expectedState: proofConflict.currentPublication.state,
@@ -266,11 +268,13 @@ export function CreatorMissionWorkspace() {
                       Your confirmed URL and evidence selection are preserved.
                     </p>
                     <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                      <button type="button" onClick={() => void retryPreservedProof()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-bold">
-                        Retry preserved proof
-                      </button>
+                      {canRetryPreservedProof ? (
+                        <button type="button" onClick={() => void retryPreservedProof()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-bold">
+                          Retry preserved proof
+                        </button>
+                      ) : null}
                       <button type="button" onClick={reviewPreservedProof} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-bold">
-                        Review and edit submission
+                        {canRetryPreservedProof ? "Review and edit submission" : "Dismiss and view current state"}
                       </button>
                     </div>
                   </section>
