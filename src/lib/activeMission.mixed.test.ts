@@ -36,6 +36,17 @@ function workspace(
 }
 
 describe("deriveNextAction mixed workflow states", () => {
+  it("selects the remaining required publication action after another item is verified", () => {
+    expect(deriveNextAction(workspace("publication_in_progress", [
+      { id: "verified", state: "proof_verified", required: true, deadline: "2026-07-15T00:00:00Z" },
+      { id: "publish-next", state: "approved_to_publish", required: true, deadline: "2026-07-17T00:00:00Z" },
+    ]))).toMatchObject({
+      kind: "publish_and_submit_proof",
+      owner: "creator",
+      workItemId: "publish-next",
+    });
+  });
+
   it("prioritizes required proof corrections over optional proof review", () => {
     expect(deriveNextAction(workspace("publication_in_progress", [
       { id: "optional-review", state: "proof_under_review", required: false, deadline: "2026-07-15T00:00:00Z" },

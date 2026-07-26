@@ -447,6 +447,8 @@ export function useSubmitPublicationProof(submissionId: string) {
   const queryClient = useQueryClient();
   const [conflict, setConflict] = useState<ScopedPublicationProofConflict | null>(null);
   const scopeRef = useRef({ submissionId, generation: 0 });
+  const activeMutationGeneration = useRef<number | null>(null);
+  const resetGeneration = useRef(scopeRef.current.generation);
   if (scopeRef.current.submissionId !== submissionId) {
     scopeRef.current = {
       submissionId,
@@ -502,13 +504,48 @@ export function useSubmitPublicationProof(submissionId: string) {
       invalidatePublicationCollections(queryClient, submissionId, input.workItemId);
     },
   });
+  useEffect(() => {
+    if (resetGeneration.current === renderScope.generation) return;
+    resetGeneration.current = renderScope.generation;
+    activeMutationGeneration.current = null;
+    mutation.reset();
+  }, [mutation.reset, renderScope.generation]);
+
+  const mutate: typeof mutation.mutate = (input, options) => {
+    activeMutationGeneration.current = renderScope.generation;
+    mutation.mutate(input, options);
+  };
+  const mutateAsync: typeof mutation.mutateAsync = (input, options) => {
+    activeMutationGeneration.current = renderScope.generation;
+    return mutation.mutateAsync(input, options);
+  };
+  const observer = activeMutationGeneration.current === renderScope.generation
+    ? mutation
+    : {
+        ...mutation,
+        context: undefined,
+        data: undefined,
+        error: null,
+        failureCount: 0,
+        failureReason: null,
+        isError: false,
+        isIdle: true,
+        isPaused: false,
+        isPending: false,
+        isSuccess: false,
+        status: "idle" as const,
+        submittedAt: 0,
+        variables: undefined,
+      };
   const visibleConflict = conflict
     && conflict.submissionId === renderScope.submissionId
     && conflict.generation === renderScope.generation
     ? { localProof: conflict.localProof, currentPublication: conflict.currentPublication }
     : null;
   return {
-    ...mutation,
+    ...observer,
+    mutate,
+    mutateAsync,
     conflict: visibleConflict,
     clearConflict: () => setConflict(null),
   };

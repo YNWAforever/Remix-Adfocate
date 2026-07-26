@@ -3,6 +3,7 @@ import {
   deriveNextAction,
   publicationStatePresentation,
   type ActiveMissionWorkspace,
+  type PublicationProofReviewView,
   type WorkItemState,
 } from "./activeMission";
 
@@ -81,6 +82,17 @@ describe("deriveNextAction", () => {
       proof_correction_requested: { labelKey: "activeMission.state.proofCorrectionRequested", owner: "creator" },
       proof_verified: { labelKey: "activeMission.state.proofVerified", owner: "none" },
     });
+  });
+
+  it("models the server correction decision as rejected", () => {
+    const review: PublicationProofReviewView = {
+      id: "review-1",
+      state: "correction_requested",
+      decision: "rejected",
+      reviewedAt: "2026-07-26T00:00:00Z",
+      createdAt: "2026-07-25T00:00:00Z",
+    };
+    expect(review.decision).toBe("rejected");
   });
 
   it.each([

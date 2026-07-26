@@ -129,7 +129,7 @@ export type PublicationProofCorrectionView = Readonly<{
 export type PublicationProofReviewView = Readonly<{
   id: string;
   state: "open" | "correction_requested" | "verified";
-  decision: "correction_requested" | "verified" | null;
+  decision: "rejected" | "verified" | null;
   reviewedAt: string | null;
   createdAt: string;
 }>;
@@ -321,6 +321,10 @@ export function deriveNextAction(workspace: ActiveMissionWorkspace): ActiveMissi
       ?? publicationItem("proof_correction_requested");
     if (correction) {
       return { ...actionForItem("revise_publication_proof", correction), owner: "creator" };
+    }
+    const approved = publicationItem("approved_to_publish", true) ?? publicationItem("approved_to_publish");
+    if (approved) {
+      return { ...actionForItem("publish_and_submit_proof", approved), owner: "creator" };
     }
     const submitted = publicationItem("proof_submitted", true)
       ?? publicationItem("proof_under_review", true)

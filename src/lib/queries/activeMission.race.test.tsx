@@ -562,6 +562,16 @@ describe("useSubmitPublicationProof request scoping", () => {
     act(() => { submit = result.current.mutateAsync(localProof); });
     await waitFor(() => expect(result.current.isPending).toBe(true));
     act(() => { rerender({ submissionId: "sub-2" }); });
+    expect(result.current).toMatchObject({
+      status: "idle",
+      data: undefined,
+      error: null,
+      variables: undefined,
+      isIdle: true,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+    });
 
     const currentPublication = {
       workItemId: "item-1", revision: 5, attempts: [{ id: "server-attempt" }],
@@ -572,5 +582,15 @@ describe("useSubmitPublicationProof request scoping", () => {
 
     expect(result.current.conflict).toBeNull();
     expect(queryClient.getQueryData(missionPublicationQueryKey("sub-2", "item-1"))).toBe(publicationB);
+    expect(result.current).toMatchObject({
+      status: "idle",
+      data: undefined,
+      error: null,
+      variables: undefined,
+      isIdle: true,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+    });
   });
 });
