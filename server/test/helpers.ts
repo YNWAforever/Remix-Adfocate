@@ -473,7 +473,7 @@ export async function seedActiveMission(opts: {
       fulfillment_required: opts.fulfillmentRequired ?? false,
     })
     .eq("id", mission.id)
-    .select("id, creator_workflow_mode, fulfillment_required")
+    .select("id, slug, creator_workflow_mode, fulfillment_required")
     .single();
   if (missionError) throw missionError;
 
