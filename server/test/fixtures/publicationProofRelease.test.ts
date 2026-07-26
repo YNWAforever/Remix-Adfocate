@@ -8,9 +8,12 @@ import {
   serviceForTests,
 } from "../helpers";
 import {
+  assertPublicationProofReleaseInvariant,
+  PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC,
   publicationProofReleaseSummary,
   seedPublicationProofReleaseFixture,
   type PublicationProofReleaseFixture,
+  type PublicationProofReleaseInvariantSnapshot,
 } from "./publicationProofRelease";
 
 const CREATOR_EMAIL = "publication-proof-release-creator@test.local";
@@ -22,6 +25,8 @@ const ITEM_TITLES = {
   optionalEvidence: "Optional evidence",
   existingApprovedSetupRequired: "Existing approved — setup required",
 } as const;
+const RESET_DIAGNOSTIC =
+  "Publication proof fixture is partial; run `supabase db reset` before reseeding.";
 
 const skipReason = activeMissionIntegrationSkipReason();
 const integrationSuite = skipReason === null ? describe : describe.skip;
@@ -50,6 +55,131 @@ function fixtureShape(): PublicationProofReleaseFixture {
       budgetTransactions: 0,
     },
     budgetBaseline: { balance: 0, enforced: false, transactions: 0 },
+  };
+}
+
+function invariantSnapshot(): PublicationProofReleaseInvariantSnapshot {
+  const itemRows = [
+    {
+      id: "item-required-success",
+      title: ITEM_TITLES.requiredMetadataSuccess,
+      position: 0,
+      required: true,
+      sourceTemplateId: "template-success",
+    },
+    {
+      id: "item-required-unavailable",
+      title: ITEM_TITLES.requiredMetadataUnavailable,
+      position: 1,
+      required: true,
+      sourceTemplateId: "template-unavailable",
+    },
+    {
+      id: "item-optional",
+      title: ITEM_TITLES.optionalEvidence,
+      position: 2,
+      required: false,
+      sourceTemplateId: "template-optional",
+    },
+    {
+      id: "item-existing",
+      title: ITEM_TITLES.existingApprovedSetupRequired,
+      position: 3,
+      required: true,
+      sourceTemplateId: null,
+    },
+  ];
+  const items = itemRows.map((item, index) => ({
+    ...item,
+    platform: "instagram",
+    state: "approved_to_publish",
+    currentSubmittedVersionId: `version-${index + 1}`,
+    approvedVersionId: `version-${index + 1}`,
+    currentProofAttemptId: null,
+    verifiedProofAttemptId: null,
+  }));
+  return {
+    workspace: { id: DEMO_WS, slug: "demo" },
+    mission: { id: "mission-id", workspaceId: DEMO_WS, slug: MISSION_SLUG },
+    creator: { id: "creator-id", workspaceId: DEMO_WS, email: CREATOR_EMAIL },
+    operatorStaff: { userId: "operator-id", email: OPERATOR_EMAIL, active: true },
+    operatorMembership: {
+      userId: "operator-id",
+      workspaceId: DEMO_WS,
+      email: OPERATOR_EMAIL,
+      active: true,
+    },
+    submission: {
+      id: "submission-id",
+      missionId: "mission-id",
+      creatorId: "creator-id",
+      workspaceId: DEMO_WS,
+      status: "joined",
+    },
+    workflow: {
+      id: "workflow-id",
+      submissionId: "submission-id",
+      workspaceId: DEMO_WS,
+      state: "approved_to_publish",
+    },
+    items,
+    drafts: items.map((item) => ({
+      workItemId: item.id,
+      revision: 1,
+      archivedAt: null,
+    })),
+    versions: items.map((item, index) => ({
+      id: `version-${index + 1}`,
+      workItemId: item.id,
+      versionNumber: 1,
+      submittedBy: "creator-id",
+    })),
+    reviewRounds: items.slice(0, 3).map((item, index) => ({
+      workItemId: item.id,
+      versionId: `version-${index + 1}`,
+      state: "approved_to_publish",
+      reviewerId: "operator-id",
+    })),
+    instructions: [
+      {
+        workItemId: "item-required-success",
+        sourceTemplateId: "template-success",
+        platform: "instagram",
+        publicationInstructions: "Publish the approved post for metadata-success acceptance.",
+        publicationWindowHours: 72,
+        requiredDisclosures: ["#ad"],
+        expectedAccount: "@publication_proof_fixture",
+        proofEvidencePolicy: { required: true, metadataPath: "success" },
+        publicationDueAt: "2026-08-01T00:00:00.000Z",
+        frozenAt: "2026-07-27T00:00:00.000Z",
+      },
+      {
+        workItemId: "item-required-unavailable",
+        sourceTemplateId: "template-unavailable",
+        platform: "instagram",
+        publicationInstructions: "Publish the approved post for metadata-unavailable acceptance.",
+        publicationWindowHours: 72,
+        requiredDisclosures: ["#ad"],
+        expectedAccount: "@publication_proof_fixture",
+        proofEvidencePolicy: { required: true, metadataPath: "unavailable" },
+        publicationDueAt: "2026-08-01T00:00:00.000Z",
+        frozenAt: "2026-07-27T00:00:00.000Z",
+      },
+      {
+        workItemId: "item-optional",
+        sourceTemplateId: "template-optional",
+        platform: "instagram",
+        publicationInstructions: "Publish the optional approved post.",
+        publicationWindowHours: 72,
+        requiredDisclosures: [],
+        expectedAccount: "@publication_proof_fixture",
+        proofEvidencePolicy: {},
+        publicationDueAt: "2026-08-01T00:00:00.000Z",
+        frozenAt: "2026-07-27T00:00:00.000Z",
+      },
+    ],
+    proofAttempts: [],
+    proofReviews: [],
   };
 }
 
@@ -89,6 +219,65 @@ describe("publication proof release output", () => {
   });
 });
 
+describe("publication proof release replay invariant", () => {
+  it("returns all four stable named item IDs for a clean pre-action fixture", () => {
+    expect(PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC).toBe(RESET_DIAGNOSTIC);
+    expect(assertPublicationProofReleaseInvariant(invariantSnapshot())).toEqual({
+      requiredMetadataSuccess: { id: "item-required-success" },
+      requiredMetadataUnavailable: { id: "item-required-unavailable" },
+      optionalEvidence: { id: "item-optional" },
+      existingApprovedSetupRequired: { id: "item-existing" },
+    });
+  });
+
+  it.each([
+    ["missing named item", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.items.pop();
+    }],
+    ["inactive staff identity", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.operatorStaff!.active = false;
+    }],
+    ["inactive workspace membership", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.operatorMembership!.active = false;
+    }],
+    ["wrong required flag", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.items[2].required = true;
+    }],
+    ["missing approved version", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.items[3].approvedVersionId = null;
+    }],
+    ["mismatched draft revision", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.drafts[0].revision = 2;
+    }],
+    ["mismatched evidence policy", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.instructions[0].proofEvidencePolicy = {};
+    }],
+  ])("rejects partial replay state: %s", (_label, mutate) => {
+    const snapshot = invariantSnapshot();
+    mutate(snapshot);
+    expect(() => assertPublicationProofReleaseInvariant(snapshot))
+      .toThrow(RESET_DIAGNOSTIC);
+  });
+
+  it.each([
+    ["proof attempt", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.proofAttempts.push({ id: "attempt-1", workItemId: snapshot.items[0].id });
+    }],
+    ["proof review", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.proofReviews.push({ id: "review-1", attemptId: "attempt-1" });
+    }],
+    ["proof-submitted item", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.items[0].state = "proof_submitted";
+      snapshot.items[0].currentProofAttemptId = "attempt-1";
+    }],
+  ])("rejects post-action replay state: %s", (_label, mutate) => {
+    const snapshot = invariantSnapshot();
+    mutate(snapshot);
+    expect(() => assertPublicationProofReleaseInvariant(snapshot))
+      .toThrow(RESET_DIAGNOSTIC);
+  });
+});
+
 integrationSuite("publication proof release live fixture", () => {
   it("replays safely with mixed publication paths and pre-action baselines", async () => {
     const first = await seedPublicationProofReleaseFixture();
@@ -106,12 +295,13 @@ integrationSuite("publication proof release live fixture", () => {
     expect(fixture.mission.id).toBe(first.mission.id);
     expect(fixture.submission.id).toBe(first.submission.id);
     expect(fixture.workflow.id).toBe(first.workflow.id);
+    expect(fixture.items).toEqual(first.items);
 
     const [missionRows, creatorRows, operatorRows, membership, items, instructions, attempts] =
       await Promise.all([
         svc.from("missions").select("id").eq("slug", MISSION_SLUG),
         svc.from("creators").select("id").eq("display_name", CREATOR_EMAIL),
-        svc.from("staff_users").select("user_id").eq("email", OPERATOR_EMAIL),
+        svc.from("staff_users").select("user_id, active").eq("email", OPERATOR_EMAIL),
         svc.from("brand_users")
           .select("user_id, workspace_id, active")
           .eq("user_id", fixture.operator.id)
@@ -144,7 +334,7 @@ integrationSuite("publication proof release live fixture", () => {
     }
     expect(missionRows.data).toHaveLength(1);
     expect(creatorRows.data).toHaveLength(1);
-    expect(operatorRows.data).toHaveLength(1);
+    expect(operatorRows.data).toEqual([{ user_id: fixture.operator.id, active: true }]);
     expect(membership.data).toEqual({
       user_id: fixture.operator.id,
       workspace_id: DEMO_WS,
@@ -172,6 +362,7 @@ integrationSuite("publication proof release live fixture", () => {
       required: true,
       state: "approved_to_publish",
       current_proof_attempt_id: null,
+      approved_version_id: expect.any(String),
     });
 
     const instructionsByItem = new Map(
