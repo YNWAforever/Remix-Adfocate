@@ -995,6 +995,7 @@ suite(suiteName, () => {
       metadata_status: "unavailable",
       metadata_snapshot: {},
       content_checksum: `publication-cross-${id}`,
+      submission_idempotency_key: unique(),
     });
     expect(crossWorkspaceAttempt.error?.code).toBe("23503");
 
@@ -1004,15 +1005,21 @@ suite(suiteName, () => {
     expect(pointAtAttempt.error).toBeNull();
 
     const assetId = unique();
-    const objectPath = `${own.creator.id}/${attempt.data!.id}/${assetId}.jpg`;
+    const objectPath = `${own.creator.id}/${workflow.data.id}/${item.data!.id}/proof-evidence/${assetId}.jpg`;
     const asset = await svc.from("mission_publication_proof_assets").insert({
       id: assetId,
       workspace_id: item.data!.workspace_id,
       mission_publication_proof_attempt_id: attempt.data!.id,
+      mission_submission_id: own.submission.id,
+      mission_workflow_id: workflow.data.id,
+      mission_work_item_id: item.data!.id,
+      creator_id: own.creator.id,
       storage_object_path: objectPath,
       original_filename: "proof.jpg",
       mime_type: "image/jpeg",
       byte_size: 5,
+      upload_state: "pending",
+      upload_grant_expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
       content_checksum: `asset-${id}`,
     });
     expect(asset.error).toBeNull();
@@ -1112,12 +1119,20 @@ suite(suiteName, () => {
     const bucket = await svc.storage.getBucket("mission-publication-proof-assets");
     expect(bucket.error).toBeNull();
     expect(bucket.data).toMatchObject({ public: false });
+    const proofBytes = new Uint8Array([112, 114, 111, 111, 102]);
     const deniedUpload = await otherUser.storage.from("mission-publication-proof-assets")
-      .upload(objectPath, new Blob(["proof"], { type: "image/jpeg" }));
+      .upload(objectPath, proofBytes, { contentType: "image/jpeg" });
     expect(deniedUpload.error).not.toBeNull();
     const upload = await ownUser.storage.from("mission-publication-proof-assets")
-      .upload(objectPath, new Blob(["proof"], { type: "image/jpeg" }));
+      .upload(objectPath, proofBytes, { contentType: "image/jpeg" });
     expect(upload.error).toBeNull();
+    const finalizeAsset = await svc.from("mission_publication_proof_assets")
+      .update({
+        upload_state: "finalized",
+        finalized_at: new Date().toISOString(),
+      })
+      .eq("id", assetId);
+    expect(finalizeAsset.error).toBeNull();
     const ownEvidence = await ownUser.storage.from("mission-publication-proof-assets").download(objectPath);
     expect(ownEvidence.error).toBeNull();
     const hiddenEvidence = await otherUser.storage.from("mission-publication-proof-assets").download(objectPath);
@@ -1580,15 +1595,19 @@ suite(suiteName, () => {
     expect(authenticatedDenied.error?.message.toLowerCase()).toContain("permission denied");
 
     const otherWorkspace = await makeBrand(`publication-existing-workspace-${id}@test.local`);
+    const wrongWorkspaceOperator = await makeStaff(
+      `publication-existing-wrong-workspace-${id}@test.local`,
+    );
     expect((await svc.from("brand_users").insert({
-      user_id: operator.userId,
+      user_id: wrongWorkspaceOperator.userId,
       workspace_id: otherWorkspace.workspaceId,
-      email: `publication-existing-operator-${id}@test.local`,
+      email: `publication-existing-wrong-workspace-${id}@test.local`,
       role: "member",
       active: true,
     })).error).toBeNull();
     const wrongWorkspace = await setup({
       p_workspace: otherWorkspace.workspaceId,
+      p_operator: wrongWorkspaceOperator.userId,
       p_idempotency_key: unique(),
     });
     expect(wrongWorkspace.data).toMatchObject({ code: "WORKFLOW_NOT_FOUND" });
