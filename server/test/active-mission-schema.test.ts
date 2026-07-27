@@ -19,6 +19,55 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("documents a non-destructive publication-proof rollback and operator recovery contract", () => {
+    const runbookPath = resolve("docs/operations/publication-proof-release-runbook.md");
+    const runbook = existsSync(runbookPath)
+      ? readFileSync(runbookPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const token of [
+      "mission_publication_instructions",
+      "mission_publication_proof_attempts",
+      "setup_existing_publication_instructions",
+      "p_workspace",
+      "p_workflow",
+      "p_work_item",
+      "p_operator",
+      "p_expected_state",
+      "p_expected_revision",
+      "p_idempotency_key",
+      "p_instructions",
+      "proof_submitted",
+      "proof_under_review",
+      "proof_correction_requested",
+      "metadata_status",
+      "refresh-publication-proof-metadata",
+      "workflow_stale",
+      "publication-proof-enabled",
+      "route/feature boundary",
+      "new creator proof mutations",
+      "operator queue/review actions",
+      "mission_workflow_events",
+      "mission_publication_proof_assets",
+      "mission_publication_proof_reviews",
+      "mission_publication_proof_review_items",
+      "content_urls",
+      "points_awarded",
+      "xp_awarded",
+      "earnings",
+      "workspace budget",
+    ]) expect(runbook, `missing publication-proof runbook token: ${token}`).toContain(token);
+
+    for (const forbidden of [
+      "drop table",
+      "truncate table",
+      "delete from",
+      "reverse migration",
+      "update public.mission_submissions set",
+      "delete storage",
+    ]) expect(runbook, `destructive rollback instruction found: ${forbidden}`).not.toContain(forbidden);
+  });
+
   it("defines a service-only existing publication setup RPC with locked canonical anchors", () => {
     const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
     const sql = existsSync(migrationPath)
