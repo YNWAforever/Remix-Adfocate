@@ -37,6 +37,11 @@ type InstructionInput = {
   };
 };
 
+type ExistingInstructionSetupInput = Omit<
+  InstructionInput,
+  "overrideReason"
+>;
+
 export type PublicationProofReviewProps = {
   workflow: ActiveMissionWorkflow;
   selectedWorkItemId?: string;
@@ -55,6 +60,7 @@ export type PublicationProofReviewProps = {
   }) => Promise<unknown>;
   onRefreshMetadata: (input: ProofActionBase) => Promise<unknown>;
   onSetInstructions: (input: InstructionInput) => Promise<unknown>;
+  onSetupExistingInstructions: (input: ExistingInstructionSetupInput) => Promise<unknown>;
   onActionError?: (error: unknown) => void;
 };
 
@@ -128,8 +134,9 @@ const COPY = {
     disclosureList: "Required disclosures (one per line)",
     evidenceRequired: "Require private evidence",
     overrideReason: "Setup reason",
-    saveInstructions: "Save and freeze instructions",
-    setupInvalid: "Complete the publication instructions, window, and setup reason.",
+    setupConfirmation: "I confirm these complete instructions will be frozen immediately.",
+    saveInstructions: "Set up publication proof",
+    setupInvalid: "Complete the publication instructions and window, then confirm the frozen setup.",
   },
   zh: {
     proofAttempt: (number: number) => `發佈證明第 ${number} 次提交`,
@@ -185,8 +192,9 @@ const COPY = {
     disclosureList: "必須披露內容（每行一項）",
     evidenceRequired: "必須提交私人證明",
     overrideReason: "設定原因",
-    saveInstructions: "儲存並凍結指示",
-    setupInvalid: "請填妥發佈指示、時限及設定原因。",
+    saveInstructions: "設定發佈證明",
+    setupInvalid: "請填妥發佈指示及時限，並確認會立即凍結設定。",
+    setupConfirmation: "我確認這些完整指示將會立即凍結。",
   },
 } as const;
 
@@ -214,7 +222,7 @@ function reviewFor(workflow: ActiveMissionWorkflow, attemptId: string) {
 
 export function PublicationProofReview({
   workflow, selectedWorkItemId, selectedAttemptId, currentOperatorId, busy = false,
-  onClaim, onRequestCorrection, onVerify, onRefreshMetadata, onSetInstructions, onActionError,
+  onClaim, onRequestCorrection, onVerify, onRefreshMetadata, onSetupExistingInstructions, onActionError,
 }: PublicationProofReviewProps) {
   const { lang } = useI18n();
   const c = COPY[lang === "zh" ? "zh" : "en"];
@@ -246,10 +254,11 @@ export function PublicationProofReview({
   const [actionError, setActionError] = useState<string | null>(null);
   const [localBusy, setLocalBusy] = useState(false);
   const [setup, setSetup] = useState({
-    publicationInstructions: "", publicationWindowHours: "48", expectedAccount: "",
-    requiredDisclosures: "", evidenceRequired: false, overrideReason: "",
+    publicationInstructions: "", publicationWindowHours: "", expectedAccount: "",
+    requiredDisclosures: "", evidenceRequired: false,
   });
   const [setupError, setSetupError] = useState(false);
+  const [setupConfirmed, setSetupConfirmed] = useState(false);
   const firstCorrectionRef = useRef<HTMLTextAreaElement>(null);
   const focusCorrectionAfterAddRef = useRef(false);
   const verifyInputRef = useRef<HTMLInputElement>(null);
@@ -378,18 +387,16 @@ export function PublicationProofReview({
     setAttemptConfirmation("");
   }
 
-  async function saveInstructions() {
+  async function setupExistingInstructions() {
     const text = setup.publicationInstructions.trim();
-    const reason = setup.overrideReason.trim();
     const hours = Number(setup.publicationWindowHours);
-    if (!text || !reason || !Number.isInteger(hours) || hours <= 0) {
+    if (!text || !Number.isInteger(hours) || hours <= 0 || !setupConfirmed) {
       setSetupError(true);
       return;
     }
     setSetupError(false);
-    await perform(() => onSetInstructions({
+    await perform(() => onSetupExistingInstructions({
       workItemId: item.id, expectedState: item.state, expectedRevision: itemRevision(item),
-      overrideReason: reason,
       instructions: {
         publicationInstructions: text, publicationWindowHours: hours,
         requiredDisclosures: setup.requiredDisclosures.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
@@ -399,7 +406,7 @@ export function PublicationProofReview({
     }));
   }
 
-  if (!instructions && item.state === "approved_to_publish") {
+  if (item.publicationSetupRequired === true && !instructions && !attempt) {
     return (
       <section aria-labelledby="publication-setup-title" className="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5">
         <h2 id="publication-setup-title" className="font-heading text-xl font-bold">{c.instructionsRequired}</h2>
@@ -408,9 +415,9 @@ export function PublicationProofReview({
         <label className="grid gap-1 font-bold">{c.account}<input className={FIELD} value={setup.expectedAccount} onChange={(event) => setSetup({ ...setup, expectedAccount: event.target.value })} /></label>
         <label className="grid gap-1 font-bold">{c.disclosureList}<textarea className={FIELD} value={setup.requiredDisclosures} onChange={(event) => setSetup({ ...setup, requiredDisclosures: event.target.value })} /></label>
         <label className="flex gap-2 font-bold"><input type="checkbox" checked={setup.evidenceRequired} onChange={(event) => setSetup({ ...setup, evidenceRequired: event.target.checked })} />{c.evidenceRequired}</label>
-        <label className="grid gap-1 font-bold">{c.overrideReason}<textarea className={FIELD} value={setup.overrideReason} onChange={(event) => setSetup({ ...setup, overrideReason: event.target.value })} /></label>
+        <label className="flex gap-2 font-bold"><input type="checkbox" checked={setupConfirmed} onChange={(event) => setSetupConfirmed(event.target.checked)} />{c.setupConfirmation}</label>
         {setupError ? <p role="alert" className="font-bold text-red-700">{c.setupInvalid}</p> : null}
-        <button type="button" disabled={isBusy} onClick={() => void saveInstructions()} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.saveInstructions}</button>
+        <button type="button" disabled={isBusy} onClick={() => void setupExistingInstructions()} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.saveInstructions}</button>
       </section>
     );
   }

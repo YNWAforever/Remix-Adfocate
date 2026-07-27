@@ -25,6 +25,7 @@ type OperatorErrorCode =
   | "WRONG_STATE"
   | "REVISION_LIMIT_REACHED"
   | "PUBLICATION_SETUP_REQUIRED"
+  | "IDEMPOTENCY_CONFLICT"
   | "UNKNOWN";
 
 class OperatorActiveMissionError extends Error {
@@ -123,6 +124,7 @@ export type AdminActiveMissionRepository = {
   }): Promise<unknown>;
   grantRevision(input: TransitionBase & { reason: string; grantedCount: number }): Promise<unknown>;
   setPublicationInstructions(input: TransitionBase & PublicationInstructionMutation): Promise<unknown>;
+  setupExistingPublicationInstructions(input: TransitionBase & PublicationInstructionSetupMutation): Promise<unknown>;
   approveVersion(input: TransitionBase & { expectedState: string; versionId: string }): Promise<unknown>;
   markFulfillmentShipped(input: Omit<TransitionBase, "workItemId"> & { note: string | null }): Promise<unknown>;
   startProofReview(input: ProofTransitionInput): Promise<unknown>;
@@ -175,11 +177,16 @@ type PublicationInstructionMutation = {
   instructions: PublicationInstructionInput;
 };
 
+type PublicationInstructionSetupMutation = Omit<
+  PublicationInstructionMutation,
+  "overrideReason"
+>;
+
 function dbError(error: { message?: string | null } | null): never {
   const message = error?.message ?? "Operator active mission database error";
   const mapped: Record<string, OperatorErrorCode> = {
     not_found: "WORKFLOW_NOT_FOUND",
-    idempotency_conflict: "WORKFLOW_STALE",
+    idempotency_conflict: "IDEMPOTENCY_CONFLICT",
     not_authorized: "NOT_AUTHORIZED",
     validation_failed: "VALIDATION_FAILED",
     stale: "WORKFLOW_STALE",
@@ -362,6 +369,10 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       const proofReviews = ((proofReviewsResult.data ?? []) as Row[]).filter((proofReview) => proofAttemptIds.has(proofReview.mission_publication_proof_attempt_id));
       const authorizedProofAssets = ((proofAssetsResult.data ?? []) as Row[]).filter((proofAsset) =>
         proofAsset.upload_state === "finalized" && proofAttemptIds.has(proofAsset.mission_publication_proof_attempt_id));
+      const instructionItemIds = new Set(
+        ((publicationInstructionsResult.data ?? []) as Row[]).map((instruction) => instruction.mission_work_item_id),
+      );
+      const proofAttemptItemIds = new Set(((proofAttemptsResult.data ?? []) as Row[]).map((attempt) => attempt.mission_work_item_id));
       const proofAssets = await Promise.all(authorizedProofAssets.map(async (proofAsset) => {
         const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
           .createSignedUrl(proofAsset.storage_object_path, input.signedUrlTtlSeconds);
@@ -386,7 +397,12 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       return {
         workflow,
         submission,
-        workItems: itemsResult.data ?? [],
+        workItems: ((itemsResult.data ?? []) as Row[]).map((item) => ({
+          ...item,
+          publicationSetupRequired: item.state === "approved_to_publish"
+            && !instructionItemIds.has(item.id)
+            && !proofAttemptItemIds.has(item.id),
+        })),
         fulfillment: fulfillmentResult.data ?? null,
         versions: versionsResult.data ?? [],
         reviews: reviewsResult.data ?? [],
@@ -481,6 +497,37 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       if (payload.code) throw new OperatorActiveMissionError(payload.code as OperatorErrorCode, payload.code, payload.current_instruction);
       return payload;
     },
+
+    async setupExistingPublicationInstructions(input) {
+      const workspace = await workspaceId(client, input.workspaceSlug);
+      const result = await client.rpc("setup_existing_publication_instructions", {
+        p_workspace: workspace,
+        p_workflow: input.workflowId,
+        p_work_item: input.workItemId,
+        p_operator: input.operatorId,
+        p_expected_state: input.expectedState,
+        p_expected_revision: input.expectedRevision,
+        p_idempotency_key: input.idempotencyKey,
+        p_instructions: {
+          publication_instructions: input.instructions.publicationInstructions,
+          publication_window_hours: input.instructions.publicationWindowHours,
+          required_disclosures: input.instructions.requiredDisclosures,
+          expected_account: input.instructions.expectedAccount,
+          proof_evidence_policy: input.instructions.proofEvidencePolicy,
+        },
+      });
+      if (result.error) dbError(result.error);
+      const payload = result.data as Row | null;
+      if (!payload) throw new OperatorActiveMissionError("WORKFLOW_NOT_FOUND", "not_found");
+      if (payload.code) {
+        throw new OperatorActiveMissionError(
+          payload.code as OperatorErrorCode,
+          payload.code,
+          payload.current_instruction,
+        );
+      }
+      return payload;
+    },
     async approveVersion(input) {
       const workspace = await workspaceId(client, input.workspaceSlug);
       return rpcData(await client.rpc("approve_mission_version", {
@@ -565,7 +612,9 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
 function statusFor(code: OperatorErrorCode) {
   if (code === "WORKFLOW_NOT_FOUND" || code === "NOT_AUTHORIZED") return 404;
   if (code === "VALIDATION_FAILED") return 400;
-  if (code === "WORKFLOW_STALE" || code === "WRONG_STATE" || code === "REVISION_LIMIT_REACHED" || code === "PUBLICATION_SETUP_REQUIRED") return 409;
+  if (code === "WORKFLOW_STALE" || code === "WRONG_STATE"
+    || code === "REVISION_LIMIT_REACHED" || code === "PUBLICATION_SETUP_REQUIRED"
+    || code === "IDEMPOTENCY_CONFLICT") return 409;
   return 500;
 }
 
@@ -773,6 +822,30 @@ export function createAdminActiveMissionRoutes(
       }
       return c.json(await repository().setPublicationInstructions({
         workflowId, workItemId, ...ctx, expectedState, expectedRevision, idempotencyKey, overrideReason, instructions,
+      }));
+    } catch (error) { return routeError(c, error); }
+  });
+
+  routes.post("/:workflowId/work-items/:workItemId/publication-setup", async (c) => {
+    try {
+      const ctx = context(c);
+      const workflowId = pathUuid(c, "workflowId");
+      const workItemId = pathUuid(c, "workItemId");
+      const body: Row = await c.req.json<Row>().catch(() => ({} as Row));
+      const expectedState = text(body.expectedState);
+      const expectedRevision = body.expectedRevision;
+      const idempotencyKey = uuid(body.idempotencyKey);
+      const instructions = publicationInstructionInput(body.instructions);
+      if (expectedState !== "approved_to_publish"
+        || !Number.isInteger(expectedRevision) || expectedRevision < 0
+        || !idempotencyKey || !instructions) {
+        throw new OperatorActiveMissionError(
+          "VALIDATION_FAILED",
+          "Complete instructions, approved state/revision, and idempotency key are required",
+        );
+      }
+      return c.json(await repository().setupExistingPublicationInstructions({
+        workflowId, workItemId, ...ctx, expectedState, expectedRevision, idempotencyKey, instructions,
       }));
     } catch (error) { return routeError(c, error); }
   });

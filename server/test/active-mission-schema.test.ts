@@ -7,6 +7,7 @@ import {
   creatorRewardSnapshot,
   makeBrand,
   makeCreator,
+  makeStaff,
   seedActiveMission,
   serviceForTests,
   userForJwt,
@@ -18,6 +19,99 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("defines a service-only existing publication setup RPC with locked canonical anchors", () => {
+    const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const token of [
+      "function private.setup_existing_publication_instructions",
+      "function public.setup_existing_publication_instructions",
+      "security definer",
+      "set search_path = ''",
+      "auth.jwt() ->> 'role'",
+      "private.assert_active_mission_operator(p_operator)",
+      "from public.brand_users",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "from public.mission_workflows",
+      "from public.mission_work_items",
+      "from public.mission_publication_instructions",
+      "from public.mission_publication_proof_attempts",
+      "for update",
+      "v_item.state <> 'approved_to_publish'",
+      "p_expected_state",
+      "p_expected_revision",
+      "p_idempotency_key uuid",
+      "mission_publication_existing_instructions_setup",
+    ]) expect(sql, `missing existing publication setup token: ${token}`).toContain(token);
+
+    const locks = [
+      "from public.mission_workflows",
+      "from public.mission_work_items",
+      "from public.mission_publication_instructions",
+      "from public.mission_publication_proof_attempts",
+    ].map((token) => sql.indexOf(token));
+    expect(locks.every((position) => position >= 0)).toBe(true);
+    expect(locks).toEqual([...locks].sort((left, right) => left - right));
+  });
+
+  it("requires a complete authored policy, freezes once, and preserves exact idempotency", () => {
+    const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const field of [
+      "publication_instructions",
+      "publication_window_hours",
+      "required_disclosures",
+      "expected_account",
+      "proof_evidence_policy",
+    ]) {
+      expect(sql).toContain(`p_instructions ? '${field}'`);
+    }
+    expect(sql).toMatch(/jsonb_array_elements\([^)]*required_disclosures[^)]*\)[\s\S]*btrim/);
+    expect(sql).toMatch(
+      /case when jsonb_typeof\(p_instructions->'required_disclosures'\) = 'array' then exists/,
+    );
+    expect(sql).toMatch(/proof_evidence_policy[\s\S]*jsonb_typeof/);
+    expect(sql).toContain("publication_due_at");
+    expect(sql).toContain("make_interval(hours =>");
+    expect(sql).toContain("frozen_at");
+    expect(sql).toContain("idempotency_keys");
+    expect(sql).toContain("array[p_idempotency_key]");
+    expect(sql).toMatch(/p_idempotency_key\s*=\s*any\(v_instruction\.idempotency_keys\)/);
+    expect(sql).toContain("raise exception 'idempotency_conflict'");
+    expect(sql).toContain("'idempotent', true");
+    expect(sql).toContain("'idempotent', false");
+    expect(sql).toContain("event.event_type = 'mission_publication_existing_instructions_setup'");
+    expect(sql).not.toMatch(/coalesce\([^)]*p_instructions/);
+  });
+
+  it("keeps existing setup audit metadata private, reward-neutral, and service-only", () => {
+    const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+    const eventStart = sql.indexOf("'mission_publication_existing_instructions_setup'");
+    const eventEnd = sql.indexOf("return jsonb_build_object", eventStart);
+    const eventWrite = sql.slice(eventStart, eventEnd);
+    const signature = "(uuid, uuid, uuid, uuid, text, integer, uuid, jsonb)";
+
+    expect(eventStart).toBeGreaterThanOrEqual(0);
+    expect(eventWrite).not.toMatch(
+      /publication_instructions|required_disclosures|expected_account|proof_evidence_policy/,
+    );
+    expect(sql).toContain(`revoke all on function private.setup_existing_publication_instructions${signature} from public, anon, authenticated, service_role`);
+    expect(sql).toContain(`revoke all on function public.setup_existing_publication_instructions${signature} from public, anon, authenticated, service_role`);
+    expect(sql).toContain(`grant execute on function public.setup_existing_publication_instructions${signature} to service_role`);
+    expect(sql).not.toMatch(/grant execute[^;]*to (public|anon|authenticated)/);
+    expect(sql).not.toMatch(/update\s+public\.(mission_submissions|point_balances|earnings_balances)/);
+    expect(sql).not.toMatch(/update\s+public\.creators\s+set\s+xp/);
+  });
+
   it("snapshots complete publication policy, guards overrides, and freezes the approval deadline", () => {
     const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
     const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
@@ -1232,6 +1326,138 @@ suite(suiteName, () => {
       { event_type: "mission_publication_proof_submitted" },
       { event_type: "mission_publication_proof_resubmitted" },
     ]));
+    expect(await creatorRewardSnapshot(active.creator.id)).toEqual(beforeRewards);
+  });
+});
+
+suite(suiteName, () => {
+  it("sets up one existing approved item with exact replay, private audit, and neutral rewards", async () => {
+    const id = unique();
+    const svc = serviceForTests();
+    const active = await seedActiveMission({
+      email: `publication-existing-${id}@test.local`,
+      slug: `test-publication-existing-${id}`,
+      deliverables: [{
+        title: "Current authored item",
+        platform: "instagram",
+        publicationInstructions: "Current template policy",
+        publicationWindowHours: 48,
+        requiredDisclosures: [],
+        proofEvidencePolicy: {},
+      }],
+    });
+    const created = await userForJwt(active.creator.jwt).rpc(
+      "create_mission_workflow",
+      { p_submission: active.submission.id },
+    );
+    expect(created.error).toBeNull();
+
+    const canonical = await svc.from("mission_work_items")
+      .select("workspace_id")
+      .eq("mission_workflow_id", created.data.id)
+      .single();
+    expect(canonical.error).toBeNull();
+    const workItemId = unique();
+    const inserted = await svc.from("mission_work_items").insert({
+      id: workItemId,
+      workspace_id: canonical.data!.workspace_id,
+      mission_workflow_id: created.data.id,
+      source_template_id: null,
+      title: "Existing approved legacy item",
+      platform: "instagram",
+      requirements_snapshot: [],
+      required: true,
+      position: 1,
+      state: "approved_to_publish",
+    });
+    expect(inserted.error).toBeNull();
+
+    const operator = await makeStaff(`publication-existing-operator-${id}@test.local`);
+    expect((await svc.from("brand_users").insert({
+      user_id: operator.userId,
+      workspace_id: canonical.data!.workspace_id,
+      email: `publication-existing-operator-${id}@test.local`,
+      role: "member",
+      active: true,
+    })).error).toBeNull();
+    const inactiveWorkspaceOperator = await makeStaff(
+      `publication-existing-outsider-${id}@test.local`,
+    );
+    const beforeRewards = await creatorRewardSnapshot(active.creator.id);
+    const key = unique();
+    const instructions = {
+      publication_instructions: "Publish exactly as approved.",
+      publication_window_hours: 36,
+      required_disclosures: ["#ad", "Paid partnership"],
+      expected_account: "@approved",
+      proof_evidence_policy: { required: true },
+    };
+    const setup = (patch: Record<string, unknown> = {}) => svc.rpc(
+      "setup_existing_publication_instructions",
+      {
+        p_workspace: canonical.data!.workspace_id,
+        p_workflow: created.data.id,
+        p_work_item: workItemId,
+        p_operator: operator.userId,
+        p_expected_state: "approved_to_publish",
+        p_expected_revision: 0,
+        p_idempotency_key: key,
+        p_instructions: instructions,
+        ...patch,
+      },
+    );
+
+    const staleBeforeSetup = await setup({
+      p_idempotency_key: unique(),
+      p_expected_revision: 1,
+    });
+    expect(staleBeforeSetup.data).toMatchObject({ code: "WORKFLOW_STALE" });
+    const first = await setup();
+    expect(first.error).toBeNull();
+    expect(first.data).toMatchObject({
+      instruction: {
+        mission_work_item_id: workItemId,
+        frozen_at: expect.any(String),
+        revision: 0,
+      },
+      idempotent: false,
+    });
+    const replay = await setup();
+    expect(replay.error).toBeNull();
+    expect(replay.data).toMatchObject({
+      instruction: { id: first.data.instruction.id },
+      idempotent: true,
+    });
+    const changed = await setup({
+      p_instructions: { ...instructions, publication_window_hours: 72 },
+    });
+    expect(changed.error?.message.toLowerCase()).toContain("idempotency_conflict");
+    const secondSetup = await setup({
+      p_idempotency_key: unique(),
+    });
+    expect(secondSetup.data).toMatchObject({ code: "WRONG_STATE" });
+    const unauthorized = await setup({
+      p_operator: inactiveWorkspaceOperator.userId,
+      p_idempotency_key: unique(),
+    });
+    expect(unauthorized.error?.message.toLowerCase()).toContain("not_authorized");
+
+    const [instruction, attempts, event] = await Promise.all([
+      svc.from("mission_publication_instructions").select("*")
+        .eq("mission_work_item_id", workItemId).single(),
+      svc.from("mission_publication_proof_attempts").select("id")
+        .eq("mission_work_item_id", workItemId),
+      svc.from("mission_workflow_events").select("event_type, metadata")
+        .eq("mission_work_item_id", workItemId)
+        .eq("event_type", "mission_publication_existing_instructions_setup").single(),
+    ]);
+    expect(instruction.data?.idempotency_keys).toContain(key);
+    expect(attempts.data).toEqual([]);
+    expect(event.data).toMatchObject({
+      event_type: "mission_publication_existing_instructions_setup",
+      metadata: { revision: 0, idempotency_key: key },
+    });
+    expect(JSON.stringify(event.data)).not.toContain("Publish exactly as approved.");
     expect(await creatorRewardSnapshot(active.creator.id)).toEqual(beforeRewards);
   });
 });

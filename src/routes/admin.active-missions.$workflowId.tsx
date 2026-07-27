@@ -14,6 +14,7 @@ import {
   markActiveMissionShipped,
   requestActiveMissionRevision,
   setActiveMissionPublicationInstructions,
+  setupActiveMissionPublicationInstructions,
   startActiveMissionReview,
 } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
@@ -136,6 +137,21 @@ export function AdminActiveMissionReviewView({
             overrideReason: input.overrideReason,
             instructions: input.instructions,
           });
+          await refresh();
+          return result;
+        }}
+        onSetupExistingInstructions={async (input) => {
+          const result = await setupActiveMissionPublicationInstructions(
+            workflowId,
+            input.workItemId,
+            {
+              workspace,
+              expectedState: input.expectedState,
+              expectedRevision: input.expectedRevision,
+              idempotencyKey: idempotencyKey(),
+              instructions: input.instructions,
+            },
+          );
           await refresh();
           return result;
         }}

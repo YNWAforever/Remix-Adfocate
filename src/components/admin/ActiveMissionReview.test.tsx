@@ -407,6 +407,7 @@ function renderProof(overrides: Partial<React.ComponentProps<typeof PublicationP
     onClaim: vi.fn().mockResolvedValue({}), onRequestCorrection: vi.fn().mockResolvedValue({}),
     onVerify: vi.fn().mockResolvedValue({}), onRefreshMetadata: vi.fn().mockResolvedValue({}),
     onSetInstructions: vi.fn().mockResolvedValue({}),
+    onSetupExistingInstructions: vi.fn().mockResolvedValue({}),
   };
   render(<PublicationProofReview workflow={proofWorkflow()} selectedWorkItemId="work-item-2"
     currentOperatorId="reviewer-1" {...handlers} {...overrides} />);
@@ -546,28 +547,30 @@ describe("PublicationProofReview localization and setup", () => {
       ...setupWorkflow.workItems[0],
       state: "approved_to_publish",
       current_proof_attempt_id: null,
+      publicationSetupRequired: true,
     };
     setupWorkflow.publicationInstructions = [];
     setupWorkflow.proofAttempts = [];
     setupWorkflow.proofReviews = [];
     const handlers = renderProof({ workflow: setupWorkflow });
-    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
-    expect(screen.getByText("Complete the publication instructions, window, and setup reason.")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Set up publication proof" }));
+    expect(screen.getByText("Complete the publication instructions and window, then confirm the frozen setup.")).toBeVisible();
     fireEvent.change(screen.getByLabelText("Publication instructions"), { target: { value: "Publish exactly as approved." } });
+    fireEvent.change(screen.getByLabelText("Publication window (hours)"), { target: { value: "48" } });
     fireEvent.change(screen.getByLabelText("Required disclosures (one per line)"), { target: { value: "#ad\nPaid partnership" } });
     fireEvent.change(screen.getByLabelText("Expected account (optional)"), { target: { value: "@amy" } });
     fireEvent.click(screen.getByLabelText("Require private evidence"));
-    fireEvent.change(screen.getByLabelText("Setup reason"), { target: { value: "Explicit Phase 3 setup" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
-    await waitFor(() => expect(handlers.onSetInstructions).toHaveBeenCalledWith(expect.objectContaining({
+    fireEvent.click(screen.getByLabelText("I confirm these complete instructions will be frozen immediately."));
+    fireEvent.click(screen.getByRole("button", { name: "Set up publication proof" }));
+    await waitFor(() => expect(handlers.onSetupExistingInstructions).toHaveBeenCalledWith(expect.objectContaining({
       expectedState: "approved_to_publish", expectedRevision: 7,
-      overrideReason: "Explicit Phase 3 setup",
       instructions: expect.objectContaining({
         publicationInstructions: "Publish exactly as approved.",
         requiredDisclosures: ["#ad", "Paid partnership"], expectedAccount: "@amy",
         proofEvidencePolicy: { required: true },
       }),
     })));
+    expect(handlers.onSetInstructions).not.toHaveBeenCalled();
   });
 
   it("omits a false private-evidence flag from legacy publication setup", async () => {
@@ -576,21 +579,39 @@ describe("PublicationProofReview localization and setup", () => {
       ...setupWorkflow.workItems[0],
       state: "approved_to_publish",
       current_proof_attempt_id: null,
+      publicationSetupRequired: true,
     };
     setupWorkflow.publicationInstructions = [];
     setupWorkflow.proofAttempts = [];
     setupWorkflow.proofReviews = [];
     const handlers = renderProof({ workflow: setupWorkflow });
     fireEvent.change(screen.getByLabelText("Publication instructions"), { target: { value: "Publish exactly as approved." } });
-    fireEvent.change(screen.getByLabelText("Setup reason"), { target: { value: "Explicit Phase 3 setup" } });
+    fireEvent.change(screen.getByLabelText("Publication window (hours)"), { target: { value: "48" } });
+    fireEvent.click(screen.getByLabelText("I confirm these complete instructions will be frozen immediately."));
+    fireEvent.click(screen.getByRole("button", { name: "Set up publication proof" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Save and freeze instructions" }));
-
-    await waitFor(() => expect(handlers.onSetInstructions).toHaveBeenCalledWith(expect.objectContaining({
+    await waitFor(() => expect(handlers.onSetupExistingInstructions).toHaveBeenCalledWith(expect.objectContaining({
       instructions: expect.objectContaining({
         proofEvidencePolicy: {},
       }),
     })));
+  });
+
+  it("does not infer setup eligibility from missing instructions", () => {
+    const setupWorkflow = proofWorkflow();
+    setupWorkflow.workItems[0] = {
+      ...setupWorkflow.workItems[0],
+      state: "approved_to_publish",
+      current_proof_attempt_id: null,
+      publicationSetupRequired: false,
+    };
+    setupWorkflow.publicationInstructions = [];
+    setupWorkflow.proofAttempts = [];
+    setupWorkflow.proofReviews = [];
+
+    renderProof({ workflow: setupWorkflow });
+
+    expect(screen.queryByRole("button", { name: "Set up publication proof" })).not.toBeInTheDocument();
   });
 });
 });

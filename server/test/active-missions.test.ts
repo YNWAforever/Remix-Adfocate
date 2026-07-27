@@ -658,6 +658,43 @@ describe("active mission operator routes without a live database", () => {
     })).rejects.toMatchObject({ code: "NOT_AUTHORIZED" });
   });
 
+  it("derives publication setup eligibility only from an approved item with no instruction or attempt", async () => {
+    const approvedItem = {
+      ...item,
+      id: workItemId,
+      mission_workflow_id: workflowId,
+      state: "approved_to_publish",
+      approved_version_id: versionId,
+      revision: 0,
+    };
+    const { client } = scriptedClient([
+      { table: "workspaces", data: { id: "workspace-1" } },
+      { table: "brand_users", data: { user_id: "operator-1" } },
+      { table: "mission_workflows", data: { ...workflow, id: workflowId } },
+      { table: "mission_submissions", data: submission },
+      { table: "mission_work_items", data: [approvedItem] },
+      { table: "mission_fulfillments", data: null },
+      { table: "mission_workflow_events", data: [] },
+      { table: "mission_draft_assets", data: [] },
+      { table: "mission_draft_versions", data: [] },
+      { table: "mission_review_rounds", data: [] },
+      { table: "mission_revision_grants", data: [] },
+      { table: "mission_publication_instructions", data: [] },
+      { table: "mission_publication_proof_attempts", data: [] },
+      { table: "mission_publication_proof_reviews", data: [] },
+      { table: "mission_publication_proof_assets", data: [] },
+    ]);
+
+    const detail = await createAdminActiveMissionRepository(client).getDetail({
+      workflowId,
+      workspaceSlug: "demo",
+      operatorId: "operator-1",
+      signedUrlTtlSeconds: 600,
+    }) as { workItems: Array<{ publicationSetupRequired?: boolean }> };
+
+    expect(detail.workItems[0]?.publicationSetupRequired).toBe(true);
+  });
+
   it("uses the workspace header and returns queue metadata without private URLs", async () => {
     const listQueue = vi.fn(async () => ({ items: [{ ...urgent, workflowId: "workflow-1", creatorDisplayName: "Creator", missionTitle: "Launch", state: "submitted", reviewerId: null, riskBucket: "overdue" }] }));
     const repository = { listQueue } as unknown as AdminActiveMissionRepository;
@@ -878,6 +915,170 @@ describe("active mission operator routes without a live database", () => {
         required_disclosures: ["#ad"], expected_account: null, proof_evidence_policy: {}, override_reason: "Account changed",
       },
     });
+  });
+
+  it("posts existing approved setup only through the explicit compatibility endpoint", async () => {
+    const setupExistingPublicationInstructions = vi.fn(async () => ({
+      instruction: { mission_work_item_id: workItemId, revision: 0 },
+    }));
+    const repository = { setupExistingPublicationInstructions } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(
+      repository,
+      () => ({ userId: "operator-1", email: "op@example.com" }),
+    ));
+    const body = {
+      expectedState: "approved_to_publish",
+      expectedRevision: 0,
+      idempotencyKey,
+      instructions: {
+        publicationInstructions: "Publish the approved reel",
+        publicationWindowHours: 36,
+        requiredDisclosures: ["#ad", "Paid partnership"],
+        expectedAccount: "@creator",
+        proofEvidencePolicy: { screenshots: 1 },
+      },
+    };
+
+    const response = await app.request(
+      `/api/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-setup`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+        body: JSON.stringify(body),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(setupExistingPublicationInstructions).toHaveBeenCalledWith({
+      workflowId,
+      workItemId,
+      workspaceSlug: "demo",
+      operatorId: "operator-1",
+      ...body,
+    });
+  });
+
+  it("calls only setup_existing_publication_instructions for existing approved setup", async () => {
+    const rpc = vi.fn(async () => ({ data: { instruction: { revision: 0 } }, error: null }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+
+    await repository.setupExistingPublicationInstructions({
+      workflowId: "workflow-1",
+      workItemId: "item-1",
+      operatorId: "operator-1",
+      workspaceSlug: "demo",
+      expectedState: "approved_to_publish",
+      expectedRevision: 0,
+      idempotencyKey,
+      instructions: {
+        publicationInstructions: "Publish approved content",
+        publicationWindowHours: 48,
+        requiredDisclosures: ["#ad"],
+        expectedAccount: null,
+        proofEvidencePolicy: {},
+      },
+    });
+
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith("setup_existing_publication_instructions", {
+      p_workspace: "workspace-1",
+      p_workflow: "workflow-1",
+      p_work_item: "item-1",
+      p_operator: "operator-1",
+      p_expected_state: "approved_to_publish",
+      p_expected_revision: 0,
+      p_idempotency_key: idempotencyKey,
+      p_instructions: {
+        publication_instructions: "Publish approved content",
+        publication_window_hours: 48,
+        required_disclosures: ["#ad"],
+        expected_account: null,
+        proof_evidence_policy: {},
+      },
+    });
+  });
+
+  it("maps changed-payload setup replay to stable IDEMPOTENCY_CONFLICT", async () => {
+    const rpc = vi.fn(async () => ({ data: null, error: { message: "idempotency_conflict" } }));
+    const repository = createAdminActiveMissionRepository(operatorClient(rpc));
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(
+      repository,
+      () => ({ userId: "operator-1", email: "op@example.com" }),
+    ));
+
+    const response = await app.request(
+      `/api/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-setup`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+        body: JSON.stringify({
+          expectedState: "approved_to_publish",
+          expectedRevision: 0,
+          idempotencyKey,
+          instructions: {
+            publicationInstructions: "Changed payload",
+            publicationWindowHours: 48,
+            requiredDisclosures: ["#ad"],
+            expectedAccount: null,
+            proofEvidencePolicy: {},
+          },
+        }),
+      },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ code: "IDEMPOTENCY_CONFLICT" });
+  });
+
+  it.each([
+    ["wrong expected state", { expectedState: "under_review" }],
+    ["negative expected revision", { expectedRevision: -1 }],
+    ["malformed idempotency key", { idempotencyKey: "not-a-uuid" }],
+    ["blank instructions", { instructions: { publicationInstructions: " " } }],
+    ["non-positive publication window", { instructions: { publicationWindowHours: 0 } }],
+    ["blank disclosure", { instructions: { requiredDisclosures: ["#ad", " "] } }],
+    ["invalid evidence policy", { instructions: { proofEvidencePolicy: [] } }],
+  ])("rejects explicit existing publication setup with %s", async (_label, patch) => {
+    const setupExistingPublicationInstructions = vi.fn();
+    const repository = { setupExistingPublicationInstructions } as unknown as AdminActiveMissionRepository;
+    const app = new Hono<Env>();
+    app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(
+      repository,
+      () => ({ userId: "operator-1", email: "op@example.com" }),
+    ));
+    const base = {
+      expectedState: "approved_to_publish",
+      expectedRevision: 0,
+      idempotencyKey,
+      instructions: {
+        publicationInstructions: "Publish the approved reel",
+        publicationWindowHours: 36,
+        requiredDisclosures: ["#ad"],
+        expectedAccount: null,
+        proofEvidencePolicy: {},
+      },
+    };
+    const instructionsPatch = "instructions" in patch ? patch.instructions : undefined;
+    const response = await app.request(
+      `/api/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-setup`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Workspace-Slug": "demo" },
+        body: JSON.stringify({
+          ...base,
+          ...patch,
+          instructions: instructionsPatch
+            ? { ...base.instructions, ...instructionsPatch }
+            : base.instructions,
+        }),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(setupExistingPublicationInstructions).not.toHaveBeenCalled();
   });
 
   it.each([

@@ -242,6 +242,7 @@ export type ActiveMissionWorkItem = {
   requirements_snapshot: ActiveMissionRequirement[];
   current_proof_attempt_id?: string | null;
   revision?: number;
+  publicationSetupRequired?: boolean;
 };
 
 export type ActiveMissionVersion = {
@@ -601,6 +602,38 @@ export function setActiveMissionPublicationInstructions(
       expectedRevision: body.expectedRevision,
       idempotencyKey: body.idempotencyKey,
       overrideReason: body.overrideReason,
+      instructions: body.instructions,
+    }),
+  });
+}
+
+export function setupActiveMissionPublicationInstructions(
+  workflowId: string,
+  workItemId: string,
+  body: {
+    workspace: string;
+    expectedState: string;
+    expectedRevision: number;
+    idempotencyKey: string;
+    instructions: {
+      publicationInstructions: string;
+      publicationWindowHours: number;
+      requiredDisclosures: string[];
+      expectedAccount: string | null;
+      proofEvidencePolicy: Record<string, unknown>;
+    };
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-setup`, {
+    method: "POST",
+    headers: {
+      ...activeMissionWorkspaceHeader(body.workspace),
+      "Idempotency-Key": body.idempotencyKey,
+    },
+    body: JSON.stringify({
+      expectedState: body.expectedState,
+      expectedRevision: body.expectedRevision,
+      idempotencyKey: body.idempotencyKey,
       instructions: body.instructions,
     }),
   });

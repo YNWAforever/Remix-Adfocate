@@ -24,6 +24,7 @@ const h = vi.hoisted(() => ({
   verifyProof: vi.fn(),
   refreshProofMetadata: vi.fn(),
   setPublicationInstructions: vi.fn(),
+  setupExistingPublicationInstructions: vi.fn(),
   reportAuthError: vi.fn(),
 }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -47,6 +48,7 @@ vi.mock("@/lib/admin", async (importOriginal) => {
     fetchActiveMissionWorkflow: h.fetchActiveMissionWorkflow,
     startActiveMissionReview: h.startActiveMissionReview,
     setActiveMissionPublicationInstructions: h.setPublicationInstructions,
+    setupActiveMissionPublicationInstructions: h.setupExistingPublicationInstructions,
   };
 });
 vi.mock("@/lib/queries/activeMission", async (importOriginal) => {
@@ -286,6 +288,7 @@ describe("admin publication proof review route", () => {
     h.requestProofCorrection.mockResolvedValue({});
     h.verifyProof.mockResolvedValue({});
     h.refreshProofMetadata.mockResolvedValue({});
+    h.setupExistingPublicationInstructions.mockResolvedValue({});
     analyticsEvents.length = 0;
     setActivationAnalyticsSink((event) => {
       analyticsEvents.push(event as { name: string; properties: Record<string, unknown> });
@@ -294,6 +297,51 @@ describe("admin publication proof review route", () => {
 
   afterEach(() => {
     setActivationAnalyticsSink(null);
+  });
+
+  it("routes a server-reported setup requirement through the separate compatibility client", async () => {
+    const setup = operatorProofWorkflow();
+    setup.workItems[0] = {
+      ...setup.workItems[0],
+      state: "approved_to_publish",
+      current_proof_attempt_id: null,
+      publicationSetupRequired: true,
+    };
+    setup.publicationInstructions = [];
+    setup.proofAttempts = [];
+    setup.proofReviews = [];
+    h.fetchActiveMissionWorkflow.mockResolvedValue(setup);
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+
+    await screen.findByRole("button", { name: "Set up publication proof" });
+    fireEvent.change(screen.getByLabelText("Publication instructions"), {
+      target: { value: "Publish exactly as approved." },
+    });
+    fireEvent.change(screen.getByLabelText("Publication window (hours)"), {
+      target: { value: "24" },
+    });
+    fireEvent.click(screen.getByLabelText("I confirm these complete instructions will be frozen immediately."));
+    fireEvent.click(screen.getByRole("button", { name: "Set up publication proof" }));
+
+    await waitFor(() => expect(h.setupExistingPublicationInstructions).toHaveBeenCalledWith(
+      "workflow-today",
+      "item-today",
+      expect.objectContaining({
+        workspace: "demo",
+        expectedState: "approved_to_publish",
+        expectedRevision: 4,
+        idempotencyKey: expect.any(String),
+        instructions: expect.objectContaining({
+          publicationInstructions: "Publish exactly as approved.",
+          publicationWindowHours: 24,
+        }),
+      }),
+    ));
+    expect(h.setPublicationInstructions).not.toHaveBeenCalled();
   });
 
   it("binds Task 9 proof hooks to the exact current attempt", async () => {
