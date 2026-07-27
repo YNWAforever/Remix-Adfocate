@@ -87,6 +87,13 @@ describe("active mission migration contract", () => {
     ]) expect(runbook, `missing reviewed emergency-control token: ${token}`).toContain(token);
 
     expect(runbook).not.toContain("select id, workspace_id, mission_id, status, content_urls");
+
+    const blockedDiagnostic = runbook
+      .split("### blocked-item diagnostic")[1]
+      ?.split("### overdue priority")[0] ?? "";
+    expect(blockedDiagnostic).toContain("item.deadline as creator_deadline");
+    expect(blockedDiagnostic).toContain("item.review_due_at");
+    expect(blockedDiagnostic).not.toContain("review.review_due_at");
   });
 
   it("defines a service-only existing publication setup RPC with locked canonical anchors", () => {

@@ -43,6 +43,7 @@ select
   instruction.id as instruction_id,
   instruction.revision as instruction_revision,
   instruction.publication_due_at,
+  item.deadline as creator_deadline,
   attempt.id as attempt_id,
   attempt.attempt_number,
   attempt.submitted_at,
@@ -51,7 +52,7 @@ select
   attempt.metadata_error_category,
   review.id as review_id,
   review.state as review_state,
-  review.review_due_at,
+  item.review_due_at,
   review.creator_response_deadline
 from public.mission_workflows workflow
 join public.mission_work_items item
