@@ -1,9 +1,10 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminAuthError, AdminRequestError } from "@/lib/admin";
 import type { ActiveMissionQueueItem, ActiveMissionWorkflow } from "@/lib/admin";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
+import { setActivationAnalyticsSink } from "@/lib/activationAnalytics";
 
 vi.mock("@/lib/i18n", async () => {
   const { dict } = await import("@/lib/i18n.dict");
@@ -101,6 +102,7 @@ const detailWorkflow: ActiveMissionWorkflow = {
     missions: {
       id: "mission-1",
       title: "Summer launch",
+      mission_type: "ugc",
       description: null,
       key_messages: [],
       dos: [],
@@ -247,6 +249,7 @@ describe("publication proof queue filters", () => {
 
 function operatorProofWorkflow(): ActiveMissionWorkflow {
   const value = structuredClone(detailWorkflow);
+  value.workflow.review_sla_hours = 48;
   value.workItems[0] = {
     ...value.workItems[0], state: "proof_under_review", approved_version_id: "version-1",
     current_proof_attempt_id: "attempt-current", revision: 4,
@@ -274,6 +277,8 @@ function operatorProofWorkflow(): ActiveMissionWorkflow {
 }
 
 describe("admin publication proof review route", () => {
+  const analyticsEvents: Array<{ name: string; properties: Record<string, unknown> }> = [];
+
   beforeEach(() => {
     vi.clearAllMocks();
     h.fetchActiveMissionWorkflow.mockResolvedValue(operatorProofWorkflow());
@@ -281,6 +286,14 @@ describe("admin publication proof review route", () => {
     h.requestProofCorrection.mockResolvedValue({});
     h.verifyProof.mockResolvedValue({});
     h.refreshProofMetadata.mockResolvedValue({});
+    analyticsEvents.length = 0;
+    setActivationAnalyticsSink((event) => {
+      analyticsEvents.push(event as { name: string; properties: Record<string, unknown> });
+    });
+  });
+
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
   });
 
   it("binds Task 9 proof hooks to the exact current attempt", async () => {
@@ -316,4 +329,135 @@ describe("admin publication proof review route", () => {
     fireEvent.click(screen.getByRole("button", { name: "Claim review" }));
     await waitFor(() => expect(h.reportAuthError).toHaveBeenCalledWith(expect.any(AdminAuthError)));
   });
+
+
+  it("emits verified only after the canonical verify action succeeds", async () => {
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    ["Publicly accessible", "Platform matches", "Account matches",
+      "Content matches approved version", "Timing acceptable", "Disclosures present"]
+      .forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    fireEvent.change(screen.getByLabelText("Type attempt number 3 to confirm"), {
+      target: { value: "3" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_verified",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_verified")?.properties)
+      .toEqual(expect.objectContaining({
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "proof_verified", attemptNumber: 3, reviewNumber: 1,
+        metadataStatus: "available",
+      }));
+  });
+
+
+  it("emits review-started only after claim succeeds", async () => {
+    const submitted = operatorProofWorkflow();
+    submitted.workItems[0] = { ...submitted.workItems[0], state: "proof_submitted" };
+    submitted.proofReviews![0] = {
+      ...submitted.proofReviews![0], reviewerId: null, state: "open",
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(submitted);
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Claim review" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_review_started",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_review_started")?.properties)
+      .toEqual(expect.objectContaining({
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "proof_under_review", attemptNumber: 3, reviewNumber: 1,
+        metadataStatus: "available",
+      }));
+  });
+
+  it("emits category-only correction telemetry after the correction succeeds", async () => {
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    fireEvent.click(screen.getByRole("button", { name: "Request correction" }));
+    fireEvent.change(screen.getByLabelText("Correction category 1"), {
+      target: { value: "content" },
+    });
+    fireEvent.change(screen.getByLabelText("Correction 1"), {
+      target: { value: "Private operator correction prose" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send correction request" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_correction_requested",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_correction_requested")?.properties)
+      .toEqual(expect.objectContaining({
+        locale: "en", missionType: "ugc", platform: "instagram",
+        state: "proof_correction_requested", attemptNumber: 3, reviewNumber: 1,
+        checklistFailureCategories: ["content"],
+      }));
+    expect(JSON.stringify(analyticsEvents)).not.toContain("Private operator correction prose");
+  });
+
+  it("emits metadata recovery and unavailable outcome only after a successful refresh", async () => {
+    const unavailable = operatorProofWorkflow();
+    unavailable.proofAttempts![0] = {
+      ...unavailable.proofAttempts![0],
+      metadataStatus: "unavailable",
+      metadataErrorCategory: "private-network-detail",
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(unavailable);
+    h.refreshProofMetadata.mockResolvedValue({ metadata_status: "unavailable" });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Refresh metadata" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_metadata_unavailable",
+    ));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_proof_recovery_used",
+      "publication_proof_metadata_unavailable",
+    ]);
+    expect(analyticsEvents[0]?.properties).toEqual(expect.objectContaining({
+      state: "proof_under_review",
+      attemptNumber: 3,
+      recoveryCategory: "metadata_unavailable",
+    }));
+    expect(JSON.stringify(analyticsEvents)).not.toContain("private-network-detail");
+  });
+
+  it("does not emit operator mutation outcomes when the action fails", async () => {
+    h.verifyProof.mockRejectedValueOnce(new Error("failed verification"));
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    ["Publicly accessible", "Platform matches", "Account matches",
+      "Content matches approved version", "Timing acceptable", "Disclosures present"]
+      .forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    fireEvent.change(screen.getByLabelText("Type attempt number 3 to confirm"), {
+      target: { value: "3" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("failed verification");
+    expect(analyticsEvents.map(({ name }) => name)).not.toContain("publication_proof_verified");
+  });
+
+
 });

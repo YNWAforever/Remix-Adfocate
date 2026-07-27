@@ -6,7 +6,15 @@ import type {
   PublicationProofChecklistInput,
   PublicationProofCorrectionInput,
 } from "@/lib/admin";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { useI18n } from "@/lib/i18n";
+import {
+  proofReviewTimingBucket,
+  publicationAnalyticsBase,
+  publicationMetadataStatus,
+  publicationResultInteger,
+  publicationResultMetadataStatus,
+} from "@/lib/publicationProofAnalytics";
 
 type ProofActionBase = {
   workItemId: string;
@@ -210,6 +218,9 @@ export function PublicationProofReview({
 }: PublicationProofReviewProps) {
   const { lang } = useI18n();
   const c = COPY[lang === "zh" ? "zh" : "en"];
+  const mission = Array.isArray(workflow.submission.missions)
+    ? workflow.submission.missions[0]
+    : workflow.submission.missions;
   const item = workflow.workItems.find((candidate) => candidate.id === selectedWorkItemId)
     ?? workflow.workItems.find((candidate) => candidate.state.startsWith("proof_"))
     ?? workflow.workItems[0];
@@ -288,12 +299,32 @@ export function PublicationProofReview({
   } : null;
   const allPassed = CHECKLIST_KEYS.every((key) => checklist[key]);
   const isBusy = busy || localBusy;
+  const reviewTimingBucket = proofReviewTimingBucket(
+    attempt?.submittedAt ?? "",
+    workflow.workflow.review_sla_hours,
+  );
+  const analyticsFor = (state: string) => publicationAnalyticsBase({
+    locale: lang,
+    missionType: mission?.mission_type,
+    platform: item.platform,
+    state,
+  });
+  const reviewNumberFor = (result: unknown) => publicationResultInteger(
+    result,
+    "reviewNumber",
+    "review_number",
+    review?.reviewNumber ?? 1,
+  );
 
-  async function perform(action: () => Promise<unknown>) {
+  async function perform(
+    action: () => Promise<unknown>,
+    onSuccess?: (result: unknown) => void,
+  ) {
     setActionError(null);
     setLocalBusy(true);
     try {
-      await action();
+      const result = await action();
+      onSuccess?.(result);
     } catch (error) {
       setActionError(error instanceof Error && error.message ? error.message : c.actionFailed);
       onActionError?.(error);
@@ -312,7 +343,20 @@ export function PublicationProofReview({
       return;
     }
     setCorrectionError(false);
-    await perform(() => onRequestCorrection({ ...base, checklist, corrections: clean, summary: summary.trim() || null }));
+    await perform(
+      () => onRequestCorrection({ ...base, checklist, corrections: clean, summary: summary.trim() || null }),
+      (result) => {
+        const analytics = analyticsFor("proof_correction_requested");
+        if (!analytics || !attempt) return;
+        trackActivationEvent("publication_proof_correction_requested", {
+          ...analytics,
+          timingBucket: reviewTimingBucket,
+          attemptNumber: attempt.attemptNumber,
+          reviewNumber: reviewNumberFor(result),
+          checklistFailureCategories: [...new Set(clean.map(({ category }) => category))],
+        });
+      },
+    );
   }
 
   function focusCorrection() {
@@ -414,7 +458,26 @@ export function PublicationProofReview({
           <h3 className="font-heading font-bold">{c.metadata}</h3>
           {attempt.metadataStatus === "available" ? <dl className="mt-3 space-y-2 text-sm">{safeMetadata(attempt).map(([key, value]) => <div key={key}><dt className="font-bold">{key}</dt><dd className="break-all">{value}</dd></div>)}</dl>
             : <p className="mt-3 text-sm">{c.metadataUnavailable}</p>}
-          <button type="button" disabled={isBusy} onClick={() => base && void perform(() => onRefreshMetadata(base))} className={`${BUTTON} mt-3 bg-[var(--color-sky)]`}>{c.refreshMetadata}</button>
+          <button type="button" disabled={isBusy} onClick={() => base && void perform(
+            () => onRefreshMetadata(base),
+            (result) => {
+              const analytics = analyticsFor(item.state);
+              if (!analytics || !attempt) return;
+              const metadataStatus = publicationResultMetadataStatus(result, attempt.metadataStatus);
+              trackActivationEvent("publication_proof_recovery_used", {
+                ...analytics,
+                attemptNumber: attempt.attemptNumber,
+                recoveryCategory: "metadata_unavailable",
+              });
+              if (metadataStatus === "unavailable") {
+                trackActivationEvent("publication_proof_metadata_unavailable", {
+                  ...analytics,
+                  attemptNumber: attempt.attemptNumber,
+                  metadataStatus: "unavailable",
+                });
+              }
+            },
+          )} className={`${BUTTON} mt-3 bg-[var(--color-sky)]`}>{c.refreshMetadata}</button>
         </article>
         <article className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
           <h3 className="font-heading font-bold">{c.evidence}</h3>
@@ -483,11 +546,37 @@ export function PublicationProofReview({
         <p id="verify-proof-description">{c.noReward}</p>
         <label className="grid gap-1 font-bold">{c.typeAttempt(attempt.attemptNumber)}<input ref={verifyInputRef} className={FIELD} inputMode="numeric" value={attemptConfirmation} onChange={(event) => setAttemptConfirmation(event.target.value)} /></label>
         <button type="button" onClick={closeVerification} className={`${BUTTON} bg-white`}>{c.cancelVerification}</button>
-        <button type="button" disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(() => onVerify({ ...base, checklist, summary: summary.trim() || null }))} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.confirmVerification}</button>
+        <button type="button" disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(
+          () => onVerify({ ...base, checklist, summary: summary.trim() || null }),
+          (result) => {
+            const analytics = analyticsFor("proof_verified");
+            if (!analytics || !attempt) return;
+            trackActivationEvent("publication_proof_verified", {
+              ...analytics,
+              timingBucket: reviewTimingBucket,
+              attemptNumber: attempt.attemptNumber,
+              reviewNumber: reviewNumberFor(result),
+              metadataStatus: publicationMetadataStatus(attempt.metadataStatus),
+            });
+          },
+        )} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.confirmVerification}</button>
       </div> : null}
 
       <div data-testid="proof-review-actions" className="sticky bottom-0 z-20 -mx-2 flex flex-wrap gap-2 border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-3 lg:static lg:mx-0">
-        <button type="button" disabled={isBusy || item.state !== "proof_submitted" || !base} onClick={() => base && void perform(() => onClaim(base))} className={`${BUTTON} bg-[var(--color-sky)]`}>{c.claim}</button>
+        <button type="button" disabled={isBusy || item.state !== "proof_submitted" || !base} onClick={() => base && void perform(
+          () => onClaim(base),
+          (result) => {
+            const analytics = analyticsFor("proof_under_review");
+            if (!analytics || !attempt) return;
+            trackActivationEvent("publication_proof_review_started", {
+              ...analytics,
+              timingBucket: reviewTimingBucket,
+              attemptNumber: attempt.attemptNumber,
+              reviewNumber: reviewNumberFor(result),
+              metadataStatus: publicationMetadataStatus(attempt.metadataStatus),
+            });
+          },
+        )} className={`${BUTTON} bg-[var(--color-sky)]`}>{c.claim}</button>
         <span className="self-center text-sm font-bold">{review?.reviewerId ? `${c.claimedBy}: ${review.reviewerId}` : null}</span>
         <button type="button" disabled={isBusy || !claimedByCurrent} onClick={focusCorrection} className={`${BUTTON} bg-[var(--color-sun)]`}>{c.requestCorrection}</button>
         <button ref={verifyTriggerRef} type="button" disabled={isBusy || !claimedByCurrent || !allPassed} onClick={openVerification} className={`${BUTTON} bg-[var(--color-acid)]`}>{c.verify}</button>

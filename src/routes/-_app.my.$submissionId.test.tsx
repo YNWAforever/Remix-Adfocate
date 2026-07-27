@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ActiveMissionWorkspace, MissionPublicationView } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
+import { setActivationAnalyticsSink } from "@/lib/activationAnalytics";
 
 vi.mock("@/lib/i18n", async () => {
   const { dict } = await import("@/lib/i18n.dict");
@@ -409,3 +410,198 @@ describe("creator active mission workspace route", () => {
     expect(mocks.proofSubmit.clearConflict).toHaveBeenCalled();
     expect(mocks.proofSubmit.mutateAsync).not.toHaveBeenCalled();
   });
+
+
+describe("creator publication proof analytics", () => {
+  const analyticsEvents: Array<{ name: string; properties: Record<string, unknown> }> = [];
+  let nowSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.search = {};
+    const approved = workspace();
+    approved.workflow.state = "approved_to_publish";
+    approved.workItems[0].state = "approved_to_publish";
+    approved.workItems[0].approvedVersionId = "version-3";
+    Object.assign(mocks.query, { data: approved, isLoading: false, isError: false, error: null });
+    Object.assign(mocks.publication, {
+      data: publication({
+        instructions: {
+          ...publication().instructions,
+          publishDueAt: "2026-07-28T06:00:00.000Z",
+        },
+      }),
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    mocks.proofSubmit.conflict = null;
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({});
+    analyticsEvents.length = 0;
+    setActivationAnalyticsSink((event) => {
+      analyticsEvents.push(event as { name: string; properties: Record<string, unknown> });
+    });
+    nowSpy = vi.spyOn(Date, "now").mockReturnValue(Date.parse("2026-07-27T12:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
+    nowSpy.mockRestore();
+  });
+
+  it("emits instruction visibility once and waits for the first real form interaction before starting", () => {
+    const Component = Route.options.component as React.ComponentType;
+    const view = renderRoute();
+
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+    ]);
+
+    const primaryUrl = screen.getByLabelText("Primary public URL");
+    fireEvent.focus(primaryUrl);
+    fireEvent.focus(primaryUrl);
+    fireEvent.change(primaryUrl, { target: { value: "https://www.instagram.com/p/private-post" } });
+    view.rerender(<Component />);
+
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+    ]);
+    expect(analyticsEvents[1]?.properties).toEqual({
+      locale: "en",
+      missionType: "ugc",
+      platform: "instagram",
+      state: "approved_to_publish",
+      timingBucket: "within_24h",
+      attemptNumber: 1,
+    });
+  });
+
+  it("emits initial submit and unavailable metadata only after the mutation succeeds without private payload values", async () => {
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({
+      attempt: {
+        id: "attempt-private",
+        attemptNumber: 1,
+        primaryUrl: "https://www.instagram.com/p/private-post",
+        additionalUrls: [],
+        submittedAt: "2026-07-27T12:01:00.000Z",
+        submittedLate: false,
+        metadataStatus: "unavailable",
+        metadataSnapshot: {},
+        metadataErrorCategory: "private-error",
+        evidence: [],
+        review: null,
+        corrections: [],
+      },
+    });
+    renderRoute();
+    fireEvent.change(screen.getByLabelText("Primary public URL"), {
+      target: { value: "https://www.instagram.com/p/private-post" },
+    });
+    fireEvent.click(screen.getByRole("checkbox", { name: /I confirm this is the published content/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_metadata_unavailable",
+    ));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+      "publication_proof_submitted",
+      "publication_proof_metadata_unavailable",
+    ]);
+    expect(analyticsEvents[2]?.properties).toEqual(expect.objectContaining({
+      state: "proof_submitted",
+      attemptNumber: 1,
+      urlCount: 1,
+      evidenceCount: 0,
+      lateness: "on_time",
+      metadataStatus: "unavailable",
+    }));
+    const serialized = JSON.stringify(analyticsEvents);
+    ["mission-1", "item-1", "wf-1", "sub-1", "private-post", "@creator",
+      "Publish the approved version.", "attempt-private", "private-error"]
+      .forEach((forbidden) => expect(serialized).not.toContain(forbidden));
+  });
+
+  it("does not emit submit outcomes when the proof mutation fails", async () => {
+    mocks.proofSubmit.mutateAsync.mockRejectedValueOnce(new Error("request failed"));
+    renderRoute();
+    fireEvent.change(screen.getByLabelText("Primary public URL"), {
+      target: { value: "https://www.instagram.com/p/private-post" },
+    });
+    fireEvent.click(screen.getByRole("checkbox", { name: /I confirm this is the published content/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/submit proof/i);
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+    ]);
+  });
+
+  it("uses the canonical next attempt to distinguish correction resubmission", async () => {
+    const priorAttempt = {
+      id: "attempt-1", attemptNumber: 1, primaryUrl: "https://www.instagram.com/p/prior",
+      additionalUrls: [], submittedAt: "2026-07-26T08:00:00.000Z", submittedLate: false,
+      metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null,
+      evidence: [], review: null, corrections: [],
+    };
+    Object.assign(mocks.publication, {
+      data: publication({
+        state: "proof_correction_requested",
+        attempts: [priorAttempt],
+        currentAttempt: priorAttempt,
+      }),
+    });
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({
+      attempt: { ...priorAttempt, id: "attempt-2", attemptNumber: 2 },
+    });
+    renderRoute();
+    fireEvent.change(screen.getByLabelText("Primary public URL"), {
+      target: { value: "https://www.instagram.com/p/corrected" },
+    });
+    fireEvent.click(screen.getByRole("checkbox", { name: /I confirm this is the published content/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Publish and submit proof" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_resubmitted",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_resubmitted")?.properties)
+      .toEqual(expect.objectContaining({
+        state: "proof_submitted",
+        attemptNumber: 2,
+      }));
+    expect(analyticsEvents.map(({ name }) => name)).not.toContain("publication_proof_submitted");
+  });
+
+  it("emits stale-conflict recovery only after the preserved proof retry succeeds", async () => {
+    const currentPublication = publication({ state: "proof_correction_requested", revision: 5 });
+    mocks.proofSubmit.conflict = {
+      localProof: {
+        workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
+        idempotencyKey: "old-key", primaryUrl: "https://www.instagram.com/p/private-local",
+        additionalUrls: [], evidenceAssetIds: [],
+      },
+      currentPublication,
+    };
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({ attempt: { attemptNumber: 2 } });
+    Object.assign(mocks.publication, { data: currentPublication });
+    renderRoute();
+
+    fireEvent.click(screen.getByRole("button", { name: "Retry preserved proof" }));
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_recovery_used",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_recovery_used")?.properties)
+      .toEqual({
+        locale: "en",
+        missionType: "ugc",
+        platform: "instagram",
+        state: "proof_correction_requested",
+        attemptNumber: 2,
+        recoveryCategory: "stale_conflict",
+      });
+    expect(JSON.stringify(analyticsEvents)).not.toContain("private-local");
+  });
+});

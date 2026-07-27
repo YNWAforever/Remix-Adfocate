@@ -10,6 +10,13 @@ import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
 import { WorkspaceHeader } from "@/components/active-mission/WorkspaceHeader";
 import { deriveNextAction } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
+import {
+  creatorPublicationTimingBucket,
+  publicationAnalyticsBase,
+  publicationMetadataStatus,
+  publicationResultInteger,
+} from "@/lib/publicationProofAnalytics";
 import { useI18n } from "@/lib/i18n";
 import {
   useActiveMissionWorkspace,
@@ -64,7 +71,7 @@ function errorKind(error: unknown): "missing" | "forbidden" | "recoverable" {
 }
 
 export function CreatorMissionWorkspace() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { submissionId } = Route.useParams();
   const search = useSearch({ from: "/_app/my/$submissionId" });
   const navigate = useNavigate({ from: "/my/$submissionId" });
@@ -80,6 +87,8 @@ export function CreatorMissionWorkspace() {
   const [proofEvidence, setProofEvidence] = useState<ProofEvidenceAsset[]>([]);
   const clearProofConflict = proofSubmit.clearConflict;
   const proofEvidenceScope = useRef<string | null>(null);
+  const instructionAnalyticsRef = useRef(new Set<string>());
+  const proofFormAnalyticsRef = useRef(new Set<string>());
   const editorRef = useRef<HTMLDivElement>(null);
   const workspace = workspaceQuery.data;
 
@@ -110,6 +119,19 @@ export function CreatorMissionWorkspace() {
   useEffect(() => {
     clearProofConflict?.();
   }, [publicationWorkItemId, clearProofConflict]);
+
+  useEffect(() => {
+    if (!publication || instructionAnalyticsRef.current.has(publication.workItemId)) return;
+    const analytics = publicationAnalyticsBase({
+      locale: lang,
+      missionType: workspace?.mission.missionType,
+      platform: publication.platform,
+      state: publication.state,
+    });
+    if (!analytics) return;
+    instructionAnalyticsRef.current.add(publication.workItemId);
+    trackActivationEvent("publication_instructions_viewed", analytics);
+  }, [lang, publication, workspace?.mission.missionType]);
 
   if (workspaceQuery.isLoading) {
     return (
@@ -202,11 +224,48 @@ export function CreatorMissionWorkspace() {
 
   async function retryPreservedProof() {
     if (!proofConflict || !canRetryPreservedProof) return;
-    await proofSubmit.mutateAsync({
+    const result = await proofSubmit.mutateAsync({
       ...proofConflict.localProof,
       expectedState: proofConflict.currentPublication.state,
       expectedRevision: proofConflict.currentPublication.revision,
       idempotencyKey: crypto.randomUUID(),
+    });
+    const analytics = publicationAnalyticsBase({
+      locale: lang,
+      missionType: workspace?.mission.missionType,
+      platform: proofConflict.currentPublication.platform,
+      state: proofConflict.currentPublication.state,
+    });
+    if (!analytics) return;
+    const resultAttempt = result && typeof result === "object"
+      ? (result as { attempt?: unknown }).attempt
+      : null;
+    trackActivationEvent("publication_proof_recovery_used", {
+      ...analytics,
+      attemptNumber: publicationResultInteger(
+        resultAttempt,
+        "attemptNumber",
+        "attempt_number",
+        (proofConflict.currentPublication.currentAttempt?.attemptNumber ?? 0) + 1,
+      ),
+      recoveryCategory: "stale_conflict",
+    });
+  }
+
+  function trackProofFormStart() {
+    if (!publication || proofFormAnalyticsRef.current.has(publication.workItemId)) return;
+    const analytics = publicationAnalyticsBase({
+      locale: lang,
+      missionType: workspace?.mission.missionType,
+      platform: publication.platform,
+      state: publication.state,
+    });
+    if (!analytics) return;
+    proofFormAnalyticsRef.current.add(publication.workItemId);
+    trackActivationEvent("publication_proof_form_started", {
+      ...analytics,
+      timingBucket: creatorPublicationTimingBucket(publication.instructions.publishDueAt),
+      attemptNumber: (publication.currentAttempt?.attemptNumber ?? 0) + 1,
     });
   }
 
@@ -286,13 +345,48 @@ export function CreatorMissionWorkspace() {
                     evidenceAssets={proofEvidence}
                     isSubmitting={proofSubmit.isPending || Boolean(proofConflict)}
                     onUploadFile={uploadProofEvidence}
-                    onSubmit={(value) => proofSubmit.mutateAsync({
-                      workItemId: publication.workItemId,
-                      expectedState: publication.state,
-                      expectedRevision: publication.revision,
-                      idempotencyKey: crypto.randomUUID(),
-                      ...value,
-                    })}
+                    onStart={trackProofFormStart}
+                    onSubmit={async (value) => {
+                      const result = await proofSubmit.mutateAsync({
+                        workItemId: publication.workItemId,
+                        expectedState: publication.state,
+                        expectedRevision: publication.revision,
+                        idempotencyKey: crypto.randomUUID(),
+                        ...value,
+                      });
+                      const analytics = publicationAnalyticsBase({
+                        locale: lang,
+                        missionType: workspace?.mission.missionType,
+                        platform: publication.platform,
+                        state: "proof_submitted",
+                      });
+                      if (!analytics) return result;
+                      const attempt = result.attempt;
+                      const metadataStatus = publicationMetadataStatus(attempt.metadataStatus);
+                      const properties = {
+                        ...analytics,
+                        timingBucket: attempt.submittedLate ? "late" as const : "on_time" as const,
+                        attemptNumber: attempt.attemptNumber,
+                        urlCount: 1 + attempt.additionalUrls.length,
+                        evidenceCount: attempt.evidence.length,
+                        lateness: attempt.submittedLate ? "late" as const : "on_time" as const,
+                        metadataStatus,
+                      };
+                      trackActivationEvent(
+                        attempt.attemptNumber > 1
+                          ? "publication_proof_resubmitted"
+                          : "publication_proof_submitted",
+                        properties,
+                      );
+                      if (attempt.metadataStatus === "unavailable") {
+                        trackActivationEvent("publication_proof_metadata_unavailable", {
+                          ...analytics,
+                          attemptNumber: attempt.attemptNumber,
+                          metadataStatus: "unavailable",
+                        });
+                      }
+                      return result;
+                    }}
                   />
                 ) : null}
                 <ProofAttemptHistory publication={publication} />

@@ -31,6 +31,7 @@ type Props = {
   evidenceAssets?: readonly ProofEvidenceAsset[];
   isSubmitting?: boolean;
   onUploadFile?: (file: File) => Promise<void>;
+  onStart?: () => void;
   onSubmit: (value: ProofFormValue) => Promise<unknown>;
 };
 
@@ -47,6 +48,7 @@ export function ProofSubmissionForm({
   evidenceAssets = [],
   isSubmitting = false,
   onUploadFile,
+  onStart,
   onSubmit,
 }: Props) {
   const headingId = useId();
@@ -56,6 +58,7 @@ export function ProofSubmissionForm({
   const primaryRef = useRef<HTMLInputElement>(null);
   const successRef = useRef<HTMLHeadingElement>(null);
   const scopeRef = useRef(publication.workItemId);
+  const startedRef = useRef(false);
   const [primaryUrl, setPrimaryUrl] = useState("");
   const [additionalUrls, setAdditionalUrls] = useState<string[]>([]);
   const [selectedEvidence, setSelectedEvidence] = useState<string[]>([]);
@@ -68,6 +71,7 @@ export function ProofSubmissionForm({
   useEffect(() => {
     if (scopeRef.current === publication.workItemId) return;
     scopeRef.current = publication.workItemId;
+    startedRef.current = false;
     setPrimaryUrl("");
     setAdditionalUrls([]);
     setSelectedEvidence([]);
@@ -81,6 +85,12 @@ export function ProofSubmissionForm({
   useEffect(() => {
     if (success) successRef.current?.focus();
   }, [success]);
+
+  function startInteraction() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    onStart?.();
+  }
 
   const busy = isSubmitting || submitting;
   const needsEvidence = publicationEvidenceRequired(publication.instructions.proofEvidencePolicy);
@@ -151,7 +161,7 @@ export function ProofSubmissionForm({
       <h2 id={headingId} className="font-heading text-xl font-bold">Submit publication proof</h2>
       <p className="mt-2 text-sm text-[var(--color-soft-ink)]">Add the public link for the exact approved version you published.</p>
 
-      <form className="mt-5 space-y-5" noValidate onSubmit={submit}>
+      <form className="mt-5 space-y-5" noValidate onFocusCapture={startInteraction} onChangeCapture={startInteraction} onSubmit={submit}>
         <div>
           <label htmlFor={`${headingId}-primary`} className="font-heading text-sm font-bold">Primary public URL</label>
           <input
