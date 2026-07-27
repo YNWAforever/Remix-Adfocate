@@ -481,7 +481,7 @@ activeSuite(`active-mission notification live integration${integrationSkipReason
   it("commits a proof correction after notification failure and permits semantic retry", async () => {
     const fixture = await seedPublicationProofReleaseFixture();
     const svc = serviceForTests();
-    const workItemId = fixture.items.requiredMetadataSuccess.id;
+    const workItemId = fixture.items.optionalEvidence.id;
     const instruction = await svc.from("mission_publication_instructions")
       .select("revision")
       .eq("mission_work_item_id", workItemId)

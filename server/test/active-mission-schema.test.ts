@@ -1451,7 +1451,9 @@ suite(suiteName, () => {
       svc.from("mission_publication_proof_attempts").select("id, attempt_number, content_checksum")
         .eq("mission_work_item_id", item.data!.id).order("attempt_number"),
       svc.from("mission_publication_proof_reviews").select("mission_publication_proof_attempt_id, state")
-        .eq("workspace_id", item.data!.workspace_id).order("review_number"),
+        .eq("workspace_id", item.data!.workspace_id)
+        .in("mission_publication_proof_attempt_id", [first.data.attempt.id, correction.data.attempt.id])
+        .order("review_number"),
       svc.from("mission_work_items").select("state, current_proof_attempt_id").eq("id", item.data!.id).single(),
       svc.from("mission_workflow_events").select("event_type").eq("mission_work_item_id", item.data!.id)
         .in("event_type", ["mission_publication_proof_submitted", "mission_publication_proof_resubmitted"]),
