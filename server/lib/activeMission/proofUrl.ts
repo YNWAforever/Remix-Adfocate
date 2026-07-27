@@ -1,8 +1,8 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 
-import { ActiveMissionError } from "./errors";
-import type { ProofMetadataSnapshot } from "./types";
+import { ActiveMissionError } from "./errors.js";
+import type { ProofMetadataSnapshot } from "./types.js";
 
 export const PLATFORM_HOSTS = {
   instagram: ["instagram.com", "www.instagram.com"],
