@@ -608,6 +608,11 @@ describe("PublicationProofReview localization and setup", () => {
     setupWorkflow.publicationInstructions = [];
     setupWorkflow.proofAttempts = [];
     setupWorkflow.proofReviews = [];
+    setupWorkflow.events = [{
+      mission_work_item_id: setupWorkflow.workItems[0].id,
+      event_type: "mission_publication_existing_instructions_setup",
+      metadata: { idempotency_key: "history-only" },
+    }];
 
     renderProof({ workflow: setupWorkflow });
 

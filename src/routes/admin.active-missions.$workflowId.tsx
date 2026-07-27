@@ -91,7 +91,8 @@ export function AdminActiveMissionReviewView({
 
   const handleProofError = (error: unknown) => {
     if (error instanceof AdminAuthError) reportAuthError(error);
-    if (error instanceof AdminRequestError && error.code === "WORKFLOW_STALE") {
+    if (error instanceof AdminRequestError
+      && (error.code === "WORKFLOW_STALE" || error.code === "WRONG_STATE")) {
       void detail.refetch().then(({ data }) => {
         const selected = data?.workItems.find((item) => item.id === workItemId)
           ?? data?.workItems.find((item) => PUBLICATION_STATES.has(item.state));

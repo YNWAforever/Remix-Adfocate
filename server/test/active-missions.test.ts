@@ -695,6 +695,46 @@ describe("active mission operator routes without a live database", () => {
     expect(detail.workItems[0]?.publicationSetupRequired).toBe(true);
   });
 
+  it("excludes history-only rewinds from publication setup eligibility", async () => {
+    const approvedItem = {
+      ...item,
+      id: workItemId,
+      mission_workflow_id: workflowId,
+      state: "approved_to_publish",
+      approved_version_id: versionId,
+      revision: 0,
+    };
+    const { client } = scriptedClient([
+      { table: "workspaces", data: { id: "workspace-1" } },
+      { table: "brand_users", data: { user_id: "operator-1" } },
+      { table: "mission_workflows", data: { ...workflow, id: workflowId } },
+      { table: "mission_submissions", data: submission },
+      { table: "mission_work_items", data: [approvedItem] },
+      { table: "mission_fulfillments", data: null },
+      { table: "mission_workflow_events", data: [{
+        mission_work_item_id: workItemId,
+        event_type: "mission_publication_existing_instructions_setup",
+      }] },
+      { table: "mission_draft_assets", data: [] },
+      { table: "mission_draft_versions", data: [] },
+      { table: "mission_review_rounds", data: [] },
+      { table: "mission_revision_grants", data: [] },
+      { table: "mission_publication_instructions", data: [] },
+      { table: "mission_publication_proof_attempts", data: [] },
+      { table: "mission_publication_proof_reviews", data: [] },
+      { table: "mission_publication_proof_assets", data: [] },
+    ]);
+
+    const detail = await createAdminActiveMissionRepository(client).getDetail({
+      workflowId,
+      workspaceSlug: "demo",
+      operatorId: "operator-1",
+      signedUrlTtlSeconds: 600,
+    }) as { workItems: Array<{ publicationSetupRequired?: boolean }> };
+
+    expect(detail.workItems[0]?.publicationSetupRequired).toBe(false);
+  });
+
   it("uses the workspace header and returns queue metadata without private URLs", async () => {
     const listQueue = vi.fn(async () => ({ items: [{ ...urgent, workflowId: "workflow-1", creatorDisplayName: "Creator", missionTitle: "Launch", state: "submitted", reviewerId: null, riskBucket: "overdue" }] }));
     const repository = { listQueue } as unknown as AdminActiveMissionRepository;
@@ -1034,10 +1074,16 @@ describe("active mission operator routes without a live database", () => {
 
   it.each([
     ["wrong expected state", { expectedState: "under_review" }],
+    ["null expected state", { expectedState: null }],
     ["negative expected revision", { expectedRevision: -1 }],
     ["malformed idempotency key", { idempotencyKey: "not-a-uuid" }],
     ["blank instructions", { instructions: { publicationInstructions: " " } }],
     ["non-positive publication window", { instructions: { publicationWindowHours: 0 } }],
+    ["negative publication window", { instructions: { publicationWindowHours: -1 } }],
+    ["fractional publication window", { instructions: { publicationWindowHours: 1.5 } }],
+    ["null publication window", { instructions: { publicationWindowHours: null } }],
+    ["too-large publication window", { instructions: { publicationWindowHours: 8761 } }],
+    ["integer-overflow publication window", { instructions: { publicationWindowHours: 999999999999999 } }],
     ["blank disclosure", { instructions: { requiredDisclosures: ["#ad", " "] } }],
     ["invalid evidence policy", { instructions: { proofEvidencePolicy: [] } }],
   ])("rejects explicit existing publication setup with %s", async (_label, patch) => {

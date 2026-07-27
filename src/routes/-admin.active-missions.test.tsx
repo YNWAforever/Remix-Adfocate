@@ -344,6 +344,55 @@ describe("admin publication proof review route", () => {
     expect(h.setPublicationInstructions).not.toHaveBeenCalled();
   });
 
+  it("refreshes a setup race reported as WRONG_STATE and hides history-only setup", async () => {
+    const setup = operatorProofWorkflow();
+    setup.workItems[0] = {
+      ...setup.workItems[0],
+      state: "approved_to_publish",
+      current_proof_attempt_id: null,
+      publicationSetupRequired: true,
+    };
+    setup.publicationInstructions = [];
+    setup.proofAttempts = [];
+    setup.proofReviews = [];
+    const recovered = structuredClone(setup);
+    recovered.workItems[0].publicationSetupRequired = false;
+    recovered.events = [{
+      mission_work_item_id: "item-today",
+      event_type: "mission_publication_existing_instructions_setup",
+      metadata: { idempotency_key: "history-only" },
+    }];
+    h.fetchActiveMissionWorkflow
+      .mockResolvedValueOnce(setup)
+      .mockResolvedValue(recovered);
+    h.setupExistingPublicationInstructions.mockRejectedValueOnce(
+      new AdminRequestError("state progressed", "WRONG_STATE"),
+    );
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+
+    await screen.findByRole("button", { name: "Set up publication proof" });
+    fireEvent.change(screen.getByLabelText("Publication instructions"), {
+      target: { value: "Publish exactly as approved." },
+    });
+    fireEvent.change(screen.getByLabelText("Publication window (hours)"), {
+      target: { value: "24" },
+    });
+    fireEvent.click(screen.getByLabelText(
+      "I confirm these complete instructions will be frozen immediately.",
+    ));
+    fireEvent.click(screen.getByRole("button", { name: "Set up publication proof" }));
+
+    await waitFor(() => expect(h.fetchActiveMissionWorkflow.mock.calls.length).toBeGreaterThan(1));
+    await waitFor(() => {
+      expect(screen.queryByRole("button", { name: "Set up publication proof" }))
+        .not.toBeInTheDocument();
+    });
+  });
+
   it("binds Task 9 proof hooks to the exact current attempt", async () => {
     const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
     renderWithQueryClient(<AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />);

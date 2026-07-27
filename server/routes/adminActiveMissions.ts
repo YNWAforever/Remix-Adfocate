@@ -13,6 +13,7 @@ const QUEUE_STATES = ["submitted", "under_review"];
 const PROOF_QUEUE_STATES = ["proof_submitted", "proof_under_review", "proof_correction_requested"];
 const ALL_QUEUE_STATES = [...QUEUE_STATES, ...PROOF_QUEUE_STATES];
 const EXPECTED_REVIEW_STATES = new Set(QUEUE_STATES);
+const MAX_PUBLICATION_WINDOW_HOURS = 8760;
 
 // Supabase joins and RPC JSON have endpoint-specific dynamic fields; boundary validators narrow values before use.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -373,6 +374,11 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         ((publicationInstructionsResult.data ?? []) as Row[]).map((instruction) => instruction.mission_work_item_id),
       );
       const proofAttemptItemIds = new Set(((proofAttemptsResult.data ?? []) as Row[]).map((attempt) => attempt.mission_work_item_id));
+      const setupHistoryItemIds = new Set(
+        ((eventsResult.data ?? []) as Row[])
+          .filter((event) => event.event_type === "mission_publication_existing_instructions_setup")
+          .map((event) => event.mission_work_item_id),
+      );
       const proofAssets = await Promise.all(authorizedProofAssets.map(async (proofAsset) => {
         const signed = await client.storage.from(PUBLICATION_PROOF_ASSET_BUCKET)
           .createSignedUrl(proofAsset.storage_object_path, input.signedUrlTtlSeconds);
@@ -401,7 +407,8 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
           ...item,
           publicationSetupRequired: item.state === "approved_to_publish"
             && !instructionItemIds.has(item.id)
-            && !proofAttemptItemIds.has(item.id),
+            && !proofAttemptItemIds.has(item.id)
+            && !setupHistoryItemIds.has(item.id),
         })),
         fulfillment: fulfillmentResult.data ?? null,
         versions: versionsResult.data ?? [],
@@ -667,6 +674,7 @@ function publicationInstructionInput(value: unknown): PublicationInstructionInpu
   const proofEvidencePolicy = row.proofEvidencePolicy;
   if (!publicationInstructions
     || !Number.isInteger(publicationWindowHours) || publicationWindowHours <= 0
+    || publicationWindowHours > MAX_PUBLICATION_WINDOW_HOURS
     || !Array.isArray(disclosures) || !disclosures.every((entry) => typeof entry === "string" && entry.trim())
     || (row.expectedAccount !== null && row.expectedAccount !== undefined && !expectedAccount)
     || !proofEvidencePolicy || typeof proofEvidencePolicy !== "object" || Array.isArray(proofEvidencePolicy)) return null;

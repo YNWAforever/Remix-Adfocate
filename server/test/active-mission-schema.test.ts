@@ -40,7 +40,7 @@ describe("active mission migration contract", () => {
       "from public.mission_publication_instructions",
       "from public.mission_publication_proof_attempts",
       "for update",
-      "v_item.state <> 'approved_to_publish'",
+      "v_item.state is distinct from 'approved_to_publish'",
       "p_expected_state",
       "p_expected_revision",
       "p_idempotency_key uuid",
@@ -77,6 +77,22 @@ describe("active mission migration contract", () => {
       /case when jsonb_typeof\(p_instructions->'required_disclosures'\) = 'array' then exists/,
     );
     expect(sql).toMatch(/proof_evidence_policy[\s\S]*jsonb_typeof/);
+    expect(sql).toContain("p_expected_state is distinct from 'approved_to_publish'");
+    expect(sql).toContain("v_item.state is distinct from p_expected_state");
+    expect(sql).toContain("v_item.state is distinct from 'approved_to_publish'");
+    expect(sql).toContain("jsonb_typeof(p_instructions->'publication_window_hours') = 'number'");
+    expect(sql).toContain("v_window_hours > 8760");
+    expect(sql).toContain("v_setup_event public.mission_workflow_events");
+    for (const correlation of [
+      "event.workspace_id = p_workspace",
+      "event.mission_workflow_id = p_workflow",
+      "event.mission_work_item_id = p_work_item",
+      "event.actor_type = 'operator'",
+      "event.actor_id = p_operator",
+      "event.entity_id = v_instruction.id",
+      "event.metadata->>'idempotency_key' = p_idempotency_key::text",
+    ]) expect(sql).toContain(correlation);
+    expect(sql).toContain("v_setup_event.metadata->>'revision' is distinct from p_expected_revision::text");
     expect(sql).toContain("publication_due_at");
     expect(sql).toContain("make_interval(hours =>");
     expect(sql).toContain("frozen_at");
@@ -87,7 +103,7 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("'idempotent', true");
     expect(sql).toContain("'idempotent', false");
     expect(sql).toContain("event.event_type = 'mission_publication_existing_instructions_setup'");
-    expect(sql).not.toMatch(/coalesce\([^)]*p_instructions/);
+    expect(sql).not.toMatch(/coalesce\(\s*p_instructions(?:->[^,]+)?\s*,/);
   });
 
   it("keeps existing setup audit metadata private, reward-neutral, and service-only", () => {
@@ -1380,6 +1396,14 @@ suite(suiteName, () => {
       role: "member",
       active: true,
     })).error).toBeNull();
+    const otherOperator = await makeStaff(`publication-existing-other-${id}@test.local`);
+    expect((await svc.from("brand_users").insert({
+      user_id: otherOperator.userId,
+      workspace_id: canonical.data!.workspace_id,
+      email: `publication-existing-other-${id}@test.local`,
+      role: "member",
+      active: true,
+    })).error).toBeNull();
     const inactiveWorkspaceOperator = await makeStaff(
       `publication-existing-outsider-${id}@test.local`,
     );
@@ -1407,6 +1431,120 @@ suite(suiteName, () => {
       },
     );
 
+    for (const invalidState of [null, "under_review"]) {
+      const invalid = await setup({
+        p_expected_state: invalidState,
+        p_idempotency_key: unique(),
+      });
+      expect(invalid.data).toMatchObject({ code: "VALIDATION_FAILED" });
+    }
+    for (const invalidWindow of [null, 1.5, -1, 0, 8761, 999999999999999]) {
+      const invalid = await setup({
+        p_idempotency_key: unique(),
+        p_instructions: {
+          ...instructions,
+          publication_window_hours: invalidWindow,
+        },
+      });
+      expect(invalid.data).toMatchObject({ code: "VALIDATION_FAILED" });
+    }
+    const setupArgs = {
+      p_workspace: canonical.data!.workspace_id,
+      p_workflow: created.data.id,
+      p_work_item: workItemId,
+      p_operator: operator.userId,
+      p_expected_state: "approved_to_publish",
+      p_expected_revision: 0,
+      p_idempotency_key: unique(),
+      p_instructions: instructions,
+    };
+    const [anonDenied, authenticatedDenied] = await Promise.all([
+      userForJwt("").rpc("setup_existing_publication_instructions", setupArgs),
+      userForJwt(active.creator.jwt).rpc("setup_existing_publication_instructions", setupArgs),
+    ]);
+    expect(anonDenied.error?.message.toLowerCase()).toContain("permission denied");
+    expect(authenticatedDenied.error?.message.toLowerCase()).toContain("permission denied");
+
+    const otherWorkspace = await makeBrand(`publication-existing-workspace-${id}@test.local`);
+    expect((await svc.from("brand_users").insert({
+      user_id: operator.userId,
+      workspace_id: otherWorkspace.workspaceId,
+      email: `publication-existing-operator-${id}@test.local`,
+      role: "member",
+      active: true,
+    })).error).toBeNull();
+    const wrongWorkspace = await setup({
+      p_workspace: otherWorkspace.workspaceId,
+      p_idempotency_key: unique(),
+    });
+    expect(wrongWorkspace.data).toMatchObject({ code: "WORKFLOW_NOT_FOUND" });
+
+    const attemptItemId = unique();
+    const historyItemId = unique();
+    const collisionItemId = unique();
+    expect((await svc.from("mission_work_items").insert([
+      {
+        id: attemptItemId, workspace_id: canonical.data!.workspace_id,
+        mission_workflow_id: created.data.id, source_template_id: null,
+        title: "Prior attempt item", platform: "instagram", requirements_snapshot: [],
+        required: true, position: 2, state: "approved_to_publish",
+      },
+      {
+        id: historyItemId, workspace_id: canonical.data!.workspace_id,
+        mission_workflow_id: created.data.id, source_template_id: null,
+        title: "History rewind item", platform: "instagram", requirements_snapshot: [],
+        required: true, position: 3, state: "approved_to_publish",
+      },
+      {
+        id: collisionItemId, workspace_id: canonical.data!.workspace_id,
+        mission_workflow_id: created.data.id, source_template_id: null,
+        title: "Normal setter collision item", platform: "instagram", requirements_snapshot: [],
+        required: true, position: 4, state: "approved_to_publish",
+      },
+    ])).error).toBeNull();
+    expect((await svc.from("mission_publication_proof_attempts").insert({
+      workspace_id: canonical.data!.workspace_id, mission_work_item_id: attemptItemId,
+      attempt_number: 1, primary_url: "https://www.instagram.com/p/prior",
+      additional_urls: [], submitted_by: active.creator.id, submitted_late: false,
+      metadata_status: "unavailable", metadata_snapshot: {},
+      content_checksum: "prior-attempt", submission_idempotency_key: unique(),
+    })).error).toBeNull();
+    const preExistingAttempt = await setup({
+      p_work_item: attemptItemId,
+      p_idempotency_key: unique(),
+    });
+    expect(preExistingAttempt.data).toMatchObject({ code: "WRONG_STATE" });
+    expect((await svc.from("mission_workflow_events").insert({
+      workspace_id: canonical.data!.workspace_id, mission_workflow_id: created.data.id,
+      mission_work_item_id: historyItemId, actor_type: "operator", actor_id: operator.userId,
+      event_type: "mission_publication_existing_instructions_setup",
+      entity_type: "mission_publication_instruction", metadata: {
+        revision: 0, idempotency_key: unique(),
+      },
+    })).error).toBeNull();
+    const historyOnly = await setup({
+      p_work_item: historyItemId,
+      p_idempotency_key: unique(),
+    });
+    expect(historyOnly.data).toMatchObject({ code: "WRONG_STATE" });
+    const collisionKey = unique();
+    expect((await svc.from("mission_publication_instructions").insert({
+      workspace_id: canonical.data!.workspace_id, mission_work_item_id: collisionItemId,
+      platform: "instagram", source_template_id: null,
+      publication_instructions: instructions.publication_instructions,
+      publication_window_hours: instructions.publication_window_hours,
+      required_disclosures: instructions.required_disclosures,
+      expected_account: instructions.expected_account,
+      proof_evidence_policy: instructions.proof_evidence_policy,
+      publication_due_at: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString(),
+      idempotency_keys: [collisionKey],
+    })).error).toBeNull();
+    const collision = await setup({
+      p_work_item: collisionItemId,
+      p_idempotency_key: collisionKey,
+    });
+    expect(collision.data).toMatchObject({ code: "WRONG_STATE" });
+
     const staleBeforeSetup = await setup({
       p_idempotency_key: unique(),
       p_expected_revision: 1,
@@ -1428,6 +1566,19 @@ suite(suiteName, () => {
       instruction: { id: first.data.instruction.id },
       idempotent: true,
     });
+    expect((await svc.from("mission_work_items").update({
+      state: "proof_submitted",
+    }).eq("id", workItemId)).error).toBeNull();
+    const progressedReplay = await setup();
+    expect(progressedReplay.error).toBeNull();
+    expect(progressedReplay.data).toMatchObject({
+      instruction: { id: first.data.instruction.id },
+      idempotent: true,
+    });
+    const otherOperatorCollision = await setup({
+      p_operator: otherOperator.userId,
+    });
+    expect(otherOperatorCollision.data).toMatchObject({ code: "WRONG_STATE" });
     const changed = await setup({
       p_instructions: { ...instructions, publication_window_hours: 72 },
     });

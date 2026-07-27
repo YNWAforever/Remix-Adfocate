@@ -14,6 +14,7 @@ declare
   v_workflow public.mission_workflows;
   v_item public.mission_work_items;
   v_instruction public.mission_publication_instructions;
+  v_setup_event public.mission_workflow_events;
   v_window_hours integer;
   v_expected_account text;
 begin
@@ -30,17 +31,21 @@ begin
   end if;
 
   if p_workspace is null or p_workflow is null or p_work_item is null
-    or p_operator is null or p_expected_state <> 'approved_to_publish'
+    or p_operator is null or p_expected_state is distinct from 'approved_to_publish'
     or p_expected_revision is null or p_expected_revision < 0
     or p_idempotency_key is null
-    or p_instructions is null or jsonb_typeof(p_instructions) <> 'object'
+    or coalesce(jsonb_typeof(p_instructions) = 'object', false) is not true
     or not (p_instructions ? 'publication_instructions')
     or not (p_instructions ? 'publication_window_hours')
     or not (p_instructions ? 'required_disclosures')
     or not (p_instructions ? 'expected_account')
     or not (p_instructions ? 'proof_evidence_policy')
     or nullif(btrim(p_instructions->>'publication_instructions'), '') is null
-    or (p_instructions->>'publication_window_hours') !~ '^[1-9][0-9]*$'
+    or case
+      when jsonb_typeof(p_instructions->'publication_window_hours') = 'number'
+        then coalesce((p_instructions->>'publication_window_hours') ~ '^[1-9][0-9]{0,3}$', false) is not true
+      else true
+    end
     or case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
         select 1
         from jsonb_array_elements(p_instructions->'required_disclosures') disclosure
@@ -49,17 +54,20 @@ begin
       )
       else true
     end
-    or jsonb_typeof(p_instructions->'expected_account') not in ('null', 'string')
+    or coalesce(jsonb_typeof(p_instructions->'expected_account') in ('null', 'string'), false) is not true
     or (
       jsonb_typeof(p_instructions->'expected_account') = 'string'
       and nullif(btrim(p_instructions->>'expected_account'), '') is null
     )
-    or jsonb_typeof(p_instructions->'proof_evidence_policy') <> 'object'
+    or coalesce(jsonb_typeof(p_instructions->'proof_evidence_policy') = 'object', false) is not true
   then
     return jsonb_build_object('code', 'VALIDATION_FAILED');
   end if;
 
   v_window_hours := (p_instructions->>'publication_window_hours')::integer;
+  if v_window_hours > 8760 then
+    return jsonb_build_object('code', 'VALIDATION_FAILED');
+  end if;
   v_expected_account := case
     when jsonb_typeof(p_instructions->'expected_account') = 'null' then null
     else btrim(p_instructions->>'expected_account')
@@ -96,30 +104,45 @@ begin
     and attempt.workspace_id = p_workspace
   for update;
 
+  select event.* into v_setup_event
+  from public.mission_workflow_events event
+  where event.workspace_id = p_workspace
+    and event.mission_workflow_id = p_workflow
+    and event.mission_work_item_id = p_work_item
+    and event.event_type = 'mission_publication_existing_instructions_setup'
+    and event.actor_type = 'operator'
+    and event.actor_id = p_operator
+    and event.entity_type = 'mission_publication_instruction'
+    and event.entity_id = v_instruction.id
+    and event.metadata->>'idempotency_key' = p_idempotency_key::text
+  order by event.created_at, event.id
+  limit 1
+  for update;
+
   if v_instruction.id is not null then
-    if p_idempotency_key = any(v_instruction.idempotency_keys) then
-      if p_expected_state <> v_item.state
-        or p_expected_revision <> v_instruction.revision
-        or v_instruction.publication_instructions is distinct from btrim(p_instructions->>'publication_instructions')
-        or v_instruction.publication_window_hours is distinct from v_window_hours
-        or v_instruction.required_disclosures is distinct from p_instructions->'required_disclosures'
-        or v_instruction.expected_account is distinct from v_expected_account
-        or v_instruction.proof_evidence_policy is distinct from p_instructions->'proof_evidence_policy'
-      then
-        raise exception 'idempotency_conflict';
-      end if;
-      return jsonb_build_object(
-        'instruction', to_jsonb(v_instruction),
-        'idempotent', true
-      );
+    if v_setup_event.id is null then
+      return jsonb_build_object('code', 'WRONG_STATE');
     end if;
-    return jsonb_build_object('code', 'WRONG_STATE');
+    if v_setup_event.metadata->>'revision' is distinct from p_expected_revision::text
+      or not (p_idempotency_key = any(v_instruction.idempotency_keys))
+      or v_instruction.publication_instructions is distinct from btrim(p_instructions->>'publication_instructions')
+      or v_instruction.publication_window_hours is distinct from v_window_hours
+      or v_instruction.required_disclosures is distinct from p_instructions->'required_disclosures'
+      or v_instruction.expected_account is distinct from v_expected_account
+      or v_instruction.proof_evidence_policy is distinct from p_instructions->'proof_evidence_policy'
+    then
+      raise exception 'idempotency_conflict';
+    end if;
+    return jsonb_build_object(
+      'instruction', to_jsonb(v_instruction),
+      'idempotent', true
+    );
   end if;
 
-  if v_item.state <> p_expected_state then
+  if v_item.state is distinct from p_expected_state then
     return jsonb_build_object('code', 'WORKFLOW_STALE');
   end if;
-  if v_item.state <> 'approved_to_publish' then
+  if v_item.state is distinct from 'approved_to_publish' then
     return jsonb_build_object('code', 'WRONG_STATE');
   end if;
   if p_expected_revision <> 0 then
@@ -184,20 +207,7 @@ begin
       where instruction.mission_work_item_id = p_work_item
         and instruction.workspace_id = p_workspace
       for update;
-      if v_instruction.id is not null
-        and p_idempotency_key = any(v_instruction.idempotency_keys)
-        and v_instruction.publication_instructions is not distinct from btrim(p_instructions->>'publication_instructions')
-        and v_instruction.publication_window_hours is not distinct from v_window_hours
-        and v_instruction.required_disclosures is not distinct from p_instructions->'required_disclosures'
-        and v_instruction.expected_account is not distinct from v_expected_account
-        and v_instruction.proof_evidence_policy is not distinct from p_instructions->'proof_evidence_policy'
-      then
-        return jsonb_build_object(
-          'instruction', to_jsonb(v_instruction),
-          'idempotent', true
-        );
-      end if;
-      raise exception 'idempotency_conflict';
+      return jsonb_build_object('code', 'WRONG_STATE');
   end;
 
   insert into public.mission_workflow_events (
