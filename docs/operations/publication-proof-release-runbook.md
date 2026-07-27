@@ -82,9 +82,9 @@ setup or review.
 
 ### Overdue priority
 
-Use this query for an operator queue export. It mirrors the current priority
-ordering: late submissions or a passed review, creator-response, or publication
-due time come first; then the earliest due time; then submission time and item
+Use this query for an operator queue export. It exactly mirrors the current priority
+ordering: late submissions or a passed review, creator-response, publication, or
+creator work-item due time come first; then the earliest due time, submission time, and item
 ID. Queue visibility may remain enabled during containment, but queue/review
 actions must fail closed while the gate is off.
 
@@ -98,13 +98,15 @@ queue as (
     attempt.id as attempt_id,
     attempt.submitted_at,
     attempt.submitted_late,
-    review.review_due_at,
+    item.review_due_at,
     review.creator_response_deadline,
     instruction.publication_due_at,
+    item.deadline as creator_deadline,
     least(
-      coalesce(review.review_due_at, 'infinity'::timestamptz),
+      coalesce(item.review_due_at, 'infinity'::timestamptz),
       coalesce(review.creator_response_deadline, 'infinity'::timestamptz),
       coalesce(instruction.publication_due_at, 'infinity'::timestamptz)
+      , coalesce(item.deadline, 'infinity'::timestamptz)
     ) as due_at
   from public.mission_workflows workflow
   join public.mission_work_items item
@@ -214,6 +216,7 @@ A disable must block **new creator proof mutations** at these routes:
 It must also block **operator queue/review actions** (setup and metadata actions
 included) at these routes:
 
+- `PUT /admin/active-missions/:workflowId/work-items/:workItemId/publication-instructions`
 - `POST /admin/active-missions/:workflowId/work-items/:workItemId/publication-setup`
 - `POST /admin/active-missions/:workflowId/work-items/:workItemId/proof-review/start`
 - `POST /admin/active-missions/:workflowId/work-items/:workItemId/proof-review/corrections`
@@ -245,6 +248,7 @@ where p.oid in (
   'public.verify_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,text)'::regprocedure,
   'public.request_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid)'::regprocedure,
   'public.complete_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,text,jsonb,text)'::regprocedure,
+  'public.set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)'::regprocedure,
   'public.setup_existing_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)'::regprocedure
 )
 order by 1;
@@ -259,6 +263,7 @@ revoke execute on function public.request_publication_proof_correction(uuid,uuid
 revoke execute on function public.verify_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,text) from service_role;
 revoke execute on function public.request_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid) from service_role;
 revoke execute on function public.complete_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,text,jsonb,text) from service_role;
+revoke execute on function public.set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb) from service_role;
 revoke execute on function public.setup_existing_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb) from service_role;
 ```
 
@@ -279,6 +284,7 @@ grant execute on function public.request_publication_proof_correction(uuid,uuid,
 grant execute on function public.verify_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,text) to service_role;
 grant execute on function public.request_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid) to service_role;
 grant execute on function public.complete_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,text,jsonb,text) to service_role;
+grant execute on function public.set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb) to service_role;
 grant execute on function public.setup_existing_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb) to service_role;
 ```
 
@@ -300,8 +306,10 @@ alter the legacy submission/reward anchor as compensation.
 Capture the following before and after each recovery with the same opaque IDs:
 
 ```sql
--- Legacy submission anchor, including legacy content_urls.
-select id, workspace_id, mission_id, status, content_urls,
+-- Legacy submission anchor: compare content_urls digest/count, never export raw URLs.
+select id, workspace_id, mission_id, status,
+       cardinality(content_urls) as content_urls_count,
+       md5(coalesce(array_to_string(content_urls, E'\x1f'), '')) as content_urls_digest,
        points_awarded, xp_awarded, submitted_at, reviewed_at
 from public.mission_submissions
 where id = '<SUBMISSION_UUID>'::uuid;
@@ -310,19 +318,21 @@ where id = '<SUBMISSION_UUID>'::uuid;
 select c.xp, pb.balance as points,
        eb.available as earnings, wb.balance as workspace_budget
 from public.creators c
-left join public.point_balances pb on pb.creator_id = c.id
-left join public.earnings_balances eb on eb.creator_id = c.id
+left join public.point_balances pb
+  on pb.creator_id = c.id and pb.workspace_id = '<WORKSPACE_UUID>'::uuid
+left join public.earnings_balances eb
+  on eb.creator_id = c.id and eb.workspace_id = '<WORKSPACE_UUID>'::uuid
 left join public.workspace_budgets wb on wb.workspace_id = '<WORKSPACE_UUID>'::uuid
 where c.id = '<CREATOR_UUID>'::uuid;
 
 -- Transaction counts are part of the neutrality comparison.
 select
-  (select count(*) from public.point_transactions where creator_id = '<CREATOR_UUID>'::uuid) as point_transactions,
-  (select count(*) from public.earnings_transactions where creator_id = '<CREATOR_UUID>'::uuid) as earnings_transactions,
+  (select count(*) from public.point_transactions where creator_id = '<CREATOR_UUID>'::uuid and workspace_id = '<WORKSPACE_UUID>'::uuid) as point_transactions,
+  (select count(*) from public.earnings_transactions where creator_id = '<CREATOR_UUID>'::uuid and workspace_id = '<WORKSPACE_UUID>'::uuid) as earnings_transactions,
   (select count(*) from public.workspace_budget_transactions where workspace_id = '<WORKSPACE_UUID>'::uuid) as workspace_budget_transactions;
 ```
 
-Any difference in submission status, `content_urls`, points, XP, earnings,
-workspace budget, or these transaction counts is release-stopping. Keep the
-before/after rows and the event/attempt counts in the incident record, without
+Any difference in submission status, `content_urls` digest/count, points, XP,
+earnings, workspace budget, or these transaction counts is release-stopping. Keep
+the before/after digests, numeric counters, and event/attempt counts in the incident record, without
 credentials or personal data.

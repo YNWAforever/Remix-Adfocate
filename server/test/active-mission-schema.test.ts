@@ -68,6 +68,27 @@ describe("active mission migration contract", () => {
     ]) expect(runbook, `destructive rollback instruction found: ${forbidden}`).not.toContain(forbidden);
   });
 
+  it("documents complete and privacy-safe publication-proof emergency controls", () => {
+    const runbookPath = resolve("docs/operations/publication-proof-release-runbook.md");
+    const runbook = existsSync(runbookPath)
+      ? readFileSync(runbookPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const token of [
+      "put /admin/active-missions/:workflowid/work-items/:workitemid/publication-instructions",
+      "set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)",
+      "item.deadline as creator_deadline",
+      "item.review_due_at",
+      "md5(coalesce(array_to_string(content_urls",
+      "pb.workspace_id = '<workspace_uuid>'::uuid",
+      "eb.workspace_id = '<workspace_uuid>'::uuid",
+      "point_transactions where creator_id = '<creator_uuid>'::uuid and workspace_id = '<workspace_uuid>'::uuid",
+      "earnings_transactions where creator_id = '<creator_uuid>'::uuid and workspace_id = '<workspace_uuid>'::uuid",
+    ]) expect(runbook, `missing reviewed emergency-control token: ${token}`).toContain(token);
+
+    expect(runbook).not.toContain("select id, workspace_id, mission_id, status, content_urls");
+  });
+
   it("defines a service-only existing publication setup RPC with locked canonical anchors", () => {
     const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
     const sql = existsSync(migrationPath)
