@@ -409,7 +409,7 @@ describe("admin publication proof review route", () => {
     expect(JSON.stringify(analyticsEvents)).not.toContain("Private operator correction prose");
   });
 
-  it("emits metadata recovery and unavailable outcome only after a successful refresh", async () => {
+  it("emits metadata recovery only for a real unavailable-to-available refresh", async () => {
     const unavailable = operatorProofWorkflow();
     unavailable.proofAttempts![0] = {
       ...unavailable.proofAttempts![0],
@@ -417,7 +417,52 @@ describe("admin publication proof review route", () => {
       metadataErrorCategory: "private-network-detail",
     };
     h.fetchActiveMissionWorkflow.mockResolvedValue(unavailable);
-    h.refreshProofMetadata.mockResolvedValue({ metadata_status: "unavailable" });
+    h.refreshProofMetadata.mockResolvedValue({
+      attempt: { metadata_status: "available", metadata_error_category: null },
+      idempotent: false,
+    });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Refresh metadata" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_recovery_used",
+    ));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_proof_recovery_used",
+    ]);
+    expect(analyticsEvents[0]?.properties).toEqual(expect.objectContaining({
+      state: "proof_under_review",
+      attemptNumber: 3,
+      recoveryCategory: "metadata_unavailable",
+    }));
+    expect(JSON.stringify(analyticsEvents)).not.toContain("private-network-detail");
+  });
+
+  it("does not claim recovery when already-available metadata stays available", async () => {
+    h.refreshProofMetadata.mockResolvedValue({
+      attempt: { metadata_status: "available", metadata_error_category: null },
+      idempotent: false,
+    });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Refresh metadata" }));
+
+    await waitFor(() => expect(h.refreshProofMetadata).toHaveBeenCalledTimes(1));
+    expect(analyticsEvents).toEqual([]);
+  });
+  it("emits unavailable, not recovery, for an available-to-unavailable refresh", async () => {
+    h.refreshProofMetadata.mockResolvedValue({
+      attempt: {
+        metadata_status: "unavailable",
+        metadata_error_category: "private-network-detail",
+      },
+      idempotent: false,
+    });
     const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
     renderWithQueryClient(
       <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
@@ -428,15 +473,38 @@ describe("admin publication proof review route", () => {
       "publication_proof_metadata_unavailable",
     ));
     expect(analyticsEvents.map(({ name }) => name)).toEqual([
-      "publication_proof_recovery_used",
       "publication_proof_metadata_unavailable",
     ]);
-    expect(analyticsEvents[0]?.properties).toEqual(expect.objectContaining({
-      state: "proof_under_review",
-      attemptNumber: 3,
-      recoveryCategory: "metadata_unavailable",
-    }));
     expect(JSON.stringify(analyticsEvents)).not.toContain("private-network-detail");
+  });
+
+  it("keeps an unavailable refresh classified as unavailable without claiming recovery", async () => {
+    const unavailable = operatorProofWorkflow();
+    unavailable.proofAttempts![0] = {
+      ...unavailable.proofAttempts![0],
+      metadataStatus: "unavailable",
+      metadataErrorCategory: "private-network-detail",
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(unavailable);
+    h.refreshProofMetadata.mockResolvedValue({
+      attempt: {
+        metadata_status: "unavailable",
+        metadata_error_category: "private-network-detail",
+      },
+      idempotent: false,
+    });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Refresh metadata" }));
+
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "publication_proof_metadata_unavailable",
+    ));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_proof_metadata_unavailable",
+    ]);
   });
 
   it("does not emit operator mutation outcomes when the action fails", async () => {

@@ -94,8 +94,17 @@ export function publicationResultInteger(
 export function publicationResultMetadataStatus(
   value: unknown,
   fallback: unknown,
-): unknown {
-  if (!value || typeof value !== "object") return fallback;
+): PublicationMetadataStatus {
+  if (!value || typeof value !== "object") return publicationMetadataStatus(fallback);
   const record = value as Record<string, unknown>;
-  return record.metadataStatus ?? record.metadata_status ?? fallback;
+  const attempt = record.attempt && typeof record.attempt === "object"
+    ? record.attempt as Record<string, unknown>
+    : null;
+  return publicationMetadataStatus(
+    attempt?.metadataStatus
+      ?? attempt?.metadata_status
+      ?? record.metadataStatus
+      ?? record.metadata_status
+      ?? fallback,
+  );
 }

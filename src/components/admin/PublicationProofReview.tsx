@@ -463,12 +463,15 @@ export function PublicationProofReview({
             (result) => {
               const analytics = analyticsFor(item.state);
               if (!analytics || !attempt) return;
-              const metadataStatus = publicationResultMetadataStatus(result, attempt.metadataStatus);
-              trackActivationEvent("publication_proof_recovery_used", {
-                ...analytics,
-                attemptNumber: attempt.attemptNumber,
-                recoveryCategory: "metadata_unavailable",
-              });
+              const previousMetadataStatus = publicationMetadataStatus(attempt.metadataStatus);
+              const metadataStatus = publicationResultMetadataStatus(result, previousMetadataStatus);
+              if (previousMetadataStatus === "unavailable" && metadataStatus === "available") {
+                trackActivationEvent("publication_proof_recovery_used", {
+                  ...analytics,
+                  attemptNumber: attempt.attemptNumber,
+                  recoveryCategory: "metadata_unavailable",
+                });
+              }
               if (metadataStatus === "unavailable") {
                 trackActivationEvent("publication_proof_metadata_unavailable", {
                   ...analytics,

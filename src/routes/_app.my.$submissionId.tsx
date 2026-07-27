@@ -8,14 +8,13 @@ import { ProofSubmissionForm, type ProofEvidenceAsset } from "@/components/activ
 import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
 import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
 import { WorkspaceHeader } from "@/components/active-mission/WorkspaceHeader";
-import { deriveNextAction } from "@/lib/activeMission";
+import { deriveNextAction, type PublicationProofAttemptView } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import {
   creatorPublicationTimingBucket,
   publicationAnalyticsBase,
   publicationMetadataStatus,
-  publicationResultInteger,
 } from "@/lib/publicationProofAnalytics";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -222,6 +221,42 @@ export function CreatorMissionWorkspace() {
   const canRetryPreservedProof = proofConflict?.currentPublication.state === "approved_to_publish"
     || proofConflict?.currentPublication.state === "proof_correction_requested";
 
+  function trackSuccessfulProofOutcome(
+    attempt: PublicationProofAttemptView,
+    platform: unknown,
+  ): number {
+    const analytics = publicationAnalyticsBase({
+      locale: lang,
+      missionType: workspace?.mission.missionType,
+      platform,
+      state: "proof_submitted",
+    });
+    if (!analytics) return attempt.attemptNumber;
+    const metadataStatus = publicationMetadataStatus(attempt.metadataStatus);
+    const properties = {
+      ...analytics,
+      timingBucket: attempt.submittedLate ? "late" as const : "on_time" as const,
+      attemptNumber: attempt.attemptNumber,
+      urlCount: 1 + attempt.additionalUrls.length,
+      evidenceCount: attempt.evidence.length,
+      lateness: attempt.submittedLate ? "late" as const : "on_time" as const,
+      metadataStatus,
+    };
+    trackActivationEvent(
+      attempt.attemptNumber > 1
+        ? "publication_proof_resubmitted"
+        : "publication_proof_submitted",
+      properties,
+    );
+    if (attempt.metadataStatus === "unavailable") {
+      trackActivationEvent("publication_proof_metadata_unavailable", {
+        ...analytics,
+        attemptNumber: attempt.attemptNumber,
+        metadataStatus: "unavailable",
+      });
+    }
+    return attempt.attemptNumber;
+  }
   async function retryPreservedProof() {
     if (!proofConflict || !canRetryPreservedProof) return;
     const result = await proofSubmit.mutateAsync({
@@ -230,6 +265,10 @@ export function CreatorMissionWorkspace() {
       expectedRevision: proofConflict.currentPublication.revision,
       idempotencyKey: crypto.randomUUID(),
     });
+    const attemptNumber = trackSuccessfulProofOutcome(
+      result.attempt,
+      proofConflict.currentPublication.platform,
+    );
     const analytics = publicationAnalyticsBase({
       locale: lang,
       missionType: workspace?.mission.missionType,
@@ -237,17 +276,9 @@ export function CreatorMissionWorkspace() {
       state: proofConflict.currentPublication.state,
     });
     if (!analytics) return;
-    const resultAttempt = result && typeof result === "object"
-      ? (result as { attempt?: unknown }).attempt
-      : null;
     trackActivationEvent("publication_proof_recovery_used", {
       ...analytics,
-      attemptNumber: publicationResultInteger(
-        resultAttempt,
-        "attemptNumber",
-        "attempt_number",
-        (proofConflict.currentPublication.currentAttempt?.attemptNumber ?? 0) + 1,
-      ),
+      attemptNumber,
       recoveryCategory: "stale_conflict",
     });
   }
@@ -354,37 +385,7 @@ export function CreatorMissionWorkspace() {
                         idempotencyKey: crypto.randomUUID(),
                         ...value,
                       });
-                      const analytics = publicationAnalyticsBase({
-                        locale: lang,
-                        missionType: workspace?.mission.missionType,
-                        platform: publication.platform,
-                        state: "proof_submitted",
-                      });
-                      if (!analytics) return result;
-                      const attempt = result.attempt;
-                      const metadataStatus = publicationMetadataStatus(attempt.metadataStatus);
-                      const properties = {
-                        ...analytics,
-                        timingBucket: attempt.submittedLate ? "late" as const : "on_time" as const,
-                        attemptNumber: attempt.attemptNumber,
-                        urlCount: 1 + attempt.additionalUrls.length,
-                        evidenceCount: attempt.evidence.length,
-                        lateness: attempt.submittedLate ? "late" as const : "on_time" as const,
-                        metadataStatus,
-                      };
-                      trackActivationEvent(
-                        attempt.attemptNumber > 1
-                          ? "publication_proof_resubmitted"
-                          : "publication_proof_submitted",
-                        properties,
-                      );
-                      if (attempt.metadataStatus === "unavailable") {
-                        trackActivationEvent("publication_proof_metadata_unavailable", {
-                          ...analytics,
-                          attemptNumber: attempt.attemptNumber,
-                          metadataStatus: "unavailable",
-                        });
-                      }
+                      trackSuccessfulProofOutcome(result.attempt, publication.platform);
                       return result;
                     }}
                   />

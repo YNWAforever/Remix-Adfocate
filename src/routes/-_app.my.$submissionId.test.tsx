@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import type { ActiveMissionWorkspace, MissionPublicationView } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
 import { setActivationAnalyticsSink } from "@/lib/activationAnalytics";
@@ -355,6 +356,18 @@ describe("creator active mission workspace route", () => {
     };
     Object.assign(mocks.publication, { data: currentPublication });
     mocks.proofSubmit.conflict = { localProof, currentPublication };
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({
+      attempt: {
+        ...correctionAttempt,
+        id: "attempt-2",
+        attemptNumber: 2,
+        primaryUrl: localProof.primaryUrl,
+        additionalUrls: localProof.additionalUrls,
+        submittedAt: "2026-07-28T09:00:00.000Z",
+        review: null,
+        corrections: [],
+      },
+    });
 
     renderRoute();
     expect(screen.getByRole("alert")).toHaveTextContent(
@@ -477,6 +490,54 @@ describe("creator publication proof analytics", () => {
     });
   });
 
+  it("deduplicates StrictMode replay and rerenders while allowing new items and genuine remounts", () => {
+    const Component = Route.options.component as React.ComponentType;
+    const firstMount = render(<StrictMode><Component /></StrictMode>);
+
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+    ]);
+    fireEvent.focus(screen.getByLabelText("Primary public URL"));
+    firstMount.rerender(<StrictMode><Component /></StrictMode>);
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+    ]);
+
+    const secondItemWorkspace = workspace();
+    secondItemWorkspace.workflow.state = "approved_to_publish";
+    secondItemWorkspace.workItems[1] = {
+      ...secondItemWorkspace.workItems[1],
+      state: "approved_to_publish",
+      approvedVersionId: "version-4",
+    };
+    mocks.search = { item: "item-2" };
+    Object.assign(mocks.query, { data: secondItemWorkspace });
+    Object.assign(mocks.publication, {
+      data: publication({ workItemId: "item-2", approvedVersionId: "version-4" }),
+    });
+    firstMount.rerender(<StrictMode><Component /></StrictMode>);
+    fireEvent.focus(screen.getByLabelText("Primary public URL"));
+
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+    ]);
+
+    firstMount.unmount();
+    render(<StrictMode><Component /></StrictMode>);
+    fireEvent.focus(screen.getByLabelText("Primary public URL"));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+      "publication_instructions_viewed",
+      "publication_proof_form_started",
+    ]);
+  });
   it("emits initial submit and unavailable metadata only after the mutation succeeds without private payload values", async () => {
     mocks.proofSubmit.mutateAsync.mockResolvedValue({
       attempt: {
@@ -575,7 +636,7 @@ describe("creator publication proof analytics", () => {
     expect(analyticsEvents.map(({ name }) => name)).not.toContain("publication_proof_submitted");
   });
 
-  it("emits stale-conflict recovery only after the preserved proof retry succeeds", async () => {
+  it("emits the canonical resubmission outcome, unavailable metadata, and recovery after a stale retry succeeds", async () => {
     const currentPublication = publication({ state: "proof_correction_requested", revision: 5 });
     mocks.proofSubmit.conflict = {
       localProof: {
@@ -585,7 +646,22 @@ describe("creator publication proof analytics", () => {
       },
       currentPublication,
     };
-    mocks.proofSubmit.mutateAsync.mockResolvedValue({ attempt: { attemptNumber: 2 } });
+    mocks.proofSubmit.mutateAsync.mockResolvedValue({
+      attempt: {
+        id: "attempt-private-retry",
+        attemptNumber: 2,
+        primaryUrl: "https://www.instagram.com/p/private-local",
+        additionalUrls: ["https://www.instagram.com/p/private-extra"],
+        submittedAt: "2026-07-27T12:01:00.000Z",
+        submittedLate: false,
+        metadataStatus: "unavailable",
+        metadataSnapshot: {},
+        metadataErrorCategory: "private-network-detail",
+        evidence: [{ id: "private-evidence" }],
+        review: null,
+        corrections: [],
+      },
+    });
     Object.assign(mocks.publication, { data: currentPublication });
     renderRoute();
 
@@ -593,6 +669,20 @@ describe("creator publication proof analytics", () => {
     await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
       "publication_proof_recovery_used",
     ));
+    expect(analyticsEvents.map(({ name }) => name)).toEqual([
+      "publication_instructions_viewed",
+      "publication_proof_resubmitted",
+      "publication_proof_metadata_unavailable",
+      "publication_proof_recovery_used",
+    ]);
+    expect(analyticsEvents.find(({ name }) => name === "publication_proof_resubmitted")?.properties)
+      .toEqual(expect.objectContaining({
+        state: "proof_submitted",
+        attemptNumber: 2,
+        urlCount: 2,
+        evidenceCount: 1,
+        metadataStatus: "unavailable",
+      }));
     expect(analyticsEvents.find(({ name }) => name === "publication_proof_recovery_used")?.properties)
       .toEqual({
         locale: "en",
@@ -602,6 +692,8 @@ describe("creator publication proof analytics", () => {
         attemptNumber: 2,
         recoveryCategory: "stale_conflict",
       });
-    expect(JSON.stringify(analyticsEvents)).not.toContain("private-local");
+    const serialized = JSON.stringify(analyticsEvents);
+    ["private-local", "private-extra", "private-evidence", "private-network-detail"]
+      .forEach((forbidden) => expect(serialized).not.toContain(forbidden));
   });
 });
