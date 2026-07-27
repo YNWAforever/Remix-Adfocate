@@ -1768,6 +1768,34 @@ describe("active mission publication proof routes", () => {
     expect(createProofEvidenceUploadGrant).toHaveBeenCalledWith(expect.objectContaining({ workflowId: workflow.id }), expect.objectContaining({ contentType: "image/png" }), { expectedState: "approved_to_publish", expectedRevision: 0, idempotencyKey: "22222222-2222-4222-8222-222222222222" });
   });
 
+  it.each([
+    ["string expectedRevision", { ...publicationBody, expectedRevision: "0" }],
+    ["null expectedRevision", { ...publicationBody, expectedRevision: null }],
+    ["fractional expectedRevision", { ...publicationBody, expectedRevision: 0.5 }],
+    ["negative expectedRevision", { ...publicationBody, expectedRevision: -1 }],
+    ["non-object JSON body", "not-an-object"],
+  ])("rejects %s before repository access", async (_label, body) => {
+    const getWorkspace = vi.fn(async () => ({ workflow }));
+    const createProofEvidenceUploadGrant = vi.fn();
+    const repo = { getWorkspace, createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
+
+    const response = await controlledApp(repo).request(
+      "/api/my-missions/sub-1/publication/item-1/assets/upload-grant",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": "99999999-9999-4999-8999-999999999999",
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: "VALIDATION_FAILED" });
+    expect(getWorkspace).not.toHaveBeenCalled();
+    expect(createProofEvidenceUploadGrant).not.toHaveBeenCalled();
+  });
+
   it("maps tenant/not-found errors without invoking the proof mutation", async () => {
     const createProofEvidenceUploadGrant = vi.fn();
     const repo = { getWorkspace: vi.fn(async () => { throw new ActiveMissionError("WORKFLOW_NOT_FOUND", "not found"); }), createProofEvidenceUploadGrant } as unknown as ActiveMissionRepository;
