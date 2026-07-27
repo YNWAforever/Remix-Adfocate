@@ -41,19 +41,19 @@ begin
     or not (p_instructions ? 'expected_account')
     or not (p_instructions ? 'proof_evidence_policy')
     or nullif(btrim(p_instructions->>'publication_instructions'), '') is null
-    or case
+    or (case
       when jsonb_typeof(p_instructions->'publication_window_hours') = 'number'
         then coalesce((p_instructions->>'publication_window_hours') ~ '^[1-9][0-9]{0,3}$', false) is not true
       else true
-    end
-    or case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
+    end)
+    or (case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
         select 1
         from jsonb_array_elements(p_instructions->'required_disclosures') disclosure
         where jsonb_typeof(disclosure) <> 'string'
           or nullif(btrim(disclosure #>> '{}'), '') is null
       )
       else true
-    end
+    end)
     or coalesce(jsonb_typeof(p_instructions->'expected_account') in ('null', 'string'), false) is not true
     or (
       jsonb_typeof(p_instructions->'expected_account') = 'string'

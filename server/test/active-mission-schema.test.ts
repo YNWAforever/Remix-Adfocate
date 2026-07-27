@@ -182,6 +182,18 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("event.event_type = 'mission_publication_existing_instructions_setup'");
     expect(sql).not.toMatch(/coalesce\(\s*p_instructions(?:->[^,]+)?\s*,/);
   });
+  it("parenthesizes CASE expressions inside the existing-setup PL/pgSQL validation IF", () => {
+    const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+    const validationStart = sql.indexOf("if p_workspace is null");
+    const validationEnd = sql.indexOf("then\n    return jsonb_build_object('code', 'validation_failed')", validationStart);
+    const validation = sql.slice(validationStart, validationEnd);
+
+    expect(validationStart).toBeGreaterThanOrEqual(0);
+    expect(validationEnd).toBeGreaterThan(validationStart);
+    expect(validation.match(/\bor\s+\(\s*case\b/g) ?? []).toHaveLength(2);
+    expect(validation).not.toMatch(/\bor\s+case\b/);
+  });
 
   it("keeps existing setup audit metadata private, reward-neutral, and service-only", () => {
     const migrationPath = resolve("supabase/migrations/20260727130000_publication_proof_existing_setup.sql");
