@@ -327,6 +327,9 @@ export async function getCreatorScores(userId: string) {
 
 
 export async function cleanup() {
+  const releaseCreatorEmail = "publication-proof-release-creator@test.local";
+  const releaseOperatorEmail = "publication-proof-release-operator@test.local";
+  const releaseMissionSlug = "test-publication-proof-release";
   // Campaigns G1: delete test campaigns (slug "test-%") — cascades campaign_missions +
   // campaign_participants — then the throwaway workspaces ("test-camp-%") created by the
   // cross-workspace settlement tests (cascades their campaigns + budget rows). Done first so
@@ -340,8 +343,12 @@ export async function cleanup() {
   await service().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
 
   // Test creators (delete cascades their mission_submissions).
-  const byEmail = await service().from("creators").select("id").like("display_name", "%@test.local");
-  const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
+  const byEmail = await service().from("creators").select("id")
+    .like("display_name", "%@test.local")
+    .neq("display_name", releaseCreatorEmail);
+  const byPhone = await service().from("creators").select("id")
+    .like("phone", "+1555%")
+    .neq("display_name", releaseCreatorEmail);
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
   if (ids.length) {
     await service().from("operator_audit_events").delete().in("creator_id", ids);
@@ -375,7 +382,9 @@ export async function cleanup() {
     await service().auth.admin.deleteUser(id);
   }
   // Test missions (slug "test-%") and any leftover submissions on them.
-  const testMissions = await service().from("missions").select("id").like("slug", "test-%");
+  const testMissions = await service().from("missions").select("id")
+    .like("slug", "test-%")
+    .neq("slug", releaseMissionSlug);
   for (const m of testMissions.data ?? []) {
     await service().from("operator_audit_events").delete().eq("mission_id", m.id);
     await service().from("mission_shortlists").delete().eq("mission_id", m.id);
@@ -390,7 +399,9 @@ export async function cleanup() {
     await service().from("redemption_gifts").delete().eq("id", g.id);
   }
   // Test staff users (email "%@test.local") + their auth users.
-  const staffRows = await service().from("staff_users").select("user_id").like("email", "%@test.local");
+  const staffRows = await service().from("staff_users").select("user_id")
+    .like("email", "%@test.local")
+    .neq("email", releaseOperatorEmail);
   for (const s of staffRows.data ?? []) {
     await service().from("operator_audit_events").delete().eq("operator_id", s.user_id);
     await service().from("staff_users").delete().eq("user_id", s.user_id);
@@ -399,10 +410,16 @@ export async function cleanup() {
 
   // Brand test data: memberships/invites for %@test.local, the throwaway workspaces makeBrand
   // created (slug "test-brand-ws-%"), any missions still in them, and the brand auth users.
-  const brandUsers = await service().from("brand_users").select("user_id").like("email", "%@test.local");
+  const brandUsers = await service().from("brand_users").select("user_id")
+    .like("email", "%@test.local")
+    .neq("email", releaseOperatorEmail);
   const brandUserIds = (brandUsers.data ?? []).map((r) => r.user_id as string);
-  await service().from("brand_invites").delete().like("email", "%@test.local");
-  await service().from("brand_users").delete().like("email", "%@test.local");
+  await service().from("brand_invites").delete()
+    .like("email", "%@test.local")
+    .neq("email", releaseOperatorEmail);
+  await service().from("brand_users").delete()
+    .like("email", "%@test.local")
+    .neq("email", releaseOperatorEmail);
   for (const id of brandUserIds) await service().auth.admin.deleteUser(id);
 
   const brandWs = await service().from("workspaces").select("id").like("slug", "test-brand-ws-%");

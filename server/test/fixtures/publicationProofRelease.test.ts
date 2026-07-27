@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   activeMissionIntegrationSkipReason,
+  cleanup,
   creatorRewardSnapshot,
   DEMO_WS,
   serviceForTests,
@@ -407,6 +408,20 @@ integrationSuite("publication proof release live fixture", () => {
     expect(fixture.budgetBaseline).toMatchObject({
       balance: fixture.rewardBaseline.budget,
       transactions: fixture.rewardBaseline.budgetTransactions,
+    });
+  });
+
+  it("survives the shared integration cleanup ownership sweep", async () => {
+    const first = await seedPublicationProofReleaseFixture();
+
+    await cleanup();
+
+    const replay = await seedPublicationProofReleaseFixture();
+    expect(replay).toMatchObject({
+      creator: { id: first.creator.id },
+      operator: { id: first.operator.id },
+      mission: { id: first.mission.id },
+      workflow: { id: first.workflow.id },
     });
   });
 });
