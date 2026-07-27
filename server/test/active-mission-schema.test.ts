@@ -1122,11 +1122,25 @@ describe("publication proof asset rollout policy", () => {
     expect(sql).toContain("v_workflow.id::text||'/'||p_work_item::text");
     expect(sql).toContain("if v_asset.id is not null then return v_asset");
   });
+  it("assigns unique migration versions in the publication-proof asset guard order", () => {
+    const migrations = readdirSync(resolve("supabase/migrations"))
+      .filter((name) => name.endsWith(".sql"))
+      .sort();
+    const versions = migrations.map((name) => name.split("_", 1)[0]);
+    const mutationGuards = migrations.findIndex((name) => name.endsWith("publication_proof_asset_mutation_guards.sql"));
+    const lifecycleGuards = migrations.findIndex((name) => name.endsWith("publication_proof_asset_guards.sql"));
+    const publicGuards = migrations.findIndex((name) => name.endsWith("publication_proof_public_guards.sql"));
+
+    expect(new Set(versions).size).toBe(versions.length);
+    expect(mutationGuards).toBeGreaterThanOrEqual(0);
+    expect(lifecycleGuards).toBeGreaterThan(mutationGuards);
+    expect(publicGuards).toBeGreaterThan(lifecycleGuards);
+  });
 });
 
 describe("publication proof lifecycle guards", () => {
   it("restricts states and makes staging concurrent-safe", () => {
-    const sql = readFileSync(resolve("supabase/migrations/20260725130000_publication_proof_asset_guards.sql"), "utf8");
+    const sql = readFileSync(resolve("supabase/migrations/20260725140000_publication_proof_asset_guards.sql"), "utf8");
     expect(sql).toContain("v_item.state not in ('approved_to_publish','proof_correction_requested')");
     expect(sql).toContain("on conflict (storage_object_path) do nothing");
     expect(sql).toContain("idempotency_conflict");
