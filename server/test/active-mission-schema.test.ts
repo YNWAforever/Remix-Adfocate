@@ -231,6 +231,17 @@ describe("active mission migration contract", () => {
     expect(sql).not.toMatch(/update\s+public\.(point_balances|earnings_balances)/i);
     expect(sql).not.toMatch(/update\s+public\.creators\s+set\s+xp/i);
   });
+  it("parenthesizes CASE/EXISTS validation inside the publication-instructions PL/pgSQL IF", () => {
+    const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
+    const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");
+    const setterStart = sql.indexOf("create or replace function private.set_publication_instructions");
+    const setterEnd = sql.indexOf("create or replace function public.set_publication_instructions", setterStart);
+    const setter = sql.slice(setterStart, setterEnd);
+
+    expect(setter).toMatch(
+      /or\s+\(\s*case when jsonb_typeof\(p_instructions->'required_disclosures'\) = 'array' then exists \([\s\S]*?\)\s+else true end\s*\)\s+or/,
+    );
+  });
   it("keeps operator override prose out of workflow event metadata", () => {
     const migrationPath = resolve("supabase/migrations/20260723090000_publication_proof_validation.sql");
     const sql = readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n");

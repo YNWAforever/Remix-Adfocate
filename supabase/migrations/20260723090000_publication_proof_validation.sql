@@ -498,10 +498,10 @@ begin
     or jsonb_typeof(p_instructions) <> 'object'
     or nullif(btrim(p_instructions->>'publication_instructions'), '') is null
     or coalesce((p_instructions->>'publication_window_hours') ~ '^[1-9][0-9]*$', false) is not true
-    or case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
+    or (case when jsonb_typeof(p_instructions->'required_disclosures') = 'array' then exists (
       select 1 from jsonb_array_elements(p_instructions->'required_disclosures') disclosure
       where jsonb_typeof(disclosure) <> 'string' or nullif(btrim(disclosure #>> '{}'), '') is null
-    ) else true end
+    ) else true end)
     or (p_instructions ? 'expected_account' and jsonb_typeof(p_instructions->'expected_account') not in ('null', 'string'))
     or (jsonb_typeof(p_instructions->'expected_account') = 'string' and nullif(btrim(p_instructions->>'expected_account'), '') is null)
     or jsonb_typeof(p_instructions->'proof_evidence_policy') <> 'object'
