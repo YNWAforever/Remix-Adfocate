@@ -10,7 +10,7 @@ import {
 
 const owner = { submissionId: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", workflowId: "workflow-1", workItemId: "item-1" };
 
-function clientFor(asset: any = {
+function clientFor(asset: Record<string, unknown> = {
   id: "asset-1", storage_object_path: "creator-1/submission-1/item-1/proof-evidence/asset-1.jpg",
   upload_state: "pending", mime_type: "image/jpeg", byte_size: 1024,
   upload_grant_expires_at: "2026-07-23T10:10:00.000Z",

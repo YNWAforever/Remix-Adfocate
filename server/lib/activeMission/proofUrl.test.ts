@@ -363,7 +363,7 @@ describe("inspectProofUrl DNS and redirects", () => {
   });
 
   it("stops when a fourth redirect would be required", async () => {
-    const fetch = vi.fn(async (_url: string) =>
+    const fetch = vi.fn(async () =>
       new Response(null, {
         status: 302,
         headers: { location: "/p/next" },

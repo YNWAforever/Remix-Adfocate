@@ -238,7 +238,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
   return {
     async listQueue(input) {
       const workspace = await workspaceId(client, input.workspaceSlug, input.operatorId);
-      let query = client.from("mission_work_items")
+      const query = client.from("mission_work_items")
         .select("id, mission_workflow_id, title, platform, state, deadline, review_due_at, current_reviewer_id, current_submitted_version_id, current_proof_attempt_id")
         .eq("workspace_id", workspace)
         .in("state", input.proofState ? [input.proofState] : input.state ? [input.state] : ALL_QUEUE_STATES);

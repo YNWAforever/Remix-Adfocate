@@ -469,9 +469,12 @@ describe("PublicationProofReview", () => {
 
     const dialog = screen.getByRole("alertdialog", { name: "Verify publication proof attempt 2?" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
-    expect(screen.getByLabelText("Type attempt number 2 to confirm")).toHaveFocus();
+    const confirmationInput = screen.getByLabelText("Type attempt number 2 to confirm");
+    expect(confirmationInput).toHaveFocus();
 
     fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(dialog).toBeVisible();
+    fireEvent.keyDown(confirmationInput, { key: "Escape" });
 
     await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();

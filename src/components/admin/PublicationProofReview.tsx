@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import type {
   ActiveMissionPublicationProofAttempt,
   ActiveMissionPublicationProofReview,
@@ -262,6 +263,7 @@ export function PublicationProofReview({
   const firstCorrectionRef = useRef<HTMLTextAreaElement>(null);
   const focusCorrectionAfterAddRef = useRef(false);
   const verifyInputRef = useRef<HTMLInputElement>(null);
+  const verificationDialogRef = useRef<HTMLDivElement>(null);
   const verifyTriggerRef = useRef<HTMLButtonElement>(null);
   const restoreVerifyFocusRef = useRef(false);
 
@@ -385,6 +387,25 @@ export function PublicationProofReview({
   function closeVerification() {
     setConfirming(false);
     setAttemptConfirmation("");
+  }
+
+  function handleVerificationKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === "Tab") {
+      const focusable = Array.from(verificationDialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), input:not(:disabled)',
+      ) ?? []);
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (first && last && ((!event.shiftKey && document.activeElement === last)
+        || (event.shiftKey && document.activeElement === first))) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      }
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeVerification();
+    }
   }
 
   async function setupExistingInstructions() {
@@ -527,36 +548,18 @@ export function PublicationProofReview({
       </section>
 
       {actionError ? <p role="alert" aria-live="assertive" className="rounded-xl border-2 border-red-700 bg-red-50 p-3 font-bold text-red-700">{actionError}</p> : null}
-      {confirming ? <div
+      {confirming ? <div ref={verificationDialogRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="verify-proof-title"
         aria-describedby="verify-proof-description"
-        onKeyDown={(event) => {
-          if (event.key === "Tab") {
-            const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
-              'button:not(:disabled), input:not(:disabled)',
-            ));
-            const first = focusable[0];
-            const last = focusable.at(-1);
-            if (first && last && ((!event.shiftKey && document.activeElement === last)
-              || (event.shiftKey && document.activeElement === first))) {
-              event.preventDefault();
-              (event.shiftKey ? last : first).focus();
-            }
-          }
-          if (event.key === "Escape") {
-            event.preventDefault();
-            closeVerification();
-          }
-        }}
         className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
       >
         <h3 id="verify-proof-title" className="font-heading font-bold">{c.verifyTitle(attempt.attemptNumber)}</h3>
         <p id="verify-proof-description">{c.noReward}</p>
-        <label className="grid gap-1 font-bold">{c.typeAttempt(attempt.attemptNumber)}<input ref={verifyInputRef} className={FIELD} inputMode="numeric" value={attemptConfirmation} onChange={(event) => setAttemptConfirmation(event.target.value)} /></label>
-        <button type="button" onClick={closeVerification} className={`${BUTTON} bg-white`}>{c.cancelVerification}</button>
-        <button type="button" disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(
+        <label className="grid gap-1 font-bold">{c.typeAttempt(attempt.attemptNumber)}<input ref={verifyInputRef} onKeyDown={handleVerificationKeyDown} className={FIELD} inputMode="numeric" value={attemptConfirmation} onChange={(event) => setAttemptConfirmation(event.target.value)} /></label>
+        <button type="button" onKeyDown={handleVerificationKeyDown} onClick={closeVerification} className={`${BUTTON} bg-white`}>{c.cancelVerification}</button>
+        <button type="button" onKeyDown={handleVerificationKeyDown} disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(
           () => onVerify({ ...base, checklist, summary: summary.trim() || null }),
           (result) => {
             const analytics = analyticsFor("proof_verified");
