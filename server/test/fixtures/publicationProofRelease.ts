@@ -51,6 +51,7 @@ export type PublicationProofReleaseInvariantSnapshot = {
     workspaceId: string;
     email: string;
     onboardingCompleted: boolean;
+    onboardingStep: number;
   } | null;
   operatorStaff: { userId: string; email: string; active: boolean } | null;
   operatorMembership: {
@@ -201,6 +202,7 @@ export function assertPublicationProofReleaseInvariant(
     || creator?.workspaceId !== DEMO_WS
     || creator.email !== CREATOR_EMAIL
     || creator.onboardingCompleted !== true
+    || creator.onboardingStep !== 5
     || !nonBlank(creator.id)
     || operatorStaff?.email !== OPERATOR_EMAIL
     || operatorStaff.active !== true
@@ -479,7 +481,7 @@ async function assembleExistingFixture(): Promise<PublicationProofReleaseFixture
       .eq("slug", MISSION_SLUG)
       .maybeSingle(),
     svc.from("creators")
-      .select("id, workspace_id, display_name, onboarding_completed")
+      .select("id, workspace_id, display_name, onboarding_completed, onboarding_step")
       .eq("workspace_id", DEMO_WS)
       .eq("display_name", CREATOR_EMAIL)
       .maybeSingle(),
@@ -603,6 +605,7 @@ async function assembleExistingFixture(): Promise<PublicationProofReleaseFixture
       workspaceId: creator.data.workspace_id,
       email: creator.data.display_name,
       onboardingCompleted: creator.data.onboarding_completed,
+      onboardingStep: creator.data.onboarding_step,
     },
     operatorStaff: {
       userId: operatorStaff.data.user_id,
@@ -765,11 +768,19 @@ export async function seedPublicationProofReleaseFixture():
       },
     ],
   });
+  const rewardBeforeBrowserReadiness = await creatorRewardSnapshot(active.creator.id);
   const browserReady = await svc.from("creators")
     .update({ onboarding_completed: true, onboarding_step: 5 })
     .eq("id", active.creator.id);
   if (browserReady.error) {
     failure("prepare publication proof fixture creator for browser acceptance", browserReady.error);
+  }
+  const rewardAfterBrowserReadiness = await creatorRewardSnapshot(active.creator.id);
+  if (
+    canonicalJson(rewardAfterBrowserReadiness)
+    !== canonicalJson(rewardBeforeBrowserReadiness)
+  ) {
+    failure("preserve publication proof fixture rewards during browser preparation", null);
   }
 
   const created = await userForJwt(active.creator.jwt).rpc("create_mission_workflow", {

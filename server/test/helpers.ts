@@ -549,25 +549,54 @@ export async function seedActiveMission(opts: {
 }
 
 export async function creatorRewardSnapshot(creatorId: string) {
-  const [creator, points, earnings, pointTx, earningsTx, budget, budgetTx] = await Promise.all([
+  const [
+    creator,
+    points,
+    earnings,
+    pointTx,
+    earningsTx,
+    redemptions,
+    rewardCatalog,
+    budget,
+    budgetTx,
+  ] = await Promise.all([
     service().from("creators").select("xp").eq("id", creatorId).single(),
     service().from("point_balances").select("balance").eq("creator_id", creatorId).single(),
     service().from("earnings_balances").select("available").eq("creator_id", creatorId).single(),
     service().from("point_transactions").select("id", { count: "exact", head: true }).eq("creator_id", creatorId),
     service().from("earnings_transactions").select("id", { count: "exact", head: true }).eq("creator_id", creatorId),
+    service().from("redemptions").select("id", { count: "exact", head: true }).eq("creator_id", creatorId),
+    service().from("redemption_gifts").select("stock_qty, stock_remaining").eq("workspace_id", DEMO_WS),
     service().from("workspace_budgets").select("balance").eq("workspace_id", DEMO_WS).maybeSingle(),
     service().from("workspace_budget_transactions").select("id", { count: "exact", head: true }).eq("workspace_id", DEMO_WS),
   ]);
-  for (const result of [creator, points, earnings, pointTx, earningsTx, budget, budgetTx]) {
+  for (const result of [
+    creator,
+    points,
+    earnings,
+    pointTx,
+    earningsTx,
+    redemptions,
+    rewardCatalog,
+    budget,
+    budgetTx,
+  ]) {
     if (result.error) throw result.error;
   }
+  const catalog = rewardCatalog.data ?? [];
   return {
     xp: creator.data!.xp,
     points: points.data!.balance,
     earnings: earnings.data!.available,
-    pointTransactions: pointTx.count,
-    earningsTransactions: earningsTx.count,
+    pointTransactions: pointTx.count ?? 0,
+    earningsTransactions: earningsTx.count ?? 0,
+    redemptions: redemptions.count ?? 0,
+    rewardCatalogCount: catalog.length,
+    rewardCatalogInventory: {
+      total: catalog.reduce((sum, gift) => sum + gift.stock_qty, 0),
+      remaining: catalog.reduce((sum, gift) => sum + gift.stock_remaining, 0),
+    },
     budget: budget.data?.balance ?? null,
-    budgetTransactions: budgetTx.count,
+    budgetTransactions: budgetTx.count ?? 0,
   };
 }

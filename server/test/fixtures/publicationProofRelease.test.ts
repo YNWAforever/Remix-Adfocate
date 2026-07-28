@@ -53,6 +53,12 @@ function fixtureShape(): PublicationProofReleaseFixture {
       earnings: 0,
       pointTransactions: 0,
       earningsTransactions: 0,
+      redemptions: 0,
+      rewardCatalogCount: 8,
+      rewardCatalogInventory: {
+        total: 8,
+        remaining: 8,
+      },
       budget: 0,
       budgetTransactions: 0,
     },
@@ -103,7 +109,13 @@ function invariantSnapshot(): PublicationProofReleaseInvariantSnapshot {
   return {
     workspace: { id: DEMO_WS, slug: "demo" },
     mission: { id: "mission-id", workspaceId: DEMO_WS, slug: MISSION_SLUG },
-    creator: { id: "creator-id", workspaceId: DEMO_WS, email: CREATOR_EMAIL, onboardingCompleted: true },
+    creator: {
+      id: "creator-id",
+      workspaceId: DEMO_WS,
+      email: CREATOR_EMAIL,
+      onboardingCompleted: true,
+      onboardingStep: 5,
+    },
     operatorStaff: { userId: "operator-id", email: OPERATOR_EMAIL, active: true },
     operatorMembership: {
       userId: "operator-id",
@@ -248,6 +260,9 @@ describe("publication proof release replay invariant", () => {
   });
 
   it.each([
+    ["wrong onboarding step", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
+      snapshot.creator!.onboardingStep = 4;
+    }],
     ["missing named item", (snapshot: PublicationProofReleaseInvariantSnapshot) => {
       snapshot.items.pop();
     }],
