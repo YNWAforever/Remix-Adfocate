@@ -1,3 +1,5 @@
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 type FetchApp = {
@@ -38,9 +40,30 @@ export function createViteApiMiddleware(app: FetchApp) {
         ));
         response.statusCode = fetchResponse.status;
         response.statusMessage = fetchResponse.statusText;
-        fetchResponse.headers.forEach((value, name) => response.setHeader(name, value));
-        response.end(Buffer.from(await fetchResponse.arrayBuffer()));
+        const setCookies = fetchResponse.headers.getSetCookie();
+        fetchResponse.headers.forEach((value, name) => {
+          if (name !== "set-cookie") response.setHeader(name, value);
+        });
+        if (setCookies.length > 0) response.setHeader("set-cookie", setCookies);
+
+        if (request.method === "HEAD" || fetchResponse.body === null) {
+          await fetchResponse.body?.cancel();
+          response.end();
+          return;
+        }
+
+        await pipeline(
+          Readable.fromWeb(
+            fetchResponse.body as import("node:stream/web").ReadableStream<Uint8Array>,
+          ),
+          response,
+        );
       } catch (error) {
+        if (response.destroyed || response.writableEnded) return;
+        if (response.headersSent) {
+          response.destroy(error instanceof Error ? error : undefined);
+          return;
+        }
         response.statusCode = 500;
         response.setHeader("content-type", "application/json");
         response.end(JSON.stringify({
