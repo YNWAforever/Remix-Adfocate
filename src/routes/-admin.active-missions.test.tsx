@@ -38,7 +38,7 @@ vi.mock("@/components/admin/AdminAuthContext", () => ({
   useAdminAuth: () => ({ authed: true, staff: { userId: "reviewer-1", email: "op@example.com" }, reportAuthError: h.reportAuthError }),
 }));
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({
-  useAdminWorkspace: () => ({ workspace: "demo", setWorkspace: vi.fn() }),
+  useAdminWorkspace: () => ({ workspace: "workspace-id", workspaceSlug: "demo", setWorkspace: vi.fn() }),
 }));
 vi.mock("@/lib/admin", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/admin")>();

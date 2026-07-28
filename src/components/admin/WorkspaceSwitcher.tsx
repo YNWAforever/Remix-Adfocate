@@ -6,7 +6,7 @@ import { useAdminWorkspace } from "./AdminWorkspaceContext";
 
 export function WorkspaceSwitcher() {
   const { authed, reportAuthError } = useAdminAuth();
-  const { workspace, setWorkspace } = useAdminWorkspace();
+  const { workspace, workspaceSlug, setWorkspace } = useAdminWorkspace();
   const ws = useQuery({
     queryKey: adminMissionKeys.workspaces,
     queryFn: fetchWorkspaces,
@@ -16,13 +16,22 @@ export function WorkspaceSwitcher() {
   useEffect(() => {
     if (ws.error instanceof AdminAuthError) reportAuthError(ws.error);
   }, [ws.error, reportAuthError]);
+  useEffect(() => {
+    if (!workspace || workspaceSlug) return;
+    const selected = ws.data?.workspaces.find((item) => item.id === workspace);
+    if (selected?.slug) setWorkspace(workspace, selected.slug);
+  }, [setWorkspace, workspace, workspaceSlug, ws.data?.workspaces]);
 
   return (
     <select
       aria-label="workspace"
       className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 py-1 text-sm"
       value={workspace}
-      onChange={(e) => setWorkspace(e.target.value)}
+      onChange={(e) => {
+        const id = e.target.value;
+        const selected = ws.data?.workspaces.find((item) => item.id === id);
+        setWorkspace(id, selected?.slug ?? "");
+      }}
     >
       <option value="">全部 / All workspaces</option>
       {(ws.data?.workspaces ?? []).map((w) => (

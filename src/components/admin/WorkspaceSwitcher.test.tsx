@@ -14,8 +14,13 @@ import { AdminWorkspaceProvider, useAdminWorkspace } from "./AdminWorkspaceConte
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 function Probe() {
-  const { workspace } = useAdminWorkspace();
-  return <div data-testid="ws">{workspace || "ALL"}</div>;
+  const { workspace, workspaceSlug } = useAdminWorkspace();
+  return (
+    <>
+      <div data-testid="ws">{workspace || "ALL"}</div>
+      <div data-testid="ws-slug">{workspaceSlug || "ALL"}</div>
+    </>
+  );
 }
 
 function wrap() {
@@ -34,7 +39,7 @@ describe("WorkspaceSwitcher", () => {
     vi.clearAllMocks();
     sessionStorage.clear();
     window.history.replaceState(null, "", "/admin/missions");
-    h.fetchWorkspaces.mockResolvedValue({ workspaces: [{ id: "w1", name: "Brand A" }, { id: "w2", name: "Brand B" }] });
+    h.fetchWorkspaces.mockResolvedValue({ workspaces: [{ id: "w1", slug: "brand-a", name: "Brand A" }, { id: "w2", slug: "brand-b", name: "Brand B" }] });
   });
 
   it("defaults to All and persists a selection to sessionStorage + URL", async () => {
@@ -43,7 +48,9 @@ describe("WorkspaceSwitcher", () => {
     await screen.findByRole("option", { name: "Brand A" });
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "w1" } });
     expect(screen.getByTestId("ws").textContent).toBe("w1");
+    expect(screen.getByTestId("ws-slug").textContent).toBe("brand-a");
     expect(sessionStorage.getItem("adfocate_admin_workspace")).toBe("w1");
+    expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBe("brand-a");
     expect(new URLSearchParams(window.location.search).get("ws")).toBe("w1");
   });
 

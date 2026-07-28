@@ -11,13 +11,13 @@ export const Route = createFileRoute("/admin/active-missions")({ component: Admi
 
 export function AdminActiveMissionsRoute() {
   const { authed, reportAuthError } = useAdminAuth();
-  const { workspace } = useAdminWorkspace();
+  const { workspaceSlug } = useAdminWorkspace();
   const [filters, setFilters] = useState<ActiveMissionQueueUiFilters>({});
   const { t } = useI18n();
   const queue = useQuery({
-    queryKey: ["admin-active-missions", workspace, filters],
-    queryFn: () => fetchActiveMissionQueue({ workspace, ...filters }),
-    enabled: authed && Boolean(workspace),
+    queryKey: ["admin-active-missions", workspaceSlug, filters],
+    queryFn: () => fetchActiveMissionQueue({ workspace: workspaceSlug, ...filters }),
+    enabled: authed && Boolean(workspaceSlug),
     retry: false,
   });
 
@@ -25,7 +25,7 @@ export function AdminActiveMissionsRoute() {
     if (queue.error instanceof AdminAuthError) reportAuthError(queue.error);
   }, [queue.error, reportAuthError]);
 
-  if (!workspace) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectQueue")}</p>;
+  if (!workspaceSlug) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectQueue")}</p>;
   if (queue.isLoading) return <p className="text-sm">{t("app.admin.activeMission.route.loadingQueue")}</p>;
   if (queue.isError) return <p role="alert" className="text-sm font-bold text-red-700">{t("app.admin.activeMission.route.queueError")}</p>;
 

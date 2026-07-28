@@ -58,9 +58,9 @@ export function AdminActiveMissionReviewView({
   workItemId?: string;
 }) {
   const { authed, staff, reportAuthError } = useAdminAuth();
-  const { workspace } = useAdminWorkspace();
+  const { workspaceSlug } = useAdminWorkspace();
   const queryClient = useQueryClient();
-  const key = ["admin-active-mission", workspace, workflowId] as const;
+  const key = ["admin-active-mission", workspaceSlug, workflowId] as const;
   const { t } = useI18n();
   const [selectedAttemptId, setSelectedAttemptId] = useState<string>();
   const startProofReview = useStartProofReview();
@@ -69,8 +69,8 @@ export function AdminActiveMissionReviewView({
   const refreshProofMetadata = useRefreshProofMetadata();
   const detail = useQuery({
     queryKey: key,
-    queryFn: () => fetchActiveMissionWorkflow(workflowId, workspace),
-    enabled: authed && Boolean(workspace),
+    queryFn: () => fetchActiveMissionWorkflow(workflowId, workspaceSlug),
+    enabled: authed && Boolean(workspaceSlug),
     retry: false,
   });
 
@@ -81,11 +81,11 @@ export function AdminActiveMissionReviewView({
   const refresh = async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: key }),
-      queryClient.invalidateQueries({ queryKey: ["admin-active-missions", workspace] }),
+      queryClient.invalidateQueries({ queryKey: ["admin-active-missions", workspaceSlug] }),
     ]);
   };
 
-  if (!workspace) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectReview")}</p>;
+  if (!workspaceSlug) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectReview")}</p>;
   if (detail.isLoading) return <p className="text-sm">{t("app.admin.activeMission.route.loadingWorkflow")}</p>;
   if (detail.isError || !detail.data) return <p role="alert" className="text-sm font-bold text-red-700">{t("app.admin.activeMission.route.workflowError")}</p>;
 
@@ -118,20 +118,20 @@ export function AdminActiveMissionReviewView({
         currentOperatorId={staff.userId}
         busy={proofBusy}
         onClaim={(input) => startProofReview.mutateAsync({
-          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
         })}
         onRequestCorrection={(input) => requestProofCorrection.mutateAsync({
-          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
         })}
         onVerify={(input) => verifyProof.mutateAsync({
-          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
         })}
         onRefreshMetadata={(input) => refreshProofMetadata.mutateAsync({
-          workflowId, workspace, ...input, idempotencyKey: idempotencyKey(),
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
         })}
         onSetInstructions={async (input) => {
           const result = await setActiveMissionPublicationInstructions(workflowId, input.workItemId, {
-            workspace,
+            workspace: workspaceSlug,
             expectedState: input.expectedState,
             expectedRevision: input.expectedRevision,
             idempotencyKey: idempotencyKey(),
@@ -146,7 +146,7 @@ export function AdminActiveMissionReviewView({
             workflowId,
             input.workItemId,
             {
-              workspace,
+              workspace: workspaceSlug,
               expectedState: input.expectedState,
               expectedRevision: input.expectedRevision,
               idempotencyKey: idempotencyKey(),
@@ -166,27 +166,27 @@ export function AdminActiveMissionReviewView({
       workflow={detail.data}
       selectedWorkItemId={workItemId}
       onStartReview={async (input) => {
-        const result = await startActiveMissionReview(workflowId, input.workItemId, { workspace, expectedState: input.expectedState });
+        const result = await startActiveMissionReview(workflowId, input.workItemId, { workspace: workspaceSlug, expectedState: input.expectedState });
         await refresh();
         return result;
       }}
       onRequestRevision={async (input) => {
-        const result = await requestActiveMissionRevision(workflowId, input.workItemId, { workspace, ...input });
+        const result = await requestActiveMissionRevision(workflowId, input.workItemId, { workspace: workspaceSlug, ...input });
         await refresh();
         return result;
       }}
       onGrantRevision={async (input) => {
-        const result = await grantActiveMissionRevision(workflowId, input.workItemId, { workspace, reason: input.reason, grantedCount: input.grantedCount });
+        const result = await grantActiveMissionRevision(workflowId, input.workItemId, { workspace: workspaceSlug, reason: input.reason, grantedCount: input.grantedCount });
         await refresh();
         return result;
       }}
       onApproveVersion={async (input) => {
-        const result = await approveActiveMissionVersion(workflowId, input.workItemId, { workspace, expectedState: input.expectedState, versionId: input.versionId });
+        const result = await approveActiveMissionVersion(workflowId, input.workItemId, { workspace: workspaceSlug, expectedState: input.expectedState, versionId: input.versionId });
         await refresh();
         return result;
       }}
       onMarkShipped={async (input) => {
-        const result = await markActiveMissionShipped(workflowId, { workspace, note: input.note });
+        const result = await markActiveMissionShipped(workflowId, { workspace: workspaceSlug, note: input.note });
         await refresh();
         return result;
       }}
