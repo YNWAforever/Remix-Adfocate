@@ -36,6 +36,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...original,
     Link: ({ children, className }: { children: React.ReactNode; className?: string }) => <a href="/" className={className}>{children}</a>,
+    Outlet: () => <div data-testid="admin-active-missions-outlet" />,
   };
 });
 vi.mock("@/components/admin/AdminAuthContext", () => ({
@@ -192,9 +193,15 @@ describe("admin active missions route", () => {
     vi.clearAllMocks();
     h.fetchActiveMissionQueue.mockResolvedValue({ items });
   });
+  it("renders nested active-mission routes through the parent outlet", async () => {
+    const { Route } = await import("./admin.active-missions");
+    const Component = Route.options.component as React.ComponentType;
+    renderWithQueryClient(<Component />);
+    expect(screen.getByTestId("admin-active-missions-outlet")).toBeVisible();
+  });
 
   it("loads the canonical queue for the current workspace", async () => {
-    const { Route } = await import("./admin.active-missions");
+    const { Route } = await import("./admin.active-missions.index");
     const Component = Route.options.component as React.ComponentType;
     renderWithQueryClient(<Component />);
     await screen.findByText("Amy Wong");

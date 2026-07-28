@@ -196,7 +196,7 @@ describe("active mission bilingual UI", () => {
 
   it("renders creator and operator route states in zh-Hant-HK", async () => {
     const { WorkspaceProblem } = await import("@/routes/_app.my.$submissionId");
-    const queueModule = await import("@/routes/admin.active-missions");
+    const queueModule = await import("@/routes/admin.active-missions.index");
     const { AdminActiveMissionReviewView } = await import("@/routes/admin.active-missions.$workflowId");
     const QueueView = queueModule.Route.options.component as React.ComponentType;
 
