@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
 import { PublicationProofReview } from "@/components/admin/PublicationProofReview";
@@ -63,6 +63,7 @@ export function AdminActiveMissionReviewView({
   const key = ["admin-active-mission", workspaceSlug, workflowId] as const;
   const { t } = useI18n();
   const [selectedAttemptId, setSelectedAttemptId] = useState<string>();
+  const proofActionKeys = useRef(new Map<string, string>());
   const startProofReview = useStartProofReview();
   const requestProofCorrection = useRequestProofCorrection();
   const verifyProof = useVerifyProof();
@@ -83,6 +84,30 @@ export function AdminActiveMissionReviewView({
       queryClient.invalidateQueries({ queryKey: key }),
       queryClient.invalidateQueries({ queryKey: ["admin-active-missions", workspaceSlug] }),
     ]);
+  };
+
+  const runProofAction = async <T,>(
+    action: string,
+    input: unknown,
+    operation: (key: string) => Promise<T>,
+  ): Promise<T> => {
+    const signature = `${action}:${JSON.stringify(input)}`;
+    const existingKey = proofActionKeys.current.get(signature);
+    const key = existingKey ?? idempotencyKey();
+    proofActionKeys.current.set(signature, key);
+    try {
+      const result = await operation(key);
+      proofActionKeys.current.delete(signature);
+      return result;
+    } catch (error) {
+      if (
+        error instanceof AdminRequestError
+        && (error.code === "WORKFLOW_STALE" || error.code === "WRONG_STATE")
+      ) {
+        proofActionKeys.current.delete(signature);
+      }
+      throw error;
+    }
   };
 
   if (!workspaceSlug) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.route.selectReview")}</p>;
@@ -117,31 +142,31 @@ export function AdminActiveMissionReviewView({
         selectedAttemptId={selectedAttemptId}
         currentOperatorId={staff.userId}
         busy={proofBusy}
-        onClaim={(input) => startProofReview.mutateAsync({
-          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
-        })}
-        onRequestCorrection={(input) => requestProofCorrection.mutateAsync({
-          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
-        })}
-        onVerify={(input) => verifyProof.mutateAsync({
-          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
-        })}
-        onRefreshMetadata={(input) => refreshProofMetadata.mutateAsync({
-          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: idempotencyKey(),
-        })}
-        onSetInstructions={async (input) => {
+        onClaim={(input) => runProofAction("claim", input, (key) => startProofReview.mutateAsync({
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: key,
+        }))}
+        onRequestCorrection={(input) => runProofAction("request-correction", input, (key) => requestProofCorrection.mutateAsync({
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: key,
+        }))}
+        onVerify={(input) => runProofAction("verify", input, (key) => verifyProof.mutateAsync({
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: key,
+        }))}
+        onRefreshMetadata={(input) => runProofAction("refresh-metadata", input, (key) => refreshProofMetadata.mutateAsync({
+          workflowId, workspace: workspaceSlug, ...input, idempotencyKey: key,
+        }))}
+        onSetInstructions={(input) => runProofAction("set-instructions", input, async (key) => {
           const result = await setActiveMissionPublicationInstructions(workflowId, input.workItemId, {
             workspace: workspaceSlug,
             expectedState: input.expectedState,
             expectedRevision: input.expectedRevision,
-            idempotencyKey: idempotencyKey(),
+            idempotencyKey: key,
             overrideReason: input.overrideReason,
             instructions: input.instructions,
           });
           await refresh();
           return result;
-        }}
-        onSetupExistingInstructions={async (input) => {
+        })}
+        onSetupExistingInstructions={(input) => runProofAction("setup-existing-instructions", input, async (key) => {
           const result = await setupActiveMissionPublicationInstructions(
             workflowId,
             input.workItemId,
@@ -149,13 +174,13 @@ export function AdminActiveMissionReviewView({
               workspace: workspaceSlug,
               expectedState: input.expectedState,
               expectedRevision: input.expectedRevision,
-              idempotencyKey: idempotencyKey(),
+              idempotencyKey: key,
               instructions: input.instructions,
             },
           );
           await refresh();
           return result;
-        }}
+        })}
         onActionError={handleProofError}
       />
     );

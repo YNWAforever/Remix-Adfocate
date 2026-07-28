@@ -1142,6 +1142,24 @@ suite(suiteName, () => {
 });
 
 describe("publication proof asset rollout policy", () => {
+  it("aligns the proof asset table and private bucket with the seven-type Phase 2 MIME contract", () => {
+    const sql = readFileSync(resolve("supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql"), "utf8");
+    for (const mimeType of [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "video/mp4",
+      "video/quicktime",
+      "video/webm",
+    ]) {
+      expect(sql).toContain(mimeType);
+    }
+    expect(sql).toContain("drop constraint if exists mission_publication_proof_assets_mime_type_check");
+    expect(sql).toContain("allowed_mime_types = excluded.allowed_mime_types");
+    expect(sql).not.toContain("application/pdf");
+  });
+
   it("uses the Phase 2 MIME map and workflow-scoped canonical path", () => {
     const sql = readFileSync(resolve("supabase/migrations/20260725110000_publication_proof_asset_policy.sql"), "utf8");
     expect(sql).toContain("video/quicktime");

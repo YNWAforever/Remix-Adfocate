@@ -42,6 +42,14 @@ const PUBLICATION_STATES = new Set([
   "proof_verified",
 ]);
 
+const PUBLICATION_STATE_LABEL_KEYS = {
+  approved_to_publish: "app.activeMission.publication.status.ready",
+  proof_submitted: "app.activeMission.publication.status.submitted",
+  proof_under_review: "app.activeMission.publication.status.underReview",
+  proof_correction_requested: "app.activeMission.publication.status.correctionRequested",
+  proof_verified: "app.activeMission.publication.status.verified",
+} as const;
+
 type ProofEvidenceGrant = {
   asset: { id: string; storageObjectPath: string };
   token: string;
@@ -324,47 +332,51 @@ export function CreatorMissionWorkspace() {
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
           {publicationWorkItemId ? (
             publicationQuery.isLoading ? (
-              <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" aria-label="Loading publication proof" />
+              <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" aria-label={t("app.activeMission.publication.loading")} />
             ) : publicationQuery.isError || !publication ? (
               <div role="alert" className="rounded-[var(--radius)] border-2 border-red-700 bg-red-50 p-4">
-                <p className="font-bold">Couldn’t load publication details.</p>
-                <button type="button" onClick={() => void publicationQuery.refetch()} className="mt-3 min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold">Try again</button>
+                <p className="font-bold">{t("app.activeMission.publication.loadError")}</p>
+                <button type="button" onClick={() => void publicationQuery.refetch()} className="mt-3 min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold">{t("common.retry")}</button>
               </div>
             ) : (
               <>
                 <PublicationInstructions publication={publication} />
                 {publication.state === "proof_submitted" || publication.state === "proof_under_review" ? (
                   <p role="status" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4 font-semibold">
-                    Adfocate is reviewing your publication proof.
+                    {t("app.activeMission.publication.reviewing")}
                   </p>
                 ) : null}
                 {proofConflict ? (
                   <section role="alert" className="rounded-[var(--radius)] border-2 border-amber-800 bg-amber-50 p-5">
-                    <h2 className="font-heading text-xl font-bold text-amber-950">Publication changed</h2>
+                    <h2 className="font-heading text-xl font-bold text-amber-950">{t("app.activeMission.publication.recovery.changedTitle")}</h2>
                     <p className="mt-2 text-sm text-amber-950">
-                      Your proof was not submitted because the publication changed.
+                      {t("app.activeMission.publication.recovery.changedBody")}
                     </p>
                     <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                       <div>
-                        <dt className="font-bold">Current server state</dt>
-                        <dd>{proofConflict.currentPublication.state}</dd>
+                        <dt className="font-bold">{t("app.activeMission.publication.recovery.currentState")}</dt>
+                        <dd>{t(PUBLICATION_STATE_LABEL_KEYS[
+                          proofConflict.currentPublication.state as keyof typeof PUBLICATION_STATE_LABEL_KEYS
+                        ])}</dd>
                       </div>
                       <div>
-                        <dt className="font-bold">Preserved primary URL</dt>
+                        <dt className="font-bold">{t("app.activeMission.publication.recovery.primaryUrl")}</dt>
                         <dd className="break-all">{proofConflict.localProof.primaryUrl}</dd>
                       </div>
                     </dl>
                     <p className="mt-4 text-sm font-semibold">
-                      Your confirmed URL and evidence selection are preserved.
+                      {t("app.activeMission.publication.recovery.selectionPreserved")}
                     </p>
                     <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                       {canRetryPreservedProof ? (
                         <button type="button" onClick={() => void retryPreservedProof()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-bold">
-                          Retry preserved proof
+                          {t("app.activeMission.publication.recovery.retryPreserved")}
                         </button>
                       ) : null}
                       <button type="button" onClick={reviewPreservedProof} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-bold">
-                        {canRetryPreservedProof ? "Review and edit submission" : "Dismiss and view current state"}
+                        {canRetryPreservedProof
+                          ? t("app.activeMission.publication.recovery.reviewSubmission")
+                          : t("app.activeMission.publication.recovery.dismiss")}
                       </button>
                     </div>
                   </section>

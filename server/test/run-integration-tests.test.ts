@@ -95,6 +95,7 @@ function harness() {
 
 describe("integration test launcher", () => {
   it("keeps the complete ordered integration file list unique", () => {
+    expect(runner.publicationProofPreflightFile).toBe("server/test/publication-proof-asset-grant-live.test.ts");
     expect(runner.integrationFiles).toEqual(expectedIntegrationFiles);
     expect(new Set(runner.integrationFiles).size).toBe(expectedIntegrationFiles.length);
   });
@@ -103,6 +104,11 @@ describe("integration test launcher", () => {
     const h = harness();
     runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl });
 
+    expect(importMocks.spawnSync).toHaveBeenCalledWith(
+      "C:/node/node.exe",
+      [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", "server/test/publication-proof-asset-grant-live.test.ts"],
+      { cwd: "C:/repo", env: { PRESERVE_ME: "yes", RUN_INTEGRATION: "1" }, stdio: "inherit" },
+    );
     expect(h.spawnImpl).toHaveBeenCalledWith(
       "C:/node/node.exe",
       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", ...expectedIntegrationFiles],

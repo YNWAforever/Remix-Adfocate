@@ -5,12 +5,15 @@ import type { ActiveMissionWorkspace, MissionPublicationView } from "@/lib/activ
 import { ApiError } from "@/lib/api";
 import { setActivationAnalyticsSink } from "@/lib/activationAnalytics";
 
+const i18nMocks = vi.hoisted(() => ({ lang: "en" as "en" | "zh" }));
+
 vi.mock("@/lib/i18n", async () => {
   const { dict } = await import("@/lib/i18n.dict");
   const t = (key: string, params?: Record<string, string | number>) =>
-    (dict.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
+    (dict[i18nMocks.lang][key] ?? dict.en[key] ?? key)
+      .replace(/\{(\w+)\}/g, (_, name: string) => String(params?.[name] ?? `{${name}}`));
   return {
-    useI18n: () => ({ lang: "en", localeReady: true, setLang: vi.fn(), t }),
+    useI18n: () => ({ lang: i18nMocks.lang, localeReady: true, setLang: vi.fn(), t }),
   };
 });
 
@@ -103,6 +106,7 @@ function renderRoute() {
 describe("creator active mission workspace route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    i18nMocks.lang = "en";
     mocks.search = {};
     Object.assign(mocks.query, { data: workspace(), isLoading: false, isError: false, error: null });
     mocks.save.mutateAsync.mockResolvedValue({ draft: workspace().workItems[0].draft });
@@ -322,6 +326,38 @@ describe("creator active mission workspace route", () => {
     await waitFor(() => expect(verified).toHaveFocus());
     expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
   });
+  it("localizes publication review and stale-recovery states for Traditional Chinese creators", () => {
+    i18nMocks.lang = "zh";
+    const submitted = workspace();
+    submitted.workflow.state = "publication_in_progress";
+    submitted.workItems[0].state = "proof_submitted";
+    Object.assign(mocks.query, { data: submitted });
+    const currentPublication = publication({ state: "proof_submitted", revision: 5 });
+    Object.assign(mocks.publication, { data: currentPublication });
+    mocks.proofSubmit.conflict = {
+      localProof: {
+        workItemId: "item-1",
+        expectedState: "approved_to_publish",
+        expectedRevision: 4,
+        idempotencyKey: "old-key",
+        primaryUrl: "https://www.instagram.com/p/local",
+        additionalUrls: [],
+        evidenceAssetIds: ["asset-1"],
+      },
+      currentPublication,
+    };
+
+    const localized = renderRoute();
+
+    expect(screen.getByText("Adfocate 正在審核你的發佈證明。")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "發佈狀態已變更" })).toBeVisible();
+    expect(screen.getByText("目前系統狀態")).toBeVisible();
+    expect(screen.getByText("已保留的主要網址")).toBeVisible();
+    expect(screen.getByText("你已確認的網址和證明檔案選擇已保留。")).toBeVisible();
+    expect(screen.getByRole("button", { name: "關閉並查看目前狀態" })).toBeVisible();
+    localized.unmount();
+    i18nMocks.lang = "en";
+  });
   it("requires explicit review of a stale proof while preserving the confirmed local submission for retry", async () => {
     const approved = workspace();
     approved.workflow.state = "approved_to_publish";
@@ -373,7 +409,7 @@ describe("creator active mission workspace route", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Your proof was not submitted because the publication changed.",
     );
-    expect(screen.getByText("proof_correction_requested")).toBeVisible();
+    expect(screen.getByText("Publication proof needs correction")).toBeVisible();
     expect(screen.getByText(localProof.primaryUrl)).toBeVisible();
     expect(screen.getByText("Your confirmed URL and evidence selection are preserved.")).toBeVisible();
     expect(screen.getByText("Response deadline").nextElementSibling?.querySelector("time"))
@@ -431,6 +467,7 @@ describe("creator publication proof analytics", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    i18nMocks.lang = "en";
     mocks.search = {};
     const approved = workspace();
     approved.workflow.state = "approved_to_publish";

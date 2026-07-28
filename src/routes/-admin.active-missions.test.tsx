@@ -505,6 +505,33 @@ describe("admin publication proof review route", () => {
     })));
   });
 
+  it("reuses the same idempotency key when a verification response is lost and retried", async () => {
+    h.verifyProof
+      .mockRejectedValueOnce(new Error("response lost"))
+      .mockResolvedValueOnce({});
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    ["Publicly accessible", "Platform matches", "Account matches",
+      "Content matches approved version", "Timing acceptable", "Disclosures present"]
+      .forEach((label) => fireEvent.click(screen.getByLabelText(label)));
+    fireEvent.click(screen.getByRole("button", { name: "Verify proof" }));
+    fireEvent.change(screen.getByLabelText("Type attempt number 3 to confirm"), {
+      target: { value: "3" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+    await waitFor(() => expect(h.verifyProof).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+    await waitFor(() => expect(h.verifyProof).toHaveBeenCalledTimes(2));
+
+    const firstKey = h.verifyProof.mock.calls[0]?.[0]?.idempotencyKey;
+    const retryKey = h.verifyProof.mock.calls[1]?.[0]?.idempotencyKey;
+    expect(firstKey).toEqual(expect.any(String));
+    expect(retryKey).toBe(firstKey);
+  });
+
   it("reloads stale proof state and routes proof auth failures through AdminAuthContext", async () => {
     const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
     const stale = operatorProofWorkflow();
