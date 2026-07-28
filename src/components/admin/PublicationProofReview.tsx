@@ -562,6 +562,7 @@ export function PublicationProofReview({
         <button type="button" onKeyDown={handleVerificationKeyDown} disabled={isBusy || attemptConfirmation !== String(attempt.attemptNumber)} onClick={() => base && void perform(
           () => onVerify({ ...base, checklist, summary: summary.trim() || null }),
           (result) => {
+            closeVerification();
             const analytics = analyticsFor("proof_verified");
             if (!analytics || !attempt) return;
             trackActivationEvent("publication_proof_verified", {

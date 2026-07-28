@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminAuthError, AdminRequestError } from "@/lib/admin";
@@ -524,6 +524,10 @@ describe("admin publication proof review route", () => {
 
 
   it("emits verified only after the canonical verify action succeeds", async () => {
+    let resolveVerify!: (value: { reviewNumber: number }) => void;
+    h.verifyProof.mockImplementationOnce(() => new Promise((resolve) => {
+      resolveVerify = resolve;
+    }));
     const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
     renderWithQueryClient(
       <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
@@ -537,7 +541,17 @@ describe("admin publication proof review route", () => {
       target: { value: "3" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
+    expect(screen.getByRole("alertdialog")).toBeVisible();
 
+    await act(async () => {
+      resolveVerify({ reviewNumber: 1 });
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+    expect(screen.queryByLabelText("Type attempt number 3 to confirm")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Confirm verification" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Verify proof" })).toHaveFocus();
     await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
       "publication_proof_verified",
     ));
@@ -724,6 +738,9 @@ describe("admin publication proof review route", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm verification" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("failed verification");
+    expect(screen.getByRole("alertdialog")).toBeVisible();
+    expect(screen.getByLabelText("Type attempt number 3 to confirm")).toHaveValue("3");
+    expect(screen.getByRole("button", { name: "Confirm verification" })).toBeEnabled();
     expect(analyticsEvents.map(({ name }) => name)).not.toContain("publication_proof_verified");
   });
 
