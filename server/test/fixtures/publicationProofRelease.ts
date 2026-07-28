@@ -46,7 +46,12 @@ export const PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC =
 export type PublicationProofReleaseInvariantSnapshot = {
   workspace: { id: string; slug: string } | null;
   mission: { id: string; workspaceId: string; slug: string } | null;
-  creator: { id: string; workspaceId: string; email: string } | null;
+  creator: {
+    id: string;
+    workspaceId: string;
+    email: string;
+    onboardingCompleted: boolean;
+  } | null;
   operatorStaff: { userId: string; email: string; active: boolean } | null;
   operatorMembership: {
     userId: string;
@@ -195,6 +200,7 @@ export function assertPublicationProofReleaseInvariant(
     || !nonBlank(mission.id)
     || creator?.workspaceId !== DEMO_WS
     || creator.email !== CREATOR_EMAIL
+    || creator.onboardingCompleted !== true
     || !nonBlank(creator.id)
     || operatorStaff?.email !== OPERATOR_EMAIL
     || operatorStaff.active !== true
@@ -473,7 +479,7 @@ async function assembleExistingFixture(): Promise<PublicationProofReleaseFixture
       .eq("slug", MISSION_SLUG)
       .maybeSingle(),
     svc.from("creators")
-      .select("id, workspace_id, display_name")
+      .select("id, workspace_id, display_name, onboarding_completed")
       .eq("workspace_id", DEMO_WS)
       .eq("display_name", CREATOR_EMAIL)
       .maybeSingle(),
@@ -596,6 +602,7 @@ async function assembleExistingFixture(): Promise<PublicationProofReleaseFixture
       id: creator.data.id,
       workspaceId: creator.data.workspace_id,
       email: creator.data.display_name,
+      onboardingCompleted: creator.data.onboarding_completed,
     },
     operatorStaff: {
       userId: operatorStaff.data.user_id,
@@ -758,6 +765,13 @@ export async function seedPublicationProofReleaseFixture():
       },
     ],
   });
+  const browserReady = await svc.from("creators")
+    .update({ onboarding_completed: true, onboarding_step: 5 })
+    .eq("id", active.creator.id);
+  if (browserReady.error) {
+    failure("prepare publication proof fixture creator for browser acceptance", browserReady.error);
+  }
+
   const created = await userForJwt(active.creator.jwt).rpc("create_mission_workflow", {
     p_submission: active.submission.id,
   });

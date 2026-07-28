@@ -103,7 +103,7 @@ function invariantSnapshot(): PublicationProofReleaseInvariantSnapshot {
   return {
     workspace: { id: DEMO_WS, slug: "demo" },
     mission: { id: "mission-id", workspaceId: DEMO_WS, slug: MISSION_SLUG },
-    creator: { id: "creator-id", workspaceId: DEMO_WS, email: CREATOR_EMAIL },
+    creator: { id: "creator-id", workspaceId: DEMO_WS, email: CREATOR_EMAIL, onboardingCompleted: true },
     operatorStaff: { userId: "operator-id", email: OPERATOR_EMAIL, active: true },
     operatorMembership: {
       userId: "operator-id",
