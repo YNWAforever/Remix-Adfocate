@@ -26,7 +26,7 @@ const hoisted = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/queries/kocmax", () => ({ useMyMissions: () => hoisted.my }));
 
-import { Route } from "./_app.my";
+import { Route } from "./_app.my.index";
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 
 function renderMy() {
