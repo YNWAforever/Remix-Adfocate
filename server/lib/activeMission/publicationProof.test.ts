@@ -75,5 +75,3 @@ describe("publication proof evidence", () => {
       .toBe(calls[1]?.[1].p_storage_object_path);
   });
 });
-
-
