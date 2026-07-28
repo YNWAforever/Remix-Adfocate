@@ -5,6 +5,12 @@ This runbook covers the Phase 2 `active_workspace` rollout. The legacy
 review, fulfilment, revision, and approve-to-publish operations must not change
 its status, points, XP, earnings, or workspace budget.
 
+> Phase 3 publication-proof rollout, rollback, feature containment, and operator
+> recovery are governed by the dedicated
+> [publication proof release runbook](publication-proof-release-runbook.md).
+> It is additive to this Phase 2 guide and does not authorize state rewrites or
+> record removal.
+
 ## Safety rules
 
 - New missions default to `creator_workflow_mode=legacy`.

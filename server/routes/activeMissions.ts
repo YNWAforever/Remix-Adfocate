@@ -1,4 +1,4 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
+﻿import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { ActiveMissionError, statusFor } from "../lib/activeMission/errors.js";
@@ -7,6 +7,7 @@ import {
   validateSubmitInput,
   validateUploadGrantInput,
 } from "../lib/activeMission/creatorActions.js";
+import { validateProofEvidenceFinalizeInput, validateProofEvidenceUploadInput, validateSubmitPublicationProofInput } from "../lib/activeMission/publicationProof.js";
 import {
   createActiveMissionRepository,
   type ActiveMissionOwner,
@@ -14,6 +15,17 @@ import {
   type DraftSaveInput,
 } from "../lib/activeMission/repo.js";
 import { serviceClient } from "../lib/supabase.js";
+
+function proofMutation(idempotencyKey: string | undefined, body: unknown) {
+  const input = body && typeof body === "object" && !Array.isArray(body)
+    ? body as Record<string, unknown> : {};
+  const expectedState = input.expectedState;
+  const expectedRevision = input.expectedRevision;
+  if (typeof expectedState !== "string" || !expectedState.trim() || typeof expectedRevision !== "number" || !Number.isInteger(expectedRevision) || expectedRevision < 0 || typeof idempotencyKey !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+    throw new ActiveMissionError("VALIDATION_FAILED", "expectedState, expectedRevision, and Idempotency-Key are required");
+  }
+  return { expectedState: expectedState.trim(), expectedRevision, idempotencyKey: idempotencyKey.trim() };
+}
 
 function errorResponse(c: Parameters<Parameters<Hono<Env>["onError"]>[0]>[1], error: unknown) {
   if (error instanceof ActiveMissionError) {
@@ -45,6 +57,33 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
     }
   });
 
+  routes.get("/:submissionId/publication/:workItemId", async (c) => {
+    try {
+      const publication = await repository().getPublication(owner(c), c.req.param("workItemId"));
+      return c.json({ publication });
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/proofs", async (c) => {
+    try {
+      const body = await c.req.json<Record<string, unknown>>().catch(() => {
+        throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON");
+      });
+      const mutation = proofMutation(c.req.header("Idempotency-Key"), body);
+      const input = validateSubmitPublicationProofInput(body, mutation);
+      const result = await repository().submitProof(
+        owner(c),
+        c.req.param("workItemId"),
+        input,
+      );
+      return c.json(result);
+    } catch (error) {
+      return errorResponse(c, error);
+    }
+  });
+
   routes.patch("/:submissionId/work-items/:workItemId/draft", async (c) => {
     try {
       let input: DraftSaveInput;
@@ -65,6 +104,26 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
     } catch (error) {
       return errorResponse(c, error);
     }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/assets/upload-grant", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const mutation = proofMutation(c.req.header("Idempotency-Key"), body);
+      const workspace = await repository().getWorkspace(owner(c));
+      const result = await repository().createProofEvidenceUploadGrant({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), mutation);
+      return c.json(result);
+    } catch (error) { return errorResponse(c, error); }
+  });
+
+  routes.post("/:submissionId/publication/:workItemId/assets/:assetId/finalize", async (c) => {
+    try {
+      const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
+      const mutation = proofMutation(c.req.header("Idempotency-Key"), body);
+      const workspace = await repository().getWorkspace(owner(c));
+      const asset = await repository().finalizeProofEvidence({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), mutation);
+      return c.json({ asset });
+    } catch (error) { return errorResponse(c, error); }
   });
 
   routes.post("/:submissionId/work-items/:workItemId/assets/upload-grant", async (c) => {

@@ -197,6 +197,14 @@ export type ActiveMissionQueueItem = {
   creatorDeadline: string | null;
   submittedAt: string | null;
   reviewDueAt: string | null;
+  proofAttemptId?: string | null;
+  proofAttemptNumber?: number | null;
+  submittedLate?: boolean;
+  metadataStatus?: string | null;
+  platform?: string | null;
+  publicationDueAt?: string | null;
+  creatorResponseDeadline?: string | null;
+  proofReviewerId?: string | null;
   reviewerId: string | null;
   riskBucket: ActiveMissionRiskBucket;
 };
@@ -207,6 +215,11 @@ export type ActiveMissionQueueFilters = {
   state?: ActiveMissionReviewState;
   reviewer?: string;
   mission?: string;
+  proofState?: string;
+  late?: boolean;
+  metadataStatus?: string;
+  platform?: string;
+  publicationDeadline?: string;
 };
 
 export type ActiveMissionRequirement = {
@@ -227,6 +240,9 @@ export type ActiveMissionWorkItem = {
   current_submitted_version_id: string | null;
   approved_version_id: string | null;
   requirements_snapshot: ActiveMissionRequirement[];
+  current_proof_attempt_id?: string | null;
+  revision?: number;
+  publicationSetupRequired?: boolean;
 };
 
 export type ActiveMissionVersion = {
@@ -265,6 +281,57 @@ export type ActiveMissionAsset = {
   signedUrl: string;
 };
 
+export type ActiveMissionPublicationInstruction = {
+  id: string;
+  workItemId: string;
+  publicationInstructions: string;
+  publicationWindowHours: number;
+  requiredDisclosures: string[];
+  expectedAccount: string | null;
+  proofEvidencePolicy: Record<string, unknown>;
+  publicationDueAt: string;
+  frozenAt: string | null;
+  revision: number;
+};
+
+export type ActiveMissionPublicationProofAttempt = {
+  id: string;
+  workItemId: string;
+  attemptNumber: number;
+  primaryUrl: string;
+  additionalUrls: string[];
+  submittedAt: string;
+  submittedLate: boolean;
+  metadataStatus: string;
+  metadataSnapshot: Record<string, unknown>;
+  metadataErrorCategory: string | null;
+};
+
+export type ActiveMissionPublicationProofReview = {
+  id: string;
+  attemptId: string;
+  reviewNumber: number;
+  state: "open" | "correction_requested" | "verified";
+  decision: string | null;
+  reviewerId: string | null;
+  reviewedAt: string | null;
+  decisionAt: string | null;
+  creatorResponseDeadline: string | null;
+  checklist: Record<string, boolean> | null;
+  summary: string | null;
+  items: Array<{ id: string; category: string; text: string; passed: boolean | null; position: number }>;
+};
+
+export type ActiveMissionPublicationProofAsset = {
+  id: string;
+  attemptId: string;
+  originalFilename: string;
+  contentType: string;
+  sizeBytes: number;
+  createdAt: string;
+  signedUrl: string;
+};
+
 type ActiveMissionBrief = {
   id: string;
   title: string;
@@ -289,6 +356,10 @@ export type ActiveMissionWorkflow = {
   grants: ActiveMissionRevisionGrant[];
   events: Array<Record<string, unknown>>;
   assets: ActiveMissionAsset[];
+  publicationInstructions?: ActiveMissionPublicationInstruction[];
+  proofAttempts?: ActiveMissionPublicationProofAttempt[];
+  proofReviews?: ActiveMissionPublicationProofReview[];
+  proofAssets?: ActiveMissionPublicationProofAsset[];
 };
 
 export type ActiveMissionRevisionItem = {
@@ -308,6 +379,11 @@ export function fetchActiveMissionQueue(filters: ActiveMissionQueueFilters) {
   if (filters.state) qs.set("state", filters.state);
   if (filters.reviewer) qs.set("reviewer", filters.reviewer);
   if (filters.mission) qs.set("mission", filters.mission);
+  if (filters.proofState) qs.set("proofState", filters.proofState);
+  if (filters.late !== undefined) qs.set("late", String(filters.late));
+  if (filters.metadataStatus) qs.set("metadataStatus", filters.metadataStatus);
+  if (filters.platform) qs.set("platform", filters.platform);
+  if (filters.publicationDeadline) qs.set("publicationDeadline", filters.publicationDeadline);
   const suffix = qs.size ? `?${qs.toString()}` : "";
   return adminFetch<{ items: ActiveMissionQueueItem[] }>(`/admin/active-missions/queue${suffix}`, {
     headers: activeMissionWorkspaceHeader(filters.workspace),
@@ -384,6 +460,182 @@ export function markActiveMissionShipped(workflowId: string, body: { workspace: 
     method: "POST",
     headers: activeMissionWorkspaceHeader(body.workspace),
     body: JSON.stringify({ note: body.note }),
+  });
+}
+
+export type PublicationProofChecklistInput = {
+  publiclyAccessible: boolean;
+  platformMatches: boolean;
+  accountMatches: boolean;
+  contentMatchesApprovedVersion: boolean;
+  timingAcceptable: boolean;
+  disclosuresPresent: boolean;
+};
+
+export type PublicationProofCorrectionInput = {
+  category: "access" | "platform" | "account" | "content" | "timing" | "disclosure" | "evidence" | "other";
+  text: string;
+  position: number;
+};
+
+type PublicationProofMutationInput = {
+  workspace: string;
+  expectedState: string;
+  expectedRevision: number;
+  attemptId: string;
+  idempotencyKey: string;
+};
+
+function proofMutationHeaders(body: PublicationProofMutationInput): HeadersInit {
+  return {
+    ...activeMissionWorkspaceHeader(body.workspace),
+    "Idempotency-Key": body.idempotencyKey,
+  };
+}
+
+function proofChecklistBody(checklist: PublicationProofChecklistInput) {
+  return {
+    publicly_accessible: checklist.publiclyAccessible,
+    platform_matches: checklist.platformMatches,
+    account_matches: checklist.accountMatches,
+    content_matches_approved_version: checklist.contentMatchesApprovedVersion,
+    timing_acceptable: checklist.timingAcceptable,
+    disclosures_present: checklist.disclosuresPresent,
+  };
+}
+
+function proofMutationBody(body: PublicationProofMutationInput) {
+  return {
+    expectedState: body.expectedState,
+    expectedRevision: body.expectedRevision,
+    attemptId: body.attemptId,
+  };
+}
+
+export function startPublicationProofReview(
+  workflowId: string,
+  workItemId: string,
+  body: PublicationProofMutationInput,
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/proof-review/start`, {
+    method: "POST",
+    headers: proofMutationHeaders(body),
+    body: JSON.stringify(proofMutationBody(body)),
+  });
+}
+
+export function requestPublicationProofCorrection(
+  workflowId: string,
+  workItemId: string,
+  body: PublicationProofMutationInput & {
+    checklist: PublicationProofChecklistInput;
+    corrections: PublicationProofCorrectionInput[];
+    summary?: string | null;
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/proof-review/corrections`, {
+    method: "POST",
+    headers: proofMutationHeaders(body),
+    body: JSON.stringify({
+      ...proofMutationBody(body),
+      checklist: proofChecklistBody(body.checklist),
+      corrections: body.corrections,
+      summary: body.summary,
+    }),
+  });
+}
+
+export function verifyPublicationProof(
+  workflowId: string,
+  workItemId: string,
+  body: PublicationProofMutationInput & { checklist: PublicationProofChecklistInput; summary?: string | null },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/proof-review/verify`, {
+    method: "POST",
+    headers: proofMutationHeaders(body),
+    body: JSON.stringify({
+      ...proofMutationBody(body),
+      checklist: proofChecklistBody(body.checklist),
+      summary: body.summary,
+    }),
+  });
+}
+
+export function refreshPublicationProofMetadata(
+  workflowId: string,
+  workItemId: string,
+  body: PublicationProofMutationInput,
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/proofs/${body.attemptId}/metadata-refresh`, {
+    method: "POST",
+    headers: proofMutationHeaders(body),
+    body: JSON.stringify(proofMutationBody(body)),
+  });
+}
+
+export function setActiveMissionPublicationInstructions(
+  workflowId: string,
+  workItemId: string,
+  body: {
+    workspace: string;
+    expectedState: string;
+    expectedRevision: number;
+    idempotencyKey: string;
+    overrideReason: string;
+    instructions: {
+      publicationInstructions: string;
+      publicationWindowHours: number;
+      requiredDisclosures: string[];
+      expectedAccount: string | null;
+      proofEvidencePolicy: Record<string, unknown>;
+    };
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-instructions`, {
+    method: "PUT",
+    headers: {
+      ...activeMissionWorkspaceHeader(body.workspace),
+      "Idempotency-Key": body.idempotencyKey,
+    },
+    body: JSON.stringify({
+      expectedState: body.expectedState,
+      expectedRevision: body.expectedRevision,
+      idempotencyKey: body.idempotencyKey,
+      overrideReason: body.overrideReason,
+      instructions: body.instructions,
+    }),
+  });
+}
+
+export function setupActiveMissionPublicationInstructions(
+  workflowId: string,
+  workItemId: string,
+  body: {
+    workspace: string;
+    expectedState: string;
+    expectedRevision: number;
+    idempotencyKey: string;
+    instructions: {
+      publicationInstructions: string;
+      publicationWindowHours: number;
+      requiredDisclosures: string[];
+      expectedAccount: string | null;
+      proofEvidencePolicy: Record<string, unknown>;
+    };
+  },
+) {
+  return adminFetch(`/admin/active-missions/${workflowId}/work-items/${workItemId}/publication-setup`, {
+    method: "POST",
+    headers: {
+      ...activeMissionWorkspaceHeader(body.workspace),
+      "Idempotency-Key": body.idempotencyKey,
+    },
+    body: JSON.stringify({
+      expectedState: body.expectedState,
+      expectedRevision: body.expectedRevision,
+      idempotencyKey: body.idempotencyKey,
+      instructions: body.instructions,
+    }),
   });
 }
 
@@ -586,6 +838,11 @@ export type MissionDeliverableTemplateInput = {
   position: number;
   required: boolean;
   draft_due_offset_hours: number;
+  publication_instructions: string;
+  publication_window_hours: number;
+  required_disclosures: string[];
+  expected_account: string | null;
+  proof_evidence_policy: Record<string, unknown>;
   requirements: {
     id?: string;
     category: "format" | "key_message" | "compliance" | "quality" | "other";

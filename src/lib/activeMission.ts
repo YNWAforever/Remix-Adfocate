@@ -5,6 +5,8 @@ export type WorkflowState =
   | "in_review"
   | "revision_requested"
   | "approved_to_publish"
+  | "publication_in_progress"
+  | "proof_verified"
   | "cancelled"
   | "expired";
 
@@ -15,6 +17,10 @@ export type WorkItemState =
   | "under_review"
   | "revision_requested"
   | "approved_to_publish"
+  | "proof_submitted"
+  | "proof_under_review"
+  | "proof_correction_requested"
+  | "proof_verified"
   | "cancelled"
   | "expired";
 
@@ -102,6 +108,95 @@ export type MissionDraftVersionView = {
   assets: MissionDraftAssetView[];
 };
 
+export type PublicationProofChecklist = Readonly<{
+  publiclyAccessible: boolean;
+  platformMatches: boolean;
+  accountMatches: boolean;
+  contentMatchesApprovedVersion: boolean;
+  timingAcceptable: boolean;
+  disclosuresPresent: boolean;
+}>;
+
+export type PublicationProofCorrectionView = Readonly<{
+  id: string;
+  category: "access" | "platform" | "account" | "content" | "timing" | "disclosure" | "evidence" | "other";
+  text: string;
+  position: number;
+  passed?: boolean | null;
+  createdAt?: string;
+}>;
+
+export type PublicationProofReviewView = Readonly<{
+  id: string;
+  state: "open" | "correction_requested" | "verified";
+  decision: "rejected" | "verified" | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  creatorResponseDeadline: string | null;
+}>;
+
+export type PublicationProofEvidenceView = Readonly<{
+  id: string;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  checksum: string;
+  signedUrl: string;
+}>;
+
+export type PublicationProofAttemptView = Readonly<{
+  id: string;
+  attemptNumber: number;
+  primaryUrl: string;
+  additionalUrls: readonly string[];
+  submittedAt: string;
+  submittedLate: boolean;
+  metadataStatus: "available" | "unavailable" | "unsafe";
+  metadataSnapshot: Readonly<Record<string, unknown>>;
+  metadataErrorCategory: string | null;
+  evidence: readonly PublicationProofEvidenceView[];
+  review: PublicationProofReviewView | null;
+  corrections: readonly PublicationProofCorrectionView[];
+}>;
+
+export type MissionPublicationInstructionsView = Readonly<{
+  publicationInstructions: string;
+  requiredDisclosures: readonly string[];
+  expectedAccount: string | null;
+  proofEvidencePolicy: Readonly<Record<string, unknown>>;
+  publishDueAt: string;
+  frozenAt: string | null;
+}>;
+
+export type MissionPublicationView = Readonly<{
+  workItemId: string;
+  platform: string;
+  state: WorkItemState;
+  revision: number;
+  approvedVersionId: string | null;
+  instructions: MissionPublicationInstructionsView;
+  attempts: readonly PublicationProofAttemptView[];
+  currentAttempt: PublicationProofAttemptView | null;
+  acceptedAttempt: PublicationProofAttemptView | null;
+}>;
+export function publicationEvidenceRequired(policy: Readonly<Record<string, unknown>>): boolean {
+  return Object.keys(policy).length > 0;
+}
+
+
+export type PublicationStateOwner = "creator" | "operator" | "none";
+
+export const publicationStatePresentation = {
+  approved_to_publish: { labelKey: "activeMission.state.approvedToPublish", owner: "creator" },
+  proof_submitted: { labelKey: "activeMission.state.proofSubmitted", owner: "operator" },
+  proof_under_review: { labelKey: "activeMission.state.proofUnderReview", owner: "operator" },
+  proof_correction_requested: { labelKey: "activeMission.state.proofCorrectionRequested", owner: "creator" },
+  proof_verified: { labelKey: "activeMission.state.proofVerified", owner: "none" },
+} as const satisfies Record<
+  Extract<WorkItemState, "approved_to_publish" | "proof_submitted" | "proof_under_review" | "proof_correction_requested" | "proof_verified">,
+  { labelKey: string; owner: PublicationStateOwner }
+>;
+
 export type MissionWorkItemView = {
   id: string;
   title: string;
@@ -168,10 +263,15 @@ export type ActiveMissionNextAction = {
     | "revise"
     | "await_review"
     | "await_publication"
+    | "publish_and_submit_proof"
+    | "await_proof_review"
+    | "revise_publication_proof"
+    | "proof_verified"
     | "contact_support";
   workItemId: string | null;
   deadline: string | null;
   blockedReason: string | null;
+  owner?: PublicationStateOwner;
 };
 
 function deadlineValue(value: string | null): number {
@@ -207,12 +307,45 @@ export function deriveNextAction(workspace: ActiveMissionWorkspace): ActiveMissi
       blockedReason: workflow.state === "cancelled" ? "workflow_cancelled" : "workflow_expired",
     };
   }
+  const publicationItem = (state: WorkItemState, requiredOnly = false) =>
+    firstByDeadline(workItems.filter((item) => item.state === state && (!requiredOnly || item.required)));
+  if (workflow.state === "proof_verified") {
+    const verified = publicationItem("proof_verified", true) ?? publicationItem("proof_verified");
+    return verified
+      ? { ...actionForItem("proof_verified", verified), owner: "none" }
+      : { kind: "contact_support", workItemId: null, deadline: workflow.deadline, blockedReason: "workflow_state_inconsistent" };
+  }
   if (workflow.state === "approved_to_publish") {
+    const approved = publicationItem("approved_to_publish", true) ?? publicationItem("approved_to_publish");
+    return approved
+      ? { ...actionForItem("publish_and_submit_proof", approved), owner: "creator" }
+      : { kind: "await_publication", workItemId: null, deadline: workflow.deadline, blockedReason: "approval_is_not_completion" };
+  }
+  if (workflow.state === "publication_in_progress") {
+    const correction = publicationItem("proof_correction_requested", true)
+      ?? publicationItem("proof_correction_requested");
+    if (correction) {
+      return { ...actionForItem("revise_publication_proof", correction), owner: "creator" };
+    }
+    const approved = publicationItem("approved_to_publish", true) ?? publicationItem("approved_to_publish");
+    if (approved) {
+      return { ...actionForItem("publish_and_submit_proof", approved), owner: "creator" };
+    }
+    const submitted = publicationItem("proof_submitted", true)
+      ?? publicationItem("proof_under_review", true)
+      ?? publicationItem("proof_submitted")
+      ?? publicationItem("proof_under_review");
+    if (submitted) {
+      return {
+        ...actionForItem("await_proof_review", submitted, "operator_proof_review"),
+        owner: "operator",
+      };
+    }
     return {
-      kind: "await_publication",
+      kind: "contact_support",
       workItemId: null,
       deadline: workflow.deadline,
-      blockedReason: "approval_is_not_completion",
+      blockedReason: "workflow_state_inconsistent",
     };
   }
 

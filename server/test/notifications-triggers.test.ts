@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import {
@@ -7,6 +7,7 @@ import {
   makeCreator, makeMission, makeStaff, seedActiveMission,
   makeGift, addCodes, setXp, cleanup, DEMO_WS,
 } from "./helpers";
+import { seedPublicationProofReleaseFixture } from "./fixtures/publicationProofRelease";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const integrationSkipReason = activeMissionIntegrationSkipReason();
@@ -19,10 +20,25 @@ const migrationSql = readFileSync(migrationPath, "utf8")
   .toLowerCase()
   .replace(/\r\n/g, "\n");
 
+const publicationMigrationPath = resolve(
+  "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+);
+const publicationMigrationSql = existsSync(publicationMigrationPath)
+  ? readFileSync(publicationMigrationPath, "utf8")
+    .toLowerCase()
+    .replace(/\r\n/g, "\n")
+  : "";
+
 function definition(name: string): string {
   const start = migrationSql.lastIndexOf(`create or replace function ${name}(`);
   const end = migrationSql.indexOf("\n$$;", start);
   return start < 0 || end < 0 ? "" : migrationSql.slice(start, end + 4);
+}
+
+function publicationDefinition(name: string): string {
+  const start = publicationMigrationSql.lastIndexOf(`create or replace function ${name}(`);
+  const end = publicationMigrationSql.indexOf("\n$$;", start);
+  return start < 0 || end < 0 ? "" : publicationMigrationSql.slice(start, end + 4);
 }
 
 describe("active-mission notification SQL contract", () => {
@@ -126,6 +142,122 @@ describe("active-mission notification SQL contract", () => {
     expect(migrationSql).not.toMatch(/\b(?:cron\.schedule|pg_cron|create extension)\b/);
     expect(migrationSql).not.toMatch(
       /(?:insert into|update|delete from) public\.(?:point_balances|point_transactions|earnings_balances|earnings_transactions|workspace_budgets|workspace_budget_transactions|redemptions)\b/,
+    );
+  });
+});
+
+describe("publication-proof notification SQL contract", () => {
+  const currentConstraintStart = migrationSql.indexOf(
+    "add constraint notifications_type_check",
+  );
+  const currentConstraintEnd = migrationSql.indexOf("));", currentConstraintStart);
+  const currentTypes = [
+    ...migrationSql
+      .slice(currentConstraintStart, currentConstraintEnd)
+      .matchAll(/'([a-z_]+)'/g),
+  ].map((match) => match[1]);
+  const publicationTypes = [
+    "mission_publication_correction_requested",
+    "mission_publication_verified",
+  ] as const;
+
+  it("additively extends the current notification type and payload-size constraints", () => {
+    const typeStart = publicationMigrationSql.indexOf(
+      "add constraint notifications_type_check",
+    );
+    const typeEnd = publicationMigrationSql.indexOf("));", typeStart);
+    const found = [
+      ...publicationMigrationSql.slice(typeStart, typeEnd).matchAll(/'([a-z_]+)'/g),
+    ].map((match) => match[1]);
+    const payloadStart = publicationMigrationSql.indexOf(
+      "add constraint notifications_workflow_payload_size_check",
+    );
+    const payloadEnd = publicationMigrationSql.indexOf(")", payloadStart);
+    const payloadConstraint = publicationMigrationSql.slice(payloadStart, payloadEnd);
+
+    expect(found).toEqual([...currentTypes, ...publicationTypes]);
+    expect(new Set(found).size).toBe(found.length);
+    for (const type of publicationTypes) {
+      expect(payloadConstraint).toContain(`'${type}'`);
+    }
+  });
+
+  it("observes only the correction-requested and verified workflow events", () => {
+    const trigger = publicationDefinition("private.notify_publication_proof_event");
+
+    expect(publicationMigrationSql).toContain(
+      "after insert on public.mission_workflow_events",
+    );
+    expect(trigger).toContain("'mission_publication_proof_correction_requested'");
+    expect(trigger).toContain("'mission_publication_proof_verified'");
+    expect(trigger).toContain("mission_publication_proof_review_items");
+    expect(trigger).toContain("mission_publication_proof_attempts");
+  });
+
+  it("keeps the private notifier definer-safe, revoked, and semantically deduped", () => {
+    const notifier = publicationDefinition(
+      "private.notify_publication_proof_outcome",
+    );
+
+    expect(notifier).toContain("returns boolean");
+    expect(notifier).toContain("security definer");
+    expect(notifier).toContain("set search_path = ''");
+    expect(notifier).toMatch(
+      /begin\s+insert into private\.mission_workflow_notification_dedupe[\s\S]*?p_semantic_key[\s\S]*?on conflict do nothing[\s\S]*?get diagnostics v_claimed = row_count;[\s\S]*?if v_claimed = 0 then[\s\S]*?return false;[\s\S]*?end if;[\s\S]*?insert into public\.notifications[\s\S]*?exception\s+when others then\s+return false;\s+end;/,
+    );
+    expect(publicationMigrationSql).toContain(
+      "revoke all on function private.notify_publication_proof_outcome(uuid, text, uuid, text, jsonb) from public, anon, authenticated, service_role;",
+    );
+    expect(publicationMigrationSql).not.toContain(
+      "grant execute on function private.notify_publication_proof_outcome",
+    );
+  });
+
+  it("limits payload to the approved publication-proof fields", () => {
+    const notifier = publicationDefinition(
+      "private.notify_publication_proof_outcome",
+    );
+    const payload = notifier.match(
+      /v_data := jsonb_strip_nulls\(jsonb_build_object\(([\s\S]*?)\)\);/,
+    )?.[1] ?? "";
+    const keys = [...payload.matchAll(/^\s{4}'([a-z_]+)'\s*,/gm)]
+      .map((match) => match[1]);
+
+    expect(keys).toEqual([
+      "mission_title",
+      "mission_slug",
+      "submission_id",
+      "deliverable_title",
+      "deadline",
+      "attempt_number",
+      "reason_categories",
+    ]);
+    expect(payload).not.toMatch(/finding|summary|checklist|url|account|creator|operator/);
+  });
+
+  it("catches notification insert errors without rolling back the event transition", () => {
+    const notifier = publicationDefinition(
+      "private.notify_publication_proof_outcome",
+    );
+    const trigger = publicationDefinition("private.notify_publication_proof_event");
+
+    expect(notifier).toMatch(
+      /insert into public\.notifications[\s\S]*?exception\s+when others then\s+return false;/,
+    );
+    expect(trigger).toMatch(
+      /perform private\.notify_publication_proof_outcome\([\s\S]*?return new;[\s\S]*?exception\s+when others then\s+return new;/,
+    );
+  });
+
+  it("adds no scheduler, reward, submission-status, XP, earnings, or budget mutation", () => {
+    expect(publicationMigrationSql).not.toMatch(
+      /\b(?:cron\.schedule|pg_cron|create extension)\b/,
+    );
+    expect(publicationMigrationSql).not.toMatch(
+      /(?:insert into|update|delete from)\s+public\.(?:mission_submissions|point_balances|point_transactions|earnings_balances|earnings_transactions|workspace_budgets|workspace_budget_transactions|redemptions)\b/,
+    );
+    expect(publicationMigrationSql).not.toMatch(
+      /(?:set|update)[\s\S]{0,80}\b(?:status|xp|earnings|budget)\s*=/,
     );
   });
 });
@@ -344,5 +476,130 @@ activeSuite(`active-mission notification live integration${integrationSkipReason
     expect(retried.error).toBeNull();
     expect((await notifsFor(active.creator.jwt)).filter((row) =>
       row.data.submission_id === active.submission.id)).toHaveLength(2);
+  });
+
+  it("commits a proof correction after notification failure and permits semantic retry", async () => {
+    const fixture = await seedPublicationProofReleaseFixture();
+    const svc = serviceForTests();
+    const workItemId = fixture.items.optionalEvidence.id;
+    const instruction = await svc.from("mission_publication_instructions")
+      .select("revision")
+      .eq("mission_work_item_id", workItemId)
+      .single();
+    expect(instruction.error).toBeNull();
+
+    const submitted = await svc.rpc("submit_mission_publication_proof", {
+      p_submission: fixture.submission.id,
+      p_creator: fixture.creator.id,
+      p_workspace: fixture.workspace.id,
+      p_work_item: workItemId,
+      p_expected_state: "approved_to_publish",
+      p_expected_revision: instruction.data!.revision,
+      p_idempotency_key: randomUUID(),
+      p_proof: {
+        primary_url: `https://www.instagram.com/p/${randomUUID()}`,
+        additional_urls: [],
+        metadata_status: "unavailable",
+        metadata_snapshot: {},
+        metadata_error_category: "platform_blocked",
+      },
+      p_evidence_asset_ids: [],
+    });
+    expect(submitted.error).toBeNull();
+    const attemptId = submitted.data.attempt.id as string;
+    const attemptNumber = submitted.data.attempt.attempt_number as number;
+    const started = await svc.rpc("start_publication_proof_review", {
+      p_workspace: fixture.workspace.id,
+      p_workflow: fixture.workflow.id,
+      p_work_item: workItemId,
+      p_attempt: attemptId,
+      p_expected_state: "proof_submitted",
+      p_expected_revision: instruction.data!.revision,
+      p_operator: fixture.operator.id,
+      p_idempotency_key: randomUUID(),
+    });
+    expect(started.error).toBeNull();
+    expect((await svc.from("missions").update({ title: "x".repeat(9000) })
+      .eq("id", fixture.mission.id)).error).toBeNull();
+
+    const corrected = await svc.rpc("request_publication_proof_correction", {
+      p_workspace: fixture.workspace.id,
+      p_workflow: fixture.workflow.id,
+      p_work_item: workItemId,
+      p_attempt: attemptId,
+      p_expected_state: "proof_under_review",
+      p_expected_revision: instruction.data!.revision,
+      p_operator: fixture.operator.id,
+      p_idempotency_key: randomUUID(),
+      p_checklist: {
+        publicly_accessible: true,
+        platform_matches: true,
+        account_matches: true,
+        content_matches_approved_version: false,
+        timing_acceptable: true,
+        disclosures_present: true,
+      },
+      p_items: [{
+        category: "content",
+        text: "Publish the approved final cut",
+        position: 0,
+      }],
+      p_summary: "Correction required",
+    });
+    expect(corrected.error).toBeNull();
+    expect(corrected.data.work_item.state).toBe("proof_correction_requested");
+    expect((await svc.from("notifications")
+      .select("id")
+      .eq("user_id", fixture.creator.id)
+      .eq("type", "mission_publication_correction_requested")
+      .eq("entity_id", workItemId)).data).toEqual([]);
+
+    expect((await svc.from("missions").update({ title: fixture.mission.slug })
+      .eq("id", fixture.mission.id)).error).toBeNull();
+    const replay = await svc.from("mission_workflow_events").insert({
+      workspace_id: fixture.workspace.id,
+      mission_workflow_id: fixture.workflow.id,
+      mission_work_item_id: workItemId,
+      actor_type: "system",
+      actor_id: null,
+      event_type: "mission_publication_proof_correction_requested",
+      entity_type: "mission_publication_proof_review",
+      entity_id: corrected.data.review.id,
+      metadata: {
+        attempt_number: attemptNumber,
+        correction_count: 1,
+        creator_response_deadline: corrected.data.review.creator_response_deadline,
+      },
+    });
+    expect(replay.error).toBeNull();
+
+    const notifications = await svc.from("notifications")
+      .select("type, entity_type, entity_id, data")
+      .eq("user_id", fixture.creator.id)
+      .eq("type", "mission_publication_correction_requested")
+      .eq("entity_id", workItemId);
+    expect(notifications.error).toBeNull();
+    expect(notifications.data).toHaveLength(1);
+    expect(notifications.data?.[0]).toMatchObject({
+      type: "mission_publication_correction_requested",
+      entity_type: "mission_work_item",
+      entity_id: workItemId,
+      data: {
+        mission_title: fixture.mission.slug,
+        mission_slug: fixture.mission.slug,
+        submission_id: fixture.submission.id,
+        attempt_number: attemptNumber,
+        reason_categories: ["content"],
+      },
+    });
+    expect(Object.keys(notifications.data?.[0].data ?? {}).sort()).toEqual([
+      "attempt_number",
+      "deadline",
+      "deliverable_title",
+      "mission_slug",
+      "mission_title",
+      "reason_categories",
+      "submission_id",
+    ]);
   });
 });

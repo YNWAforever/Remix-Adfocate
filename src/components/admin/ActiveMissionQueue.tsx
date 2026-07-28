@@ -8,6 +8,11 @@ export type ActiveMissionQueueUiFilters = {
   state?: ActiveMissionReviewState;
   reviewer?: string;
   mission?: string;
+  proofState?: string;
+  late?: boolean;
+  metadataStatus?: string;
+  platform?: string;
+  publicationDeadline?: string;
 };
 
 type Props = {
@@ -55,6 +60,23 @@ function submittedLabel(value: string | null, now: Date, t: Translate) {
 export function ActiveMissionQueue({ items, filters = EMPTY_FILTERS, onFiltersChange, now = new Date() }: Props) {
   const { lang, t } = useI18n();
   const locale = lang === "zh" ? "zh-HK" : "en-US";
+  const proofCopy = lang === "zh" ? {
+    proofState: "證明狀態", allProofStates: "所有證明狀態", lateness: "提交時限",
+    allLateness: "所有提交", late: "逾期", onTime: "準時",
+    metadataStatus: "頁面資料狀態", allMetadata: "所有頁面資料狀態",
+    available: "可用", unavailable: "不可用", unsafe: "不安全",
+    platform: "平台", allPlatforms: "所有平台",
+    publicationDeadline: "發佈截止時間", allDeadlines: "所有發佈截止時間",
+    overdue: "已逾期", upcoming: "尚未到期", submittedLate: "逾期提交",
+  } : {
+    proofState: "Proof state", allProofStates: "All proof states", lateness: "Lateness",
+    allLateness: "All submissions", late: "Late", onTime: "On time",
+    metadataStatus: "Metadata status", allMetadata: "All metadata statuses",
+    available: "Available", unavailable: "Unavailable", unsafe: "Unsafe",
+    platform: "Platform", allPlatforms: "All platforms",
+    publicationDeadline: "Publication deadline", allDeadlines: "All publication deadlines",
+    overdue: "Overdue", upcoming: "Upcoming", submittedLate: "Submitted late",
+  };
   const [draftFilters, setDraftFilters] = useState<ActiveMissionQueueUiFilters>(filters);
   useEffect(() => {
     setDraftFilters(filters);
@@ -67,7 +89,7 @@ export function ActiveMissionQueue({ items, filters = EMPTY_FILTERS, onFiltersCh
       mission: draftFilters.mission?.trim(),
     };
     for (const key of Object.keys(next) as Array<keyof ActiveMissionQueueUiFilters>) {
-      if (!next[key]) delete next[key];
+      if (next[key] === undefined || next[key] === "") delete next[key];
     }
     onFiltersChange?.(next);
   };
@@ -79,7 +101,7 @@ export function ActiveMissionQueue({ items, filters = EMPTY_FILTERS, onFiltersCh
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.activeMission.queue.subtitle")}</p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <label className="grid gap-1 text-sm font-bold">
           {t("app.admin.activeMission.queue.risk")}
           <select className={FIELD} value={draftFilters.risk ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, risk: event.target.value as ActiveMissionRiskBucket || undefined }))}>
@@ -106,6 +128,54 @@ export function ActiveMissionQueue({ items, filters = EMPTY_FILTERS, onFiltersCh
           {t("app.admin.activeMission.queue.mission")}
           <input className={FIELD} value={draftFilters.mission ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, mission: event.target.value }))} placeholder={t("app.admin.activeMission.queue.missionId")} />
         </label>
+        <label className="grid gap-1 text-sm font-bold">
+          {proofCopy.proofState}
+          <select className={FIELD} value={draftFilters.proofState ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, proofState: event.target.value || undefined }))}>
+            <option value="">{proofCopy.allProofStates}</option>
+            <option value="approved_to_publish">approved_to_publish</option>
+            <option value="proof_submitted">proof_submitted</option>
+            <option value="proof_under_review">proof_under_review</option>
+            <option value="proof_correction_requested">proof_correction_requested</option>
+            <option value="proof_verified">proof_verified</option>
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-bold">
+          {proofCopy.lateness}
+          <select className={FIELD} value={draftFilters.late === undefined ? "" : String(draftFilters.late)} onChange={(event) => setDraftFilters((current) => ({ ...current, late: event.target.value === "" ? undefined : event.target.value === "true" }))}>
+            <option value="">{proofCopy.allLateness}</option>
+            <option value="true">{proofCopy.late}</option>
+            <option value="false">{proofCopy.onTime}</option>
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-bold">
+          {proofCopy.metadataStatus}
+          <select className={FIELD} value={draftFilters.metadataStatus ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, metadataStatus: event.target.value || undefined }))}>
+            <option value="">{proofCopy.allMetadata}</option>
+            <option value="available">{proofCopy.available}</option>
+            <option value="unavailable">{proofCopy.unavailable}</option>
+            <option value="unsafe">{proofCopy.unsafe}</option>
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-bold">
+          {proofCopy.platform}
+          <select className={FIELD} value={draftFilters.platform ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, platform: event.target.value || undefined }))}>
+            <option value="">{proofCopy.allPlatforms}</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="youtube">YouTube</option>
+            <option value="facebook">Facebook</option>
+            <option value="threads">Threads</option>
+            <option value="linkedin">LinkedIn</option>
+          </select>
+        </label>
+        <label className="grid gap-1 text-sm font-bold">
+          {proofCopy.publicationDeadline}
+          <select className={FIELD} value={draftFilters.publicationDeadline ?? ""} onChange={(event) => setDraftFilters((current) => ({ ...current, publicationDeadline: event.target.value || undefined }))}>
+            <option value="">{proofCopy.allDeadlines}</option>
+            <option value="overdue">{proofCopy.overdue}</option>
+            <option value="upcoming">{proofCopy.upcoming}</option>
+          </select>
+        </label>
         <button
           type="button"
           onClick={applyFilters}
@@ -128,7 +198,11 @@ export function ActiveMissionQueue({ items, filters = EMPTY_FILTERS, onFiltersCh
                     <span>{item.creatorDisplayName}</span>
                   </p>
                 </div>
-                <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold">{dueLabel(item.reviewDueAt, now, t, locale)}</span>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold">{dueLabel(item.reviewDueAt, now, t, locale)}</span>
+                  {"submittedLate" in item && item.submittedLate ? <span className="rounded-full border-2 border-amber-800 bg-amber-100 px-2 py-1 text-xs font-bold">{proofCopy.submittedLate}</span> : null}
+                  {"metadataStatus" in item && item.metadataStatus ? <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-1 text-xs font-bold">{String(item.metadataStatus)}</span> : null}
+                </div>
               </div>
               <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
                 <div><dt className="font-bold">{t("app.admin.activeMission.queue.sla")}</dt><dd>{t(RISK_KEYS[item.riskBucket])}</dd></div>

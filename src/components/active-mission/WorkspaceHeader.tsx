@@ -14,6 +14,8 @@ const WORKFLOW_KEYS: Record<ActiveMissionWorkspace["workflow"]["state"], string>
   in_review: "app.activeMission.workspace.state.inReview",
   revision_requested: "app.activeMission.workspace.state.revisionRequested",
   approved_to_publish: "app.activeMission.workspace.state.approvedToPublish",
+  publication_in_progress: "app.activeMission.workspace.state.inReview",
+  proof_verified: "app.activeMission.workspace.state.approvedToPublish",
   cancelled: "app.activeMission.workspace.state.cancelled",
   expired: "app.activeMission.workspace.state.expired",
 };
@@ -26,6 +28,10 @@ const ACTION_KEYS: Record<ActiveMissionNextAction["kind"], string> = {
   revise: "app.activeMission.workspace.action.revise",
   await_review: "app.activeMission.workspace.action.awaitReview",
   await_publication: "app.activeMission.workspace.action.awaitPublication",
+  publish_and_submit_proof: "app.activeMission.workspace.action.awaitPublication",
+  await_proof_review: "app.activeMission.workspace.action.awaitReview",
+  revise_publication_proof: "app.activeMission.workspace.action.revise",
+  proof_verified: "app.activeMission.workspace.action.awaitPublication",
   contact_support: "app.activeMission.workspace.action.contactSupport",
 };
 
@@ -37,6 +43,10 @@ const RESPONSIBLE_KEYS: Record<ActiveMissionNextAction["kind"], string> = {
   revise: "app.activeMission.workspace.responsible.revise",
   await_review: "app.activeMission.workspace.responsible.awaitReview",
   await_publication: "app.activeMission.workspace.responsible.awaitPublication",
+  publish_and_submit_proof: "app.activeMission.workspace.responsible.awaitPublication",
+  await_proof_review: "app.activeMission.workspace.responsible.awaitReview",
+  revise_publication_proof: "app.activeMission.workspace.responsible.revise",
+  proof_verified: "app.activeMission.workspace.responsible.awaitPublication",
   contact_support: "app.activeMission.workspace.responsible.contactSupport",
 };
 

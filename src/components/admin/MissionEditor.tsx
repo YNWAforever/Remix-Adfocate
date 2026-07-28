@@ -7,6 +7,7 @@ import { PlatformPicker } from "./PlatformPicker";
 import { MissionBrief } from "@/components/MissionBrief";
 import { MissionFacts } from "@/components/MissionFacts";
 import type { Mission } from "@/lib/queries/kocmax";
+import { useI18n } from "@/lib/i18n";
 
 const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
 const REQUIREMENT_CATEGORIES = ["format", "key_message", "compliance", "quality", "other"] as const;
@@ -26,10 +27,21 @@ type Props = {
 const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
 let editorKeySequence = 0;
 const nextEditorKey = () => `mission-workflow-editor-${editorKeySequence++}`;
+const PUBLICATION_POLICY_ERROR_MESSAGE_KEYS: Record<string, string> = {
+  PUBLICATION_INSTRUCTIONS_REQUIRED: "app.admin.missionEditor.publicationInstructionsRequired",
+  PUBLICATION_WINDOW_HOURS_INVALID: "app.admin.missionEditor.publicationWindowInvalid",
+  REQUIRED_DISCLOSURES_INVALID: "app.admin.missionEditor.requiredDisclosuresInvalid",
+  REQUIRED_DISCLOSURE_REQUIRED: "app.admin.missionEditor.requiredDisclosuresInvalid",
+  EXPECTED_ACCOUNT_INVALID: "app.admin.missionEditor.expectedAccountInvalid",
+  PROOF_EVIDENCE_POLICY_INVALID: "app.admin.missionEditor.proofEvidencePolicyInvalid",
+};
+
 
 type EditableRequirement = MissionDeliverableTemplateInput["requirements"][number] & { editorKey: string };
-type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements"> & {
+type EditableTemplate = Omit<MissionDeliverableTemplateInput, "requirements" | "proof_evidence_policy"> & {
   editorKey: string;
+  proof_evidence_policy: Record<string, unknown>;
+  proofEvidencePolicyText: string;
   requirements: EditableRequirement[];
 };
 
@@ -37,15 +49,28 @@ function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): Edit
   return templates.map((template) => ({
     ...template,
     editorKey: nextEditorKey(),
+    proofEvidencePolicyText: JSON.stringify(template.proof_evidence_policy),
     requirements: template.requirements.map((requirement) => ({ ...requirement, editorKey: nextEditorKey() })),
   }));
 }
 
+function parsedEvidencePolicy(value: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
 function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
-  return templates.map(({ editorKey: templateKey, requirements, ...template }) => {
+  return templates.map(({ editorKey: templateKey, proofEvidencePolicyText, requirements, ...template }) => {
     void templateKey;
+    const proofEvidencePolicy = parsedEvidencePolicy(proofEvidencePolicyText);
+    if (!proofEvidencePolicy) throw new Error("invalid_proof_evidence_policy");
     return {
       ...template,
+      proof_evidence_policy: proofEvidencePolicy,
       requirements: requirements.map(({ editorKey: requirementKey, ...requirement }) => {
         void requirementKey;
         return requirement;
@@ -55,6 +80,7 @@ function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTem
 }
 
 export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
+  const { t } = useI18n();
   const published = mode === "edit" && initial?.status !== "draft";
   const [f, setF] = useState({
     workspace_id: initial?.workspace_id ?? workspaces[0]?.id ?? "",
@@ -95,6 +121,15 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
 
   const submit = async () => {
     setErrors({});
+    const invalidEvidencePolicyIndex = f.creator_workflow_mode === "active_workspace"
+      ? f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null)
+      : -1;
+    if (invalidEvidencePolicyIndex >= 0) {
+      setErrors({
+        [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: "PROOF_EVIDENCE_POLICY_INVALID",
+      });
+      return;
+    }
     const body: MissionDraftInput = {
       workspace_id: f.workspace_id, slug: f.slug, title: f.title, mission_type: f.mission_type,
       description: f.description || null, category: f.category || null,
@@ -124,7 +159,14 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
     }
   };
 
-  const Err = ({ k }: { k: string }) => (errors[k] ? <p className="text-xs font-bold text-red-600">{errors[k]}</p> : null);
+  const Err = ({ k, nested = false }: { k: string; nested?: boolean }) => {
+    const raw = errors[k] ?? (nested
+      ? Object.entries(errors).find(([field]) => field.startsWith(`${k}.`))?.[1]
+      : undefined);
+    if (!raw) return null;
+    const messageKey = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw];
+    return <p className="text-xs font-bold text-red-600">{messageKey ? t(messageKey) : raw}</p>;
+  };
   const input = "h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50";
   const area = "w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm";
   const lockNote = (reason: string) => <span className="ml-2 text-xs text-[var(--color-soft-ink)]">{reason}</span>;
@@ -270,6 +312,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                   position: previous.deliverable_templates.length,
                   required: true,
                   draft_due_offset_hours: 0,
+                  publication_instructions: "",
+                  publication_window_hours: 72,
+                  required_disclosures: [],
+                  expected_account: null,
+                  proof_evidence_policy: {},
+                  proofEvidencePolicyText: "{}",
                   requirements: [],
                 } satisfies EditableTemplate],
               }))}
@@ -334,6 +382,84 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                       )),
                     }))}
                   />
+                </label>
+                <label className="block text-sm">{t("app.admin.missionEditor.publicationInstructions")}
+                  <textarea
+                    aria-label={t("app.admin.missionEditor.publicationInstructionsAria", { position: templateIndex + 1 })}
+                    rows={3}
+                    className={area}
+                    value={template.publication_instructions}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, publication_instructions: event.target.value } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                  <Err k={`deliverable_templates.${templateIndex}.publication_instructions`} />
+                <label className="block text-sm">{t("app.admin.missionEditor.publicationWindow")}
+                  <input
+                    aria-label={t("app.admin.missionEditor.publicationWindowAria", { position: templateIndex + 1 })}
+                    className={input}
+                    type="number"
+                    min={1}
+                    value={template.publication_window_hours}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, publication_window_hours: Number(event.target.value) } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                  <Err k={`deliverable_templates.${templateIndex}.publication_window_hours`} />
+                <label className="block text-sm">{t("app.admin.missionEditor.requiredDisclosures")}
+                  <textarea
+                    aria-label={t("app.admin.missionEditor.requiredDisclosuresAria", { position: templateIndex + 1 })}
+                    rows={3}
+                    className={area}
+                    value={template.required_disclosures.join("\n")}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? {
+                          ...item,
+                          required_disclosures: event.target.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean),
+                        } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                  <Err k={`deliverable_templates.${templateIndex}.required_disclosures`} nested />
+                <label className="block text-sm">{t("app.admin.missionEditor.expectedAccount")}
+                  <input
+                    aria-label={t("app.admin.missionEditor.expectedAccountAria", { position: templateIndex + 1 })}
+                    className={input}
+                    value={template.expected_account ?? ""}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, expected_account: event.target.value.trim() || null } : item
+                      )),
+                    }))}
+                  />
+                </label>
+                  <Err k={`deliverable_templates.${templateIndex}.expected_account`} />
+                <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
+                  <textarea
+                    aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position: templateIndex + 1 })}
+                    rows={2}
+                    className={area}
+                    value={template.proofEvidencePolicyText}
+                    onChange={(event) => setF((previous) => ({
+                      ...previous,
+                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+                        index === templateIndex ? { ...item, proofEvidencePolicyText: event.target.value } : item
+                      )),
+                    }))}
+                  />
+                  <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
                 </label>
                 <button
                   type="button"

@@ -1,6 +1,8 @@
 import { ActiveMissionError } from "./errors.js";
 import type {
   DraftPatch,
+  ProofChecklist,
+  ProofInput,
   QueueItem,
   WorkflowState,
   WorkflowStateInput,
@@ -24,7 +26,16 @@ const ALLOWED_TRANSITIONS: Record<WorkItemState, readonly WorkItemState[]> = {
     "expired",
   ],
   revision_requested: ["submitted", "cancelled", "expired"],
-  approved_to_publish: ["cancelled"],
+  approved_to_publish: ["proof_submitted", "cancelled"],
+  proof_submitted: ["proof_under_review", "cancelled", "expired"],
+  proof_under_review: [
+    "proof_correction_requested",
+    "proof_verified",
+    "cancelled",
+    "expired",
+  ],
+  proof_correction_requested: ["proof_submitted", "cancelled", "expired"],
+  proof_verified: ["cancelled"],
   cancelled: [],
   expired: [],
 };
@@ -36,11 +47,25 @@ export function deriveWorkflowState({
   if (fulfillment !== null && fulfillment !== "received") {
     return "fulfillment_pending";
   }
+
+  const requiredItems = items.filter((item) => item.required);
   if (
-    items
-      .filter((item) => item.required)
-      .every((item) => item.state === "approved_to_publish")
+    requiredItems.length > 0 &&
+    requiredItems.every((item) => item.state === "proof_verified")
   ) {
+    return "proof_verified";
+  }
+  if (
+    requiredItems.some(
+      (item) =>
+        item.state === "proof_submitted" ||
+        item.state === "proof_under_review" ||
+        item.state === "proof_correction_requested",
+    )
+  ) {
+    return "publication_in_progress";
+  }
+  if (requiredItems.every((item) => item.state === "approved_to_publish")) {
     return "approved_to_publish";
   }
   if (items.some((item) => item.state === "revision_requested")) {
@@ -118,14 +143,113 @@ export function validateDraftPatch(
 
 export function compareQueueItems(left: QueueItem, right: QueueItem): number {
   return (
+    Number(right.submittedLate) - Number(left.submittedLate) ||
     compareTimestamp(left.deadline, right.deadline) ||
     compareTimestamp(left.reviewDueAt, right.reviewDueAt) ||
     compareTimestamp(left.submittedAt, right.submittedAt)
   );
 }
 
+export function comparePublicationProofQueueItems(
+  left: QueueItem,
+  right: QueueItem,
+  now = Date.now(),
+): number {
+  const deadline = (item: QueueItem) => Math.min(
+    timestampOrInfinity(item.reviewDueAt),
+    timestampOrInfinity(item.creatorResponseDeadline),
+    timestampOrInfinity(item.publicationDueAt),
+    timestampOrInfinity(item.deadline),
+  );
+  const leftDue = deadline(left);
+  const rightDue = deadline(right);
+  return Number(Boolean(right.submittedLate) || rightDue < now) - Number(Boolean(left.submittedLate) || leftDue < now)
+    || (leftDue === rightDue ? 0 : leftDue < rightDue ? -1 : 1)
+    || compareTimestamp(left.submittedAt, right.submittedAt)
+    || (left.workItemId ?? "").localeCompare(right.workItemId ?? "");
+}
+
+export function validateProofChecklist(
+  checklist: unknown,
+): asserts checklist is ProofChecklist {
+  if (
+    checklist === null ||
+    typeof checklist !== "object" ||
+    Array.isArray(checklist)
+  ) {
+    invalid("proof checklist must be an object");
+  }
+
+  const value = checklist as Record<string, unknown>;
+  const keys: (keyof ProofChecklist)[] = [
+    "publicly_accessible",
+    "platform_matches",
+    "account_matches",
+    "content_matches_approved_version",
+    "timing_acceptable",
+    "disclosures_present",
+  ];
+  if (Object.keys(value).length !== keys.length) {
+    invalid("proof checklist must contain exactly the required keys");
+  }
+  for (const key of keys) {
+    if (typeof value[key] !== "boolean") {
+      invalid(`proof checklist value for ${key} must be boolean`);
+    }
+  }
+}
+
+export function normalizeProofInput(input: unknown): ProofInput {
+  if (input === null || typeof input !== "object" || Array.isArray(input)) {
+    invalid("proof input must be an object");
+  }
+
+  const value = input as Record<string, unknown>;
+  const primaryUrl = normalizeNonBlankString(value.primaryUrl, "primaryUrl");
+  const additionalUrls = normalizeOptionalStringArray(
+    value.additionalUrls,
+    "additionalUrls",
+  );
+  if (additionalUrls.length > 4) {
+    invalid("additionalUrls may contain at most four URLs");
+  }
+
+  const allUrls = [primaryUrl, ...additionalUrls];
+  if (new Set(allUrls).size !== allUrls.length) {
+    invalid("proof URLs must be unique");
+  }
+
+  const evidenceAssetIds = normalizeOptionalStringArray(
+    value.evidenceAssetIds,
+    "evidenceAssetIds",
+  );
+  if (new Set(evidenceAssetIds).size !== evidenceAssetIds.length) {
+    invalid("evidenceAssetIds must be unique");
+  }
+
+  return { primaryUrl, additionalUrls, evidenceAssetIds };
+}
+
+function normalizeNonBlankString(value: unknown, field: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    invalid(`${field} must be a non-blank string`);
+  }
+  return value.trim();
+}
+
+function normalizeOptionalStringArray(value: unknown, field: string): string[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    invalid(`${field} must be an array of strings`);
+  }
+  return value.map((entry) => normalizeNonBlankString(entry, field));
+}
+
 function invalid(message: string): never {
-  throw new ActiveMissionError("VALIDATION_FAILED", message);
+  throw new ActiveMissionError(
+    "VALIDATION_FAILED",
+    `VALIDATION_FAILED: ${message}`,
+  );
 }
 
 function isHttpUrl(value: unknown): boolean {

@@ -1,7 +1,9 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
+
+export const publicationProofPreflightFile = "server/test/publication-proof-asset-grant-live.test.ts";
 
 export const integrationFiles = [
   "server/test/rls.test.ts",
@@ -28,6 +30,8 @@ export const integrationFiles = [
   "server/test/assistant.test.ts",
   "server/test/adminContent.test.ts",
   "server/test/content.test.ts",
+  "server/test/active-mission-schema.test.ts",
+  "server/test/active-missions.test.ts",
   "server/test/notifications-triggers.test.ts",
   "server/test/notifications-api.test.ts",
   "server/test/insights.test.ts",
@@ -43,13 +47,36 @@ export const integrationFiles = [
 
 const vitest = resolve("node_modules/vitest/vitest.mjs");
 
-export function launchIntegrationTests({ processRef = process, spawnImpl = spawn } = {}) {
+export function launchIntegrationTests({
+  processRef = process,
+  spawnImpl = spawn,
+  spawnSyncImpl = spawnSync,
+} = {}) {
+  const env = { ...processRef.env, RUN_INTEGRATION: "1" };
+  const preflight = spawnSyncImpl(
+    processRef.execPath,
+    [vitest, "run", "--no-file-parallelism", publicationProofPreflightFile],
+    { cwd: processRef.cwd(), env, stdio: "inherit" },
+  );
+  if (preflight.error) {
+    processRef.stderr.write(`${preflight.error}\n`);
+    processRef.exit(1);
+    return null;
+  }
+  if (preflight.signal) {
+    processRef.kill(processRef.pid, preflight.signal);
+    return null;
+  }
+  if (preflight.status !== 0) {
+    processRef.exit(preflight.status ?? 1);
+    return null;
+  }
   const child = spawnImpl(
     processRef.execPath,
     [vitest, "run", "--no-file-parallelism", ...integrationFiles],
     {
       cwd: processRef.cwd(),
-      env: { ...processRef.env, RUN_INTEGRATION: "1" },
+      env,
       stdio: "inherit",
     },
   );

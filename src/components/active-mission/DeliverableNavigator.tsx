@@ -16,6 +16,10 @@ const STATUS_KEYS: Record<WorkItemState, string> = {
   under_review: "app.activeMission.deliverable.status.underReview",
   revision_requested: "app.activeMission.deliverable.status.changesRequested",
   approved_to_publish: "app.activeMission.deliverable.status.approvedToPublish",
+  proof_submitted: "app.activeMission.deliverable.status.submitted",
+  proof_under_review: "app.activeMission.deliverable.status.underReview",
+  proof_correction_requested: "app.activeMission.deliverable.status.changesRequested",
+  proof_verified: "app.activeMission.deliverable.status.approvedToPublish",
   cancelled: "app.activeMission.deliverable.status.cancelled",
   expired: "app.activeMission.deliverable.status.expired",
 };

@@ -3,8 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api";
 import * as api from "@/lib/api";
-import type { ActiveMissionWorkspace, MissionDraft } from "../activeMission";
-import { activeMissionQueryKey, useSaveMissionDraft } from "./activeMission";
+import type { ActiveMissionWorkspace, MissionDraft, MissionPublicationView } from "../activeMission";
+import {
+  activeMissionQueryKey, missionPublicationQueryKey, useSaveMissionDraft, useSubmitPublicationProof,
+} from "./activeMission";
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -538,3 +540,57 @@ function replaceDraftForTest(workspaceValue: ActiveMissionWorkspace, nextDraft: 
       item.id === "item-1" ? { ...item, draft: nextDraft } : item),
   };
 }
+describe("useSubmitPublicationProof request scoping", () => {
+  it("does not expose a deferred stale conflict after switching submissions", async () => {
+    const request = deferred<{ attempt: never }>();
+    vi.spyOn(api, "apiFetch").mockImplementation(() => request.promise);
+    const { queryClient, wrapper } = setup();
+    const publicationB = {
+      workItemId: "item-1", revision: 9, attempts: [],
+    } as unknown as MissionPublicationView;
+    queryClient.setQueryData(missionPublicationQueryKey("sub-2", "item-1"), publicationB);
+    const { result, rerender } = renderHook(
+      ({ submissionId }) => useSubmitPublicationProof(submissionId),
+      { wrapper, initialProps: { submissionId: "sub-1" } },
+    );
+    const localProof = {
+      workItemId: "item-1", expectedState: "approved_to_publish", expectedRevision: 4,
+      idempotencyKey: "11111111-1111-4111-8111-111111111111",
+      primaryUrl: "https://instagram.com/p/local",
+    };
+    let submit!: Promise<unknown>;
+    act(() => { submit = result.current.mutateAsync(localProof); });
+    await waitFor(() => expect(result.current.isPending).toBe(true));
+    act(() => { rerender({ submissionId: "sub-2" }); });
+    expect(result.current).toMatchObject({
+      status: "idle",
+      data: undefined,
+      error: null,
+      variables: undefined,
+      isIdle: true,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+    });
+
+    const currentPublication = {
+      workItemId: "item-1", revision: 5, attempts: [{ id: "server-attempt" }],
+    } as unknown as MissionPublicationView;
+    const stale = new ApiError(409, "WORKFLOW_STALE", "Proof state is stale", { currentPublication });
+    request.reject(stale);
+    await act(async () => { await expect(submit).rejects.toBe(stale); });
+
+    expect(result.current.conflict).toBeNull();
+    expect(queryClient.getQueryData(missionPublicationQueryKey("sub-2", "item-1"))).toBe(publicationB);
+    expect(result.current).toMatchObject({
+      status: "idle",
+      data: undefined,
+      error: null,
+      variables: undefined,
+      isIdle: true,
+      isPending: false,
+      isSuccess: false,
+      isError: false,
+    });
+  });
+});

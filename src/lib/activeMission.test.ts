@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { deriveNextAction, type ActiveMissionWorkspace, type WorkItemState } from "./activeMission";
+import {
+  deriveNextAction,
+  publicationStatePresentation,
+  type ActiveMissionWorkspace,
+  type PublicationProofReviewView,
+  type WorkItemState,
+} from "./activeMission";
 
 function workspace(options: {
   workflowState?: ActiveMissionWorkspace["workflow"]["state"];
@@ -68,6 +74,44 @@ const fulfillment = (status: "preparing" | "shipped" | "received"): NonNullable<
 });
 
 describe("deriveNextAction", () => {
+  it("defines stable label keys and owners for every publication state", () => {
+    expect(publicationStatePresentation).toEqual({
+      approved_to_publish: { labelKey: "activeMission.state.approvedToPublish", owner: "creator" },
+      proof_submitted: { labelKey: "activeMission.state.proofSubmitted", owner: "operator" },
+      proof_under_review: { labelKey: "activeMission.state.proofUnderReview", owner: "operator" },
+      proof_correction_requested: { labelKey: "activeMission.state.proofCorrectionRequested", owner: "creator" },
+      proof_verified: { labelKey: "activeMission.state.proofVerified", owner: "none" },
+    });
+  });
+
+  it("models the server correction decision as rejected", () => {
+    const review: PublicationProofReviewView = {
+      id: "review-1",
+      state: "correction_requested",
+      decision: "rejected",
+      reviewedAt: "2026-07-26T00:00:00Z",
+      createdAt: "2026-07-25T00:00:00Z",
+      creatorResponseDeadline: null,
+    };
+    expect(review.decision).toBe("rejected");
+  });
+
+  it.each([
+    ["approved_to_publish", "publish_and_submit_proof", "creator"],
+    ["proof_submitted", "await_proof_review", "operator"],
+    ["proof_under_review", "await_proof_review", "operator"],
+    ["proof_correction_requested", "revise_publication_proof", "creator"],
+    ["proof_verified", "proof_verified", "none"],
+  ] as const)("maps publication item %s to %s", (state, kind, owner) => {
+    const workflowState = state === "approved_to_publish" || state === "proof_verified"
+      ? state
+      : "publication_in_progress";
+    expect(deriveNextAction(workspace({
+      workflowState,
+      items: [{ id: "publication-item", state, deadline: "2026-07-19T00:00:00Z" }],
+    }))).toMatchObject({ kind, owner, workItemId: "publication-item" });
+  });
+
   it("prioritizes a revision request over other editable work", () => {
     expect(deriveNextAction(workspace({
       workflowState: "revision_requested",
@@ -121,7 +165,10 @@ describe("deriveNextAction", () => {
     expect(deriveNextAction(workspace({
       workflowState: "approved_to_publish",
       items: [{ id: "item-1", state: "approved_to_publish", deadline: null }],
-    }))).toEqual({ kind: "await_publication", workItemId: null, deadline: "2026-07-20T00:00:00Z", blockedReason: "approval_is_not_completion" });
+    }))).toEqual({
+      kind: "publish_and_submit_proof", workItemId: "item-1", deadline: null,
+      blockedReason: null, owner: "creator",
+    });
   });
 
   it("does not reopen optional drafting after the overall workflow is approved", () => {

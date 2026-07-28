@@ -1,10 +1,16 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ActiveMissionNextAction, ActiveMissionWorkspace, MissionWorkItemView } from "@/lib/activeMission";
 import type { ActiveMissionWorkflow } from "@/lib/admin";
 import { I18nProvider } from "@/lib/i18n";
 import { dict, type Locale } from "@/lib/i18n.dict";
+import {
+  renderNotification,
+  type NotificationRow,
+  type NotificationType,
+} from "@/lib/notifications";
 import { ActiveMissionQueue } from "@/components/admin/ActiveMissionQueue";
 import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
 import { DeliverableNavigator } from "./DeliverableNavigator";
@@ -90,6 +96,37 @@ async function renderLocale(ui: React.ReactNode, locale: Locale) {
   return result;
 }
 
+function renderOutcomeNotification(
+  type: NotificationType,
+  locale: Locale,
+) {
+  const row: NotificationRow = {
+    id: "notification-1",
+    type,
+    data: {
+      mission_title: "Summer launch",
+      mission_slug: "summer-launch",
+      submission_id: "submission-1",
+      deliverable_title: "Instagram Reel",
+      deadline: "29 Jul",
+      attempt_number: 2,
+      reason_categories: ["content", "disclosure"],
+    },
+    entity_type: "mission_work_item",
+    entity_id: "work-item-1",
+    read_at: null,
+    created_at: "2026-07-27T00:00:00.000Z",
+  };
+  const t = (key: string, params: Record<string, string | number> = {}) => {
+    let value = (dict[locale] as Record<string, string>)[key] ?? key;
+    for (const [param, replacement] of Object.entries(params)) {
+      value = value.replaceAll(`{${param}}`, String(replacement));
+    }
+    return value;
+  };
+  return renderNotification(row, t);
+}
+
 describe("active mission bilingual UI", () => {
   beforeEach(() => window.localStorage.clear());
   afterEach(() => cleanup());
@@ -159,7 +196,7 @@ describe("active mission bilingual UI", () => {
 
   it("renders creator and operator route states in zh-Hant-HK", async () => {
     const { WorkspaceProblem } = await import("@/routes/_app.my.$submissionId");
-    const queueModule = await import("@/routes/admin.active-missions");
+    const queueModule = await import("@/routes/admin.active-missions.index");
     const { AdminActiveMissionReviewView } = await import("@/routes/admin.active-missions.$workflowId");
     const QueueView = queueModule.Route.options.component as React.ComponentType;
 
@@ -184,4 +221,120 @@ describe("active mission bilingual UI", () => {
     expect(dict.en["app.activeMission.timeline.state.approvedToPublish"]).toBe("Approved to publish — rewards are not issued yet");
     expect(dict.zh["app.activeMission.timeline.state.approvedToPublish"]).toBe("已批准發佈 — 尚未發放獎賞");
   });
+});
+  it.each([
+    [
+      "en",
+      "mission_publication_correction_requested",
+      "Publication proof needs correction",
+      "\"Instagram Reel\" publication proof (attempt 2) needs correction. Reason categories: content,disclosure.",
+      XCircle,
+    ],
+    [
+      "zh",
+      "mission_publication_correction_requested",
+      "發佈證明需要修正",
+      "「Instagram Reel」的發佈證明（第 2 次提交）需要修正。原因類別：content,disclosure。",
+      XCircle,
+    ],
+    [
+      "en",
+      "mission_publication_verified",
+      "Publication proof verified",
+      "\"Instagram Reel\" publication proof (attempt 2) has been verified.",
+      CheckCircle2,
+    ],
+    [
+      "zh",
+      "mission_publication_verified",
+      "發佈證明已核實",
+      "「Instagram Reel」的發佈證明（第 2 次提交）已核實。",
+      CheckCircle2,
+    ],
+  ] as const)(
+    "renders the %s %s notification with bilingual copy, creator link, and icon",
+    (locale, type, title, body, icon) => {
+      const rendered = renderOutcomeNotification(type, locale);
+
+      expect(rendered).toMatchObject({
+        title,
+        body,
+        href: "/my/submission-1",
+        icon,
+      });
+      expect(dict[locale][`app.notif.${type}.title`]).toBe(title);
+      expect(dict[locale][`app.notif.${type}.body`]).toBeTruthy();
+    },
+  );
+
+describe("publication proof operational copy", () => {
+  const publicationProofKeys = [
+    "app.activeMission.publication.status.ready",
+    "app.activeMission.publication.status.submitted",
+    "app.activeMission.publication.status.underReview",
+    "app.activeMission.publication.status.correctionRequested",
+    "app.activeMission.publication.status.verified",
+    "app.activeMission.publication.validation.urlRequired",
+    "app.activeMission.publication.validation.urlInvalid",
+    "app.activeMission.publication.validation.evidenceRequired",
+    "app.activeMission.publication.validation.acknowledgementRequired",
+    "app.activeMission.publication.checklist.title",
+    "app.activeMission.publication.checklist.platform",
+    "app.activeMission.publication.checklist.account",
+    "app.activeMission.publication.checklist.disclosures",
+    "app.activeMission.publication.checklist.metadata",
+    "app.activeMission.publication.checklist.evidence",
+    "app.activeMission.publication.correction.title",
+    "app.activeMission.publication.correction.deadline",
+    "app.activeMission.publication.correction.category",
+    "app.activeMission.publication.correction.details",
+    "app.activeMission.publication.metadata.available",
+    "app.activeMission.publication.metadata.unavailable",
+    "app.activeMission.publication.metadata.retry",
+    "app.activeMission.publication.metadata.unavailableHelp",
+    "app.activeMission.publication.recovery.title",
+    "app.activeMission.publication.recovery.stale",
+    "app.activeMission.publication.recovery.uploadFailed",
+    "app.activeMission.publication.recovery.retryPreserved",
+    "app.activeMission.publication.recovery.reviewSubmission",
+    "app.activeMission.publication.confirmation.submitTitle",
+    "app.activeMission.publication.confirmation.submitBody",
+    "app.activeMission.publication.confirmation.submitAction",
+    "app.admin.activeMission.publication.confirmation.verifyTitle",
+    "app.admin.activeMission.publication.confirmation.verifyBody",
+    "app.admin.activeMission.publication.confirmation.rewardNeutral",
+    "app.admin.activeMission.publication.confirmation.verifyAction",
+    "app.notif.mission_publication_ready.title",
+    "app.notif.mission_publication_ready.body",
+    "app.notif.mission_publication_deadline_approaching.title",
+    "app.notif.mission_publication_deadline_approaching.body",
+    "app.notif.mission_publication_deadline_overdue.title",
+    "app.notif.mission_publication_deadline_overdue.body",
+    "app.notif.mission_publication_correction_requested.title",
+    "app.notif.mission_publication_correction_requested.body",
+    "app.notif.mission_publication_verified.title",
+    "app.notif.mission_publication_verified.body",
+    "app.admin.activeMission.metrics.submissionConversion",
+    "app.admin.activeMission.metrics.onTimePublication",
+    "app.admin.activeMission.metrics.firstAttemptVerification",
+    "app.admin.activeMission.metrics.correctionRequest",
+    "app.admin.activeMission.metrics.averageAttemptsPerVerifiedItem",
+    "app.admin.activeMission.metrics.medianReviewTime",
+    "app.admin.activeMission.metrics.metadataFailure",
+    "app.admin.activeMission.metrics.staleRecovery",
+  ] as const;
+
+  it("keeps English and Traditional Chinese key sets identical", () => {
+    expect(Object.keys(dict.en).sort()).toEqual(Object.keys(dict.zh).sort());
+  });
+
+  it.each(["en", "zh"] as const)(
+    "provides non-blank %s publication proof operational strings",
+    (locale) => {
+      for (const key of publicationProofKeys) {
+        expect.soft(dict[locale][key], `${locale}:${key}`).toEqual(expect.any(String));
+        expect.soft(dict[locale][key]?.trim(), `${locale}:${key}`).not.toBe("");
+      }
+    },
+  );
 });
