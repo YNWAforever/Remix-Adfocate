@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 
-const h = vi.hoisted(() => ({ fetchWorkspaces: vi.fn() }));
+const h = vi.hoisted(() => ({ fetchWorkspaces: vi.fn(), fetchActiveMissionQueue: vi.fn() }));
 vi.mock("@/lib/admin", () => ({
   fetchWorkspaces: h.fetchWorkspaces,
+  fetchActiveMissionQueue: h.fetchActiveMissionQueue,
   adminMissionKeys: { workspaces: ["admin-workspaces"] },
   AdminAuthError: class AdminAuthError extends Error {},
 }));
@@ -12,6 +13,7 @@ vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ a
 
 import { AdminWorkspaceProvider, useAdminWorkspace } from "./AdminWorkspaceContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { fetchActiveMissionQueue } from "@/lib/admin";
 
 type WorkspaceResult = {
   workspaces: Array<{ id: string; slug: string; name: string }>;
@@ -35,12 +37,23 @@ function Probe() {
   );
 }
 
-function wrap(queryClient = new QueryClient()) {
+function ActiveMissionQueryProbe() {
+  const { workspaceSlug } = useAdminWorkspace();
+  useQuery({
+    queryKey: ["admin-active-missions", workspaceSlug],
+    queryFn: () => fetchActiveMissionQueue({ workspace: workspaceSlug }),
+    enabled: Boolean(workspaceSlug),
+    retry: false,
+  });
+  return null;
+}
+function wrap(queryClient = new QueryClient(), includeActiveMissionQuery = false) {
   const result = render(
     <QueryClientProvider client={queryClient}>
       <AdminWorkspaceProvider>
         <WorkspaceSwitcher />
         <Probe />
+        {includeActiveMissionQuery ? <ActiveMissionQueryProbe /> : null}
       </AdminWorkspaceProvider>
     </QueryClientProvider>,
   );
@@ -60,6 +73,7 @@ describe("WorkspaceSwitcher", () => {
     sessionStorage.clear();
     window.history.replaceState(null, "", "/admin/missions");
     h.fetchWorkspaces.mockResolvedValue(canonicalWorkspaces);
+    h.fetchActiveMissionQueue.mockResolvedValue({ items: [] });
   });
 
   afterEach(() => {
@@ -136,10 +150,11 @@ describe("WorkspaceSwitcher", () => {
     h.fetchWorkspaces.mockReturnValue(pending.promise);
     const replaceState = vi.spyOn(window.history, "replaceState");
 
-    const { queryClient } = wrap();
+    const { queryClient } = wrap(new QueryClient(), true);
     expect(screen.getByTestId("ws").textContent).toBe("invalid-workspace");
     expect(screen.getByTestId("ws-slug").textContent).toBe("ALL");
     expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBeNull();
+    expect(h.fetchActiveMissionQueue).not.toHaveBeenCalled();
 
     pending.resolve(canonicalWorkspaces);
     await waitFor(() => expect(screen.getByTestId("ws").textContent).toBe("ALL"));
@@ -148,6 +163,7 @@ describe("WorkspaceSwitcher", () => {
     expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBeNull();
     expect(new URLSearchParams(window.location.search).get("ws")).toBeNull();
     expect(replaceState).toHaveBeenCalledTimes(1);
+    expect(h.fetchActiveMissionQueue).not.toHaveBeenCalled();
 
     await act(async () => {
       queryClient.setQueryData(["admin-workspaces"], {
@@ -156,5 +172,6 @@ describe("WorkspaceSwitcher", () => {
       await Promise.resolve();
     });
     expect(replaceState).toHaveBeenCalledTimes(1);
+    expect(h.fetchActiveMissionQueue).not.toHaveBeenCalled();
   });
 });
