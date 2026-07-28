@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({ fetchWorkspaces: vi.fn() }));
@@ -35,15 +35,16 @@ function Probe() {
   );
 }
 
-function wrap() {
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
+function wrap(queryClient = new QueryClient()) {
+  const result = render(
+    <QueryClientProvider client={queryClient}>
       <AdminWorkspaceProvider>
         <WorkspaceSwitcher />
         <Probe />
       </AdminWorkspaceProvider>
     </QueryClientProvider>,
   );
+  return { queryClient, ...result };
 }
 
 const canonicalWorkspaces: WorkspaceResult = {
@@ -125,5 +126,35 @@ describe("WorkspaceSwitcher", () => {
     expect(screen.getByTestId("ws").textContent).toBe("ALL");
     expect(screen.getByTestId("ws-slug").textContent).toBe("ALL");
     expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBeNull();
+  });
+
+  it("clears an invalid UUID after the authoritative list loads and stays idempotent on refetch", async () => {
+    sessionStorage.setItem("adfocate_admin_workspace", "invalid-workspace");
+    sessionStorage.setItem("adfocate_admin_workspace_slug", "stale-brand");
+    window.history.replaceState(null, "", "/admin/missions?ws=invalid-workspace");
+    const pending = deferred<WorkspaceResult>();
+    h.fetchWorkspaces.mockReturnValue(pending.promise);
+    const replaceState = vi.spyOn(window.history, "replaceState");
+
+    const { queryClient } = wrap();
+    expect(screen.getByTestId("ws").textContent).toBe("invalid-workspace");
+    expect(screen.getByTestId("ws-slug").textContent).toBe("ALL");
+    expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBeNull();
+
+    pending.resolve(canonicalWorkspaces);
+    await waitFor(() => expect(screen.getByTestId("ws").textContent).toBe("ALL"));
+    expect(screen.getByTestId("ws-slug").textContent).toBe("ALL");
+    expect(sessionStorage.getItem("adfocate_admin_workspace")).toBeNull();
+    expect(sessionStorage.getItem("adfocate_admin_workspace_slug")).toBeNull();
+    expect(new URLSearchParams(window.location.search).get("ws")).toBeNull();
+    expect(replaceState).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      queryClient.setQueryData(["admin-workspaces"], {
+        workspaces: [...canonicalWorkspaces.workspaces],
+      });
+      await Promise.resolve();
+    });
+    expect(replaceState).toHaveBeenCalledTimes(1);
   });
 });

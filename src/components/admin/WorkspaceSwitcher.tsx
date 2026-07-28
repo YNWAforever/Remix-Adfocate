@@ -19,10 +19,11 @@ export function WorkspaceSwitcher() {
   useEffect(() => {
     if (!ws.data || !workspace) return;
     const selected = ws.data.workspaces.find((item) => item.id === workspace);
-    const canonicalSlug = selected?.slug ?? "";
-    if (canonicalSlug !== workspaceSlug || !selected) {
-      setWorkspace(workspace, canonicalSlug);
+    if (!selected) {
+      setWorkspace("", "");
+      return;
     }
+    if (selected.slug !== workspaceSlug) setWorkspace(workspace, selected.slug);
   }, [setWorkspace, workspace, workspaceSlug, ws.data]);
 
   return (

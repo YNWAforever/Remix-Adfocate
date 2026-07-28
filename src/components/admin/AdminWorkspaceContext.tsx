@@ -10,7 +10,7 @@ function initialWorkspace(): WorkspaceSelection {
   const storedWorkspace = window.sessionStorage.getItem(SS_KEY) ?? "";
   const fromUrl = new URLSearchParams(window.location.search).get("ws");
   const workspace = fromUrl !== null ? fromUrl : storedWorkspace;
-  if (!workspace) window.sessionStorage.removeItem(SS_SLUG_KEY);
+  window.sessionStorage.removeItem(SS_SLUG_KEY);
   return { workspace, workspaceSlug: "" };
 }
 
