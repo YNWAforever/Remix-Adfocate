@@ -277,7 +277,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       const workflowRows = (workflowsResult.data ?? []) as Row[];
       const submissionIds = workflowRows.map((row) => row.mission_submission_id as string);
       const submissionsResult = await client.from("mission_submissions")
-        .select("id, mission_id, creator_id, creators!mission_submissions_creator_workspace_fk(display_name), missions!mission_submissions_mission_workspace_fk(title)")
+        .select("id, mission_id, creator_id, creators!mission_submissions_creator_id_fkey(display_name), missions!mission_submissions_mission_workspace_fk(title)")
         .eq("workspace_id", workspace)
         .in("id", submissionIds);
       if (submissionsResult.error) dbError(submissionsResult.error);
@@ -342,7 +342,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       const workflow = requireData<Row>(await client.from("mission_workflows")
         .select("*").eq("id", input.workflowId).eq("workspace_id", workspace).maybeSingle());
       const submission = requireData<Row>(await client.from("mission_submissions")
-        .select("*, creators!mission_submissions_creator_workspace_fk(id, display_name), missions!mission_submissions_mission_workspace_fk(*)")
+        .select("*, creators!mission_submissions_creator_id_fkey(id, display_name), missions!mission_submissions_mission_workspace_fk(*)")
         .eq("id", workflow.mission_submission_id).eq("workspace_id", workspace).maybeSingle());
       const [itemsResult, fulfillmentResult, eventsResult, assetsResult] = await Promise.all([
         client.from("mission_work_items").select("*").eq("mission_workflow_id", input.workflowId).eq("workspace_id", workspace).order("position"),
@@ -354,7 +354,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
       const itemIds = ((itemsResult.data ?? []) as Row[]).map((row) => row.id as string);
       const [versionsResult, reviewsResult, grantsResult] = itemIds.length ? await Promise.all([
         client.from("mission_draft_versions").select("*").eq("workspace_id", workspace).in("mission_work_item_id", itemIds).order("version_number"),
-        client.from("mission_review_rounds").select("*, mission_review_items(*)").eq("workspace_id", workspace).in("mission_work_item_id", itemIds).order("round_number"),
+        client.from("mission_review_rounds").select("*, mission_review_items!mission_review_items_round_workspace_fk(*)").eq("workspace_id", workspace).in("mission_work_item_id", itemIds).order("round_number"),
         client.from("mission_revision_grants").select("*").eq("workspace_id", workspace).in("mission_work_item_id", itemIds).order("granted_at"),
       ]) : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
       for (const result of [versionsResult, reviewsResult, grantsResult]) if (result.error) dbError(result.error);
