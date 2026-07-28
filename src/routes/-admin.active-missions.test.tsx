@@ -19,6 +19,10 @@ const h = vi.hoisted(() => ({
   fetchActiveMissionQueue: vi.fn(),
   fetchActiveMissionWorkflow: vi.fn(),
   startActiveMissionReview: vi.fn(),
+  requestActiveMissionRevision: vi.fn(),
+  grantActiveMissionRevision: vi.fn(),
+  approveActiveMissionVersion: vi.fn(),
+  markActiveMissionShipped: vi.fn(),
   startProofReview: vi.fn(),
   requestProofCorrection: vi.fn(),
   verifyProof: vi.fn(),
@@ -47,6 +51,10 @@ vi.mock("@/lib/admin", async (importOriginal) => {
     fetchActiveMissionQueue: h.fetchActiveMissionQueue,
     fetchActiveMissionWorkflow: h.fetchActiveMissionWorkflow,
     startActiveMissionReview: h.startActiveMissionReview,
+    requestActiveMissionRevision: h.requestActiveMissionRevision,
+    grantActiveMissionRevision: h.grantActiveMissionRevision,
+    approveActiveMissionVersion: h.approveActiveMissionVersion,
+    markActiveMissionShipped: h.markActiveMissionShipped,
     setActiveMissionPublicationInstructions: h.setPublicationInstructions,
     setupActiveMissionPublicationInstructions: h.setupExistingPublicationInstructions,
   };
@@ -218,7 +226,87 @@ describe("admin active missions route", () => {
     );
     expect(h.reportAuthError).toHaveBeenCalledWith(authError);
   });
-});
+  it("passes the canonical workspace slug to revision, approval, and shipping actions", async () => {
+    const reviewWorkflow = structuredClone(detailWorkflow);
+    reviewWorkflow.workItems[0] = {
+      ...reviewWorkflow.workItems[0], state: "under_review", current_reviewer_id: "reviewer-1",
+    };
+    reviewWorkflow.fulfillment = { status: "preparing" };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(reviewWorkflow);
+    h.requestActiveMissionRevision.mockResolvedValue({});
+    h.approveActiveMissionVersion.mockResolvedValue({});
+    h.markActiveMissionShipped.mockResolvedValue({});
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Instagram reel" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Request revision" }));
+    fireEvent.change(screen.getByLabelText("Required change 1"), {
+      target: { value: "Use the approved disclosure wording" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send revision request" }));
+    await waitFor(() => expect(h.requestActiveMissionRevision).toHaveBeenCalledWith(
+      "workflow-today",
+      "item-today",
+      expect.objectContaining({
+        workspace: "demo", expectedState: "under_review", versionId: "version-1",
+      }),
+    ));
+
+    fireEvent.click(screen.getByRole("button", { name: "Approve version" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    await waitFor(() => expect(h.approveActiveMissionVersion).toHaveBeenCalledWith(
+      "workflow-today",
+      "item-today",
+      { workspace: "demo", expectedState: "under_review", versionId: "version-1" },
+    ));
+
+    fireEvent.click(screen.getByRole("button", { name: "Mark shipped" }));
+    fireEvent.change(screen.getByLabelText("Shipping note"), {
+      target: { value: "Courier collected" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm shipped" }));
+    await waitFor(() => expect(h.markActiveMissionShipped).toHaveBeenCalledWith(
+      "workflow-today",
+      { workspace: "demo", note: "Courier collected" },
+    ));
+  });
+
+  it("passes the canonical workspace slug when granting another revision", async () => {
+    const exhausted = structuredClone(detailWorkflow);
+    exhausted.workflow.revision_limit = 1;
+    exhausted.workItems[0] = {
+      ...exhausted.workItems[0], state: "under_review", current_reviewer_id: "reviewer-1",
+    };
+    exhausted.reviews = [{
+      id: "review-1",
+      mission_work_item_id: "item-today",
+      mission_draft_version_id: "version-1",
+      round_number: 1,
+      state: "revision_requested",
+      mission_review_items: [],
+    }];
+    h.fetchActiveMissionWorkflow.mockResolvedValue(exhausted);
+    h.grantActiveMissionRevision.mockResolvedValue({});
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.change(await screen.findByLabelText("Grant reason"), {
+      target: { value: "The mission brief changed" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Grant another revision" }));
+
+    await waitFor(() => expect(h.grantActiveMissionRevision).toHaveBeenCalledWith(
+      "workflow-today",
+      "item-today",
+      { workspace: "demo", reason: "The mission brief changed", grantedCount: 1 },
+    ));
+  });});
 
 describe("publication proof queue filters", () => {
   it("applies proof state, lateness, metadata, platform, deadline, mission, and reviewer only after Apply", () => {
@@ -497,6 +585,10 @@ describe("admin publication proof review route", () => {
     await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
       "publication_proof_correction_requested",
     ));
+    expect(h.requestProofCorrection).toHaveBeenCalledWith(expect.objectContaining({
+      workflowId: "workflow-today", workItemId: "item-today", workspace: "demo",
+      attemptId: "attempt-current", expectedState: "proof_under_review", expectedRevision: 4,
+    }));
     expect(analyticsEvents.find(({ name }) => name === "publication_proof_correction_requested")?.properties)
       .toEqual(expect.objectContaining({
         locale: "en", missionType: "ugc", platform: "instagram",
@@ -527,6 +619,10 @@ describe("admin publication proof review route", () => {
     await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
       "publication_proof_recovery_used",
     ));
+    expect(h.refreshProofMetadata).toHaveBeenCalledWith(expect.objectContaining({
+      workflowId: "workflow-today", workItemId: "item-today", workspace: "demo",
+      attemptId: "attempt-current", expectedState: "proof_under_review", expectedRevision: 4,
+    }));
     expect(analyticsEvents.map(({ name }) => name)).toEqual([
       "publication_proof_recovery_used",
     ]);

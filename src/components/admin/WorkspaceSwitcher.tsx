@@ -17,10 +17,13 @@ export function WorkspaceSwitcher() {
     if (ws.error instanceof AdminAuthError) reportAuthError(ws.error);
   }, [ws.error, reportAuthError]);
   useEffect(() => {
-    if (!workspace || workspaceSlug) return;
-    const selected = ws.data?.workspaces.find((item) => item.id === workspace);
-    if (selected?.slug) setWorkspace(workspace, selected.slug);
-  }, [setWorkspace, workspace, workspaceSlug, ws.data?.workspaces]);
+    if (!ws.data || !workspace) return;
+    const selected = ws.data.workspaces.find((item) => item.id === workspace);
+    const canonicalSlug = selected?.slug ?? "";
+    if (canonicalSlug !== workspaceSlug || !selected) {
+      setWorkspace(workspace, canonicalSlug);
+    }
+  }, [setWorkspace, workspace, workspaceSlug, ws.data]);
 
   return (
     <select

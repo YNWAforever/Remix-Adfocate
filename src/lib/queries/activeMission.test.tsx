@@ -388,4 +388,43 @@ describe("operator publication proof hooks", () => {
       useRefreshProofMetadata,
     ]).toSatisfy((hooks: unknown[]) => hooks.every((hook) => typeof hook === "function"));
   });
+
+  it("invalidates the exact slug-scoped proof detail and queue keys", async () => {
+    vi.spyOn(supabase.auth, "getSession").mockResolvedValue({
+      data: { session: null }, error: null,
+    } as never);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, status: 200, json: async () => ({ ok: true }),
+    }));
+    const { queryClient, wrapper } = setup();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const { result } = renderHook(() => useRequestProofCorrection(), { wrapper });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        workflowId: "workflow-1",
+        workItemId: "item-1",
+        workspace: "demo",
+        expectedState: "proof_under_review",
+        expectedRevision: 7,
+        attemptId: "22222222-2222-4222-8222-222222222222",
+        idempotencyKey: "11111111-1111-4111-8111-111111111111",
+        checklist: {
+          publiclyAccessible: true,
+          platformMatches: true,
+          accountMatches: false,
+          contentMatchesApprovedVersion: true,
+          timingAcceptable: true,
+          disclosuresPresent: true,
+        },
+        corrections: [{ category: "account", text: "Use the approved account", position: 0 }],
+        summary: null,
+      });
+    });
+
+    expect(invalidate.mock.calls.map(([filter]) => filter?.queryKey)).toEqual([
+      ["admin-active-mission", "demo", "workflow-1"],
+      ["admin-active-missions", "demo"],
+    ]);
+  });
 });
