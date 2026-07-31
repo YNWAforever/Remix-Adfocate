@@ -292,6 +292,8 @@ describe("reward handoff service boundaries", () => {
     rpcError?: { message: string } | null;
     queueStatus?: "pending" | "cancelled";
     corruptMissionWorkspace?: boolean;
+    corruptApprovalCycle?: boolean;
+    corruptCancellationCycle?: boolean;
   }) {
     const calls: string[] = [];
     const selects: string[] = [];
@@ -302,6 +304,7 @@ describe("reward handoff service boundaries", () => {
       mission_workflow_id: workflowId,
       reward_contract_id: "contract-1",
       decision_kind: "approved",
+      pending_reward_id: options?.corruptApprovalCycle ? "pending-other" : null,
       decided_at: "2026-07-31T10:00:00.000Z",
       required_item_count: 1,
       verified_required_item_count: 1,
@@ -336,7 +339,7 @@ describe("reward handoff service boundaries", () => {
       creators: { id: "creator-1", workspace_id: "workspace-1", display_name: "Creator" },
       missions: { id: "mission-1", workspace_id: options?.corruptMissionWorkspace ? "workspace-2" : "workspace-1", title: "Mission" },
       completion_decision: decision,
-      cancellation_decision: options?.queueStatus === "cancelled" ? { id: "cancel-1", workspace_id: "workspace-1", mission_workflow_id: workflowId, reward_contract_id: "contract-1", decision_kind: "cancelled" } : null,
+      cancellation_decision: options?.queueStatus === "cancelled" ? { id: "cancel-1", workspace_id: "workspace-1", mission_workflow_id: workflowId, reward_contract_id: "contract-1", pending_reward_id: options?.corruptCancellationCycle ? "pending-other" : "pending-1", supersedes_decision_id: options?.corruptCancellationCycle ? "decision-other" : "decision-1", decision_kind: "cancelled" } : null,
     };
     const dataFor = (table: string) => {
       if (table === "brand_users") return {
@@ -489,6 +492,25 @@ describe("reward handoff service boundaries", () => {
     const harness = serviceHarness({ corruptMissionWorkspace: true });
     const result = await harness.repository.listRewardHandoffs({
       workspaceSlug: "alpha", operatorId, status: "pending",
+    }) as { items: unknown[] };
+    expect(result.items).toEqual([]);
+  });
+  it("rejects detail and omits queue rows whose approval belongs to another pending cycle", async () => {
+    const detailHarness = serviceHarness({ corruptApprovalCycle: true });
+    await expect(detailHarness.repository.getCompletion({
+      workflowId, workspaceSlug: "alpha", operatorId,
+    })).rejects.toMatchObject({ code: "FORBIDDEN", message: "forbidden" });
+    const queueHarness = serviceHarness({ corruptApprovalCycle: true });
+    const result = await queueHarness.repository.listRewardHandoffs({
+      workspaceSlug: "alpha", operatorId, status: "pending",
+    }) as { items: unknown[] };
+    expect(result.items).toEqual([]);
+  });
+
+  it("omits cancelled queue rows whose cancellation does not supersede the current approval", async () => {
+    const harness = serviceHarness({ queueStatus: "cancelled", corruptCancellationCycle: true });
+    const result = await harness.repository.listRewardHandoffs({
+      workspaceSlug: "alpha", operatorId, status: "cancelled",
     }) as { items: unknown[] };
     expect(result.items).toEqual([]);
   });

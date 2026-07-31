@@ -64,6 +64,9 @@ vi.mock("@/components/admin/RewardHandoffQueue", () => ({
     processingWindowDays: number | null;
     onFiltersChange: (filters: Record<string, unknown>) => void;
     onSaveProcessingWindow: (days: number | null) => Promise<void>;
+    hasMore: boolean;
+    loadingMore: boolean;
+    onLoadMore: () => Promise<void>;
   }) => (
     <div>
       <p data-testid="route-items">{props.items.map((item) => item.creatorDisplayName).join(",")}</p>
@@ -88,6 +91,11 @@ vi.mock("@/components/admin/RewardHandoffQueue", () => ({
       <button type="button" onClick={() => void props.onSaveProcessingWindow(0)}>
         Route save setting
       </button>
+      {props.hasMore ? (
+        <button type="button" disabled={props.loadingMore} onClick={() => void props.onLoadMore()}>
+          Route load more
+        </button>
+      ) : null}
     </div>
   ),
 }));
@@ -192,6 +200,49 @@ describe("admin reward handoffs route", () => {
     }));
   });
 
+  it("ignores a stale load-more success after the workspace changes", async () => {
+    const latePage = deferred<{
+      items: RewardHandoffQueueItem[];
+      rewardProcessingWindowDays: number | null;
+      pageInfo: { hasMore: boolean; nextCursor: string | null; limit: number };
+    }>();
+    const alpha = queueItem();
+    const beta = { ...queueItem(), id: "pending-beta", creatorDisplayName: "Beta Creator" };
+    const stale = { ...queueItem(), id: "pending-stale", creatorDisplayName: "Stale Alpha Creator" };
+    h.fetchRewardHandoffs.mockImplementation((filters: { workspace: string; cursor?: string }) => {
+      if (filters.cursor) return latePage.promise;
+      if (filters.workspace === "beta") return Promise.resolve({
+        items: [beta], rewardProcessingWindowDays: 7,
+        pageInfo: { hasMore: false, nextCursor: null, limit: 50 },
+      });
+      return Promise.resolve({
+        items: [alpha], rewardProcessingWindowDays: 7,
+        pageInfo: { hasMore: true, nextCursor: "alpha-cursor", limit: 50 },
+      });
+    });
+    const view = renderRoute();
+    await screen.findByText("Amy Wong");
+    fireEvent.click(screen.getByRole("button", { name: "Route load more" }));
+    await waitFor(() => expect(h.fetchRewardHandoffs).toHaveBeenCalledWith(
+      expect.objectContaining({ workspace: "alpha", cursor: "alpha-cursor" }),
+    ));
+
+    h.workspaceSlug = "beta";
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <AdminRewardHandoffsRoute />
+      </QueryClientProvider>,
+    );
+    await screen.findByText("Beta Creator");
+    latePage.resolve({
+      items: [stale], rewardProcessingWindowDays: 7,
+      pageInfo: { hasMore: true, nextCursor: "stale-cursor", limit: 50 },
+    });
+    await act(async () => { await Promise.resolve(); });
+    expect(screen.getByTestId("route-items")).toHaveTextContent("Beta Creator");
+    expect(screen.getByTestId("route-items")).not.toHaveTextContent("Stale Alpha Creator");
+    expect(screen.queryByRole("button", { name: "Route load more" })).not.toBeInTheDocument();
+  });
   it("writes only bounded due/component/status filters to URL search", async () => {
     renderRoute();
     await screen.findByText("Amy Wong");

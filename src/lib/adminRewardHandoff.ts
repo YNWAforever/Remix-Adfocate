@@ -73,7 +73,7 @@ export type CompletionReview = {
   rewardContract: AdminRewardContract | null;
   completionEligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
-  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string; proofReviewId: string; reviewerId: string; createdAt: string }>;
   processingWindowDays: number | null;
   processingTargetAt: string | null;
 };

@@ -424,7 +424,7 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         client,
         workspace,
         input.workflowId,
-        { workflow, submission, requiredItems: (itemsResult.data ?? []) as Row[] },
+        { workflow, submission, requiredItems: (itemsResult.data ?? []) as Row[], proofReviews },
         rewardProcessingWindowByWorkspace.get(workspace) ?? null,
       );
       return {

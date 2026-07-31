@@ -1205,11 +1205,16 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("backfill_request_hash");
     expect(sql).toContain("unique (workspace_id, backfill_idempotency_key)");
     expect(sql).toContain("idempotency_conflict");
+    expect(sql).toMatch(/jsonb_build_array\(\s*'reward_contract_backfill',\s*p_workspace,\s*p_operator,/);
+    expect(sql).toContain("p_notification_type = 'mission_reward_pending' and pending.status = 'pending'");
+    expect(sql).toContain("p_notification_type = 'mission_reward_pending_cancelled' and pending.status = 'cancelled'");
     expect(sql).toContain("retry_reward_handoff_notification");
     expect(sql).toContain("set search_path = ''");
     expect(sql).toContain("grant execute on function public.retry_reward_handoff_notification");
     expect(sql).toContain("to service_role");
     expect(sql).toContain("revoke all");
+    const runbook = readFileSync(resolve("docs/operations/reward-handoff.md"), "utf8");
+    expect(runbook).toMatch(/--data "\{\\"notificationType\\":\\"\$\{NOTIFICATION_TYPE\}\\"\}"/);
   });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness

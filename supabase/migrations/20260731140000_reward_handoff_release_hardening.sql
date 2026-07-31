@@ -67,7 +67,7 @@ begin
   v_request_hash := encode(
     extensions.digest(
       convert_to(jsonb_build_array(
-        'reward_contract_backfill', p_workflow, p_points_amount, p_cash_amount,
+        'reward_contract_backfill', p_workspace, p_operator, p_workflow, p_points_amount, p_cash_amount,
         p_currency, p_xp_amount, p_source_mission_updated_at,
         p_confirmation_evidence_source, btrim(p_confirmation_reason)
       )::text, 'UTF8'),
@@ -219,6 +219,7 @@ begin
    and approval.mission_workflow_id = pending.mission_workflow_id
    and approval.reward_contract_id = contract.id
    and approval.decision_kind = 'approved'
+    and approval.pending_reward_id is null
   left join public.mission_completion_decisions cancellation
     on cancellation.id = pending.cancellation_decision_id
    and cancellation.workspace_id = pending.workspace_id
@@ -229,8 +230,8 @@ begin
    and cancellation.decision_kind = 'cancelled'
   where pending.id = p_pending_reward
     and pending.workspace_id = p_workspace
-    and (p_notification_type = 'mission_reward_pending'
-      or cancellation.id is not null);
+    and ((p_notification_type = 'mission_reward_pending' and pending.status = 'pending' and pending.cancellation_decision_id is null)
+      or (p_notification_type = 'mission_reward_pending_cancelled' and pending.status = 'cancelled' and cancellation.id is not null));
   if v_recipient is null or v_decision is null then raise exception 'not_found'; end if;
 
   v_components := array_remove(array[

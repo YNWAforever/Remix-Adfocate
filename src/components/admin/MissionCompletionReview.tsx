@@ -30,7 +30,7 @@ export type MissionCompletionReviewProps = {
   rewardContract: (RewardContract & Partial<AdminRewardContract>) | null;
   eligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
-  acceptedProofAnchors?: Array<{ workItemId: string; proofAttemptId: string }>;
+  acceptedProofAnchors?: Array<{ workItemId: string; proofAttemptId: string; proofReviewId: string; reviewerId: string; createdAt: string }>;
   processingWindowDays?: number | null;
   processingTargetAt?: string | null;
   busy: boolean;
@@ -408,6 +408,8 @@ export function MissionCompletionReview({
           <div><dt className="font-bold">{t("app.admin.activeMission.completion.contractSource")}</dt><dd className="break-all">{rewardContract?.source ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
           <div><dt className="font-bold">{t("app.admin.activeMission.completion.evidenceSource")}</dt><dd className="break-all">{rewardContract?.confirmationEvidenceSource ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
           <div><dt className="font-bold">{t("app.admin.activeMission.completion.sourceTimestamp")}</dt><dd className="break-all">{rewardContract?.sourceMissionUpdatedAt ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
+          <div><dt className="font-bold">{t("app.admin.activeMission.completion.confirmedBy")}</dt><dd className="break-all">{rewardContract?.confirmedBy ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
+          <div><dt className="font-bold">{t("app.admin.activeMission.completion.confirmationReason")}</dt><dd className="max-h-32 overflow-auto whitespace-pre-wrap break-words">{rewardContract?.confirmationReason ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
           <div>
             <dt className="font-bold">{t("app.admin.activeMission.completion.slaPreview")}</dt>
             <dd className="break-all">{processingTargetAt ?? (processingWindowDays === null ? t("app.admin.activeMission.completion.noSla") : t("app.admin.activeMission.completion.slaDays", { count: processingWindowDays }))}</dd>
@@ -418,7 +420,15 @@ export function MissionCompletionReview({
           {acceptedProofAnchors.length ? (
             <ul className="mt-1 list-disc space-y-1 pl-5 text-sm">
               {acceptedProofAnchors.map((anchor) => (
-                <li key={anchor.workItemId + ":" + anchor.proofAttemptId} className="break-all">{anchor.workItemId} / {anchor.proofAttemptId}</li>
+                <li key={anchor.workItemId + ":" + anchor.proofAttemptId} className="min-w-0 break-words">
+                  <dl className="grid min-w-0 gap-1">
+                    <div><dt className="font-bold">{t("app.admin.activeMission.completion.workItemId")}</dt><dd className="break-all">{anchor.workItemId}</dd></div>
+                    <div><dt className="font-bold">{t("app.admin.activeMission.completion.proofAttemptId")}</dt><dd className="break-all">{anchor.proofAttemptId}</dd></div>
+                    <div><dt className="font-bold">{t("app.admin.activeMission.completion.proofReviewId")}</dt><dd className="break-all">{anchor.proofReviewId}</dd></div>
+                    <div><dt className="font-bold">{t("app.admin.activeMission.completion.proofReviewer")}</dt><dd className="break-all">{anchor.reviewerId}</dd></div>
+                    <div><dt className="font-bold">{t("app.admin.activeMission.completion.proofReviewCreatedAt")}</dt><dd className="break-all">{anchor.createdAt}</dd></div>
+                  </dl>
+                </li>
               ))}
             </ul>
           ) : <p className="text-sm">{t("app.admin.activeMission.completion.noProofAnchors")}</p>}

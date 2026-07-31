@@ -105,10 +105,16 @@ export function AdminRewardHandoffsRoute() {
   const [additionalItems, setAdditionalItems] = useState<RewardHandoffQueueItem[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const paginationGenerationRef = useRef(0);
+  const paginationContext = `${workspaceSlug}|${filters.due ?? "all"}|${filters.component ?? "all"}|${filters.status}`;
+  const paginationContextRef = useRef(paginationContext);
+  paginationContextRef.current = paginationContext;
 
   useEffect(() => {
+    paginationGenerationRef.current += 1;
     setAdditionalItems([]);
     setNextCursor(queue.data?.pageInfo?.nextCursor ?? null);
+    setLoadingMore(false);
   }, [queue.data, workspaceSlug, filters]);
 
   useEffect(() => {
@@ -186,6 +192,8 @@ export function AdminRewardHandoffsRoute() {
 
   async function loadMore() {
     if (!nextCursor || loadingMore) return;
+    const generation = paginationGenerationRef.current;
+    const context = paginationContext;
     setLoadingMore(true);
     try {
       const page = await fetchRewardHandoffs({
@@ -193,10 +201,13 @@ export function AdminRewardHandoffsRoute() {
         cursor: nextCursor,
         limit: queue.data?.pageInfo?.limit ?? 50,
       });
+      if (generation !== paginationGenerationRef.current || context !== paginationContextRef.current) return;
       setAdditionalItems((current) => [...current, ...page.items]);
       setNextCursor(page.pageInfo.nextCursor);
+    } catch {
+      if (generation !== paginationGenerationRef.current || context !== paginationContextRef.current) return;
     } finally {
-      setLoadingMore(false);
+      if (generation === paginationGenerationRef.current && context === paginationContextRef.current) setLoadingMore(false);
     }
   }
 

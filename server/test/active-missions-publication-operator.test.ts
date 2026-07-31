@@ -19,6 +19,7 @@ describe("publication proof operator routes", () => {
 
   it("keeps operator provenance and bounded evidence while stripping proof URLs", () => {
     const projection = normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
       workflow: { state: "proof_verified" },
       contract: {
         id: "contract-1", points_amount: 500, cash_amount: "125.00", currency: "HKD",
@@ -28,10 +29,18 @@ describe("publication proof operator routes", () => {
         created_at: "2026-07-31T10:00:00.000Z",
       },
       requiredItems: [{
-        required: true, state: "proof_verified",
+        id: workItemId, required: true, state: "proof_verified",
         current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
       }],
-      pendingReward: {
+      proofReviews: [{
+        id: "review-1", workspace_id: "workspace-1",
+        mission_publication_proof_attempt_id: attemptId,
+        state: "verified", decision: "verified", reviewer_id: reviewerId,
+        reviewed_at: "2026-07-31T09:59:00.000Z",
+        created_at: "2026-07-31T09:58:00.000Z",
+        primary_url: "https://instagram.com/private",
+        summary: "private review note",
+      }],      pendingReward: {
         id: "pending-1", mission_workflow_id: workflowId, mission_submission_id: "submission-1",
         creator_id: "creator-1", mission_id: missionId, reward_contract_id: "contract-1",
         completion_decision_id: "decision-1", points_amount: 500, cash_amount: 125,
@@ -44,7 +53,7 @@ describe("publication proof operator routes", () => {
         required_item_count: 1, verified_required_item_count: 1,
         evidence_snapshot: { requiredItems: [{
           workItemId, proofAttemptId: attemptId, proofReviewId: "review-1",
-          attemptNumber: 1, contentChecksum: "checksum",
+          attemptNumber: 1, contentChecksum: "checksum", reviewedAt: "2026-07-31T09:59:00.000Z", reviewDecision: "verified",
           primaryUrl: "https://instagram.com/private",
           signedUrl: "https://signed.example/proof",
         }] },
@@ -63,13 +72,42 @@ describe("publication proof operator routes", () => {
       requiredItemCount: 1,
       verifiedRequiredItemCount: 1,
     });
+    expect(projection.acceptedProofAnchors).toEqual([{
+      workItemId, proofAttemptId: attemptId, proofReviewId: "review-1",
+      reviewerId, createdAt: "2026-07-31T09:58:00.000Z",
+    }]);
     expect(projection.pendingReward?.decision).toMatchObject({
       decidedBy: reviewerId,
       evidence: { requiredItems: [{ proofAttemptId: attemptId, contentChecksum: "checksum" }] },
     });
-    expect(JSON.stringify(projection)).not.toMatch(/primaryUrl|signedUrl|proofUrl/i);
+    expect(JSON.stringify(projection)).not.toMatch(/primaryUrl|signedUrl|proofUrl|private review note/i);
   });
 
+  it("rejects a proof anchor when the terminal review does not match the accepted attempt", () => {
+    expect(() => normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
+      workflow: { state: "proof_verified" },
+      contract: null,
+      requiredItems: [{
+        id: workItemId, required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      pendingReward: null,
+      approvalDecision: {
+        decision_kind: "approved",
+        evidence_snapshot: { requiredItems: [{
+          workItemId, proofAttemptId: attemptId, proofReviewId: "review-accepted",
+          reviewedAt: "2026-07-31T09:59:00.000Z", reviewDecision: "verified",
+        }] },
+      },
+      proofReviews: [{
+        id: "review-other", workspace_id: "workspace-1",
+        mission_publication_proof_attempt_id: attemptId,
+        state: "verified", decision: "verified", reviewer_id: reviewerId,
+        reviewed_at: "2026-07-31T09:59:00.000Z", created_at: "2026-07-31T09:58:00.000Z",
+      }],
+    })).toThrowError(expect.objectContaining({ code: "FORBIDDEN", message: "forbidden" }));
+  });
   function app(repository: AdminActiveMissionRepository) {
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(

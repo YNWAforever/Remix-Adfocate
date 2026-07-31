@@ -122,7 +122,7 @@ export type RewardHandoffProjection = {
   rewardContract: RewardContract | null;
   completionEligibility: CompletionEligibility;
   pendingReward: PendingReward | null;
-  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string; proofReviewId: string; reviewerId: string; createdAt: string }>;
   processingWindowDays: number | null;
   processingTargetAt: string | null;
 };
@@ -560,17 +560,20 @@ function assertCanonicalRewardHandoff(input: {
   submission: unknown;
   contract: unknown;
   pendingReward: unknown;
-  decision: unknown;
+  approvalDecision: unknown;
+  cancellationDecision: unknown;
 }) {
   const workflow = record(input.workflow);
   const submission = record(input.submission);
   const contract = record(input.contract);
   const pending = record(input.pendingReward);
-  const decisionRow = record(input.decision);
+  const approval = record(input.approvalDecision);
+  const cancellation = record(input.cancellationDecision);
   const workflowId = text(workflow.id);
   const submissionId = text(submission.id);
   const creatorId = text(submission.creator_id);
   const missionId = text(submission.mission_id);
+  const contractId = text(contract.id);
   if (!workflowId
     || !same(workflow, "workspace_id", input.workspaceId)
     || !same(workflow, "mission_submission_id", submissionId)
@@ -583,23 +586,47 @@ function assertCanonicalRewardHandoff(input: {
     || !same(contract, "mission_submission_id", submissionId)
     || !same(contract, "mission_id", missionId)
   )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
-  if (Object.keys(pending).length > 0 && (
-    !same(pending, "workspace_id", input.workspaceId)
+  if (Object.keys(pending).length === 0) {
+    if (Object.keys(approval).length > 0 || Object.keys(cancellation).length > 0) {
+      throw new RewardHandoffError("FORBIDDEN", "forbidden");
+    }
+    return;
+  }
+  const pendingId = text(pending.id);
+  const approvalId = text(pending.completion_decision_id);
+  const cancellationId = text(pending.cancellation_decision_id);
+  const status = text(pending.status);
+  if (!pendingId || !approvalId || (status !== "pending" && status !== "cancelled")
+    || !same(pending, "workspace_id", input.workspaceId)
     || !same(pending, "mission_workflow_id", workflowId)
     || !same(pending, "mission_submission_id", submissionId)
     || !same(pending, "creator_id", creatorId)
     || !same(pending, "mission_id", missionId)
-    || (text(pending.reward_contract_id) !== null
-      && text(pending.reward_contract_id) !== text(contract.id))
-  )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
-  if (Object.keys(decisionRow).length > 0 && (
-    !same(decisionRow, "workspace_id", input.workspaceId)
-    || !same(decisionRow, "mission_workflow_id", workflowId)
-    || (text(decisionRow.reward_contract_id) !== null
-      && text(decisionRow.reward_contract_id) !== text(contract.id))
-    || ![text(pending.completion_decision_id), text(pending.cancellation_decision_id)]
-      .includes(text(decisionRow.id))
-  )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+    || (text(pending.reward_contract_id) !== null && text(pending.reward_contract_id) !== contractId)
+    || !same(approval, "id", approvalId)
+    || !same(approval, "workspace_id", input.workspaceId)
+    || !same(approval, "mission_workflow_id", workflowId)
+    || !same(approval, "reward_contract_id", contractId)
+    || text(approval.decision_kind) !== "approved"
+    || text(approval.pending_reward_id) !== null) {
+    throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  }
+  if (status === "pending") {
+    if (cancellationId !== null || Object.keys(cancellation).length > 0) {
+      throw new RewardHandoffError("FORBIDDEN", "forbidden");
+    }
+    return;
+  }
+  if (!cancellationId
+    || !same(cancellation, "id", cancellationId)
+    || !same(cancellation, "workspace_id", input.workspaceId)
+    || !same(cancellation, "mission_workflow_id", workflowId)
+    || !same(cancellation, "reward_contract_id", contractId)
+    || !same(cancellation, "pending_reward_id", pendingId)
+    || !same(cancellation, "supersedes_decision_id", approvalId)
+    || text(cancellation.decision_kind) !== "cancelled") {
+    throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  }
 }
 
 export function canonicalRewardHandoffQueueItem(
@@ -616,14 +643,16 @@ export function canonicalRewardHandoffQueueItem(
   const contract = relation(row.reward_contract);
   const creator = relation(row.creators);
   const mission = relation(row.missions);
-  const decisionRow = relation(row.completion_decision);
+  const approval = relation(row.completion_decision);
   const cancellation = relation(row.cancellation_decision);
   const workflowId = text(row.mission_workflow_id);
   const submissionId = text(row.mission_submission_id);
   const creatorId = text(row.creator_id);
   const missionId = text(row.mission_id);
   const contractId = text(row.reward_contract_id);
+  const status = text(row.status);
   if (!workflowId || !submissionId || !creatorId || !missionId || !contractId
+    || (status !== "pending" && status !== "cancelled")
     || !same(workflow, "id", workflowId) || !same(workflow, "workspace_id", workspaceId)
     || !same(workflow, "mission_submission_id", submissionId)
     || !same(submission, "id", submissionId) || !same(submission, "workspace_id", workspaceId)
@@ -634,16 +663,21 @@ export function canonicalRewardHandoffQueueItem(
     || !same(contract, "mission_id", missionId)
     || !same(creator, "id", creatorId) || !same(creator, "workspace_id", workspaceId)
     || !same(mission, "id", missionId) || !same(mission, "workspace_id", workspaceId)
-    || !same(decisionRow, "id", text(row.completion_decision_id))
-    || !same(decisionRow, "workspace_id", workspaceId)
-    || !same(decisionRow, "mission_workflow_id", workflowId)
-    || !same(decisionRow, "reward_contract_id", contractId)
-    || text(decisionRow.decision_kind) !== "approved") return null;
-  if (text(row.status) === "cancelled" && (
+    || !same(approval, "id", text(row.completion_decision_id))
+    || !same(approval, "workspace_id", workspaceId)
+    || !same(approval, "mission_workflow_id", workflowId)
+    || !same(approval, "reward_contract_id", contractId)
+    || text(approval.decision_kind) !== "approved"
+    || text(approval.pending_reward_id) !== null) return null;
+  if (status === "pending"
+    && (text(row.cancellation_decision_id) !== null || Object.keys(cancellation).length > 0)) return null;
+  if (status === "cancelled" && (
     !same(cancellation, "id", text(row.cancellation_decision_id))
     || !same(cancellation, "workspace_id", workspaceId)
     || !same(cancellation, "mission_workflow_id", workflowId)
     || !same(cancellation, "reward_contract_id", contractId)
+    || !same(cancellation, "pending_reward_id", text(row.id))
+    || !same(cancellation, "supersedes_decision_id", text(row.completion_decision_id))
     || text(cancellation.decision_kind) !== "cancelled"
   )) return null;
   const pending = operatorPendingReward(row);
@@ -652,20 +686,59 @@ export function canonicalRewardHandoffQueueItem(
     ...pending,
     creatorDisplayName: text(creator.display_name),
     missionTitle: text(mission.title),
-    completionDecision: queueCompletionDecision(decisionRow),
+    completionDecision: queueCompletionDecision(approval),
   };
 }
+function acceptedProofAnchors(input: {
+  workspaceId?: string;
+  requiredItems: unknown[];
+  approvalDecision?: unknown;
+  proofReviews?: unknown[];
+}): RewardHandoffProjection["acceptedProofAnchors"] {
+  const approval = record(input.approvalDecision);
+  if (text(approval.decision_kind ?? approval.kind) !== "approved") return [];
+  const evidenceItems = safeEvidence(approval.evidence_snapshot ?? approval.evidence).requiredItems;
+  const reviews = (input.proofReviews ?? []).map(record);
+  return input.requiredItems.map(record).filter((item) => {
+    const current = text(item.current_proof_attempt_id ?? item.currentProofAttemptId);
+    return item.required === true && item.state === "proof_verified" && current !== null
+      && current === text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId);
+  }).map((item) => {
+    const workItemId = text(item.id ?? item.workItemId);
+    const proofAttemptId = text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId);
+    const evidence = evidenceItems.find((entry) => entry.workItemId === workItemId
+      && entry.proofAttemptId === proofAttemptId && entry.reviewDecision === "verified");
+    const review = reviews.find((entry) => text(entry.id) === evidence?.proofReviewId
+      && text(entry.mission_publication_proof_attempt_id ?? entry.attemptId) === proofAttemptId);
+    const proofReviewId = text(review?.id);
+    const reviewerId = text(review?.reviewer_id ?? review?.reviewerId);
+    const createdAt = text(review?.created_at ?? review?.createdAt);
+    const reviewedAt = text(review?.reviewed_at ?? review?.reviewedAt);
+    if (!workItemId || !proofAttemptId || !evidence || !proofReviewId || !reviewerId || !createdAt
+      || text(review?.state) !== "verified" || text(review?.decision) !== "verified"
+      || (input.workspaceId !== undefined && text(review?.workspace_id) !== input.workspaceId)
+      || (evidence.reviewedAt !== null && evidence.reviewedAt !== reviewedAt)) {
+      throw new RewardHandoffError("FORBIDDEN", "forbidden");
+    }
+    return { workItemId, proofAttemptId, proofReviewId, reviewerId, createdAt };
+  });
+}
+
 export function normalizeOperatorRewardHandoffProjection(input: {
+  workspaceId?: string;
   workflow: unknown;
   contract: unknown;
   requiredItems: unknown[];
   pendingReward: unknown;
   decision?: unknown;
+  approvalDecision?: unknown;
+  proofReviews?: unknown[];
   processingWindowDays?: number | null;
 }): RewardHandoffProjection {
   const workflow = record(input.workflow);
   const contract = rewardContract(input.contract);
   const pending = operatorPendingReward(input.pendingReward, input.decision);
+  const approval = input.approvalDecision ?? input.decision;
   return {
     rewardContract: contract,
     completionEligibility: buildCompletionEligibility({
@@ -675,23 +748,16 @@ export function normalizeOperatorRewardHandoffProjection(input: {
       pendingReward: pending,
     }),
     pendingReward: pending,
-    acceptedProofAnchors: input.requiredItems
-      .map(record)
-      .filter((item) => item.required === true
-        && item.state === "proof_verified"
-        && text(item.current_proof_attempt_id ?? item.currentProofAttemptId) !== null
-        && text(item.current_proof_attempt_id ?? item.currentProofAttemptId)
-          === text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId))
-      .map((item) => ({
-        workItemId: text(item.id ?? item.workItemId) ?? "",
-        proofAttemptId: text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId) ?? "",
-      }))
-      .filter((anchor) => anchor.workItemId !== "" && anchor.proofAttemptId !== ""),
+    acceptedProofAnchors: acceptedProofAnchors({
+      workspaceId: input.workspaceId,
+      requiredItems: input.requiredItems,
+      approvalDecision: approval,
+      proofReviews: input.proofReviews,
+    }),
     processingWindowDays: input.processingWindowDays ?? pending?.processingWindowDays ?? null,
     processingTargetAt: pending?.targetAt ?? null,
   };
 }
-
 function mapDatabaseError(error: { message?: string | null } | null): never {
   const message = (error?.message ?? "").toLowerCase();
   type DatabaseErrorCode = Exclude<RewardHandoffErrorCode, "NOT_AUTHENTICATED" | "UNKNOWN">;
@@ -760,7 +826,7 @@ export async function getOperatorRewardHandoffProjection(
   client: SupabaseClient,
   workspaceId: string,
   workflowId: string,
-  known?: { workflow: unknown; submission: unknown; requiredItems: unknown[] },
+  known?: { workflow: unknown; submission: unknown; requiredItems: unknown[]; proofReviews?: unknown[] },
   processingWindowDays?: number | null,
 ) {
   let workflowResult: { data: unknown; error: { message?: string | null } | null };
@@ -792,6 +858,18 @@ export async function getOperatorRewardHandoffProjection(
   if (itemsResult.error) mapDatabaseError(itemsResult.error);
   if (submissionResult.error) mapDatabaseError(submissionResult.error);
   if (!submissionResult.data) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  const acceptedAttemptIds = (itemsResult.data ?? []).map(record)
+    .filter((item) => item.required === true && item.state === "proof_verified")
+    .map((item) => text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId))
+    .filter((id): id is string => id !== null);
+  let proofReviews: unknown[] = known?.proofReviews ?? [];
+  if (!known && acceptedAttemptIds.length > 0) {
+    const reviewsResult = await client.from("mission_publication_proof_reviews").select("*")
+      .eq("workspace_id", workspaceId)
+      .in("mission_publication_proof_attempt_id", acceptedAttemptIds);
+    if (reviewsResult.error) mapDatabaseError(reviewsResult.error);
+    proofReviews = (reviewsResult.data ?? []) as unknown[];
+  }
   const [contractResult, pendingResult] = await Promise.all([
     client.from("mission_reward_contracts").select("*")
       .eq("workspace_id", workspaceId).eq("mission_workflow_id", workflowId).maybeSingle(),
@@ -803,12 +881,18 @@ export async function getOperatorRewardHandoffProjection(
     if (result.error) mapDatabaseError(result.error);
   }
   const pending = pendingResult.data as JsonRow | null;
-  const decisionId = pending?.cancellation_decision_id ?? pending?.completion_decision_id;
-  let decisionResult: { data: unknown; error: { message?: string | null } | null } = { data: null, error: null };
-  if (typeof decisionId === "string") {
-    decisionResult = await client.from("mission_completion_decisions").select("*")
-      .eq("workspace_id", workspaceId).eq("id", decisionId).maybeSingle();
-    if (decisionResult.error) mapDatabaseError(decisionResult.error);
+  const emptyDecision = { data: null, error: null as { message?: string | null } | null };
+  let approvalResult: { data: unknown; error: { message?: string | null } | null } = emptyDecision;
+  let cancellationResult: { data: unknown; error: { message?: string | null } | null } = emptyDecision;
+  if (typeof pending?.completion_decision_id === "string") {
+    approvalResult = await client.from("mission_completion_decisions").select("*")
+      .eq("workspace_id", workspaceId).eq("id", pending.completion_decision_id).maybeSingle();
+    if (approvalResult.error) mapDatabaseError(approvalResult.error);
+  }
+  if (typeof pending?.cancellation_decision_id === "string") {
+    cancellationResult = await client.from("mission_completion_decisions").select("*")
+      .eq("workspace_id", workspaceId).eq("id", pending.cancellation_decision_id).maybeSingle();
+    if (cancellationResult.error) mapDatabaseError(cancellationResult.error);
   }
   let resolvedProcessingWindowDays = processingWindowDays;
   if (resolvedProcessingWindowDays === undefined) {
@@ -828,14 +912,18 @@ export async function getOperatorRewardHandoffProjection(
     submission: submissionResult.data,
     contract: contractResult.data,
     pendingReward: pending,
-    decision: decisionResult.data,
+    approvalDecision: approvalResult.data,
+    cancellationDecision: cancellationResult.data,
   });
   return normalizeOperatorRewardHandoffProjection({
+    workspaceId,
     workflow: workflowResult.data,
     contract: contractResult.data,
     requiredItems: (itemsResult.data ?? []) as unknown[],
     pendingReward: pending,
-    decision: decisionResult.data,
+    decision: cancellationResult.data ?? approvalResult.data,
+    approvalDecision: approvalResult.data,
+    proofReviews,
     processingWindowDays: resolvedProcessingWindowDays,
   });
 }
@@ -923,7 +1011,7 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
     async listRewardHandoffs(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
       let query = client.from("mission_pending_rewards")
-        .select("*, workflow:mission_workflows!mission_pending_rewards_mission_workflow_id_fkey(id, workspace_id, mission_submission_id), submission:mission_submissions!mission_pending_rewards_mission_submission_id_fkey(id, workspace_id, creator_id, mission_id), reward_contract:mission_reward_contracts!mission_pending_rewards_reward_contract_id_fkey(id, workspace_id, mission_workflow_id, mission_submission_id, mission_id), creators!mission_pending_rewards_creator_id_fkey(id, workspace_id, display_name), missions!mission_pending_rewards_mission_id_fkey(id, workspace_id, title), completion_decision:mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, decision_kind, decided_at, required_item_count, verified_required_item_count, evidence_snapshot), cancellation_decision:mission_completion_decisions!mission_pending_rewards_cancellation_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, decision_kind)")
+        .select("*, workflow:mission_workflows!mission_pending_rewards_mission_workflow_id_fkey(id, workspace_id, mission_submission_id), submission:mission_submissions!mission_pending_rewards_mission_submission_id_fkey(id, workspace_id, creator_id, mission_id), reward_contract:mission_reward_contracts!mission_pending_rewards_reward_contract_id_fkey(id, workspace_id, mission_workflow_id, mission_submission_id, mission_id), creators!mission_pending_rewards_creator_id_fkey(id, workspace_id, display_name), missions!mission_pending_rewards_mission_id_fkey(id, workspace_id, title), completion_decision:mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, pending_reward_id, supersedes_decision_id, decision_kind, decided_at, required_item_count, verified_required_item_count, evidence_snapshot), cancellation_decision:mission_completion_decisions!mission_pending_rewards_cancellation_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, pending_reward_id, supersedes_decision_id, decision_kind)")
         .eq("workspace_id", workspace.id)
         .eq("status", input.status);
       const now = new Date();

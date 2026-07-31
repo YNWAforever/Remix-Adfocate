@@ -73,7 +73,7 @@ function renderReview(overrides: Partial<{
   rewardContract: (RewardContract & Partial<AdminRewardContract>) | null;
   eligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
-  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string; proofReviewId: string; reviewerId: string; createdAt: string }>;
   processingWindowDays: number | null;
   processingTargetAt: string | null;
   busy: boolean;
@@ -358,13 +358,20 @@ describe("MissionCompletionReview", () => {
         source: "operator_backfill",
         confirmationEvidenceSource: "operator_record",
         sourceMissionUpdatedAt: "2026-07-29T10:00:00.000Z",
+        confirmedBy: "operator-42",
+        confirmationReason: "Confirmed against signed agreement with creator.",
       },
       pendingReward,
-      acceptedProofAnchors: [{ workItemId: "work-item-1", proofAttemptId: "proof-attempt-1" }],
+      acceptedProofAnchors: [{ workItemId: "work-item-1", proofAttemptId: "proof-attempt-1", proofReviewId: "proof-review-1", reviewerId: "reviewer-1", createdAt: "2026-07-29T11:00:00.000Z" }],
       processingWindowDays: 7,
       processingTargetAt: "2026-08-06T10:00:00.000Z",
     });
-    expect(screen.getByText("work-item-1 / proof-attempt-1")).toBeVisible();
+    expect(screen.getByText("work-item-1")).toBeVisible();
+    expect(screen.getByText("proof-attempt-1")).toBeVisible();
+    expect(screen.getByText("proof-review-1")).toBeVisible();
+    expect(screen.getByText("reviewer-1")).toBeVisible();
+    expect(screen.getByText("operator-42")).toBeVisible();
+    expect(screen.getByText("Confirmed against signed agreement with creator.")).toBeVisible();
     expect(screen.getByText("operator_backfill")).toBeVisible();
     expect(screen.getByText("operator_record")).toBeVisible();
     expect(screen.getByText("2026-08-06T10:00:00.000Z")).toBeVisible();
