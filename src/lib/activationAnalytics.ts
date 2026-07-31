@@ -41,6 +41,43 @@ export type PublicationChecklistFailureCategory =
   (typeof PUBLICATION_CHECKLIST_FAILURE_CATEGORIES)[number];
 export type PublicationRecoveryCategory = (typeof PUBLICATION_RECOVERY_CATEGORIES)[number];
 
+const REWARD_HANDOFF_WORKFLOW_STATES = ["proof_verified", "reward_pending"] as const;
+const REWARD_HANDOFF_CONTRACT_SOURCES = ["join", "operator_backfill", "missing"] as const;
+const REWARD_HANDOFF_ERROR_CATEGORIES = [
+  "wrong_state",
+  "required_proof_incomplete",
+  "reward_contract_required",
+  "pending_reward_exists",
+  "workflow_stale",
+  "notification_failed",
+  "contract_error",
+  "eligibility_error",
+  "duplicate",
+  "other",
+  "unknown",
+] as const;
+
+export type RewardHandoffAnalyticsEvent =
+  | "mission_completion_review_viewed"
+  | "mission_completion_approved"
+  | "mission_reward_pending_viewed"
+  | "mission_reward_pending_cancelled"
+  | "mission_reward_support_selected"
+  | "reward_handoff_queue_viewed"
+  | "reward_handoff_queue_filtered";
+
+export type RewardHandoffAnalyticsProperties = {
+  missionId?: string;
+  locale?: PublicationAnalyticsLocale;
+  deviceCategory?: DeviceCategory;
+  workflowState?: (typeof REWARD_HANDOFF_WORKFLOW_STATES)[number];
+  contractSource?: (typeof REWARD_HANDOFF_CONTRACT_SOURCES)[number];
+  errorCategory?: (typeof REWARD_HANDOFF_ERROR_CATEGORIES)[number];
+  hasPoints?: boolean;
+  hasCash?: boolean;
+  hasXp?: boolean;
+};
+
 /**
  * The allowed activation analytics payloads and their PII boundary.
  * Do not add direct creator identifiers or creator-authored content here.
@@ -199,6 +236,13 @@ export type ActivationEventMap = {
     platform: PublicationPlatform; state: PublicationAnalyticsState;
     attemptNumber: number; recoveryCategory: PublicationRecoveryCategory;
   };
+  mission_completion_review_viewed: RewardHandoffAnalyticsProperties;
+  mission_completion_approved: RewardHandoffAnalyticsProperties;
+  mission_reward_pending_viewed: RewardHandoffAnalyticsProperties;
+  mission_reward_pending_cancelled: RewardHandoffAnalyticsProperties;
+  mission_reward_support_selected: RewardHandoffAnalyticsProperties;
+  reward_handoff_queue_viewed: RewardHandoffAnalyticsProperties;
+  reward_handoff_queue_filtered: RewardHandoffAnalyticsProperties;
 };
 
 const ACTIVATION_PROPERTY_KEYS = {
@@ -237,6 +281,13 @@ const ACTIVATION_PROPERTY_KEYS = {
   publication_proof_resubmitted: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "urlCount", "evidenceCount", "lateness", "metadataStatus"],
   publication_proof_verified: ["locale", "missionType", "platform", "state", "timingBucket", "attemptNumber", "reviewNumber", "metadataStatus"],
   publication_proof_recovery_used: ["locale", "missionType", "platform", "state", "attemptNumber", "recoveryCategory"],
+  mission_completion_review_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  mission_completion_approved: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  mission_reward_pending_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  mission_reward_pending_cancelled: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  mission_reward_support_selected: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  reward_handoff_queue_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  reward_handoff_queue_filtered: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
 } as const satisfies Record<keyof ActivationEventMap, readonly string[]>;
 
 const PUBLICATION_ANALYTICS_EVENT_NAMES = [
@@ -255,6 +306,19 @@ type PublicationAnalyticsEventName = (typeof PUBLICATION_ANALYTICS_EVENT_NAMES)[
 
 const PUBLICATION_ANALYTICS_EVENT_SET: ReadonlySet<keyof ActivationEventMap> =
   new Set(PUBLICATION_ANALYTICS_EVENT_NAMES);
+
+const REWARD_HANDOFF_ANALYTICS_EVENT_NAMES = [
+  "mission_completion_review_viewed",
+  "mission_completion_approved",
+  "mission_reward_pending_viewed",
+  "mission_reward_pending_cancelled",
+  "mission_reward_support_selected",
+  "reward_handoff_queue_viewed",
+  "reward_handoff_queue_filtered",
+] as const satisfies readonly RewardHandoffAnalyticsEvent[];
+
+const REWARD_HANDOFF_ANALYTICS_EVENT_SET: ReadonlySet<keyof ActivationEventMap> =
+  new Set(REWARD_HANDOFF_ANALYTICS_EVENT_NAMES);
 
 function isAllowedString(value: unknown, allowed: readonly string[]): boolean {
   return typeof value === "string" && allowed.includes(value);
@@ -297,6 +361,29 @@ function isPublicationAnalyticsEvent(
   return PUBLICATION_ANALYTICS_EVENT_SET.has(name);
 }
 
+function isRewardHandoffAnalyticsEvent(
+  name: keyof ActivationEventMap,
+): name is RewardHandoffAnalyticsEvent {
+  return REWARD_HANDOFF_ANALYTICS_EVENT_SET.has(name);
+}
+
+function isSafeRewardHandoffProperty(key: string, value: unknown): boolean {
+  switch (key) {
+    case "missionId":
+      return typeof value === "string"
+        && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+    case "locale": return isAllowedString(value, PUBLICATION_ANALYTICS_LOCALES);
+    case "deviceCategory": return isAllowedString(value, ["mobile", "tablet", "desktop"]);
+    case "workflowState": return isAllowedString(value, REWARD_HANDOFF_WORKFLOW_STATES);
+    case "contractSource": return isAllowedString(value, REWARD_HANDOFF_CONTRACT_SOURCES);
+    case "errorCategory": return isAllowedString(value, REWARD_HANDOFF_ERROR_CATEGORIES);
+    case "hasPoints":
+    case "hasCash":
+    case "hasXp": return typeof value === "boolean";
+    default: return false;
+  }
+}
+
 type ActivationAnalyticsSink = (event: {
   name: keyof ActivationEventMap;
   properties: object;
@@ -313,7 +400,8 @@ export function trackActivationEvent<K extends keyof ActivationEventMap>(
   const safeProperties = Object.fromEntries(
     Object.entries(properties).filter(([key, value]) =>
       allowed.has(key)
-      && (!isPublicationAnalyticsEvent(name) || isSafePublicationProperty(key, value))),
+      && (!isPublicationAnalyticsEvent(name) || isSafePublicationProperty(key, value))
+      && (!isRewardHandoffAnalyticsEvent(name) || isSafeRewardHandoffProperty(key, value))),
   );
   activationAnalyticsSink?.({ name, properties: safeProperties });
 }

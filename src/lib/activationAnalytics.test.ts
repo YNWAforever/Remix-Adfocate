@@ -318,3 +318,104 @@ describe("getDeviceCategory", () => {
     expect(getDeviceCategory(width)).toBe(category);
   });
 });
+
+const rewardHandoffEvents = [
+  "mission_completion_review_viewed",
+  "mission_completion_approved",
+  "mission_reward_pending_viewed",
+  "mission_reward_pending_cancelled",
+  "mission_reward_support_selected",
+  "reward_handoff_queue_viewed",
+  "reward_handoff_queue_filtered",
+] as const;
+
+describe("reward handoff analytics privacy contract", () => {
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
+  });
+
+  it("delivers all seven typed events with only bounded safe dimensions", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+    const properties = {
+      missionId: "11111111-1111-4111-8111-111111111111",
+      locale: "zh" as const,
+      deviceCategory: "mobile" as const,
+      workflowState: "reward_pending" as const,
+      contractSource: "operator_backfill" as const,
+      errorCategory: "wrong_state" as const,
+      hasPoints: true,
+      hasCash: false,
+      hasXp: true,
+    };
+
+    for (const name of rewardHandoffEvents) trackActivationEvent(name, properties);
+
+    expect(sink.mock.calls.map(([event]) => event)).toEqual(
+      rewardHandoffEvents.map((name) => ({ name, properties })),
+    );
+  });
+
+  it.each(rewardHandoffEvents)("drops sensitive keys from %s", (name) => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent(name, {
+      missionId: "11111111-1111-4111-8111-111111111111",
+      locale: "en",
+      deviceCategory: "desktop",
+      workflowState: "proof_verified",
+      contractSource: "join",
+      errorCategory: "other",
+      hasPoints: true,
+      hasCash: true,
+      hasXp: false,
+      pointsAmount: 1000,
+      cashAmount: 500,
+      xpAmount: 100,
+      note: "operator authored note",
+      proofUrl: "https://creator.example/private",
+      handle: "@creator_handle",
+      email: "creator@example.com",
+      evidencePath: "C:\\Users\\creator\\proof.txt",
+      rawError: new Error("private database failure"),
+    } as never);
+
+    expect(sink).toHaveBeenCalledWith({
+      name,
+      properties: {
+        missionId: "11111111-1111-4111-8111-111111111111",
+        locale: "en",
+        deviceCategory: "desktop",
+        workflowState: "proof_verified",
+        contractSource: "join",
+        errorCategory: "other",
+        hasPoints: true,
+        hasCash: true,
+        hasXp: false,
+      },
+    });
+  });
+
+  it("rejects sensitive values even when placed under allowlisted keys", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent("mission_completion_review_viewed", {
+      missionId: "https://creator.example/private",
+      locale: "creator@example.com",
+      deviceCategory: "@creator_handle",
+      workflowState: "C:\\Users\\creator\\proof.txt",
+      contractSource: "operator authored note",
+      errorCategory: "raw database error: creator@example.com",
+      hasPoints: 1000,
+      hasCash: Number.POSITIVE_INFINITY,
+      hasXp: "true",
+    } as never);
+
+    expect(sink).toHaveBeenCalledWith({
+      name: "mission_completion_review_viewed",
+      properties: {},
+    });
+  });
+});

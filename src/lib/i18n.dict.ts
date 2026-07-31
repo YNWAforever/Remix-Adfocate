@@ -1042,6 +1042,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.mission_publication_correction_requested.body": "\"{deliverable}\" publication proof (attempt {attempt}) needs correction. Reason categories: {reasonCategories}.",
     "app.notif.mission_publication_verified.title": "Publication proof verified",
     "app.notif.mission_publication_verified.body": "\"{deliverable}\" publication proof (attempt {attempt}) has been verified.",
+    "app.notif.mission_reward_pending.title": "Reward handoff pending",
+    "app.notif.mission_reward_pending.body": "\"{mission}\" is complete. Your reward is pending finance review. Target: {target}.",
+    "app.notif.mission_reward_pending_cancelled.title": "Reward handoff cancelled",
+    "app.notif.mission_reward_pending_cancelled.body": "\"{mission}\" reward handoff was cancelled and returned for review. Category: {reasonCategory}.",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "Challenges",
@@ -2222,6 +2226,10 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.notif.mission_publication_correction_requested.body": "「{deliverable}」的發佈證明（第 {attempt} 次提交）需要修正。原因類別：{reasonCategories}。",
     "app.notif.mission_publication_verified.title": "發佈證明已核實",
     "app.notif.mission_publication_verified.body": "「{deliverable}」的發佈證明（第 {attempt} 次提交）已核實。",
+    "app.notif.mission_reward_pending.title": "獎勵交接待審核",
+    "app.notif.mission_reward_pending.body": "「{mission}」已完成。獎勵交接正等待財務審核。目標日期：{target}。",
+    "app.notif.mission_reward_pending_cancelled.title": "獎勵交接已取消",
+    "app.notif.mission_reward_pending_cancelled.body": "「{mission}」的獎勵交接已取消並退回審核。類別：{reasonCategory}。",
 
     // ── app: campaigns ────────────────────────────────────────
     "app.nav.campaigns": "挑戰",

@@ -90,4 +90,42 @@ describe("renderNotification", () => {
     expect(r.body).toContain("夏日挑戰");
     expect(r.href).toBe("/campaigns/summer");
   });
+  it.each([
+    {
+      type: "mission_reward_pending",
+      data: {
+        mission_title: "Launch", submission_id: "sub-1", target_at: "17 Jul",
+        reward_components: ["points", "cash"],
+      },
+      en: {
+        title: "Reward handoff pending",
+        body: "\"Launch\" is complete. Your reward is pending finance review. Target: 17 Jul.",
+      },
+      zh: {
+        title: "獎勵交接待審核",
+        body: "「Launch」已完成。獎勵交接正等待財務審核。目標日期：17 Jul。",
+      },
+    },
+    {
+      type: "mission_reward_pending_cancelled",
+      data: {
+        mission_title: "Launch", submission_id: "sub-1", reason_category: "contract_error",
+      },
+      en: {
+        title: "Reward handoff cancelled",
+        body: "\"Launch\" reward handoff was cancelled and returned for review. Category: contract_error.",
+      },
+      zh: {
+        title: "獎勵交接已取消",
+        body: "「Launch」的獎勵交接已取消並退回審核。類別：contract_error。",
+      },
+    },
+  ] as const)("renders $type with exact bilingual pending-safe copy", ({ type, data, en, zh }) => {
+    const renderedEn = renderNotification(row(type, data), makeT("en"));
+    const renderedZh = renderNotification(row(type, data), makeT("zh"));
+    expect(renderedEn).toMatchObject({ ...en, href: "/my/sub-1" });
+    expect(renderedZh).toMatchObject({ ...zh, href: "/my/sub-1" });
+    expect(`${renderedEn.title} ${renderedEn.body} ${renderedZh.title} ${renderedZh.body}`)
+      .not.toMatch(/\b(?:paid|payout|credited|available|issued)\b/i);
+  });
 });
