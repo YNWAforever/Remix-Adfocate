@@ -18,6 +18,7 @@ const integrationSkipReason = activeMissionIntegrationSkipReason();
 const suite = integrationSkipReason === null ? describe : describe.skip;
 const suiteName = integrationSkipReason === null ? "active mission workflow schema" : `active mission workflow schema (skipped: ${integrationSkipReason})`;
 const unique = () => randomUUID();
+const powershellExecutableFor = (platform: NodeJS.Platform) => platform === "win32" ? "powershell.exe" : "pwsh";
 
 const rewardContractMigrationSql = () => readFileSync(
   resolve("supabase/migrations/20260731110000_reward_contract_capture.sql"),
@@ -1218,9 +1219,12 @@ describe("active mission migration contract", () => {
     const retryCommand = runbook.split(/\r?\n/).find((line) => line.trimStart().startsWith("curl.exe --fail-with-body"));
     const payloadExpression = retryCommand?.match(/--data (.+)$/)?.[1];
     if (!payloadExpression) throw new Error("Reward retry PowerShell payload expression is missing");
+    expect(powershellExecutableFor("win32")).toBe("powershell.exe");
+    expect(powershellExecutableFor("linux")).toBe("pwsh");
+    const powershellExecutable = powershellExecutableFor(process.platform);
     const notificationTypes = ["mission_reward_pending", "mission_reward_pending_cancelled"] as const;
     for (const notificationType of notificationTypes) {
-      const payload = execFileSync("powershell.exe", [
+      const payload = execFileSync(powershellExecutable, [
         "-NoProfile", "-NonInteractive", "-Command",
         "$NOTIFICATION_TYPE = '" + notificationType + "'; " + payloadExpression,
       ], { encoding: "utf8" }).trim();
