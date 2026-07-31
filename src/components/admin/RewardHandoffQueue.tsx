@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   RewardHandoffListFilters,
   RewardHandoffQueueItem,
@@ -12,6 +12,7 @@ export type RewardHandoffUiFilters = Pick<
 >;
 
 type Props = {
+  workspaceKey: string;
   items: RewardHandoffQueueItem[];
   filters: RewardHandoffUiFilters;
   processingWindowDays: number | null;
@@ -73,7 +74,11 @@ function normalizedFilters(filters: RewardHandoffUiFilters): RewardHandoffUiFilt
   };
 }
 
-export function RewardHandoffQueue({
+export function RewardHandoffQueue(props: Props) {
+  return <RewardHandoffQueueWorkspace key={props.workspaceKey} {...props} />;
+}
+
+function RewardHandoffQueueWorkspace({
   items,
   filters,
   processingWindowDays,
@@ -88,10 +93,15 @@ export function RewardHandoffQueue({
   const [windowDraft, setWindowDraft] = useState(
     processingWindowDays === null ? "" : String(processingWindowDays),
   );
+  const mountedRef = useRef(true);
   const [saveState, setSaveState] = useState<
     | { kind: "idle" | "saving" | "error" }
     | { kind: "saved"; days: number | null }
   >({ kind: "idle" });
+
+  useEffect(() => () => {
+    mountedRef.current = false;
+  }, []);
 
   useEffect(() => {
     setDraftFilters(normalizedFilters(filters));
@@ -117,9 +127,9 @@ export function RewardHandoffQueue({
     setSaveState({ kind: "saving" });
     try {
       await onSaveProcessingWindow(days);
-      setSaveState({ kind: "saved", days });
+      if (mountedRef.current) setSaveState({ kind: "saved", days });
     } catch {
-      setSaveState({ kind: "error" });
+      if (mountedRef.current) setSaveState({ kind: "error" });
     }
   }
 
@@ -143,6 +153,13 @@ export function RewardHandoffQueue({
     return validDate(item.targetAt)
       ? formatDate(item.targetAt, locale)
       : t("app.admin.rewardHandoff.noTarget");
+  }
+
+  function decision(item: RewardHandoffQueueItem) {
+    const decidedAt = item.completionDecision?.decidedAt ?? null;
+    return validDate(decidedAt)
+      ? formatDate(decidedAt, locale)
+      : t("app.admin.rewardHandoff.notAvailable");
   }
 
   function evidence(item: RewardHandoffQueueItem) {
@@ -199,6 +216,7 @@ export function RewardHandoffQueue({
             <input
               className={FIELD}
               inputMode="numeric"
+              aria-describedby="reward-processing-window-unit"
               value={windowDraft}
               onChange={(event) => {
                 setWindowDraft(event.target.value);
@@ -207,12 +225,14 @@ export function RewardHandoffQueue({
               disabled={saveState.kind === "saving"}
             />
           </label>
-          <span className="text-sm font-medium">{t("app.admin.rewardHandoff.sla.unit")}</span>
+          <span id="reward-processing-window-unit" className="text-sm font-medium">
+            {t("app.admin.rewardHandoff.sla.unit")}
+          </span>
           <button
             type="button"
             onClick={() => void saveWindow()}
             disabled={saveState.kind === "saving"}
-            className="h-10 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 font-heading text-sm font-bold disabled:opacity-60"
+            className="h-10 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 font-heading text-sm font-bold hover:brightness-95 disabled:opacity-60"
           >
             {saveState.kind === "saving"
               ? t("app.admin.rewardHandoff.sla.saving")
@@ -285,7 +305,7 @@ export function RewardHandoffQueue({
         <button
           type="button"
           onClick={() => onFiltersChange(normalizedFilters(draftFilters))}
-          className="h-10 self-end rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-4 font-heading text-sm font-bold"
+          className="h-10 self-end rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-4 font-heading text-sm font-bold hover:brightness-95"
         >
           {t("app.admin.rewardHandoff.filter.apply")}
         </button>
@@ -325,14 +345,14 @@ export function RewardHandoffQueue({
                     <dl className="mt-3 grid min-w-0 gap-2 text-sm">
                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.reward")}</dt><dd className="break-words">{renderReward(item)}</dd></div>
                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.target")}</dt><dd>{target(item)}</dd></div>
-                      <div><dt className="font-bold">{t("app.admin.rewardHandoff.decision")}</dt><dd>{item.completionDecision ? formatDate(item.completionDecision.decidedAt, locale) : t("app.admin.rewardHandoff.notAvailable")}</dd></div>
+                      <div><dt className="font-bold">{t("app.admin.rewardHandoff.decision")}</dt><dd>{decision(item)}</dd></div>
                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.evidence")}</dt><dd>{evidence(item)}</dd></div>
                     </dl>
                     <Link
                       to="/admin/active-missions/$workflowId"
                       params={{ workflowId: item.workflowId }}
                       search={{ workItemId: undefined }}
-                      className="mt-3 inline-flex rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold"
+                      className="mt-3 inline-flex rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold hover:bg-[var(--color-paper)]"
                     >
                       {t("app.admin.rewardHandoff.timeline")}
                     </Link>
@@ -357,7 +377,7 @@ export function RewardHandoffQueue({
                         <td className="max-w-48 break-words border-b p-2">{item.missionTitle ?? t("app.admin.rewardHandoff.unknownMission")}</td>
                         <td className="border-b p-2">{renderReward(item)}</td>
                         <td className="border-b p-2">{target(item)}</td>
-                        <td className="border-b p-2">{item.completionDecision ? formatDate(item.completionDecision.decidedAt, locale) : t("app.admin.rewardHandoff.notAvailable")}</td>
+                        <td className="border-b p-2">{decision(item)}</td>
                         <td className="border-b p-2">{evidence(item)}</td>
                         <td className="border-b p-2">{status(item)}</td>
                         <td className="border-b p-2">
@@ -365,7 +385,7 @@ export function RewardHandoffQueue({
                             to="/admin/active-missions/$workflowId"
                             params={{ workflowId: item.workflowId }}
                             search={{ workItemId: undefined }}
-                            className="font-bold underline"
+                            className="font-bold underline hover:text-[var(--color-soft-ink)]"
                           >
                             {t("app.admin.rewardHandoff.timeline")}
                           </Link>

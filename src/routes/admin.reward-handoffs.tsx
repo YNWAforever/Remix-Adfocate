@@ -152,12 +152,15 @@ export function AdminRewardHandoffsRoute() {
   function changeFilters(next: RewardHandoffUiFilters) {
     const safe = validateRewardHandoffSearch(next as Record<string, unknown>);
     const identity = [safe.due ?? "all", safe.component ?? "all", safe.status].join("|");
-    if (localeReady && filteredRef.current !== identity) {
+    if (!localeReady) {
+      pendingFilteredRef.current = safe;
+    } else if (filteredRef.current !== identity) {
       if (trackActivationEvent(
         "reward_handoff_queue_filtered",
         analyticsProperties(lang, safe),
       )) {
         filteredRef.current = identity;
+        pendingFilteredRef.current = null;
       } else {
         pendingFilteredRef.current = safe;
       }
@@ -189,7 +192,7 @@ export function AdminRewardHandoffsRoute() {
         <button
           type="button"
           onClick={() => void queue.refetch()}
-          className="rounded-full border-2 border-current px-3 py-1"
+          className="rounded-full border-2 border-current px-3 py-1 hover:bg-red-50"
         >
           {t("app.admin.rewardHandoff.retry")}
         </button>
@@ -199,6 +202,7 @@ export function AdminRewardHandoffsRoute() {
 
   return (
     <RewardHandoffQueue
+      workspaceKey={workspaceSlug}
       items={queue.data?.items ?? []}
       filters={filters}
       processingWindowDays={queue.data?.rewardProcessingWindowDays ?? null}

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RewardHandoffQueueItem } from "@/lib/adminRewardHandoff";
 
@@ -42,11 +42,19 @@ function item(overrides: Partial<RewardHandoffQueueItem> = {}): RewardHandoffQue
 }
 
 const baseProps = {
+  workspaceKey: "alpha",
   filters: { status: "pending" as const },
   processingWindowDays: 7,
   onFiltersChange: vi.fn(),
   onSaveProcessingWindow: vi.fn(),
 };
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
+}
 
 describe("RewardHandoffQueue", () => {
   beforeEach(() => {
@@ -108,6 +116,16 @@ describe("RewardHandoffQueue", () => {
     expect(screen.getAllByText("已取消")[0]).toBeVisible();
   });
 
+  it("renders malformed completion decision timestamps as localized unavailable", () => {
+    render(<RewardHandoffQueue {...baseProps} items={[item({
+      completionDecision: {
+        ...item().completionDecision!,
+        decidedAt: "2026-02-31T10:00:00.000Z",
+      },
+    })]} />);
+    expect(screen.getAllByText("Not available").length).toBeGreaterThan(0);
+  });
+
   it("waits for explicit filter application through native controls", () => {
     const onFiltersChange = vi.fn();
     render(<RewardHandoffQueue {...baseProps} items={[]} onFiltersChange={onFiltersChange} />);
@@ -144,7 +162,9 @@ describe("RewardHandoffQueue", () => {
       <RewardHandoffQueue {...baseProps} items={[]} onSaveProcessingWindow={onSave} />,
     );
     const input = screen.getByLabelText("Processing window");
-    expect(screen.getByText("calendar days")).toBeVisible();
+    const unit = screen.getByText("calendar days");
+    expect(unit).toBeVisible();
+    expect(input).toHaveAttribute("aria-describedby", unit.id);
     fireEvent.change(input, { target: { value: "0" } });
     expect(onSave).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
@@ -157,6 +177,57 @@ describe("RewardHandoffQueue", () => {
     language = "zh";
     rerender(<RewardHandoffQueue {...baseProps} items={[]} processingWindowDays={null} />);
     expect(screen.getByText("日曆日")).toBeVisible();
+  });
+
+  it("resets draft, validation, and success state when workspace changes with the same setting", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const view = render(<RewardHandoffQueue {...baseProps} items={[]} onSaveProcessingWindow={onSave} />);
+    const input = screen.getByLabelText("Processing window");
+    fireEvent.change(input, { target: { value: "0" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+    expect(await screen.findByRole("status")).toHaveTextContent("Saved 0 calendar days.");
+    fireEvent.change(input, { target: { value: "366" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+    expect(await screen.findByRole("alert")).toBeVisible();
+
+    view.rerender(<RewardHandoffQueue {...baseProps} workspaceKey="beta" items={[]} onSaveProcessingWindow={onSave} />);
+    expect(screen.getByLabelText("Processing window")).toHaveValue("7");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
+  });
+
+  it.each(["resolve", "reject"] as const)(
+    "ignores an in-flight save that %ss after a workspace switch",
+    async (settlement) => {
+      const pending = deferred<void>();
+      const saveA = vi.fn(() => pending.promise);
+      const saveB = vi.fn().mockResolvedValue(undefined);
+      const view = render(<RewardHandoffQueue {...baseProps} items={[]} onSaveProcessingWindow={saveA} />);
+      fireEvent.change(screen.getByLabelText("Processing window"), { target: { value: "12" } });
+      fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+      expect(saveA).toHaveBeenCalledWith(12);
+
+      view.rerender(<RewardHandoffQueue {...baseProps} workspaceKey="beta" items={[]} onSaveProcessingWindow={saveB} />);
+      await act(async () => {
+        if (settlement === "resolve") pending.resolve();
+        else pending.reject(new Error("private stale workspace failure"));
+        await pending.promise.catch(() => undefined);
+      });
+
+      expect(screen.getByLabelText("Processing window")).toHaveValue("7");
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeEmptyDOMElement();
+      expect(saveB).not.toHaveBeenCalled();
+    },
+  );
+
+  it("adds explicit hover states to queue actions and timeline links", () => {
+    render(<RewardHandoffQueue {...baseProps} items={[item()]} />);
+    expect(screen.getByRole("button", { name: "Save processing window" }).className).toMatch(/hover:/);
+    expect(screen.getByRole("button", { name: "Apply filters" }).className).toMatch(/hover:/);
+    for (const link of screen.getAllByRole("link", { name: "Open mission timeline" })) {
+      expect(link.className).toMatch(/hover:/);
+    }
   });
 
   it("bounds retryable save errors, preserves input, and retries", async () => {

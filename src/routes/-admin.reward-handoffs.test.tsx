@@ -58,6 +58,7 @@ vi.mock("@/lib/adminRewardHandoff", async (importOriginal) => {
 });
 vi.mock("@/components/admin/RewardHandoffQueue", () => ({
   RewardHandoffQueue: (props: {
+    workspaceKey: string;
     items: RewardHandoffQueueItem[];
     filters: Record<string, unknown>;
     processingWindowDays: number | null;
@@ -75,6 +76,14 @@ vi.mock("@/components/admin/RewardHandoffQueue", () => ({
         })}
       >
         Route apply filters
+      </button>
+      <button
+        type="button"
+        onClick={() => props.onFiltersChange({
+          due: "no_target", component: "cash", status: "pending",
+        })}
+      >
+        Route apply latest filters
       </button>
       <button type="button" onClick={() => void props.onSaveProcessingWindow(0)}>
         Route save setting
@@ -103,6 +112,13 @@ function queueItem(): RewardHandoffQueueItem {
 
 function client() {
   return new QueryClient({ defaultOptions: { queries: { retry: false } } });
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
 }
 
 function renderRoute(queryClient = client()) {
@@ -198,6 +214,40 @@ describe("admin reward handoffs route", () => {
     await waitFor(() => expect(h.fetchRewardHandoffs.mock.calls.length).toBeGreaterThan(1));
   });
 
+  it("keeps late workspace-A save settlement scoped to A after switching to B", async () => {
+    const pending = deferred<{ workspaceId: string; rewardProcessingWindowDays: number }>();
+    h.setRewardProcessingWindow.mockReturnValueOnce(pending.promise);
+    const view = renderRoute();
+    await screen.findByText("Amy Wong");
+    const invalidate = vi.spyOn(view.queryClient, "invalidateQueries");
+    fireEvent.click(screen.getByRole("button", { name: "Route save setting" }));
+    expect(h.setRewardProcessingWindow).toHaveBeenCalledWith({ workspace: "alpha", days: 0 });
+
+    h.workspaceSlug = "beta";
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <AdminRewardHandoffsRoute />
+      </QueryClientProvider>,
+    );
+    await waitFor(() => expect(h.fetchRewardHandoffs).toHaveBeenCalledWith({
+      workspace: "beta", status: "pending",
+    }));
+    const betaFetches = h.fetchRewardHandoffs.mock.calls.filter(
+      ([filters]) => filters.workspace === "beta",
+    ).length;
+
+    pending.resolve({ workspaceId: "workspace-alpha", rewardProcessingWindowDays: 0 });
+    await waitFor(() => expect(invalidate).toHaveBeenCalledWith({
+      queryKey: ["admin-reward-handoffs", "alpha"],
+    }));
+    expect(invalidate).not.toHaveBeenCalledWith({
+      queryKey: ["admin-reward-handoffs", "beta"],
+    });
+    expect(h.fetchRewardHandoffs.mock.calls.filter(
+      ([filters]) => filters.workspace === "beta",
+    )).toHaveLength(betaFetches);
+  });
+
   it("bounds load errors and offers a successful retry", async () => {
     h.fetchRewardHandoffs
       .mockRejectedValueOnce(new Error("private database creator@example.com"))
@@ -205,7 +255,9 @@ describe("admin reward handoffs route", () => {
     renderRoute();
     expect(await screen.findByRole("alert")).toHaveTextContent("Unable to load reward handoffs.");
     expect(screen.queryByText(/creator@example/)).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Retry reward handoffs" }));
+    const retry = screen.getByRole("button", { name: "Retry reward handoffs" });
+    expect(retry.className).toMatch(/hover:/);
+    fireEvent.click(retry);
     expect(await screen.findByText("Amy Wong")).toBeVisible();
   });
 
@@ -268,6 +320,52 @@ describe("admin reward handoffs route", () => {
         componentFilter: "all", statusFilter: "pending",
       },
     }));
+  });
+
+  it("retains only the latest pre-ready filter analytics and delivers it exactly once", async () => {
+    const sink = vi.fn((_event: {
+      name: keyof import("@/lib/activationAnalytics").ActivationEventMap; properties: object;
+    }) => {
+      void _event;
+      return true;
+    });
+    setActivationAnalyticsSink(sink);
+    h.localeReady = false;
+    const view = renderRoute();
+    await screen.findByText("Amy Wong");
+    fireEvent.click(screen.getByRole("button", { name: /^Route apply filters$/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Route apply latest filters" }));
+    expect(sink).not.toHaveBeenCalled();
+
+    h.localeReady = true;
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <AdminRewardHandoffsRoute />
+      </QueryClientProvider>,
+    );
+    await waitFor(() => expect(sink.mock.calls.filter(
+      ([event]) => event.name === "reward_handoff_queue_filtered",
+    )).toHaveLength(1));
+    const filtered = sink.mock.calls.find(
+      ([event]) => event.name === "reward_handoff_queue_filtered",
+    )?.[0];
+    expect(filtered).toEqual({
+      name: "reward_handoff_queue_filtered",
+      properties: {
+        locale: "en", dueFilter: "no_target",
+        componentFilter: "cash", statusFilter: "pending",
+      },
+    });
+    expect(JSON.stringify(filtered)).not.toMatch(/alpha|beta|creator|mission|125|500|note/i);
+
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <AdminRewardHandoffsRoute />
+      </QueryClientProvider>,
+    );
+    expect(sink.mock.calls.filter(
+      ([event]) => event.name === "reward_handoff_queue_filtered",
+    )).toHaveLength(1);
   });
 
   it("does not query without authentication or a workspace", () => {
