@@ -4,6 +4,7 @@ import { DeliverableNavigator } from "@/components/active-mission/DeliverableNav
 import { DraftEditor } from "@/components/active-mission/DraftEditor";
 import { FulfillmentCard } from "@/components/active-mission/FulfillmentCard";
 import { ProofAttemptHistory } from "@/components/active-mission/ProofAttemptHistory";
+import { RewardPendingCard } from "@/components/active-mission/RewardPendingCard";
 import { ProofSubmissionForm, type ProofEvidenceAsset } from "@/components/active-mission/ProofSubmissionForm";
 import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
 import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
@@ -17,6 +18,7 @@ import {
   publicationMetadataStatus,
 } from "@/lib/publicationProofAnalytics";
 import { useI18n } from "@/lib/i18n";
+import { creatorRewardExperience } from "@/lib/rewardHandoff";
 import {
   useActiveMissionWorkspace,
   useConfirmMissionReceipt,
@@ -98,18 +100,33 @@ export function CreatorMissionWorkspace() {
   const proofFormAnalyticsRef = useRef(new Set<string>());
   const editorRef = useRef<HTMLDivElement>(null);
   const workspace = workspaceQuery.data;
+  const pendingReward = workspace?.pendingReward ?? null;
+  const rewardExperience = workspace
+    ? creatorRewardExperience(workspace.workflow.state, pendingReward)
+    : null;
+  const showRewardExperience = rewardExperience !== null;
 
   const nextAction = workspace ? deriveNextAction(workspace) : null;
   const validSearchId = workspace?.workItems.some(({ id }) => id === search.item) ? search.item! : null;
   const validSelectedId = workspace?.workItems.some(({ id }) => id === selectedId) ? selectedId : null;
+  const rewardHistoryId = showRewardExperience && workspace
+    ? workspace.workItems.find((item) => item.required && item.state === "proof_verified")?.id
+      ?? workspace.workItems.find((item) => item.state === "proof_verified")?.id
+      ?? workspace.workItems.find((item) => item.required && PUBLICATION_STATES.has(item.state))?.id
+      ?? workspace.workItems.find((item) => PUBLICATION_STATES.has(item.state))?.id
+      ?? null
+    : null;
   const defaultId = workspace
-    ? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
+    ? rewardHistoryId
+      ?? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
       ?? workspace.workItems[0]?.id
       ?? null
     : null;
   const activeId = validSearchId ?? validSelectedId ?? defaultId;
   const activeItem = workspace?.workItems.find(({ id }) => id === activeId) ?? null;
-  const publicationWorkItemId = activeItem && PUBLICATION_STATES.has(activeItem.state) ? activeItem.id : "";
+  const publicationWorkItemId = activeItem && PUBLICATION_STATES.has(activeItem.state)
+    ? activeItem.id
+    : "";
   const publicationQuery = useMissionPublication(submissionId, publicationWorkItemId);
   const publication = publicationQuery.data;
 
@@ -330,7 +347,37 @@ export function CreatorMissionWorkspace() {
       <div className="grid min-w-0 gap-5 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start">
         <DeliverableNavigator items={workspace.workItems} selectedId={activeItem.id} onSelect={selectItem} />
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
-          {publicationWorkItemId ? (
+          {showRewardExperience && pendingReward ? (
+            <>
+              {!publicationWorkItemId ? (
+                <p className="min-w-0 break-words rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4 text-sm font-semibold [overflow-wrap:anywhere]">
+                  {t("app.activeMission.rewardPending.noPublicationHistory")}
+                </p>
+              ) : publicationQuery.isLoading ? (
+                <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white motion-reduce:animate-none" aria-label={t("app.activeMission.publication.loading")} />
+              ) : publicationQuery.isError || !publication ? (
+                <div role="alert" className="rounded-[var(--radius)] border-2 border-red-700 bg-red-50 p-4">
+                  <p className="font-bold">{t("app.activeMission.publication.loadError")}</p>
+                  <button type="button" onClick={() => void publicationQuery.refetch()} className="mt-3 min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold">{t("common.retry")}</button>
+                </div>
+              ) : (
+                <ProofAttemptHistory
+                  publication={publication}
+                  variant={rewardExperience ?? "reward_pending"}
+                  autoFocusVerifiedHeading={false}
+                />
+              )}
+              <VersionTimeline
+                versions={activeItem.versions ?? []}
+                events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)}
+              />
+              <RewardPendingCard
+                missionTitle={workspace.mission.title}
+                pendingReward={pendingReward}
+                supportHref={`/contact?topic=reward-pending&submission=${encodeURIComponent(submissionId)}`}
+              />
+            </>
+          ) : publicationWorkItemId ? (
             publicationQuery.isLoading ? (
               <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" aria-label={t("app.activeMission.publication.loading")} />
             ) : publicationQuery.isError || !publication ? (

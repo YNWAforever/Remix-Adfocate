@@ -16,6 +16,9 @@ vi.mock("@/lib/i18n", async () => {
 });
 
 const h = vi.hoisted(() => ({
+  authed: true,
+  workspaceSlug: "demo" as string | undefined,
+  completionReviewHook: vi.fn(),
   fetchActiveMissionQueue: vi.fn(),
   fetchActiveMissionWorkflow: vi.fn(),
   startActiveMissionReview: vi.fn(),
@@ -29,6 +32,13 @@ const h = vi.hoisted(() => ({
   refreshProofMetadata: vi.fn(),
   setPublicationInstructions: vi.fn(),
   setupExistingPublicationInstructions: vi.fn(),
+  completionReviewData: null as unknown,
+  completionReviewRefetch: vi.fn(),
+  completionReviewError: null as unknown,
+  completionReviewLoading: false,
+  approveCompletion: vi.fn(),
+  backfillRewardContract: vi.fn(),
+  cancelRewardHandoff: vi.fn(),
   reportAuthError: vi.fn(),
 }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -40,10 +50,16 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 vi.mock("@/components/admin/AdminAuthContext", () => ({
-  useAdminAuth: () => ({ authed: true, staff: { userId: "reviewer-1", email: "op@example.com" }, reportAuthError: h.reportAuthError }),
+  useAdminAuth: () => ({
+    authed: h.authed,
+    staff: { userId: "reviewer-1", email: "op@example.com" },
+    reportAuthError: h.reportAuthError,
+  }),
 }));
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({
-  useAdminWorkspace: () => ({ workspace: "workspace-id", workspaceSlug: "demo", setWorkspace: vi.fn() }),
+  useAdminWorkspace: () => ({
+    workspace: "workspace-id", workspaceSlug: h.workspaceSlug, setWorkspace: vi.fn(),
+  }),
 }));
 vi.mock("@/lib/admin", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/admin")>();
@@ -68,6 +84,25 @@ vi.mock("@/lib/queries/activeMission", async (importOriginal) => {
     useRequestProofCorrection: () => ({ mutateAsync: h.requestProofCorrection, isPending: false }),
     useVerifyProof: () => ({ mutateAsync: h.verifyProof, isPending: false }),
     useRefreshProofMetadata: () => ({ mutateAsync: h.refreshProofMetadata, isPending: false }),
+    useCompletionReview: (workflowId: string, workspace: string) => {
+      h.completionReviewHook(workflowId, workspace);
+      return {
+        data: h.completionReviewData, error: h.completionReviewError,
+        isLoading: h.completionReviewLoading, refetch: h.completionReviewRefetch,
+      };
+    },
+    useApproveMissionCompletion: () => ({
+      mutateAsync: h.approveCompletion,
+      isPending: false,
+    }),
+    useBackfillRewardContract: () => ({
+      mutateAsync: h.backfillRewardContract,
+      isPending: false,
+    }),
+    useCancelRewardHandoff: () => ({
+      mutateAsync: h.cancelRewardHandoff,
+      isPending: false,
+    }),
   };
 });
 
@@ -772,4 +807,487 @@ describe("admin publication proof review route", () => {
   });
 
 
+});
+
+const COMPLETION_MISSION_ID = "11111111-1111-4111-8111-111111111111";
+
+function operatorCompletionWorkflow(state: "proof_verified" | "reward_pending" = "proof_verified") {
+  const value = operatorProofWorkflow();
+  const mission = Array.isArray(value.submission.missions)
+    ? value.submission.missions[0]
+    : value.submission.missions;
+  value.submission.missions = { ...mission, id: COMPLETION_MISSION_ID };
+  value.workflow = {
+    ...value.workflow,
+    state,
+    revision: 8,
+    submission_id: "submission-1",
+  };
+  value.workItems[0] = {
+    ...value.workItems[0],
+    state: "proof_verified",
+    verified_proof_attempt_id: "attempt-current",
+  } as typeof value.workItems[number] & { verified_proof_attempt_id: string };
+  return value;
+}
+
+const completionContract = {
+  id: "contract-1",
+  pointsAmount: 500,
+  cashAmount: 125,
+  currency: "HKD",
+  xpAmount: 0,
+  source: "join" as const,
+  createdAt: "2026-07-30T10:00:00.000Z",
+  sourceMissionUpdatedAt: "2026-07-29T10:00:00.000Z",
+  confirmedBy: null,
+  confirmationEvidenceSource: null,
+  confirmationReason: null,
+};
+
+const completionPendingReward = {
+  id: "pending-1",
+  workflowId: "workflow-today",
+  submissionId: "submission-1",
+  creatorId: "creator-1",
+  missionId: COMPLETION_MISSION_ID,
+  rewardContractId: "contract-1",
+  completionDecisionId: "decision-1",
+  cancellationDecisionId: null,
+  reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+  status: "pending" as const,
+  processingWindowDays: 7,
+  targetAt: "2026-08-06T10:00:00.000Z",
+  createdAt: "2026-07-30T10:00:00.000Z",
+  cancelledAt: null,
+  decision: null,
+};
+
+function routeDeferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
+describe("admin mission completion review route", () => {
+  const analyticsEvents: Array<{ name: string; properties: Record<string, unknown> }> = [];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    h.authed = true;
+    h.workspaceSlug = "demo";
+    h.completionReviewError = null;
+    h.completionReviewLoading = false;
+    h.completionReviewData = {
+      rewardContract: completionContract,
+      completionEligibility: {
+        eligible: true,
+        blockers: [],
+        requiredItemCount: 1,
+        verifiedRequiredItemCount: 1,
+      },
+      pendingReward: null,
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(operatorCompletionWorkflow());
+    h.completionReviewRefetch.mockImplementation(async () => ({
+      data: h.completionReviewData,
+    }));
+    h.approveCompletion.mockResolvedValue({});
+    h.backfillRewardContract.mockResolvedValue({});
+    h.cancelRewardHandoff.mockResolvedValue({});
+    analyticsEvents.length = 0;
+    setActivationAnalyticsSink((event) => {
+      analyticsEvents.push(event as { name: string; properties: Record<string, unknown> });
+    });
+  });
+
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
+  });
+
+  it("renders completion below publication proof and emits review-viewed once per revision", async () => {
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    const view = renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    const proofHeading = await screen.findByRole(
+      "heading",
+      { name: "Publication proof attempt 3" },
+    );
+    const completionHeading = await screen.findByRole(
+      "heading",
+      { name: "Mission completion review" },
+    );
+    expect(
+      proofHeading.compareDocumentPosition(completionHeading)
+      & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    await waitFor(() => expect(
+      analyticsEvents.filter(({ name }) => name === "mission_completion_review_viewed"),
+    ).toHaveLength(1));
+    expect(analyticsEvents[0]).toEqual({
+      name: "mission_completion_review_viewed",
+      properties: {
+        missionId: COMPLETION_MISSION_ID,
+        locale: "en",
+        deviceCategory: "desktop",
+        workflowState: "proof_verified",
+        contractSource: "join",
+        hasPoints: true,
+        hasCash: true,
+        hasXp: false,
+      },
+    });
+
+    view.rerender(
+      <QueryClientProvider client={new QueryClient()}>
+        <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />
+      </QueryClientProvider>,
+    );
+    await waitFor(() => expect(
+      analyticsEvents.filter(({ name }) => name === "mission_completion_review_viewed"),
+    ).toHaveLength(1));
+    expect(JSON.stringify(analyticsEvents)).not.toContain("Amy Wong");
+  });
+
+  it("wires approval and emits success telemetry only after confirmation", async () => {
+    const approval = routeDeferred<unknown>();
+    h.approveCompletion.mockImplementationOnce(() => approval.promise);
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Approve completion" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    expect(h.approveCompletion).toHaveBeenCalledWith({
+      workflowId: "workflow-today",
+      submissionId: "submission-1",
+      workspace: "demo",
+      expectedState: "proof_verified",
+      expectedRevision: 8,
+    });
+    expect(analyticsEvents.map(({ name }) => name)).not.toContain("mission_completion_approved");
+
+    await act(async () => {
+      approval.resolve({});
+      await approval.promise;
+    });
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "mission_completion_approved",
+    ));
+    expect(analyticsEvents.find(({ name }) => name === "mission_completion_approved")?.properties)
+      .toEqual(expect.objectContaining({
+        missionId: COMPLETION_MISSION_ID,
+        workflowState: "proof_verified",
+        contractSource: "join",
+        hasPoints: true,
+        hasCash: true,
+        hasXp: false,
+      }));
+  });
+
+  it("wires audited reward backfill through the Task 6 mutation", async () => {
+    h.completionReviewData = {
+      ...(h.completionReviewData as object),
+      rewardContract: null,
+    };
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.change(await screen.findByLabelText("Points"), { target: { value: "500" } });
+    fireEvent.change(screen.getByLabelText("Cash amount"), { target: { value: "125" } });
+    fireEvent.change(screen.getByLabelText("Currency"), { target: { value: "hkd" } });
+    fireEvent.change(screen.getByLabelText("Confirmation evidence"), {
+      target: { value: "operator_record" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirmation reason"), {
+      target: { value: "Confirmed operator record" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save frozen reward contract" }));
+    await waitFor(() => expect(h.backfillRewardContract).toHaveBeenCalledWith({
+      workflowId: "workflow-today",
+      submissionId: "submission-1",
+      workspace: "demo",
+      pointsAmount: 500,
+      cashAmount: 125,
+      currency: "HKD",
+      xpAmount: 0,
+      sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: "operator_record",
+      confirmationReason: "Confirmed operator record",
+    }));
+    expect(h.completionReviewRefetch).toHaveBeenCalled();
+  });
+
+  it("never emits approval success on rejection", async () => {
+    h.approveCompletion.mockRejectedValueOnce(new Error("response lost"));
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Approve completion" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("response lost");
+    expect(screen.getByRole("alertdialog")).toBeVisible();
+    expect(analyticsEvents.map(({ name }) => name)).not.toContain("mission_completion_approved");
+  });
+
+  it("emits cancellation success only after the confirmed mutation", async () => {
+    h.completionReviewData = {
+      ...(h.completionReviewData as object),
+      pendingReward: completionPendingReward,
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(
+      operatorCompletionWorkflow("reward_pending"),
+    );
+    const cancellation = routeDeferred<unknown>();
+    h.cancelRewardHandoff.mockImplementationOnce(() => cancellation.promise);
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel reward handoff" }));
+    fireEvent.change(screen.getByLabelText("Cancellation category"), {
+      target: { value: "contract_error" },
+    });
+    fireEvent.change(screen.getByLabelText("Cancellation note"), {
+      target: { value: "Confirmed contract mismatch" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+    expect(analyticsEvents.map(({ name }) => name))
+      .not.toContain("mission_reward_pending_cancelled");
+    expect(h.cancelRewardHandoff).toHaveBeenCalledWith({
+      workflowId: "workflow-today",
+      submissionId: "submission-1",
+      workspace: "demo",
+      expectedState: "reward_pending",
+      expectedRevision: 8,
+      reasonCategory: "contract_error",
+      reasonNote: "Confirmed contract mismatch",
+    });
+    await act(async () => {
+      cancellation.resolve({});
+      await cancellation.promise;
+    });
+    await waitFor(() => expect(analyticsEvents.map(({ name }) => name)).toContain(
+      "mission_reward_pending_cancelled",
+    ));
+  });
+
+  it("refreshes stale cancellation state without losing recoverable input or emitting success", async () => {
+    h.completionReviewData = {
+      ...h.completionReviewData as object,
+      pendingReward: completionPendingReward,
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(
+      operatorCompletionWorkflow("reward_pending"),
+    );
+    h.cancelRewardHandoff.mockRejectedValueOnce(
+      new AdminRequestError("changed", "WORKFLOW_STALE"),
+    );
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel reward handoff" }));
+    fireEvent.change(screen.getByLabelText("Cancellation category"), {
+      target: { value: "contract_error" },
+    });
+    fireEvent.change(screen.getByLabelText("Cancellation note"), {
+      target: { value: "Recoverable operator note" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+
+
+    await waitFor(() => expect(h.fetchActiveMissionWorkflow.mock.calls.length).toBeGreaterThan(1));
+    expect(h.completionReviewRefetch).toHaveBeenCalled();
+    expect(screen.getByRole("alertdialog")).toBeVisible();
+    expect(screen.getByLabelText("Cancellation category")).toHaveValue("contract_error");
+    expect(screen.getByLabelText("Cancellation note")).toHaveValue(
+      "Recoverable operator note",
+    );
+    expect(analyticsEvents.map(({ name }) => name))
+      .not.toContain("mission_reward_pending_cancelled");
+  });
+
+  it("disables the completion query while unauthenticated", async () => {
+    h.authed = false;
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await waitFor(() => expect(h.completionReviewHook).toHaveBeenLastCalledWith("", ""));
+    expect(h.fetchActiveMissionWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("renders applicable completion loading separately from a disabled query", async () => {
+    h.completionReviewData = undefined;
+    h.completionReviewLoading = true;
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    expect(await screen.findByText("Loading completion review…")).toBeVisible();
+    expect(h.completionReviewHook).toHaveBeenLastCalledWith("workflow-today", "demo");
+  });
+
+  it("renders a bounded completion error with retry", async () => {
+    h.completionReviewData = undefined;
+    h.completionReviewError = new Error("private backend detail");
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Unable to load completion review.",
+    );
+    expect(screen.queryByText("private backend detail")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry completion review" }));
+    expect(h.completionReviewRefetch).toHaveBeenCalled();
+  });
+
+  it("keeps the completion query disabled for non-applicable workflow state", async () => {
+    h.fetchActiveMissionWorkflow.mockResolvedValue(operatorProofWorkflow());
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    await screen.findByRole("heading", { name: "Publication proof attempt 3" });
+    await waitFor(() => expect(h.completionReviewHook).toHaveBeenLastCalledWith("", ""));
+    expect(screen.queryByRole("heading", { name: "Mission completion review" }))
+      .not.toBeInTheDocument();
+    expect(screen.queryByText("Loading completion review…")).not.toBeInTheDocument();
+  });
+
+  it("shows rejected backfill inline, preserves input, and retries the same payload", async () => {
+    h.completionReviewData = {
+      ...(h.completionReviewData as object),
+      rewardContract: null,
+    };
+    h.backfillRewardContract
+      .mockRejectedValueOnce(new Error("Backfill response uncertain"))
+      .mockResolvedValueOnce({});
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.change(await screen.findByLabelText("Points"), { target: { value: "500" } });
+    fireEvent.change(screen.getByLabelText("Cash amount"), { target: { value: "125" } });
+    fireEvent.change(screen.getByLabelText("Currency"), { target: { value: "hkd" } });
+    fireEvent.change(screen.getByLabelText("Confirmation evidence"), {
+      target: { value: "operator_record" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirmation reason"), {
+      target: { value: "Preserved operator evidence" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save frozen reward contract" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Backfill response uncertain");
+    expect(screen.getByLabelText("Confirmation reason"))
+      .toHaveValue("Preserved operator evidence");
+    fireEvent.click(screen.getByRole("button", { name: "Save frozen reward contract" }));
+    await waitFor(() => expect(h.backfillRewardContract).toHaveBeenCalledTimes(2));
+    expect(h.backfillRewardContract.mock.calls[0][0])
+      .toEqual(h.backfillRewardContract.mock.calls[1][0]);
+    expect(h.backfillRewardContract.mock.calls[1][0]).not.toHaveProperty("idempotencyKey");
+  });
+
+  it("invalidates an open approval after stale refresh advances to reward pending", async () => {
+    h.approveCompletion.mockImplementationOnce(async () => {
+      h.completionReviewData = {
+        rewardContract: completionContract,
+        completionEligibility: {
+          eligible: false, blockers: ["pending_reward_exists"],
+          requiredItemCount: 1, verifiedRequiredItemCount: 1,
+        },
+        pendingReward: completionPendingReward,
+      };
+      h.fetchActiveMissionWorkflow.mockResolvedValue(
+        operatorCompletionWorkflow("reward_pending"),
+      );
+      throw new AdminRequestError("changed", "WORKFLOW_STALE");
+    });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Approve completion" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    expect(await screen.findByText(
+      "Workflow changed. Review the current state before acting again.",
+    )).toBeVisible();
+    expect(screen.getByRole("button", { name: "Confirm approval" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    expect(h.approveCompletion).toHaveBeenCalledTimes(1);
+  });
+
+  it("invalidates cancellation after stale refresh and preserves its note", async () => {
+    h.completionReviewData = {
+      ...(h.completionReviewData as object),
+      pendingReward: completionPendingReward,
+    };
+    h.fetchActiveMissionWorkflow.mockResolvedValue(
+      operatorCompletionWorkflow("reward_pending"),
+    );
+    h.cancelRewardHandoff.mockImplementationOnce(async () => {
+      h.completionReviewData = {
+        rewardContract: completionContract,
+        completionEligibility: {
+          eligible: true, blockers: [],
+          requiredItemCount: 1, verifiedRequiredItemCount: 1,
+        },
+        pendingReward: null,
+      };
+      h.fetchActiveMissionWorkflow.mockResolvedValue(operatorCompletionWorkflow());
+      throw new AdminRequestError("changed", "WRONG_STATE");
+    });
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel reward handoff" }));
+    fireEvent.change(screen.getByLabelText("Cancellation category"), {
+      target: { value: "contract_error" },
+    });
+    fireEvent.change(screen.getByLabelText("Cancellation note"), {
+      target: { value: "Keep this recoverable note" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+    expect(await screen.findByText(
+      "Workflow changed. Review the current state before acting again.",
+    )).toBeVisible();
+    expect(screen.getByLabelText("Cancellation note"))
+      .toHaveValue("Keep this recoverable note");
+    expect(screen.getByRole("button", { name: "Confirm cancellation" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+    expect(h.cancelRewardHandoff).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries a revision-only stale approval with the refreshed revision", async () => {
+    h.approveCompletion
+      .mockImplementationOnce(async () => {
+        const refreshed = operatorCompletionWorkflow();
+        refreshed.workflow = { ...refreshed.workflow, revision: 9 };
+        h.fetchActiveMissionWorkflow.mockResolvedValue(refreshed);
+        throw new AdminRequestError("changed", "WORKFLOW_STALE");
+      })
+      .mockResolvedValueOnce({});
+    const { AdminActiveMissionReviewView } = await import("./admin.active-missions.$workflowId");
+    renderWithQueryClient(
+      <AdminActiveMissionReviewView workflowId="workflow-today" workItemId="item-today" />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Approve completion" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    await waitFor(() => expect(h.fetchActiveMissionWorkflow.mock.calls.length)
+      .toBeGreaterThan(1));
+    expect(screen.getByRole("button", { name: "Confirm approval" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    await waitFor(() => expect(h.approveCompletion).toHaveBeenCalledTimes(2));
+    expect(h.approveCompletion.mock.calls[1][0]).toEqual(expect.objectContaining({
+      expectedState: "proof_verified",
+      expectedRevision: 9,
+    }));
+  });
 });

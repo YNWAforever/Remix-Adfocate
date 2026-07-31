@@ -9,7 +9,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["src/test/setup.ts"],
-    include: ["server/**/*.test.ts", "src/**/*.test.ts?(x)"],
+    include: ["server/**/*.test.ts", "src/**/*.test.ts?(x)", "scripts/**/*.test.ts"],
     exclude: integration ? [] : ["server/test/rls.test.ts"],
     // Integration setup/teardown hooks do many sequential DB round-trips (cleanup,
     // seed creator+mission, join, submit). The 10s default hook timeout is too tight
