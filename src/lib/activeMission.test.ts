@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type { CompletionDecision as ServerCompletionDecision } from "../../server/lib/activeMission/types";
 import {
   deriveNextAction,
   publicationStatePresentation,
   type ActiveMissionWorkspace,
+  type CompletionDecision,
   type PublicationProofReviewView,
   type WorkItemState,
 } from "./activeMission";
@@ -74,6 +76,30 @@ const fulfillment = (status: "preparing" | "shipped" | "received"): NonNullable<
   operationalNote: null,
 });
 
+describe("reward handoff shared types", () => {
+  it("keeps the creator-safe completion decision contract identical on client and server", () => {
+    const decision = {
+      id: "decision-1",
+      missionWorkflowId: "workflow-1",
+      decisionKind: "approved" as const,
+      rewardContractId: "contract-1",
+      pendingRewardId: "pending-1",
+      supersedesDecisionId: null,
+      workflowRevision: 3,
+      requiredItemCount: 2,
+      verifiedRequiredItemCount: 2,
+      evidenceSnapshot: { proof: "verified" },
+      decidedAt: "2026-07-31T00:00:00Z",
+    } satisfies CompletionDecision;
+
+    expectTypeOf<CompletionDecision>().toEqualTypeOf<ServerCompletionDecision>();
+    expect(decision).toMatchObject({
+      decisionKind: "approved",
+      workflowRevision: 3,
+      verifiedRequiredItemCount: 2,
+    });
+  });
+});
 describe("deriveNextAction", () => {
   it("defines stable label keys and owners for every publication state", () => {
     expect(publicationStatePresentation).toEqual({

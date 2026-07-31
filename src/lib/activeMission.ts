@@ -23,6 +23,20 @@ export type RewardContract = {
   createdAt: string;
 };
 
+export type CompletionDecision = {
+  id: string;
+  missionWorkflowId: string;
+  decisionKind: "approved" | "cancelled";
+  rewardContractId: string;
+  pendingRewardId: string | null;
+  supersedesDecisionId: string | null;
+  workflowRevision: number;
+  requiredItemCount: number;
+  verifiedRequiredItemCount: number;
+  evidenceSnapshot: Readonly<Record<string, unknown>>;
+  decidedAt: string;
+};
+
 export type PendingReward = {
   id: string;
   status: RewardHandoffStatus;
