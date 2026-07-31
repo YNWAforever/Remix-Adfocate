@@ -42,6 +42,7 @@ export type MissionWorkflow = {
   state: WorkflowState;
   acceptedAt: string;
   deadline: string | null;
+  revision: number;
   fulfillmentRequired: boolean;
   revisionLimit: number;
   reviewSlaHours: number;
@@ -225,7 +226,7 @@ export interface ActiveMissionRepository {
 const SUBMISSION_SELECT =
   "id, mission_id, creator_id, workspace_id, missions!mission_submissions_mission_workspace_fk(id, slug, title, mission_type, description, deliverables, requirements, platforms, effort, target_audience, dos, donts, key_messages, reference_links)";
 const WORKFLOW_SELECT =
-  "id, workspace_id, mission_submission_id, state, accepted_at, deadline, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, created_at, updated_at";
+  "id, workspace_id, mission_submission_id, state, accepted_at, deadline, revision, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, created_at, updated_at";
 const ITEM_SELECT =
   "id, workspace_id, mission_workflow_id, title, platform, requirements_snapshot, required, position, deadline, state, current_submitted_version_id, approved_version_id, review_started_at, review_due_at, created_at, updated_at";
 const DRAFT_SELECT =
@@ -287,6 +288,7 @@ function toWorkflow(row: JsonRow): MissionWorkflow {
     state: row.state,
     acceptedAt: row.accepted_at,
     deadline: row.deadline ?? null,
+    revision: row.revision,
     fulfillmentRequired: row.fulfillment_required,
     revisionLimit: row.revision_limit,
     reviewSlaHours: row.review_sla_hours,

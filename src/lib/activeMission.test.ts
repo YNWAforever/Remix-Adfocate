@@ -19,6 +19,7 @@ function workspace(options: {
       state: options.workflowState ?? "drafting",
       acceptedAt: "2026-07-15T00:00:00Z",
       deadline: "2026-07-20T00:00:00Z",
+      revision: 0,
       fulfillmentRequired: options.fulfillment !== undefined,
       revisionLimit: 2,
       reviewSlaHours: 48,

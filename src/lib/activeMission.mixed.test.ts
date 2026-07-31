@@ -9,7 +9,7 @@ function workspace(
   return {
     workflow: {
       id: "workflow-1", submissionId: "sub-1", state: workflowState, acceptedAt: "2026-07-15T00:00:00Z",
-      deadline: "2026-07-20T00:00:00Z", fulfillmentRequired: fulfillment !== null, revisionLimit: 2,
+      deadline: "2026-07-20T00:00:00Z", revision: 0, fulfillmentRequired: fulfillment !== null, revisionLimit: 2,
       reviewSlaHours: 48, revisionResponseHours: 48, createdAt: "2026-07-15T00:00:00Z", updatedAt: "2026-07-15T00:00:00Z",
     },
     mission: {

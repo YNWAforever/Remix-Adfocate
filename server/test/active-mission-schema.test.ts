@@ -19,6 +19,22 @@ const suiteName = integrationSkipReason === null ? "active mission workflow sche
 const unique = () => randomUUID();
 
 describe("active mission migration contract", () => {
+  it("defines an additive, reward-neutral handoff schema", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260731100000_reward_handoff_schema.sql"),
+      "utf8",
+    );
+    expect(sql).toContain("create table public.mission_reward_contracts");
+    expect(sql).toContain("create table public.mission_completion_decisions");
+    expect(sql).toContain("create table public.mission_pending_rewards");
+    expect(sql).toContain("reward_processing_window_days");
+    expect(sql).toContain("'reward_pending'");
+    expect(sql).toContain("where status = 'pending'");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("revoke all");
+    expect(sql).not.toContain("approve_submission(");
+  });
+
   it("documents a non-destructive publication-proof rollback and operator recovery contract", () => {
     const runbookPath = resolve("docs/operations/publication-proof-release-runbook.md");
     const runbook = existsSync(runbookPath)

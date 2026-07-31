@@ -7,8 +7,31 @@ export type WorkflowState =
   | "approved_to_publish"
   | "publication_in_progress"
   | "proof_verified"
+  | "reward_pending"
   | "cancelled"
   | "expired";
+
+export type RewardHandoffStatus = "pending" | "cancelled";
+
+export type RewardContract = {
+  id: string;
+  pointsAmount: number;
+  cashAmount: number;
+  currency: string;
+  xpAmount: number;
+  source: "join" | "operator_backfill";
+  createdAt: string;
+};
+
+export type PendingReward = {
+  id: string;
+  status: RewardHandoffStatus;
+  reward: Pick<RewardContract, "pointsAmount" | "cashAmount" | "currency" | "xpAmount">;
+  processingWindowDays: number | null;
+  targetAt: string | null;
+  createdAt: string;
+  cancelledAt: string | null;
+};
 
 export type WorkItemState =
   | "blocked_by_fulfillment"
@@ -45,6 +68,7 @@ export type MissionWorkflow = {
   state: WorkflowState;
   acceptedAt: string;
   deadline: string | null;
+  revision: number;
   fulfillmentRequired: boolean;
   revisionLimit: number;
   reviewSlaHours: number;

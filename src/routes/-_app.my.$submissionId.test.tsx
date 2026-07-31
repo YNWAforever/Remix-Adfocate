@@ -63,7 +63,7 @@ vi.spyOn(Route, "useParams").mockReturnValue({ submissionId: "sub-1" } as never)
 
 function workspace(overrides: Partial<ActiveMissionWorkspace> = {}): ActiveMissionWorkspace {
   return {
-    workflow: { id: "wf-1", submissionId: "sub-1", state: "drafting", acceptedAt: "2026-07-15T00:00:00Z", deadline: "2026-07-30T00:00:00Z", fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48, revisionResponseHours: 48, createdAt: "2026-07-15T00:00:00Z", updatedAt: "2026-07-15T00:00:00Z" },
+    workflow: { id: "wf-1", submissionId: "sub-1", state: "drafting", acceptedAt: "2026-07-15T00:00:00Z", deadline: "2026-07-30T00:00:00Z", revision: 0, fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48, revisionResponseHours: 48, createdAt: "2026-07-15T00:00:00Z", updatedAt: "2026-07-15T00:00:00Z" },
     mission: { id: "mission-1", slug: "launch", title: "Launch mission", missionType: "ugc", brief: { description: null, deliverables: [], requirements: [], platforms: [], effort: null, targetAudience: null, dos: [], donts: [], keyMessages: [], referenceLinks: [] } },
     fulfillment: null,
     workItems: [

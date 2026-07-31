@@ -59,6 +59,7 @@ function workspace(nextAction: ActiveMissionNextAction): ActiveMissionWorkspace 
       state: "revision_requested",
       acceptedAt: "2026-07-15T00:00:00.000Z",
       deadline: "2026-07-24T10:00:00.000Z",
+      revision: 0,
       fulfillmentRequired: true,
       revisionLimit: 2,
       reviewSlaHours: 48,

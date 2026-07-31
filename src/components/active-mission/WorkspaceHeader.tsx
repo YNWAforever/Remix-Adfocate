@@ -16,6 +16,7 @@ const WORKFLOW_KEYS: Record<ActiveMissionWorkspace["workflow"]["state"], string>
   approved_to_publish: "app.activeMission.workspace.state.approvedToPublish",
   publication_in_progress: "app.activeMission.workspace.state.inReview",
   proof_verified: "app.activeMission.workspace.state.approvedToPublish",
+  reward_pending: "app.activeMission.workspace.state.rewardPending",
   cancelled: "app.activeMission.workspace.state.cancelled",
   expired: "app.activeMission.workspace.state.expired",
 };

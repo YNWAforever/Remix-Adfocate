@@ -22,7 +22,7 @@ function workspace(): ActiveMissionWorkspace {
   return {
     workflow: {
       id: "workflow-1", submissionId: "sub-1", state: "drafting", acceptedAt: "2026-07-15T00:00:00Z",
-      deadline: null, fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48,
+      deadline: null, revision: 0, fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48,
       revisionResponseHours: 48, createdAt: "2026-07-15T00:00:00Z", updatedAt: "2026-07-15T00:00:00Z",
     },
     mission: {
