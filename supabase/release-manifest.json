@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "cliVersion": "2.110.0",
+  "generatedFrom": "supabase/migrations",
+  "migrations": [
+    {
+      "version": "20260715163350",
+      "name": "active_mission_workspace",
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "7e84755bcacf066809e3201ce51eada0b51673e27841b9d44da70442730f560a",
+      "phase": "active_mission",
+      "dependsOn": [],
+      "capabilities": [
+        "table:public.mission_workflows",
+        "column:public.missions.creator_workflow_mode",
+        "function:public.create_mission_workflow",
+        "policy:public.mission_workflows.mission_workflows_creator_read",
+        "trigger:public.mission_draft_versions_immutable",
+        "grant:authenticated.public.create_mission_workflow(uuid)",
+        "storage-policy:storage.objects.mission_draft_assets_storage_read"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260717190420",
+      "name": "receive_mission_fulfillment",
+      "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+      "sha256": "b32f533964cda379d60a5d01c6d39c2f348aa9927d063b5a39ad9305778cfc63",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260715163350"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260718134500",
+      "name": "active_mission_operator_lifecycle",
+      "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+      "sha256": "df002f9bc6d350363678950a1f51c14a18deae45f583e742a9eb2cda609e7266",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260717190420"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260718193000",
+      "name": "harden_active_mission_operator_lifecycle",
+      "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "sha256": "c666fe36add211a6bc40419ea761dc857585a904ea61e4ef87e3be22b6022846",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260718134500"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260718210000",
+      "name": "author_active_mission_workflow_policies",
+      "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+      "sha256": "d15b28e3cccab1d4885c3cb33f08177ef1dd8023a694497a1f31f8ec8fe9ae6c",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260718193000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260718213000",
+      "name": "guard_mission_authoring_snapshot_race",
+      "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "sha256": "24a5d5afb2eb9f1b8a51814d789e9f68d9deeb4df09b94a35886f7d70935b4eb",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260718210000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260719133000",
+      "name": "submit_active_mission_draft",
+      "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+      "sha256": "33121d68fb072cf98a1243170264a796d0f08b2d7f5427f7854ccff69277e54c",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260718213000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260719160000",
+      "name": "abandon_active_mission_asset",
+      "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+      "sha256": "57f0c0dfd9f306f5e38140c3e064ae05815dbd30be47f9b488659491b0b29038",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260719133000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260719200000",
+      "name": "active_mission_workflow_notifications",
+      "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+      "sha256": "1bc2c60e3e93a06fcbabbe4e43a4731c343b5263ad46156dce80d055393533f7",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260719160000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260719220000",
+      "name": "migrate_pristine_joined_active_mission",
+      "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+      "sha256": "e1c81a85674242e21db02621f2c3d9cc801b4c3a34822cc5d1b5842e5be23c42",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260719200000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260720033542",
+      "name": "final_review_active_mission_contracts",
+      "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+      "sha256": "01a6378ca4ef51fc733fce49298b55c796572be8dd04376ebc1f39dad54dd60c",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260719220000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260720175319",
+      "name": "grant_service_role_budget_read",
+      "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+      "sha256": "0d311dfcff44c09dc5418d16ded82bad66b2ce879e8c5f5d7e627880bfbf433a",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260720033542"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260720193637",
+      "name": "resolve_mission_submission_relationships",
+      "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+      "sha256": "d0ce9f11f0b66ddf1d1ac76a6c2669839327f85f553d6349037ff1fded68cbd3",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260720175319"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260723090000",
+      "name": "publication_proof_validation",
+      "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+      "sha256": "15a79586bd3421739defd2f3985ff62e353a78e9fda1e76e30c968269070c079",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260720193637"
+      ],
+      "capabilities": [
+        "table:public.mission_publication_proof_attempts",
+        "policy:public.mission_publication_proof_attempts.mission_publication_proof_attempts_creator_read",
+        "trigger:public.mission_publication_proof_attempts_immutable"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260723170000",
+      "name": "publication_proof_rollout",
+      "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+      "sha256": "5b69abffda80aac3cbf007515cc1ef0956a1edc8f2f2b4dc833ad7f44dbd97bf",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260723090000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725090000",
+      "name": "publication_proof_rollout_compat",
+      "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+      "sha256": "566956e437be029039ac55f1e626d3e5ea2f5db6605ecffbb2dd8cab056ed465",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260723170000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725110000",
+      "name": "publication_proof_asset_policy",
+      "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+      "sha256": "61469f3004f292fc4678a1cb77f1e0eed16b27561eb479002fcfae3b9d49aa53",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725090000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725130000",
+      "name": "publication_proof_asset_mutation_guards",
+      "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+      "sha256": "e4f25b7083f0f6d46c9c52c0494194513ac635004abf147026f70ca7313b2da1",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725110000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725140000",
+      "name": "publication_proof_asset_guards",
+      "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+      "sha256": "e461544af2a2bfae2964a42777d6421e758c8f60298dff5297ecbd6e40c95d92",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725130000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725143000",
+      "name": "publication_proof_public_guards",
+      "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+      "sha256": "4c7a752a7b1dd41461249307a1ff0ae9153065db5ef3e81570611071c97f05ec",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725140000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260725150000",
+      "name": "publication_proof_public_rpc_final",
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "sha256": "93f996508c82da6df1200347050cd9dbe8e7024d6aa5e33f0ed63aba800a3f5f",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725143000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260727120000",
+      "name": "publication_proof_instrumentation",
+      "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+      "sha256": "bd56dda15ee21b640ee99ee8e7b3d8bd3ce34eab95a44bb97906cb2bddb0a9af",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260725150000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260727130000",
+      "name": "publication_proof_existing_setup",
+      "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+      "sha256": "7552f2d601067b5e6b3a304886255f99d35b8abe2c60af59fb28082f6ad6ec12",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260727120000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260728135000",
+      "name": "fix_publication_proof_asset_path_regex",
+      "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "sha256": "a4a909bb7711ffcfb50a8f4b4b8947c7695bccbea319d266854b0a5733dd15b4",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260727130000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260729010000",
+      "name": "align_publication_proof_asset_mime_contract",
+      "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "sha256": "9d667de55f18307d5152201b07450e00d158a000456c538c60194030cd846d19",
+      "phase": "publication_proof",
+      "dependsOn": [
+        "20260728135000"
+      ],
+      "capabilities": [],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731100000",
+      "name": "reward_handoff_schema",
+      "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+      "sha256": "001d47a1aa076592ff90ecbd3cad4f18610cba93644addcbbaa86b5d9e72c30c",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260729010000"
+      ],
+      "capabilities": [
+        "table:public.mission_reward_contracts",
+        "table:public.mission_completion_decisions",
+        "table:public.mission_pending_rewards",
+        "rls:public.mission_reward_contracts",
+        "trigger:public.mission_reward_contracts_immutable",
+        "trigger:public.mission_completion_decisions_immutable",
+        "trigger:public.mission_pending_rewards_guarded_update"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731110000",
+      "name": "reward_contract_capture",
+      "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+      "sha256": "f0c3f0d51a5c71258b8cd2ac870f5a1fc8ded72b05b489ecbeb6615c192de260",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731100000"
+      ],
+      "capabilities": [
+        "function:public.join_active_mission",
+        "grant:authenticated.public.join_active_mission(uuid)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731120000",
+      "name": "reward_handoff_transitions",
+      "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+      "sha256": "b543fa6c5b8ccc2db167544abd0f36489e824f752e16d0efb7ac58242e61d7ef",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731110000"
+      ],
+      "capabilities": [
+        "function:public.approve_mission_completion",
+        "function:public.cancel_mission_reward_handoff"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731130000",
+      "name": "reward_handoff_notifications",
+      "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+      "sha256": "4dd020d97905e398947fe4d535d56004283b02425d41787c265794e385912cf5",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731120000"
+      ],
+      "capabilities": [
+        "trigger:public.reward_handoff_workflow_event_notifications"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731140000",
+      "name": "reward_handoff_release_hardening",
+      "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+      "sha256": "f7a8409e7497ae250e1bd795d6985eff814f3f2e4fdbfca196072e4c630fe896",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731130000"
+      ],
+      "capabilities": [
+        "function:public.retry_reward_handoff_notification",
+        "grant:service_role.public.retry_reward_handoff_notification(uuid,uuid,uuid,text)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    }
+  ]
+}

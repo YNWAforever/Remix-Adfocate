@@ -16,7 +16,9 @@
     "ingest:kb": "vite-node scripts/ingest-kb.ts",
     "seed:publication-proof-acceptance": "vite-node scripts/seed-publication-proof-acceptance.ts",
     "seed:reward-handoff-acceptance": "vite-node scripts/seed-reward-handoff-acceptance.ts",
-    "test:release-workflow": "vitest run scripts/release/supabase-workflow-contract.test.ts"
+    "test:release-workflow": "vitest run scripts/release/supabase-workflow-contract.test.ts",
+    "release:manifest:write": "vite-node scripts/release/manifest-cli.ts write",
+    "release:manifest:check": "vite-node scripts/release/manifest-cli.ts check"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",
