@@ -432,6 +432,71 @@ integrationSuite(integrationSuiteName, () => {
     expect(changed.error?.message.toLowerCase()).toContain("idempotency_conflict");
   });
 
+  it("treats idempotency keys as workspace-wide before stale workflow checks", async () => {
+    const first = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const second = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const key = unique();
+    await approveCompletion(first, key);
+
+    const service = serviceForTests();
+    const conflict = await service.rpc(
+      "approve_mission_completion",
+      approvalArgs(second, key, {
+        p_expected_revision: second.expectedRevision - 1,
+      }),
+    );
+    expect(conflict.error?.message.toLowerCase()).toContain(
+      "idempotency_conflict",
+    );
+    const [workflow, decisions, pending] = await Promise.all([
+      service.from("mission_workflows").select("state, revision")
+        .eq("id", second.workflowId).single(),
+      service.from("mission_completion_decisions").select("id")
+        .eq("mission_workflow_id", second.workflowId),
+      service.from("mission_pending_rewards").select("id")
+        .eq("mission_workflow_id", second.workflowId),
+    ]);
+    expect(workflow.data).toEqual({
+      state: "proof_verified",
+      revision: second.expectedRevision,
+    });
+    expect(decisions.data).toEqual([]);
+    expect(pending.data).toEqual([]);
+  });
+
+  it("rejects replay when individually valid rows no longer form the canonical chain", async () => {
+    const fixture = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const key = unique();
+    await approveCompletion(fixture, key);
+    const foreignCreator = await makeCreator(
+      `reward-handoff-replay-mismatch-${unique()}@test.local`,
+    );
+    const service = serviceForTests();
+    const mismatch = await service.from("mission_submissions").update({
+      creator_id: foreignCreator.userId,
+    })
+      .eq("id", fixture.submissionId)
+      .eq("workspace_id", fixture.workspaceId)
+      .select("id")
+      .single();
+    expect(mismatch.error).toBeNull();
+
+    const replay = await service.rpc(
+      "approve_mission_completion",
+      approvalArgs(fixture, key),
+    );
+    expect(replay.error?.message.toLowerCase()).toContain(
+      "idempotency_conflict",
+    );
+    expect(replay.data).toBeNull();
+  });
+
   it("does not reveal whether a workflow exists in another workspace", async () => {
     const fixture = await seedRewardHandoffFixture({
       requiredStates: ["proof_verified"],

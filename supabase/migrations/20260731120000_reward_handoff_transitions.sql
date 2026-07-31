@@ -77,42 +77,92 @@ begin
     raise exception 'not_found';
   end if;
 
-  -- A replay is resolved only after locking its requested canonical workflow.
-  -- The pending row must belong to the same tenant/workflow/contract and have
-  -- the relationship required by the immutable decision kind.
-  select decision as decision_row, pending as pending_row
-  into v_replay
+  -- Idempotency keys are claimed workspace-wide. Compare the immutable request
+  -- before state/revision checks or any replay reconstruction.
+  select decision.* into v_decision
   from public.mission_completion_decisions decision
-  left join public.mission_pending_rewards pending
-    on pending.workspace_id = decision.workspace_id
-   and pending.mission_workflow_id = decision.mission_workflow_id
-   and pending.reward_contract_id = decision.reward_contract_id
-   and (
-     (
-       decision.decision_kind = 'approved'
-       and decision.pending_reward_id is null
-       and pending.completion_decision_id = decision.id
-     )
-     or (
-       decision.decision_kind = 'cancelled'
-       and pending.id = decision.pending_reward_id
-       and pending.cancellation_decision_id = decision.id
-     )
-   )
   where decision.workspace_id = p_workspace
-    and decision.mission_workflow_id = p_workflow
     and decision.idempotency_key = p_idempotency_key;
-  if found then
-    v_decision := v_replay.decision_row;
-    v_pending := v_replay.pending_row;
-  end if;
   if v_decision.id is not null then
-    if v_decision.request_hash <> v_request_hash or v_pending.id is null then
+    if v_decision.request_hash <> v_request_hash then
       raise exception 'idempotency_conflict';
     end if;
-    if v_decision.decision_kind <> 'approved' then
+    if v_decision.mission_workflow_id <> p_workflow
+      or v_decision.decision_kind <> 'approved'
+    then
       raise exception 'idempotency_conflict';
     end if;
+  end if;
+
+  select submission.* into v_submission
+  from public.mission_submissions submission
+  where submission.id = v_workflow.mission_submission_id
+    and submission.workspace_id = p_workspace;
+  if v_submission.id is null then
+    if v_decision.id is not null then
+      raise exception 'idempotency_conflict';
+    end if;
+    raise exception 'completion_not_eligible';
+  end if;
+
+  select contract.* into v_contract
+  from public.mission_reward_contracts contract
+  where contract.workspace_id = p_workspace
+    and contract.mission_workflow_id = p_workflow
+    and contract.mission_submission_id = v_submission.id
+    and contract.mission_id = v_submission.mission_id;
+  if v_contract.id is null then
+    if v_decision.id is not null then
+      raise exception 'idempotency_conflict';
+    end if;
+    raise exception 'reward_contract_required';
+  end if;
+
+  if v_decision.id is not null then
+    select pending as pending_row
+    into v_replay
+    from public.mission_pending_rewards pending
+    join public.mission_completion_decisions approval
+      on approval.workspace_id = pending.workspace_id
+     and approval.mission_workflow_id = pending.mission_workflow_id
+     and approval.reward_contract_id = pending.reward_contract_id
+     and pending.completion_decision_id = approval.id
+     and approval.decision_kind = 'approved'
+     and approval.pending_reward_id is null
+    left join public.mission_completion_decisions cancellation
+      on cancellation.workspace_id = pending.workspace_id
+     and cancellation.mission_workflow_id = pending.mission_workflow_id
+     and cancellation.reward_contract_id = pending.reward_contract_id
+     and pending.id = cancellation.pending_reward_id
+     and pending.cancellation_decision_id = cancellation.id
+     and cancellation.supersedes_decision_id = pending.completion_decision_id
+     and cancellation.decision_kind = 'cancelled'
+    where pending.workspace_id = p_workspace
+      and pending.mission_workflow_id = p_workflow
+      and pending.mission_submission_id = v_submission.id
+      and pending.creator_id = v_submission.creator_id
+      and pending.mission_id = v_submission.mission_id
+      and pending.reward_contract_id = v_contract.id
+      and approval.id = v_decision.id
+      and (
+        (
+          pending.status = 'pending'
+          and pending.cancellation_decision_id is null
+          and pending.cancelled_at is null
+          and cancellation.id is null
+        )
+        or (
+          pending.status = 'cancelled'
+          and pending.cancellation_decision_id is not null
+          and pending.cancelled_at is not null
+          and cancellation.id is not null
+        )
+      )
+    limit 1;
+    if not found then
+      raise exception 'idempotency_conflict';
+    end if;
+    v_pending := v_replay.pending_row;
     return jsonb_build_object(
       'workflow', jsonb_build_object(
         'id', v_decision.mission_workflow_id,
@@ -135,24 +185,6 @@ begin
   end if;
   if v_workflow.revision <> p_expected_revision then
     raise exception 'workflow_stale';
-  end if;
-
-  select contract.* into v_contract
-  from public.mission_reward_contracts contract
-  where contract.workspace_id = p_workspace
-    and contract.mission_workflow_id = v_workflow.id;
-  if v_contract.id is null then
-    raise exception 'reward_contract_required';
-  end if;
-
-  select submission.* into v_submission
-  from public.mission_submissions submission
-  where submission.id = v_workflow.mission_submission_id
-    and submission.id = v_contract.mission_submission_id
-    and submission.workspace_id = p_workspace
-    and submission.mission_id = v_contract.mission_id;
-  if v_submission.id is null then
-    raise exception 'completion_not_eligible';
   end if;
 
   select count(*) into v_required_item_count
@@ -423,6 +455,8 @@ declare
   v_request jsonb;
   v_request_hash text;
   v_workflow public.mission_workflows;
+  v_submission public.mission_submissions;
+  v_contract public.mission_reward_contracts;
   v_approval public.mission_completion_decisions;
   v_decision public.mission_completion_decisions;
   v_pending public.mission_pending_rewards;
@@ -480,41 +514,79 @@ begin
     raise exception 'not_found';
   end if;
 
-  -- Reconstruct a replay only from the requested locked workflow and the
-  -- tenant-bound immutable decision/pending relationship.
-  select decision as decision_row, pending as pending_row
-  into v_replay
+  -- The workspace owns the key; stale state/revision cannot mask a prior claim.
+  select decision.* into v_decision
   from public.mission_completion_decisions decision
-  left join public.mission_pending_rewards pending
-    on pending.workspace_id = decision.workspace_id
-   and pending.mission_workflow_id = decision.mission_workflow_id
-   and pending.reward_contract_id = decision.reward_contract_id
-   and (
-     (
-       decision.decision_kind = 'approved'
-       and decision.pending_reward_id is null
-       and pending.completion_decision_id = decision.id
-     )
-     or (
-       decision.decision_kind = 'cancelled'
-       and pending.id = decision.pending_reward_id
-       and pending.cancellation_decision_id = decision.id
-     )
-   )
   where decision.workspace_id = p_workspace
-    and decision.mission_workflow_id = p_workflow
     and decision.idempotency_key = p_idempotency_key;
-  if found then
-    v_decision := v_replay.decision_row;
-    v_pending := v_replay.pending_row;
-  end if;
   if v_decision.id is not null then
     if v_decision.request_hash <> v_request_hash then
       raise exception 'idempotency_conflict';
     end if;
-    if v_decision.decision_kind <> 'cancelled' or v_pending.id is null then
+    if v_decision.mission_workflow_id <> p_workflow
+      or v_decision.decision_kind <> 'cancelled'
+    then
       raise exception 'idempotency_conflict';
     end if;
+  end if;
+
+  select submission.* into v_submission
+  from public.mission_submissions submission
+  where submission.id = v_workflow.mission_submission_id
+    and submission.workspace_id = p_workspace;
+  if v_submission.id is null then
+    if v_decision.id is not null then
+      raise exception 'idempotency_conflict';
+    end if;
+    raise exception 'pending_reward_not_found';
+  end if;
+
+  select contract.* into v_contract
+  from public.mission_reward_contracts contract
+  where contract.workspace_id = p_workspace
+    and contract.mission_workflow_id = p_workflow
+    and contract.mission_submission_id = v_submission.id
+    and contract.mission_id = v_submission.mission_id;
+  if v_contract.id is null then
+    if v_decision.id is not null then
+      raise exception 'idempotency_conflict';
+    end if;
+    raise exception 'pending_reward_not_found';
+  end if;
+
+  if v_decision.id is not null then
+    select pending as pending_row
+    into v_replay
+    from public.mission_pending_rewards pending
+    join public.mission_completion_decisions approval
+      on approval.workspace_id = pending.workspace_id
+     and approval.mission_workflow_id = pending.mission_workflow_id
+     and approval.reward_contract_id = pending.reward_contract_id
+     and pending.completion_decision_id = approval.id
+     and approval.decision_kind = 'approved'
+     and approval.pending_reward_id is null
+    join public.mission_completion_decisions cancellation
+      on cancellation.workspace_id = pending.workspace_id
+     and cancellation.mission_workflow_id = pending.mission_workflow_id
+     and cancellation.reward_contract_id = pending.reward_contract_id
+     and pending.id = cancellation.pending_reward_id
+     and pending.cancellation_decision_id = cancellation.id
+     and cancellation.supersedes_decision_id = pending.completion_decision_id
+     and cancellation.decision_kind = 'cancelled'
+    where pending.workspace_id = p_workspace
+      and pending.mission_workflow_id = p_workflow
+      and pending.mission_submission_id = v_submission.id
+      and pending.creator_id = v_submission.creator_id
+      and pending.mission_id = v_submission.mission_id
+      and pending.reward_contract_id = v_contract.id
+      and pending.status = 'cancelled'
+      and pending.cancelled_at is not null
+      and cancellation.id = v_decision.id
+    limit 1;
+    if not found then
+      raise exception 'idempotency_conflict';
+    end if;
+    v_pending := v_replay.pending_row;
     return jsonb_build_object(
       'workflow', jsonb_build_object(
         'id', v_decision.mission_workflow_id,
@@ -541,15 +613,12 @@ begin
 
   select pending.* into v_pending
   from public.mission_pending_rewards pending
-  join public.mission_reward_contracts contract
-    on contract.id = pending.reward_contract_id
-   and contract.workspace_id = pending.workspace_id
-   and contract.mission_workflow_id = pending.mission_workflow_id
-   and contract.mission_submission_id = pending.mission_submission_id
-   and contract.mission_id = pending.mission_id
   where pending.workspace_id = p_workspace
-    and pending.mission_workflow_id = v_workflow.id
-    and pending.mission_submission_id = v_workflow.mission_submission_id
+    and pending.mission_workflow_id = p_workflow
+    and pending.mission_submission_id = v_submission.id
+    and pending.creator_id = v_submission.creator_id
+    and pending.mission_id = v_submission.mission_id
+    and pending.reward_contract_id = v_contract.id
     and pending.status = 'pending'
     and pending.cancellation_decision_id is null
     and pending.cancelled_at is null

@@ -329,32 +329,79 @@ describe("active mission migration contract", () => {
       const workflowLock = block.indexOf(
         "select workflow.* into v_workflow",
       );
-      const replayLookup = block.indexOf(
-        "from public.mission_completion_decisions decision",
+      const keyLookupStart = block.indexOf(
+        "select decision.* into v_decision",
       );
+      const keyLookupEnd = block.indexOf(";", keyLookupStart);
+      const keyLookup = block.slice(keyLookupStart, keyLookupEnd + 1);
+      const requestHashCheck = block.indexOf(
+        "v_decision.request_hash <> v_request_hash",
+      );
+      const requestedWorkflowCheck = block.indexOf(
+        "v_decision.mission_workflow_id <> p_workflow",
+      );
+      const canonicalSubmission = block.indexOf(
+        "select submission.* into v_submission",
+      );
+      const canonicalContract = block.indexOf(
+        "select contract.* into v_contract",
+      );
+      const replayLookup = block.indexOf(
+        "select pending as pending_row",
+      );
+      const stateCheck = block.indexOf(
+        "if v_workflow.state <> v_expected_state then",
+      );
+
       expect(workflowLock, `${name} workflow lock`).toBeGreaterThanOrEqual(0);
-      expect(replayLookup, `${name} replay lookup`).toBeGreaterThan(workflowLock);
+      expect(keyLookupStart, `${name} key lookup`).toBeGreaterThan(workflowLock);
+      expect(requestHashCheck, `${name} hash check`).toBeGreaterThan(keyLookupEnd);
+      expect(requestedWorkflowCheck, `${name} workflow check`)
+        .toBeGreaterThan(requestHashCheck);
+      expect(canonicalSubmission, `${name} canonical submission`)
+        .toBeGreaterThan(requestedWorkflowCheck);
+      expect(canonicalContract, `${name} canonical contract`)
+        .toBeGreaterThan(canonicalSubmission);
+      expect(replayLookup, `${name} replay lookup`)
+        .toBeGreaterThan(canonicalContract);
+      expect(stateCheck, `${name} state check`).toBeGreaterThan(replayLookup);
       expect(block.slice(0, workflowLock)).not.toContain(
         "from public.mission_completion_decisions decision",
       );
-      expect(block).toContain(
-        "decision.mission_workflow_id = p_workflow",
+      expect(keyLookup).toContain("decision.workspace_id = p_workspace");
+      expect(keyLookup).toContain(
+        "decision.idempotency_key = p_idempotency_key",
       );
-      expect(block).toContain(
-        "pending.workspace_id = decision.workspace_id",
-      );
-      expect(block).toContain(
-        "pending.mission_workflow_id = decision.mission_workflow_id",
-      );
-      expect(block).toContain(
-        "pending.completion_decision_id = decision.id",
-      );
-      expect(block).toContain(
-        "pending.id = decision.pending_reward_id",
-      );
-      expect(block).toContain(
-        "pending.cancellation_decision_id = decision.id",
-      );
+      expect(keyLookup).not.toContain("decision.mission_workflow_id");
+      for (const predicate of [
+        "submission.id = v_workflow.mission_submission_id",
+        "submission.workspace_id = p_workspace",
+        "contract.workspace_id = p_workspace",
+        "contract.mission_workflow_id = p_workflow",
+        "contract.mission_submission_id = v_submission.id",
+        "contract.mission_id = v_submission.mission_id",
+        "pending.workspace_id = p_workspace",
+        "pending.mission_workflow_id = p_workflow",
+        "pending.mission_submission_id = v_submission.id",
+        "pending.creator_id = v_submission.creator_id",
+        "pending.mission_id = v_submission.mission_id",
+        "pending.reward_contract_id = v_contract.id",
+        "approval.workspace_id = pending.workspace_id",
+        "approval.mission_workflow_id = pending.mission_workflow_id",
+        "approval.reward_contract_id = pending.reward_contract_id",
+        "pending.completion_decision_id = approval.id",
+        "approval.decision_kind = 'approved'",
+        "cancellation.workspace_id = pending.workspace_id",
+        "cancellation.mission_workflow_id = pending.mission_workflow_id",
+        "cancellation.reward_contract_id = pending.reward_contract_id",
+        "pending.id = cancellation.pending_reward_id",
+        "pending.cancellation_decision_id = cancellation.id",
+        "cancellation.supersedes_decision_id = pending.completion_decision_id",
+        "cancellation.decision_kind = 'cancelled'",
+      ]) {
+        expect(block, `${name} missing replay predicate: ${predicate}`)
+          .toContain(predicate);
+      }
       expect(block).toContain(
         "'id', v_decision.mission_workflow_id",
       );
@@ -409,7 +456,7 @@ describe("active mission migration contract", () => {
       expect(block).toContain("'idempotent', true");
       expect(block).toContain("'idempotent', false");
       expect(block).toContain(
-        "select decision as decision_row, pending as pending_row",
+        "select decision.* into v_decision",
       );
       expect(block).not.toContain("select decision, pending");
     }
