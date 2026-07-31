@@ -303,9 +303,9 @@ export type ActiveMissionWorkspace = {
   workItems: MissionWorkItemView[];
   events: MissionWorkflowEvent[];
   nextAction: ServerNextAction;
-  rewardContract?: RewardContract | null;
-  completionEligibility?: CompletionEligibility;
-  pendingReward?: PendingReward | null;
+  rewardContract: RewardContract | null;
+  completionEligibility: CompletionEligibility;
+  pendingReward: PendingReward | null;
 };
 
 export type ActiveMissionNextAction = {

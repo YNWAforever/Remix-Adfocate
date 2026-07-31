@@ -71,6 +71,10 @@ function workspace(overrides: Partial<ActiveMissionWorkspace> = {}): ActiveMissi
       { id: "item-2", title: "Story", platform: "instagram", requirements: [], required: false, position: 2, deadline: "2026-07-27T00:00:00Z", state: "drafting", draft: { id: "draft-2", caption: "", externalUrl: null, checklist: {}, revision: 0, lastSavedAt: "2026-07-18T00:00:00Z" }, currentSubmittedVersionId: null, approvedVersionId: null, reviewStartedAt: null, reviewDueAt: null },
     ],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "draft", workItemId: "item-1", deadline: "2026-07-25T00:00:00Z", blockedReason: null },
     ...overrides,
   };

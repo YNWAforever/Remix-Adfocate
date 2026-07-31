@@ -14,6 +14,12 @@ import {
   cancelRewardHandoff,
   fetchCompletionReview,
   fetchRewardHandoffs,
+  normalizeApproveCompletionInput,
+  normalizeBackfillRewardContractInput,
+  normalizeCancelRewardHandoffInput,
+  normalizeIdentifier,
+  normalizeRewardHandoffListFilters,
+  normalizeWorkspace,
   setRewardProcessingWindow,
   type ApproveCompletionInput,
   type BackfillRewardContractInput,
@@ -636,7 +642,6 @@ type RewardMutationScope = {
   workflowId: string;
   submissionId: string;
   workspace: string;
-  idempotencyKey?: string;
 };
 
 export type ApproveCompletionMutationInput =
@@ -646,47 +651,185 @@ export type BackfillRewardContractMutationInput =
 export type CancelRewardHandoffMutationInput =
   Omit<CancelRewardHandoffInput, "idempotencyKey"> & RewardMutationScope;
 
-function normalizeSemanticValue(value: unknown, field = ""): unknown {
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (field === "currency") return trimmed.toUpperCase();
-    if (field === "confirmationEvidenceSource" || field === "reasonCategory") {
-      return trimmed.toLowerCase();
-    }
-    return trimmed;
+function normalizeRewardScope(input: RewardMutationScope): RewardMutationScope {
+  return {
+    workflowId: normalizeIdentifier(input.workflowId),
+    submissionId: normalizeIdentifier(input.submissionId),
+    workspace: normalizeWorkspace(input.workspace),
+  };
+}
+
+function normalizeApproveCompletionMutation(
+  input: ApproveCompletionMutationInput,
+): ApproveCompletionMutationInput {
+  const scope = normalizeRewardScope(input);
+  const normalized = normalizeApproveCompletionInput({
+    workspace: input.workspace,
+    expectedState: input.expectedState,
+    expectedRevision: input.expectedRevision,
+    idempotencyKey: "",
+  });
+  return {
+    ...scope,
+    expectedState: normalized.expectedState,
+    expectedRevision: normalized.expectedRevision,
+  };
+}
+
+function normalizeBackfillRewardContractMutation(
+  input: BackfillRewardContractMutationInput,
+): BackfillRewardContractMutationInput {
+  const scope = normalizeRewardScope(input);
+  const normalized = normalizeBackfillRewardContractInput({
+    workspace: input.workspace,
+    pointsAmount: input.pointsAmount,
+    cashAmount: input.cashAmount,
+    currency: input.currency,
+    xpAmount: input.xpAmount,
+    sourceMissionUpdatedAt: input.sourceMissionUpdatedAt,
+    confirmationEvidenceSource: input.confirmationEvidenceSource,
+    confirmationReason: input.confirmationReason,
+    idempotencyKey: "",
+  });
+  return {
+    ...scope,
+    pointsAmount: normalized.pointsAmount,
+    cashAmount: normalized.cashAmount,
+    currency: normalized.currency,
+    xpAmount: normalized.xpAmount,
+    sourceMissionUpdatedAt: normalized.sourceMissionUpdatedAt,
+    confirmationEvidenceSource: normalized.confirmationEvidenceSource,
+    confirmationReason: normalized.confirmationReason,
+  };
+}
+
+function normalizeCancelRewardHandoffMutation(
+  input: CancelRewardHandoffMutationInput,
+): CancelRewardHandoffMutationInput {
+  const scope = normalizeRewardScope(input);
+  const normalized = normalizeCancelRewardHandoffInput({
+    workspace: input.workspace,
+    expectedState: input.expectedState,
+    expectedRevision: input.expectedRevision,
+    reasonCategory: input.reasonCategory,
+    reasonNote: input.reasonNote,
+    idempotencyKey: "",
+  });
+  return {
+    ...scope,
+    expectedState: normalized.expectedState,
+    expectedRevision: normalized.expectedRevision,
+    reasonCategory: normalized.reasonCategory,
+    reasonNote: normalized.reasonNote,
+  };
+}
+
+function canonicalSignatureValue(value: unknown): string {
+  if (value === undefined) return '["undefined"]';
+  if (value === null) return '["null"]';
+  if (Array.isArray(value)) {
+    return `["array",[${value.map(canonicalSignatureValue).join(",")}]]`;
   }
-  if (Array.isArray(value)) return value.map((item) => normalizeSemanticValue(item));
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>)
-        .filter(([key]) => key !== "idempotencyKey")
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, nested]) => [key, normalizeSemanticValue(nested, key)]),
-    );
+  if (typeof value === "string") return `["string",${JSON.stringify(value)}]`;
+  if (typeof value === "boolean") return `["boolean",${value ? "true" : "false"}]`;
+  if (typeof value === "number") {
+    const numberValue = Number.isNaN(value)
+      ? "NaN"
+      : value === Number.POSITIVE_INFINITY
+        ? "Infinity"
+        : value === Number.NEGATIVE_INFINITY
+          ? "-Infinity"
+          : Object.is(value, -0)
+            ? "-0"
+            : String(value);
+    return `["number",${JSON.stringify(numberValue)}]`;
   }
-  return value;
+  if (typeof value === "bigint") return `["bigint",${JSON.stringify(String(value))}]`;
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => key !== "idempotencyKey")
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, nested]) =>
+        `[${JSON.stringify(key)},${canonicalSignatureValue(nested)}]`);
+    return `["object",[${entries.join(",")}]]`;
+  }
+  return `[${JSON.stringify(typeof value)},${JSON.stringify(String(value))}]`;
 }
 
 export function rewardMutationSignature(action: string, input: unknown): string {
-  return `${action}:${JSON.stringify(normalizeSemanticValue(input))}`;
+  return `${action}:${canonicalSignatureValue(input)}`;
 }
 
 function createIdempotencyKey() {
   return globalThis.crypto.randomUUID();
 }
 
+type RewardMutationRegistryEntry = {
+  key: string;
+  inFlight: number;
+  ambiguous: boolean;
+};
+
+const rewardMutationRegistry = new Map<string, RewardMutationRegistryEntry>();
+
+export function __resetRewardMutationRegistryForTests() {
+  if (import.meta.env.MODE !== "test") {
+    throw new Error("Reward mutation registry reset is test-only");
+  }
+  rewardMutationRegistry.clear();
+}
+
+function acquireRewardMutation(signature: string): RewardMutationRegistryEntry {
+  let entry = rewardMutationRegistry.get(signature);
+  if (!entry) {
+    entry = { key: createIdempotencyKey(), inFlight: 0, ambiguous: false };
+    rewardMutationRegistry.set(signature, entry);
+  } else if (entry.inFlight === 0) {
+    entry.ambiguous = false;
+  }
+  entry.inFlight += 1;
+  return entry;
+}
+
+function settleRewardMutation(
+  signature: string,
+  entry: RewardMutationRegistryEntry,
+  outcome: "success" | "ambiguous" | "definitive",
+) {
+  if (rewardMutationRegistry.get(signature) !== entry) return;
+  if (outcome === "definitive") {
+    rewardMutationRegistry.delete(signature);
+    return;
+  }
+  entry.inFlight = Math.max(0, entry.inFlight - 1);
+  if (outcome === "ambiguous") entry.ambiguous = true;
+  if (entry.inFlight === 0 && !entry.ambiguous) {
+    rewardMutationRegistry.delete(signature);
+  }
+}
+
+function rewardFailureOutcome(error: unknown): "ambiguous" | "definitive" {
+  if (!(error instanceof AdminRequestError)) return "ambiguous";
+  const status = error.status;
+  if (status === undefined) return "ambiguous";
+  return status >= 500 && status <= 599 ? "ambiguous" : "definitive";
+}
+
 function invalidateRewardCollections(
   queryClient: ReturnType<typeof useQueryClient>,
   input: RewardMutationScope,
 ) {
+  const workspace = normalizeWorkspace(input.workspace);
+  const workflowId = normalizeIdentifier(input.workflowId);
+  const submissionId = normalizeIdentifier(input.submissionId);
   void queryClient.invalidateQueries({
-    queryKey: ["admin-active-mission", input.workspace, input.workflowId],
+    queryKey: ["admin-active-mission", workspace, workflowId],
   });
   void queryClient.invalidateQueries({
-    queryKey: ["admin-reward-handoffs", input.workspace],
+    queryKey: ["admin-reward-handoffs", workspace],
   });
   void queryClient.invalidateQueries({
-    queryKey: activeMissionQueryKey(input.submissionId),
+    queryKey: activeMissionQueryKey(submissionId),
   });
   void queryClient.invalidateQueries({ queryKey: ["notifications"] });
 }
@@ -696,28 +839,21 @@ function useStableRewardMutation<
   TResult,
 >(
   action: string,
+  normalize: (input: TInput) => TInput,
   operation: (input: TInput & { idempotencyKey: string }) => Promise<TResult>,
 ) {
   const queryClient = useQueryClient();
-  const keys = useRef(new Map<string, string>());
   return useMutation({
     mutationFn: async (input: TInput) => {
-      const signature = rewardMutationSignature(action, input);
-      const key = keys.current.get(signature)
-        ?? input.idempotencyKey
-        ?? createIdempotencyKey();
-      keys.current.set(signature, key);
+      const normalized = normalize(input);
+      const signature = rewardMutationSignature(action, normalized);
+      const entry = acquireRewardMutation(signature);
       try {
-        const result = await operation({ ...input, idempotencyKey: key });
-        keys.current.delete(signature);
+        const result = await operation({ ...normalized, idempotencyKey: entry.key });
+        settleRewardMutation(signature, entry, "success");
         return result;
       } catch (error) {
-        if (
-          error instanceof AdminRequestError
-          && (error.code === "WORKFLOW_STALE" || error.code === "WRONG_STATE")
-        ) {
-          keys.current.delete(signature);
-        }
+        settleRewardMutation(signature, entry, rewardFailureOutcome(error));
         throw error;
       }
     },
@@ -726,23 +862,26 @@ function useStableRewardMutation<
 }
 
 export function useCompletionReview(workflowId: string, workspace: string) {
+  const canonicalWorkflowId = normalizeIdentifier(workflowId);
+  const canonicalWorkspace = normalizeWorkspace(workspace);
   return useQuery({
-    queryKey: ["admin-active-mission", workspace, workflowId, "completion-review"],
-    queryFn: () => fetchCompletionReview(workflowId, workspace),
-    enabled: Boolean(workflowId && workspace),
+    queryKey: ["admin-active-mission", canonicalWorkspace, canonicalWorkflowId, "completion-review"],
+    queryFn: () => fetchCompletionReview(canonicalWorkflowId, canonicalWorkspace),
+    enabled: Boolean(canonicalWorkflowId && canonicalWorkspace),
     retry: false,
   });
 }
 
 export function useRewardHandoffs(filters: RewardHandoffListFilters) {
+  const normalized = normalizeRewardHandoffListFilters(filters);
   return useQuery({
-    queryKey: ["admin-reward-handoffs", filters.workspace, {
-      due: filters.due || undefined,
-      component: filters.component || undefined,
-      status: filters.status || undefined,
+    queryKey: ["admin-reward-handoffs", normalized.workspace, {
+      due: normalized.due,
+      component: normalized.component,
+      status: normalized.status,
     }],
-    queryFn: () => fetchRewardHandoffs(filters),
-    enabled: Boolean(filters.workspace),
+    queryFn: () => fetchRewardHandoffs(normalized),
+    enabled: Boolean(normalized.workspace),
     retry: false,
   });
 }
@@ -750,6 +889,7 @@ export function useRewardHandoffs(filters: RewardHandoffListFilters) {
 export function useApproveMissionCompletion() {
   return useStableRewardMutation<ApproveCompletionMutationInput, Awaited<ReturnType<typeof approveMissionCompletion>>>(
     "approve-completion",
+    normalizeApproveCompletionMutation,
     ({ workflowId, submissionId, ...input }) => {
       void submissionId;
       return approveMissionCompletion(workflowId, input);
@@ -760,6 +900,7 @@ export function useApproveMissionCompletion() {
 export function useBackfillRewardContract() {
   return useStableRewardMutation<BackfillRewardContractMutationInput, Awaited<ReturnType<typeof backfillRewardContract>>>(
     "backfill-reward-contract",
+    normalizeBackfillRewardContractMutation,
     ({ workflowId, submissionId, ...input }) => {
       void submissionId;
       return backfillRewardContract(workflowId, input);
@@ -770,6 +911,7 @@ export function useBackfillRewardContract() {
 export function useCancelRewardHandoff() {
   return useStableRewardMutation<CancelRewardHandoffMutationInput, Awaited<ReturnType<typeof cancelRewardHandoff>>>(
     "cancel-reward-handoff",
+    normalizeCancelRewardHandoffMutation,
     ({ workflowId, submissionId, ...input }) => {
       void submissionId;
       return cancelRewardHandoff(workflowId, input);
@@ -782,8 +924,9 @@ export function useSetRewardProcessingWindow() {
   return useMutation({
     mutationFn: setRewardProcessingWindow,
     onSuccess: (_data, input) => {
+      const workspace = normalizeWorkspace(input.workspace);
       void queryClient.invalidateQueries({
-        queryKey: ["admin-reward-handoffs", input.workspace],
+        queryKey: ["admin-reward-handoffs", workspace],
       });
     },
   });

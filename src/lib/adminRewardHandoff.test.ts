@@ -6,12 +6,17 @@ import {
   cancelRewardHandoff,
   fetchCompletionReview,
   fetchRewardHandoffs,
+  normalizeRewardHandoffListFilters,
   setRewardProcessingWindow,
+  type AdminCompletionDecision,
+  type AdminCompletionEvidenceItem,
+  type AdminPendingReward,
   type AdminRewardContract,
   type ApproveCompletionInput,
   type CancelRewardHandoffInput,
   type CompletionReview,
   type RewardHandoffListResponse,
+  type RewardHandoffMutationResult,
   type RewardHandoffQueueItem,
 } from "./adminRewardHandoff";
 import type {
@@ -151,36 +156,73 @@ describe("admin reward handoff client", () => {
     }
   });
 
-  it("encodes bounded list filters in stable order and omits empty values", async () => {
+  it("canonicalizes bounded list filters, explicit pending defaults, and workspace transport", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response({
       items: [],
       rewardProcessingWindowDays: 7,
     }));
 
     await fetchRewardHandoffs({
-      workspace: "alpha",
-      due: "due_soon",
-      component: "cash",
-      status: "cancelled",
+      workspace: " alpha ",
+      due: " DUE_SOON " as "due_soon",
+      component: " Cash " as "cash",
+      status: " " as "",
     });
     await fetchRewardHandoffs({
       workspace: "alpha",
-      due: "",
+      due: "  " as "",
       component: undefined,
-      status: "",
     });
 
     expect(fetch).toHaveBeenNthCalledWith(
       1,
-      "/api/admin/reward-handoffs?due=due_soon&component=cash&status=cancelled",
+      "/api/admin/reward-handoffs?due=due_soon&component=cash&status=pending",
       expect.objectContaining({
         headers: expect.objectContaining({ "X-Workspace-Slug": "alpha" }),
       }),
     );
     expect(fetch).toHaveBeenNthCalledWith(
       2,
-      "/api/admin/reward-handoffs",
+      "/api/admin/reward-handoffs?status=pending",
       expect.any(Object),
+    );
+    expect(normalizeRewardHandoffListFilters({
+      workspace: " alpha ",
+      due: " " as "",
+      status: undefined,
+    })).toEqual({
+      workspace: "alpha",
+      due: undefined,
+      component: undefined,
+      status: "pending",
+    });
+  });
+
+  it("uses the same canonical mutation values in headers and bodies", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response());
+
+    await backfillRewardContract(" workflow-1 ", {
+      workspace: " alpha ",
+      pointsAmount: 500,
+      cashAmount: 125,
+      currency: " hkd ",
+      xpAmount: 0,
+      sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: " OPERATOR_RECORD " as "operator_record",
+      confirmationReason: " Confirmed ",
+      idempotencyKey,
+    });
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/admin/active-missions/workflow-1/reward-contract",
+      expect.objectContaining({
+        headers: expect.objectContaining({ "X-Workspace-Slug": "alpha" }),
+        body: JSON.stringify({
+          pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0,
+          sourceMissionUpdatedAt: null, confirmationEvidenceSource: "operator_record",
+          confirmationReason: "Confirmed", idempotencyKey,
+        }),
+      }),
     );
   });
 
@@ -207,22 +249,59 @@ describe("admin reward handoff client", () => {
 
   it("keeps public response types tied to the active-mission projection", () => {
     expectTypeOf<CompletionReview["rewardContract"]>().toEqualTypeOf<AdminRewardContract | null>();
+    expectTypeOf<CompletionReview["pendingReward"]>().toEqualTypeOf<AdminPendingReward | null>();
+    expectTypeOf<RewardHandoffMutationResult["decision"]>()
+      .toEqualTypeOf<AdminCompletionDecision | null>();
     expectTypeOf<Pick<AdminRewardContract, keyof RewardContract>>()
       .toEqualTypeOf<RewardContract>();
     expectTypeOf<CompletionReview["completionEligibility"]>().toEqualTypeOf<CompletionEligibility>();
-    expectTypeOf<CompletionReview["pendingReward"]>().toEqualTypeOf<PendingReward | null>();
-    expectTypeOf<Pick<RewardHandoffQueueItem, keyof PendingReward>>()
-      .toEqualTypeOf<PendingReward>();
     expectTypeOf<RewardHandoffListResponse["items"][number]>().toEqualTypeOf<RewardHandoffQueueItem>();
+    expectTypeOf<RewardHandoffQueueItem["id"]>().toEqualTypeOf<string>();
     expectTypeOf<ApproveCompletionInput["expectedState"]>().toEqualTypeOf<"proof_verified">();
     expectTypeOf<CancelRewardHandoffInput["expectedState"]>().toEqualTypeOf<"reward_pending">();
   });
 
-  it("keeps creator projections free of operator and proof transport fields", () => {
-    type ForbiddenPendingKeys = Extract<
-      keyof PendingReward,
-      "reasonNote" | "operatorId" | "idempotencyKey" | "requestHash" | "proofUrl" | "signedUrl"
+  it("keeps nested creator and bounded admin projections free of private transport fields", () => {
+    type ForbiddenKeys = "reasonNote" | "reasonCategory" | "decidedBy" | "actorId"
+      | "operatorId" | "idempotencyKey" | "requestHash" | "proofUrl" | "primaryUrl"
+      | "signedUrl" | "storageObjectPath";
+    type ForbiddenCreatorKeys = Extract<keyof PendingReward, ForbiddenKeys>;
+    type ForbiddenAdminDecisionKeys = Extract<keyof AdminCompletionDecision, ForbiddenKeys>;
+    type ForbiddenAdminEvidenceKeys = Extract<
+      keyof AdminCompletionEvidenceItem,
+      ForbiddenKeys
     >;
-    expectTypeOf<ForbiddenPendingKeys>().toEqualTypeOf<never>();
+    expectTypeOf<ForbiddenCreatorKeys>().toEqualTypeOf<never>();
+    expectTypeOf<ForbiddenAdminDecisionKeys>().toEqualTypeOf<never>();
+    expectTypeOf<ForbiddenAdminEvidenceKeys>().toEqualTypeOf<never>();
+  });
+
+  it("keeps the nested admin decision and evidence key sets exact", () => {
+    type DecisionKeys = "id" | "kind" | "workflowRevision" | "requiredItemCount"
+      | "verifiedRequiredItemCount" | "evidence" | "decidedAt";
+    type EvidenceKeys = "workItemId" | "proofAttemptId" | "proofReviewId"
+      | "attemptNumber" | "submittedAt" | "contentChecksum" | "metadataStatus"
+      | "reviewNumber" | "reviewedAt" | "reviewDecision";
+    expectTypeOf<keyof AdminCompletionDecision>().toEqualTypeOf<DecisionKeys>();
+    expectTypeOf<keyof AdminCompletionDecision["evidence"]>()
+      .toEqualTypeOf<"requiredItems">();
+    expectTypeOf<keyof AdminCompletionEvidenceItem>().toEqualTypeOf<EvidenceKeys>();
+  });
+
+  it("models the exact bounded mutation decision shape", () => {
+    const decision = {
+      id: "decision-1",
+      kind: "approved" as const,
+      workflowRevision: 8,
+      requiredItemCount: 2,
+      verifiedRequiredItemCount: 2,
+      evidence: { requiredItems: [] },
+      decidedAt: "2026-07-31T10:00:00.000Z",
+    } satisfies AdminCompletionDecision;
+    expect(decision).toEqual({
+      id: "decision-1", kind: "approved", workflowRevision: 8,
+      requiredItemCount: 2, verifiedRequiredItemCount: 2,
+      evidence: { requiredItems: [] }, decidedAt: "2026-07-31T10:00:00.000Z",
+    });
   });
 });

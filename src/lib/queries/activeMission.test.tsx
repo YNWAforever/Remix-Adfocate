@@ -14,7 +14,9 @@ import {
 } from "@/lib/admin";
 import type { ActiveMissionWorkspace, MissionDraft, MissionPublicationView } from "../activeMission";
 import {
+  __resetRewardMutationRegistryForTests,
   activeMissionQueryKey,
+  rewardMutationSignature,
   missionPublicationQueryKey,
   useActiveMissionWorkspace,
   useApproveMissionCompletion,
@@ -26,6 +28,7 @@ import {
   useMissionPublication,
   useProofEvidenceUpload,
   useRefreshProofMetadata,
+  useRewardHandoffs,
   useRequestProofCorrection,
   useSaveMissionDraft,
   useStartProofReview,
@@ -54,6 +57,10 @@ function workspace(): ActiveMissionWorkspace {
       currentSubmittedVersionId: null, approvedVersionId: null, reviewStartedAt: null, reviewDueAt: null,
     }],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "continue_draft", workItemId: "item-1", deadline: null, blockedReason: null },
   };
 }
@@ -443,12 +450,13 @@ describe("reward handoff mutation hooks", () => {
   };
 
   beforeEach(() => {
+    __resetRewardMutationRegistryForTests();
     vi.spyOn(supabase.auth, "getSession").mockResolvedValue({
       data: { session: null }, error: null,
     } as never);
   });
 
-  it("reuses a normalized semantic key after ambiguity, preserves conflict, and clears success", async () => {
+  it("retains only ambiguous failures and clears every definitive HTTP response", async () => {
     const fetch = vi.fn()
       .mockRejectedValueOnce(new TypeError("offline"))
       .mockResolvedValueOnce({
@@ -459,16 +467,28 @@ describe("reward handoff mutation hooks", () => {
         ok: false, status: 409, statusText: "Conflict",
         json: async () => ({ error: "conflict", code: "IDEMPOTENCY_CONFLICT" }),
       })
+      .mockResolvedValueOnce({
+        ok: false, status: 422, statusText: "Unprocessable Entity",
+        json: async () => ({ error: "validation", code: "VALIDATION_FAILED" }),
+      })
       .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
     vi.stubGlobal("fetch", fetch);
     const randomUUID = vi.spyOn(globalThis.crypto, "randomUUID")
       .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
-      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222")
+      .mockReturnValueOnce("33333333-3333-4333-8333-333333333333")
+      .mockReturnValueOnce("44444444-4444-4444-8444-444444444444");
     const { wrapper } = setup();
     const { result } = renderHook(() => useApproveMissionCompletion(), { wrapper });
 
     await act(async () => {
-      await expect(result.current.mutateAsync(approval)).rejects.toThrow("offline");
+      await expect(result.current.mutateAsync({
+        ...approval,
+        workflowId: " workflow-1 ",
+        submissionId: " sub-1 ",
+        workspace: " alpha ",
+        expectedState: " PROOF_VERIFIED " as "proof_verified",
+      })).rejects.toThrow("offline");
       await expect(result.current.mutateAsync({
         expectedRevision: 7,
         expectedState: "proof_verified",
@@ -477,20 +497,177 @@ describe("reward handoff mutation hooks", () => {
         workflowId: "workflow-1",
       })).rejects.toBeInstanceOf(AdminRequestError);
       await expect(result.current.mutateAsync(approval)).rejects.toMatchObject({ status: 409 });
+      await expect(result.current.mutateAsync(approval)).rejects.toMatchObject({ status: 422 });
       await result.current.mutateAsync(approval);
     });
-    expect(fetch.mock.calls.slice(0, 4).map(([, init]) =>
+    expect(fetch.mock.calls.slice(0, 5).map(([, init]) =>
       JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
-      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+      "33333333-3333-4333-8333-333333333333",
     ]);
 
     await act(async () => { await result.current.mutateAsync(approval); });
-    expect(JSON.parse((fetch.mock.calls[4][1] as RequestInit).body as string).idempotencyKey)
+    expect(JSON.parse((fetch.mock.calls[5][1] as RequestInit).body as string).idempotencyKey)
+      .toBe("44444444-4444-4444-8444-444444444444");
+    expect(randomUUID).toHaveBeenCalledTimes(4);
+  });
+
+  it("coordinates concurrent identical mutations across hook instances", async () => {
+    let resolveFirst!: (value: Response) => void;
+    let rejectSecond!: (reason: unknown) => void;
+    const fetch = vi.fn()
+      .mockImplementationOnce(() => new Promise<Response>((resolve) => { resolveFirst = resolve; }))
+      .mockImplementationOnce(() => new Promise<Response>((_resolve, reject) => { rejectSecond = reject; }))
+      .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetch);
+    vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+    const { wrapper } = setup();
+    const first = renderHook(() => useApproveMissionCompletion(), { wrapper });
+    const second = renderHook(() => useApproveMissionCompletion(), { wrapper });
+
+    let firstRequest!: Promise<unknown>;
+    let secondRequest!: Promise<unknown>;
+    act(() => {
+      firstRequest = first.result.current.mutateAsync(approval);
+      secondRequest = second.result.current.mutateAsync({ ...approval });
+    });
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    expect(fetch.mock.calls.slice(0, 2).map(([, init]) =>
+      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      "11111111-1111-4111-8111-111111111111",
+      "11111111-1111-4111-8111-111111111111",
+    ]);
+
+    resolveFirst({ ok: true, status: 200, json: async () => ({ ok: true }) } as Response);
+    await firstRequest;
+    rejectSecond(new TypeError("offline"));
+    await expect(secondRequest).rejects.toThrow("offline");
+    await act(async () => { await first.result.current.mutateAsync(approval); });
+    expect(JSON.parse((fetch.mock.calls[2][1] as RequestInit).body as string).idempotencyKey)
+      .toBe("11111111-1111-4111-8111-111111111111");
+
+    await act(async () => { await first.result.current.mutateAsync(approval); });
+    expect(JSON.parse((fetch.mock.calls[3][1] as RequestInit).body as string).idempotencyKey)
       .toBe("22222222-2222-4222-8222-222222222222");
-    expect(randomUUID).toHaveBeenCalledTimes(2);
+  });
+
+  it("force-clears a concurrent batch after a definitive 4xx", async () => {
+    let resolveDefinitive!: (value: Response) => void;
+    let rejectAmbiguous!: (reason: unknown) => void;
+    const fetch = vi.fn()
+      .mockImplementationOnce(() =>
+        new Promise<Response>((resolve) => { resolveDefinitive = resolve; }))
+      .mockImplementationOnce(() =>
+        new Promise<Response>((_resolve, reject) => { rejectAmbiguous = reject; }))
+      .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetch);
+    vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+    const { wrapper } = setup();
+    const first = renderHook(() => useApproveMissionCompletion(), { wrapper });
+    const second = renderHook(() => useApproveMissionCompletion(), { wrapper });
+
+    let definitiveRequest!: Promise<unknown>;
+    let ambiguousRequest!: Promise<unknown>;
+    act(() => {
+      definitiveRequest = first.result.current.mutateAsync(approval);
+      ambiguousRequest = second.result.current.mutateAsync({ ...approval });
+    });
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    resolveDefinitive({
+      ok: false, status: 422, statusText: "Unprocessable Entity",
+      json: async () => ({ error: "validation", code: "VALIDATION_FAILED" }),
+    } as Response);
+    await expect(definitiveRequest).rejects.toMatchObject({ status: 422 });
+    rejectAmbiguous(new TypeError("offline"));
+    await expect(ambiguousRequest).rejects.toThrow("offline");
+
+    await act(async () => { await first.result.current.mutateAsync(approval); });
+    expect(fetch.mock.calls.map(([, init]) =>
+      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      "11111111-1111-4111-8111-111111111111",
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+    ]);
+  });
+
+  it("isolates simultaneous actions, workflows, submissions, workspaces, and payloads", async () => {
+    const fetch = vi.fn().mockResolvedValue({
+      ok: true, status: 200, json: async () => ({ ok: true }),
+    });
+    vi.stubGlobal("fetch", fetch);
+    vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222")
+      .mockReturnValueOnce("33333333-3333-4333-8333-333333333333")
+      .mockReturnValueOnce("44444444-4444-4444-8444-444444444444")
+      .mockReturnValueOnce("55555555-5555-4555-8555-555555555555")
+      .mockReturnValueOnce("66666666-6666-4666-8666-666666666666");
+    const { wrapper } = setup();
+    const approve = renderHook(() => useApproveMissionCompletion(), { wrapper });
+    const backfill = renderHook(() => useBackfillRewardContract(), { wrapper });
+
+    await act(async () => {
+      await Promise.all([
+        approve.result.current.mutateAsync(approval),
+        approve.result.current.mutateAsync({ ...approval, workflowId: "workflow-2" }),
+        approve.result.current.mutateAsync({ ...approval, submissionId: "sub-2" }),
+        approve.result.current.mutateAsync({ ...approval, workspace: "beta" }),
+        approve.result.current.mutateAsync({ ...approval, expectedRevision: 8 }),
+        backfill.result.current.mutateAsync({
+          workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+          pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0,
+          sourceMissionUpdatedAt: null, confirmationEvidenceSource: "operator_record",
+          confirmationReason: "Confirmed",
+        }),
+      ]);
+    });
+
+    expect(new Set(fetch.mock.calls.map(([, init]) =>
+      JSON.parse((init as RequestInit).body as string).idempotencyKey)).size).toBe(6);
+  });
+
+  it("builds canonical signatures without collapsing meaningful JSON distinctions", () => {
+    const first = {
+      workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+      expectedState: "proof_verified", expectedRevision: 7,
+    };
+    const reordered = {
+      expectedRevision: 7, workspace: "alpha", submissionId: "sub-1",
+      workflowId: "workflow-1", expectedState: "proof_verified",
+    };
+    expect(rewardMutationSignature("approve-completion", first))
+      .toBe(rewardMutationSignature("approve-completion", reordered));
+    expect(rewardMutationSignature("x", { value: undefined }))
+      .not.toBe(rewardMutationSignature("x", {}));
+    expect(rewardMutationSignature("x", { value: null }))
+      .not.toBe(rewardMutationSignature("x", { value: undefined }));
+    expect(rewardMutationSignature("x", { value: [1] }))
+      .not.toBe(rewardMutationSignature("x", { value: 1 }));
+  });
+
+  it("uses one canonical queue query key for equivalent filter inputs", () => {
+    const fetch = vi.fn().mockResolvedValue({
+      ok: true, status: 200,
+      json: async () => ({ items: [], rewardProcessingWindowDays: 7 }),
+    });
+    vi.stubGlobal("fetch", fetch);
+    const { queryClient, wrapper } = setup();
+    renderHook(() => useRewardHandoffs({
+      workspace: " alpha ", due: " DUE_SOON " as "due_soon", status: " " as "",
+    }), { wrapper });
+    renderHook(() => useRewardHandoffs({
+      workspace: "alpha", due: "due_soon", status: "pending",
+    }), { wrapper });
+    expect(queryClient.getQueryCache().findAll({
+      queryKey: ["admin-reward-handoffs"],
+    })).toHaveLength(1);
   });
 
   it.each(["WORKFLOW_STALE", "WRONG_STATE"] as const)(
@@ -536,15 +713,15 @@ describe("reward handoff mutation hooks", () => {
     const cancel = renderHook(() => useCancelRewardHandoff(), { wrapper });
 
     await act(async () => {
-      await approve.result.current.mutateAsync(approval);
+      await approve.result.current.mutateAsync({ ...approval, workspace: " alpha " });
       await backfill.result.current.mutateAsync({
-        workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+        workflowId: " workflow-1 ", submissionId: " sub-1 ", workspace: " alpha ",
         pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0,
         sourceMissionUpdatedAt: null, confirmationEvidenceSource: "operator_record",
         confirmationReason: "Confirmed",
       });
       await cancel.result.current.mutateAsync({
-        workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+        workflowId: " workflow-1 ", submissionId: " sub-1 ", workspace: " alpha ",
         expectedState: "reward_pending", expectedRevision: 8,
         reasonCategory: "other", reasonNote: "Reassess",
       });

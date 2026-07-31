@@ -64,6 +64,10 @@ function workspace(options: {
       reviewDueAt: null,
     })),
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "ignored-server-hint", workItemId: null, deadline: null, blockedReason: null },
   };
 }
@@ -98,6 +102,15 @@ describe("reward handoff shared types", () => {
       workflowRevision: 3,
       verifiedRequiredItemCount: 2,
     });
+  });
+
+  it("requires all three reward projections on every workspace response", () => {
+    type IsOptional<Key extends keyof ActiveMissionWorkspace> = Pick<
+      ActiveMissionWorkspace, Key
+    > extends Required<Pick<ActiveMissionWorkspace, Key>> ? false : true;
+    expectTypeOf<IsOptional<"rewardContract">>().toEqualTypeOf<false>();
+    expectTypeOf<IsOptional<"completionEligibility">>().toEqualTypeOf<false>();
+    expectTypeOf<IsOptional<"pendingReward">>().toEqualTypeOf<false>();
   });
 });
 describe("deriveNextAction", () => {

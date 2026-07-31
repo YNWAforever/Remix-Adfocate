@@ -31,6 +31,10 @@ function workspace(
       reviewDueAt: null,
     })),
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "ignored", workItemId: null, deadline: null, blockedReason: null },
   };
 }

@@ -38,6 +38,10 @@ function workspace(): ActiveMissionWorkspace {
       currentSubmittedVersionId: null, approvedVersionId: null, reviewStartedAt: null, reviewDueAt: null,
     }],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "continue_draft", workItemId: "item-1", deadline: null, blockedReason: null },
   };
 }

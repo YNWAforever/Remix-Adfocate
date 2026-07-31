@@ -94,6 +94,10 @@ function workspace(nextAction: ActiveMissionNextAction): ActiveMissionWorkspace 
     },
     workItems: [draftItem],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction,
   };
 }
