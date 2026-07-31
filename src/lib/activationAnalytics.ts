@@ -43,6 +43,9 @@ export type PublicationRecoveryCategory = (typeof PUBLICATION_RECOVERY_CATEGORIE
 
 const REWARD_HANDOFF_WORKFLOW_STATES = ["proof_verified", "reward_pending"] as const;
 const REWARD_HANDOFF_CONTRACT_SOURCES = ["join", "operator_backfill", "missing"] as const;
+const REWARD_HANDOFF_DUE_FILTERS = ["all", "overdue", "due_soon", "no_target"] as const;
+const REWARD_HANDOFF_COMPONENT_FILTERS = ["all", "points", "cash", "xp"] as const;
+const REWARD_HANDOFF_STATUS_FILTERS = ["pending", "cancelled"] as const;
 const REWARD_HANDOFF_ERROR_CATEGORIES = [
   "wrong_state",
   "required_proof_incomplete",
@@ -76,6 +79,9 @@ export type RewardHandoffAnalyticsProperties = {
   hasPoints?: boolean;
   hasCash?: boolean;
   hasXp?: boolean;
+  dueFilter?: (typeof REWARD_HANDOFF_DUE_FILTERS)[number];
+  componentFilter?: (typeof REWARD_HANDOFF_COMPONENT_FILTERS)[number];
+  statusFilter?: (typeof REWARD_HANDOFF_STATUS_FILTERS)[number];
 };
 
 /**
@@ -286,8 +292,8 @@ const ACTIVATION_PROPERTY_KEYS = {
   mission_reward_pending_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
   mission_reward_pending_cancelled: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
   mission_reward_support_selected: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
-  reward_handoff_queue_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
-  reward_handoff_queue_filtered: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp"],
+  reward_handoff_queue_viewed: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp", "dueFilter", "componentFilter", "statusFilter"],
+  reward_handoff_queue_filtered: ["missionId", "locale", "deviceCategory", "workflowState", "contractSource", "errorCategory", "hasPoints", "hasCash", "hasXp", "dueFilter", "componentFilter", "statusFilter"],
 } as const satisfies Record<keyof ActivationEventMap, readonly string[]>;
 
 const PUBLICATION_ANALYTICS_EVENT_NAMES = [
@@ -380,6 +386,9 @@ function isSafeRewardHandoffProperty(key: string, value: unknown): boolean {
     case "hasPoints":
     case "hasCash":
     case "hasXp": return typeof value === "boolean";
+    case "dueFilter": return isAllowedString(value, REWARD_HANDOFF_DUE_FILTERS);
+    case "componentFilter": return isAllowedString(value, REWARD_HANDOFF_COMPONENT_FILTERS);
+    case "statusFilter": return isAllowedString(value, REWARD_HANDOFF_STATUS_FILTERS);
     default: return false;
   }
 }

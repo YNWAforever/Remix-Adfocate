@@ -8,6 +8,7 @@ vi.mock("./useAdminQueueCounts", () => ({ useAdminQueueCounts: () => ({ applicat
 import { RouterProvider, createRouter, createRootRoute, createRoute, createMemoryHistory } from "@tanstack/react-router";
 import { I18nProvider } from "@/lib/i18n";
 import { AdminSideNav } from "./AdminSideNav";
+import { adminPageTitleKey } from "./adminNavItems";
 
 beforeEach(() => {
   localStorage.setItem("lang", "zh");
@@ -57,5 +58,16 @@ describe("AdminSideNav", () => {
     renderNav();
     await waitFor(() => expect(screen.getByText("7")).toBeInTheDocument());
     expect(screen.getByText("12")).toBeInTheDocument();
+  });
+
+  it("links the finance queue and resolves its top-bar title", async () => {
+    renderNav("/admin/reward-handoffs");
+    await waitFor(() => {
+      const link = screen.getByText("獎勵交接").closest("a");
+      expect(link).toHaveAttribute("href", "/admin/reward-handoffs");
+    });
+    expect(adminPageTitleKey("/admin/reward-handoffs")).toBe(
+      "app.admin.tabRewardHandoffs",
+    );
   });
 });
