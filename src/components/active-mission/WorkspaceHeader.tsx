@@ -15,7 +15,7 @@ const WORKFLOW_KEYS: Record<ActiveMissionWorkspace["workflow"]["state"], string>
   revision_requested: "app.activeMission.workspace.state.revisionRequested",
   approved_to_publish: "app.activeMission.workspace.state.approvedToPublish",
   publication_in_progress: "app.activeMission.workspace.state.inReview",
-  proof_verified: "app.activeMission.workspace.state.approvedToPublish",
+  proof_verified: "app.activeMission.workspace.state.proofVerified",
   reward_pending: "app.activeMission.workspace.state.rewardPending",
   cancelled: "app.activeMission.workspace.state.cancelled",
   expired: "app.activeMission.workspace.state.expired",
@@ -74,8 +74,19 @@ function formatDate(value: string, locale: string): string {
 
 export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: WorkspaceHeaderProps) {
   const { lang, t } = useI18n();
-  const reasonKey = nextAction.blockedReason ? BLOCK_REASON_KEYS[nextAction.blockedReason] : null;
-  const reasonFallback = nextAction.blockedReason?.replaceAll("_", " ").replace(/^./, (character) => character.toUpperCase()) ?? "";
+  const rewardReview = workspace.workflow.state === "reward_pending";
+  const rewardReassessment = workspace.workflow.state === "proof_verified"
+    && workspace.pendingReward?.status === "cancelled";
+  const rewardExperience = rewardReview || rewardReassessment;
+  const actionKey = rewardReview
+    ? "app.activeMission.workspace.action.rewardPending"
+    : rewardReassessment
+      ? "app.activeMission.workspace.action.rewardReassessment"
+      : ACTION_KEYS[nextAction.kind];
+  const responsibleKey = rewardExperience ? "app.activeMission.workspace.responsible.rewardReview" : RESPONSIBLE_KEYS[nextAction.kind];
+  const blockedReason = rewardExperience ? null : nextAction.blockedReason;
+  const reasonKey = blockedReason ? BLOCK_REASON_KEYS[blockedReason] : null;
+  const reasonFallback = blockedReason?.replaceAll("_", " ").replace(/^./, (character) => character.toUpperCase()) ?? "";
   return (
     <header className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -91,22 +102,22 @@ export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: Work
           onClick={() => onPrimaryAction(nextAction)}
           className="min-h-11 shrink-0 touch-manipulation rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2.5 font-heading font-bold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         >
-          {t(ACTION_KEYS[nextAction.kind])}
+          {t(actionKey)}
         </button>
       </div>
 
       <dl className="mt-5 grid gap-4 border-t-2 border-[var(--color-ink)] pt-4 sm:grid-cols-2">
         <div>
           <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.responsible")}</dt>
-          <dd className="mt-1 text-sm font-medium">{t(RESPONSIBLE_KEYS[nextAction.kind])}</dd>
+          <dd className="mt-1 text-sm font-medium">{t(responsibleKey)}</dd>
         </div>
         <div>
           <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.deadline")}</dt>
           <dd className="mt-1 text-sm font-medium">
-            {nextAction.deadline ? <time dateTime={nextAction.deadline}>{formatDate(nextAction.deadline, lang === "zh" ? "zh-HK" : "en-US")}</time> : t("app.activeMission.workspace.noDeadline")}
+            {rewardExperience ? t("app.activeMission.workspace.rewardReviewTiming") : nextAction.deadline ? <time dateTime={nextAction.deadline}>{formatDate(nextAction.deadline, lang === "zh" ? "zh-HK" : "en-US")}</time> : t("app.activeMission.workspace.noDeadline")}
           </dd>
         </div>
-        {nextAction.blockedReason ? (
+        {blockedReason ? (
           <div className="sm:col-span-2">
             <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.blockedWhy")}</dt>
             <dd className="mt-1 break-words text-sm font-medium">{reasonKey ? t(reasonKey) : t("app.activeMission.workspace.unknownReason", { reason: reasonFallback })}</dd>

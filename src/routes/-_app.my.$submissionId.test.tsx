@@ -18,6 +18,7 @@ vi.mock("@/lib/i18n", async () => {
 });
 
 const mocks = vi.hoisted(() => ({
+  params: { submissionId: "sub-1" },
   search: {} as { item?: string },
   query: { data: undefined as ActiveMissionWorkspace | undefined, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
   save: { mutateAsync: vi.fn(), conflict: null, clearConflict: vi.fn() },
@@ -59,7 +60,7 @@ vi.mock("@/lib/supabase", () => ({
 }));
 
 import { Route } from "./_app.my.$submissionId";
-vi.spyOn(Route, "useParams").mockReturnValue({ submissionId: "sub-1" } as never);
+vi.spyOn(Route, "useParams").mockImplementation(() => mocks.params as never);
 
 function workspace(overrides: Partial<ActiveMissionWorkspace> = {}): ActiveMissionWorkspace {
   return {
@@ -111,6 +112,7 @@ describe("creator active mission workspace route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     i18nMocks.lang = "en";
+    mocks.params = { submissionId: "sub-1" };
     mocks.search = {};
     Object.assign(mocks.query, { data: workspace(), isLoading: false, isError: false, error: null });
     mocks.save.mutateAsync.mockResolvedValue({ draft: workspace().workItems[0].draft });
@@ -462,6 +464,82 @@ describe("creator active mission workspace route", () => {
     fireEvent.click(screen.getByRole("button", { name: "Dismiss and view current state" }));
     expect(mocks.proofSubmit.clearConflict).toHaveBeenCalled();
     expect(mocks.proofSubmit.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it("replaces proof controls with reward review while preserving immutable proof history", async () => {
+    mocks.params = { submissionId: "sub/1?creator" };
+    const accepted = {
+      id: "attempt-reward", attemptNumber: 1,
+      primaryUrl: "https://www.instagram.com/p/verified", additionalUrls: [],
+      submittedAt: "2026-07-30T08:00:00.000Z", submittedLate: false,
+      metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null,
+      evidence: [],
+      review: {
+        id: "review-reward", state: "verified" as const, decision: "verified" as const,
+        reviewedAt: "2026-07-30T10:00:00.000Z", createdAt: "2026-07-30T09:00:00.000Z",
+        creatorResponseDeadline: null,
+      },
+      corrections: [],
+    };
+    const rewardWorkspace = workspace({
+      pendingReward: {
+        id: null,
+        status: "pending",
+        reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+        processingWindowDays: 7,
+        targetAt: "2026-08-07T10:00:00.000Z",
+        createdAt: "2026-07-31T15:00:00.000Z",
+        cancelledAt: null,
+        decisionState: { kind: "approved", decidedAt: "2026-07-31T15:00:00.000Z" },
+      },
+    });
+    rewardWorkspace.workflow.state = "reward_pending";
+    rewardWorkspace.workItems[0].state = "proof_verified";
+    Object.assign(mocks.query, { data: rewardWorkspace });
+    Object.assign(mocks.publication, {
+      data: publication({ state: "proof_verified", attempts: [accepted], currentAttempt: accepted, acceptedAttempt: accepted }),
+    });
+
+    renderRoute();
+
+    const heading = screen.getByRole("heading", { name: "Mission complete — reward under finance review" });
+    expect(heading).toBeVisible();
+    await waitFor(() => expect(heading).toHaveFocus());
+    expect(screen.getByRole("heading", { name: "Proof attempt 1" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Primary published URL" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save draft" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Contact support about this reward" })).toHaveAttribute(
+      "href",
+      "/contact?topic=reward-pending&submission=sub%2F1%3Fcreator",
+    );
+  });
+
+  it("returns a cancelled handoff to proof verification with honest reassessment copy", () => {
+    const reassessment = workspace({
+      pendingReward: {
+        id: null,
+        status: "cancelled",
+        reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+        processingWindowDays: 7,
+        targetAt: null,
+        createdAt: "2026-07-31T16:00:00.000Z",
+        cancelledAt: "2026-08-01T08:00:00.000Z",
+        decisionState: { kind: "cancelled", decidedAt: "2026-08-01T08:00:00.000Z" },
+      },
+    });
+    reassessment.workflow.state = "proof_verified";
+    reassessment.workItems[0].state = "proof_verified";
+    Object.assign(mocks.query, { data: reassessment });
+    Object.assign(mocks.publication, { data: publication({ state: "proof_verified" }) });
+
+    renderRoute();
+
+    expect(screen.getByText("Proof verified", { selector: "span" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Proof verified — reward reassessment" })).toBeVisible();
+    expect(screen.getByText("Your publication proof remains verified. Finance is reassessing the reward details.")).toBeVisible();
+    expect(document.body).not.toHaveTextContent(/reversed funds/i);
+    expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
   });
 
 
