@@ -18,6 +18,7 @@ import {
   publicationMetadataStatus,
 } from "@/lib/publicationProofAnalytics";
 import { useI18n } from "@/lib/i18n";
+import { creatorRewardExperience } from "@/lib/rewardHandoff";
 import {
   useActiveMissionWorkspace,
   useConfirmMissionReceipt,
@@ -100,26 +101,25 @@ export function CreatorMissionWorkspace() {
   const editorRef = useRef<HTMLDivElement>(null);
   const workspace = workspaceQuery.data;
   const pendingReward = workspace?.pendingReward ?? null;
-  const showRewardExperience = Boolean(pendingReward && (
-    workspace?.workflow.state === "reward_pending"
-    || (workspace?.workflow.state === "proof_verified" && pendingReward.status === "cancelled")
-  ));
+  const rewardExperience = workspace
+    ? creatorRewardExperience(workspace.workflow.state, pendingReward)
+    : null;
+  const showRewardExperience = rewardExperience !== null;
 
   const nextAction = workspace ? deriveNextAction(workspace) : null;
   const validSearchId = workspace?.workItems.some(({ id }) => id === search.item) ? search.item! : null;
   const validSelectedId = workspace?.workItems.some(({ id }) => id === selectedId) ? selectedId : null;
-  const rewardHistoryId = showRewardExperience
-    ? workspace?.workItems.find(({ state }) => state === "proof_verified")?.id ?? null
-    : null;
   const defaultId = workspace
-    ? rewardHistoryId
-      ?? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
+    ? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
       ?? workspace.workItems[0]?.id
       ?? null
     : null;
-  const activeId = rewardHistoryId ?? validSearchId ?? validSelectedId ?? defaultId;
+  const activeId = validSearchId ?? validSelectedId ?? defaultId;
   const activeItem = workspace?.workItems.find(({ id }) => id === activeId) ?? null;
-  const publicationWorkItemId = activeItem && PUBLICATION_STATES.has(activeItem.state) ? activeItem.id : "";
+  const publicationWorkItemId = activeItem
+    && (showRewardExperience || PUBLICATION_STATES.has(activeItem.state))
+    ? activeItem.id
+    : "";
   const publicationQuery = useMissionPublication(submissionId, publicationWorkItemId);
   const publication = publicationQuery.data;
 
@@ -350,8 +350,16 @@ export function CreatorMissionWorkspace() {
                   <button type="button" onClick={() => void publicationQuery.refetch()} className="mt-3 min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold">{t("common.retry")}</button>
                 </div>
               ) : (
-                <ProofAttemptHistory publication={publication} />
+                <ProofAttemptHistory
+                  publication={publication}
+                  variant={rewardExperience ?? "reward_pending"}
+                  autoFocusVerifiedHeading={false}
+                />
               )}
+              <VersionTimeline
+                versions={activeItem.versions ?? []}
+                events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)}
+              />
               <RewardPendingCard
                 missionTitle={workspace.mission.title}
                 pendingReward={pendingReward}

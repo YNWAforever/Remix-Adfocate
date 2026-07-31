@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  ACTIVATION_ANALYTICS_EVENT,
   getDeviceCategory,
+  initializeActivationAnalytics,
   setActivationAnalyticsSink,
   trackActivationEvent,
 } from "./activationAnalytics";
@@ -12,23 +14,23 @@ describe("activation analytics", () => {
   });
 
   it("is safe when no analytics sink is configured", () => {
-    expect(() =>
+    expect(
       trackActivationEvent("landing_page_viewed", {
         locale: "en",
         deviceCategory: "desktop",
       }),
-    ).not.toThrow();
+    ).toBe(false);
   });
 
   it("delivers typed activation events to the configured sink", () => {
     const sink = vi.fn();
     setActivationAnalyticsSink(sink);
 
-    trackActivationEvent("signup_started", {
+    expect(trackActivationEvent("signup_started", {
       locale: "zh",
       deviceCategory: "mobile",
       source: "creators_hero",
-    });
+    })).toBe(true);
 
     expect(sink).toHaveBeenCalledOnce();
     expect(sink).toHaveBeenCalledWith({
@@ -54,6 +56,25 @@ describe("activation analytics", () => {
     expect(sink).not.toHaveBeenCalled();
   });
 
+  it("initializes a documented browser CustomEvent transport with sanitized detail", () => {
+    const listener = vi.fn();
+    window.addEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
+    initializeActivationAnalytics();
+
+    expect(trackActivationEvent("signup_started", {
+      locale: "en",
+      deviceCategory: "desktop",
+      source: "creators_hero",
+      creatorId: "creator-private",
+    } as never)).toBe(true);
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect((listener.mock.calls[0]?.[0] as CustomEvent).detail).toEqual({
+      name: "signup_started",
+      properties: { locale: "en", deviceCategory: "desktop", source: "creators_hero" },
+    });
+    window.removeEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
+  });
   it("delivers the ten Phase 2 events with privacy-limited payloads", () => {
     const sink = vi.fn();
     setActivationAnalyticsSink(sink);

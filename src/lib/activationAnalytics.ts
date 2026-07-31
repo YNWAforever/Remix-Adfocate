@@ -384,18 +384,28 @@ function isSafeRewardHandoffProperty(key: string, value: unknown): boolean {
   }
 }
 
-type ActivationAnalyticsSink = (event: {
+type ActivationAnalyticsEvent = {
   name: keyof ActivationEventMap;
   properties: object;
-}) => void;
+};
 
-// Analytics is intentionally a no-op until the application configures a provider.
+type ActivationAnalyticsSink = (event: ActivationAnalyticsEvent) => boolean | void;
+
+/**
+ * Browser-only first-party analytics transport contract. Consumers may listen
+ * for this event without the application inventing an external endpoint.
+ * The event detail has already passed the per-event privacy allowlist.
+ */
+export const ACTIVATION_ANALYTICS_EVENT = "adfocate:activation-analytics";
+
 let activationAnalyticsSink: ActivationAnalyticsSink | null = null;
+let activationAnalyticsSinkVersion = 0;
+const activationAnalyticsSinkListeners = new Set<() => void>();
 
 export function trackActivationEvent<K extends keyof ActivationEventMap>(
   name: K,
   properties: ActivationEventMap[K],
-): void {
+): boolean {
   const allowed = new Set<string>(ACTIVATION_PROPERTY_KEYS[name]);
   const safeProperties = Object.fromEntries(
     Object.entries(properties).filter(([key, value]) =>
@@ -403,15 +413,39 @@ export function trackActivationEvent<K extends keyof ActivationEventMap>(
       && (!isPublicationAnalyticsEvent(name) || isSafePublicationProperty(key, value))
       && (!isRewardHandoffAnalyticsEvent(name) || isSafeRewardHandoffProperty(key, value))),
   );
-  activationAnalyticsSink?.({ name, properties: safeProperties });
+  if (!activationAnalyticsSink) return false;
+  try {
+    return activationAnalyticsSink({ name, properties: safeProperties }) !== false;
+  } catch {
+    return false;
+  }
 }
 
 export function setActivationAnalyticsSink(
   sink: ActivationAnalyticsSink | null,
 ): void {
+  if (activationAnalyticsSink === sink) return;
   activationAnalyticsSink = sink;
+  activationAnalyticsSinkVersion += 1;
+  for (const listener of activationAnalyticsSinkListeners) listener();
 }
 
+export function initializeActivationAnalytics(): void {
+  if (typeof window === "undefined") return;
+  setActivationAnalyticsSink((event) => window.dispatchEvent(new CustomEvent(
+    ACTIVATION_ANALYTICS_EVENT,
+    { detail: event },
+  )));
+}
+
+export function subscribeActivationAnalyticsSink(listener: () => void): () => void {
+  activationAnalyticsSinkListeners.add(listener);
+  return () => activationAnalyticsSinkListeners.delete(listener);
+}
+
+export function getActivationAnalyticsSinkVersion(): number {
+  return activationAnalyticsSinkVersion;
+}
 export function getDeviceCategory(width?: number): DeviceCategory {
   const resolvedWidth =
     width ?? (typeof window === "undefined" ? 1024 : window.innerWidth);

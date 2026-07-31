@@ -1,5 +1,6 @@
 import type { ActiveMissionNextAction, ActiveMissionWorkspace } from "@/lib/activeMission";
 import { useI18n } from "@/lib/i18n";
+import { creatorRewardExperience } from "@/lib/rewardHandoff";
 
 type WorkspaceHeaderProps = {
   workspace: ActiveMissionWorkspace;
@@ -74,16 +75,20 @@ function formatDate(value: string, locale: string): string {
 
 export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: WorkspaceHeaderProps) {
   const { lang, t } = useI18n();
-  const rewardReview = workspace.workflow.state === "reward_pending";
-  const rewardReassessment = workspace.workflow.state === "proof_verified"
-    && workspace.pendingReward?.status === "cancelled";
-  const rewardExperience = rewardReview || rewardReassessment;
+  const rewardExperience = creatorRewardExperience(workspace.workflow.state, workspace.pendingReward);
+  const rewardReview = rewardExperience === "reward_pending";
+  const rewardReassessment = rewardExperience === "reward_reassessment";
   const actionKey = rewardReview
     ? "app.activeMission.workspace.action.rewardPending"
     : rewardReassessment
       ? "app.activeMission.workspace.action.rewardReassessment"
       : ACTION_KEYS[nextAction.kind];
-  const responsibleKey = rewardExperience ? "app.activeMission.workspace.responsible.rewardReview" : RESPONSIBLE_KEYS[nextAction.kind];
+  const stateKey = rewardReassessment
+    ? "app.activeMission.workspace.state.proofVerified"
+    : WORKFLOW_KEYS[workspace.workflow.state];
+  const responsibleKey = rewardExperience
+    ? "app.activeMission.workspace.responsible.rewardReview"
+    : RESPONSIBLE_KEYS[nextAction.kind];
   const blockedReason = rewardExperience ? null : nextAction.blockedReason;
   const reasonKey = blockedReason ? BLOCK_REASON_KEYS[blockedReason] : null;
   const reasonFallback = blockedReason?.replaceAll("_", " ").replace(/^./, (character) => character.toUpperCase()) ?? "";
@@ -94,7 +99,7 @@ export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: Work
           <p className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.label")}</p>
           <h1 className="break-words font-heading text-2xl font-black text-pretty">{workspace.mission.title}</h1>
           <span className="inline-flex rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold">
-            {t(WORKFLOW_KEYS[workspace.workflow.state])}
+            {t(stateKey)}
           </span>
         </div>
         <button

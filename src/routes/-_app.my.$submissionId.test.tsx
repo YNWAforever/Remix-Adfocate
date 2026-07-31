@@ -28,6 +28,7 @@ const mocks = vi.hoisted(() => ({
   submit: { mutateAsync: vi.fn() },
   upload: vi.fn(),
   publication: { data: undefined as MissionPublicationView | undefined, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
+  publications: {} as Record<string, { data: MissionPublicationView | undefined; isLoading: boolean; isError: boolean; error: Error | null; refetch: ReturnType<typeof vi.fn> }>,
   proofEvidence: { createGrant: { mutateAsync: vi.fn() }, finalize: { mutateAsync: vi.fn() } },
   proofSubmit: { mutateAsync: vi.fn(), isPending: false, conflict: null as null | { localProof: Record<string, unknown>; currentPublication: MissionPublicationView }, clearConflict: vi.fn() },
   proofUpload: vi.fn(),
@@ -38,7 +39,9 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     Link: ({ to, children, ...props }: { to: string; children: React.ReactNode } & Record<string, unknown>) => <a href={to} {...props}>{children}</a>,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => vi.fn(({ search }: { search?: (current: typeof mocks.search) => typeof mocks.search }) => {
+      if (search) mocks.search = search(mocks.search);
+    }),
     useSearch: () => mocks.search,
   };
 });
@@ -50,7 +53,7 @@ vi.mock("@/lib/queries/activeMission", () => ({
   useCreateDraftAssetGrant: () => mocks.grant,
   useFinalizeDraftAsset: () => mocks.finalize,
   useSubmitMissionWorkItem: () => mocks.submit,
-  useMissionPublication: () => mocks.publication,
+  useMissionPublication: (_submissionId: string, workItemId: string) => mocks.publications[workItemId] ?? mocks.publication,
   useProofEvidenceUpload: () => mocks.proofEvidence,
   useSubmitPublicationProof: () => mocks.proofSubmit,
 }));
@@ -119,6 +122,7 @@ describe("creator active mission workspace route", () => {
     mocks.receipt.mutateAsync.mockResolvedValue({});
     mocks.grant.mutateAsync.mockResolvedValue({ asset: { id: "asset-1", storageObjectPath: "creator/wf-1/item-1/asset-1.png" }, token: "signed-token" });
     Object.assign(mocks.publication, { data: undefined, isLoading: false, isError: false, error: null });
+    mocks.publications = {};
     mocks.proofEvidence.createGrant.mutateAsync.mockResolvedValue({
       asset: { id: "proof-asset-1", storageObjectPath: "creator/wf-1/item-1/proof-evidence/proof-asset-1.webp" },
       token: "proof-token",
@@ -330,7 +334,7 @@ describe("creator active mission workspace route", () => {
     const verified = screen.getByRole("heading", { name: "Proof verified" });
     expect(verified).toBeVisible();
     await waitFor(() => expect(verified).toHaveFocus());
-    expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
+    expect(screen.getByText("Your verified publication proof remains on record.")).toBeVisible();
   });
   it("localizes publication review and stale-recovery states for Traditional Chinese creators", () => {
     i18nMocks.lang = "zh";
@@ -543,6 +547,87 @@ describe("creator active mission workspace route", () => {
   });
 
 
+  it("keeps valid reward selection and changes localized proof history plus immutable timeline across items", async () => {
+    const attempt = (id: string, attemptNumber: number, url: string) => ({
+      id, attemptNumber, primaryUrl: url, additionalUrls: [],
+      submittedAt: "2026-07-30T08:00:00.000Z", submittedLate: false,
+      metadataStatus: "available" as const, metadataSnapshot: {}, metadataErrorCategory: null,
+      evidence: [], corrections: [],
+      review: {
+        id: `review-${id}`, state: "verified" as const, decision: "verified" as const,
+        reviewedAt: "2026-07-30T10:00:00.000Z", createdAt: "2026-07-30T09:00:00.000Z",
+        creatorResponseDeadline: null,
+      },
+    });
+    const firstAttempt = attempt("attempt-first", 1, "https://www.instagram.com/p/first");
+    const secondAttempt = attempt("attempt-second", 2, "https://www.instagram.com/p/second");
+    const rewardWorkspace = workspace({
+      pendingReward: {
+        id: null, status: "pending",
+        reward: { pointsAmount: 500, cashAmount: 0, currency: "HKD", xpAmount: 0 },
+        processingWindowDays: 7, targetAt: null,
+        createdAt: "2026-08-02T01:00:00.000Z", cancelledAt: null,
+        decisionState: { kind: "approved", decidedAt: "2026-08-02T01:00:00.000Z" },
+      },
+    });
+    rewardWorkspace.workflow.state = "reward_pending";
+    rewardWorkspace.workItems[0] = {
+      ...rewardWorkspace.workItems[0], state: "proof_verified",
+      versions: [{
+        id: "version-first", versionNumber: 1, caption: "First frozen draft", externalUrl: null,
+        checklist: {}, contentChecksum: "first", submittedAt: "2026-07-28T08:00:00.000Z",
+        state: "approved_to_publish", decisionAt: "2026-07-29T08:00:00.000Z", assets: [],
+      }],
+    };
+    rewardWorkspace.workItems[1] = {
+      ...rewardWorkspace.workItems[1], state: "proof_verified",
+      versions: [{
+        id: "version-second", versionNumber: 7, caption: "Second frozen draft", externalUrl: null,
+        checklist: {}, contentChecksum: "second", submittedAt: "2026-07-29T08:00:00.000Z",
+        state: "approved_to_publish", decisionAt: "2026-07-30T08:00:00.000Z", assets: [],
+      }],
+    };
+    mocks.search = { item: "item-2" };
+    Object.assign(mocks.query, { data: rewardWorkspace });
+    mocks.publications = {
+      "item-1": { ...mocks.publication, data: publication({ workItemId: "item-1", state: "proof_verified", attempts: [firstAttempt], currentAttempt: firstAttempt, acceptedAttempt: firstAttempt }) },
+      "item-2": { ...mocks.publication, data: publication({ workItemId: "item-2", state: "proof_verified", attempts: [secondAttempt], currentAttempt: secondAttempt, acceptedAttempt: secondAttempt }) },
+    };
+
+    renderRoute();
+    expect(screen.getByRole("button", { name: /Story/ })).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("heading", { name: "Proof attempt 2" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Version 7" })).toBeVisible();
+
+    fireEvent.click(screen.getByRole("button", { name: /Instagram Reel/ }));
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Proof attempt 1" })).toBeVisible());
+    expect(screen.getByRole("heading", { name: "Version 1" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save draft" })).not.toBeInTheDocument();
+  });
+
+  it("uses one conservative reassessment state when decision cancellation arrives before status", () => {
+    const mismatch = workspace({
+      pendingReward: {
+        id: null, status: "pending",
+        reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 10 },
+        processingWindowDays: 7, targetAt: "2026-08-10T08:00:00.000Z",
+        createdAt: "2026-08-02T02:00:00.000Z", cancelledAt: null,
+        decisionState: { kind: "cancelled", decidedAt: "2026-08-02T03:00:00.000Z" },
+      },
+    });
+    mismatch.workflow.state = "reward_pending";
+    mismatch.workItems[0].state = "proof_verified";
+    Object.assign(mocks.query, { data: mismatch });
+    Object.assign(mocks.publication, { data: publication({ state: "proof_verified" }) });
+
+    renderRoute();
+    expect(screen.getByText("Proof verified", { selector: "span" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "View reward reassessment" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: /Proof verified.*reward reassessment/ })).toBeVisible();
+    expect(screen.queryByText("Points")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
+  });
 describe("creator publication proof analytics", () => {
   const analyticsEvents: Array<{ name: string; properties: Record<string, unknown> }> = [];
   let nowSpy: ReturnType<typeof vi.spyOn>;
@@ -550,7 +635,7 @@ describe("creator publication proof analytics", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     i18nMocks.lang = "en";
-    mocks.search = {};
+    mocks.search = { item: "item-1" };
     const approved = workspace();
     approved.workflow.state = "approved_to_publish";
     approved.workItems[0].state = "approved_to_publish";
@@ -567,6 +652,7 @@ describe("creator publication proof analytics", () => {
       isError: false,
       error: null,
     });
+    mocks.publications = { "item-1": mocks.publication };
     mocks.proofSubmit.conflict = null;
     mocks.proofSubmit.mutateAsync.mockResolvedValue({});
     analyticsEvents.length = 0;

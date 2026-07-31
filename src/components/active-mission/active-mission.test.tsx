@@ -280,7 +280,7 @@ describe("ProofAttemptHistory", () => {
     render(<ProofAttemptHistory publication={publication({ state: "proof_verified", attempts: [accepted], currentAttempt: accepted, acceptedAttempt: accepted })} />);
 
     expect(screen.getByRole("heading", { name: "Proof verified" })).toBeVisible();
-    expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
+    expect(screen.getByText("Your verified publication proof remains on record.")).toBeVisible();
     expect(screen.getByText("Accepted attempt 2")).toBeVisible();
     expect(screen.getByText("Launch reel")).toBeVisible();
   });

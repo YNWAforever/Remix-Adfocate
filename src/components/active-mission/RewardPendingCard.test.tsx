@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { CreatorPendingReward } from "@/lib/activeMission";
@@ -39,7 +39,7 @@ describe("RewardPendingCard", () => {
     window.localStorage.clear();
     setActivationAnalyticsSink(null);
   });
-  afterEach(() => setActivationAnalyticsSink(null));
+  afterEach(() => act(() => setActivationAnalyticsSink(null)));
 
   it("shows a frozen locale-aware reward snapshot without claiming funds exist", async () => {
     renderCard(pendingReward());
@@ -86,7 +86,7 @@ describe("RewardPendingCard", () => {
 
   it("deduplicates viewed analytics by stable projection identity and tracks support only on activation", async () => {
     const events: Array<{ name: string; properties: object }> = [];
-    setActivationAnalyticsSink((event) => events.push(event));
+    setActivationAnalyticsSink((event) => { events.push(event); });
     const reward = pendingReward({
       createdAt: "2026-07-31T13:00:00.000Z",
       decisionState: { kind: "approved", decidedAt: "2026-07-31T13:00:00.000Z" },
