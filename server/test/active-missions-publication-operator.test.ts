@@ -7,6 +7,7 @@ import {
   sortActiveMissionQueue,
   type AdminActiveMissionRepository,
 } from "../routes/adminActiveMissions";
+import { normalizeOperatorRewardHandoffProjection } from "../lib/activeMission/rewardHandoff";
 
 describe("publication proof operator routes", () => {
   const workflowId = "11111111-1111-4111-8111-111111111111";
@@ -15,6 +16,59 @@ describe("publication proof operator routes", () => {
   const reviewerId = "44444444-4444-4444-8444-444444444444";
   const idempotencyKey = "55555555-5555-4555-8555-555555555555";
   const attemptId = "66666666-6666-4666-8666-666666666666";
+
+  it("keeps operator provenance and bounded evidence while stripping proof URLs", () => {
+    const projection = normalizeOperatorRewardHandoffProjection({
+      workflow: { state: "proof_verified" },
+      contract: {
+        id: "contract-1", points_amount: 500, cash_amount: "125.00", currency: "HKD",
+        xp_amount: 0, source: "operator_backfill", source_mission_updated_at: null,
+        confirmed_by: reviewerId, confirmation_evidence_source: "operator_record",
+        confirmation_reason: "Confirmed from operator record",
+        created_at: "2026-07-31T10:00:00.000Z",
+      },
+      requiredItems: [{
+        required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      pendingReward: {
+        id: "pending-1", mission_workflow_id: workflowId, mission_submission_id: "submission-1",
+        creator_id: "creator-1", mission_id: missionId, reward_contract_id: "contract-1",
+        completion_decision_id: "decision-1", points_amount: 500, cash_amount: 125,
+        currency: "HKD", xp_amount: 0, status: "pending", processing_window_days: 7,
+        target_at: null, cancellation_decision_id: null,
+        created_at: "2026-07-31T10:00:00.000Z", cancelled_at: null,
+      },
+      decision: {
+        id: "decision-1", decision_kind: "approved", workflow_revision: 7,
+        required_item_count: 1, verified_required_item_count: 1,
+        evidence_snapshot: { requiredItems: [{
+          workItemId, proofAttemptId: attemptId, proofReviewId: "review-1",
+          attemptNumber: 1, contentChecksum: "checksum",
+          primaryUrl: "https://instagram.com/private",
+          signedUrl: "https://signed.example/proof",
+        }] },
+        reason_category: null, reason_note: null, decided_by: reviewerId,
+        decided_at: "2026-07-31T10:00:00.000Z",
+      },
+    });
+    expect(projection.rewardContract).toMatchObject({
+      source: "operator_backfill",
+      confirmedBy: reviewerId,
+      confirmationEvidenceSource: "operator_record",
+    });
+    expect(projection.completionEligibility).toEqual({
+      eligible: false,
+      blockers: ["pending_reward_exists"],
+      requiredItemCount: 1,
+      verifiedRequiredItemCount: 1,
+    });
+    expect(projection.pendingReward?.decision).toMatchObject({
+      decidedBy: reviewerId,
+      evidence: { requiredItems: [{ proofAttemptId: attemptId, contentChecksum: "checksum" }] },
+    });
+    expect(JSON.stringify(projection)).not.toMatch(/primaryUrl|signedUrl|proofUrl/i);
+  });
 
   function app(repository: AdminActiveMissionRepository) {
     const app = new Hono<Env>();

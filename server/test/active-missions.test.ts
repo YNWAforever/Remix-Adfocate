@@ -25,7 +25,7 @@ function scriptedClient(scripts: Script[]) {
     if (!script || script.table !== table) throw new Error("unexpected table " + table);
     const result = { data: script.data, error: script.error ?? null };
     const builder: Record<string, unknown> = {};
-    for (const op of ["select", "eq", "is", "in", "order", "update"]) {
+    for (const op of ["select", "eq", "is", "in", "order", "limit", "update"]) {
       builder[op] = (...args: unknown[]) => {
         calls.push({ table, op, args });
         return builder;
@@ -41,7 +41,13 @@ function scriptedClient(scripts: Script[]) {
     data: { signedUrl: `https://signed.test/${path}` }, error: null,
   }));
   const storage = { from: vi.fn(() => ({ createSignedUrl })) };
-  return { client: { from, storage } as unknown as SupabaseClient, calls, createSignedUrl, remaining: () => scripts.length - cursor };
+  const rpc = vi.fn(async (name: string, args: unknown) => {
+    const script = scripts[cursor++];
+    if (!script || script.table !== `rpc:${name}`) throw new Error("unexpected rpc " + name);
+    calls.push({ table: `rpc:${name}`, op: "rpc", args: [args] });
+    return { data: script.data, error: script.error ?? null };
+  });
+  return { client: { from, rpc, storage } as unknown as SupabaseClient, calls, createSignedUrl, remaining: () => scripts.length - cursor };
 }
 
 const owner = { submissionId: "sub-1", creatorId: "creator-1", workspaceId: "workspace-1" };
@@ -117,7 +123,14 @@ const anchor = (): Script[] => [
 describe("active mission repository without a live database", () => {
   it("constrains workspace read ownership and shapes the creator view", async () => {
     const scripted = scriptedClient([
-      ...anchor(), { table: "mission_fulfillments", data: null },
+      ...anchor(),
+      { table: "rpc:get_my_mission_reward_handoff", data: {
+        reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+        status: "pending", processingWindowDays: 7, targetAt: null,
+        createdAt: "2026-07-31T10:00:00.000Z", cancelledAt: null,
+        decisionState: { kind: "approved", decidedAt: "2026-07-31T10:00:00.000Z" },
+      } },
+      { table: "mission_fulfillments", data: null },
       { table: "mission_work_items", data: [item] }, { table: "mission_working_drafts", data: [draft] },
       { table: "mission_workflow_events", data: [] }, { table: "mission_draft_versions", data: [version] },
       { table: "mission_review_rounds", data: [review] }, { table: "mission_draft_assets", data: assets },
@@ -144,6 +157,22 @@ describe("active mission repository without a live database", () => {
       revisionDeadline: review.creator_response_deadline,
     });
     expect(result.nextAction).toMatchObject({ kind: "continue_draft", workItemId: item.id });
+    expect(result).toMatchObject({
+      rewardContract: null,
+      completionEligibility: {
+        eligible: false,
+        blockers: expect.arrayContaining(["wrong_state", "required_proof_incomplete", "pending_reward_exists"]),
+        requiredItemCount: 1,
+        verifiedRequiredItemCount: 0,
+      },
+      pendingReward: {
+        id: null,
+        status: "pending",
+        reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+      },
+    });
+    expect(scripted.calls.find((call) => call.table === "rpc:get_my_mission_reward_handoff")?.args)
+      .toEqual([{ p_submission: owner.submissionId }]);
     expect(scripted.calls.filter((c) => c.table === "mission_submissions" && c.op === "eq").map((c) => c.args))
       .toEqual([["id", owner.submissionId], ["creator_id", owner.creatorId], ["workspace_id", owner.workspaceId]]);
     expect(scripted.calls.filter((c) => c.table === "mission_working_drafts" && c.op === "in").map((c) => c.args))
@@ -683,6 +712,13 @@ describe("active mission operator routes without a live database", () => {
       { table: "mission_publication_proof_attempts", data: [] },
       { table: "mission_publication_proof_reviews", data: [] },
       { table: "mission_publication_proof_assets", data: [] },
+      { table: "mission_reward_contracts", data: {
+        id: "contract-1", points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
+        source: "join", source_mission_updated_at: null, confirmed_by: null,
+        confirmation_evidence_source: null, confirmation_reason: null,
+        created_at: "2026-07-31T10:00:00.000Z",
+      } },
+      { table: "mission_pending_rewards", data: null },
     ]);
 
     const detail = await createAdminActiveMissionRepository(client).getDetail({
@@ -690,9 +726,20 @@ describe("active mission operator routes without a live database", () => {
       workspaceSlug: "demo",
       operatorId: "operator-1",
       signedUrlTtlSeconds: 600,
-    }) as { workItems: Array<{ publicationSetupRequired?: boolean }> };
+    }) as {
+      workItems: Array<{ publicationSetupRequired?: boolean }>;
+      rewardContract: { source: string } | null;
+      completionEligibility: { eligible: boolean; blockers: string[] };
+      pendingReward: unknown;
+    };
 
     expect(detail.workItems[0]?.publicationSetupRequired).toBe(true);
+    expect(detail.rewardContract).toMatchObject({ source: "join" });
+    expect(detail.completionEligibility).toMatchObject({
+      eligible: false,
+      blockers: ["wrong_state", "required_proof_incomplete"],
+    });
+    expect(detail.pendingReward).toBeNull();
   });
 
   it("excludes history-only rewinds from publication setup eligibility", async () => {
@@ -723,6 +770,13 @@ describe("active mission operator routes without a live database", () => {
       { table: "mission_publication_proof_attempts", data: [] },
       { table: "mission_publication_proof_reviews", data: [] },
       { table: "mission_publication_proof_assets", data: [] },
+      { table: "mission_reward_contracts", data: {
+        id: "contract-1", points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
+        source: "join", source_mission_updated_at: null, confirmed_by: null,
+        confirmation_evidence_source: null, confirmation_reason: null,
+        created_at: "2026-07-31T10:00:00.000Z",
+      } },
+      { table: "mission_pending_rewards", data: null },
     ]);
 
     const detail = await createAdminActiveMissionRepository(client).getDetail({

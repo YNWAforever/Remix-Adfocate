@@ -6,6 +6,7 @@ import { PUBLICATION_PROOF_ASSET_BUCKET, refreshPublicationProofMetadata } from 
 import { inspectProofUrl, PLATFORM_HOSTS } from "../lib/activeMission/proofUrl.js";
 import { validateProofChecklist } from "../lib/activeMission/state.js";
 import type { ProofChecklist, ProofReviewItemInput } from "../lib/activeMission/types.js";
+import { getOperatorRewardHandoffProjection } from "../lib/activeMission/rewardHandoff.js";
 
 const ASSET_BUCKET = "mission-draft-assets";
 const SIGNED_URL_TTL_SECONDS = 10 * 60;
@@ -400,9 +401,16 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         if (signed.error || !signed.data) dbError(signed.error);
         return { ...asset, signedUrl: signed.data.signedUrl };
       }));
+      const rewardHandoff = await getOperatorRewardHandoffProjection(
+        client,
+        workspace,
+        input.workflowId,
+        { workflow, requiredItems: (itemsResult.data ?? []) as Row[] },
+      );
       return {
         workflow,
         submission,
+        ...rewardHandoff,
         workItems: ((itemsResult.data ?? []) as Row[]).map((item) => ({
           ...item,
           publicationSetupRequired: item.state === "approved_to_publish"
