@@ -53,6 +53,8 @@ const expectedIntegrationFiles = [
   "server/test/content.test.ts",
   "server/test/active-mission-schema.test.ts",
   "server/test/active-missions.test.ts",
+  "server/test/reward-contracts.test.ts",
+  "server/test/reward-handoffs.test.ts",
   "server/test/notifications-triggers.test.ts",
   "server/test/notifications-api.test.ts",
   "server/test/insights.test.ts",
@@ -98,6 +100,13 @@ describe("integration test launcher", () => {
     expect(runner.publicationProofPreflightFile).toBe("server/test/publication-proof-asset-grant-live.test.ts");
     expect(runner.integrationFiles).toEqual(expectedIntegrationFiles);
     expect(new Set(runner.integrationFiles).size).toBe(expectedIntegrationFiles.length);
+    const activeMissionsIndex = runner.integrationFiles.indexOf("server/test/active-missions.test.ts");
+    expect(runner.integrationFiles.slice(activeMissionsIndex + 1, activeMissionsIndex + 3)).toEqual([
+      "server/test/reward-contracts.test.ts",
+      "server/test/reward-handoffs.test.ts",
+    ]);
+    expect(runner.integrationFiles.filter((file: string) => file === "server/test/reward-contracts.test.ts")).toHaveLength(1);
+    expect(runner.integrationFiles.filter((file: string) => file === "server/test/reward-handoffs.test.ts")).toHaveLength(1);
   });
 
   it("spawns local Vitest with the exact environment and preserves numeric exit codes", () => {
