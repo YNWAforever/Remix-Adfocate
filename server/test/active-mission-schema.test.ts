@@ -257,11 +257,14 @@ describe("active mission migration contract", () => {
       "membership.active",
       "raise exception 'not_authorized';",
       "extensions.digest(convert_to(",
-      "from public.mission_completion_decisions decision",
       "select workflow.* into v_workflow",
       "workflow.workspace_id = p_workspace",
       "for update;",
+      "from public.mission_completion_decisions decision",
     ]);
+    expect(approve.slice(0, workflowLock)).not.toContain(
+      "from public.mission_completion_decisions decision",
+    );
     expect(replayAfterLock).toBeGreaterThan(workflowLock);
     expectSqlOrder(
       approve.slice(replayAfterLock),
@@ -272,6 +275,9 @@ describe("active mission migration contract", () => {
         "item.required",
         "item.verified_proof_attempt_id",
         "from public.mission_publication_proof_attempts attempt",
+        "join public.mission_publication_proof_reviews review",
+        "review.state = 'verified'",
+        "review.decision = 'verified'",
         "insert into public.mission_completion_decisions",
         "insert into public.mission_pending_rewards",
         "update public.mission_workflows",
@@ -289,6 +295,92 @@ describe("active mission migration contract", () => {
     expect(approve).toMatch(
       /pending_reward_id,[\s\S]*?\)\s*values\s*\([\s\S]*?null,/,
     );
+    expect(approve).toContain("'proofreviewid'");
+    expect(approve).not.toContain("'primaryurl'");
+    expect(approve).not.toContain("'additionalurls'");
+    expect(approve).not.toContain("'storageobjectpath'");
+  });
+
+  it("locks before replay and reconstructs immutable cycle snapshots with tenant-bound joins", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "private.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "private.cancel_mission_reward_handoff",
+    );
+
+    for (const [name, block, replayState, pendingState] of [
+      [
+        "private.approve_mission_completion",
+        approve,
+        "'state', 'reward_pending'",
+        "'status', 'pending'",
+      ],
+      [
+        "private.cancel_mission_reward_handoff",
+        cancel,
+        "'state', 'proof_verified'",
+        "'status', 'cancelled'",
+      ],
+    ] as const) {
+      const workflowLock = block.indexOf(
+        "select workflow.* into v_workflow",
+      );
+      const replayLookup = block.indexOf(
+        "from public.mission_completion_decisions decision",
+      );
+      expect(workflowLock, `${name} workflow lock`).toBeGreaterThanOrEqual(0);
+      expect(replayLookup, `${name} replay lookup`).toBeGreaterThan(workflowLock);
+      expect(block.slice(0, workflowLock)).not.toContain(
+        "from public.mission_completion_decisions decision",
+      );
+      expect(block).toContain(
+        "decision.mission_workflow_id = p_workflow",
+      );
+      expect(block).toContain(
+        "pending.workspace_id = decision.workspace_id",
+      );
+      expect(block).toContain(
+        "pending.mission_workflow_id = decision.mission_workflow_id",
+      );
+      expect(block).toContain(
+        "pending.completion_decision_id = decision.id",
+      );
+      expect(block).toContain(
+        "pending.id = decision.pending_reward_id",
+      );
+      expect(block).toContain(
+        "pending.cancellation_decision_id = decision.id",
+      );
+      expect(block).toContain(
+        "'id', v_decision.mission_workflow_id",
+      );
+      expect(block).toContain(replayState);
+      expect(block).toContain(
+        "'revision', v_decision.workflow_revision + 1",
+      );
+      expect(block).toContain(
+        "'updated_at', v_decision.decided_at",
+      );
+      expect(block).toContain(pendingState);
+      expect(block).not.toContain(
+        "'workflow', to_jsonb(v_workflow)",
+      );
+      expect(block).not.toContain(
+        "'pendingreward', to_jsonb(v_pending),",
+      );
+    }
+    expect(approve).toContain("'cancellation_decision_id', null");
+    expect(approve).toContain("'cancelled_at', null");
+    expect(cancel).toContain(
+      "'cancellation_decision_id', v_decision.id",
+    );
+    expect(cancel).toContain(
+      "'cancelled_at', v_decision.decided_at",
+    );
   });
 
   it("normalizes idempotency hashes and rolls pending conflicts back", () => {
@@ -302,7 +394,7 @@ describe("active mission migration contract", () => {
       "private.cancel_mission_reward_handoff",
     );
 
-    for (const [name, block] of [
+    for (const [, block] of [
       ["private.approve_mission_completion", approve],
       ["private.cancel_mission_reward_handoff", cancel],
     ] as const) {
@@ -349,7 +441,7 @@ describe("active mission migration contract", () => {
       [
       "select pending.* into v_pending",
       "status = 'pending'",
-      "for update;",
+      "for update of pending;",
       "insert into public.mission_completion_decisions",
       "update public.mission_pending_rewards",
       "set status = 'cancelled',",
@@ -405,9 +497,42 @@ describe("active mission migration contract", () => {
       "submission.creator_id = v_creator",
       "if v_workflow is null then",
       "raise exception 'not_found';",
+      "from public.mission_reward_contracts contract",
+      "contract.workspace_id = v_workspace",
+      "contract.mission_workflow_id = v_workflow",
+      "contract.mission_submission_id = p_submission",
+      "contract.mission_id = v_mission",
       "from public.mission_pending_rewards pending",
       "jsonb_build_object(",
     ]);
+    for (const predicate of [
+      "pending.workspace_id = v_workspace",
+      "pending.mission_workflow_id = v_workflow",
+      "pending.mission_submission_id = p_submission",
+      "pending.creator_id = v_creator",
+      "pending.mission_id = v_mission",
+      "pending.reward_contract_id = v_contract",
+      "approval.workspace_id = pending.workspace_id",
+      "approval.mission_workflow_id = pending.mission_workflow_id",
+      "approval.reward_contract_id = pending.reward_contract_id",
+      "approval.id = pending.completion_decision_id",
+      "approval.decision_kind = 'approved'",
+      "cancellation.workspace_id = pending.workspace_id",
+      "cancellation.mission_workflow_id = pending.mission_workflow_id",
+      "cancellation.reward_contract_id = pending.reward_contract_id",
+      "cancellation.id = pending.cancellation_decision_id",
+      "cancellation.pending_reward_id = pending.id",
+      "cancellation.supersedes_decision_id = approval.id",
+      "cancellation.decision_kind = 'cancelled'",
+    ]) {
+      expect(creatorRead, `missing creator tenant predicate: ${predicate}`)
+        .toContain(predicate);
+    }
+    expect(creatorRead).toContain(
+      "select pending as pending_row,",
+    );
+    expect(creatorRead).toContain("into v_read");
+    expect(creatorRead).toContain("v_pending := v_read.pending_row");
     for (const forbidden of [
       "reason_note",
       "confirmation_reason",

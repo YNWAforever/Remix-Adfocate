@@ -68,36 +68,6 @@ begin
     'hex'
   );
 
-  select decision as decision_row, pending as pending_row
-  into v_replay
-  from public.mission_completion_decisions decision
-  left join public.mission_pending_rewards pending
-    on pending.completion_decision_id = decision.id
-  where decision.workspace_id = p_workspace
-    and decision.idempotency_key = p_idempotency_key;
-  if found then
-    v_decision := v_replay.decision_row;
-    v_pending := v_replay.pending_row;
-  end if;
-  if v_decision.id is not null then
-    if v_decision.request_hash <> v_request_hash then
-      raise exception 'idempotency_conflict';
-    end if;
-    select workflow.* into v_workflow
-    from public.mission_workflows workflow
-    where workflow.id = v_decision.mission_workflow_id
-      and workflow.workspace_id = p_workspace;
-    if v_workflow.id is null or v_pending.id is null then
-      raise exception 'idempotency_conflict';
-    end if;
-    return jsonb_build_object(
-      'workflow', to_jsonb(v_workflow),
-      'decision', to_jsonb(v_decision),
-      'pendingReward', to_jsonb(v_pending),
-      'idempotent', true
-    );
-  end if;
-
   select workflow.* into v_workflow
   from public.mission_workflows workflow
   where workflow.id = p_workflow
@@ -107,14 +77,30 @@ begin
     raise exception 'not_found';
   end if;
 
-  -- Recheck after the canonical row lock so a concurrent identical request
-  -- reconstructs the committed result instead of observing the new state as stale.
+  -- A replay is resolved only after locking its requested canonical workflow.
+  -- The pending row must belong to the same tenant/workflow/contract and have
+  -- the relationship required by the immutable decision kind.
   select decision as decision_row, pending as pending_row
   into v_replay
   from public.mission_completion_decisions decision
   left join public.mission_pending_rewards pending
-    on pending.completion_decision_id = decision.id
+    on pending.workspace_id = decision.workspace_id
+   and pending.mission_workflow_id = decision.mission_workflow_id
+   and pending.reward_contract_id = decision.reward_contract_id
+   and (
+     (
+       decision.decision_kind = 'approved'
+       and decision.pending_reward_id is null
+       and pending.completion_decision_id = decision.id
+     )
+     or (
+       decision.decision_kind = 'cancelled'
+       and pending.id = decision.pending_reward_id
+       and pending.cancellation_decision_id = decision.id
+     )
+   )
   where decision.workspace_id = p_workspace
+    and decision.mission_workflow_id = p_workflow
     and decision.idempotency_key = p_idempotency_key;
   if found then
     v_decision := v_replay.decision_row;
@@ -124,10 +110,22 @@ begin
     if v_decision.request_hash <> v_request_hash or v_pending.id is null then
       raise exception 'idempotency_conflict';
     end if;
+    if v_decision.decision_kind <> 'approved' then
+      raise exception 'idempotency_conflict';
+    end if;
     return jsonb_build_object(
-      'workflow', to_jsonb(v_workflow),
+      'workflow', jsonb_build_object(
+        'id', v_decision.mission_workflow_id,
+        'state', 'reward_pending',
+        'revision', v_decision.workflow_revision + 1,
+        'updated_at', v_decision.decided_at
+      ),
       'decision', to_jsonb(v_decision),
-      'pendingReward', to_jsonb(v_pending),
+      'pendingReward', to_jsonb(v_pending) || jsonb_build_object(
+        'status', 'pending',
+        'cancellation_decision_id', null,
+        'cancelled_at', null
+      ),
       'idempotent', true
     );
   end if;
@@ -174,9 +172,14 @@ begin
     and exists (
       select 1
       from public.mission_publication_proof_attempts attempt
+      join public.mission_publication_proof_reviews review
+        on review.workspace_id = attempt.workspace_id
+       and review.mission_publication_proof_attempt_id = attempt.id
+       and review.state = 'verified'
+       and review.decision = 'verified'
       where attempt.id = item.verified_proof_attempt_id
         and attempt.mission_work_item_id = item.id
-        and attempt.workspace_id = p_workspace
+        and attempt.workspace_id = item.workspace_id
     );
   if v_required_item_count = 0
     or v_verified_required_item_count <> v_required_item_count
@@ -191,10 +194,14 @@ begin
         jsonb_build_object(
           'workItemId', item.id,
           'proofAttemptId', attempt.id,
+          'proofReviewId', review.id,
           'attemptNumber', attempt.attempt_number,
           'submittedAt', attempt.submitted_at,
           'contentChecksum', attempt.content_checksum,
-          'metadataStatus', attempt.metadata_status
+          'metadataStatus', attempt.metadata_status,
+          'reviewNumber', review.review_number,
+          'reviewedAt', review.reviewed_at,
+          'reviewDecision', review.decision
         )
         order by item.position, item.id
       ),
@@ -207,6 +214,11 @@ begin
     on attempt.id = item.verified_proof_attempt_id
    and attempt.mission_work_item_id = item.id
    and attempt.workspace_id = item.workspace_id
+  join public.mission_publication_proof_reviews review
+    on review.workspace_id = item.workspace_id
+   and review.mission_publication_proof_attempt_id = attempt.id
+   and review.state = 'verified'
+   and review.decision = 'verified'
   where item.mission_workflow_id = v_workflow.id
     and item.workspace_id = p_workspace
     and item.required
@@ -342,9 +354,18 @@ begin
   );
 
   return jsonb_build_object(
-    'workflow', to_jsonb(v_workflow),
+    'workflow', jsonb_build_object(
+      'id', v_decision.mission_workflow_id,
+      'state', 'reward_pending',
+      'revision', v_decision.workflow_revision + 1,
+      'updated_at', v_decision.decided_at
+    ),
     'decision', to_jsonb(v_decision),
-    'pendingReward', to_jsonb(v_pending),
+    'pendingReward', to_jsonb(v_pending) || jsonb_build_object(
+      'status', 'pending',
+      'cancellation_decision_id', null,
+      'cancelled_at', null
+    ),
     'idempotent', false
   );
 end;
@@ -450,42 +471,6 @@ begin
     'hex'
   );
 
-  select decision as decision_row, pending as pending_row
-  into v_replay
-  from public.mission_completion_decisions decision
-  left join public.mission_pending_rewards pending
-    on pending.completion_decision_id = decision.id
-  where decision.workspace_id = p_workspace
-    and decision.idempotency_key = p_idempotency_key;
-  if found then
-    v_decision := v_replay.decision_row;
-    v_pending := v_replay.pending_row;
-  end if;
-  if v_decision.id is not null then
-    if v_decision.request_hash <> v_request_hash then
-      raise exception 'idempotency_conflict';
-    end if;
-    if v_pending.id is null and v_decision.pending_reward_id is not null then
-      select pending.* into v_pending
-      from public.mission_pending_rewards pending
-      where pending.id = v_decision.pending_reward_id
-        and pending.workspace_id = p_workspace;
-    end if;
-    select workflow.* into v_workflow
-    from public.mission_workflows workflow
-    where workflow.id = v_decision.mission_workflow_id
-      and workflow.workspace_id = p_workspace;
-    if v_workflow.id is null or v_pending.id is null then
-      raise exception 'idempotency_conflict';
-    end if;
-    return jsonb_build_object(
-      'workflow', to_jsonb(v_workflow),
-      'decision', to_jsonb(v_decision),
-      'pendingReward', to_jsonb(v_pending),
-      'idempotent', true
-    );
-  end if;
-
   select workflow.* into v_workflow
   from public.mission_workflows workflow
   where workflow.id = p_workflow
@@ -495,12 +480,29 @@ begin
     raise exception 'not_found';
   end if;
 
+  -- Reconstruct a replay only from the requested locked workflow and the
+  -- tenant-bound immutable decision/pending relationship.
   select decision as decision_row, pending as pending_row
   into v_replay
   from public.mission_completion_decisions decision
   left join public.mission_pending_rewards pending
-    on pending.completion_decision_id = decision.id
+    on pending.workspace_id = decision.workspace_id
+   and pending.mission_workflow_id = decision.mission_workflow_id
+   and pending.reward_contract_id = decision.reward_contract_id
+   and (
+     (
+       decision.decision_kind = 'approved'
+       and decision.pending_reward_id is null
+       and pending.completion_decision_id = decision.id
+     )
+     or (
+       decision.decision_kind = 'cancelled'
+       and pending.id = decision.pending_reward_id
+       and pending.cancellation_decision_id = decision.id
+     )
+   )
   where decision.workspace_id = p_workspace
+    and decision.mission_workflow_id = p_workflow
     and decision.idempotency_key = p_idempotency_key;
   if found then
     v_decision := v_replay.decision_row;
@@ -510,19 +512,22 @@ begin
     if v_decision.request_hash <> v_request_hash then
       raise exception 'idempotency_conflict';
     end if;
-    if v_pending.id is null and v_decision.pending_reward_id is not null then
-      select pending.* into v_pending
-      from public.mission_pending_rewards pending
-      where pending.id = v_decision.pending_reward_id
-        and pending.workspace_id = p_workspace;
-    end if;
-    if v_pending.id is null then
+    if v_decision.decision_kind <> 'cancelled' or v_pending.id is null then
       raise exception 'idempotency_conflict';
     end if;
     return jsonb_build_object(
-      'workflow', to_jsonb(v_workflow),
+      'workflow', jsonb_build_object(
+        'id', v_decision.mission_workflow_id,
+        'state', 'proof_verified',
+        'revision', v_decision.workflow_revision + 1,
+        'updated_at', v_decision.decided_at
+      ),
       'decision', to_jsonb(v_decision),
-      'pendingReward', to_jsonb(v_pending),
+      'pendingReward', to_jsonb(v_pending) || jsonb_build_object(
+        'status', 'cancelled',
+        'cancellation_decision_id', v_decision.id,
+        'cancelled_at', v_decision.decided_at
+      ),
       'idempotent', true
     );
   end if;
@@ -536,10 +541,19 @@ begin
 
   select pending.* into v_pending
   from public.mission_pending_rewards pending
+  join public.mission_reward_contracts contract
+    on contract.id = pending.reward_contract_id
+   and contract.workspace_id = pending.workspace_id
+   and contract.mission_workflow_id = pending.mission_workflow_id
+   and contract.mission_submission_id = pending.mission_submission_id
+   and contract.mission_id = pending.mission_id
   where pending.workspace_id = p_workspace
     and pending.mission_workflow_id = v_workflow.id
+    and pending.mission_submission_id = v_workflow.mission_submission_id
     and pending.status = 'pending'
-  for update;
+    and pending.cancellation_decision_id is null
+    and pending.cancelled_at is null
+  for update of pending;
   if v_pending.id is null then
     raise exception 'pending_reward_not_found';
   end if;
@@ -550,6 +564,7 @@ begin
     and decision.workspace_id = p_workspace
     and decision.mission_workflow_id = v_workflow.id
     and decision.reward_contract_id = v_pending.reward_contract_id
+    and decision.pending_reward_id is null
     and decision.decision_kind = 'approved';
   if v_approval.id is null then
     raise exception 'cancellation_not_allowed';
@@ -602,7 +617,11 @@ begin
       cancelled_at = v_now
   where id = v_pending.id
     and workspace_id = p_workspace
+    and mission_workflow_id = v_workflow.id
+    and reward_contract_id = v_pending.reward_contract_id
+    and completion_decision_id = v_approval.id
     and status = 'pending'
+    and cancellation_decision_id is null
   returning * into v_pending;
   if v_pending.id is null then
     raise exception 'cancellation_not_allowed';
@@ -649,9 +668,18 @@ begin
   );
 
   return jsonb_build_object(
-    'workflow', to_jsonb(v_workflow),
+    'workflow', jsonb_build_object(
+      'id', v_decision.mission_workflow_id,
+      'state', 'proof_verified',
+      'revision', v_decision.workflow_revision + 1,
+      'updated_at', v_decision.decided_at
+    ),
     'decision', to_jsonb(v_decision),
-    'pendingReward', to_jsonb(v_pending),
+    'pendingReward', to_jsonb(v_pending) || jsonb_build_object(
+      'status', 'cancelled',
+      'cancellation_decision_id', v_decision.id,
+      'cancelled_at', v_decision.decided_at
+    ),
     'idempotent', false
   );
 end;
@@ -700,16 +728,21 @@ set search_path = ''
 as $$
 declare
   v_creator uuid := (select auth.uid());
+  v_workspace uuid;
   v_workflow uuid;
+  v_mission uuid;
+  v_contract uuid;
   v_pending public.mission_pending_rewards;
   v_decision_kind text;
   v_decided_at timestamptz;
+  v_read record;
 begin
   if v_creator is null then
     raise exception 'not_found';
   end if;
 
-  select workflow.id into v_workflow
+  select workflow.id, submission.workspace_id, submission.mission_id
+  into v_workflow, v_workspace, v_mission
   from public.mission_submissions submission
   join public.mission_workflows workflow
     on workflow.mission_submission_id = submission.id
@@ -720,29 +753,68 @@ begin
     raise exception 'not_found';
   end if;
 
-  select pending.* into v_pending
-  from public.mission_pending_rewards pending
-  where pending.mission_submission_id = p_submission
-    and pending.mission_workflow_id = v_workflow
-  order by pending.created_at desc, pending.id desc
-  limit 1;
-  if v_pending.id is null then
+  select contract.id into v_contract
+  from public.mission_reward_contracts contract
+  where contract.workspace_id = v_workspace
+    and contract.mission_workflow_id = v_workflow
+    and contract.mission_submission_id = p_submission
+    and contract.mission_id = v_mission;
+  if v_contract is null then
     return null;
   end if;
 
-  if v_pending.status = 'cancelled' then
-    select decision.decision_kind, decision.decided_at
-    into v_decision_kind, v_decided_at
-    from public.mission_completion_decisions decision
-    where decision.id = v_pending.cancellation_decision_id
-      and decision.workspace_id = v_pending.workspace_id;
-  else
-    select decision.decision_kind, decision.decided_at
-    into v_decision_kind, v_decided_at
-    from public.mission_completion_decisions decision
-    where decision.id = v_pending.completion_decision_id
-      and decision.workspace_id = v_pending.workspace_id;
+  select pending as pending_row,
+    case
+      when pending.status = 'cancelled' then cancellation.decision_kind
+      else approval.decision_kind
+    end as decision_kind,
+    case
+      when pending.status = 'cancelled' then cancellation.decided_at
+      else approval.decided_at
+    end as decided_at
+  into v_read
+  from public.mission_pending_rewards pending
+  join public.mission_completion_decisions approval
+    on approval.workspace_id = pending.workspace_id
+   and approval.mission_workflow_id = pending.mission_workflow_id
+   and approval.reward_contract_id = pending.reward_contract_id
+   and approval.id = pending.completion_decision_id
+   and approval.decision_kind = 'approved'
+   and approval.pending_reward_id is null
+  left join public.mission_completion_decisions cancellation
+    on cancellation.workspace_id = pending.workspace_id
+   and cancellation.mission_workflow_id = pending.mission_workflow_id
+   and cancellation.reward_contract_id = pending.reward_contract_id
+   and cancellation.id = pending.cancellation_decision_id
+   and cancellation.pending_reward_id = pending.id
+   and cancellation.supersedes_decision_id = approval.id
+   and cancellation.decision_kind = 'cancelled'
+  where pending.workspace_id = v_workspace
+    and pending.mission_workflow_id = v_workflow
+    and pending.mission_submission_id = p_submission
+    and pending.creator_id = v_creator
+    and pending.mission_id = v_mission
+    and pending.reward_contract_id = v_contract
+    and (
+      (
+        pending.status = 'pending'
+        and pending.cancellation_decision_id is null
+        and cancellation.id is null
+      )
+      or (
+        pending.status = 'cancelled'
+        and pending.cancellation_decision_id is not null
+        and cancellation.id is not null
+      )
+    )
+  order by pending.created_at desc, pending.id desc
+  limit 1;
+  if not found then
+    return null;
   end if;
+  v_pending := v_read.pending_row;
+  v_decision_kind := v_read.decision_kind;
+  v_decided_at := v_read.decided_at;
 
   return jsonb_build_object(
     'reward', jsonb_build_object(

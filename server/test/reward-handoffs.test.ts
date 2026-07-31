@@ -45,6 +45,7 @@ type Fixture = {
   expectedRevision: number;
   contractId: string;
   requiredItemIds: string[];
+  requiredReviewIds: string[];
   optionalItemIds: string[];
 };
 
@@ -57,7 +58,11 @@ type HandoffResult = {
     required_item_count: number;
     verified_required_item_count: number;
     evidence_snapshot: {
-      requiredItems: Array<{ workItemId: string; proofAttemptId: string }>;
+      requiredItems: Array<{
+        workItemId: string;
+        proofAttemptId: string;
+        proofReviewId: string;
+      }>;
     };
   };
   pendingReward: {
@@ -110,6 +115,7 @@ async function seedRewardHandoffFixture(options: {
   requiredStates: WorkItemState[];
   optionalStates?: WorkItemState[];
   processingWindowDays?: number | null;
+  omitVerifiedReviewPositions?: number[];
 }): Promise<Fixture> {
   const optionalStates = options.optionalStates ?? [];
   const states = [...options.requiredStates, ...optionalStates];
@@ -142,6 +148,8 @@ async function seedRewardHandoffFixture(options: {
     .order("position");
   expect(itemsResult.error).toBeNull();
   const items = itemsResult.data ?? [];
+  const operator = await linkOperator();
+  const reviewIds = new Map<string, string>();
 
   for (const [index, item] of items.entries()) {
     const state = states[index]!;
@@ -166,6 +174,32 @@ async function seedRewardHandoffFixture(options: {
         .single();
       expect(attempt.error).toBeNull();
       attemptId = attempt.data!.id;
+      if (!(options.omitVerifiedReviewPositions ?? []).includes(index)) {
+        const review = await service.from("mission_publication_proof_reviews")
+          .insert({
+            workspace_id: DEMO_WS,
+            mission_publication_proof_attempt_id: attemptId,
+            review_number: 1,
+            state: "verified",
+            decision: "verified",
+            reviewer_id: operator.userId,
+            reviewed_at: new Date().toISOString(),
+            checklist: {
+              publicly_accessible: true,
+              platform_matches: true,
+              account_matches: true,
+              content_matches_approved_version: true,
+              timing_acceptable: true,
+              disclosures_present: true,
+            },
+            summary: "Verified publication proof",
+            decision_idempotency_key: unique(),
+          })
+          .select("id")
+          .single();
+        expect(review.error).toBeNull();
+        reviewIds.set(item.id, review.data!.id);
+      }
     }
     const updated = await service.from("mission_work_items").update({
       state,
@@ -199,8 +233,6 @@ async function seedRewardHandoffFixture(options: {
       ? 14
       : options.processingWindowDays,
   }).eq("id", DEMO_WS)).error).toBeNull();
-  const operator = await linkOperator();
-
   return {
     workspaceId: DEMO_WS,
     workflowId,
@@ -213,6 +245,9 @@ async function seedRewardHandoffFixture(options: {
     expectedRevision,
     contractId: contract.data!.id,
     requiredItemIds: items.filter((item) => item.required).map((item) => item.id),
+    requiredReviewIds: items.filter((item) => item.required)
+      .map((item) => reviewIds.get(item.id))
+      .filter((id): id is string => id !== undefined),
     optionalItemIds: items.filter((item) => !item.required).map((item) => item.id),
   };
 }
@@ -321,7 +356,10 @@ integrationSuite(integrationSuiteName, () => {
     });
     const evidenceIds = approved.decision.evidence_snapshot.requiredItems
       .map((item) => item.workItemId);
+    const evidenceReviewIds = approved.decision.evidence_snapshot.requiredItems
+      .map((item) => item.proofReviewId);
     expect(evidenceIds).toEqual(fixture.requiredItemIds);
+    expect(evidenceReviewIds).toEqual(fixture.requiredReviewIds);
     expect(evidenceIds.some((id) => fixture.optionalItemIds.includes(id))).toBe(false);
     expect(await creatorRewardSnapshot(fixture.creatorId)).toEqual(before);
   });
@@ -350,6 +388,29 @@ integrationSuite(integrationSuiteName, () => {
         .select("id").eq("mission_workflow_id", fixture.workflowId);
       expect(decisions.data).toEqual([]);
     }
+  });
+
+  it("rejects a manually pointed verified attempt without an immutable verified review", async () => {
+    const fixture = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+      omitVerifiedReviewPositions: [0],
+    });
+    const service = serviceForTests();
+    const blocked = await service.rpc(
+      "approve_mission_completion",
+      approvalArgs(fixture, unique()),
+    );
+    expect(blocked.error?.message.toLowerCase()).toContain(
+      "completion_not_eligible",
+    );
+    const [decisions, pending] = await Promise.all([
+      service.from("mission_completion_decisions").select("id")
+        .eq("mission_workflow_id", fixture.workflowId),
+      service.from("mission_pending_rewards").select("id")
+        .eq("mission_workflow_id", fixture.workflowId),
+    ]);
+    expect(decisions.data).toEqual([]);
+    expect(pending.data).toEqual([]);
   });
 
   it("returns the original result for an identical retry and rejects changed payload reuse", async () => {
@@ -481,6 +542,83 @@ integrationSuite(integrationSuiteName, () => {
     expect(await creatorRewardSnapshot(fixture.creatorId)).toEqual(before);
   });
 
+  it("replays immutable approval and cancellation cycle snapshots after later cycles", async () => {
+    const fixture = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const approvalKey = unique();
+    const firstApproval = await approveCompletion(fixture, approvalKey);
+    const cancellationKey = unique();
+    const reason = {
+      reasonCategory: "contract_error",
+      reasonNote: "Freeze the first cancellation result.",
+    };
+    const firstCancellation = await cancelHandoff(
+      fixture,
+      firstApproval,
+      reason,
+      cancellationKey,
+    );
+    const secondApproval = await approveCompletion(fixture, unique(), {
+      p_expected_revision: firstCancellation.workflow.revision,
+    });
+    expect(secondApproval.pendingReward.id).not.toBe(
+      firstApproval.pendingReward.id,
+    );
+
+    const service = serviceForTests();
+    const replays = await Promise.all([
+      service.rpc(
+        "approve_mission_completion",
+        approvalArgs(fixture, approvalKey),
+      ),
+      service.rpc(
+        "cancel_mission_reward_handoff",
+        cancellationArgs(
+          fixture,
+          firstApproval,
+          cancellationKey,
+          reason,
+        ),
+      ),
+      service.rpc(
+        "approve_mission_completion",
+        approvalArgs(fixture, approvalKey),
+      ),
+      service.rpc(
+        "cancel_mission_reward_handoff",
+        cancellationArgs(
+          fixture,
+          firstApproval,
+          cancellationKey,
+          reason,
+        ),
+      ),
+    ]);
+    for (const replay of replays) expect(replay.error).toBeNull();
+
+    for (const replay of [replays[0]!, replays[2]!]) {
+      expect(replay.data.workflow).toEqual(firstApproval.workflow);
+      expect(replay.data.decision).toEqual(firstApproval.decision);
+      expect(replay.data.pendingReward).toEqual(firstApproval.pendingReward);
+      expect(replay.data.idempotent).toBe(true);
+      expect(replay.data.pendingReward).toMatchObject({
+        status: "pending",
+        cancellation_decision_id: null,
+        cancelled_at: null,
+      });
+    }
+    for (const replay of [replays[1]!, replays[3]!]) {
+      expect(replay.data.workflow).toEqual(firstCancellation.workflow);
+      expect(replay.data.decision).toEqual(firstCancellation.decision);
+      expect(replay.data.pendingReward).toEqual(
+        firstCancellation.pendingReward,
+      );
+      expect(replay.data.idempotent).toBe(true);
+      expect(replay.data.workflow.state).toBe("proof_verified");
+    }
+  });
+
   it("rolls a new decision back when pending insertion conflicts", async () => {
     const fixture = await seedRewardHandoffFixture({
       requiredStates: ["proof_verified"],
@@ -596,5 +734,57 @@ integrationSuite(integrationSuiteName, () => {
     );
     expect(cross.error?.message.toLowerCase()).toContain("not_found");
     expect(absent.error?.message).toBe(cross.error?.message);
+  });
+
+  it("ignores a newer handoff row whose tenant chain is internally mismatched", async () => {
+    const owned = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const foreignFacts = await seedRewardHandoffFixture({
+      requiredStates: ["proof_verified"],
+    });
+    const service = serviceForTests();
+    const decision = await service.from("mission_completion_decisions").insert({
+      workspace_id: owned.workspaceId,
+      mission_workflow_id: owned.workflowId,
+      decision_kind: "approved",
+      reward_contract_id: foreignFacts.contractId,
+      pending_reward_id: null,
+      supersedes_decision_id: null,
+      workflow_revision: owned.expectedRevision,
+      required_item_count: 1,
+      verified_required_item_count: 1,
+      evidence_snapshot: {},
+      reason_category: null,
+      reason_note: null,
+      decided_by: owned.operatorId,
+      idempotency_key: unique(),
+      request_hash: "b".repeat(64),
+    }).select("id").single();
+    expect(decision.error).toBeNull();
+    const forged = await service.from("mission_pending_rewards").insert({
+      workspace_id: owned.workspaceId,
+      mission_workflow_id: owned.workflowId,
+      mission_submission_id: owned.submissionId,
+      creator_id: foreignFacts.creatorId,
+      mission_id: foreignFacts.missionId,
+      reward_contract_id: foreignFacts.contractId,
+      completion_decision_id: decision.data!.id,
+      points_amount: 999999,
+      cash_amount: 999999,
+      currency: "HKD",
+      xp_amount: 999999,
+      status: "pending",
+      processing_window_days: 365,
+      target_at: new Date(Date.now() + 365 * 86_400_000).toISOString(),
+    });
+    expect(forged.error).toBeNull();
+
+    const read = await userForJwt(owned.creatorJwt).rpc(
+      "get_my_mission_reward_handoff",
+      { p_submission: owned.submissionId },
+    );
+    expect(read.error).toBeNull();
+    expect(read.data).toBeNull();
   });
 });
