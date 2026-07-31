@@ -186,7 +186,7 @@ describe("MissionCompletionReview", () => {
         workflowId="workflow-1"
         workflowState="proof_verified"
         workflowRevision={8}
-        rewardContract={{ ...contract, xpAmount: 25 }}
+        rewardContract={{ ...contract, xpAmount: 2_500 }}
         eligibility={eligible}
         pendingReward={null}
         busy={false}
@@ -196,7 +196,7 @@ describe("MissionCompletionReview", () => {
         onActionError={vi.fn()}
       />,
     );
-    expect(screen.getByText("25 XP")).toBeVisible();
+    expect(screen.getByText("2,500 XP")).toBeVisible();
   });
 
   it("validates audited backfill provenance and always submits zero XP", async () => {
@@ -380,11 +380,20 @@ describe("MissionCompletionReview", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("response lost");
-    expect(screen.getByRole("alertdialog")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Confirm approval" })).toBeEnabled();
+    const dialog = screen.getByRole("alertdialog");
+    const keepReviewing = screen.getByRole("button", { name: "Keep reviewing" });
+    const confirm = screen.getByRole("button", { name: "Confirm approval" });
+    expect(dialog).toBeVisible();
+    expect(dialog).toHaveFocus();
+    expect(confirm).toBeEnabled();
     expect(onActionError).toHaveBeenCalledWith(expect.any(Error));
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(keepReviewing).toHaveFocus();
+    dialog.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(confirm).toHaveFocus();
 
-    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    fireEvent.click(confirm);
     await waitFor(() => expect(onApprove).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
   });
@@ -401,7 +410,17 @@ describe("MissionCompletionReview", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Workflow changed. Review the current state before acting again.",
     );
-    expect(screen.getByRole("button", { name: "Confirm approval" })).toBeDisabled();
+    const keepReviewing = screen.getByRole("button", { name: "Keep reviewing" });
+    const confirm = screen.getByRole("button", { name: "Confirm approval" });
+    const outsideAction = screen.getByRole("button", { name: "Cancel reward handoff" });
+    expect(confirm).toBeDisabled();
+    expect(keepReviewing).toBeEnabled();
+    outsideAction.focus();
+    fireEvent.keyDown(outsideAction, { key: "Tab" });
+    expect(keepReviewing).toHaveFocus();
+    outsideAction.focus();
+    fireEvent.keyDown(outsideAction, { key: "Tab", shiftKey: true });
+    expect(keepReviewing).toHaveFocus();
     fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
     expect(onApprove).not.toHaveBeenCalled();
   });

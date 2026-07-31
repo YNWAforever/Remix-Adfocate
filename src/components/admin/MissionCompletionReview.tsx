@@ -147,6 +147,7 @@ export function MissionCompletionReview({
   const restoreFocusRef = useRef<HTMLButtonElement | null>(null);
   const isBusy = busy || localBusy;
   const locale = lang === "zh" ? "zh-Hant-HK" : "en-HK";
+  const integerFormatter = new Intl.NumberFormat(locale);
   const approvalActionValid = workflowState === "proof_verified"
     && eligibility.eligible
     && Boolean(rewardContract);
@@ -200,6 +201,15 @@ export function MissionCompletionReview({
       if (!first || !last) {
         event.preventDefault();
         dialogRef.current?.focus();
+        return;
+      }
+      const activeElement = document.activeElement;
+      if (
+        activeElement === dialogRef.current
+        || !dialogRef.current?.contains(activeElement)
+      ) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
         return;
       }
       if (!event.shiftKey && document.activeElement === last) {
@@ -364,7 +374,7 @@ export function MissionCompletionReview({
           <div className="mt-3 flex min-w-0 flex-wrap gap-2">
             <span className="rounded-full bg-[var(--color-acid)] px-3 py-1 font-bold">
               {t("app.admin.activeMission.completion.points", {
-                amount: new Intl.NumberFormat(locale).format(displayReward.pointsAmount),
+                amount: integerFormatter.format(displayReward.pointsAmount),
               })}
             </span>
             <span className="rounded-full bg-[var(--color-sun)] px-3 py-1 font-bold">
@@ -377,7 +387,7 @@ export function MissionCompletionReview({
             {displayReward.xpAmount > 0 ? (
               <span className="rounded-full bg-[var(--color-sky)] px-3 py-1 font-bold">
                 {t("app.admin.activeMission.completion.xp", {
-                  amount: displayReward.xpAmount,
+                  amount: integerFormatter.format(displayReward.xpAmount),
                 })}
               </span>
             ) : null}
