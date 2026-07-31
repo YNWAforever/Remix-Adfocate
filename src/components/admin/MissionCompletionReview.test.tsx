@@ -350,6 +350,22 @@ describe("MissionCompletionReview", () => {
     await act(async () => { request.resolve({}); await request.promise; });
   });
 
+  it("shows terminal proof anchors before approval", () => {
+    renderReview({
+      workflowState: "proof_verified",
+      acceptedProofAnchors: [{
+        workItemId: "pre-work-item", proofAttemptId: "pre-proof-attempt",
+        proofReviewId: "pre-proof-review", reviewerId: "pre-reviewer",
+        createdAt: "2026-07-31T09:58:00.000Z",
+      }],
+    });
+    expect(screen.getByText("pre-work-item")).toBeVisible();
+    expect(screen.getByText("pre-proof-attempt")).toBeVisible();
+    expect(screen.getByText("pre-proof-review")).toBeVisible();
+    expect(screen.getByText("pre-reviewer")).toBeVisible();
+    expect(screen.getByText("2026-07-31T09:58:00.000Z")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Approve completion" })).toBeEnabled();
+  });
   it("shows exact proof anchors, SLA target, provenance, and cancellation handoff ID", () => {
     renderReview({
       workflowState: "reward_pending",

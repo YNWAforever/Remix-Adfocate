@@ -692,12 +692,16 @@ export function canonicalRewardHandoffQueueItem(
 function acceptedProofAnchors(input: {
   workspaceId?: string;
   requiredItems: unknown[];
-  approvalDecision?: unknown;
+  proofAttempts?: unknown[];
   proofReviews?: unknown[];
+  approvalDecision?: unknown;
 }): RewardHandoffProjection["acceptedProofAnchors"] {
   const approval = record(input.approvalDecision);
-  if (text(approval.decision_kind ?? approval.kind) !== "approved") return [];
-  const evidenceItems = safeEvidence(approval.evidence_snapshot ?? approval.evidence).requiredItems;
+  const hasApproval = text(approval.decision_kind ?? approval.kind) === "approved";
+  const evidenceItems = hasApproval
+    ? safeEvidence(approval.evidence_snapshot ?? approval.evidence).requiredItems
+    : [];
+  const attempts = (input.proofAttempts ?? []).map(record);
   const reviews = (input.proofReviews ?? []).map(record);
   return input.requiredItems.map(record).filter((item) => {
     const current = text(item.current_proof_attempt_id ?? item.currentProofAttemptId);
@@ -706,24 +710,32 @@ function acceptedProofAnchors(input: {
   }).map((item) => {
     const workItemId = text(item.id ?? item.workItemId);
     const proofAttemptId = text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId);
-    const evidence = evidenceItems.find((entry) => entry.workItemId === workItemId
-      && entry.proofAttemptId === proofAttemptId && entry.reviewDecision === "verified");
-    const review = reviews.find((entry) => text(entry.id) === evidence?.proofReviewId
-      && text(entry.mission_publication_proof_attempt_id ?? entry.attemptId) === proofAttemptId);
+    const attempt = attempts.find((entry) => text(entry.id) === proofAttemptId
+      && text(entry.mission_work_item_id ?? entry.workItemId) === workItemId
+      && (input.workspaceId === undefined || text(entry.workspace_id) === input.workspaceId));
+    const review = reviews.find((entry) => text(entry.mission_publication_proof_attempt_id ?? entry.attemptId) === proofAttemptId
+      && text(entry.state) === "verified" && text(entry.decision) === "verified"
+      && (input.workspaceId === undefined || text(entry.workspace_id) === input.workspaceId));
     const proofReviewId = text(review?.id);
     const reviewerId = text(review?.reviewer_id ?? review?.reviewerId);
     const createdAt = text(review?.created_at ?? review?.createdAt);
     const reviewedAt = text(review?.reviewed_at ?? review?.reviewedAt);
-    if (!workItemId || !proofAttemptId || !evidence || !proofReviewId || !reviewerId || !createdAt
-      || text(review?.state) !== "verified" || text(review?.decision) !== "verified"
-      || (input.workspaceId !== undefined && text(review?.workspace_id) !== input.workspaceId)
-      || (evidence.reviewedAt !== null && evidence.reviewedAt !== reviewedAt)) {
-      throw new RewardHandoffError("FORBIDDEN", "forbidden");
+    if (!workItemId || !proofAttemptId || !attempt || !proofReviewId || !reviewerId || !createdAt) {
+      if (hasApproval) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+      return null;
+    }
+    if (hasApproval) {
+      const evidence = evidenceItems.find((entry) => entry.workItemId === workItemId
+        && entry.proofAttemptId === proofAttemptId
+        && entry.proofReviewId === proofReviewId
+        && entry.reviewDecision === "verified");
+      if (!evidence || (evidence.reviewedAt !== null && evidence.reviewedAt !== reviewedAt)) {
+        throw new RewardHandoffError("FORBIDDEN", "forbidden");
+      }
     }
     return { workItemId, proofAttemptId, proofReviewId, reviewerId, createdAt };
-  });
+  }).filter((anchor): anchor is RewardHandoffProjection["acceptedProofAnchors"][number] => anchor !== null);
 }
-
 export function normalizeOperatorRewardHandoffProjection(input: {
   workspaceId?: string;
   workflow: unknown;
@@ -732,6 +744,7 @@ export function normalizeOperatorRewardHandoffProjection(input: {
   pendingReward: unknown;
   decision?: unknown;
   approvalDecision?: unknown;
+  proofAttempts?: unknown[];
   proofReviews?: unknown[];
   processingWindowDays?: number | null;
 }): RewardHandoffProjection {
@@ -741,17 +754,37 @@ export function normalizeOperatorRewardHandoffProjection(input: {
   const approval = input.approvalDecision ?? input.decision;
   return {
     rewardContract: contract,
-    completionEligibility: buildCompletionEligibility({
-      workflowState: workflow.state,
-      requiredItems: input.requiredItems,
-      contract,
-      pendingReward: pending,
-    }),
+    completionEligibility: (() => {
+      const base = buildCompletionEligibility({
+        workflowState: workflow.state,
+        requiredItems: input.requiredItems,
+        contract,
+        pendingReward: pending,
+      });
+      const anchors = acceptedProofAnchors({
+        workspaceId: input.workspaceId,
+        requiredItems: input.requiredItems,
+        approvalDecision: approval,
+        proofAttempts: input.proofAttempts,
+        proofReviews: input.proofReviews,
+      });
+      const blockers: CompletionEligibility["blockers"] = base.blockers.filter((blocker) => blocker !== "required_proof_incomplete");
+      if (base.requiredItemCount === 0 || anchors.length !== base.requiredItemCount) {
+        blockers.push("required_proof_incomplete");
+      }
+      return {
+        ...base,
+        eligible: blockers.length === 0,
+        blockers,
+        verifiedRequiredItemCount: anchors.length,
+      };
+    })(),
     pendingReward: pending,
     acceptedProofAnchors: acceptedProofAnchors({
       workspaceId: input.workspaceId,
       requiredItems: input.requiredItems,
       approvalDecision: approval,
+      proofAttempts: input.proofAttempts,
       proofReviews: input.proofReviews,
     }),
     processingWindowDays: input.processingWindowDays ?? pending?.processingWindowDays ?? null,
@@ -826,7 +859,7 @@ export async function getOperatorRewardHandoffProjection(
   client: SupabaseClient,
   workspaceId: string,
   workflowId: string,
-  known?: { workflow: unknown; submission: unknown; requiredItems: unknown[]; proofReviews?: unknown[] },
+  known?: { workflow: unknown; submission: unknown; requiredItems: unknown[]; proofAttempts?: unknown[]; proofReviews?: unknown[] },
   processingWindowDays?: number | null,
 ) {
   let workflowResult: { data: unknown; error: { message?: string | null } | null };
@@ -862,12 +895,19 @@ export async function getOperatorRewardHandoffProjection(
     .filter((item) => item.required === true && item.state === "proof_verified")
     .map((item) => text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId))
     .filter((id): id is string => id !== null);
+  let proofAttempts: unknown[] = known?.proofAttempts ?? [];
   let proofReviews: unknown[] = known?.proofReviews ?? [];
   if (!known && acceptedAttemptIds.length > 0) {
-    const reviewsResult = await client.from("mission_publication_proof_reviews").select("*")
-      .eq("workspace_id", workspaceId)
-      .in("mission_publication_proof_attempt_id", acceptedAttemptIds);
+    const [attemptsResult, reviewsResult] = await Promise.all([
+      client.from("mission_publication_proof_attempts").select("id, workspace_id, mission_work_item_id")
+        .eq("workspace_id", workspaceId).in("id", acceptedAttemptIds),
+      client.from("mission_publication_proof_reviews").select("*")
+        .eq("workspace_id", workspaceId)
+        .in("mission_publication_proof_attempt_id", acceptedAttemptIds),
+    ]);
+    if (attemptsResult.error) mapDatabaseError(attemptsResult.error);
     if (reviewsResult.error) mapDatabaseError(reviewsResult.error);
+    proofAttempts = (attemptsResult.data ?? []) as unknown[];
     proofReviews = (reviewsResult.data ?? []) as unknown[];
   }
   const [contractResult, pendingResult] = await Promise.all([
@@ -923,6 +963,7 @@ export async function getOperatorRewardHandoffProjection(
     pendingReward: pending,
     decision: cancellationResult.data ?? approvalResult.data,
     approvalDecision: approvalResult.data,
+    proofAttempts,
     proofReviews,
     processingWindowDays: resolvedProcessingWindowDays,
   });

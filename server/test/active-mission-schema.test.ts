@@ -1214,7 +1214,7 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("to service_role");
     expect(sql).toContain("revoke all");
     const runbook = readFileSync(resolve("docs/operations/reward-handoff.md"), "utf8");
-    expect(runbook).toMatch(/--data "\{\\"notificationType\\":\\"\$\{NOTIFICATION_TYPE\}\\"\}"/);
+    expect(runbook).toContain(`    curl.exe --fail-with-body -X POST "$ADFOCATE_BASE_URL/api/admin/reward-handoffs/$PENDING_REWARD_ID/notifications/retry" -H "Authorization: Bearer $STAFF_ACCESS_TOKEN" -H "X-Workspace-Slug: $WORKSPACE_SLUG" -H "Content-Type: application/json" --data ('{"notificationType":"{0}"}' -f $NOTIFICATION_TYPE)`);
   });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness
