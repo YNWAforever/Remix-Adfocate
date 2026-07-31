@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { normalizeOperatorRewardHandoffProjection } from "../lib/activeMission/rewardHandoff";
 import {
   activeMissionIntegrationSkipReason,
   cleanup,
@@ -94,6 +95,34 @@ describe("reward handoff transition migration contract", () => {
     expect(sql).toContain(
       "create or replace function public.get_my_mission_reward_handoff",
     );
+  });
+});
+
+describe("reward handoff operator projection", () => {
+  it.each([
+    ["a frozen SLA", 7, "2026-08-07T10:00:00.000Z"],
+    ["no SLA", null, null],
+  ])("uses the pending reward's %s after workspace settings change", (
+    _label,
+    processingWindowDays,
+    targetAt,
+  ) => {
+    const projection = normalizeOperatorRewardHandoffProjection({
+      workflow: { state: "reward_pending" },
+      contract: null,
+      requiredItems: [],
+      processingWindowDays: 30,
+      pendingReward: {
+        id: "pending-1",
+        status: "pending",
+        processing_window_days: processingWindowDays,
+        target_at: targetAt,
+        created_at: "2026-07-31T10:00:00.000Z",
+      },
+    });
+
+    expect(projection.processingWindowDays).toBe(processingWindowDays);
+    expect(projection.processingTargetAt).toBe(targetAt);
   });
 });
 

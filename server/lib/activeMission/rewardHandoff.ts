@@ -787,7 +787,9 @@ export function normalizeOperatorRewardHandoffProjection(input: {
       proofAttempts: input.proofAttempts,
       proofReviews: input.proofReviews,
     }),
-    processingWindowDays: input.processingWindowDays ?? pending?.processingWindowDays ?? null,
+    processingWindowDays: pending
+      ? pending.processingWindowDays
+      : input.processingWindowDays ?? null,
     processingTargetAt: pending?.targetAt ?? null,
   };
 }
