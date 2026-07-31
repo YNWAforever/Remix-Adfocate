@@ -3,7 +3,6 @@ import {
   useRef,
   useState,
   type FormEvent,
-  type KeyboardEvent,
 } from "react";
 import type {
   CompletionEligibility,
@@ -129,7 +128,7 @@ export function MissionCompletionReview({
   onCancel,
   onActionError,
 }: MissionCompletionReviewProps) {
-  const { t } = useI18n();
+  const { lang, t } = useI18n();
   const [backfill, setBackfill] = useState<BackfillForm>(EMPTY_BACKFILL);
   const [backfillError, setBackfillError] = useState(false);
   const [dialog, setDialog] = useState<DialogKind>(null);
@@ -141,12 +140,23 @@ export function MissionCompletionReview({
   const [actionError, setActionError] = useState<string | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const [localBusy, setLocalBusy] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLFormElement>(null);
   const reviewRef = useRef<HTMLElement>(null);
   const approvalConfirmRef = useRef<HTMLButtonElement>(null);
   const cancellationCategoryRef = useRef<HTMLSelectElement>(null);
   const restoreFocusRef = useRef<HTMLButtonElement | null>(null);
   const isBusy = busy || localBusy;
+  const locale = lang === "zh" ? "zh-Hant-HK" : "en-HK";
+  const approvalActionValid = workflowState === "proof_verified"
+    && eligibility.eligible
+    && Boolean(rewardContract);
+  const cancellationActionValid = workflowState === "reward_pending"
+    && pendingReward?.status === "pending";
+  const dialogActionValid = dialog === "approve"
+    ? approvalActionValid
+    : dialog === "cancel"
+      ? cancellationActionValid
+      : true;
 
   useEffect(() => {
     if (dialog === "approve") {
@@ -166,6 +176,44 @@ export function MissionCompletionReview({
     restoreFocusRef.current = null;
   }, [dialog]);
 
+  useEffect(() => {
+    if (dialog && isBusy) dialogRef.current?.focus();
+  }, [dialog, isBusy]);
+
+  useEffect(() => {
+    if (!dialog) return;
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (!isBusy) {
+          setActionError(null);
+          setDialog(null);
+        }
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        "button:not(:disabled), select:not(:disabled), textarea:not(:disabled), input:not(:disabled)",
+      ) ?? []);
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (!first || !last) {
+        event.preventDefault();
+        dialogRef.current?.focus();
+        return;
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [dialog, isBusy]);
+
   if (workflowState !== "proof_verified" && workflowState !== "reward_pending") {
     return null;
   }
@@ -182,28 +230,6 @@ export function MissionCompletionReview({
     if (isBusy) return;
     setActionError(null);
     setDialog(null);
-  }
-
-  function handleDialogKeyDown(event: KeyboardEvent<HTMLElement>) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeDialog();
-      return;
-    }
-    if (event.key !== "Tab") return;
-    const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
-      "button:not(:disabled), select:not(:disabled), textarea:not(:disabled), input:not(:disabled)",
-    ) ?? []);
-    const first = focusable[0];
-    const last = focusable.at(-1);
-    if (!first || !last) return;
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    } else if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    }
   }
 
   async function perform(
@@ -255,6 +281,7 @@ export function MissionCompletionReview({
   }
 
   async function approveCompletion() {
+    if (!approvalActionValid) return;
     await perform(
       () => onApprove({
         expectedState: "proof_verified",
@@ -266,6 +293,7 @@ export function MissionCompletionReview({
   }
 
   async function cancelHandoff() {
+    if (!cancellationActionValid) return;
     const note = cancellationNote.trim();
     if (
       !CANCELLATION_REASONS.includes(cancellationCategory as RewardCancellationReason)
@@ -336,14 +364,15 @@ export function MissionCompletionReview({
           <div className="mt-3 flex min-w-0 flex-wrap gap-2">
             <span className="rounded-full bg-[var(--color-acid)] px-3 py-1 font-bold">
               {t("app.admin.activeMission.completion.points", {
-                amount: displayReward.pointsAmount,
+                amount: new Intl.NumberFormat(locale).format(displayReward.pointsAmount),
               })}
             </span>
             <span className="rounded-full bg-[var(--color-sun)] px-3 py-1 font-bold">
-              {t("app.admin.activeMission.completion.cash", {
+              {new Intl.NumberFormat(locale, {
+                style: "currency",
                 currency: displayReward.currency,
-                amount: displayReward.cashAmount,
-              })}
+                currencyDisplay: "symbol",
+              }).format(displayReward.cashAmount)}
             </span>
             {displayReward.xpAmount > 0 ? (
               <span className="rounded-full bg-[var(--color-sky)] px-3 py-1 font-bold">
@@ -374,6 +403,8 @@ export function MissionCompletionReview({
               <input
                 className={FIELD}
                 type="number"
+                name="pointsAmount"
+                autoComplete="off"
                 min="0"
                 step="1"
                 value={backfill.pointsAmount}
@@ -388,6 +419,8 @@ export function MissionCompletionReview({
               <input
                 className={FIELD}
                 type="number"
+                name="cashAmount"
+                autoComplete="off"
                 min="0"
                 step="0.01"
                 value={backfill.cashAmount}
@@ -402,6 +435,8 @@ export function MissionCompletionReview({
               <input
                 className={FIELD}
                 inputMode="text"
+                name="currency"
+                autoComplete="off"
                 maxLength={3}
                 value={backfill.currency}
                 onChange={(event) => setBackfill((current) => ({
@@ -415,6 +450,8 @@ export function MissionCompletionReview({
               <input
                 className={FIELD}
                 type="datetime-local"
+                name="sourceMissionUpdatedAt"
+                autoComplete="off"
                 value={backfill.sourceMissionUpdatedAt}
                 onChange={(event) => setBackfill((current) => ({
                   ...current,
@@ -427,6 +464,8 @@ export function MissionCompletionReview({
             {t("app.admin.activeMission.completion.evidenceLabel")}
             <select
               className={FIELD}
+              name="confirmationEvidenceSource"
+              autoComplete="off"
               value={backfill.confirmationEvidenceSource}
               onChange={(event) => setBackfill((current) => ({
                 ...current,
@@ -448,6 +487,8 @@ export function MissionCompletionReview({
             {t("app.admin.activeMission.completion.reasonLabel")}
             <textarea
               className={FIELD}
+              name="confirmationReason"
+              autoComplete="off"
               maxLength={2_000}
               rows={3}
               value={backfill.confirmationReason}
@@ -463,6 +504,11 @@ export function MissionCompletionReview({
           {backfillError ? (
             <p role="alert" className="font-bold text-red-700">
               {t("app.admin.activeMission.completion.backfillInvalid")}
+            </p>
+          ) : null}
+          {actionError ? (
+            <p role="alert" aria-live="assertive" className="font-bold text-red-700">
+              {actionError}
             </p>
           ) : null}
           <button
@@ -504,14 +550,16 @@ export function MissionCompletionReview({
 
       {dialog ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-3">
-          <div
+          <form
+            onSubmit={(event) => event.preventDefault()}
             ref={dialogRef}
             role="alertdialog"
             aria-modal="true"
             aria-busy={isBusy}
             aria-labelledby="completion-dialog-title"
             aria-describedby="completion-dialog-description"
-            className="max-h-[90vh] w-full min-w-0 max-w-lg overflow-y-auto rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-xl sm:p-5"
+            tabIndex={-1}
+            className="max-h-[90vh] w-full min-w-0 max-w-lg overscroll-contain overflow-y-auto rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-xl sm:p-5"
           >
             <h2 id="completion-dialog-title" className="font-display text-xl font-bold">
               {dialog === "approve"
@@ -531,9 +579,10 @@ export function MissionCompletionReview({
                   <select
                     ref={cancellationCategoryRef}
                     className={FIELD}
+                    name="cancellationCategory"
+                    autoComplete="off"
                     value={cancellationCategory}
                     disabled={isBusy}
-                    onKeyDown={handleDialogKeyDown}
                     onChange={(event) => setCancellationCategory(
                       event.target.value as RewardCancellationReason | "",
                     )}
@@ -552,11 +601,12 @@ export function MissionCompletionReview({
                   {t("app.admin.activeMission.completion.cancelNote")}
                   <textarea
                     className={FIELD}
+                    name="cancellationReasonNote"
+                    autoComplete="off"
                     rows={4}
                     maxLength={2_000}
                     disabled={isBusy}
                     value={cancellationNote}
-                    onKeyDown={handleDialogKeyDown}
                     onChange={(event) => setCancellationNote(event.target.value)}
                   />
                 </label>
@@ -568,7 +618,11 @@ export function MissionCompletionReview({
               </div>
             ) : null}
 
-            {actionError ? (
+            {!dialogActionValid ? (
+              <p role="alert" className="mt-4 font-bold text-red-700">
+                {t("app.admin.activeMission.completion.staleAction")}
+              </p>
+            ) : actionError ? (
               <p role="alert" className="mt-4 font-bold text-red-700">
                 {actionError}
               </p>
@@ -579,7 +633,6 @@ export function MissionCompletionReview({
                 type="button"
                 disabled={isBusy}
                 onClick={closeDialog}
-                onKeyDown={handleDialogKeyDown}
                 className={`${BUTTON} bg-white`}
               >
                 {t("app.admin.activeMission.completion.keepReviewing")}
@@ -588,9 +641,8 @@ export function MissionCompletionReview({
                 <button
                   ref={approvalConfirmRef}
                   type="button"
-                  disabled={isBusy}
+                  disabled={isBusy || !dialogActionValid}
                   onClick={() => void approveCompletion()}
-                  onKeyDown={handleDialogKeyDown}
                   className={`${BUTTON} bg-[var(--color-acid)]`}
                 >
                   {t("app.admin.activeMission.completion.confirmApprove")}
@@ -598,16 +650,15 @@ export function MissionCompletionReview({
               ) : (
                 <button
                   type="button"
-                  disabled={isBusy}
+                  disabled={isBusy || !dialogActionValid}
                   onClick={() => void cancelHandoff()}
-                  onKeyDown={handleDialogKeyDown}
                   className={`${BUTTON} bg-[var(--color-sun)]`}
                 >
                   {t("app.admin.activeMission.completion.confirmCancel")}
                 </button>
               )}
             </div>
-          </div>
+          </form>
         </div>
       ) : null}
     </section>

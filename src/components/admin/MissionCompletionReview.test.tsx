@@ -108,6 +108,18 @@ describe("MissionCompletionReview", () => {
   beforeEach(() => {
     i18n.lang = "en";
   });
+  function fillValidBackfill() {
+    fireEvent.change(screen.getByLabelText("Points"), { target: { value: "500" } });
+    fireEvent.change(screen.getByLabelText("Cash amount"), { target: { value: "125.5" } });
+    fireEvent.change(screen.getByLabelText("Currency"), { target: { value: "hkd" } });
+    fireEvent.change(screen.getByLabelText("Confirmation evidence"), {
+      target: { value: "operator_record" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirmation reason"), {
+      target: { value: "Confirmed against the signed operator record." },
+    });
+  }
+
 
   it("is hidden outside proof_verified and reward_pending", () => {
     const { container, rerender } = render(
@@ -166,7 +178,7 @@ describe("MissionCompletionReview", () => {
   it("renders the frozen reward without visually emphasizing zero XP", () => {
     const { rerender } = renderReview();
     expect(screen.getByText("500 points")).toBeVisible();
-    expect(screen.getByText("HKD 125")).toBeVisible();
+    expect(screen.getByText(/HK\$\s?125\.00/)).toBeVisible();
     expect(screen.queryByText(/XP/)).not.toBeInTheDocument();
 
     rerender(
@@ -232,6 +244,35 @@ describe("MissionCompletionReview", () => {
     }));
     expect(screen.getByText("XP is fixed at 0 for audited backfills.")).toBeVisible();
   });
+  it("shows backfill rejection inline, preserves every field, and retries", async () => {
+    const onBackfill = vi.fn()
+      .mockRejectedValueOnce(new Error("Reward contract lookup timed out"))
+      .mockResolvedValueOnce({});
+    renderReview({ rewardContract: null, onBackfill });
+    fillValidBackfill();
+    fireEvent.change(screen.getByLabelText("Source mission updated at"), {
+      target: { value: "2026-07-30T18:00" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save frozen reward contract" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Reward contract lookup timed out");
+    expect(screen.getByLabelText("Points")).toHaveValue(500);
+    expect(screen.getByLabelText("Cash amount")).toHaveValue(125.5);
+    expect(screen.getByLabelText("Currency")).toHaveValue("hkd");
+    expect(screen.getByLabelText("Source mission updated at"))
+      .toHaveValue("2026-07-30T18:00");
+    expect(screen.getByLabelText("Confirmation evidence")).toHaveValue("operator_record");
+    expect(screen.getByLabelText("Confirmation reason"))
+      .toHaveValue("Confirmed against the signed operator record.");
+    expect(screen.getByLabelText("Points")).toHaveAttribute("name", "pointsAmount");
+    expect(screen.getByLabelText("Confirmation reason"))
+      .toHaveAttribute("name", "confirmationReason");
+    fireEvent.click(screen.getByRole("button", { name: "Save frozen reward contract" }));
+    await waitFor(() => expect(onBackfill).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByText("Reward contract lookup timed out"))
+      .not.toBeInTheDocument());
+    expect(screen.getByRole("status")).toHaveTextContent("Reward contract backfilled.");
+  });
+
 
   it("keeps approval open and busy, then announces success and restores trigger focus", async () => {
     const request = deferred<unknown>();
@@ -286,6 +327,49 @@ describe("MissionCompletionReview", () => {
     expect(screen.getByRole("region", { name: "Mission completion review" })).toHaveFocus();
   });
 
+  it("contains approval focus and blocks Tab and Escape while busy", async () => {
+    const request = deferred<unknown>();
+    renderReview({ onApprove: vi.fn(() => request.promise) });
+    fireEvent.click(screen.getByRole("button", { name: "Approve completion" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    const dialog = screen.getByRole("alertdialog");
+    await waitFor(() => expect(dialog).toHaveFocus());
+    expect(dialog).toHaveAttribute("aria-busy", "true");
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.getByRole("alertdialog")).toBeVisible();
+    await act(async () => { request.resolve({}); await request.promise; });
+  });
+
+  it("contains cancellation focus and blocks Tab and Escape while busy", async () => {
+    const request = deferred<unknown>();
+    renderReview({
+      workflowState: "reward_pending",
+      pendingReward,
+      onCancel: vi.fn(() => request.promise),
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel reward handoff" }));
+    fireEvent.change(screen.getByLabelText("Cancellation category"), {
+      target: { value: "contract_error" },
+    });
+    fireEvent.change(screen.getByLabelText("Cancellation note"), {
+      target: { value: "Contract mismatch" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+    const dialog = screen.getByRole("alertdialog");
+    await waitFor(() => expect(dialog).toHaveFocus());
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(dialog).toHaveFocus();
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.getByRole("alertdialog")).toBeVisible();
+    await act(async () => { request.resolve({}); await request.promise; });
+  });
+
   it("preserves an approval dialog after an ambiguous failure and allows retry", async () => {
     const onApprove = vi.fn()
       .mockRejectedValueOnce(new Error("response lost"))
@@ -304,6 +388,71 @@ describe("MissionCompletionReview", () => {
     await waitFor(() => expect(onApprove).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
   });
+  it("reconciles an open approval when refresh advances to reward pending", () => {
+    const onApprove = vi.fn(async () => ({}));
+    const view = renderReview({ onApprove });
+    fireEvent.click(screen.getByRole("button", { name: "Approve completion" }));
+    view.rerender(
+      <MissionCompletionReview workflowId="workflow-1" workflowState="reward_pending"
+        workflowRevision={9} rewardContract={contract} eligibility={eligible}
+        pendingReward={pendingReward} busy={false} onBackfill={vi.fn()}
+        onApprove={onApprove} onCancel={vi.fn()} onActionError={vi.fn()} />,
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Workflow changed. Review the current state before acting again.",
+    );
+    expect(screen.getByRole("button", { name: "Confirm approval" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    expect(onApprove).not.toHaveBeenCalled();
+  });
+
+  it("preserves cancellation input but disables stale action after refresh", () => {
+    const onCancel = vi.fn(async () => ({}));
+    const view = renderReview({
+      workflowState: "reward_pending",
+      pendingReward,
+      onCancel,
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Cancel reward handoff" }));
+    fireEvent.change(screen.getByLabelText("Cancellation category"), {
+      target: { value: "contract_error" },
+    });
+    fireEvent.change(screen.getByLabelText("Cancellation note"), {
+      target: { value: "Preserve this note" },
+    });
+    view.rerender(
+      <MissionCompletionReview workflowId="workflow-1" workflowState="proof_verified"
+        workflowRevision={9} rewardContract={contract} eligibility={eligible}
+        pendingReward={null} busy={false} onBackfill={vi.fn()} onApprove={vi.fn()}
+        onCancel={onCancel} onActionError={vi.fn()} />,
+    );
+    expect(screen.getByLabelText("Cancellation category")).toHaveValue("contract_error");
+    expect(screen.getByLabelText("Cancellation note")).toHaveValue("Preserve this note");
+    expect(screen.getByRole("button", { name: "Confirm cancellation" })).toBeDisabled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Workflow changed. Review the current state before acting again.",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Confirm cancellation" }));
+    expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it("uses the refreshed revision when the same approval remains valid", async () => {
+    const onApprove = vi.fn(async () => ({}));
+    const view = renderReview({ onApprove });
+    fireEvent.click(screen.getByRole("button", { name: "Approve completion" }));
+    view.rerender(
+      <MissionCompletionReview workflowId="workflow-1" workflowState="proof_verified"
+        workflowRevision={9} rewardContract={contract} eligibility={eligible}
+        pendingReward={null} busy={false} onBackfill={vi.fn()}
+        onApprove={onApprove} onCancel={vi.fn()} onActionError={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Confirm approval" }));
+    await waitFor(() => expect(onApprove).toHaveBeenCalledWith({
+      expectedState: "proof_verified",
+      expectedRevision: 9,
+    }));
+  });
+
 
   it("requires a bounded cancellation category and note, preserving them on failure", async () => {
     const onCancel = vi.fn()

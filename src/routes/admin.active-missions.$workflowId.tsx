@@ -108,13 +108,20 @@ export function AdminActiveMissionReviewView({
   const approveCompletion = useApproveMissionCompletion();
   const backfillRewardContract = useBackfillRewardContract();
   const cancelRewardHandoff = useCancelRewardHandoff();
-  const completionReview = useCompletionReview(workflowId, workspaceSlug ?? "");
   const detail = useQuery({
     queryKey: key,
     queryFn: () => fetchActiveMissionWorkflow(workflowId, workspaceSlug),
     enabled: authed && Boolean(workspaceSlug),
     retry: false,
   });
+
+  const completionApplicable = authed
+    && Boolean(workspaceSlug)
+    && Boolean(workflowStateField(detail.data?.workflow.state));
+  const completionReview = useCompletionReview(
+    completionApplicable ? workflowId : "",
+    completionApplicable ? workspaceSlug ?? "" : "",
+  );
 
   useEffect(() => {
     if (detail.error instanceof AdminAuthError) reportAuthError(detail.error);
@@ -239,7 +246,7 @@ export function AdminActiveMissionReviewView({
   const completionBusy = approveCompletion.isPending
     || backfillRewardContract.isPending
     || cancelRewardHandoff.isPending;
-  const completionPanel = (
+  const completionPanelBody = (
     workflowState
     && workflowRevision !== null
     && submissionId
@@ -290,6 +297,28 @@ export function AdminActiveMissionReviewView({
       onActionError={handleWorkflowError}
     />
   ) : null;
+  const completionPanel = !completionApplicable ? null
+    : completionReview.isLoading ? (
+      <p role="status" className="text-sm">
+        {t("app.admin.activeMission.completion.loading")}
+      </p>
+    ) : completionReview.error && !(completionReview.error instanceof AdminAuthError) ? (
+      <div
+        role="alert"
+        className="min-w-0 space-y-3 rounded-xl border-2 border-red-700 bg-red-50 p-4"
+      >
+        <p className="text-sm font-bold text-red-700">
+          {t("app.admin.activeMission.completion.loadError")}
+        </p>
+        <button
+          type="button"
+          className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold"
+          onClick={() => void completionReview.refetch()}
+        >
+          {t("app.admin.activeMission.completion.retry")}
+        </button>
+      </div>
+    ) : completionPanelBody;
 
   const selectedItem = detail.data.workItems.find((item) => item.id === workItemId)
     ?? detail.data.workItems.find((item) => PUBLICATION_STATES.has(item.state));
