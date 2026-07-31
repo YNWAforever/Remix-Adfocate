@@ -32,6 +32,112 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
 }
 
 describe("mission route behavior without a live database", () => {
+  it("falls back to legacy mission lookup when production lacks workflow mode", async () => {
+    const routes = await import("../routes/missions") as Record<string, unknown>;
+    const lookup = routes.findMissionForMode;
+    expect(lookup).toBeTypeOf("function");
+    if (typeof lookup !== "function") return;
+
+    const selects: string[] = [];
+    const maybeSingleResults = [
+      {
+        data: null,
+        error: {
+          code: "42703",
+          message: "column missions.creator_workflow_mode does not exist",
+        },
+      },
+      { data: { id: "mission-legacy" }, error: null },
+    ];
+    const maybeSingle = vi.fn(async () => maybeSingleResults.shift());
+    const eq = vi.fn(() => ({ eq, maybeSingle }));
+    const select = vi.fn((columns: string) => {
+      selects.push(columns);
+      return { eq };
+    });
+    const from = vi.fn(() => ({ select }));
+
+    const result = await lookup(
+      { from } as unknown as SupabaseClient,
+      "workspace-1",
+      "mission-slug",
+      true,
+    );
+
+    expect(selects).toEqual(["id, creator_workflow_mode", "id"]);
+    expect(result).toEqual({
+      data: { id: "mission-legacy", creator_workflow_mode: "legacy" },
+      error: null,
+    });
+    expect(eq).toHaveBeenCalledWith("status", "active");
+  });
+
+  it("does not hide unrelated mission lookup failures behind legacy mode", async () => {
+    const routes = await import("../routes/missions") as Record<string, unknown>;
+    const lookup = routes.findMissionForMode;
+    expect(lookup).toBeTypeOf("function");
+    if (typeof lookup !== "function") return;
+
+    const failure = { code: "42501", message: "permission denied for table missions" };
+    const maybeSingle = vi.fn(async () => ({ data: null, error: failure }));
+    const eq = vi.fn(() => ({ eq, maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+
+    const result = await lookup(
+      { from } as unknown as SupabaseClient,
+      "workspace-1",
+      "mission-slug",
+      true,
+    );
+
+    expect(result).toEqual({ data: null, error: failure });
+    expect(select).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to the legacy my-missions projection on the same schema skew", async () => {
+    const routes = await import("../routes/missions") as Record<string, unknown>;
+    const list = routes.listMyMissions;
+    expect(list).toBeTypeOf("function");
+    if (typeof list !== "function") return;
+
+    const selects: string[] = [];
+    const queryResults = [
+      {
+        data: null,
+        error: {
+          code: "42703",
+          message: "column missions.creator_workflow_mode does not exist",
+        },
+      },
+      {
+        data: [{ id: "submission-1", missions: { slug: "legacy-mission" } }],
+        error: null,
+      },
+    ];
+    const order = vi.fn(async () => queryResults.shift());
+    const eq = vi.fn(() => ({ order }));
+    const select = vi.fn((columns: string) => {
+      selects.push(columns);
+      return { eq };
+    });
+    const from = vi.fn(() => ({ select }));
+
+    const result = await list(
+      { from } as unknown as SupabaseClient,
+      "creator-1",
+      undefined,
+    );
+
+    expect(selects).toEqual([
+      expect.stringContaining("creator_workflow_mode"),
+      expect.not.stringContaining("creator_workflow_mode"),
+    ]);
+    expect(result).toEqual({
+      data: [{ id: "submission-1", missions: { slug: "legacy-mission" } }],
+      error: null,
+    });
+  });
   it("selects workflow mode and active workflow id for creator mission entry points", () => {
     expect(MY_MISSIONS_SELECT).toContain("creator_workflow_mode");
     expect(MY_MISSIONS_SELECT).toContain("mission_workflows(id)");
