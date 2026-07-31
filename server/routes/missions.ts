@@ -7,7 +7,65 @@ import type { PostgrestError } from "@supabase/supabase-js";
 export const missionRoutes = new Hono<Env>();
 export const MY_MISSIONS_SELECT =
   "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+export const LEGACY_MY_MISSIONS_SELECT =
+  "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)";
 
+function isMissingWorkflowMode(error: Pick<PostgrestError, "code" | "message"> | null) {
+  return Boolean(
+    error
+      && (error.code === "42703" || error.code === "PGRST204")
+      && error.message.includes("creator_workflow_mode"),
+  );
+}
+
+export async function findMissionForMode(
+  supabase: ReturnType<typeof makeUserClient>,
+  workspaceId: string,
+  slug: string,
+  activeOnly = false,
+) {
+  let currentQuery = supabase
+    .from("missions")
+    .select("id, creator_workflow_mode")
+    .eq("workspace_id", workspaceId)
+    .eq("slug", slug);
+  if (activeOnly) currentQuery = currentQuery.eq("status", "active");
+  const current = await currentQuery.maybeSingle();
+  if (!current.error || !isMissingWorkflowMode(current.error)) return current;
+
+  let legacyQuery = supabase
+    .from("missions")
+    .select("id")
+    .eq("workspace_id", workspaceId)
+    .eq("slug", slug);
+  if (activeOnly) legacyQuery = legacyQuery.eq("status", "active");
+  const legacy = await legacyQuery.maybeSingle();
+  return {
+    data: legacy.data ? { id: legacy.data.id, creator_workflow_mode: "legacy" as const } : null,
+    error: legacy.error,
+  };
+}
+
+export async function listMyMissions(
+  supabase: ReturnType<typeof makeUserClient>,
+  creatorId: string,
+  status?: string,
+) {
+  let currentQuery = supabase
+    .from("mission_submissions")
+    .select(MY_MISSIONS_SELECT)
+    .eq("creator_id", creatorId);
+  if (status) currentQuery = currentQuery.eq("status", status);
+  const current = await currentQuery.order("created_at", { ascending: false });
+  if (!current.error || !isMissingWorkflowMode(current.error)) return current;
+
+  let legacyQuery = supabase
+    .from("mission_submissions")
+    .select(LEGACY_MY_MISSIONS_SELECT)
+    .eq("creator_id", creatorId);
+  if (status) legacyQuery = legacyQuery.eq("status", status);
+  return legacyQuery.order("created_at", { ascending: false });
+}
 
 // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
 const RPC_409 = new Set([
@@ -49,13 +107,11 @@ missionRoutes.get("/", async (c) => {
 missionRoutes.get("/my", async (c) => {
   const status = c.req.query("status");
   const supabase = makeUserClient(c.get("jwt"));
-  let q = supabase
-    .from("mission_submissions")
-    .select(MY_MISSIONS_SELECT)
-    .eq("creator_id", c.get("userId"))
-    .order("created_at", { ascending: false });
-  if (status) q = q.eq("status", status);
-  const { data, error } = await q;
+  const { data, error } = await listMyMissions(
+    supabase,
+    c.get("userId"),
+    status,
+  );
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   const submissions = (data ?? []).map((value) => {
     const row = value as typeof value & {
@@ -92,13 +148,12 @@ missionRoutes.get("/:slug", async (c) => {
 /** Join an open mission. */
 missionRoutes.post("/:slug/join", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
-  const { data: m, error: mErr } = await supabase
-    .from("missions")
-    .select("id, creator_workflow_mode")
-    .eq("workspace_id", c.get("workspaceId"))
-    .eq("slug", c.req.param("slug"))
-    .eq("status", "active")            // B1: draft/closed → 404 before the RPC round-trip
-    .maybeSingle();
+  const { data: m, error: mErr } = await findMissionForMode(
+    supabase,
+    c.get("workspaceId"),
+    c.req.param("slug"),
+    true,
+  );
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
@@ -116,12 +171,11 @@ missionRoutes.post("/:slug/join", async (c) => {
 missionRoutes.put("/:slug/submit", async (c) => {
   const body = await c.req.json<{ content_urls: string[]; submission_data?: Record<string, unknown> }>();
   const supabase = makeUserClient(c.get("jwt"));
-  const { data: m, error: mErr } = await supabase
-    .from("missions")
-    .select("id, creator_workflow_mode")
-    .eq("workspace_id", c.get("workspaceId"))
-    .eq("slug", c.req.param("slug"))
-    .maybeSingle();
+  const { data: m, error: mErr } = await findMissionForMode(
+    supabase,
+    c.get("workspaceId"),
+    c.req.param("slug"),
+  );
   if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
