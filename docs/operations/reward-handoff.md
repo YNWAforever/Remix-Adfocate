@@ -116,7 +116,7 @@ Use the authenticated admin retry endpoint after the canonical decision and
 handoff checks pass. Set NOTIFICATION_TYPE to either
 mission_reward_pending or mission_reward_pending_cancelled:
 
-    curl.exe --fail-with-body -X POST "$ADFOCATE_BASE_URL/api/admin/reward-handoffs/$PENDING_REWARD_ID/notifications/retry" -H "Authorization: Bearer $STAFF_ACCESS_TOKEN" -H "X-Workspace-Slug: $WORKSPACE_SLUG" -H "Content-Type: application/json" --data ('{"notificationType":"{0}"}' -f $NOTIFICATION_TYPE)
+    curl.exe --fail-with-body -X POST "$ADFOCATE_BASE_URL/api/admin/reward-handoffs/$PENDING_REWARD_ID/notifications/retry" -H "Authorization: Bearer $STAFF_ACCESS_TOKEN" -H "X-Workspace-Slug: $WORKSPACE_SLUG" -H "Content-Type: application/json" --data ('{{"notificationType":"{0}"}}' -f $NOTIFICATION_TYPE)
 
 The operation is deduplicated by the durable pending-reward semantic key and
 returns a bounded delivered/idempotent outcome. Never print the bearer token or

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
@@ -1214,7 +1215,19 @@ describe("active mission migration contract", () => {
     expect(sql).toContain("to service_role");
     expect(sql).toContain("revoke all");
     const runbook = readFileSync(resolve("docs/operations/reward-handoff.md"), "utf8");
-    expect(runbook).toContain(`    curl.exe --fail-with-body -X POST "$ADFOCATE_BASE_URL/api/admin/reward-handoffs/$PENDING_REWARD_ID/notifications/retry" -H "Authorization: Bearer $STAFF_ACCESS_TOKEN" -H "X-Workspace-Slug: $WORKSPACE_SLUG" -H "Content-Type: application/json" --data ('{"notificationType":"{0}"}' -f $NOTIFICATION_TYPE)`);
+    const retryCommand = runbook.split(/\r?\n/).find((line) => line.trimStart().startsWith("curl.exe --fail-with-body"));
+    const payloadExpression = retryCommand?.match(/--data (.+)$/)?.[1];
+    if (!payloadExpression) throw new Error("Reward retry PowerShell payload expression is missing");
+    const notificationTypes = ["mission_reward_pending", "mission_reward_pending_cancelled"] as const;
+    for (const notificationType of notificationTypes) {
+      const payload = execFileSync("powershell.exe", [
+        "-NoProfile", "-NonInteractive", "-Command",
+        "$NOTIFICATION_TYPE = '" + notificationType + "'; " + payloadExpression,
+      ], { encoding: "utf8" }).trim();
+      expect(payload).toBe('{"notificationType":"' + notificationType + '"}');
+      expect(JSON.parse(payload)).toEqual({ notificationType });
+    }
+    expect(payloadExpression).toBe("('{{\"notificationType\":\"{0}\"}}' -f $NOTIFICATION_TYPE)");
   });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness
