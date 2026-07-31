@@ -13,6 +13,7 @@ import {
   type AdminPendingReward,
   type AdminRewardContract,
   type ApproveCompletionInput,
+  type BackfillRewardContractInput,
   type CancelRewardHandoffInput,
   type CompletionReview,
   type RewardHandoffListResponse,
@@ -20,8 +21,9 @@ import {
   type RewardHandoffQueueItem,
 } from "./adminRewardHandoff";
 import type {
+  ActiveMissionWorkspace,
   CompletionEligibility,
-  PendingReward,
+  CreatorPendingReward,
   RewardContract,
 } from "./activeMission";
 import { supabase } from "@/lib/supabase";
@@ -81,6 +83,12 @@ describe("admin reward handoff client", () => {
   it("serializes backfill, approval, cancellation, and settings bodies without workspace authority", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response());
 
+    const transportExtras = {
+      workspaceSlug: "spoofed",
+      workspace_id: "spoofed-id",
+      notes: "must not cross the client boundary",
+      arbitrary: { unsafe: true },
+    };
     await backfillRewardContract("workflow-1", {
       workspace: "alpha",
       pointsAmount: 500,
@@ -91,13 +99,15 @@ describe("admin reward handoff client", () => {
       confirmationEvidenceSource: "operator_record",
       confirmationReason: "Confirmed against the signed operator record.",
       idempotencyKey,
-    });
+      ...transportExtras,
+    } as BackfillRewardContractInput);
     await approveMissionCompletion("workflow-1", {
       workspace: "alpha",
       expectedState: "proof_verified",
       expectedRevision: 7,
       idempotencyKey,
-    });
+      ...transportExtras,
+    } as ApproveCompletionInput);
     await cancelRewardHandoff("workflow-1", {
       workspace: "alpha",
       expectedState: "reward_pending",
@@ -105,7 +115,8 @@ describe("admin reward handoff client", () => {
       idempotencyKey,
       reasonCategory: "other",
       reasonNote: "Needs finance reassessment.",
-    });
+      ...transportExtras,
+    } as CancelRewardHandoffInput);
     await setRewardProcessingWindow({ workspace: "alpha", days: null });
 
     const request = (path: string, method: string, body: unknown) => [
@@ -152,7 +163,10 @@ describe("admin reward handoff client", () => {
       { days: null },
     ));
     for (const [, init] of fetch.mock.calls) {
-      expect(JSON.parse(String(init?.body ?? "{}"))).not.toHaveProperty("workspace");
+      const body = JSON.parse(String(init?.body ?? "{}"));
+      for (const key of ["workspace", "workspaceSlug", "workspace_id", "notes", "arbitrary"]) {
+        expect(body).not.toHaveProperty(key);
+      }
     }
   });
 
@@ -207,7 +221,7 @@ describe("admin reward handoff client", () => {
       cashAmount: 125,
       currency: " hkd ",
       xpAmount: 0,
-      sourceMissionUpdatedAt: null,
+      sourceMissionUpdatedAt: "   ",
       confirmationEvidenceSource: " OPERATOR_RECORD " as "operator_record",
       confirmationReason: " Confirmed ",
       idempotencyKey,
@@ -262,14 +276,18 @@ describe("admin reward handoff client", () => {
   });
 
   it("keeps nested creator and bounded admin projections free of private transport fields", () => {
-    type ForbiddenKeys = "reasonNote" | "reasonCategory" | "decidedBy" | "actorId"
-      | "operatorId" | "idempotencyKey" | "requestHash" | "proofUrl" | "primaryUrl"
+    type CreatorForbiddenKeys = "workflowId" | "submissionId" | "creatorId" | "missionId"
+      | "rewardContractId" | "completionDecisionId" | "cancellationDecisionId"
+      | "reasonNote" | "reasonCategory" | "decidedBy" | "actorId" | "operatorId"
+      | "evidence" | "idempotencyKey" | "requestHash" | "proofUrl" | "primaryUrl"
       | "signedUrl" | "storageObjectPath";
-    type ForbiddenCreatorKeys = Extract<keyof PendingReward, ForbiddenKeys>;
-    type ForbiddenAdminDecisionKeys = Extract<keyof AdminCompletionDecision, ForbiddenKeys>;
+    type AdminForbiddenKeys = "actorId" | "operatorId" | "idempotencyKey"
+      | "requestHash" | "proofUrl" | "primaryUrl" | "signedUrl" | "storageObjectPath";
+    type ForbiddenCreatorKeys = Extract<keyof CreatorPendingReward, CreatorForbiddenKeys>;
+    type ForbiddenAdminDecisionKeys = Extract<keyof AdminCompletionDecision, AdminForbiddenKeys>;
     type ForbiddenAdminEvidenceKeys = Extract<
       keyof AdminCompletionEvidenceItem,
-      ForbiddenKeys
+      AdminForbiddenKeys
     >;
     expectTypeOf<ForbiddenCreatorKeys>().toEqualTypeOf<never>();
     expectTypeOf<ForbiddenAdminDecisionKeys>().toEqualTypeOf<never>();
@@ -278,14 +296,47 @@ describe("admin reward handoff client", () => {
 
   it("keeps the nested admin decision and evidence key sets exact", () => {
     type DecisionKeys = "id" | "kind" | "workflowRevision" | "requiredItemCount"
-      | "verifiedRequiredItemCount" | "evidence" | "decidedAt";
+      | "verifiedRequiredItemCount" | "evidence" | "reasonCategory" | "reasonNote"
+      | "decidedBy" | "decidedAt";
     type EvidenceKeys = "workItemId" | "proofAttemptId" | "proofReviewId"
       | "attemptNumber" | "submittedAt" | "contentChecksum" | "metadataStatus"
       | "reviewNumber" | "reviewedAt" | "reviewDecision";
     expectTypeOf<keyof AdminCompletionDecision>().toEqualTypeOf<DecisionKeys>();
+    expectTypeOf<AdminCompletionDecision["reasonCategory"]>().toEqualTypeOf<
+      "contract_error" | "eligibility_error" | "duplicate" | "other" | null
+    >();
+    expectTypeOf<AdminCompletionDecision["reasonNote"]>().toEqualTypeOf<string | null>();
+    expectTypeOf<AdminCompletionDecision["decidedBy"]>().toEqualTypeOf<string>();
     expectTypeOf<keyof AdminCompletionDecision["evidence"]>()
       .toEqualTypeOf<"requiredItems">();
     expectTypeOf<keyof AdminCompletionEvidenceItem>().toEqualTypeOf<EvidenceKeys>();
+  });
+
+  it("models the exact creator pending-reward projection separately from admin data", () => {
+    type CreatorKeys = "id" | "status" | "reward" | "processingWindowDays"
+      | "targetAt" | "createdAt" | "cancelledAt" | "decisionState";
+    const pending = {
+      id: null,
+      status: "pending" as const,
+      reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+      processingWindowDays: 7,
+      targetAt: "2026-08-07T00:00:00.000Z",
+      createdAt: "2026-07-31T00:00:00.000Z",
+      cancelledAt: null,
+      decisionState: {
+        kind: "approved" as const,
+        decidedAt: "2026-07-31T00:00:00.000Z",
+      },
+    } satisfies CreatorPendingReward;
+
+    expectTypeOf<keyof CreatorPendingReward>().toEqualTypeOf<CreatorKeys>();
+    expectTypeOf<CreatorPendingReward["id"]>().toEqualTypeOf<null>();
+    expectTypeOf<CreatorPendingReward["decisionState"]>().toEqualTypeOf<
+      Readonly<{ kind: "approved" | "cancelled"; decidedAt: string }>
+    >();
+    expectTypeOf<ActiveMissionWorkspace["pendingReward"]>()
+      .toEqualTypeOf<CreatorPendingReward | null>();
+    expect(pending.decisionState.kind).toBe("approved");
   });
 
   it("models the exact bounded mutation decision shape", () => {
@@ -296,12 +347,16 @@ describe("admin reward handoff client", () => {
       requiredItemCount: 2,
       verifiedRequiredItemCount: 2,
       evidence: { requiredItems: [] },
+      reasonCategory: null,
+      reasonNote: null,
+      decidedBy: "operator-1",
       decidedAt: "2026-07-31T10:00:00.000Z",
     } satisfies AdminCompletionDecision;
     expect(decision).toEqual({
       id: "decision-1", kind: "approved", workflowRevision: 8,
       requiredItemCount: 2, verifiedRequiredItemCount: 2,
-      evidence: { requiredItems: [] }, decidedAt: "2026-07-31T10:00:00.000Z",
+      evidence: { requiredItems: [] }, reasonCategory: null, reasonNote: null,
+      decidedBy: "operator-1", decidedAt: "2026-07-31T10:00:00.000Z",
     });
   });
 });

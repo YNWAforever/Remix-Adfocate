@@ -49,15 +49,15 @@ export type CompletionDecision = {
   decidedAt: string;
 };
 
-export type PendingReward = {
-  id: string | null;
+export type CreatorPendingReward = {
+  id: null;
   status: RewardHandoffStatus;
   reward: Pick<RewardContract, "pointsAmount" | "cashAmount" | "currency" | "xpAmount">;
   processingWindowDays: number | null;
   targetAt: string | null;
   createdAt: string;
   cancelledAt: string | null;
-  decisionState?: Readonly<{ kind: "approved" | "cancelled"; decidedAt: string }>;
+  decisionState: Readonly<{ kind: "approved" | "cancelled"; decidedAt: string }>;
 };
 
 export type WorkItemState =
@@ -305,7 +305,7 @@ export type ActiveMissionWorkspace = {
   nextAction: ServerNextAction;
   rewardContract: RewardContract | null;
   completionEligibility: CompletionEligibility;
-  pendingReward: PendingReward | null;
+  pendingReward: CreatorPendingReward | null;
 };
 
 export type ActiveMissionNextAction = {

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api";
 import * as api from "@/lib/api";
 import { supabase } from "@/lib/supabase";
-import { AdminRequestError } from "@/lib/admin";
+import { AdminAuthError, AdminRequestError } from "@/lib/admin";
 import {
   refreshPublicationProofMetadata,
   requestPublicationProofCorrection,
@@ -481,14 +481,25 @@ describe("reward handoff mutation hooks", () => {
     const { wrapper } = setup();
     const { result } = renderHook(() => useApproveMissionCompletion(), { wrapper });
 
+    const approvalWithExtras = {
+      ...approval,
+      workflowId: " workflow-1 ",
+      submissionId: " sub-1 ",
+      workspace: " alpha ",
+      expectedState: " PROOF_VERIFIED " as "proof_verified",
+      workspaceSlug: "spoofed",
+      workspace_id: "spoofed-id",
+      notes: "must not enter the signature",
+      arbitrary: { unsafe: true },
+    } as typeof approval & {
+      workspaceSlug: string;
+      workspace_id: string;
+      notes: string;
+      arbitrary: { unsafe: boolean };
+    };
+
     await act(async () => {
-      await expect(result.current.mutateAsync({
-        ...approval,
-        workflowId: " workflow-1 ",
-        submissionId: " sub-1 ",
-        workspace: " alpha ",
-        expectedState: " PROOF_VERIFIED " as "proof_verified",
-      })).rejects.toThrow("offline");
+      await expect(result.current.mutateAsync(approvalWithExtras)).rejects.toThrow("offline");
       await expect(result.current.mutateAsync({
         expectedRevision: 7,
         expectedState: "proof_verified",
@@ -513,6 +524,33 @@ describe("reward handoff mutation hooks", () => {
     expect(JSON.parse((fetch.mock.calls[5][1] as RequestInit).body as string).idempotencyKey)
       .toBe("44444444-4444-4444-8444-444444444444");
     expect(randomUUID).toHaveBeenCalledTimes(4);
+  });
+
+  it("clears the retry key after a confirmed 401 AdminAuthError", async () => {
+    const fetch = vi.fn()
+      .mockResolvedValueOnce({
+        ok: false, status: 401, statusText: "Unauthorized",
+        json: async () => ({ error: "unauthorized" }),
+      })
+      .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetch);
+    vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useApproveMissionCompletion(), { wrapper });
+
+    await act(async () => {
+      await expect(result.current.mutateAsync(approval)).rejects
+        .toBeInstanceOf(AdminAuthError);
+      await result.current.mutateAsync(approval);
+    });
+
+    expect(fetch.mock.calls.map(([, init]) =>
+      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+    ]);
   });
 
   it("coordinates concurrent identical mutations across hook instances", async () => {

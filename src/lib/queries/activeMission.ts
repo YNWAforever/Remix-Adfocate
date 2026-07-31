@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
 import {
+  AdminAuthError,
   AdminRequestError,
   refreshPublicationProofMetadata,
   requestPublicationProofCorrection,
@@ -809,6 +810,7 @@ function settleRewardMutation(
 }
 
 function rewardFailureOutcome(error: unknown): "ambiguous" | "definitive" {
+  if (error instanceof AdminAuthError) return "definitive";
   if (!(error instanceof AdminRequestError)) return "ambiguous";
   const status = error.status;
   if (status === undefined) return "ambiguous";

@@ -30,6 +30,12 @@ export type AdminCompletionEvidenceItem = {
   reviewDecision: string | null;
 };
 
+export type RewardCancellationReason =
+  | "contract_error"
+  | "eligibility_error"
+  | "duplicate"
+  | "other";
+
 export type AdminCompletionDecision = {
   id: string;
   kind: "approved" | "cancelled";
@@ -39,6 +45,9 @@ export type AdminCompletionDecision = {
   evidence: {
     requiredItems: AdminCompletionEvidenceItem[];
   };
+  reasonCategory: RewardCancellationReason | null;
+  reasonNote: string | null;
+  decidedBy: string;
   decidedAt: string;
 };
 
@@ -94,7 +103,7 @@ export type CancelRewardHandoffInput = {
   expectedState: "reward_pending";
   expectedRevision: number;
   idempotencyKey: string;
-  reasonCategory: "contract_error" | "eligibility_error" | "duplicate" | "other";
+  reasonCategory: RewardCancellationReason;
   reasonNote: string;
 };
 
@@ -179,13 +188,17 @@ export function normalizeRewardHandoffListFilters(
 export function normalizeBackfillRewardContractInput(
   input: BackfillRewardContractInput,
 ): BackfillRewardContractInput {
+  const sourceMissionUpdatedAt = input.sourceMissionUpdatedAt?.trim() || null;
   return {
-    ...input,
     workspace: normalizeWorkspace(input.workspace),
+    pointsAmount: input.pointsAmount,
+    cashAmount: input.cashAmount,
     currency: input.currency.trim().toUpperCase(),
+    xpAmount: input.xpAmount,
+    sourceMissionUpdatedAt,
     confirmationEvidenceSource: normalizeRequiredLower(input.confirmationEvidenceSource),
     confirmationReason: input.confirmationReason.trim(),
-    sourceMissionUpdatedAt: input.sourceMissionUpdatedAt?.trim() ?? null,
+    idempotencyKey: input.idempotencyKey,
   };
 }
 
@@ -193,9 +206,10 @@ export function normalizeApproveCompletionInput(
   input: ApproveCompletionInput,
 ): ApproveCompletionInput {
   return {
-    ...input,
     workspace: normalizeWorkspace(input.workspace),
     expectedState: normalizeRequiredLower(input.expectedState),
+    expectedRevision: input.expectedRevision,
+    idempotencyKey: input.idempotencyKey,
   };
 }
 
@@ -203,9 +217,10 @@ export function normalizeCancelRewardHandoffInput(
   input: CancelRewardHandoffInput,
 ): CancelRewardHandoffInput {
   return {
-    ...input,
     workspace: normalizeWorkspace(input.workspace),
     expectedState: normalizeRequiredLower(input.expectedState),
+    expectedRevision: input.expectedRevision,
+    idempotencyKey: input.idempotencyKey,
     reasonCategory: normalizeRequiredLower(input.reasonCategory),
     reasonNote: input.reasonNote.trim(),
   };
