@@ -39,7 +39,7 @@ function displayTime(value: string, locale: string): string {
 function Metadata({ attempt, t }: { attempt: PublicationProofAttemptView; t: Translate }) {
   if (attempt.metadataStatus !== "available") {
     return (
-      <p className="rounded-xl border border-amber-700 bg-amber-50 p-3 text-sm text-amber-950">
+      <p className="min-w-0 break-words rounded-xl border border-amber-700 bg-amber-50 p-3 text-sm text-amber-950 [overflow-wrap:anywhere]">
         {t("app.activeMission.proofHistory.metadataUnavailable")}
       </p>
     );
@@ -48,7 +48,7 @@ function Metadata({ attempt, t }: { attempt: PublicationProofAttemptView; t: Tra
     ? attempt.metadataSnapshot.pageTitle
     : null;
   return title ? (
-    <p className="text-sm">
+    <p className="min-w-0 break-words text-sm [overflow-wrap:anywhere]">
       <span className="font-bold">{t("app.activeMission.proofHistory.previewTitle")}:</span>{" "}{title}
     </p>
   ) : null;
@@ -67,12 +67,12 @@ function AttemptCard({
 }) {
   const headingId = useId();
   return (
-    <article aria-labelledby={headingId} className="rounded-2xl border-2 border-[var(--color-ink)] bg-white p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 id={headingId} className="font-heading text-lg font-bold">
+    <article aria-labelledby={headingId} className="min-w-0 max-w-full overflow-hidden rounded-2xl border-2 border-[var(--color-ink)] bg-white p-4">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+        <h3 id={headingId} className="min-w-0 break-words font-heading text-lg font-bold [overflow-wrap:anywhere]">
           {t("app.activeMission.proofHistory.attempt", { number: attempt.attemptNumber })}
         </h3>
-        <div className="flex gap-2">
+        <div className="flex min-w-0 flex-wrap gap-2">
           {accepted ? (
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-900">
               {t("app.activeMission.proofHistory.acceptedAttempt", { number: attempt.attemptNumber })}
@@ -86,35 +86,35 @@ function AttemptCard({
         </div>
       </div>
 
-      <p className="mt-2 text-xs text-[var(--color-soft-ink)]">
+      <p className="mt-2 min-w-0 break-words text-xs text-[var(--color-soft-ink)] [overflow-wrap:anywhere]">
         {t("app.activeMission.proofHistory.submittedAt")}{" "}
         <time dateTime={attempt.submittedAt}>{displayTime(attempt.submittedAt, locale)}</time>
       </p>
 
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-4 min-w-0 space-y-2">
         <li>
-          <a href={attempt.primaryUrl} target="_blank" rel="noreferrer" className="font-bold underline">
+          <a href={attempt.primaryUrl} target="_blank" rel="noreferrer" className="inline-block max-w-full min-w-0 break-words font-bold underline [overflow-wrap:anywhere]">
             {t("app.activeMission.proofHistory.primaryUrl")}
           </a>
         </li>
         {attempt.additionalUrls.map((url, index) => (
           <li key={url}>
-            <a href={url} target="_blank" rel="noreferrer" className="font-bold underline">
+            <a href={url} target="_blank" rel="noreferrer" className="inline-block max-w-full min-w-0 break-words font-bold underline [overflow-wrap:anywhere]">
               {t("app.activeMission.proofHistory.additionalUrl", { number: index + 1 })}
             </a>
           </li>
         ))}
       </ul>
 
-      <div className="mt-4"><Metadata attempt={attempt} t={t} /></div>
+      <div className="mt-4 min-w-0"><Metadata attempt={attempt} t={t} /></div>
 
       {attempt.evidence.length > 0 ? (
-        <div className="mt-4">
-          <h4 className="font-heading text-sm font-bold">{t("app.activeMission.proofHistory.privateEvidence")}</h4>
-          <ul className="mt-2 space-y-1 text-sm">
+        <div className="mt-4 min-w-0">
+          <h4 className="break-words font-heading text-sm font-bold [overflow-wrap:anywhere]">{t("app.activeMission.proofHistory.privateEvidence")}</h4>
+          <ul className="mt-2 min-w-0 space-y-1 text-sm">
             {attempt.evidence.map((asset) => (
-              <li key={asset.id}>
-                <a href={asset.signedUrl} target="_blank" rel="noreferrer" className="font-semibold underline">{asset.originalFilename}</a>
+              <li key={asset.id} className="min-w-0">
+                <a href={asset.signedUrl} target="_blank" rel="noreferrer" className="inline-block max-w-full min-w-0 break-words font-semibold underline [overflow-wrap:anywhere]">{asset.originalFilename}</a>
               </li>
             ))}
           </ul>
@@ -122,7 +122,7 @@ function AttemptCard({
       ) : null}
 
       {attempt.corrections.length > 0 ? (
-        <div className="mt-4 rounded-xl bg-[var(--color-paper)] p-4">
+        <div className="mt-4 min-w-0 overflow-hidden rounded-xl bg-[var(--color-paper)] p-4">
           <h4 className="font-heading text-sm font-bold">{t("app.activeMission.proofHistory.requiredCorrections")}</h4>
           {attempt.review?.creatorResponseDeadline ? (
             <dl className="mt-2 text-sm">
@@ -130,13 +130,13 @@ function AttemptCard({
               <dd><time dateTime={attempt.review.creatorResponseDeadline}>{displayTime(attempt.review.creatorResponseDeadline, locale)}</time></dd>
             </dl>
           ) : null}
-          <ol className="mt-3 space-y-3">
+          <ol className="mt-3 min-w-0 space-y-3">
             {attempt.corrections.map((correction) => (
-              <li key={correction.id}>
+              <li key={correction.id} className="min-w-0">
                 <span className="rounded-full border border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
                   {t(CATEGORY_KEYS[correction.category] ?? CATEGORY_KEYS.other)}
                 </span>
-                <p className="mt-1 text-sm">{correction.text}</p>
+                <p className="mt-1 min-w-0 break-words text-sm [overflow-wrap:anywhere]">{correction.text}</p>
               </li>
             ))}
           </ol>
@@ -164,13 +164,13 @@ export function ProofAttemptHistory({
   }, [autoFocusVerifiedHeading, localeReady, publication.state, publication.acceptedAttempt?.id]);
 
   return (
-    <section aria-labelledby={headingId} className="space-y-4">
+    <section aria-labelledby={headingId} className="min-w-0 max-w-full space-y-4">
       {publication.state === "proof_verified" ? (
         <div className="rounded-[var(--radius)] border-2 border-emerald-800 bg-emerald-50 p-5">
           <h2 ref={verifiedHeadingRef} id={headingId} tabIndex={-1} className="font-heading text-xl font-bold text-emerald-950">
             {t("app.activeMission.proofHistory.verifiedTitle")}
           </h2>
-          <p className="mt-2 text-sm text-emerald-950">{t(VERIFIED_BODY_KEYS[variant])}</p>
+          <p className="mt-2 min-w-0 break-words text-sm text-emerald-950 [overflow-wrap:anywhere]">{t(VERIFIED_BODY_KEYS[variant])}</p>
         </div>
       ) : (
         <h2 id={headingId} className="font-heading text-xl font-bold">{t("app.activeMission.proofHistory.title")}</h2>

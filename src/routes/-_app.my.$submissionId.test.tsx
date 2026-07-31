@@ -28,6 +28,7 @@ const mocks = vi.hoisted(() => ({
   submit: { mutateAsync: vi.fn() },
   upload: vi.fn(),
   publication: { data: undefined as MissionPublicationView | undefined, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
+  publicationRequests: [] as string[],
   publications: {} as Record<string, { data: MissionPublicationView | undefined; isLoading: boolean; isError: boolean; error: Error | null; refetch: ReturnType<typeof vi.fn> }>,
   proofEvidence: { createGrant: { mutateAsync: vi.fn() }, finalize: { mutateAsync: vi.fn() } },
   proofSubmit: { mutateAsync: vi.fn(), isPending: false, conflict: null as null | { localProof: Record<string, unknown>; currentPublication: MissionPublicationView }, clearConflict: vi.fn() },
@@ -53,7 +54,11 @@ vi.mock("@/lib/queries/activeMission", () => ({
   useCreateDraftAssetGrant: () => mocks.grant,
   useFinalizeDraftAsset: () => mocks.finalize,
   useSubmitMissionWorkItem: () => mocks.submit,
-  useMissionPublication: (_submissionId: string, workItemId: string) => mocks.publications[workItemId] ?? mocks.publication,
+  useMissionPublication: (_submissionId: string, workItemId: string) => {
+    mocks.publicationRequests.push(workItemId);
+    if (!workItemId) return { ...mocks.publication, data: undefined, isLoading: false, isError: false, error: null };
+    return mocks.publications[workItemId] ?? mocks.publication;
+  },
   useProofEvidenceUpload: () => mocks.proofEvidence,
   useSubmitPublicationProof: () => mocks.proofSubmit,
 }));
@@ -106,6 +111,41 @@ function publication(overrides: Partial<MissionPublicationView> = {}): MissionPu
     ...overrides,
   };
 }
+
+function rewardWorkspaceWithOptionalDraft(): ActiveMissionWorkspace {
+  const value = workspace({
+    pendingReward: {
+      id: null,
+      status: "pending",
+      reward: { pointsAmount: 500, cashAmount: 0, currency: "HKD", xpAmount: 0 },
+      processingWindowDays: 7,
+      targetAt: null,
+      createdAt: "2026-08-03T01:00:00.000Z",
+      cancelledAt: null,
+      decisionState: { kind: "approved", decidedAt: "2026-08-03T01:00:00.000Z" },
+    },
+  });
+  value.workflow.state = "reward_pending";
+  value.workItems[0] = {
+    ...value.workItems[0],
+    state: "proof_verified",
+    versions: [{
+      id: "version-required",
+      versionNumber: 1,
+      caption: "Required frozen draft",
+      externalUrl: null,
+      checklist: {},
+      contentChecksum: "required",
+      submittedAt: "2026-07-28T08:00:00.000Z",
+      state: "approved_to_publish",
+      decisionAt: "2026-07-29T08:00:00.000Z",
+      assets: [],
+    }],
+  };
+  value.workItems[1] = { ...value.workItems[1], required: false, state: "drafting", versions: [] };
+  return value;
+}
+
 function renderRoute() {
   const Component = Route.options.component as React.ComponentType;
   return render(<Component />);
@@ -117,6 +157,7 @@ describe("creator active mission workspace route", () => {
     i18nMocks.lang = "en";
     mocks.params = { submissionId: "sub-1" };
     mocks.search = {};
+    mocks.publicationRequests.length = 0;
     Object.assign(mocks.query, { data: workspace(), isLoading: false, isError: false, error: null });
     mocks.save.mutateAsync.mockResolvedValue({ draft: workspace().workItems[0].draft });
     mocks.receipt.mutateAsync.mockResolvedValue({});
@@ -606,6 +647,65 @@ describe("creator active mission workspace route", () => {
     expect(screen.queryByRole("button", { name: "Save draft" })).not.toBeInTheDocument();
   });
 
+
+  it("defaults reward review to the verified required deliverable instead of an optional draft", () => {
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 320 });
+    mocks.search = {};
+    const value = rewardWorkspaceWithOptionalDraft();
+    Object.assign(mocks.query, { data: value });
+    mocks.publications = {
+      "item-1": { ...mocks.publication, data: publication({ workItemId: "item-1", state: "proof_verified" }) },
+    };
+
+    renderRoute();
+
+    expect(screen.getByRole("button", { name: /Instagram Reel/ })).toHaveAttribute("aria-current", "step");
+    expect(screen.getByRole("heading", { name: "Proof verified" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Version 1" })).toBeVisible();
+    expect(screen.getByRole("navigation", { name: "Mission deliverables" }).parentElement).toHaveClass("min-w-0");
+    expect(screen.getByRole("heading", { name: "Proof verified" }).closest("section")).toHaveClass("min-w-0", "max-w-full");
+    expect(screen.queryByText("Couldn’t load publication details.")).not.toBeInTheDocument();
+    expect(mocks.publicationRequests.find(Boolean)).toBe("item-1");
+  });
+
+  it("keeps an optional draft navigable without requesting publication or hiding its timeline", async () => {
+    mocks.search = {};
+    const value = rewardWorkspaceWithOptionalDraft();
+    Object.assign(mocks.query, { data: value });
+    mocks.publications = {
+      "item-1": { ...mocks.publication, data: publication({ workItemId: "item-1", state: "proof_verified" }) },
+    };
+    renderRoute();
+
+    mocks.publicationRequests.length = 0;
+    fireEvent.click(screen.getByRole("button", { name: /Story/ }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Story/ })).toHaveAttribute("aria-current", "step"));
+
+    expect(screen.getByText("This optional deliverable has no frozen publication or proof history.")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Version history" })).toBeVisible();
+    expect(screen.getByText("No versions or activity yet.")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Mission complete — reward under finance review" })).toBeVisible();
+    expect(screen.queryByText("Couldn’t load publication details.")).not.toBeInTheDocument();
+    expect(mocks.publicationRequests.filter(Boolean)).toEqual([]);
+    expect(screen.queryByRole("button", { name: "Publish and submit proof" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save draft" })).not.toBeInTheDocument();
+  });
+
+  it("disables reward-history loading motion when reduced motion is requested", () => {
+    mocks.search = { item: "item-1" };
+    const value = rewardWorkspaceWithOptionalDraft();
+    Object.assign(mocks.query, { data: value });
+    mocks.publications = {
+      "item-1": { ...mocks.publication, data: undefined, isLoading: true },
+    };
+
+    renderRoute();
+
+    expect(screen.getByRole("status", { name: "Loading publication proof" })).toHaveClass(
+      "animate-pulse",
+      "motion-reduce:animate-none",
+    );
+  });
   it("uses one conservative reassessment state when decision cancellation arrives before status", () => {
     const mismatch = workspace({
       pendingReward: {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { CreatorPendingReward as PendingReward } from "@/lib/activeMission";
 import {
   getActivationAnalyticsSinkVersion,
@@ -17,6 +17,7 @@ type RewardPendingCardProps = {
 
 const viewedProjectionIdentities = new Set<string>();
 const focusedProjectionIdentities = new Set<string>();
+const announcedProjectionIdentities = new Set<string>();
 const MAX_REMEMBERED_PROJECTIONS = 100;
 const RFC3339 = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
 
@@ -99,6 +100,11 @@ export function RewardPendingCard({
 }: RewardPendingCardProps) {
   const { lang, localeReady, t } = useI18n();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [announcement, setAnnouncement] = useState<{
+    identity: string;
+    lang: typeof lang;
+    text: string;
+  } | null>(null);
   const sinkVersion = useSyncExternalStore(
     subscribeActivationAnalyticsSink,
     getActivationAnalyticsSinkVersion,
@@ -110,6 +116,11 @@ export function RewardPendingCard({
   const identity = projectionIdentity(pendingReward, supportHref);
   const deviceCategory = getDeviceCategory();
   const workflowState = reassessment ? "proof_verified" as const : "reward_pending" as const;
+  const announcementText = localeReady
+    && announcement?.identity === identity
+    && announcement.lang === lang
+    ? announcement.text
+    : "";
   const hasPoints = isPositiveFinite(pendingReward.reward.pointsAmount);
   const hasCash = isPositiveFinite(pendingReward.reward.cashAmount);
   const hasXp = isPositiveFinite(pendingReward.reward.xpAmount);
@@ -132,6 +143,18 @@ export function RewardPendingCard({
     sinkVersion,
     workflowState,
   ]);
+
+  useEffect(() => {
+    if (!localeReady || announcedProjectionIdentities.has(identity)) return;
+    setAnnouncement({
+      identity,
+      lang,
+      text: t(reassessment
+        ? "app.activeMission.rewardPending.cancelledAnnouncement"
+        : "app.activeMission.rewardPending.announcement"),
+    });
+    remember(announcedProjectionIdentities, identity);
+  }, [identity, lang, localeReady, reassessment, t]);
 
   useEffect(() => {
     if (!localeReady || focusedProjectionIdentities.has(identity)) return;
@@ -157,13 +180,9 @@ export function RewardPendingCard({
       aria-label={t("app.activeMission.rewardPending.ariaLabel", { missionTitle })}
       className="min-w-0 max-w-full overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] sm:p-6"
     >
-      {localeReady ? (
-        <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-          {t(reassessment
-            ? "app.activeMission.rewardPending.cancelledAnnouncement"
-            : "app.activeMission.rewardPending.announcement")}
-        </p>
-      ) : null}
+      <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcementText}
+      </p>
       <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-soft-ink)]">
         {t(reassessment
           ? "app.activeMission.rewardPending.cancelledStatus"

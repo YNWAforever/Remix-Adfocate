@@ -109,15 +109,22 @@ export function CreatorMissionWorkspace() {
   const nextAction = workspace ? deriveNextAction(workspace) : null;
   const validSearchId = workspace?.workItems.some(({ id }) => id === search.item) ? search.item! : null;
   const validSelectedId = workspace?.workItems.some(({ id }) => id === selectedId) ? selectedId : null;
+  const rewardHistoryId = showRewardExperience && workspace
+    ? workspace.workItems.find((item) => item.required && item.state === "proof_verified")?.id
+      ?? workspace.workItems.find((item) => item.state === "proof_verified")?.id
+      ?? workspace.workItems.find((item) => item.required && PUBLICATION_STATES.has(item.state))?.id
+      ?? workspace.workItems.find((item) => PUBLICATION_STATES.has(item.state))?.id
+      ?? null
+    : null;
   const defaultId = workspace
-    ? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
+    ? rewardHistoryId
+      ?? (workspace.workItems.some(({ id }) => id === nextAction?.workItemId) ? nextAction?.workItemId : null)
       ?? workspace.workItems[0]?.id
       ?? null
     : null;
   const activeId = validSearchId ?? validSelectedId ?? defaultId;
   const activeItem = workspace?.workItems.find(({ id }) => id === activeId) ?? null;
-  const publicationWorkItemId = activeItem
-    && (showRewardExperience || PUBLICATION_STATES.has(activeItem.state))
+  const publicationWorkItemId = activeItem && PUBLICATION_STATES.has(activeItem.state)
     ? activeItem.id
     : "";
   const publicationQuery = useMissionPublication(submissionId, publicationWorkItemId);
@@ -342,8 +349,12 @@ export function CreatorMissionWorkspace() {
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
           {showRewardExperience && pendingReward ? (
             <>
-              {publicationQuery.isLoading ? (
-                <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" aria-label={t("app.activeMission.publication.loading")} />
+              {!publicationWorkItemId ? (
+                <p className="min-w-0 break-words rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4 text-sm font-semibold [overflow-wrap:anywhere]">
+                  {t("app.activeMission.rewardPending.noPublicationHistory")}
+                </p>
+              ) : publicationQuery.isLoading ? (
+                <div role="status" className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white motion-reduce:animate-none" aria-label={t("app.activeMission.publication.loading")} />
               ) : publicationQuery.isError || !publication ? (
                 <div role="alert" className="rounded-[var(--radius)] border-2 border-red-700 bg-red-50 p-4">
                   <p className="font-bold">{t("app.activeMission.publication.loadError")}</p>

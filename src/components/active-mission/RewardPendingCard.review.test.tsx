@@ -52,25 +52,38 @@ describe("RewardPendingCard review hardening", () => {
   });
   afterEach(() => act(() => setActivationAnalyticsSink(null)));
 
-  it("has one locale-ready focus and announcement owner across bootstrap and rerenders", async () => {
+  it("mounts an empty live region before locale readiness and announces each stable handoff once", async () => {
     const focus = vi.spyOn(HTMLElement.prototype, "focus");
     const value = reward({ createdAt: "2026-08-01T02:00:00.000Z" });
     const view = render(card(value));
+    const status = screen.getByRole("status");
+    const announcements: string[] = [];
+    const observer = new MutationObserver(() => announcements.push(status.textContent ?? ""));
+    observer.observe(status, { childList: true, characterData: true, subtree: true });
 
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(status).toBeEmptyDOMElement();
     expect(focus).not.toHaveBeenCalled();
 
     localeState.localeReady = true;
     view.rerender(card(value));
     const heading = screen.getByRole("heading", { name: "Mission complete — reward under finance review" });
     await waitFor(() => expect(heading).toHaveFocus());
-    expect(screen.getByRole("status")).toHaveTextContent("Mission complete");
+    await waitFor(() => expect(status).toHaveTextContent("Mission complete"));
+    view.rerender(card({ ...value }));
+    await waitFor(() => expect(announcements.filter(Boolean)).toEqual([
+      "Mission complete. Reward finance review started.",
+    ]));
     expect(focus).toHaveBeenCalledTimes(1);
 
     localeState.lang = "zh";
     view.rerender(card({ ...value }));
     expect(screen.getByRole("heading", { name: "任務已完成 — 獎賞正由財務審核" })).toBeVisible();
+    expect(status).toBeEmptyDOMElement();
+    expect(announcements.filter(Boolean)).toEqual([
+      "Mission complete. Reward finance review started.",
+    ]);
     expect(focus).toHaveBeenCalledTimes(1);
+    observer.disconnect();
     focus.mockRestore();
   });
 
@@ -134,7 +147,7 @@ describe("RewardPendingCard review hardening", () => {
     expect(screen.getByText("Usual review window: 0 days")).toBeVisible();
   });
 
-  it("supports a 320px viewport, hover affordance, and keyboard-generated activation", () => {
+  it("uses contained native link semantics with hover and activation analytics at 320px", () => {
     localeState.localeReady = true;
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 320 });
     const events: Array<{ name: string }> = [];
@@ -144,14 +157,20 @@ describe("RewardPendingCard review hardening", () => {
     });
     render(card(reward({ createdAt: "2026-08-01T09:00:00.000Z" })));
 
+    // jsdom does not run the browser's Enter-to-click default action, so assert
+    // the native focusable anchor contract and separately exercise activation.
     const region = screen.getByRole("region");
-    expect(region.scrollWidth).toBeLessThanOrEqual(320);
+    expect(region).toHaveClass("min-w-0", "max-w-full", "overflow-hidden");
     const support = screen.getByRole("link", { name: "Contact support about this reward" });
+    expect(support.tagName).toBe("A");
+    expect(support).toHaveAttribute("href", "/contact?topic=reward-pending&submission=review-test");
+    expect(support).not.toHaveAttribute("role");
+    expect(support.tabIndex).toBe(0);
     expect(support.className).toContain("hover:");
-    support.addEventListener("click", (event) => event.preventDefault(), { once: true });
     support.focus();
-    fireEvent.keyDown(support, { key: "Enter" });
-    fireEvent.click(support, { detail: 0 });
+    expect(support).toHaveFocus();
+    support.addEventListener("click", (event) => event.preventDefault(), { once: true });
+    fireEvent.click(support);
     expect(events.map(({ name }) => name)).toContain("mission_reward_support_selected");
   });
 });

@@ -81,4 +81,41 @@ describe("localized reward proof history", () => {
     expect(screen.getByText("未能顯示自動預覽。你的發佈證明仍可供人手審核。")).toBeVisible();
     expect(document.body).not.toHaveTextContent(/已付款|已入帳|可用|已發放|扣回/);
   });
+
+  it("contains long unbroken metadata, filenames, corrections, and attempt labels", async () => {
+    const metadataTitle = "metadata-" + "x".repeat(180);
+    const filename = "evidence-" + "y".repeat(180) + ".png";
+    const correctionText = "correction-" + "z".repeat(180);
+    const overflowAttempt: PublicationProofAttemptView = {
+      ...accepted,
+      attemptNumber: Number.MAX_SAFE_INTEGER,
+      metadataStatus: "available",
+      metadataSnapshot: { pageTitle: metadataTitle },
+      evidence: [{
+        id: "asset-with-a-long-identifier",
+        originalFilename: filename,
+        mimeType: "image/png",
+        sizeBytes: 128,
+        checksum: "checksum",
+        signedUrl: "https://example.com/private-evidence",
+      }],
+      corrections: [{
+        id: "correction-with-a-long-identifier",
+        category: "content",
+        text: correctionText,
+        position: 1,
+      }],
+    };
+    const value = { ...publication(), attempts: [overflowAttempt], currentAttempt: overflowAttempt, acceptedAttempt: overflowAttempt };
+    window.localStorage.setItem("lang", "en");
+    render(<I18nProvider><ProofAttemptHistory publication={value} autoFocusVerifiedHeading={false} /></I18nProvider>);
+    await waitFor(() => expect(document.documentElement.lang).toBe("en"));
+
+    const attemptHeading = screen.getByRole("heading", { name: "Proof attempt " + Number.MAX_SAFE_INTEGER });
+    expect(attemptHeading.closest("article")).toHaveClass("min-w-0", "max-w-full", "overflow-hidden");
+    expect(attemptHeading).toHaveClass("min-w-0", "break-words", "[overflow-wrap:anywhere]");
+    expect(screen.getByText(metadataTitle)).toHaveClass("min-w-0", "break-words", "[overflow-wrap:anywhere]");
+    expect(screen.getByRole("link", { name: filename })).toHaveClass("min-w-0", "break-words", "[overflow-wrap:anywhere]");
+    expect(screen.getByText(correctionText)).toHaveClass("min-w-0", "break-words", "[overflow-wrap:anywhere]");
+  });
 });
