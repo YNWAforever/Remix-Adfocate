@@ -230,7 +230,10 @@ export function normalizeRewardProcessingWindowInput(input: {
   workspace: string;
   days: number | null;
 }) {
-  return { ...input, workspace: normalizeWorkspace(input.workspace) };
+  return {
+    workspace: normalizeWorkspace(input.workspace),
+    days: input.days,
+  };
 }
 
 function workspaceHeader(workspace: string) {

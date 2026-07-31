@@ -117,7 +117,11 @@ describe("admin reward handoff client", () => {
       reasonNote: "Needs finance reassessment.",
       ...transportExtras,
     } as CancelRewardHandoffInput);
-    await setRewardProcessingWindow({ workspace: "alpha", days: null });
+    await setRewardProcessingWindow({
+      workspace: " alpha ",
+      days: null,
+      ...transportExtras,
+    } as Parameters<typeof setRewardProcessingWindow>[0]);
 
     const request = (path: string, method: string, body: unknown) => [
       path,
