@@ -1,16 +1,44 @@
-name: Supabase Migrations
+name: Supabase Production Release
 on:
-  push:
-    branches: [main]
-    paths: ["supabase/migrations/**"]
+  workflow_dispatch:
+    inputs:
+      bundle_path:
+        description: Committed sanitized evidence bundle path
+        required: true
+        type: string
+      bundle_digest:
+        description: Approved SHA-256 bundle digest
+        required: true
+        type: string
+      project_ref:
+        description: Exact approved Supabase project reference
+        required: true
+        type: string
+      approval:
+        description: Exact APPROVE phrase from the runbook
+        required: true
+        type: string
+
 jobs:
   migrate:
+    environment: production
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with: { version: latest }
-      - run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env: { SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }} }
-      - run: supabase db push
-        env: { SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }} }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Verify evidence and execute approved migration range
+        run: >-
+          npm run release:execute --
+          --bundle "${{ inputs.bundle_path }}"
+          --bundle-digest "${{ inputs.bundle_digest }}"
+          --project-ref "${{ inputs.project_ref }}"
+          --approval "${{ inputs.approval }}"
+          --apply
+        env:
+          RELEASE_DATABASE_URL: "${{ secrets.SUPABASE_DB_URL }}"
