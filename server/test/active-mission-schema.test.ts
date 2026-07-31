@@ -35,6 +35,51 @@ describe("active mission migration contract", () => {
     expect(sql).not.toContain("approve_submission(");
   });
 
+  it("defines atomic join capture and service-only audited reward settings", () => {
+    const migrationPath = resolve(
+      "supabase/migrations/20260731110000_reward_contract_capture.sql",
+    );
+    const sql = existsSync(migrationPath)
+      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+      : "";
+
+    for (const token of [
+      "create or replace function public.join_active_mission(p_mission uuid)",
+      "private.create_mission_workflow(v_submission.id)",
+      "'join'",
+      "'hkd'",
+      "create or replace function private.backfill_mission_reward_contract",
+      "create or replace function public.backfill_mission_reward_contract",
+      "for update",
+      "'operator_backfill'",
+      "confirmation_evidence_source",
+      "create or replace function private.set_reward_processing_window",
+      "create or replace function public.set_reward_processing_window",
+      "set reward_processing_window_days = p_days",
+      "set search_path = ''",
+    ]) expect(sql, `missing reward-contract token: ${token}`).toContain(token);
+
+    expect(sql).not.toContain("create trigger mission_reward_contract");
+    expect(sql).toContain(
+      "grant execute on function public.join_active_mission(uuid) to authenticated",
+    );
+    expect(sql).toContain(
+      "revoke all on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) to service_role",
+    );
+    expect(sql).toContain(
+      "revoke all on function private.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.set_reward_processing_window(uuid, uuid, smallint) to service_role",
+    );
+    expect(sql).toContain(
+      "revoke all on function private.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
+    );
+  });
+
   it("documents a non-destructive publication-proof rollback and operator recovery contract", () => {
     const runbookPath = resolve("docs/operations/publication-proof-release-runbook.md");
     const runbook = existsSync(runbookPath)
