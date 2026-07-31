@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api";
 import * as api from "@/lib/api";
 import { supabase } from "@/lib/supabase";
+import { AdminRequestError } from "@/lib/admin";
 import {
   refreshPublicationProofMetadata,
   requestPublicationProofCorrection,
@@ -16,6 +17,9 @@ import {
   activeMissionQueryKey,
   missionPublicationQueryKey,
   useActiveMissionWorkspace,
+  useApproveMissionCompletion,
+  useBackfillRewardContract,
+  useCancelRewardHandoff,
   useConfirmMissionReceipt,
   useCreateDraftAssetGrant,
   useFinalizeDraftAsset,
@@ -425,6 +429,135 @@ describe("operator publication proof hooks", () => {
     expect(invalidate.mock.calls.map(([filter]) => filter?.queryKey)).toEqual([
       ["admin-active-mission", "demo", "workflow-1"],
       ["admin-active-missions", "demo"],
+    ]);
+  });
+});
+
+describe("reward handoff mutation hooks", () => {
+  const approval = {
+    workflowId: "workflow-1",
+    submissionId: "sub-1",
+    workspace: "alpha",
+    expectedState: "proof_verified" as const,
+    expectedRevision: 7,
+  };
+
+  beforeEach(() => {
+    vi.spyOn(supabase.auth, "getSession").mockResolvedValue({
+      data: { session: null }, error: null,
+    } as never);
+  });
+
+  it("reuses a normalized semantic key after ambiguity, preserves conflict, and clears success", async () => {
+    const fetch = vi.fn()
+      .mockRejectedValueOnce(new TypeError("offline"))
+      .mockResolvedValueOnce({
+        ok: false, status: 503, statusText: "Unavailable",
+        json: async () => ({ error: "unavailable", code: "UNKNOWN" }),
+      })
+      .mockResolvedValueOnce({
+        ok: false, status: 409, statusText: "Conflict",
+        json: async () => ({ error: "conflict", code: "IDEMPOTENCY_CONFLICT" }),
+      })
+      .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+    vi.stubGlobal("fetch", fetch);
+    const randomUUID = vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+      .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useApproveMissionCompletion(), { wrapper });
+
+    await act(async () => {
+      await expect(result.current.mutateAsync(approval)).rejects.toThrow("offline");
+      await expect(result.current.mutateAsync({
+        expectedRevision: 7,
+        expectedState: "proof_verified",
+        workspace: "alpha",
+        submissionId: "sub-1",
+        workflowId: "workflow-1",
+      })).rejects.toBeInstanceOf(AdminRequestError);
+      await expect(result.current.mutateAsync(approval)).rejects.toMatchObject({ status: 409 });
+      await result.current.mutateAsync(approval);
+    });
+    expect(fetch.mock.calls.slice(0, 4).map(([, init]) =>
+      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      "11111111-1111-4111-8111-111111111111",
+      "11111111-1111-4111-8111-111111111111",
+      "11111111-1111-4111-8111-111111111111",
+      "11111111-1111-4111-8111-111111111111",
+    ]);
+
+    await act(async () => { await result.current.mutateAsync(approval); });
+    expect(JSON.parse((fetch.mock.calls[4][1] as RequestInit).body as string).idempotencyKey)
+      .toBe("22222222-2222-4222-8222-222222222222");
+    expect(randomUUID).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(["WORKFLOW_STALE", "WRONG_STATE"] as const)(
+    "clears the approval key after definitive %s",
+    async (code) => {
+      const fetch = vi.fn()
+        .mockResolvedValueOnce({
+          ok: false, status: 409, statusText: "Conflict",
+          json: async () => ({ error: code, code }),
+        })
+        .mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
+      vi.stubGlobal("fetch", fetch);
+      vi.spyOn(globalThis.crypto, "randomUUID")
+        .mockReturnValueOnce("11111111-1111-4111-8111-111111111111")
+        .mockReturnValueOnce("22222222-2222-4222-8222-222222222222");
+      const { wrapper } = setup();
+      const { result } = renderHook(() => useApproveMissionCompletion(), { wrapper });
+
+      await act(async () => {
+        await expect(result.current.mutateAsync(approval)).rejects.toMatchObject({
+          status: 409, code,
+        });
+        await result.current.mutateAsync(approval);
+      });
+      expect(fetch.mock.calls.map(([, init]) =>
+        JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+        "11111111-1111-4111-8111-111111111111",
+        "22222222-2222-4222-8222-222222222222",
+      ]);
+    },
+  );
+
+  it("invalidates exactly four scoped query families after approve, backfill, and cancel success", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, status: 200, json: async () => ({ ok: true }),
+    }));
+    vi.spyOn(globalThis.crypto, "randomUUID")
+      .mockReturnValue("11111111-1111-4111-8111-111111111111");
+    const { queryClient, wrapper } = setup();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const approve = renderHook(() => useApproveMissionCompletion(), { wrapper });
+    const backfill = renderHook(() => useBackfillRewardContract(), { wrapper });
+    const cancel = renderHook(() => useCancelRewardHandoff(), { wrapper });
+
+    await act(async () => {
+      await approve.result.current.mutateAsync(approval);
+      await backfill.result.current.mutateAsync({
+        workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+        pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0,
+        sourceMissionUpdatedAt: null, confirmationEvidenceSource: "operator_record",
+        confirmationReason: "Confirmed",
+      });
+      await cancel.result.current.mutateAsync({
+        workflowId: "workflow-1", submissionId: "sub-1", workspace: "alpha",
+        expectedState: "reward_pending", expectedRevision: 8,
+        reasonCategory: "other", reasonNote: "Reassess",
+      });
+    });
+
+    const expected = [
+      ["admin-active-mission", "alpha", "workflow-1"],
+      ["admin-reward-handoffs", "alpha"],
+      ["active-mission", "sub-1"],
+      ["notifications"],
+    ];
+    expect(invalidate.mock.calls.map(([filter]) => filter?.queryKey)).toEqual([
+      ...expected, ...expected, ...expected,
     ]);
   });
 });

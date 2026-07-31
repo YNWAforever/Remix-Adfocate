@@ -23,6 +23,18 @@ export type RewardContract = {
   createdAt: string;
 };
 
+export type CompletionEligibility = {
+  eligible: boolean;
+  blockers: Array<
+    | "wrong_state"
+    | "required_proof_incomplete"
+    | "reward_contract_required"
+    | "pending_reward_exists"
+  >;
+  requiredItemCount: number;
+  verifiedRequiredItemCount: number;
+};
+
 export type CompletionDecision = {
   id: string;
   missionWorkflowId: string;
@@ -38,13 +50,14 @@ export type CompletionDecision = {
 };
 
 export type PendingReward = {
-  id: string;
+  id: string | null;
   status: RewardHandoffStatus;
   reward: Pick<RewardContract, "pointsAmount" | "cashAmount" | "currency" | "xpAmount">;
   processingWindowDays: number | null;
   targetAt: string | null;
   createdAt: string;
   cancelledAt: string | null;
+  decisionState?: Readonly<{ kind: "approved" | "cancelled"; decidedAt: string }>;
 };
 
 export type WorkItemState =
@@ -290,6 +303,9 @@ export type ActiveMissionWorkspace = {
   workItems: MissionWorkItemView[];
   events: MissionWorkflowEvent[];
   nextAction: ServerNextAction;
+  rewardContract?: RewardContract | null;
+  completionEligibility?: CompletionEligibility;
+  pendingReward?: PendingReward | null;
 };
 
 export type ActiveMissionNextAction = {

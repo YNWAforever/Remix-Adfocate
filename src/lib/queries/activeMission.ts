@@ -2,11 +2,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
 import {
+  AdminRequestError,
   refreshPublicationProofMetadata,
   requestPublicationProofCorrection,
   startPublicationProofReview,
   verifyPublicationProof,
 } from "../admin";
+import {
+  approveMissionCompletion,
+  backfillRewardContract,
+  cancelRewardHandoff,
+  fetchCompletionReview,
+  fetchRewardHandoffs,
+  setRewardProcessingWindow,
+  type ApproveCompletionInput,
+  type BackfillRewardContractInput,
+  type CancelRewardHandoffInput,
+  type RewardHandoffListFilters,
+} from "../adminRewardHandoff";
 import type {
   ActiveMissionWorkspace, MissionDraft, MissionPublicationView,
   MissionWorkflow, PublicationProofAttemptView,
@@ -616,5 +629,162 @@ export function useRefreshProofMetadata() {
     mutationFn: ({ workflowId, workItemId, ...body }: OperatorProofMutationBase) =>
       refreshPublicationProofMetadata(workflowId, workItemId, body),
     onSuccess: (_data, input) => invalidate(input),
+  });
+}
+
+type RewardMutationScope = {
+  workflowId: string;
+  submissionId: string;
+  workspace: string;
+  idempotencyKey?: string;
+};
+
+export type ApproveCompletionMutationInput =
+  Omit<ApproveCompletionInput, "idempotencyKey"> & RewardMutationScope;
+export type BackfillRewardContractMutationInput =
+  Omit<BackfillRewardContractInput, "idempotencyKey"> & RewardMutationScope;
+export type CancelRewardHandoffMutationInput =
+  Omit<CancelRewardHandoffInput, "idempotencyKey"> & RewardMutationScope;
+
+function normalizeSemanticValue(value: unknown, field = ""): unknown {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (field === "currency") return trimmed.toUpperCase();
+    if (field === "confirmationEvidenceSource" || field === "reasonCategory") {
+      return trimmed.toLowerCase();
+    }
+    return trimmed;
+  }
+  if (Array.isArray(value)) return value.map((item) => normalizeSemanticValue(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([key]) => key !== "idempotencyKey")
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, nested]) => [key, normalizeSemanticValue(nested, key)]),
+    );
+  }
+  return value;
+}
+
+export function rewardMutationSignature(action: string, input: unknown): string {
+  return `${action}:${JSON.stringify(normalizeSemanticValue(input))}`;
+}
+
+function createIdempotencyKey() {
+  return globalThis.crypto.randomUUID();
+}
+
+function invalidateRewardCollections(
+  queryClient: ReturnType<typeof useQueryClient>,
+  input: RewardMutationScope,
+) {
+  void queryClient.invalidateQueries({
+    queryKey: ["admin-active-mission", input.workspace, input.workflowId],
+  });
+  void queryClient.invalidateQueries({
+    queryKey: ["admin-reward-handoffs", input.workspace],
+  });
+  void queryClient.invalidateQueries({
+    queryKey: activeMissionQueryKey(input.submissionId),
+  });
+  void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+}
+
+function useStableRewardMutation<
+  TInput extends RewardMutationScope,
+  TResult,
+>(
+  action: string,
+  operation: (input: TInput & { idempotencyKey: string }) => Promise<TResult>,
+) {
+  const queryClient = useQueryClient();
+  const keys = useRef(new Map<string, string>());
+  return useMutation({
+    mutationFn: async (input: TInput) => {
+      const signature = rewardMutationSignature(action, input);
+      const key = keys.current.get(signature)
+        ?? input.idempotencyKey
+        ?? createIdempotencyKey();
+      keys.current.set(signature, key);
+      try {
+        const result = await operation({ ...input, idempotencyKey: key });
+        keys.current.delete(signature);
+        return result;
+      } catch (error) {
+        if (
+          error instanceof AdminRequestError
+          && (error.code === "WORKFLOW_STALE" || error.code === "WRONG_STATE")
+        ) {
+          keys.current.delete(signature);
+        }
+        throw error;
+      }
+    },
+    onSuccess: (_data, input) => invalidateRewardCollections(queryClient, input),
+  });
+}
+
+export function useCompletionReview(workflowId: string, workspace: string) {
+  return useQuery({
+    queryKey: ["admin-active-mission", workspace, workflowId, "completion-review"],
+    queryFn: () => fetchCompletionReview(workflowId, workspace),
+    enabled: Boolean(workflowId && workspace),
+    retry: false,
+  });
+}
+
+export function useRewardHandoffs(filters: RewardHandoffListFilters) {
+  return useQuery({
+    queryKey: ["admin-reward-handoffs", filters.workspace, {
+      due: filters.due || undefined,
+      component: filters.component || undefined,
+      status: filters.status || undefined,
+    }],
+    queryFn: () => fetchRewardHandoffs(filters),
+    enabled: Boolean(filters.workspace),
+    retry: false,
+  });
+}
+
+export function useApproveMissionCompletion() {
+  return useStableRewardMutation<ApproveCompletionMutationInput, Awaited<ReturnType<typeof approveMissionCompletion>>>(
+    "approve-completion",
+    ({ workflowId, submissionId, ...input }) => {
+      void submissionId;
+      return approveMissionCompletion(workflowId, input);
+    },
+  );
+}
+
+export function useBackfillRewardContract() {
+  return useStableRewardMutation<BackfillRewardContractMutationInput, Awaited<ReturnType<typeof backfillRewardContract>>>(
+    "backfill-reward-contract",
+    ({ workflowId, submissionId, ...input }) => {
+      void submissionId;
+      return backfillRewardContract(workflowId, input);
+    },
+  );
+}
+
+export function useCancelRewardHandoff() {
+  return useStableRewardMutation<CancelRewardHandoffMutationInput, Awaited<ReturnType<typeof cancelRewardHandoff>>>(
+    "cancel-reward-handoff",
+    ({ workflowId, submissionId, ...input }) => {
+      void submissionId;
+      return cancelRewardHandoff(workflowId, input);
+    },
+  );
+}
+
+export function useSetRewardProcessingWindow() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: setRewardProcessingWindow,
+    onSuccess: (_data, input) => {
+      void queryClient.invalidateQueries({
+        queryKey: ["admin-reward-handoffs", input.workspace],
+      });
+    },
   });
 }

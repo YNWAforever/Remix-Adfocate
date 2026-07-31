@@ -341,7 +341,7 @@ describe("AdminRequestError surfaces code + fields", () => {
     }));
     const err = await createMission({ workspace_id: "w", slug: "x", title: "t", mission_type: "ugc" }).catch((e) => e);
     expect(err).toBeInstanceOf(AdminRequestError);
-    expect(err).toMatchObject({ code: "validation", fields: { slug: "taken" } });
+    expect(err).toMatchObject({ status: 422, code: "validation", fields: { slug: "taken" } });
   });
   it("fetchAdminMissions builds the workspace+status query", async () => {
     const f = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ missions: [] }) });
