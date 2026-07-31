@@ -123,15 +123,20 @@ describe("admin reward handoff client", () => {
       ...transportExtras,
     } as Parameters<typeof setRewardProcessingWindow>[0]);
 
-    const request = (path: string, method: string, body: unknown) => [
-      path,
-      expect.objectContaining({
-        method,
-        headers: expect.objectContaining({ "X-Workspace-Slug": "alpha" }),
-        body: JSON.stringify(body),
-      }),
-    ] as const;
-    expect(fetch).toHaveBeenNthCalledWith(1, ...request(
+    const request = (path: string, method: string, body: Record<string, unknown>) => {
+      const { idempotencyKey: key, ...safeBody } = body;
+      return [
+        path,
+        expect.objectContaining({
+          method,
+          headers: expect.objectContaining({
+            "X-Workspace-Slug": "alpha",
+            ...(key ? { "Idempotency-Key": key } : {}),
+          }),
+          body: JSON.stringify(safeBody),
+        }),
+      ] as const;
+    };    expect(fetch).toHaveBeenNthCalledWith(1, ...request(
       "/api/admin/active-missions/workflow-1/reward-contract",
       "POST",
       {
@@ -174,6 +179,24 @@ describe("admin reward handoff client", () => {
     }
   });
 
+  it("uses the Idempotency-Key header and never serializes it in mutation bodies", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response());
+    await approveMissionCompletion("workflow-1", {
+      workspace: "alpha",
+      expectedState: "proof_verified",
+      expectedRevision: 7,
+      idempotencyKey,
+    });
+    const init = fetch.mock.calls[0]?.[1];
+    expect(init?.headers).toEqual(expect.objectContaining({
+      "X-Workspace-Slug": "alpha",
+      "Idempotency-Key": idempotencyKey,
+    }));
+    expect(JSON.parse(String(init?.body))).toEqual({
+      expectedState: "proof_verified",
+      expectedRevision: 7,
+    });
+  });
   it("canonicalizes bounded list filters, explicit pending defaults, and workspace transport", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response({
       items: [],
@@ -216,6 +239,17 @@ describe("admin reward handoff client", () => {
     });
   });
 
+  it("serializes bounded pagination and continuation cursor deterministically", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response({
+      items: [], rewardProcessingWindowDays: null,
+      pageInfo: { hasMore: false, nextCursor: null, limit: 25 },
+    }));
+    await fetchRewardHandoffs({ workspace: "alpha", status: "pending", limit: 25, cursor: "cursor-token" });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/admin/reward-handoffs?status=pending&limit=25&cursor=cursor-token",
+      expect.any(Object),
+    );
+  });
   it("uses the same canonical mutation values in headers and bodies", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(response());
 
@@ -234,11 +268,11 @@ describe("admin reward handoff client", () => {
     expect(fetch).toHaveBeenCalledWith(
       "/api/admin/active-missions/workflow-1/reward-contract",
       expect.objectContaining({
-        headers: expect.objectContaining({ "X-Workspace-Slug": "alpha" }),
+        headers: expect.objectContaining({ "X-Workspace-Slug": "alpha", "Idempotency-Key": idempotencyKey }),
         body: JSON.stringify({
           pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0,
           sourceMissionUpdatedAt: null, confirmationEvidenceSource: "operator_record",
-          confirmationReason: "Confirmed", idempotencyKey,
+          confirmationReason: "Confirmed",
         }),
       }),
     );

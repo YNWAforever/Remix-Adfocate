@@ -259,6 +259,9 @@ export function AdminActiveMissionReviewView({
       rewardContract={completionProjection.rewardContract ?? null}
       eligibility={completionProjection.completionEligibility}
       pendingReward={completionProjection.pendingReward ?? null}
+      acceptedProofAnchors={completionProjection.acceptedProofAnchors ?? []}
+      processingWindowDays={completionProjection.processingWindowDays ?? null}
+      processingTargetAt={completionProjection.processingTargetAt ?? null}
       busy={completionBusy}
       onBackfill={(input) => runCompletionAction(() => backfillRewardContract.mutateAsync({
           workflowId,

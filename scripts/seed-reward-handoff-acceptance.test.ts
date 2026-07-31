@@ -4,6 +4,7 @@ import {
   REWARD_HANDOFF_SCENARIO_LABELS,
   REWARD_NEUTRALITY_SNAPSHOT_FIELDS,
   rewardHandoffAcceptanceSummary,
+  structuralCountsFromAssertions,
 } from "./seed-reward-handoff-acceptance";
 
 describe("reward handoff acceptance seed contract", () => {
@@ -37,6 +38,18 @@ describe("reward handoff acceptance seed contract", () => {
     ]);
   });
 
+  it("cannot report success when any scenario lacks an executed assertion", () => {
+    const incomplete = new Set(REWARD_HANDOFF_SCENARIO_LABELS.slice(0, -1));
+    expect(() => structuralCountsFromAssertions(incomplete, 5))
+      .toThrow(/missing_sla_workspace/);
+    const complete = structuralCountsFromAssertions(
+      new Set(REWARD_HANDOFF_SCENARIO_LABELS),
+      5,
+    );
+    expect(Object.values(complete.scenarioCounts)).toEqual(
+      REWARD_HANDOFF_SCENARIO_LABELS.map(() => 1),
+    );
+  });
   it("logs structural labels and counts without fixture identities or secrets", () => {
     const summary = rewardHandoffAcceptanceSummary({
       scenarioCounts: Object.fromEntries(

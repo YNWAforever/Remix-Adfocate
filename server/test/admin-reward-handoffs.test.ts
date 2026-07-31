@@ -8,7 +8,10 @@ import type { StaffIdentity } from "../lib/staffAuth";
 import {
   RewardHandoffError,
   createRewardHandoffRepository,
+  decodeRewardHandoffCursor,
+  encodeRewardHandoffCursor,
   normalizeCreatorRewardHandoffProjection,
+  validateBackfillPayload,
   type AdminRewardHandoffRepository,
 } from "../lib/activeMission/rewardHandoff";
 import { createAdminRewardHandoffRoutes } from "../routes/adminRewardHandoffs";
@@ -42,7 +45,7 @@ describe("admin reward handoff route contracts", () => {
       `/api/admin/active-missions/${workflowId}/completion`,
       {
         method: "POST",
-        headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" },
+        headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
         body: JSON.stringify({
           workspaceSlug: "forged",
           workspaceId: "44444444-4444-4444-8444-444444444444",
@@ -71,7 +74,7 @@ describe("admin reward handoff route contracts", () => {
       updateSettings: vi.fn(async () => ({ rewardProcessingWindowDays: null })),
     } as unknown as AdminRewardHandoffRepository;
     const app = mounted(repository);
-    const headers = { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" };
+    const headers = { "X-Workspace-Slug": "alpha", "Content-Type": "application/json", "Idempotency-Key": idempotencyKey };
 
     expect((await app.request(`/api/admin/active-missions/${workflowId}/completion`, { headers })).status).toBe(200);
     expect(repository.getCompletion).toHaveBeenCalledWith({ workflowId, workspaceSlug: "alpha", operatorId });
@@ -138,7 +141,7 @@ describe("admin reward handoff route contracts", () => {
         `/api/admin/active-missions/${workflowId}/reward-contract`,
         {
           method: "POST",
-          headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" },
+          headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
           body: JSON.stringify({
             pointsAmount: 500,
             cashAmount: 125,
@@ -167,14 +170,39 @@ describe("admin reward handoff route contracts", () => {
       { headers },
     )).status).toBe(200);
     expect(listRewardHandoffs).toHaveBeenLastCalledWith({
-      workspaceSlug: "alpha", operatorId, due: "due_soon", component: "cash", status: "cancelled",
+      workspaceSlug: "alpha", operatorId, due: "due_soon", component: "cash", status: "cancelled", cursor: undefined, limit: 50,
     });
     expect((await app.request("/api/admin/reward-handoffs", { headers })).status).toBe(200);
     expect(listRewardHandoffs).toHaveBeenLastCalledWith({
-      workspaceSlug: "alpha", operatorId, due: undefined, component: undefined, status: "pending",
+      workspaceSlug: "alpha", operatorId, due: undefined, component: undefined, status: "pending", cursor: undefined, limit: 50,
     });
   });
 
+  it("routes a bounded notification retry to the exact pending reward", async () => {
+    const retryNotification = vi.fn(async () => ({ delivered: true, idempotent: false }));
+    const response = await mounted({ retryNotification } as unknown as AdminRewardHandoffRepository)
+      .request("/api/admin/reward-handoffs/" + workflowId + "/notifications/retry", {
+        method: "POST",
+        headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationType: "mission_reward_pending" }),
+      });
+    expect(response.status).toBe(200);
+    expect(retryNotification).toHaveBeenCalledWith({
+      workspaceSlug: "alpha",
+      operatorId,
+      pendingRewardId: workflowId,
+      notificationType: "mission_reward_pending",
+    });
+
+    const invalid = await mounted({ retryNotification } as unknown as AdminRewardHandoffRepository)
+      .request("/api/admin/reward-handoffs/" + workflowId + "/notifications/retry", {
+        method: "POST",
+        headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationType: "custom_message" }),
+      });
+    expect(invalid.status).toBe(400);
+    expect(retryNotification).toHaveBeenCalledTimes(1);
+  });
   it("rejects missing staff, malformed IDs, invalid revisions, states, notes, SLA, and filters", async () => {
     const repository = {
       approveCompletion: vi.fn(),
@@ -188,7 +216,7 @@ describe("admin reward handoff route contracts", () => {
     })).status).toBe(401);
 
     const app = mounted(repository);
-    const headers = { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" };
+    const headers = { "X-Workspace-Slug": "alpha", "Content-Type": "application/json", "Idempotency-Key": idempotencyKey };
     const invalidRequests: Array<[string, RequestInit]> = [
       ["/api/admin/active-missions/not-a-uuid/completion", { method: "GET", headers }],
       [`/api/admin/active-missions/${workflowId}/completion`, {
@@ -263,12 +291,16 @@ describe("reward handoff service boundaries", () => {
   function serviceHarness(options?: {
     rpcError?: { message: string } | null;
     queueStatus?: "pending" | "cancelled";
+    corruptMissionWorkspace?: boolean;
   }) {
     const calls: string[] = [];
     const selects: string[] = [];
     const orders: Array<[string, unknown]> = [];
     const decision = {
       id: "decision-1",
+      workspace_id: "workspace-1",
+      mission_workflow_id: workflowId,
+      reward_contract_id: "contract-1",
       decision_kind: "approved",
       decided_at: "2026-07-31T10:00:00.000Z",
       required_item_count: 1,
@@ -281,6 +313,7 @@ describe("reward handoff service boundaries", () => {
     };
     const pending = {
       id: "pending-1",
+      workspace_id: "workspace-1",
       mission_workflow_id: workflowId,
       mission_submission_id: "submission-1",
       creator_id: "creator-1",
@@ -297,9 +330,13 @@ describe("reward handoff service boundaries", () => {
       cancellation_decision_id: options?.queueStatus === "cancelled" ? "cancel-1" : null,
       created_at: "2026-07-31T10:00:00.000Z",
       cancelled_at: options?.queueStatus === "cancelled" ? "2026-08-01T10:00:00.000Z" : null,
-      creators: { display_name: "Creator" },
-      missions: { title: "Mission" },
+      workflow: { id: workflowId, workspace_id: "workspace-1", mission_submission_id: "submission-1" },
+      submission: { id: "submission-1", workspace_id: "workspace-1", creator_id: "creator-1", mission_id: "mission-1" },
+      reward_contract: { id: "contract-1", workspace_id: "workspace-1", mission_workflow_id: workflowId, mission_submission_id: "submission-1", mission_id: "mission-1" },
+      creators: { id: "creator-1", workspace_id: "workspace-1", display_name: "Creator" },
+      missions: { id: "mission-1", workspace_id: options?.corruptMissionWorkspace ? "workspace-2" : "workspace-1", title: "Mission" },
       completion_decision: decision,
+      cancellation_decision: options?.queueStatus === "cancelled" ? { id: "cancel-1", workspace_id: "workspace-1", mission_workflow_id: workflowId, reward_contract_id: "contract-1", decision_kind: "cancelled" } : null,
     };
     const dataFor = (table: string) => {
       if (table === "brand_users") return {
@@ -310,9 +347,10 @@ describe("reward handoff service boundaries", () => {
           reward_processing_window_days: 7,
         },
       };
-      if (table === "mission_workflows") return { id: workflowId, state: "proof_verified", revision: 7 };
+      if (table === "mission_workflows") return { id: workflowId, workspace_id: "workspace-1", mission_submission_id: "submission-1", state: "proof_verified", revision: 7 };
+      if (table === "mission_submissions") return { id: "submission-1", workspace_id: "workspace-1", creator_id: "creator-1", mission_id: "mission-1" };
       if (table === "mission_work_items") return [];
-      if (table === "mission_reward_contracts") return null;
+      if (table === "mission_reward_contracts") return { id: "contract-1", workspace_id: "workspace-1", mission_workflow_id: workflowId, mission_submission_id: "submission-1", mission_id: "mission-1", points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0, source: "join", created_at: "2026-07-31T10:00:00.000Z" };
       if (table === "mission_pending_rewards") return [pending];
       if (table === "mission_completion_decisions") return decision;
       return null;
@@ -447,6 +485,28 @@ describe("reward handoff service boundaries", () => {
     expect(harness.calls.indexOf(target)).toBeGreaterThan(0);
   });
 
+  it("omits queue records whose canonical relation chain crosses a workspace boundary", async () => {
+    const harness = serviceHarness({ corruptMissionWorkspace: true });
+    const result = await harness.repository.listRewardHandoffs({
+      workspaceSlug: "alpha", operatorId, status: "pending",
+    }) as { items: unknown[] };
+    expect(result.items).toEqual([]);
+  });
+  it("authorizes and invokes the exact notification retry RPC", async () => {
+    const harness = serviceHarness();
+    await harness.repository.retryNotification({
+      workspaceSlug: "alpha",
+      operatorId,
+      pendingRewardId: workflowId,
+      notificationType: "mission_reward_pending_cancelled",
+    });
+    expect(harness.rpc).toHaveBeenCalledWith("retry_reward_handoff_notification", {
+      p_workspace: "workspace-1",
+      p_operator: operatorId,
+      p_pending_reward: workflowId,
+      p_notification_type: "mission_reward_pending_cancelled",
+    });
+  });
   it("forces zero XP into the backfill RPC", async () => {
     const harness = serviceHarness();
     await harness.repository.backfillRewardContract({
@@ -534,6 +594,36 @@ describe("reward handoff service boundaries", () => {
     },
   );
 
+  it.each([
+    "2026-02-30T10:00:00Z",
+    "2026-07-31 10:00:00Z",
+    "2026-07-31T10:00:00",
+    "2026-07-31T25:00:00Z",
+  ])("rejects non-RFC3339 source mission timestamp %s", (sourceMissionUpdatedAt) => {
+    expect(() => validateBackfillPayload({
+      pointsAmount: 1,
+      cashAmount: 0,
+      currency: "HKD",
+      xpAmount: 0,
+      sourceMissionUpdatedAt,
+      confirmationEvidenceSource: "operator_record",
+      confirmationReason: "Confirmed",
+      idempotencyKey,
+    }, idempotencyKey)).toThrow(/RFC3339/);
+  });
+  it("round-trips a stable target-null-last queue cursor and rejects malformed input", () => {
+    const cursor = encodeRewardHandoffCursor({
+      targetAt: null,
+      createdAt: "2026-08-01T00:00:00.000Z",
+      id: workflowId,
+    });
+    expect(decodeRewardHandoffCursor(cursor)).toEqual({
+      targetAt: null,
+      createdAt: "2026-08-01T00:00:00.000Z",
+      id: workflowId,
+    });
+    expect(() => decodeRewardHandoffCursor("not-a-cursor")).toThrow(/cursor/);
+  });
   it("normalizes only the creator-safe RPC projection", () => {
     const projection = normalizeCreatorRewardHandoffProjection({
       reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },

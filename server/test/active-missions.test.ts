@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -716,7 +716,9 @@ describe("active mission operator routes without a live database", () => {
       { table: "mission_publication_proof_reviews", data: [] },
       { table: "mission_publication_proof_assets", data: [] },
       { table: "mission_reward_contracts", data: {
-        id: "contract-1", points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
+        id: "contract-1", workspace_id: owner.workspaceId, mission_workflow_id: workflowId,
+        mission_submission_id: owner.submissionId, mission_id: mission.id,
+        points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
         source: "join", source_mission_updated_at: null, confirmed_by: null,
         confirmation_evidence_source: null, confirmation_reason: null,
         created_at: "2026-07-31T10:00:00.000Z",
@@ -776,7 +778,9 @@ describe("active mission operator routes without a live database", () => {
       { table: "mission_publication_proof_reviews", data: [] },
       { table: "mission_publication_proof_assets", data: [] },
       { table: "mission_reward_contracts", data: {
-        id: "contract-1", points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
+        id: "contract-1", workspace_id: owner.workspaceId, mission_workflow_id: workflowId,
+        mission_submission_id: owner.submissionId, mission_id: mission.id,
+        points_amount: 500, cash_amount: 125, currency: "HKD", xp_amount: 0,
         source: "join", source_mission_updated_at: null, confirmed_by: null,
         confirmation_evidence_source: null, confirmation_reason: null,
         created_at: "2026-07-31T10:00:00.000Z",

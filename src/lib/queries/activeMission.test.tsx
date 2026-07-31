@@ -512,7 +512,7 @@ describe("reward handoff mutation hooks", () => {
       await result.current.mutateAsync(approval);
     });
     expect(fetch.mock.calls.slice(0, 5).map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      new Headers((init as RequestInit).headers).get("Idempotency-Key"))).toEqual([
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
@@ -521,7 +521,7 @@ describe("reward handoff mutation hooks", () => {
     ]);
 
     await act(async () => { await result.current.mutateAsync(approval); });
-    expect(JSON.parse((fetch.mock.calls[5][1] as RequestInit).body as string).idempotencyKey)
+    expect(new Headers((fetch.mock.calls[5][1] as RequestInit).headers).get("Idempotency-Key"))
       .toBe("44444444-4444-4444-8444-444444444444");
     expect(randomUUID).toHaveBeenCalledTimes(4);
   });
@@ -547,7 +547,7 @@ describe("reward handoff mutation hooks", () => {
     });
 
     expect(fetch.mock.calls.map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      new Headers((init as RequestInit).headers).get("Idempotency-Key"))).toEqual([
       "11111111-1111-4111-8111-111111111111",
       "22222222-2222-4222-8222-222222222222",
     ]);
@@ -576,7 +576,7 @@ describe("reward handoff mutation hooks", () => {
     });
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
     expect(fetch.mock.calls.slice(0, 2).map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      new Headers((init as RequestInit).headers).get("Idempotency-Key"))).toEqual([
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
     ]);
@@ -586,11 +586,11 @@ describe("reward handoff mutation hooks", () => {
     rejectSecond(new TypeError("offline"));
     await expect(secondRequest).rejects.toThrow("offline");
     await act(async () => { await first.result.current.mutateAsync(approval); });
-    expect(JSON.parse((fetch.mock.calls[2][1] as RequestInit).body as string).idempotencyKey)
+    expect(new Headers((fetch.mock.calls[2][1] as RequestInit).headers).get("Idempotency-Key"))
       .toBe("11111111-1111-4111-8111-111111111111");
 
     await act(async () => { await first.result.current.mutateAsync(approval); });
-    expect(JSON.parse((fetch.mock.calls[3][1] as RequestInit).body as string).idempotencyKey)
+    expect(new Headers((fetch.mock.calls[3][1] as RequestInit).headers).get("Idempotency-Key"))
       .toBe("22222222-2222-4222-8222-222222222222");
   });
 
@@ -628,7 +628,7 @@ describe("reward handoff mutation hooks", () => {
 
     await act(async () => { await first.result.current.mutateAsync(approval); });
     expect(fetch.mock.calls.map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+      new Headers((init as RequestInit).headers).get("Idempotency-Key"))).toEqual([
       "11111111-1111-4111-8111-111111111111",
       "11111111-1111-4111-8111-111111111111",
       "22222222-2222-4222-8222-222222222222",
@@ -668,7 +668,7 @@ describe("reward handoff mutation hooks", () => {
     });
 
     expect(new Set(fetch.mock.calls.map(([, init]) =>
-      JSON.parse((init as RequestInit).body as string).idempotencyKey)).size).toBe(6);
+      new Headers((init as RequestInit).headers).get("Idempotency-Key"))).size).toBe(6);
   });
 
   it("builds canonical signatures without collapsing meaningful JSON distinctions", () => {
@@ -731,7 +731,7 @@ describe("reward handoff mutation hooks", () => {
         await result.current.mutateAsync(approval);
       });
       expect(fetch.mock.calls.map(([, init]) =>
-        JSON.parse((init as RequestInit).body as string).idempotencyKey)).toEqual([
+        new Headers((init as RequestInit).headers).get("Idempotency-Key"))).toEqual([
         "11111111-1111-4111-8111-111111111111",
         "22222222-2222-4222-8222-222222222222",
       ]);

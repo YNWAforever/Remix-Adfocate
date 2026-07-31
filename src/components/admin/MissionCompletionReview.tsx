@@ -11,6 +11,7 @@ import type {
 } from "@/lib/activeMission";
 import type {
   AdminPendingReward,
+  AdminRewardContract,
   ApproveCompletionInput,
   BackfillRewardContractInput,
   CancelRewardHandoffInput,
@@ -26,9 +27,12 @@ export type MissionCompletionReviewProps = {
   workflowId: string;
   workflowState: WorkflowState;
   workflowRevision: number;
-  rewardContract: RewardContract | null;
+  rewardContract: (RewardContract & Partial<AdminRewardContract>) | null;
   eligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
+  acceptedProofAnchors?: Array<{ workItemId: string; proofAttemptId: string }>;
+  processingWindowDays?: number | null;
+  processingTargetAt?: string | null;
   busy: boolean;
   onBackfill: (input: BackfillInput) => Promise<unknown>;
   onApprove: (input: ApproveInput) => Promise<unknown>;
@@ -122,6 +126,9 @@ export function MissionCompletionReview({
   rewardContract,
   eligibility,
   pendingReward,
+  acceptedProofAnchors = [],
+  processingWindowDays = null,
+  processingTargetAt = null,
   busy,
   onBackfill,
   onApprove,
@@ -395,6 +402,28 @@ export function MissionCompletionReview({
         </article>
       ) : null}
 
+      <article className="min-w-0 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4">
+        <h3 className="font-heading text-lg font-bold">{t("app.admin.activeMission.completion.auditTitle")}</h3>
+        <dl className="grid min-w-0 gap-2 text-sm">
+          <div><dt className="font-bold">{t("app.admin.activeMission.completion.contractSource")}</dt><dd className="break-all">{rewardContract?.source ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
+          <div><dt className="font-bold">{t("app.admin.activeMission.completion.evidenceSource")}</dt><dd className="break-all">{rewardContract?.confirmationEvidenceSource ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
+          <div><dt className="font-bold">{t("app.admin.activeMission.completion.sourceTimestamp")}</dt><dd className="break-all">{rewardContract?.sourceMissionUpdatedAt ?? t("app.admin.activeMission.completion.notAvailable")}</dd></div>
+          <div>
+            <dt className="font-bold">{t("app.admin.activeMission.completion.slaPreview")}</dt>
+            <dd className="break-all">{processingTargetAt ?? (processingWindowDays === null ? t("app.admin.activeMission.completion.noSla") : t("app.admin.activeMission.completion.slaDays", { count: processingWindowDays }))}</dd>
+          </div>
+        </dl>
+        <div>
+          <h4 className="font-bold">{t("app.admin.activeMission.completion.acceptedProofAnchors")}</h4>
+          {acceptedProofAnchors.length ? (
+            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm">
+              {acceptedProofAnchors.map((anchor) => (
+                <li key={anchor.workItemId + ":" + anchor.proofAttemptId} className="break-all">{anchor.workItemId} / {anchor.proofAttemptId}</li>
+              ))}
+            </ul>
+          ) : <p className="text-sm">{t("app.admin.activeMission.completion.noProofAnchors")}</p>}
+        </div>
+      </article>
       <p className="rounded-xl border border-[var(--color-ink)] bg-white p-3 text-sm font-bold">
         {t("app.admin.activeMission.completion.noIssuance")}
       </p>
@@ -580,6 +609,7 @@ export function MissionCompletionReview({
               {dialog === "approve"
                 ? t("app.admin.activeMission.completion.approveDialogBody")
                 : t("app.admin.activeMission.completion.cancelDialogBody")}
+              {dialog === "cancel" && pendingReward?.id ? " " + t("app.admin.activeMission.completion.handoffId") + ": " + pendingReward.id : ""}
             </p>
 
             {dialog === "cancel" ? (

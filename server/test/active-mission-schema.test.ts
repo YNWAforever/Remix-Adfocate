@@ -1196,7 +1196,21 @@ describe("active mission migration contract", () => {
       expect(definition).toContain("s.workspace_id = a.workspace_id");
     }
   });
-});
+  it("hardens backfill replay, canonical queue ordering, and notification retry", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260731140000_reward_handoff_release_hardening.sql"),
+      "utf8",
+    );
+    expect(sql).toContain("backfill_idempotency_key");
+    expect(sql).toContain("backfill_request_hash");
+    expect(sql).toContain("unique (workspace_id, backfill_idempotency_key)");
+    expect(sql).toContain("idempotency_conflict");
+    expect(sql).toContain("retry_reward_handoff_notification");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("grant execute on function public.retry_reward_handoff_notification");
+    expect(sql).toContain("to service_role");
+    expect(sql).toContain("revoke all");
+  });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness
 // resets its disposable local database, while full UUIDs keep each fixture isolated until reset.
@@ -2353,4 +2367,5 @@ suite(suiteName, () => {
     expect(JSON.stringify(event.data)).not.toContain("Publish exactly as approved.");
     expect(await creatorRewardSnapshot(active.creator.id)).toEqual(beforeRewards);
   });
+
 });

@@ -69,6 +69,7 @@ const expectedIntegrationFiles = [
 ];
 
 function harness() {
+  importMocks.spawnSync.mockClear();
   const childHandlers = new Map();
   const signalHandlers = new Map();
   const child = {
@@ -82,7 +83,12 @@ function harness() {
   const processRef = {
     argv: ["node", "test"],
     cwd: () => "C:/repo",
-    env: { PRESERVE_ME: "yes" },
+    env: {
+      PRESERVE_ME: "yes",
+      SUPABASE_URL: "http://127.0.0.1:54321",
+      SUPABASE_SERVICE_KEY: "service-key",
+      SUPABASE_ANON_KEY: "anon-key",
+    },
     execPath: "C:/node/node.exe",
     exit: vi.fn(),
     kill: vi.fn(),
@@ -96,6 +102,19 @@ function harness() {
 }
 
 describe("integration test launcher", () => {
+  it.each([
+    [{}, "SUPABASE_URL, SUPABASE_SERVICE_KEY, and SUPABASE_ANON_KEY are required"],
+    [{ SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_KEY: "service", SUPABASE_ANON_KEY: "anon" }, "loopback"],
+  ])("fails closed before preflight for an unusable integration environment", (env, message) => {
+    const h = harness();
+    h.processRef.env = env as typeof h.processRef.env;
+    importMocks.spawnSync.mockClear();
+
+    expect(() => runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl }))
+      .toThrow(message);
+    expect(importMocks.spawnSync).not.toHaveBeenCalled();
+    expect(h.spawnImpl).not.toHaveBeenCalled();
+  });
   it("keeps the complete ordered integration file list unique", () => {
     expect(runner.publicationProofPreflightFile).toBe("server/test/publication-proof-asset-grant-live.test.ts");
     expect(runner.integrationFiles).toEqual(expectedIntegrationFiles);
@@ -116,12 +135,34 @@ describe("integration test launcher", () => {
     expect(importMocks.spawnSync).toHaveBeenCalledWith(
       "C:/node/node.exe",
       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", "server/test/publication-proof-asset-grant-live.test.ts"],
-      { cwd: "C:/repo", env: { PRESERVE_ME: "yes", RUN_INTEGRATION: "1" }, stdio: "inherit" },
+      {
+        cwd: "C:/repo",
+        env: {
+          PRESERVE_ME: "yes",
+          SUPABASE_URL: "http://127.0.0.1:54321",
+          SUPABASE_SERVICE_KEY: "service-key",
+          SUPABASE_ANON_KEY: "anon-key",
+          RUN_INTEGRATION: "1",
+          INTEGRATION_RUNNER: "1",
+        },
+        stdio: "inherit",
+      },
     );
     expect(h.spawnImpl).toHaveBeenCalledWith(
       "C:/node/node.exe",
       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", ...expectedIntegrationFiles],
-      { cwd: "C:/repo", env: { PRESERVE_ME: "yes", RUN_INTEGRATION: "1" }, stdio: "inherit" },
+      {
+        cwd: "C:/repo",
+        env: {
+          PRESERVE_ME: "yes",
+          SUPABASE_URL: "http://127.0.0.1:54321",
+          SUPABASE_SERVICE_KEY: "service-key",
+          SUPABASE_ANON_KEY: "anon-key",
+          RUN_INTEGRATION: "1",
+          INTEGRATION_RUNNER: "1",
+        },
+        stdio: "inherit",
+      },
     );
     h.childHandlers.get("exit")(7, null);
     expect(h.processRef.exit).toHaveBeenCalledWith(7);

@@ -112,6 +112,15 @@ handoff, and owning creator using the canonical tenant joins. Retry only the
 existing failure-isolated notification path for that decision. Do not rerun the
 completion or cancellation command and do not create a hand-authored duplicate.
 
+Use the authenticated admin retry endpoint after the canonical decision and
+handoff checks pass. Set NOTIFICATION_TYPE to either
+mission_reward_pending or mission_reward_pending_cancelled:
+
+    curl --fail-with-body -X POST       "$ADFOCATE_BASE_URL/api/admin/reward-handoffs/$PENDING_REWARD_ID/notifications/retry"       -H "Authorization: Bearer $STAFF_ACCESS_TOKEN"       -H "X-Workspace-Slug: $WORKSPACE_SLUG"       -H "Content-Type: application/json"       --data "{"notificationType":"$NOTIFICATION_TYPE"}"
+
+The operation is deduplicated by the durable pending-reward semantic key and
+returns a bounded delivered/idempotent outcome. Never print the bearer token or
+include it in an incident record.
 A retry record may include the decision and handoff identifiers plus a bounded
 outcome. It must not include recipient email, proof URL, signed evidence,
 operator note, raw error, or credentials. Verify the notification link opens the

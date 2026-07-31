@@ -122,6 +122,9 @@ export type RewardHandoffProjection = {
   rewardContract: RewardContract | null;
   completionEligibility: CompletionEligibility;
   pendingReward: PendingReward | null;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  processingWindowDays: number | null;
+  processingTargetAt: string | null;
 };
 
 export type BackfillRewardContractInput = {
@@ -164,8 +167,9 @@ export type RewardHandoffListFilters = {
   due?: "overdue" | "due_soon" | "no_target";
   component?: "points" | "cash" | "xp";
   status: "pending" | "cancelled";
+  cursor?: string;
+  limit?: number;
 };
-
 export type AdminRewardHandoffRepository = {
   getCompletion(input: { workflowId: string; workspaceSlug: string; operatorId: string }): Promise<RewardHandoffProjection>;
   backfillRewardContract(input: BackfillRewardContractInput): Promise<unknown>;
@@ -173,6 +177,7 @@ export type AdminRewardHandoffRepository = {
   cancelRewardHandoff(input: CancelRewardHandoffInput): Promise<unknown>;
   listRewardHandoffs(input: RewardHandoffListFilters): Promise<unknown>;
   updateSettings(input: { workspaceSlug: string; operatorId: string; days: number | null }): Promise<unknown>;
+  retryNotification(input: { workspaceSlug: string; operatorId: string; pendingRewardId: string; notificationType: "mission_reward_pending" | "mission_reward_pending_cancelled" }): Promise<unknown>;
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -205,6 +210,48 @@ function integer(value: unknown): number {
   return Number.isInteger(value) ? value as number : -1;
 }
 
+function isStrictRfc3339(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!match) return false;
+  const [, year, month, day, hour, minute, second, , offset] = match;
+  const [y, mo, d, h, mi, sec] = [year, month, day, hour, minute, second].map(Number);
+  if (h > 23 || mi > 59 || sec > 59) return false;
+  if (offset !== "Z") {
+    const [offsetHour, offsetMinute] = offset.slice(1).split(":").map(Number);
+    if (offsetHour > 23 || offsetMinute > 59) return false;
+  }
+  const calendar = new Date(Date.UTC(y, mo - 1, d, h, mi, sec));
+  return calendar.getUTCFullYear() === y
+    && calendar.getUTCMonth() === mo - 1
+    && calendar.getUTCDate() === d
+    && Number.isFinite(Date.parse(value));
+}
+export type RewardHandoffCursor = {
+  targetAt: string | null;
+  createdAt: string;
+  id: string;
+};
+
+export function encodeRewardHandoffCursor(cursor: RewardHandoffCursor): string {
+  return Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
+}
+
+export function decodeRewardHandoffCursor(value: string): RewardHandoffCursor {
+  try {
+    if (!value || value.length > 1_024) throw new Error("invalid");
+    const row = record(JSON.parse(Buffer.from(value, "base64url").toString("utf8")));
+    const targetAt = row.targetAt === null ? null : text(row.targetAt);
+    const createdAt = text(row.createdAt);
+    const id = text(row.id);
+    if ((targetAt !== null && !isStrictRfc3339(targetAt))
+      || !createdAt || !isStrictRfc3339(createdAt) || !id || !UUID.test(id)) {
+      throw new Error("invalid");
+    }
+    return { targetAt, createdAt, id };
+  } catch {
+    validation("cursor is invalid");
+  }
+}
 function validation(message: string): never {
   throw new RewardHandoffError("VALIDATION_FAILED", message);
 }
@@ -214,7 +261,7 @@ export function validateUuid(value: unknown, field: string): string {
   return value;
 }
 
-export function validateCompletionPayload(value: unknown) {
+export function validateCompletionPayload(value: unknown, idempotencyKeyValue: unknown) {
   const body = record(value);
   const expectedState = text(body.expectedState);
   const expectedRevision = integer(body.expectedRevision);
@@ -223,11 +270,11 @@ export function validateCompletionPayload(value: unknown) {
   return {
     expectedState,
     expectedRevision,
-    idempotencyKey: validateUuid(body.idempotencyKey, "idempotencyKey"),
+    idempotencyKey: validateUuid(idempotencyKeyValue, "Idempotency-Key"),
   } as const;
 }
 
-export function validateCancellationPayload(value: unknown) {
+export function validateCancellationPayload(value: unknown, idempotencyKeyValue: unknown) {
   const body = record(value);
   const expectedState = text(body.expectedState);
   const expectedRevision = integer(body.expectedRevision);
@@ -240,13 +287,13 @@ export function validateCancellationPayload(value: unknown) {
   return {
     expectedState,
     expectedRevision,
-    idempotencyKey: validateUuid(body.idempotencyKey, "idempotencyKey"),
+    idempotencyKey: validateUuid(idempotencyKeyValue, "Idempotency-Key"),
     reasonCategory: reasonCategory as CancellationInput["reasonCategory"],
     reasonNote,
   } as const;
 }
 
-export function validateBackfillPayload(value: unknown) {
+export function validateBackfillPayload(value: unknown, idempotencyKeyValue: unknown) {
   const body = record(value);
   const pointsAmount = integer(body.pointsAmount);
   const cashAmount = typeof body.cashAmount === "number" ? body.cashAmount : Number.NaN;
@@ -264,8 +311,8 @@ export function validateBackfillPayload(value: unknown) {
     validation("xpAmount must be exactly zero");
   }
   if (!/^[A-Z]{3}$/.test(currency)) validation("currency must be an ISO-style three-letter code");
-  if (sourceMissionUpdatedAt !== null && !Number.isFinite(Date.parse(sourceMissionUpdatedAt))) {
-    validation("sourceMissionUpdatedAt must be an ISO timestamp or null");
+  if (sourceMissionUpdatedAt !== null && !isStrictRfc3339(sourceMissionUpdatedAt)) {
+    validation("sourceMissionUpdatedAt must be a valid RFC3339 timestamp or null");
   }
   if (!EVIDENCE_SOURCES.has(confirmationEvidenceSource)) validation("confirmationEvidenceSource is invalid");
   if (!confirmationReason || confirmationReason.length > 2_000) {
@@ -279,7 +326,7 @@ export function validateBackfillPayload(value: unknown) {
     sourceMissionUpdatedAt,
     confirmationEvidenceSource: confirmationEvidenceSource as BackfillRewardContractInput["confirmationEvidenceSource"],
     confirmationReason,
-    idempotencyKey: validateUuid(body.idempotencyKey, "idempotencyKey"),
+    idempotencyKey: validateUuid(idempotencyKeyValue, "Idempotency-Key"),
   };
 }
 
@@ -298,14 +345,35 @@ export function normalizeListFilters(value: {
   due?: unknown;
   component?: unknown;
   status?: unknown;
+  cursor?: unknown;
+  limit?: unknown;
 }) {
+  const limit = value.limit === undefined || value.limit === "" ? 50 : Number(value.limit);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) validation("limit is invalid");
+  const cursor = value.cursor === undefined || value.cursor === ""
+    ? undefined
+    : typeof value.cursor === "string" ? value.cursor.trim() : "";
+  if (cursor) decodeRewardHandoffCursor(cursor);
+  else if (value.cursor !== undefined && value.cursor !== "") validation("cursor is invalid");
   return {
     due: normalizedEnum(value.due, DUE_FILTERS, "due") as RewardHandoffListFilters["due"],
     component: normalizedEnum(value.component, COMPONENT_FILTERS, "component") as RewardHandoffListFilters["component"],
     status: (normalizedEnum(value.status, STATUS_FILTERS, "status") ?? "pending") as RewardHandoffListFilters["status"],
+    cursor,
+    limit,
   };
 }
-
+export function validateNotificationRetryPayload(value: unknown): {
+  notificationType: "mission_reward_pending" | "mission_reward_pending_cancelled";
+} {
+  const payload = record(value);
+  const notificationType = text(payload.notificationType);
+  if (notificationType !== "mission_reward_pending"
+    && notificationType !== "mission_reward_pending_cancelled") {
+    throw new RewardHandoffError("VALIDATION_FAILED", "notificationType is invalid");
+  }
+  return { notificationType };
+}
 export function validateSettingsPayload(value: unknown): { days: number | null } {
   const body = record(value);
   if (body.days === null) return { days: null };
@@ -478,12 +546,122 @@ export function buildCompletionEligibility(input: {
   };
 }
 
+function relation(value: unknown): JsonRow {
+  return Array.isArray(value) ? record(value[0]) : record(value);
+}
+
+function same(row: JsonRow, field: string, expected: string | null): boolean {
+  return expected !== null && text(row[field]) === expected;
+}
+
+function assertCanonicalRewardHandoff(input: {
+  workspaceId: string;
+  workflow: unknown;
+  submission: unknown;
+  contract: unknown;
+  pendingReward: unknown;
+  decision: unknown;
+}) {
+  const workflow = record(input.workflow);
+  const submission = record(input.submission);
+  const contract = record(input.contract);
+  const pending = record(input.pendingReward);
+  const decisionRow = record(input.decision);
+  const workflowId = text(workflow.id);
+  const submissionId = text(submission.id);
+  const creatorId = text(submission.creator_id);
+  const missionId = text(submission.mission_id);
+  if (!workflowId
+    || !same(workflow, "workspace_id", input.workspaceId)
+    || !same(workflow, "mission_submission_id", submissionId)
+    || !same(submission, "workspace_id", input.workspaceId)) {
+    throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  }
+  if (Object.keys(contract).length > 0 && (
+    !same(contract, "workspace_id", input.workspaceId)
+    || !same(contract, "mission_workflow_id", workflowId)
+    || !same(contract, "mission_submission_id", submissionId)
+    || !same(contract, "mission_id", missionId)
+  )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  if (Object.keys(pending).length > 0 && (
+    !same(pending, "workspace_id", input.workspaceId)
+    || !same(pending, "mission_workflow_id", workflowId)
+    || !same(pending, "mission_submission_id", submissionId)
+    || !same(pending, "creator_id", creatorId)
+    || !same(pending, "mission_id", missionId)
+    || (text(pending.reward_contract_id) !== null
+      && text(pending.reward_contract_id) !== text(contract.id))
+  )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  if (Object.keys(decisionRow).length > 0 && (
+    !same(decisionRow, "workspace_id", input.workspaceId)
+    || !same(decisionRow, "mission_workflow_id", workflowId)
+    || (text(decisionRow.reward_contract_id) !== null
+      && text(decisionRow.reward_contract_id) !== text(contract.id))
+    || ![text(pending.completion_decision_id), text(pending.cancellation_decision_id)]
+      .includes(text(decisionRow.id))
+  )) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+}
+
+export function canonicalRewardHandoffQueueItem(
+  rowValue: unknown,
+  workspaceId: string,
+): ReturnType<typeof operatorPendingReward> & {
+  creatorDisplayName: string | null;
+  missionTitle: string | null;
+  completionDecision: ReturnType<typeof queueCompletionDecision>;
+} | null {
+  const row = record(rowValue);
+  const workflow = relation(row.workflow);
+  const submission = relation(row.submission);
+  const contract = relation(row.reward_contract);
+  const creator = relation(row.creators);
+  const mission = relation(row.missions);
+  const decisionRow = relation(row.completion_decision);
+  const cancellation = relation(row.cancellation_decision);
+  const workflowId = text(row.mission_workflow_id);
+  const submissionId = text(row.mission_submission_id);
+  const creatorId = text(row.creator_id);
+  const missionId = text(row.mission_id);
+  const contractId = text(row.reward_contract_id);
+  if (!workflowId || !submissionId || !creatorId || !missionId || !contractId
+    || !same(workflow, "id", workflowId) || !same(workflow, "workspace_id", workspaceId)
+    || !same(workflow, "mission_submission_id", submissionId)
+    || !same(submission, "id", submissionId) || !same(submission, "workspace_id", workspaceId)
+    || !same(submission, "creator_id", creatorId) || !same(submission, "mission_id", missionId)
+    || !same(contract, "id", contractId) || !same(contract, "workspace_id", workspaceId)
+    || !same(contract, "mission_workflow_id", workflowId)
+    || !same(contract, "mission_submission_id", submissionId)
+    || !same(contract, "mission_id", missionId)
+    || !same(creator, "id", creatorId) || !same(creator, "workspace_id", workspaceId)
+    || !same(mission, "id", missionId) || !same(mission, "workspace_id", workspaceId)
+    || !same(decisionRow, "id", text(row.completion_decision_id))
+    || !same(decisionRow, "workspace_id", workspaceId)
+    || !same(decisionRow, "mission_workflow_id", workflowId)
+    || !same(decisionRow, "reward_contract_id", contractId)
+    || text(decisionRow.decision_kind) !== "approved") return null;
+  if (text(row.status) === "cancelled" && (
+    !same(cancellation, "id", text(row.cancellation_decision_id))
+    || !same(cancellation, "workspace_id", workspaceId)
+    || !same(cancellation, "mission_workflow_id", workflowId)
+    || !same(cancellation, "reward_contract_id", contractId)
+    || text(cancellation.decision_kind) !== "cancelled"
+  )) return null;
+  const pending = operatorPendingReward(row);
+  if (!pending) return null;
+  return {
+    ...pending,
+    creatorDisplayName: text(creator.display_name),
+    missionTitle: text(mission.title),
+    completionDecision: queueCompletionDecision(decisionRow),
+  };
+}
 export function normalizeOperatorRewardHandoffProjection(input: {
   workflow: unknown;
   contract: unknown;
   requiredItems: unknown[];
   pendingReward: unknown;
   decision?: unknown;
+  processingWindowDays?: number | null;
 }): RewardHandoffProjection {
   const workflow = record(input.workflow);
   const contract = rewardContract(input.contract);
@@ -497,6 +675,20 @@ export function normalizeOperatorRewardHandoffProjection(input: {
       pendingReward: pending,
     }),
     pendingReward: pending,
+    acceptedProofAnchors: input.requiredItems
+      .map(record)
+      .filter((item) => item.required === true
+        && item.state === "proof_verified"
+        && text(item.current_proof_attempt_id ?? item.currentProofAttemptId) !== null
+        && text(item.current_proof_attempt_id ?? item.currentProofAttemptId)
+          === text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId))
+      .map((item) => ({
+        workItemId: text(item.id ?? item.workItemId) ?? "",
+        proofAttemptId: text(item.verified_proof_attempt_id ?? item.verifiedProofAttemptId) ?? "",
+      }))
+      .filter((anchor) => anchor.workItemId !== "" && anchor.proofAttemptId !== ""),
+    processingWindowDays: input.processingWindowDays ?? pending?.processingWindowDays ?? null,
+    processingTargetAt: pending?.targetAt ?? null,
   };
 }
 
@@ -568,27 +760,38 @@ export async function getOperatorRewardHandoffProjection(
   client: SupabaseClient,
   workspaceId: string,
   workflowId: string,
-  known?: { workflow: unknown; requiredItems: unknown[] },
+  known?: { workflow: unknown; submission: unknown; requiredItems: unknown[] },
+  processingWindowDays?: number | null,
 ) {
   let workflowResult: { data: unknown; error: { message?: string | null } | null };
   let itemsResult: { data: unknown[] | null; error: { message?: string | null } | null };
+  let submissionResult: { data: unknown; error: { message?: string | null } | null };
   if (known) {
     workflowResult = { data: known.workflow, error: null };
     itemsResult = { data: known.requiredItems, error: null };
+    submissionResult = { data: known.submission, error: null };
   } else {
     workflowResult = await client.from("mission_workflows")
-      .select("id, state, revision")
+      .select("id, workspace_id, mission_submission_id, state, revision")
       .eq("id", workflowId)
       .eq("workspace_id", workspaceId)
       .maybeSingle();
+    const workflowRow = record(workflowResult.data);
+    submissionResult = await client.from("mission_submissions")
+      .select("id, workspace_id, creator_id, mission_id")
+      .eq("workspace_id", workspaceId)
+      .eq("id", text(workflowRow.mission_submission_id) ?? "")
+      .maybeSingle();
     itemsResult = await client.from("mission_work_items")
-      .select("required, state, current_proof_attempt_id, verified_proof_attempt_id")
+      .select("id, required, state, current_proof_attempt_id, verified_proof_attempt_id")
       .eq("workspace_id", workspaceId)
       .eq("mission_workflow_id", workflowId);
   }
   if (workflowResult.error) mapDatabaseError(workflowResult.error);
   if (!workflowResult.data) throw new RewardHandoffError("FORBIDDEN", "forbidden");
   if (itemsResult.error) mapDatabaseError(itemsResult.error);
+  if (submissionResult.error) mapDatabaseError(submissionResult.error);
+  if (!submissionResult.data) throw new RewardHandoffError("FORBIDDEN", "forbidden");
   const [contractResult, pendingResult] = await Promise.all([
     client.from("mission_reward_contracts").select("*")
       .eq("workspace_id", workspaceId).eq("mission_workflow_id", workflowId).maybeSingle(),
@@ -607,12 +810,33 @@ export async function getOperatorRewardHandoffProjection(
       .eq("workspace_id", workspaceId).eq("id", decisionId).maybeSingle();
     if (decisionResult.error) mapDatabaseError(decisionResult.error);
   }
+  let resolvedProcessingWindowDays = processingWindowDays;
+  if (resolvedProcessingWindowDays === undefined) {
+    const settingsResult = await client.from("workspaces")
+      .select("reward_processing_window_days")
+      .eq("id", workspaceId)
+      .maybeSingle();
+    if (settingsResult.error) mapDatabaseError(settingsResult.error);
+    const settings = record(settingsResult.data);
+    resolvedProcessingWindowDays = settings.reward_processing_window_days == null
+      ? null
+      : number(settings.reward_processing_window_days);
+  }
+  assertCanonicalRewardHandoff({
+    workspaceId,
+    workflow: workflowResult.data,
+    submission: submissionResult.data,
+    contract: contractResult.data,
+    pendingReward: pending,
+    decision: decisionResult.data,
+  });
   return normalizeOperatorRewardHandoffProjection({
     workflow: workflowResult.data,
     contract: contractResult.data,
     requiredItems: (itemsResult.data ?? []) as unknown[],
     pendingReward: pending,
     decision: decisionResult.data,
+    processingWindowDays: resolvedProcessingWindowDays,
   });
 }
 
@@ -638,7 +862,9 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
   return {
     async getCompletion(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
-      return getOperatorRewardHandoffProjection(client, workspace.id, input.workflowId);
+      return getOperatorRewardHandoffProjection(
+        client, workspace.id, input.workflowId, undefined, workspace.rewardProcessingWindowDays,
+      );
     },
 
     async backfillRewardContract(input) {
@@ -697,7 +923,7 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
     async listRewardHandoffs(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
       let query = client.from("mission_pending_rewards")
-        .select("*, creators!mission_pending_rewards_creator_id_fkey(display_name), missions!mission_pending_rewards_mission_id_fkey(title), completion_decision:mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey(id, decision_kind, decided_at, required_item_count, verified_required_item_count, evidence_snapshot)")
+        .select("*, workflow:mission_workflows!mission_pending_rewards_mission_workflow_id_fkey(id, workspace_id, mission_submission_id), submission:mission_submissions!mission_pending_rewards_mission_submission_id_fkey(id, workspace_id, creator_id, mission_id), reward_contract:mission_reward_contracts!mission_pending_rewards_reward_contract_id_fkey(id, workspace_id, mission_workflow_id, mission_submission_id, mission_id), creators!mission_pending_rewards_creator_id_fkey(id, workspace_id, display_name), missions!mission_pending_rewards_mission_id_fkey(id, workspace_id, title), completion_decision:mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, decision_kind, decided_at, required_item_count, verified_required_item_count, evidence_snapshot), cancellation_decision:mission_completion_decisions!mission_pending_rewards_cancellation_decision_id_fkey(id, workspace_id, mission_workflow_id, reward_contract_id, decision_kind)")
         .eq("workspace_id", workspace.id)
         .eq("status", input.status);
       const now = new Date();
@@ -710,22 +936,52 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
       if (input.component === "points") query = query.gt("points_amount", 0);
       if (input.component === "cash") query = query.gt("cash_amount", 0);
       if (input.component === "xp") query = query.gt("xp_amount", 0);
+      const limit = input.limit ?? 50;
+      if (input.cursor) {
+        const cursor = decodeRewardHandoffCursor(input.cursor);
+        query = cursor.targetAt === null
+          ? query.or(`and(target_at.is.null,created_at.gt.${cursor.createdAt}),and(target_at.is.null,created_at.eq.${cursor.createdAt},id.gt.${cursor.id})`)
+          : query.or(`target_at.gt.${cursor.targetAt},and(target_at.eq.${cursor.targetAt},created_at.gt.${cursor.createdAt}),and(target_at.eq.${cursor.targetAt},created_at.eq.${cursor.createdAt},id.gt.${cursor.id}),target_at.is.null`);
+      }
       const result = await query
         .order("target_at", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: true })
-        .order("id", { ascending: true });
+        .order("id", { ascending: true })
+        .limit(limit + 1);
       if (result.error) mapDatabaseError(result.error);
+      const rows = (result.data ?? []) as JsonRow[];
+      const hasMore = rows.length > limit;
+      const pageRows = rows.slice(0, limit);
+      const items = pageRows
+        .map((row) => canonicalRewardHandoffQueueItem(row, workspace.id))
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+      const last = pageRows.at(-1);
       return {
-        items: ((result.data ?? []) as JsonRow[]).map((row) => ({
-          ...operatorPendingReward(row),
-          creatorDisplayName: text(record(row.creators).display_name),
-          missionTitle: text(record(row.missions).title),
-          completionDecision: queueCompletionDecision(row.completion_decision),
-        })),
+        items,
         rewardProcessingWindowDays: workspace.rewardProcessingWindowDays,
+        pageInfo: {
+          hasMore,
+          nextCursor: hasMore && last ? encodeRewardHandoffCursor({
+            targetAt: nullableText(last.target_at),
+            createdAt: text(last.created_at) ?? "",
+            id: text(last.id) ?? "",
+          }) : null,
+          limit,
+        },
       };
     },
 
+    async retryNotification(input) {
+      const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
+      const result = await client.rpc("retry_reward_handoff_notification", {
+        p_workspace: workspace.id,
+        p_operator: input.operatorId,
+        p_pending_reward: input.pendingRewardId,
+        p_notification_type: input.notificationType,
+      });
+      if (result.error) mapDatabaseError(result.error);
+      return result.data;
+    },
     async updateSettings(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
       const result = await client.rpc("set_reward_processing_window", {

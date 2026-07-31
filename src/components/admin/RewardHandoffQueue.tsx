@@ -18,6 +18,9 @@ type Props = {
   processingWindowDays: number | null;
   onFiltersChange: (filters: RewardHandoffUiFilters) => void;
   onSaveProcessingWindow: (days: number | null) => Promise<void>;
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => Promise<void>;
 };
 
 const FIELD =
@@ -84,6 +87,9 @@ function RewardHandoffQueueWorkspace({
   processingWindowDays,
   onFiltersChange,
   onSaveProcessingWindow,
+  hasMore = false,
+  loadingMore = false,
+  onLoadMore,
 }: Props) {
   const { lang, localeReady, t } = useI18n();
   const locale = lang === "zh" ? "zh-HK" : "en-US";
@@ -402,6 +408,18 @@ function RewardHandoffQueueWorkspace({
           ))}
         </div>
       )}
+      {hasMore ? (
+        <button
+          type="button"
+          disabled={loadingMore}
+          onClick={() => void onLoadMore?.()}
+          className="mx-auto block rounded-full border-2 border-[var(--color-ink)] bg-white px-5 py-2 font-heading text-sm font-bold hover:bg-[var(--color-paper)] disabled:opacity-60"
+        >
+          {loadingMore
+            ? t("app.admin.rewardHandoff.loadingMore")
+            : t("app.admin.rewardHandoff.loadMore")}
+        </button>
+      ) : null}
     </section>
   );
 }

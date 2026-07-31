@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AdminAuthError } from "@/lib/admin";
 import {
   fetchRewardHandoffs,
   setRewardProcessingWindow,
   type RewardHandoffListFilters,
+  type RewardHandoffQueueItem,
 } from "@/lib/adminRewardHandoff";
 import {
   getActivationAnalyticsSinkVersion,
@@ -101,6 +102,14 @@ export function AdminRewardHandoffsRoute() {
     enabled: authed && Boolean(workspaceSlug),
     retry: false,
   });
+  const [additionalItems, setAdditionalItems] = useState<RewardHandoffQueueItem[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  useEffect(() => {
+    setAdditionalItems([]);
+    setNextCursor(queue.data?.pageInfo?.nextCursor ?? null);
+  }, [queue.data, workspaceSlug, filters]);
 
   useEffect(() => {
     if (queue.error instanceof AdminAuthError) reportAuthError(queue.error);
@@ -175,6 +184,22 @@ export function AdminRewardHandoffsRoute() {
     });
   }
 
+  async function loadMore() {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const page = await fetchRewardHandoffs({
+        ...queryFilters,
+        cursor: nextCursor,
+        limit: queue.data?.pageInfo?.limit ?? 50,
+      });
+      setAdditionalItems((current) => [...current, ...page.items]);
+      setNextCursor(page.pageInfo.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
   if (!workspaceSlug) {
     return (
       <p className="text-sm text-[var(--color-soft-ink)]">
@@ -203,11 +228,14 @@ export function AdminRewardHandoffsRoute() {
   return (
     <RewardHandoffQueue
       workspaceKey={workspaceSlug}
-      items={queue.data?.items ?? []}
+      items={[...(queue.data?.items ?? []), ...additionalItems]}
       filters={filters}
       processingWindowDays={queue.data?.rewardProcessingWindowDays ?? null}
       onFiltersChange={changeFilters}
       onSaveProcessingWindow={saveWindow}
+      hasMore={Boolean(nextCursor)}
+      loadingMore={loadingMore}
+      onLoadMore={loadMore}
     />
   );
 }

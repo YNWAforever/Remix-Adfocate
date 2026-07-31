@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CompletionEligibility, RewardContract, WorkflowState } from "@/lib/activeMission";
-import type { AdminPendingReward } from "@/lib/adminRewardHandoff";
+import type { AdminPendingReward, AdminRewardContract } from "@/lib/adminRewardHandoff";
 import { MissionCompletionReview } from "./MissionCompletionReview";
 
 const i18n = vi.hoisted(() => ({ lang: "en" as "en" | "zh" }));
@@ -70,9 +70,12 @@ function deferred<T>() {
 function renderReview(overrides: Partial<{
   workflowState: WorkflowState;
   workflowRevision: number;
-  rewardContract: RewardContract | null;
+  rewardContract: (RewardContract & Partial<AdminRewardContract>) | null;
   eligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  processingWindowDays: number | null;
+  processingTargetAt: string | null;
   busy: boolean;
   onBackfill: ReturnType<typeof vi.fn>;
   onApprove: ReturnType<typeof vi.fn>;
@@ -94,6 +97,9 @@ function renderReview(overrides: Partial<{
       rewardContract={overrides.rewardContract === undefined ? contract : overrides.rewardContract}
       eligibility={overrides.eligibility ?? eligible}
       pendingReward={overrides.pendingReward === undefined ? null : overrides.pendingReward}
+      acceptedProofAnchors={overrides.acceptedProofAnchors ?? []}
+      processingWindowDays={overrides.processingWindowDays ?? null}
+      processingTargetAt={overrides.processingTargetAt ?? null}
       busy={overrides.busy ?? false}
       onBackfill={callbacks.onBackfill}
       onApprove={callbacks.onApprove}
@@ -344,6 +350,27 @@ describe("MissionCompletionReview", () => {
     await act(async () => { request.resolve({}); await request.promise; });
   });
 
+  it("shows exact proof anchors, SLA target, provenance, and cancellation handoff ID", () => {
+    renderReview({
+      workflowState: "reward_pending",
+      rewardContract: {
+        ...contract,
+        source: "operator_backfill",
+        confirmationEvidenceSource: "operator_record",
+        sourceMissionUpdatedAt: "2026-07-29T10:00:00.000Z",
+      },
+      pendingReward,
+      acceptedProofAnchors: [{ workItemId: "work-item-1", proofAttemptId: "proof-attempt-1" }],
+      processingWindowDays: 7,
+      processingTargetAt: "2026-08-06T10:00:00.000Z",
+    });
+    expect(screen.getByText("work-item-1 / proof-attempt-1")).toBeVisible();
+    expect(screen.getByText("operator_backfill")).toBeVisible();
+    expect(screen.getByText("operator_record")).toBeVisible();
+    expect(screen.getByText("2026-08-06T10:00:00.000Z")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel reward handoff" }));
+    expect(screen.getByText(/Reward handoff ID: pending-1/)).toBeVisible();
+  });
   it("contains cancellation focus and blocks Tab and Escape while busy", async () => {
     const request = deferred<unknown>();
     renderReview({

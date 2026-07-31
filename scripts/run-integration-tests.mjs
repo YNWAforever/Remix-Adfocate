@@ -1,7 +1,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
-import { pathToFileURL } from "node:url";
+import { URL, pathToFileURL } from "node:url";
 
 export const publicationProofPreflightFile = "server/test/publication-proof-asset-grant-live.test.ts";
 
@@ -49,12 +49,29 @@ export const integrationFiles = [
 
 const vitest = resolve("node_modules/vitest/vitest.mjs");
 
+export function assertIntegrationEnvironment(env) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_KEY || !env.SUPABASE_ANON_KEY) {
+    throw new Error("SUPABASE_URL, SUPABASE_SERVICE_KEY, and SUPABASE_ANON_KEY are required");
+  }
+  let url;
+  try {
+    url = new URL(env.SUPABASE_URL);
+  } catch {
+    throw new Error("SUPABASE_URL must be a valid loopback HTTP(S) URL");
+  }
+  if (!["http:", "https:"].includes(url.protocol)
+    || !["localhost", "127.0.0.1"].includes(url.hostname)) {
+    throw new Error("SUPABASE_URL must be a loopback HTTP(S) URL");
+  }
+}
+
 export function launchIntegrationTests({
   processRef = process,
   spawnImpl = spawn,
   spawnSyncImpl = spawnSync,
 } = {}) {
-  const env = { ...processRef.env, RUN_INTEGRATION: "1" };
+  assertIntegrationEnvironment(processRef.env);
+  const env = { ...processRef.env, RUN_INTEGRATION: "1", INTEGRATION_RUNNER: "1" };
   const preflight = spawnSyncImpl(
     processRef.execPath,
     [vitest, "run", "--no-file-parallelism", publicationProofPreflightFile],

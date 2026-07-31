@@ -57,7 +57,7 @@ describe("activation analytics", () => {
   });
 
   it("initializes a documented browser CustomEvent transport with sanitized detail", () => {
-    const listener = vi.fn();
+    const listener = vi.fn((event: Event) => event.preventDefault());
     window.addEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
     initializeActivationAnalytics();
 
@@ -74,6 +74,13 @@ describe("activation analytics", () => {
       properties: { locale: "en", deviceCategory: "desktop", source: "creators_hero" },
     });
     window.removeEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
+  });
+  it("reports browser delivery as unaccepted when no consumer acknowledges it", () => {
+    initializeActivationAnalytics();
+    expect(trackActivationEvent("auth_link_requested", {
+      locale: "en",
+      method: "email_magic_link",
+    })).toBe(false);
   });
   it("delivers the ten Phase 2 events with privacy-limited payloads", () => {
     const sink = vi.fn();

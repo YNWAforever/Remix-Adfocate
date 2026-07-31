@@ -308,93 +308,179 @@ async function assertRewardNeutrality(
   }
 }
 
+export function structuralCountsFromAssertions(
+  assertedScenarios: ReadonlySet<ScenarioLabel>,
+  snapshotCount: number,
+): StructuralCounts {
+  const missing = REWARD_HANDOFF_SCENARIO_LABELS.filter(
+    (label) => !assertedScenarios.has(label),
+  );
+  if (missing.length > 0) throw new Error("unasserted_reward_handoff_scenarios:" + missing.join(","));
+  return {
+    scenarioCounts: Object.fromEntries(
+      REWARD_HANDOFF_SCENARIO_LABELS.map((label) => [label, assertedScenarios.has(label) ? 1 : 0]),
+    ) as Record<ScenarioLabel, number>,
+    neutralitySnapshotCounts: Object.fromEntries(
+      REWARD_NEUTRALITY_SNAPSHOT_FIELDS.map((field) => [field, snapshotCount]),
+    ) as Record<SnapshotField, number>,
+  };
+}
+
 export async function seedRewardHandoffAcceptance(): Promise<StructuralCounts> {
   requireLocalAcceptanceEnvironment();
   await cleanup();
   const service = serviceForTests();
   const operatorId = await linkOperator();
+  const asserted = new Set<ScenarioLabel>();
+  const snapshots: Array<Awaited<ReturnType<typeof rewardNeutralitySnapshot>>> = [];
+
   const configuredSla = await service.from("workspaces")
     .update({ reward_processing_window_days: 7 })
     .eq("id", DEMO_WS);
   if (configuredSla.error) fail("configure acceptance SLA", configuredSla.error);
-  const missingSla = await service.from("workspaces").insert({
-    slug: "test-brand-ws-reward-handoff-no-sla",
-    name: "Reward handoff acceptance without SLA",
-    reward_processing_window_days: null,
-  });
-  if (missingSla.error) fail("create acceptance missing-SLA workspace", missingSla.error);
 
-  const snapshots: Array<Awaited<ReturnType<typeof rewardNeutralitySnapshot>>> = [];
   const newJoin = await createNewJoinContractScenario();
-  snapshots.push(await rewardNeutralitySnapshot(newJoin.creatorId));
+  const newJoinContract = await service.from("mission_reward_contracts")
+    .select("id, source").eq("workspace_id", DEMO_WS)
+    .eq("mission_workflow_id", newJoin.workflowId).maybeSingle();
+  if (newJoinContract.error || !newJoinContract.data || newJoinContract.data.source !== "join") {
+    fail("assert new-join reward contract", newJoinContract.error);
+  }
+  asserted.add("new_join_contract");
 
   const backfill = await createWorkflowScenario({
-    label: "backfill",
-    operatorId,
-    states: ["proof_verified"],
-    withContract: false,
+    label: "backfill", operatorId, states: ["proof_verified"], withContract: false,
   });
-  snapshots.push(await rewardNeutralitySnapshot(backfill.creatorId));
+  const backfillBefore = await rewardNeutralitySnapshot(backfill.creatorId);
+  snapshots.push(backfillBefore);
+  const backfillKey = randomUUID();
+  const backfillArgs = {
+    p_workspace: DEMO_WS, p_workflow: backfill.workflowId, p_operator: operatorId,
+    p_points_amount: 500, p_cash_amount: 125, p_currency: "HKD", p_xp_amount: 0,
+    p_source_mission_updated_at: null,
+    p_confirmation_evidence_source: "operator_record",
+    p_confirmation_reason: "Acceptance fixture confirmed from the operator record.",
+    p_idempotency_key: backfillKey,
+  };
+  const backfilled = await service.rpc("backfill_mission_reward_contract", backfillArgs);
+  if (backfilled.error || !backfilled.data?.contract?.id || backfilled.data.idempotent) {
+    fail("execute acceptance reward-contract backfill", backfilled.error);
+  }
+  const replayedBackfill = await service.rpc("backfill_mission_reward_contract", backfillArgs);
+  if (replayedBackfill.error
+    || replayedBackfill.data?.contract?.id !== backfilled.data.contract.id
+    || replayedBackfill.data?.idempotent !== true) {
+    fail("assert acceptance reward-contract backfill replay", replayedBackfill.error);
+  }
+  await assertRewardNeutrality("backfill", backfill.creatorId, backfillBefore);
+  asserted.add("existing_workflow_needing_backfill");
 
   const eligible = await createWorkflowScenario({
-    label: "eligible",
-    operatorId,
-    states: ["proof_verified"],
-    withContract: true,
+    label: "eligible", operatorId, states: ["proof_verified"], withContract: true,
   });
-  snapshots.push(await rewardNeutralitySnapshot(eligible.creatorId));
+  const eligibleState = await service.from("mission_work_items")
+    .select("id, required, state, current_proof_attempt_id, verified_proof_attempt_id")
+    .eq("workspace_id", DEMO_WS).eq("mission_workflow_id", eligible.workflowId);
+  if (eligibleState.error || !eligibleState.data?.length
+    || eligibleState.data.some((item) => item.required !== true
+      || item.state !== "proof_verified" || !item.current_proof_attempt_id
+      || item.current_proof_attempt_id !== item.verified_proof_attempt_id)) {
+    fail("assert eligible proof-verified workflow", eligibleState.error);
+  }
+  asserted.add("eligible_proof_verified");
 
   const blocked = await createWorkflowScenario({
-    label: "blocked",
-    operatorId,
-    states: ["proof_verified", "proof_submitted"],
-    withContract: true,
+    label: "blocked", operatorId,
+    states: ["proof_verified", "proof_submitted"], withContract: true,
   });
-  snapshots.push(await rewardNeutralitySnapshot(blocked.creatorId));
+  const blockedBefore = await rewardNeutralitySnapshot(blocked.creatorId);
+  snapshots.push(blockedBefore);
+  const blockedApproval = await service.rpc("approve_mission_completion", {
+    p_workspace: DEMO_WS, p_workflow: blocked.workflowId, p_operator: operatorId,
+    p_expected_state: "proof_verified", p_expected_revision: blocked.revision,
+    p_idempotency_key: randomUUID(),
+  });
+  if (!blockedApproval.error
+    || !blockedApproval.error.message.toLowerCase().includes("completion_not_eligible")) {
+    fail("assert blocked required proof", blockedApproval.error);
+  }
+  const blockedPending = await service.from("mission_pending_rewards")
+    .select("id").eq("workspace_id", DEMO_WS)
+    .eq("mission_workflow_id", blocked.workflowId);
+  if (blockedPending.error || (blockedPending.data?.length ?? 0) !== 0) {
+    fail("assert blocked workflow has no handoff", blockedPending.error);
+  }
+  await assertRewardNeutrality("blocked", blocked.creatorId, blockedBefore);
+  asserted.add("blocked_required_proof");
 
   const pending = await createWorkflowScenario({
-    label: "pending",
-    operatorId,
-    states: ["proof_verified"],
-    withContract: true,
+    label: "pending", operatorId, states: ["proof_verified"], withContract: true,
   });
   const pendingBefore = await rewardNeutralitySnapshot(pending.creatorId);
   snapshots.push(pendingBefore);
   await approve(pending);
+  const pendingRow = await service.from("mission_pending_rewards")
+    .select("id, status, processing_window_days, target_at")
+    .eq("workspace_id", DEMO_WS).eq("mission_workflow_id", pending.workflowId).maybeSingle();
+  if (pendingRow.error || !pendingRow.data || pendingRow.data.status !== "pending"
+    || pendingRow.data.processing_window_days !== 7 || !pendingRow.data.target_at) {
+    fail("assert configured-SLA pending handoff", pendingRow.error);
+  }
   await assertRewardNeutrality("pending", pending.creatorId, pendingBefore);
+  asserted.add("pending_handoff");
+  asserted.add("configured_sla_workspace");
 
   const cancelled = await createWorkflowScenario({
-    label: "cancelled",
-    operatorId,
-    states: ["proof_verified"],
-    withContract: true,
+    label: "cancelled", operatorId, states: ["proof_verified"], withContract: true,
   });
   const cancelledBefore = await rewardNeutralitySnapshot(cancelled.creatorId);
   snapshots.push(cancelledBefore);
   const approved = await approve(cancelled);
   const cancellation = await service.rpc("cancel_mission_reward_handoff", {
-    p_workspace: DEMO_WS,
-    p_workflow: cancelled.workflowId,
-    p_operator: operatorId,
-    p_expected_state: "reward_pending",
-    p_expected_revision: approved.workflow.revision,
-    p_idempotency_key: randomUUID(),
-    p_reason_category: REWARD_HANDOFF_CANCELLATION_REASON,
+    p_workspace: DEMO_WS, p_workflow: cancelled.workflowId, p_operator: operatorId,
+    p_expected_state: "reward_pending", p_expected_revision: approved.workflow.revision,
+    p_idempotency_key: randomUUID(), p_reason_category: REWARD_HANDOFF_CANCELLATION_REASON,
     p_reason_note: "Acceptance fixture returns the verified proof for reassessment.",
   });
   if (cancellation.error) fail("cancel acceptance reward handoff", cancellation.error);
+  const cancelledRows = await Promise.all([
+    service.from("mission_pending_rewards").select("status, cancellation_decision_id")
+      .eq("workspace_id", DEMO_WS).eq("mission_workflow_id", cancelled.workflowId).maybeSingle(),
+    service.from("mission_workflows").select("state")
+      .eq("workspace_id", DEMO_WS).eq("id", cancelled.workflowId).maybeSingle(),
+  ]);
+  if (cancelledRows.some((result) => result.error)
+    || cancelledRows[0].data?.status !== "cancelled"
+    || !cancelledRows[0].data?.cancellation_decision_id
+    || cancelledRows[1].data?.state !== "proof_verified") {
+    fail("assert cancelled and reassessable handoff", cancelledRows.find((result) => result.error)?.error);
+  }
   await assertRewardNeutrality("cancelled", cancelled.creatorId, cancelledBefore);
+  asserted.add("cancelled_and_reassessable_handoff");
 
-  const scenarioCounts = Object.fromEntries(
-    REWARD_HANDOFF_SCENARIO_LABELS.map((label) => [label, 1]),
-  ) as Record<ScenarioLabel, number>;
-  const neutralitySnapshotCounts = Object.fromEntries(
-    REWARD_NEUTRALITY_SNAPSHOT_FIELDS.map((field) => [field, snapshots.length]),
-  ) as Record<SnapshotField, number>;
-  return { scenarioCounts, neutralitySnapshotCounts };
+  const clearedSla = await service.from("workspaces")
+    .update({ reward_processing_window_days: null }).eq("id", DEMO_WS);
+  if (clearedSla.error) fail("clear acceptance SLA", clearedSla.error);
+  const noSla = await createWorkflowScenario({
+    label: "no-sla", operatorId, states: ["proof_verified"], withContract: true,
+  });
+  const noSlaBefore = await rewardNeutralitySnapshot(noSla.creatorId);
+  snapshots.push(noSlaBefore);
+  await approve(noSla);
+  const noSlaPending = await service.from("mission_pending_rewards")
+    .select("id, status, processing_window_days, target_at")
+    .eq("workspace_id", DEMO_WS).eq("mission_workflow_id", noSla.workflowId).maybeSingle();
+  if (noSlaPending.error || !noSlaPending.data || noSlaPending.data.status !== "pending"
+    || noSlaPending.data.processing_window_days !== null || noSlaPending.data.target_at !== null) {
+    fail("assert usable missing-SLA handoff", noSlaPending.error);
+  }
+  await assertRewardNeutrality("no-sla", noSla.creatorId, noSlaBefore);
+  asserted.add("missing_sla_workspace");
+
+  return structuralCountsFromAssertions(asserted, snapshots.length);
 }
-
-if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+if (process.env.npm_lifecycle_event === "seed:reward-handoff-acceptance"
+  || (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url)) {
   seedRewardHandoffAcceptance()
     .then((counts) => {
       process.stdout.write(`${JSON.stringify(rewardHandoffAcceptanceSummary(counts), null, 2)}\n`);

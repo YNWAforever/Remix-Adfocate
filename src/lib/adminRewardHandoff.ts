@@ -73,6 +73,9 @@ export type CompletionReview = {
   rewardContract: AdminRewardContract | null;
   completionEligibility: CompletionEligibility;
   pendingReward: AdminPendingReward | null;
+  acceptedProofAnchors: Array<{ workItemId: string; proofAttemptId: string }>;
+  processingWindowDays: number | null;
+  processingTargetAt: string | null;
 };
 
 export type BackfillRewardContractInput = {
@@ -112,8 +115,9 @@ export type RewardHandoffListFilters = {
   due?: "overdue" | "due_soon" | "no_target" | "";
   component?: "points" | "cash" | "xp" | "";
   status?: "pending" | "cancelled" | "";
+  cursor?: string;
+  limit?: number;
 };
-
 export type RewardHandoffQueueDecision = {
   id: string;
   kind: "approved" | "cancelled";
@@ -132,6 +136,7 @@ export type RewardHandoffQueueItem = AdminPendingReward & {
 export type RewardHandoffListResponse = {
   items: RewardHandoffQueueItem[];
   rewardProcessingWindowDays: number | null;
+  pageInfo: { hasMore: boolean; nextCursor: string | null; limit: number };
 };
 
 export type RewardHandoffMutationResult = {
@@ -175,13 +180,13 @@ function normalizeRequiredLower<T extends string>(value: T): T {
 
 export function normalizeRewardHandoffListFilters(
   filters: RewardHandoffListFilters,
-): Required<Pick<RewardHandoffListFilters, "workspace" | "status">>
-  & Pick<RewardHandoffListFilters, "due" | "component"> {
-  return {
+) {  return {
     workspace: normalizeWorkspace(filters.workspace),
     due: normalizeLower(filters.due),
     component: normalizeLower(filters.component),
     status: normalizeLower(filters.status) ?? "pending",
+    cursor: filters.cursor?.trim() || undefined,
+    limit: filters.limit,
   };
 }
 
@@ -240,19 +245,20 @@ function workspaceHeader(workspace: string) {
   return { "X-Workspace-Slug": normalizeWorkspace(workspace) };
 }
 
-function mutation<TInput extends { workspace: string }, TResult>(
+function mutation<TInput extends { workspace: string; idempotencyKey?: string }, TResult>(
   path: string,
   input: TInput,
   method: "POST" | "PUT" = "POST",
 ): Promise<TResult> {
-  const { workspace, ...body } = input;
+  const { workspace, idempotencyKey, ...body } = input;
+  const headers: Record<string, string> = workspaceHeader(workspace);
+  if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
   return adminFetch<TResult>(path, {
     method,
-    headers: workspaceHeader(workspace),
+    headers,
     body: JSON.stringify(body),
   });
 }
-
 export function fetchCompletionReview(
   workflowId: string,
   workspace: string,
@@ -301,6 +307,8 @@ export function fetchRewardHandoffs(
   if (normalized.due) params.set("due", normalized.due);
   if (normalized.component) params.set("component", normalized.component);
   params.set("status", normalized.status);
+  if (normalized.limit !== undefined) params.set("limit", String(normalized.limit));
+  if (normalized.cursor) params.set("cursor", normalized.cursor);
   const query = params.toString();
   return adminFetch<RewardHandoffListResponse>(
     `/admin/reward-handoffs?${query}`,

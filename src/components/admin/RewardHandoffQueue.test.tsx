@@ -98,6 +98,19 @@ describe("RewardHandoffQueue", () => {
     expect(cards[1]).toHaveClass("min-w-0", "overflow-hidden");
   });
 
+  it("offers one accessible load-more action when continuation metadata exists", async () => {
+    const onLoadMore = vi.fn(async () => undefined);
+    render(<RewardHandoffQueue
+      {...baseProps}
+      items={[item()]}
+      hasMore
+      loadingMore={false}
+      onLoadMore={onLoadMore}
+    />);
+    const button = screen.getByRole("button", { name: "Load more reward handoffs" });
+    fireEvent.click(button);
+    await waitFor(() => expect(onLoadMore).toHaveBeenCalledTimes(1));
+  });
   it("groups missing targets under localized copy and exposes cancelled audit rows", () => {
     const cancelled = item({
       id: "cancelled-1", status: "cancelled", targetAt: null,

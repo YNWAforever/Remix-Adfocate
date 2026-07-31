@@ -8,6 +8,7 @@ import {
   validateCancellationPayload,
   validateCompletionPayload,
   validateSettingsPayload,
+  validateNotificationRetryPayload,
   validateUuid,
   type AdminRewardHandoffRepository,
 } from "../lib/activeMission/rewardHandoff.js";
@@ -32,6 +33,9 @@ function requestContext(context: Context<AdminEnv>, identity: IdentityProvider) 
   return { operatorId: staff.userId, workspaceSlug };
 }
 
+function idempotencyKey(context: Context<AdminEnv>): string {
+  return context.req.header("Idempotency-Key")?.trim() ?? "";
+}
 function routeError(context: Context<AdminEnv>, error: unknown) {
   if (error instanceof RewardHandoffError) {
     const status = rewardHandoffStatus(error.code);
@@ -69,7 +73,7 @@ export function createAdminRewardHandoffRoutes(
     try {
       const request = requestContext(context, identity);
       const workflowId = validateUuid(context.req.param("workflowId"), "workflowId");
-      const input = validateBackfillPayload(await body(context));
+      const input = validateBackfillPayload(await body(context), idempotencyKey(context));
       return context.json(await repository().backfillRewardContract({
         workflowId,
         ...request,
@@ -84,7 +88,7 @@ export function createAdminRewardHandoffRoutes(
     try {
       const request = requestContext(context, identity);
       const workflowId = validateUuid(context.req.param("workflowId"), "workflowId");
-      const input = validateCompletionPayload(await body(context));
+      const input = validateCompletionPayload(await body(context), idempotencyKey(context));
       return context.json(await repository().approveCompletion({
         workflowId,
         ...request,
@@ -99,7 +103,7 @@ export function createAdminRewardHandoffRoutes(
     try {
       const request = requestContext(context, identity);
       const workflowId = validateUuid(context.req.param("workflowId"), "workflowId");
-      const input = validateCancellationPayload(await body(context));
+      const input = validateCancellationPayload(await body(context), idempotencyKey(context));
       return context.json(await repository().cancelRewardHandoff({
         workflowId,
         ...request,
@@ -117,6 +121,8 @@ export function createAdminRewardHandoffRoutes(
         due: context.req.query("due"),
         component: context.req.query("component"),
         status: context.req.query("status"),
+        cursor: context.req.query("cursor"),
+        limit: context.req.query("limit"),
       });
       return context.json(await repository().listRewardHandoffs({ ...request, ...filters }));
     } catch (error) {
@@ -124,6 +130,20 @@ export function createAdminRewardHandoffRoutes(
     }
   });
 
+  routes.post("/reward-handoffs/:pendingRewardId/notifications/retry", async (context) => {
+    try {
+      const request = requestContext(context, identity);
+      const pendingRewardId = validateUuid(context.req.param("pendingRewardId"), "pendingRewardId");
+      const input = validateNotificationRetryPayload(await body(context));
+      return context.json(await repository().retryNotification({
+        ...request,
+        pendingRewardId,
+        ...input,
+      }));
+    } catch (error) {
+      return routeError(context, error);
+    }
+  });
   routes.put("/reward-handoffs/settings", async (context) => {
     try {
       const request = requestContext(context, identity);

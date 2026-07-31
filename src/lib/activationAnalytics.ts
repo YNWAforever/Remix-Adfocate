@@ -404,6 +404,7 @@ type ActivationAnalyticsSink = (event: ActivationAnalyticsEvent) => boolean | vo
  * Browser-only first-party analytics transport contract. Consumers may listen
  * for this event without the application inventing an external endpoint.
  * The event detail has already passed the per-event privacy allowlist.
+ * A consumer acknowledges durable acceptance by calling preventDefault().
  */
 export const ACTIVATION_ANALYTICS_EVENT = "adfocate:activation-analytics";
 
@@ -441,10 +442,14 @@ export function setActivationAnalyticsSink(
 
 export function initializeActivationAnalytics(): void {
   if (typeof window === "undefined") return;
-  setActivationAnalyticsSink((event) => window.dispatchEvent(new CustomEvent(
-    ACTIVATION_ANALYTICS_EVENT,
-    { detail: event },
-  )));
+  setActivationAnalyticsSink((event) => {
+    const browserEvent = new CustomEvent(ACTIVATION_ANALYTICS_EVENT, {
+      detail: event,
+      cancelable: true,
+    });
+    window.dispatchEvent(browserEvent);
+    return browserEvent.defaultPrevented;
+  });
 }
 
 export function subscribeActivationAnalyticsSink(listener: () => void): () => void {

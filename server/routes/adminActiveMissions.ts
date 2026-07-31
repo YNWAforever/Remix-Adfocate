@@ -200,10 +200,12 @@ function dbError(error: { message?: string | null } | null): never {
   throw new OperatorActiveMissionError(mapped[message.toLowerCase()] ?? "UNKNOWN", message);
 }
 
+const rewardProcessingWindowByWorkspace = new Map<string, number | null>();
+
 async function workspaceId(client: SupabaseClient, slug: string, operatorId?: string) {
   if (operatorId) {
     const membership = await client.from("brand_users")
-      .select("workspace_id, workspaces!brand_users_workspace_id_fkey!inner(id, slug)")
+      .select("workspace_id, workspaces!brand_users_workspace_id_fkey!inner(id, slug, reward_processing_window_days)")
       .eq("user_id", operatorId)
       .eq("active", true)
       .eq("workspaces.slug", slug)
@@ -222,6 +224,8 @@ async function workspaceId(client: SupabaseClient, slug: string, operatorId?: st
       || workspace.slug !== slug) {
       throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
     }
+    rewardProcessingWindowByWorkspace.set(resolvedWorkspaceId,
+      workspace.reward_processing_window_days == null ? null : Number(workspace.reward_processing_window_days));
     return resolvedWorkspaceId;
   }
   const result = await client.from("workspaces").select("id").eq("slug", slug).maybeSingle();
@@ -420,7 +424,8 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
         client,
         workspace,
         input.workflowId,
-        { workflow, requiredItems: (itemsResult.data ?? []) as Row[] },
+        { workflow, submission, requiredItems: (itemsResult.data ?? []) as Row[] },
+        rewardProcessingWindowByWorkspace.get(workspace) ?? null,
       );
       return {
         workflow,
