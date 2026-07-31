@@ -23,6 +23,15 @@ const rewardContractMigrationSql = () => readFileSync(
   "utf8",
 ).toLowerCase().replace(/\r\n/g, "\n");
 
+const rewardHandoffTransitionMigrationSql = () => {
+  const path = resolve(
+    "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+  );
+  return existsSync(path)
+    ? readFileSync(path, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+    : "";
+};
+
 function sqlFunctionBlock(sql: string, qualifiedName: string) {
   const signature = `create or replace function ${qualifiedName}(`;
   const start = sql.indexOf(signature);
@@ -185,6 +194,245 @@ describe("active mission migration contract", () => {
     expect(sla).toContain("set search_path = ''");
     expect(sql).toContain(
       "revoke all on function private.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
+    );
+  });
+
+  it("defines service-only atomic approval and cancellation wrappers", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "public.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "public.cancel_mission_reward_handoff",
+    );
+
+    for (const [name, block, dispatch] of [
+      [
+        "public.approve_mission_completion",
+        approve,
+        "return private.approve_mission_completion(",
+      ],
+      [
+        "public.cancel_mission_reward_handoff",
+        cancel,
+        "return private.cancel_mission_reward_handoff(",
+      ],
+    ] as const) {
+      expectSqlOrder(block, name, [
+        "auth.jwt() ->> 'role'",
+        "= 'service_role'",
+        "raise exception 'not_authorized';",
+        dispatch,
+      ]);
+      expect(block).toContain("set search_path = ''");
+    }
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.approve_mission_completion(uuid, uuid, uuid, text, integer, uuid) to service_role",
+    );
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.cancel_mission_reward_handoff(uuid, uuid, uuid, text, integer, uuid, text, text) to service_role",
+    );
+  });
+
+  it("authorizes, locks, verifies evidence, and appends approval in transaction order", () => {
+    const approve = sqlFunctionBlock(
+      rewardHandoffTransitionMigrationSql(),
+      "private.approve_mission_completion",
+    );
+    const workflowLock = approve.indexOf(
+      "select workflow.* into v_workflow",
+    );
+    const replayAfterLock = approve.indexOf(
+      "from public.mission_completion_decisions decision",
+      workflowLock,
+    );
+
+    expectSqlOrder(approve, "private.approve_mission_completion", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.user_id = p_operator",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "extensions.digest(convert_to(",
+      "from public.mission_completion_decisions decision",
+      "select workflow.* into v_workflow",
+      "workflow.workspace_id = p_workspace",
+      "for update;",
+    ]);
+    expect(replayAfterLock).toBeGreaterThan(workflowLock);
+    expectSqlOrder(
+      approve.slice(replayAfterLock),
+      "private.approve_mission_completion mutation",
+      [
+        "from public.mission_reward_contracts contract",
+        "from public.mission_work_items item",
+        "item.required",
+        "item.verified_proof_attempt_id",
+        "from public.mission_publication_proof_attempts attempt",
+        "insert into public.mission_completion_decisions",
+        "insert into public.mission_pending_rewards",
+        "update public.mission_workflows",
+        "state = 'reward_pending'",
+        "revision = revision + 1",
+        "'mission_completion_approved'",
+      ],
+    );
+    expect(approve).toContain(
+      "when v_processing_days is null then null",
+    );
+    expect(approve).toContain(
+      "else v_now + make_interval(days => v_processing_days)",
+    );
+    expect(approve).toMatch(
+      /pending_reward_id,[\s\S]*?\)\s*values\s*\([\s\S]*?null,/,
+    );
+  });
+
+  it("normalizes idempotency hashes and rolls pending conflicts back", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "private.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "private.cancel_mission_reward_handoff",
+    );
+
+    for (const [name, block] of [
+      ["private.approve_mission_completion", approve],
+      ["private.cancel_mission_reward_handoff", cancel],
+    ] as const) {
+      expect(block).toContain("extensions.digest(convert_to(");
+      expect(block).toContain("'sha256'");
+      expect(block).toContain("'action'");
+      expect(block).toContain("'workflowid'");
+      expect(block).toContain("'expectedstate'");
+      expect(block).toContain("'expectedrevision'");
+      expect(block).toContain("btrim(");
+      expect(block).toContain("raise exception 'idempotency_conflict'");
+      expect(block).toContain("'idempotent', true");
+      expect(block).toContain("'idempotent', false");
+      expect(block).toContain(
+        "select decision as decision_row, pending as pending_row",
+      );
+      expect(block).not.toContain("select decision, pending");
+    }
+    expect(cancel).toContain("lower(btrim(p_reason_category))");
+    expect(cancel).toContain("btrim(p_reason_note)");
+    expect(approve).toContain("exception when unique_violation then");
+    expect(approve).toContain("raise exception 'pending_reward_exists'");
+  });
+
+  it("locks and appends cancellation while changing only the guarded fields", () => {
+    const cancel = sqlFunctionBlock(
+      rewardHandoffTransitionMigrationSql(),
+      "private.cancel_mission_reward_handoff",
+    );
+    expectSqlOrder(cancel, "private.cancel_mission_reward_handoff auth", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "raise exception 'not_authorized';",
+      "select workflow.* into v_workflow",
+      "for update;",
+    ]);
+    const pendingLock = cancel.lastIndexOf(
+      "select pending.* into v_pending",
+    );
+    expect(pendingLock).toBeGreaterThanOrEqual(0);
+    expectSqlOrder(
+      cancel.slice(pendingLock),
+      "private.cancel_mission_reward_handoff mutation",
+      [
+      "select pending.* into v_pending",
+      "status = 'pending'",
+      "for update;",
+      "insert into public.mission_completion_decisions",
+      "update public.mission_pending_rewards",
+      "set status = 'cancelled',",
+      "cancellation_decision_id = v_decision.id,",
+      "cancelled_at = v_now",
+      "update public.mission_workflows",
+      "state = 'proof_verified'",
+      "revision = revision + 1",
+      "'mission_reward_pending_cancelled'",
+      ],
+    );
+    expect(cancel).toContain(
+      "('contract_error','eligibility_error','duplicate','other')",
+    );
+    expect(cancel).toContain("supersedes_decision_id");
+    expect(cancel).toContain("pending_reward_id");
+  });
+
+  it("keeps transition RPCs reward and budget neutral", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    for (const forbidden of [
+      "approve_submission(",
+      "update public.mission_submissions",
+      "update public.creators",
+      "insert into public.point_transactions",
+      "update public.point_balances",
+      "insert into public.earnings_transactions",
+      "update public.earnings_balances",
+      "insert into public.workspace_budget_transactions",
+      "update public.workspace_budgets",
+      "insert into public.redemptions",
+    ]) {
+      expect(sql).not.toContain(forbidden);
+    }
+  });
+
+  it("returns a creator-owned bounded handoff without audit or proof secrets", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const creatorRead = sqlFunctionBlock(
+      sql,
+      "public.get_my_mission_reward_handoff",
+    );
+    expectSqlOrder(creatorRead, "public.get_my_mission_reward_handoff auth", [
+      "auth.uid()",
+      "from public.mission_submissions submission",
+      "submission.creator_id = v_creator",
+    ]);
+    const ownedRead = creatorRead.slice(
+      creatorRead.indexOf("from public.mission_submissions submission"),
+    );
+    expectSqlOrder(ownedRead, "public.get_my_mission_reward_handoff owned read", [
+      "from public.mission_submissions submission",
+      "submission.creator_id = v_creator",
+      "if v_workflow is null then",
+      "raise exception 'not_found';",
+      "from public.mission_pending_rewards pending",
+      "jsonb_build_object(",
+    ]);
+    for (const forbidden of [
+      "reason_note",
+      "confirmation_reason",
+      "confirmation_evidence_source",
+      "confirmed_by",
+      "decided_by",
+      "actor_id",
+      "idempotency_key",
+      "request_hash",
+      "evidence_snapshot",
+      "primary_url",
+      "additional_urls",
+      "storage_object_path",
+      "signed",
+      "to_jsonb(v_decision)",
+      "to_jsonb(v_pending)",
+    ]) {
+      expect(creatorRead).not.toContain(forbidden);
+    }
+    expect(creatorRead).toContain("set search_path = ''");
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.get_my_mission_reward_handoff(uuid) to authenticated",
+    );
+    expect(normalizedSql(sql)).not.toContain(
+      "grant execute on function public.get_my_mission_reward_handoff(uuid) to anon",
     );
   });
 
