@@ -18,6 +18,38 @@ const suite = integrationSkipReason === null ? describe : describe.skip;
 const suiteName = integrationSkipReason === null ? "active mission workflow schema" : `active mission workflow schema (skipped: ${integrationSkipReason})`;
 const unique = () => randomUUID();
 
+const rewardContractMigrationSql = () => readFileSync(
+  resolve("supabase/migrations/20260731110000_reward_contract_capture.sql"),
+  "utf8",
+).toLowerCase().replace(/\r\n/g, "\n");
+
+function sqlFunctionBlock(sql: string, qualifiedName: string) {
+  const signature = `create or replace function ${qualifiedName}(`;
+  const start = sql.indexOf(signature);
+  expect(start, `missing function: ${qualifiedName}`).toBeGreaterThanOrEqual(0);
+  const bodyStart = sql.indexOf("as $$", start);
+  expect(bodyStart, `missing function body: ${qualifiedName}`).toBeGreaterThan(start);
+  const end = sql.indexOf("\n$$;", bodyStart);
+  expect(end, `unterminated function body: ${qualifiedName}`).toBeGreaterThan(bodyStart);
+  return sql.slice(start, end + 4);
+}
+
+function expectSqlOrder(block: string, qualifiedName: string, tokens: string[]) {
+  let previous = -1;
+  for (const token of tokens) {
+    const index = block.indexOf(token);
+    expect(
+      index,
+      `${qualifiedName}: missing or out-of-order token: ${token}`,
+    ).toBeGreaterThan(previous);
+    previous = index;
+  }
+}
+
+function normalizedSql(sql: string) {
+  return sql.replace(/\s+/g, " ").trim();
+}
+
 describe("active mission migration contract", () => {
   it("defines an additive, reward-neutral handoff schema", () => {
     const sql = readFileSync(
@@ -35,34 +67,56 @@ describe("active mission migration contract", () => {
     expect(sql).not.toContain("approve_submission(");
   });
 
-  it("defines atomic join capture and service-only audited reward settings", () => {
-    const migrationPath = resolve(
-      "supabase/migrations/20260731110000_reward_contract_capture.sql",
-    );
-    const sql = existsSync(migrationPath)
-      ? readFileSync(migrationPath, "utf8").toLowerCase().replace(/\r\n/g, "\n")
-      : "";
+  it("binds fresh active joins to an atomic zero-XP reward contract", () => {
+    const sql = rewardContractMigrationSql();
+    const join = sqlFunctionBlock(sql, "public.join_active_mission");
 
-    for (const token of [
-      "create or replace function public.join_active_mission(p_mission uuid)",
-      "private.create_mission_workflow(v_submission.id)",
-      "'join'",
-      "'hkd'",
-      "create or replace function private.backfill_mission_reward_contract",
-      "create or replace function public.backfill_mission_reward_contract",
-      "for update",
-      "'operator_backfill'",
-      "confirmation_evidence_source",
-      "create or replace function private.set_reward_processing_window",
-      "create or replace function public.set_reward_processing_window",
-      "set reward_processing_window_days = p_days",
-      "set search_path = ''",
-    ]) expect(sql, `missing reward-contract token: ${token}`).toContain(token);
-
+    expectSqlOrder(join, "public.join_active_mission", [
+      "v_submission := public.join_mission(p_mission);",
+      "v_workflow := private.create_mission_workflow(v_submission.id);",
+      "insert into public.mission_reward_contracts",
+      "currency,\n    xp_amount,\n    source,",
+      "'hkd',\n    0,\n    'join',",
+    ]);
+    expect(join).toContain("set search_path = ''");
     expect(sql).not.toContain("create trigger mission_reward_contract");
     expect(sql).toContain(
       "grant execute on function public.join_active_mission(uuid) to authenticated",
     );
+  });
+
+  it("guards service-only reward wrappers before private dispatch", () => {
+    const sql = rewardContractMigrationSql();
+    const backfill = sqlFunctionBlock(
+      sql,
+      "public.backfill_mission_reward_contract",
+    );
+    const sla = sqlFunctionBlock(
+      sql,
+      "public.set_reward_processing_window",
+    );
+
+    for (const [name, block, dispatch] of [
+      [
+        "public.backfill_mission_reward_contract",
+        backfill,
+        "return private.backfill_mission_reward_contract(",
+      ],
+      [
+        "public.set_reward_processing_window",
+        sla,
+        "return private.set_reward_processing_window(",
+      ],
+    ] as const) {
+      expectSqlOrder(block, name, [
+        "auth.jwt() ->> 'role'",
+        "= 'service_role'",
+        "raise exception 'not_authorized';",
+        dispatch,
+      ]);
+      expect(block).toContain("set search_path = ''");
+    }
+
     expect(sql).toContain(
       "revoke all on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
     );
@@ -70,11 +124,65 @@ describe("active mission migration contract", () => {
       "grant execute on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) to service_role",
     );
     expect(sql).toContain(
-      "revoke all on function private.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+      "revoke all on function public.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
     );
     expect(sql).toContain(
       "grant execute on function public.set_reward_processing_window(uuid, uuid, smallint) to service_role",
     );
+  });
+
+  it("authorizes and tenant-scopes backfill before workflow or contract lookup", () => {
+    const sql = rewardContractMigrationSql();
+    const backfill = sqlFunctionBlock(
+      sql,
+      "private.backfill_mission_reward_contract",
+    );
+
+    expectSqlOrder(backfill, "private.backfill_mission_reward_contract", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.user_id = p_operator",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "select workflow.* into v_workflow",
+      "from public.mission_workflows workflow",
+      "workflow.id = p_workflow",
+      "workflow.workspace_id = p_workspace",
+      "for update;",
+      "from public.mission_reward_contracts contract",
+    ]);
+    expect(backfill).toContain("set search_path = ''");
+    expect(sql).toContain(
+      "revoke all on function private.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+    );
+  });
+
+  it("keeps nullable SLA bounds and updates only the workspace SLA column", () => {
+    const sql = rewardContractMigrationSql();
+    const sla = sqlFunctionBlock(
+      sql,
+      "private.set_reward_processing_window",
+    );
+
+    expectSqlOrder(sla, "private.set_reward_processing_window", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "p_days is not null and (p_days < 0 or p_days > 365)",
+      "update public.workspaces",
+    ]);
+    expect(sla).not.toContain("p_days is null then");
+    const updates = sla.match(
+      /update public\.workspaces[\s\S]*?where id = p_workspace;/g,
+    ) ?? [];
+    expect(updates).toHaveLength(1);
+    expect(normalizedSql(updates[0]!)).toBe(
+      "update public.workspaces set reward_processing_window_days = p_days where id = p_workspace;",
+    );
+    expect(sla).toContain("set search_path = ''");
     expect(sql).toContain(
       "revoke all on function private.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
     );

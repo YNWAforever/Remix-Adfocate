@@ -8,6 +8,7 @@ import {
   creatorRewardSnapshot,
   DEMO_WS,
   makeCreator,
+  makeBrand,
   makeMission,
   makeStaff,
   seedActiveMission,
@@ -145,6 +146,45 @@ integrationSuite(integrationSuiteName, () => {
   beforeAll(cleanup);
   afterAll(cleanup);
 
+  it("denies anonymous and authenticated callers access to service-only wrappers", async () => {
+    const id = unique();
+    const creator = await makeCreator(`reward-wrapper-denial-${id}@test.local`);
+    const backfillArgs = {
+      p_workspace: DEMO_WS,
+      p_workflow: unique(),
+      p_operator: unique(),
+      p_points_amount: 100,
+      p_cash_amount: 0,
+      p_currency: "HKD",
+      p_xp_amount: 0,
+      p_source_mission_updated_at: null,
+      p_confirmation_evidence_source: "operator_record",
+      p_confirmation_reason: "Permission boundary check",
+      p_idempotency_key: unique(),
+    };
+    const slaArgs = {
+      p_workspace: DEMO_WS,
+      p_operator: unique(),
+      p_days: 14,
+    };
+
+    for (const client of [
+      userForJwt(""),
+      userForJwt(creator.jwt),
+    ]) {
+      const [backfill, sla] = await Promise.all([
+        client.rpc("backfill_mission_reward_contract", backfillArgs),
+        client.rpc("set_reward_processing_window", slaArgs),
+      ]);
+      expect(backfill.error?.message.toLowerCase()).toContain(
+        "permission denied",
+      );
+      expect(sla.error?.message.toLowerCase()).toContain(
+        "permission denied",
+      );
+    }
+  });
+
   it("captures one immutable reward contract when an active workflow is created", async () => {
     const seeded = await seedFreshActiveMission();
     const beforeRewards = await creatorRewardSnapshot(seeded.creator.userId);
@@ -224,6 +264,21 @@ integrationSuite(integrationSuiteName, () => {
     expect(missingContract.data).toEqual([]);
 
     const operator = await makeStaff(`reward-backfill-operator-${id}@test.local`);
+    const nonMember = await service.rpc("backfill_mission_reward_contract", {
+      p_workspace: DEMO_WS,
+      p_workflow: workflow.id,
+      p_operator: operator.userId,
+      p_points_amount: 500,
+      p_cash_amount: 125,
+      p_currency: "HKD",
+      p_xp_amount: 0,
+      p_source_mission_updated_at: null,
+      p_confirmation_evidence_source: "operator_record",
+      p_confirmation_reason: "Membership boundary check",
+      p_idempotency_key: unique(),
+    });
+    expect(nonMember.error?.message).toContain("not_authorized");
+
     expect((await service.from("brand_users").insert({
       user_id: operator.userId,
       workspace_id: DEMO_WS,
@@ -285,6 +340,65 @@ integrationSuite(integrationSuiteName, () => {
     expect(duplicate.error?.message).toContain("reward_contract_exists");
   });
 
+  it("does not reveal a workflow that belongs to another workspace", async () => {
+    const id = unique();
+    const historical = await seedActiveMission({
+      email: `reward-privacy-${id}@test.local`,
+      slug: `test-reward-privacy-${id}`,
+      deliverables: [{ title: "Private post", platform: "instagram" }],
+    });
+    const recovered = await joinMissionWithWorkflowRecovery(
+      userForJwt(historical.creator.jwt),
+      historical.mission,
+      historical.creator.id,
+      DEMO_WS,
+    );
+    expect(recovered.error).toBeNull();
+    const workflow = recovered.data.workflow as { id: string };
+
+    const otherWorkspace = await makeBrand(
+      `reward-privacy-brand-${id}@test.local`,
+    );
+    const operator = await makeStaff(
+      `reward-privacy-operator-${id}@test.local`,
+    );
+    const service = serviceForTests();
+    expect((await service.from("brand_users").insert({
+      user_id: operator.userId,
+      workspace_id: otherWorkspace.workspaceId,
+      email: `reward-privacy-operator-${id}@test.local`,
+      role: "member",
+      active: true,
+    })).error).toBeNull();
+
+    const args = {
+      p_workspace: otherWorkspace.workspaceId,
+      p_workflow: workflow.id,
+      p_operator: operator.userId,
+      p_points_amount: 500,
+      p_cash_amount: 125,
+      p_currency: "HKD",
+      p_xp_amount: 0,
+      p_source_mission_updated_at: null,
+      p_confirmation_evidence_source: "operator_record",
+      p_confirmation_reason: "Tenant privacy check",
+      p_idempotency_key: unique(),
+    };
+    const crossWorkspace = await service.rpc(
+      "backfill_mission_reward_contract",
+      args,
+    );
+    const absent = await service.rpc("backfill_mission_reward_contract", {
+      ...args,
+      p_workflow: unique(),
+      p_idempotency_key: unique(),
+    });
+    expect(crossWorkspace.error?.message).toContain(
+      "reward_workflow_not_found",
+    );
+    expect(absent.error?.message).toBe(crossWorkspace.error?.message);
+  });
+
   it("sets and removes the workspace reward-processing promise with active membership", async () => {
     const id = unique();
     const service = serviceForTests();
@@ -297,13 +411,29 @@ integrationSuite(integrationSuiteName, () => {
       active: true,
     })).error).toBeNull();
 
-    const set = await service.rpc("set_reward_processing_window", {
-      p_workspace: DEMO_WS,
-      p_operator: operator.userId,
-      p_days: 14,
-    });
-    expect(set.error).toBeNull();
-    expect(set.data).toEqual({ workspaceId: DEMO_WS, rewardProcessingWindowDays: 14 });
+    for (const days of [0, 365]) {
+      const accepted = await service.rpc("set_reward_processing_window", {
+        p_workspace: DEMO_WS,
+        p_operator: operator.userId,
+        p_days: days,
+      });
+      expect(accepted.error).toBeNull();
+      expect(accepted.data).toEqual({
+        workspaceId: DEMO_WS,
+        rewardProcessingWindowDays: days,
+      });
+    }
+    for (const days of [-1, 366]) {
+      const rejected = await service.rpc("set_reward_processing_window", {
+        p_workspace: DEMO_WS,
+        p_operator: operator.userId,
+        p_days: days,
+      });
+      expect(rejected.error?.message).toContain(
+        "reward_processing_window_invalid",
+      );
+    }
+
     const removed = await service.rpc("set_reward_processing_window", {
       p_workspace: DEMO_WS,
       p_operator: operator.userId,
