@@ -152,10 +152,12 @@ export class AdminAuthError extends Error {}
 export class AdminRequestError extends Error {
   code?: string;
   fields?: Record<string, string>;
-  constructor(message: string, code?: string, fields?: Record<string, string>) {
+  status?: number;
+  constructor(message: string, code?: string, fields?: Record<string, string>, status?: number) {
     super(message);
     this.code = code;
     this.fields = fields;
+    this.status = status;
   }
 }
 
@@ -175,7 +177,7 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields);
+    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields, res.status);
   }
   return res.json() as Promise<T>;
 }

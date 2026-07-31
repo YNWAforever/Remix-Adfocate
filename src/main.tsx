@@ -3,7 +3,10 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { router, queryClient } from "./router";
+import { initializeActivationAnalytics } from "./lib/activationAnalytics";
 import "./styles.css";
+
+initializeActivationAnalytics();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

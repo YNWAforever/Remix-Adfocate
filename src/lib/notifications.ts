@@ -7,7 +7,8 @@ export type NotificationType =
   | "mission_product_shipped" | "mission_receipt_required"
   | "mission_revision_requested" | "mission_draft_approved" | "mission_approved_to_publish"
   | "mission_deadline_approaching" | "mission_deadline_overdue"
-  | "mission_publication_correction_requested" | "mission_publication_verified";
+  | "mission_publication_correction_requested" | "mission_publication_verified"
+  | "mission_reward_pending" | "mission_reward_pending_cancelled";
 
 export type NotificationRow = {
   id: string;
@@ -42,6 +43,8 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   mission_deadline_overdue: Bell,
   mission_publication_correction_requested: XCircle,
   mission_publication_verified: CheckCircle2,
+  mission_reward_pending: Bell,
+  mission_reward_pending_cancelled: XCircle,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {
@@ -68,6 +71,7 @@ function paramsFor(data: Record<string, unknown>): Record<string, string | numbe
     cash: n("cash"),
     deliverable: s("deliverable_title"),
     deadline: s("deadline"),
+    target: s("target_at"),
     version: n("version_number"),
     reasonCategory: s("reason_category"),
     attempt: n("attempt_number"),
@@ -93,7 +97,9 @@ function hrefFor(row: NotificationRow): string {
     case "mission_deadline_approaching":
     case "mission_deadline_overdue":
     case "mission_publication_correction_requested":
-    case "mission_publication_verified": {
+    case "mission_publication_verified":
+    case "mission_reward_pending":
+    case "mission_reward_pending_cancelled": {
       const submissionId = row.data.submission_id;
       return typeof submissionId === "string" && submissionId
         ? `/my/${submissionId}`
@@ -106,11 +112,22 @@ function hrefFor(row: NotificationRow): string {
   }
 }
 
+function hasValidRewardTarget(data: Record<string, unknown>): boolean {
+  const target = data.target_at;
+  return typeof target === "string"
+    && target.trim().length > 0
+    && !Number.isNaN(Date.parse(target));
+}
+
 export function renderNotification(row: NotificationRow, t: T): RenderedNotification {
   const params = paramsFor(row.data);
+  const bodyKey = row.type === "mission_reward_pending"
+    && !hasValidRewardTarget(row.data)
+    ? "app.notif.mission_reward_pending.bodyNoTarget"
+    : `app.notif.${row.type}.body`;
   return {
     title: t(`app.notif.${row.type}.title`),
-    body: t(`app.notif.${row.type}.body`, params),
+    body: t(bodyKey, params),
     href: hrefFor(row),
     icon: iconFor(row.type),
   };

@@ -7,8 +7,45 @@ export type WorkflowState =
   | "approved_to_publish"
   | "publication_in_progress"
   | "proof_verified"
+  | "reward_pending"
   | "cancelled"
   | "expired";
+
+export type RewardHandoffStatus = "pending" | "cancelled";
+
+export type RewardContract = {
+  id: string;
+  pointsAmount: number;
+  cashAmount: number;
+  currency: string;
+  xpAmount: number;
+  source: "join" | "operator_backfill";
+  createdAt: string;
+};
+
+export type CompletionDecision = {
+  id: string;
+  missionWorkflowId: string;
+  decisionKind: "approved" | "cancelled";
+  rewardContractId: string;
+  pendingRewardId: string | null;
+  supersedesDecisionId: string | null;
+  workflowRevision: number;
+  requiredItemCount: number;
+  verifiedRequiredItemCount: number;
+  evidenceSnapshot: Readonly<Record<string, unknown>>;
+  decidedAt: string;
+};
+
+export type PendingReward = {
+  id: string;
+  status: RewardHandoffStatus;
+  reward: Pick<RewardContract, "pointsAmount" | "cashAmount" | "currency" | "xpAmount">;
+  processingWindowDays: number | null;
+  targetAt: string | null;
+  createdAt: string;
+  cancelledAt: string | null;
+};
 
 export type WorkItemState =
   | "blocked_by_fulfillment"

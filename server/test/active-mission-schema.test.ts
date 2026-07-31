@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
@@ -17,8 +18,598 @@ const integrationSkipReason = activeMissionIntegrationSkipReason();
 const suite = integrationSkipReason === null ? describe : describe.skip;
 const suiteName = integrationSkipReason === null ? "active mission workflow schema" : `active mission workflow schema (skipped: ${integrationSkipReason})`;
 const unique = () => randomUUID();
+const powershellExecutableFor = (platform: NodeJS.Platform) => platform === "win32" ? "powershell.exe" : "pwsh";
+
+const rewardContractMigrationSql = () => readFileSync(
+  resolve("supabase/migrations/20260731110000_reward_contract_capture.sql"),
+  "utf8",
+).toLowerCase().replace(/\r\n/g, "\n");
+
+const rewardHandoffTransitionMigrationSql = () => {
+  const path = resolve(
+    "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+  );
+  return existsSync(path)
+    ? readFileSync(path, "utf8").toLowerCase().replace(/\r\n/g, "\n")
+    : "";
+};
+
+function sqlFunctionBlock(sql: string, qualifiedName: string) {
+  const signature = `create or replace function ${qualifiedName}(`;
+  const start = sql.indexOf(signature);
+  expect(start, `missing function: ${qualifiedName}`).toBeGreaterThanOrEqual(0);
+  const bodyStart = sql.indexOf("as $$", start);
+  expect(bodyStart, `missing function body: ${qualifiedName}`).toBeGreaterThan(start);
+  const end = sql.indexOf("\n$$;", bodyStart);
+  expect(end, `unterminated function body: ${qualifiedName}`).toBeGreaterThan(bodyStart);
+  return sql.slice(start, end + 4);
+}
+
+function expectSqlOrder(block: string, qualifiedName: string, tokens: string[]) {
+  let previous = -1;
+  for (const token of tokens) {
+    const index = block.indexOf(token);
+    expect(
+      index,
+      `${qualifiedName}: missing or out-of-order token: ${token}`,
+    ).toBeGreaterThan(previous);
+    previous = index;
+  }
+}
+
+function normalizedSql(sql: string) {
+  return sql.replace(/\s+/g, " ").trim();
+}
 
 describe("active mission migration contract", () => {
+  it("defines an additive, reward-neutral handoff schema", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260731100000_reward_handoff_schema.sql"),
+      "utf8",
+    );
+    expect(sql).toContain("create table public.mission_reward_contracts");
+    expect(sql).toContain("create table public.mission_completion_decisions");
+    expect(sql).toContain("create table public.mission_pending_rewards");
+    expect(sql).toContain("reward_processing_window_days");
+    expect(sql).toContain("'reward_pending'");
+    expect(sql).toContain("where status = 'pending'");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("revoke all");
+    expect(sql).not.toContain("approve_submission(");
+  });
+
+  it("binds fresh active joins to an atomic zero-XP reward contract", () => {
+    const sql = rewardContractMigrationSql();
+    const join = sqlFunctionBlock(sql, "public.join_active_mission");
+
+    expectSqlOrder(join, "public.join_active_mission", [
+      "v_submission := public.join_mission(p_mission);",
+      "v_workflow := private.create_mission_workflow(v_submission.id);",
+      "insert into public.mission_reward_contracts",
+      "currency,\n    xp_amount,\n    source,",
+      "'hkd',\n    0,\n    'join',",
+    ]);
+    expect(join).toContain("set search_path = ''");
+    expect(sql).not.toContain("create trigger mission_reward_contract");
+    expect(sql).toContain(
+      "grant execute on function public.join_active_mission(uuid) to authenticated",
+    );
+  });
+
+  it("guards service-only reward wrappers before private dispatch", () => {
+    const sql = rewardContractMigrationSql();
+    const backfill = sqlFunctionBlock(
+      sql,
+      "public.backfill_mission_reward_contract",
+    );
+    const sla = sqlFunctionBlock(
+      sql,
+      "public.set_reward_processing_window",
+    );
+
+    for (const [name, block, dispatch] of [
+      [
+        "public.backfill_mission_reward_contract",
+        backfill,
+        "return private.backfill_mission_reward_contract(",
+      ],
+      [
+        "public.set_reward_processing_window",
+        sla,
+        "return private.set_reward_processing_window(",
+      ],
+    ] as const) {
+      expectSqlOrder(block, name, [
+        "auth.jwt() ->> 'role'",
+        "= 'service_role'",
+        "raise exception 'not_authorized';",
+        dispatch,
+      ]);
+      expect(block).toContain("set search_path = ''");
+    }
+
+    expect(sql).toContain(
+      "revoke all on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) to service_role",
+    );
+    expect(sql).toContain(
+      "revoke all on function public.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.set_reward_processing_window(uuid, uuid, smallint) to service_role",
+    );
+  });
+
+  it("authorizes and tenant-scopes backfill before workflow or contract lookup", () => {
+    const sql = rewardContractMigrationSql();
+    const backfill = sqlFunctionBlock(
+      sql,
+      "private.backfill_mission_reward_contract",
+    );
+
+    expectSqlOrder(backfill, "private.backfill_mission_reward_contract", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.user_id = p_operator",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "select workflow.* into v_workflow",
+      "from public.mission_workflows workflow",
+      "workflow.id = p_workflow",
+      "workflow.workspace_id = p_workspace",
+      "for update;",
+      "from public.mission_reward_contracts contract",
+    ]);
+    expect(backfill).toContain("set search_path = ''");
+    expect(sql).toContain(
+      "revoke all on function private.backfill_mission_reward_contract(uuid, uuid, uuid, integer, numeric, text, integer, timestamptz, text, text, uuid) from public, anon, authenticated, service_role",
+    );
+  });
+
+  it("keeps nullable SLA bounds and updates only the workspace SLA column", () => {
+    const sql = rewardContractMigrationSql();
+    const sla = sqlFunctionBlock(
+      sql,
+      "private.set_reward_processing_window",
+    );
+
+    expectSqlOrder(sla, "private.set_reward_processing_window", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "p_days is not null and (p_days < 0 or p_days > 365)",
+      "update public.workspaces",
+    ]);
+    expect(sla).not.toContain("p_days is null then");
+    const updates = sla.match(
+      /update public\.workspaces[\s\S]*?where id = p_workspace;/g,
+    ) ?? [];
+    expect(updates).toHaveLength(1);
+    expect(normalizedSql(updates[0]!)).toBe(
+      "update public.workspaces set reward_processing_window_days = p_days where id = p_workspace;",
+    );
+    expect(sla).toContain("set search_path = ''");
+    expect(sql).toContain(
+      "revoke all on function private.set_reward_processing_window(uuid, uuid, smallint) from public, anon, authenticated, service_role",
+    );
+  });
+
+  it("defines service-only atomic approval and cancellation wrappers", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "public.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "public.cancel_mission_reward_handoff",
+    );
+
+    for (const [name, block, dispatch] of [
+      [
+        "public.approve_mission_completion",
+        approve,
+        "return private.approve_mission_completion(",
+      ],
+      [
+        "public.cancel_mission_reward_handoff",
+        cancel,
+        "return private.cancel_mission_reward_handoff(",
+      ],
+    ] as const) {
+      expectSqlOrder(block, name, [
+        "auth.jwt() ->> 'role'",
+        "= 'service_role'",
+        "raise exception 'not_authorized';",
+        dispatch,
+      ]);
+      expect(block).toContain("set search_path = ''");
+    }
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.approve_mission_completion(uuid, uuid, uuid, text, integer, uuid) to service_role",
+    );
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.cancel_mission_reward_handoff(uuid, uuid, uuid, text, integer, uuid, text, text) to service_role",
+    );
+  });
+
+  it("authorizes, locks, verifies evidence, and appends approval in transaction order", () => {
+    const approve = sqlFunctionBlock(
+      rewardHandoffTransitionMigrationSql(),
+      "private.approve_mission_completion",
+    );
+    const workflowLock = approve.indexOf(
+      "select workflow.* into v_workflow",
+    );
+    const replayAfterLock = approve.indexOf(
+      "from public.mission_completion_decisions decision",
+      workflowLock,
+    );
+
+    expectSqlOrder(approve, "private.approve_mission_completion", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "membership.user_id = p_operator",
+      "membership.workspace_id = p_workspace",
+      "membership.active",
+      "raise exception 'not_authorized';",
+      "extensions.digest(convert_to(",
+      "select workflow.* into v_workflow",
+      "workflow.workspace_id = p_workspace",
+      "for update;",
+      "from public.mission_completion_decisions decision",
+    ]);
+    expect(approve.slice(0, workflowLock)).not.toContain(
+      "from public.mission_completion_decisions decision",
+    );
+    expect(replayAfterLock).toBeGreaterThan(workflowLock);
+    expectSqlOrder(
+      approve.slice(replayAfterLock),
+      "private.approve_mission_completion mutation",
+      [
+        "from public.mission_reward_contracts contract",
+        "from public.mission_work_items item",
+        "item.required",
+        "item.verified_proof_attempt_id",
+        "from public.mission_publication_proof_attempts attempt",
+        "join public.mission_publication_proof_reviews review",
+        "review.state = 'verified'",
+        "review.decision = 'verified'",
+        "insert into public.mission_completion_decisions",
+        "insert into public.mission_pending_rewards",
+        "update public.mission_workflows",
+        "state = 'reward_pending'",
+        "revision = revision + 1",
+        "'mission_completion_approved'",
+      ],
+    );
+    expect(approve).toContain(
+      "when v_processing_days is null then null",
+    );
+    expect(approve).toContain(
+      "else v_now + make_interval(days => v_processing_days)",
+    );
+    expect(approve).toMatch(
+      /pending_reward_id,[\s\S]*?\)\s*values\s*\([\s\S]*?null,/,
+    );
+    expect(approve).toContain("'proofreviewid'");
+    expect(approve).not.toContain("'primaryurl'");
+    expect(approve).not.toContain("'additionalurls'");
+    expect(approve).not.toContain("'storageobjectpath'");
+  });
+
+  it("locks before replay and reconstructs immutable cycle snapshots with tenant-bound joins", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "private.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "private.cancel_mission_reward_handoff",
+    );
+
+    for (const [name, block, replayState, pendingState] of [
+      [
+        "private.approve_mission_completion",
+        approve,
+        "'state', 'reward_pending'",
+        "'status', 'pending'",
+      ],
+      [
+        "private.cancel_mission_reward_handoff",
+        cancel,
+        "'state', 'proof_verified'",
+        "'status', 'cancelled'",
+      ],
+    ] as const) {
+      const workflowLock = block.indexOf(
+        "select workflow.* into v_workflow",
+      );
+      const keyLookupStart = block.indexOf(
+        "select decision.* into v_decision",
+      );
+      const keyLookupEnd = block.indexOf(";", keyLookupStart);
+      const keyLookup = block.slice(keyLookupStart, keyLookupEnd + 1);
+      const requestHashCheck = block.indexOf(
+        "v_decision.request_hash <> v_request_hash",
+      );
+      const requestedWorkflowCheck = block.indexOf(
+        "v_decision.mission_workflow_id <> p_workflow",
+      );
+      const canonicalSubmission = block.indexOf(
+        "select submission.* into v_submission",
+      );
+      const canonicalContract = block.indexOf(
+        "select contract.* into v_contract",
+      );
+      const replayLookup = block.indexOf(
+        "select pending as pending_row",
+      );
+      const stateCheck = block.indexOf(
+        "if v_workflow.state <> v_expected_state then",
+      );
+
+      expect(workflowLock, `${name} workflow lock`).toBeGreaterThanOrEqual(0);
+      expect(keyLookupStart, `${name} key lookup`).toBeGreaterThan(workflowLock);
+      expect(requestHashCheck, `${name} hash check`).toBeGreaterThan(keyLookupEnd);
+      expect(requestedWorkflowCheck, `${name} workflow check`)
+        .toBeGreaterThan(requestHashCheck);
+      expect(canonicalSubmission, `${name} canonical submission`)
+        .toBeGreaterThan(requestedWorkflowCheck);
+      expect(canonicalContract, `${name} canonical contract`)
+        .toBeGreaterThan(canonicalSubmission);
+      expect(replayLookup, `${name} replay lookup`)
+        .toBeGreaterThan(canonicalContract);
+      expect(stateCheck, `${name} state check`).toBeGreaterThan(replayLookup);
+      expect(block.slice(0, workflowLock)).not.toContain(
+        "from public.mission_completion_decisions decision",
+      );
+      expect(keyLookup).toContain("decision.workspace_id = p_workspace");
+      expect(keyLookup).toContain(
+        "decision.idempotency_key = p_idempotency_key",
+      );
+      expect(keyLookup).not.toContain("decision.mission_workflow_id");
+      for (const predicate of [
+        "submission.id = v_workflow.mission_submission_id",
+        "submission.workspace_id = p_workspace",
+        "contract.workspace_id = p_workspace",
+        "contract.mission_workflow_id = p_workflow",
+        "contract.mission_submission_id = v_submission.id",
+        "contract.mission_id = v_submission.mission_id",
+        "pending.workspace_id = p_workspace",
+        "pending.mission_workflow_id = p_workflow",
+        "pending.mission_submission_id = v_submission.id",
+        "pending.creator_id = v_submission.creator_id",
+        "pending.mission_id = v_submission.mission_id",
+        "pending.reward_contract_id = v_contract.id",
+        "approval.workspace_id = pending.workspace_id",
+        "approval.mission_workflow_id = pending.mission_workflow_id",
+        "approval.reward_contract_id = pending.reward_contract_id",
+        "pending.completion_decision_id = approval.id",
+        "approval.decision_kind = 'approved'",
+        "cancellation.workspace_id = pending.workspace_id",
+        "cancellation.mission_workflow_id = pending.mission_workflow_id",
+        "cancellation.reward_contract_id = pending.reward_contract_id",
+        "pending.id = cancellation.pending_reward_id",
+        "pending.cancellation_decision_id = cancellation.id",
+        "cancellation.supersedes_decision_id = pending.completion_decision_id",
+        "cancellation.decision_kind = 'cancelled'",
+      ]) {
+        expect(block, `${name} missing replay predicate: ${predicate}`)
+          .toContain(predicate);
+      }
+      expect(block).toContain(
+        "'id', v_decision.mission_workflow_id",
+      );
+      expect(block).toContain(replayState);
+      expect(block).toContain(
+        "'revision', v_decision.workflow_revision + 1",
+      );
+      expect(block).toContain(
+        "'updated_at', v_decision.decided_at",
+      );
+      expect(block).toContain(pendingState);
+      expect(block).not.toContain(
+        "'workflow', to_jsonb(v_workflow)",
+      );
+      expect(block).not.toContain(
+        "'pendingreward', to_jsonb(v_pending),",
+      );
+    }
+    expect(approve).toContain("'cancellation_decision_id', null");
+    expect(approve).toContain("'cancelled_at', null");
+    expect(cancel).toContain(
+      "'cancellation_decision_id', v_decision.id",
+    );
+    expect(cancel).toContain(
+      "'cancelled_at', v_decision.decided_at",
+    );
+  });
+
+  it("normalizes idempotency hashes and rolls pending conflicts back", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const approve = sqlFunctionBlock(
+      sql,
+      "private.approve_mission_completion",
+    );
+    const cancel = sqlFunctionBlock(
+      sql,
+      "private.cancel_mission_reward_handoff",
+    );
+
+    for (const [, block] of [
+      ["private.approve_mission_completion", approve],
+      ["private.cancel_mission_reward_handoff", cancel],
+    ] as const) {
+      expect(block).toContain("extensions.digest(convert_to(");
+      expect(block).toContain("'sha256'");
+      expect(block).toContain("'action'");
+      expect(block).toContain("'workflowid'");
+      expect(block).toContain("'expectedstate'");
+      expect(block).toContain("'expectedrevision'");
+      expect(block).toContain("btrim(");
+      expect(block).toContain("raise exception 'idempotency_conflict'");
+      expect(block).toContain("'idempotent', true");
+      expect(block).toContain("'idempotent', false");
+      expect(block).toContain(
+        "select decision.* into v_decision",
+      );
+      expect(block).not.toContain("select decision, pending");
+    }
+    expect(cancel).toContain("lower(btrim(p_reason_category))");
+    expect(cancel).toContain("btrim(p_reason_note)");
+    expect(approve).toContain("exception when unique_violation then");
+    expect(approve).toContain("raise exception 'pending_reward_exists'");
+  });
+
+  it("locks and appends cancellation while changing only the guarded fields", () => {
+    const cancel = sqlFunctionBlock(
+      rewardHandoffTransitionMigrationSql(),
+      "private.cancel_mission_reward_handoff",
+    );
+    expectSqlOrder(cancel, "private.cancel_mission_reward_handoff auth", [
+      "perform private.assert_active_mission_operator(p_operator);",
+      "from public.brand_users membership",
+      "raise exception 'not_authorized';",
+      "select workflow.* into v_workflow",
+      "for update;",
+    ]);
+    const pendingLock = cancel.lastIndexOf(
+      "select pending.* into v_pending",
+    );
+    expect(pendingLock).toBeGreaterThanOrEqual(0);
+    expectSqlOrder(
+      cancel.slice(pendingLock),
+      "private.cancel_mission_reward_handoff mutation",
+      [
+      "select pending.* into v_pending",
+      "status = 'pending'",
+      "for update of pending;",
+      "insert into public.mission_completion_decisions",
+      "update public.mission_pending_rewards",
+      "set status = 'cancelled',",
+      "cancellation_decision_id = v_decision.id,",
+      "cancelled_at = v_now",
+      "update public.mission_workflows",
+      "state = 'proof_verified'",
+      "revision = revision + 1",
+      "'mission_reward_pending_cancelled'",
+      ],
+    );
+    expect(cancel).toContain(
+      "('contract_error','eligibility_error','duplicate','other')",
+    );
+    expect(cancel).toContain("supersedes_decision_id");
+    expect(cancel).toContain("pending_reward_id");
+  });
+
+  it("keeps transition RPCs reward and budget neutral", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    for (const forbidden of [
+      "approve_submission(",
+      "update public.mission_submissions",
+      "update public.creators",
+      "insert into public.point_transactions",
+      "update public.point_balances",
+      "insert into public.earnings_transactions",
+      "update public.earnings_balances",
+      "insert into public.workspace_budget_transactions",
+      "update public.workspace_budgets",
+      "insert into public.redemptions",
+    ]) {
+      expect(sql).not.toContain(forbidden);
+    }
+  });
+
+  it("returns a creator-owned bounded handoff without audit or proof secrets", () => {
+    const sql = rewardHandoffTransitionMigrationSql();
+    const creatorRead = sqlFunctionBlock(
+      sql,
+      "public.get_my_mission_reward_handoff",
+    );
+    expectSqlOrder(creatorRead, "public.get_my_mission_reward_handoff auth", [
+      "auth.uid()",
+      "from public.mission_submissions submission",
+      "submission.creator_id = v_creator",
+    ]);
+    const ownedRead = creatorRead.slice(
+      creatorRead.indexOf("from public.mission_submissions submission"),
+    );
+    expectSqlOrder(ownedRead, "public.get_my_mission_reward_handoff owned read", [
+      "from public.mission_submissions submission",
+      "submission.creator_id = v_creator",
+      "if v_workflow is null then",
+      "raise exception 'not_found';",
+      "from public.mission_reward_contracts contract",
+      "contract.workspace_id = v_workspace",
+      "contract.mission_workflow_id = v_workflow",
+      "contract.mission_submission_id = p_submission",
+      "contract.mission_id = v_mission",
+      "from public.mission_pending_rewards pending",
+      "jsonb_build_object(",
+    ]);
+    for (const predicate of [
+      "pending.workspace_id = v_workspace",
+      "pending.mission_workflow_id = v_workflow",
+      "pending.mission_submission_id = p_submission",
+      "pending.creator_id = v_creator",
+      "pending.mission_id = v_mission",
+      "pending.reward_contract_id = v_contract",
+      "approval.workspace_id = pending.workspace_id",
+      "approval.mission_workflow_id = pending.mission_workflow_id",
+      "approval.reward_contract_id = pending.reward_contract_id",
+      "approval.id = pending.completion_decision_id",
+      "approval.decision_kind = 'approved'",
+      "cancellation.workspace_id = pending.workspace_id",
+      "cancellation.mission_workflow_id = pending.mission_workflow_id",
+      "cancellation.reward_contract_id = pending.reward_contract_id",
+      "cancellation.id = pending.cancellation_decision_id",
+      "cancellation.pending_reward_id = pending.id",
+      "cancellation.supersedes_decision_id = approval.id",
+      "cancellation.decision_kind = 'cancelled'",
+    ]) {
+      expect(creatorRead, `missing creator tenant predicate: ${predicate}`)
+        .toContain(predicate);
+    }
+    expect(creatorRead).toContain(
+      "select pending as pending_row,",
+    );
+    expect(creatorRead).toContain("into v_read");
+    expect(creatorRead).toContain("v_pending := v_read.pending_row");
+    for (const forbidden of [
+      "reason_note",
+      "confirmation_reason",
+      "confirmation_evidence_source",
+      "confirmed_by",
+      "decided_by",
+      "actor_id",
+      "idempotency_key",
+      "request_hash",
+      "evidence_snapshot",
+      "primary_url",
+      "additional_urls",
+      "storage_object_path",
+      "signed",
+      "to_jsonb(v_decision)",
+      "to_jsonb(v_pending)",
+    ]) {
+      expect(creatorRead).not.toContain(forbidden);
+    }
+    expect(creatorRead).toContain("set search_path = ''");
+    expect(normalizedSql(sql)).toContain(
+      "grant execute on function public.get_my_mission_reward_handoff(uuid) to authenticated",
+    );
+    expect(normalizedSql(sql)).not.toContain(
+      "grant execute on function public.get_my_mission_reward_handoff(uuid) to anon",
+    );
+  });
+
   it("documents a non-destructive publication-proof rollback and operator recovery contract", () => {
     const runbookPath = resolve("docs/operations/publication-proof-release-runbook.md");
     const runbook = existsSync(runbookPath)
@@ -607,7 +1198,41 @@ describe("active mission migration contract", () => {
       expect(definition).toContain("s.workspace_id = a.workspace_id");
     }
   });
-});
+  it("hardens backfill replay, canonical queue ordering, and notification retry", () => {
+    const sql = readFileSync(
+      resolve("supabase/migrations/20260731140000_reward_handoff_release_hardening.sql"),
+      "utf8",
+    );
+    expect(sql).toContain("backfill_idempotency_key");
+    expect(sql).toContain("backfill_request_hash");
+    expect(sql).toContain("unique (workspace_id, backfill_idempotency_key)");
+    expect(sql).toContain("idempotency_conflict");
+    expect(sql).toMatch(/jsonb_build_array\(\s*'reward_contract_backfill',\s*p_workspace,\s*p_operator,/);
+    expect(sql).toContain("p_notification_type = 'mission_reward_pending' and pending.status = 'pending'");
+    expect(sql).toContain("p_notification_type = 'mission_reward_pending_cancelled' and pending.status = 'cancelled'");
+    expect(sql).toContain("retry_reward_handoff_notification");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("grant execute on function public.retry_reward_handoff_notification");
+    expect(sql).toContain("to service_role");
+    expect(sql).toContain("revoke all");
+    const runbook = readFileSync(resolve("docs/operations/reward-handoff.md"), "utf8");
+    const retryCommand = runbook.split(/\r?\n/).find((line) => line.trimStart().startsWith("curl.exe --fail-with-body"));
+    const payloadExpression = retryCommand?.match(/--data (.+)$/)?.[1];
+    if (!payloadExpression) throw new Error("Reward retry PowerShell payload expression is missing");
+    expect(powershellExecutableFor("win32")).toBe("powershell.exe");
+    expect(powershellExecutableFor("linux")).toBe("pwsh");
+    const powershellExecutable = powershellExecutableFor(process.platform);
+    const notificationTypes = ["mission_reward_pending", "mission_reward_pending_cancelled"] as const;
+    for (const notificationType of notificationTypes) {
+      const payload = execFileSync(powershellExecutable, [
+        "-NoProfile", "-NonInteractive", "-Command",
+        "$NOTIFICATION_TYPE = '" + notificationType + "'; " + payloadExpression,
+      ], { encoding: "utf8" }).trim();
+      expect(payload).toBe('{"notificationType":"' + notificationType + '"}');
+      expect(JSON.parse(payload)).toEqual({ notificationType });
+    }
+    expect(payloadExpression).toBe("('{{\"notificationType\":\"{0}\"}}' -f $NOTIFICATION_TYPE)");
+  });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness
 // resets its disposable local database, while full UUIDs keep each fixture isolated until reset.
@@ -1764,4 +2389,5 @@ suite(suiteName, () => {
     expect(JSON.stringify(event.data)).not.toContain("Publish exactly as approved.");
     expect(await creatorRewardSnapshot(active.creator.id)).toEqual(beforeRewards);
   });
+
 });

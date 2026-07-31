@@ -7,6 +7,7 @@ import {
   sortActiveMissionQueue,
   type AdminActiveMissionRepository,
 } from "../routes/adminActiveMissions";
+import { normalizeOperatorRewardHandoffProjection } from "../lib/activeMission/rewardHandoff";
 
 describe("publication proof operator routes", () => {
   const workflowId = "11111111-1111-4111-8111-111111111111";
@@ -16,6 +17,170 @@ describe("publication proof operator routes", () => {
   const idempotencyKey = "55555555-5555-4555-8555-555555555555";
   const attemptId = "66666666-6666-4666-8666-666666666666";
 
+  it("keeps operator provenance and bounded evidence while stripping proof URLs", () => {
+    const projection = normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
+      workflow: { state: "proof_verified" },
+      contract: {
+        id: "contract-1", points_amount: 500, cash_amount: "125.00", currency: "HKD",
+        xp_amount: 0, source: "operator_backfill", source_mission_updated_at: null,
+        confirmed_by: reviewerId, confirmation_evidence_source: "operator_record",
+        confirmation_reason: "Confirmed from operator record",
+        created_at: "2026-07-31T10:00:00.000Z",
+      },
+      requiredItems: [{
+        id: workItemId, required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      proofAttempts: [{ id: attemptId, workspace_id: "workspace-1", mission_work_item_id: workItemId }],
+      proofReviews: [{
+        id: "review-1", workspace_id: "workspace-1",
+        mission_publication_proof_attempt_id: attemptId,
+        state: "verified", decision: "verified", reviewer_id: reviewerId,
+        reviewed_at: "2026-07-31T09:59:00.000Z",
+        created_at: "2026-07-31T09:58:00.000Z",
+        primary_url: "https://instagram.com/private",
+        summary: "private review note",
+      }],
+      pendingReward: {
+        id: "pending-1", mission_workflow_id: workflowId, mission_submission_id: "submission-1",
+        creator_id: "creator-1", mission_id: missionId, reward_contract_id: "contract-1",
+        completion_decision_id: "decision-1", points_amount: 500, cash_amount: 125,
+        currency: "HKD", xp_amount: 0, status: "pending", processing_window_days: 7,
+        target_at: null, cancellation_decision_id: null,
+        created_at: "2026-07-31T10:00:00.000Z", cancelled_at: null,
+      },
+      decision: {
+        id: "decision-1", decision_kind: "approved", workflow_revision: 7,
+        required_item_count: 1, verified_required_item_count: 1,
+        evidence_snapshot: { requiredItems: [{
+          workItemId, proofAttemptId: attemptId, proofReviewId: "review-1",
+          attemptNumber: 1, contentChecksum: "checksum", reviewedAt: "2026-07-31T09:59:00.000Z", reviewDecision: "verified",
+          primaryUrl: "https://instagram.com/private",
+          signedUrl: "https://signed.example/proof",
+        }] },
+        reason_category: null, reason_note: null, decided_by: reviewerId,
+        decided_at: "2026-07-31T10:00:00.000Z",
+      },
+    });
+    expect(projection.rewardContract).toMatchObject({
+      source: "operator_backfill",
+      confirmedBy: reviewerId,
+      confirmationEvidenceSource: "operator_record",
+    });
+    expect(projection.completionEligibility).toEqual({
+      eligible: false,
+      blockers: ["pending_reward_exists"],
+      requiredItemCount: 1,
+      verifiedRequiredItemCount: 1,
+    });
+    expect(projection.acceptedProofAnchors).toEqual([{
+      workItemId, proofAttemptId: attemptId, proofReviewId: "review-1",
+      reviewerId, createdAt: "2026-07-31T09:58:00.000Z",
+    }]);
+    expect(projection.pendingReward?.decision).toMatchObject({
+      decidedBy: reviewerId,
+      evidence: { requiredItems: [{ proofAttemptId: attemptId, contentChecksum: "checksum" }] },
+    });
+    expect(JSON.stringify(projection)).not.toMatch(/primaryUrl|signedUrl|proofUrl|private review note/i);
+  });
+
+  it("derives eligible proof anchors before approval from canonical attempt and terminal review state", () => {
+    const projection = normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
+      workflow: { state: "proof_verified" },
+      contract: {
+        id: "contract-1", points_amount: 1, cash_amount: 0, currency: "HKD", xp_amount: 0,
+        source: "join", created_at: "2026-07-31T10:00:00.000Z",
+      },
+      requiredItems: [{
+        id: workItemId, required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      proofAttempts: [{ id: attemptId, workspace_id: "workspace-1", mission_work_item_id: workItemId }],
+      proofReviews: [{
+        id: "review-pre-approval", workspace_id: "workspace-1",
+        mission_publication_proof_attempt_id: attemptId,
+        state: "verified", decision: "verified", reviewer_id: reviewerId,
+        reviewed_at: "2026-07-31T09:59:00.000Z", created_at: "2026-07-31T09:58:00.000Z",
+        primary_url: "https://private.example/proof", summary: "private note",
+      }],
+      pendingReward: null,
+    });
+    expect(projection.completionEligibility).toMatchObject({
+      eligible: true, blockers: [], requiredItemCount: 1, verifiedRequiredItemCount: 1,
+    });
+    expect(projection.acceptedProofAnchors).toEqual([{
+      workItemId, proofAttemptId: attemptId, proofReviewId: "review-pre-approval",
+      reviewerId, createdAt: "2026-07-31T09:58:00.000Z",
+    }]);
+    expect(JSON.stringify(projection)).not.toMatch(/private\.example|private note|primaryUrl|summary/i);
+  });
+
+  it.each([
+    ["missing review", []],
+    ["nonterminal review", [{
+      id: "review-open", workspace_id: "workspace-1",
+      mission_publication_proof_attempt_id: attemptId,
+      state: "open", decision: null, reviewer_id: reviewerId,
+      created_at: "2026-07-31T09:58:00.000Z",
+    }]],
+    ["wrong work-item attempt", [{
+      id: "review-verified", workspace_id: "workspace-1",
+      mission_publication_proof_attempt_id: attemptId,
+      state: "verified", decision: "verified", reviewer_id: reviewerId,
+      reviewed_at: "2026-07-31T09:59:00.000Z", created_at: "2026-07-31T09:58:00.000Z",
+    }]],
+  ])("blocks pre-approval eligibility for %s", (_label, proofReviews) => {
+    const projection = normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
+      workflow: { state: "proof_verified" },
+      contract: {
+        id: "contract-1", points_amount: 1, cash_amount: 0, currency: "HKD", xp_amount: 0,
+        source: "join", created_at: "2026-07-31T10:00:00.000Z",
+      },
+      requiredItems: [{
+        id: workItemId, required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      proofAttempts: [{
+        id: attemptId, workspace_id: "workspace-1",
+        mission_work_item_id: _label === "wrong work-item attempt" ? "work-item-other" : workItemId,
+      }],
+      proofReviews,
+      pendingReward: null,
+    });
+    expect(projection.acceptedProofAnchors).toEqual([]);
+    expect(projection.completionEligibility).toMatchObject({
+      eligible: false, blockers: ["required_proof_incomplete"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0,
+    });
+  });
+  it("rejects a proof anchor when the terminal review does not match the accepted attempt", () => {
+    expect(() => normalizeOperatorRewardHandoffProjection({
+      workspaceId: "workspace-1",
+      workflow: { state: "proof_verified" },
+      contract: null,
+      requiredItems: [{
+        id: workItemId, required: true, state: "proof_verified",
+        current_proof_attempt_id: attemptId, verified_proof_attempt_id: attemptId,
+      }],
+      pendingReward: null,
+      approvalDecision: {
+        decision_kind: "approved",
+        evidence_snapshot: { requiredItems: [{
+          workItemId, proofAttemptId: attemptId, proofReviewId: "review-accepted",
+          reviewedAt: "2026-07-31T09:59:00.000Z", reviewDecision: "verified",
+        }] },
+      },
+      proofReviews: [{
+        id: "review-other", workspace_id: "workspace-1",
+        mission_publication_proof_attempt_id: attemptId,
+        state: "verified", decision: "verified", reviewer_id: reviewerId,
+        reviewed_at: "2026-07-31T09:59:00.000Z", created_at: "2026-07-31T09:58:00.000Z",
+      }],
+    })).toThrowError(expect.objectContaining({ code: "FORBIDDEN", message: "forbidden" }));
+  });
   function app(repository: AdminActiveMissionRepository) {
     const app = new Hono<Env>();
     app.route("/api/admin/active-missions", createAdminActiveMissionRoutes(

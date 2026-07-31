@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type { CompletionDecision as ServerCompletionDecision } from "../../server/lib/activeMission/types";
 import {
   deriveNextAction,
   publicationStatePresentation,
   type ActiveMissionWorkspace,
+  type CompletionDecision,
   type PublicationProofReviewView,
   type WorkItemState,
 } from "./activeMission";
@@ -19,6 +21,7 @@ function workspace(options: {
       state: options.workflowState ?? "drafting",
       acceptedAt: "2026-07-15T00:00:00Z",
       deadline: "2026-07-20T00:00:00Z",
+      revision: 0,
       fulfillmentRequired: options.fulfillment !== undefined,
       revisionLimit: 2,
       reviewSlaHours: 48,
@@ -61,6 +64,10 @@ function workspace(options: {
       reviewDueAt: null,
     })),
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "ignored-server-hint", workItemId: null, deadline: null, blockedReason: null },
   };
 }
@@ -73,6 +80,39 @@ const fulfillment = (status: "preparing" | "shipped" | "received"): NonNullable<
   operationalNote: null,
 });
 
+describe("reward handoff shared types", () => {
+  it("keeps the creator-safe completion decision contract identical on client and server", () => {
+    const decision = {
+      id: "decision-1",
+      missionWorkflowId: "workflow-1",
+      decisionKind: "approved" as const,
+      rewardContractId: "contract-1",
+      pendingRewardId: "pending-1",
+      supersedesDecisionId: null,
+      workflowRevision: 3,
+      requiredItemCount: 2,
+      verifiedRequiredItemCount: 2,
+      evidenceSnapshot: { proof: "verified" },
+      decidedAt: "2026-07-31T00:00:00Z",
+    } satisfies CompletionDecision;
+
+    expectTypeOf<CompletionDecision>().toEqualTypeOf<ServerCompletionDecision>();
+    expect(decision).toMatchObject({
+      decisionKind: "approved",
+      workflowRevision: 3,
+      verifiedRequiredItemCount: 2,
+    });
+  });
+
+  it("requires all three reward projections on every workspace response", () => {
+    type IsOptional<Key extends keyof ActiveMissionWorkspace> = Pick<
+      ActiveMissionWorkspace, Key
+    > extends Required<Pick<ActiveMissionWorkspace, Key>> ? false : true;
+    expectTypeOf<IsOptional<"rewardContract">>().toEqualTypeOf<false>();
+    expectTypeOf<IsOptional<"completionEligibility">>().toEqualTypeOf<false>();
+    expectTypeOf<IsOptional<"pendingReward">>().toEqualTypeOf<false>();
+  });
+});
 describe("deriveNextAction", () => {
   it("defines stable label keys and owners for every publication state", () => {
     expect(publicationStatePresentation).toEqual({

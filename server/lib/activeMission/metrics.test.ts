@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   calculateOnTimeApprovalMetric,
   calculatePublicationProofOperationalMetrics,
+  calculateRewardHandoffOperationalMetrics,
   type PublicationProofMetricRow,
+  type RewardHandoffMetricRow,
 } from "./metrics";
 
 describe("calculateOnTimeApprovalMetric", () => {
@@ -161,5 +163,102 @@ describe("calculatePublicationProofOperationalMetrics", () => {
     ]);
 
     expect(metrics.averageAttemptsPerVerifiedItem).toBe(2);
+  });
+});
+
+const rewardHandoffRow = (
+  overrides: Partial<RewardHandoffMetricRow> = {},
+): RewardHandoffMetricRow => ({
+  status: "pending",
+  targetAt: "2026-07-31T15:00:00Z",
+  proofVerifiedAt: "2026-07-31T10:00:00Z",
+  rewardPendingAt: "2026-07-31T11:00:00Z",
+  completionApprovedAt: "2026-07-31T11:00:00Z",
+  cancelledAt: null,
+  rewardContractId: "11111111-1111-4111-8111-111111111111",
+  ...overrides,
+});
+
+describe("calculateRewardHandoffOperationalMetrics", () => {
+  it("counts pending, overdue, cancelled, latency, and missing-contract operations", () => {
+    const now = new Date("2026-07-31T14:00:00Z");
+    const rows: RewardHandoffMetricRow[] = [
+      rewardHandoffRow({ targetAt: "2026-07-31T13:00:00Z", rewardContractId: null }),
+      rewardHandoffRow({
+        targetAt: "2026-07-31T15:00:00Z",
+        proofVerifiedAt: "2026-07-31T10:00:00Z",
+        rewardPendingAt: "2026-07-31T12:00:00Z",
+        completionApprovedAt: "2026-07-31T12:00:00Z",
+        rewardContractId: null,
+      }),
+      rewardHandoffRow({
+        status: "cancelled",
+        proofVerifiedAt: null,
+        rewardPendingAt: null,
+        completionApprovedAt: "2026-07-31T09:00:00Z",
+        cancelledAt: "2026-07-31T13:30:00Z",
+        rewardContractId: null,
+      }),
+    ];
+
+    expect(calculateRewardHandoffOperationalMetrics(rows, now)).toEqual({
+      pendingCount: 2,
+      overdueCount: 1,
+      cancellationRate: 0.25,
+      medianProofVerifiedToPendingMinutes: 90,
+      missingContractCount: 3,
+    });
+  });
+
+  it("defines empty and invalid cohorts without contaminating metric denominators", () => {
+    expect(calculateRewardHandoffOperationalMetrics([], new Date("2026-07-31T14:00:00Z")))
+      .toEqual({
+        pendingCount: 0,
+        overdueCount: 0,
+        cancellationRate: 0,
+        medianProofVerifiedToPendingMinutes: null,
+        missingContractCount: 0,
+      });
+
+    const valid = rewardHandoffRow({
+      status: "cancelled",
+      completionApprovedAt: "2026-07-31T11:00:00Z",
+      cancelledAt: "2026-07-31T12:00:00Z",
+      proofVerifiedAt: "2026-07-31T10:00:00Z",
+      rewardPendingAt: "2026-07-31T11:00:00Z",
+    });
+    const invalid = rewardHandoffRow({
+      targetAt: Number.POSITIVE_INFINITY as never,
+      proofVerifiedAt: "not-a-date",
+      rewardPendingAt: Number.NaN as never,
+      completionApprovedAt: "not-a-date",
+      cancelledAt: Number.POSITIVE_INFINITY as never,
+    });
+
+    expect(calculateRewardHandoffOperationalMetrics(
+      [valid, invalid],
+      new Date("2026-07-31T14:00:00Z"),
+    )).toEqual({
+      pendingCount: 1,
+      overdueCount: 0,
+      cancellationRate: 0.5,
+      medianProofVerifiedToPendingMinutes: 60,
+      missingContractCount: 0,
+    });
+    expect(calculateRewardHandoffOperationalMetrics(
+      [rewardHandoffRow({ targetAt: "2026-07-31T13:00:00Z" })],
+      new Date(Number.NaN),
+    ).overdueCount).toBe(0);
+  });
+
+  it("excludes negative proof-to-pending durations from the median", () => {
+    const metrics = calculateRewardHandoffOperationalMetrics([
+      rewardHandoffRow({
+        proofVerifiedAt: "2026-07-31T12:00:00Z",
+        rewardPendingAt: "2026-07-31T11:00:00Z",
+      }),
+    ], new Date("2026-07-31T14:00:00Z"));
+
+    expect(metrics.medianProofVerifiedToPendingMinutes).toBeNull();
   });
 });

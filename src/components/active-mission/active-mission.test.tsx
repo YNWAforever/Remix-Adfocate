@@ -59,6 +59,7 @@ function workspace(nextAction: ActiveMissionNextAction): ActiveMissionWorkspace 
       state: "revision_requested",
       acceptedAt: "2026-07-15T00:00:00.000Z",
       deadline: "2026-07-24T10:00:00.000Z",
+      revision: 0,
       fulfillmentRequired: true,
       revisionLimit: 2,
       reviewSlaHours: 48,
@@ -93,6 +94,10 @@ function workspace(nextAction: ActiveMissionNextAction): ActiveMissionWorkspace 
     },
     workItems: [draftItem],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction,
   };
 }
@@ -275,7 +280,7 @@ describe("ProofAttemptHistory", () => {
     render(<ProofAttemptHistory publication={publication({ state: "proof_verified", attempts: [accepted], currentAttempt: accepted, acceptedAttempt: accepted })} />);
 
     expect(screen.getByRole("heading", { name: "Proof verified" })).toBeVisible();
-    expect(screen.getByText("Proof verified; reward processing is a later step.")).toBeVisible();
+    expect(screen.getByText("Your verified publication proof remains on record.")).toBeVisible();
     expect(screen.getByText("Accepted attempt 2")).toBeVisible();
     expect(screen.getByText("Launch reel")).toBeVisible();
   });

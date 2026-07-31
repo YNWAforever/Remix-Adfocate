@@ -15,6 +15,7 @@ import { adminBrandInviteRoutes } from "./adminBrandInvites.js";
 import { adminCampaignRoutes } from "./adminCampaigns.js";
 import { adminAcademyRoutes } from "./adminAcademy.js";
 import { adminActiveMissionRoutes } from "./adminActiveMissions.js";
+import { adminRewardHandoffRoutes } from "./adminRewardHandoffs.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -66,6 +67,7 @@ adminRoutes.route("/", adminBrandInviteRoutes);
 adminRoutes.route("/", adminCampaignRoutes);
 adminRoutes.route("/", adminAcademyRoutes);
 adminRoutes.route("/active-missions", adminActiveMissionRoutes);
+adminRoutes.route("/", adminRewardHandoffRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by
 // status). Fine while there is a single operator + one live workspace; the Brand

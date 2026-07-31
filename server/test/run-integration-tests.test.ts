@@ -53,6 +53,8 @@ const expectedIntegrationFiles = [
   "server/test/content.test.ts",
   "server/test/active-mission-schema.test.ts",
   "server/test/active-missions.test.ts",
+  "server/test/reward-contracts.test.ts",
+  "server/test/reward-handoffs.test.ts",
   "server/test/notifications-triggers.test.ts",
   "server/test/notifications-api.test.ts",
   "server/test/insights.test.ts",
@@ -67,6 +69,7 @@ const expectedIntegrationFiles = [
 ];
 
 function harness() {
+  importMocks.spawnSync.mockClear();
   const childHandlers = new Map();
   const signalHandlers = new Map();
   const child = {
@@ -80,7 +83,12 @@ function harness() {
   const processRef = {
     argv: ["node", "test"],
     cwd: () => "C:/repo",
-    env: { PRESERVE_ME: "yes" },
+    env: {
+      PRESERVE_ME: "yes",
+      SUPABASE_URL: "http://127.0.0.1:54321",
+      SUPABASE_SERVICE_KEY: "service-key",
+      SUPABASE_ANON_KEY: "anon-key",
+    },
     execPath: "C:/node/node.exe",
     exit: vi.fn(),
     kill: vi.fn(),
@@ -94,10 +102,30 @@ function harness() {
 }
 
 describe("integration test launcher", () => {
+  it.each([
+    [{}, "SUPABASE_URL, SUPABASE_SERVICE_KEY, and SUPABASE_ANON_KEY are required"],
+    [{ SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_KEY: "service", SUPABASE_ANON_KEY: "anon" }, "loopback"],
+  ])("fails closed before preflight for an unusable integration environment", (env, message) => {
+    const h = harness();
+    h.processRef.env = env as typeof h.processRef.env;
+    importMocks.spawnSync.mockClear();
+
+    expect(() => runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl }))
+      .toThrow(message);
+    expect(importMocks.spawnSync).not.toHaveBeenCalled();
+    expect(h.spawnImpl).not.toHaveBeenCalled();
+  });
   it("keeps the complete ordered integration file list unique", () => {
     expect(runner.publicationProofPreflightFile).toBe("server/test/publication-proof-asset-grant-live.test.ts");
     expect(runner.integrationFiles).toEqual(expectedIntegrationFiles);
     expect(new Set(runner.integrationFiles).size).toBe(expectedIntegrationFiles.length);
+    const activeMissionsIndex = runner.integrationFiles.indexOf("server/test/active-missions.test.ts");
+    expect(runner.integrationFiles.slice(activeMissionsIndex + 1, activeMissionsIndex + 3)).toEqual([
+      "server/test/reward-contracts.test.ts",
+      "server/test/reward-handoffs.test.ts",
+    ]);
+    expect(runner.integrationFiles.filter((file: string) => file === "server/test/reward-contracts.test.ts")).toHaveLength(1);
+    expect(runner.integrationFiles.filter((file: string) => file === "server/test/reward-handoffs.test.ts")).toHaveLength(1);
   });
 
   it("spawns local Vitest with the exact environment and preserves numeric exit codes", () => {
@@ -107,12 +135,34 @@ describe("integration test launcher", () => {
     expect(importMocks.spawnSync).toHaveBeenCalledWith(
       "C:/node/node.exe",
       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", "server/test/publication-proof-asset-grant-live.test.ts"],
-      { cwd: "C:/repo", env: { PRESERVE_ME: "yes", RUN_INTEGRATION: "1" }, stdio: "inherit" },
+      {
+        cwd: "C:/repo",
+        env: {
+          PRESERVE_ME: "yes",
+          SUPABASE_URL: "http://127.0.0.1:54321",
+          SUPABASE_SERVICE_KEY: "service-key",
+          SUPABASE_ANON_KEY: "anon-key",
+          RUN_INTEGRATION: "1",
+          INTEGRATION_RUNNER: "1",
+        },
+        stdio: "inherit",
+      },
     );
     expect(h.spawnImpl).toHaveBeenCalledWith(
       "C:/node/node.exe",
       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$/), "run", "--no-file-parallelism", ...expectedIntegrationFiles],
-      { cwd: "C:/repo", env: { PRESERVE_ME: "yes", RUN_INTEGRATION: "1" }, stdio: "inherit" },
+      {
+        cwd: "C:/repo",
+        env: {
+          PRESERVE_ME: "yes",
+          SUPABASE_URL: "http://127.0.0.1:54321",
+          SUPABASE_SERVICE_KEY: "service-key",
+          SUPABASE_ANON_KEY: "anon-key",
+          RUN_INTEGRATION: "1",
+          INTEGRATION_RUNNER: "1",
+        },
+        stdio: "inherit",
+      },
     );
     h.childHandlers.get("exit")(7, null);
     expect(h.processRef.exit).toHaveBeenCalledWith(7);

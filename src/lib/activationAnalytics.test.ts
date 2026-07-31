@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  ACTIVATION_ANALYTICS_EVENT,
   getDeviceCategory,
+  initializeActivationAnalytics,
   setActivationAnalyticsSink,
   trackActivationEvent,
 } from "./activationAnalytics";
@@ -12,23 +14,23 @@ describe("activation analytics", () => {
   });
 
   it("is safe when no analytics sink is configured", () => {
-    expect(() =>
+    expect(
       trackActivationEvent("landing_page_viewed", {
         locale: "en",
         deviceCategory: "desktop",
       }),
-    ).not.toThrow();
+    ).toBe(false);
   });
 
   it("delivers typed activation events to the configured sink", () => {
     const sink = vi.fn();
     setActivationAnalyticsSink(sink);
 
-    trackActivationEvent("signup_started", {
+    expect(trackActivationEvent("signup_started", {
       locale: "zh",
       deviceCategory: "mobile",
       source: "creators_hero",
-    });
+    })).toBe(true);
 
     expect(sink).toHaveBeenCalledOnce();
     expect(sink).toHaveBeenCalledWith({
@@ -54,6 +56,32 @@ describe("activation analytics", () => {
     expect(sink).not.toHaveBeenCalled();
   });
 
+  it("initializes a documented browser CustomEvent transport with sanitized detail", () => {
+    const listener = vi.fn((event: Event) => event.preventDefault());
+    window.addEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
+    initializeActivationAnalytics();
+
+    expect(trackActivationEvent("signup_started", {
+      locale: "en",
+      deviceCategory: "desktop",
+      source: "creators_hero",
+      creatorId: "creator-private",
+    } as never)).toBe(true);
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect((listener.mock.calls[0]?.[0] as CustomEvent).detail).toEqual({
+      name: "signup_started",
+      properties: { locale: "en", deviceCategory: "desktop", source: "creators_hero" },
+    });
+    window.removeEventListener(ACTIVATION_ANALYTICS_EVENT, listener);
+  });
+  it("reports browser delivery as unaccepted when no consumer acknowledges it", () => {
+    initializeActivationAnalytics();
+    expect(trackActivationEvent("auth_link_requested", {
+      locale: "en",
+      method: "email_magic_link",
+    })).toBe(false);
+  });
   it("delivers the ten Phase 2 events with privacy-limited payloads", () => {
     const sink = vi.fn();
     setActivationAnalyticsSink(sink);
@@ -316,5 +344,106 @@ describe("getDeviceCategory", () => {
     [1440, "desktop"],
   ] as const)("classifies width %i as %s", (width, category) => {
     expect(getDeviceCategory(width)).toBe(category);
+  });
+});
+
+const rewardHandoffEvents = [
+  "mission_completion_review_viewed",
+  "mission_completion_approved",
+  "mission_reward_pending_viewed",
+  "mission_reward_pending_cancelled",
+  "mission_reward_support_selected",
+  "reward_handoff_queue_viewed",
+  "reward_handoff_queue_filtered",
+] as const;
+
+describe("reward handoff analytics privacy contract", () => {
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
+  });
+
+  it("delivers all seven typed events with only bounded safe dimensions", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+    const properties = {
+      missionId: "11111111-1111-4111-8111-111111111111",
+      locale: "zh" as const,
+      deviceCategory: "mobile" as const,
+      workflowState: "reward_pending" as const,
+      contractSource: "operator_backfill" as const,
+      errorCategory: "wrong_state" as const,
+      hasPoints: true,
+      hasCash: false,
+      hasXp: true,
+    };
+
+    for (const name of rewardHandoffEvents) trackActivationEvent(name, properties);
+
+    expect(sink.mock.calls.map(([event]) => event)).toEqual(
+      rewardHandoffEvents.map((name) => ({ name, properties })),
+    );
+  });
+
+  it.each(rewardHandoffEvents)("drops sensitive keys from %s", (name) => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent(name, {
+      missionId: "11111111-1111-4111-8111-111111111111",
+      locale: "en",
+      deviceCategory: "desktop",
+      workflowState: "proof_verified",
+      contractSource: "join",
+      errorCategory: "other",
+      hasPoints: true,
+      hasCash: true,
+      hasXp: false,
+      pointsAmount: 1000,
+      cashAmount: 500,
+      xpAmount: 100,
+      note: "operator authored note",
+      proofUrl: "https://creator.example/private",
+      handle: "@creator_handle",
+      email: "creator@example.com",
+      evidencePath: "C:\\Users\\creator\\proof.txt",
+      rawError: new Error("private database failure"),
+    } as never);
+
+    expect(sink).toHaveBeenCalledWith({
+      name,
+      properties: {
+        missionId: "11111111-1111-4111-8111-111111111111",
+        locale: "en",
+        deviceCategory: "desktop",
+        workflowState: "proof_verified",
+        contractSource: "join",
+        errorCategory: "other",
+        hasPoints: true,
+        hasCash: true,
+        hasXp: false,
+      },
+    });
+  });
+
+  it("rejects sensitive values even when placed under allowlisted keys", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent("mission_completion_review_viewed", {
+      missionId: "https://creator.example/private",
+      locale: "creator@example.com",
+      deviceCategory: "@creator_handle",
+      workflowState: "C:\\Users\\creator\\proof.txt",
+      contractSource: "operator authored note",
+      errorCategory: "raw database error: creator@example.com",
+      hasPoints: 1000,
+      hasCash: Number.POSITIVE_INFINITY,
+      hasXp: "true",
+    } as never);
+
+    expect(sink).toHaveBeenCalledWith({
+      name: "mission_completion_review_viewed",
+      properties: {},
+    });
   });
 });
