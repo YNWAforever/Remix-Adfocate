@@ -99,8 +99,11 @@ function RewardHandoffQueueWorkspace({
     | { kind: "saved"; days: number | null }
   >({ kind: "idle" });
 
-  useEffect(() => () => {
-    mountedRef.current = false;
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {

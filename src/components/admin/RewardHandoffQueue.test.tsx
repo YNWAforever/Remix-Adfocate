@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { StrictMode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RewardHandoffQueueItem } from "@/lib/adminRewardHandoff";
 
@@ -177,6 +178,37 @@ describe("RewardHandoffQueue", () => {
     language = "zh";
     rerender(<RewardHandoffQueue {...baseProps} items={[]} processingWindowDays={null} />);
     expect(screen.getByText("日曆日")).toBeVisible();
+  });
+
+  it("announces a successful SLA save under StrictMode", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(
+      <StrictMode>
+        <RewardHandoffQueue {...baseProps} items={[]} onSaveProcessingWindow={onSave} />
+      </StrictMode>,
+    );
+    fireEvent.change(screen.getByLabelText("Processing window"), { target: { value: "12" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+    expect(await screen.findByRole("status")).toHaveTextContent("Saved 12 calendar days.");
+  });
+
+  it("shows a StrictMode save error and announces a successful retry", async () => {
+    const onSave = vi.fn()
+      .mockRejectedValueOnce(new Error("private strict-mode failure"))
+      .mockResolvedValueOnce(undefined);
+    render(
+      <StrictMode>
+        <RewardHandoffQueue {...baseProps} items={[]} onSaveProcessingWindow={onSave} />
+      </StrictMode>,
+    );
+    fireEvent.change(screen.getByLabelText("Processing window"), { target: { value: "12" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Unable to save the processing window.",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save processing window" }));
+    expect(await screen.findByRole("status")).toHaveTextContent("Saved 12 calendar days.");
+    expect(onSave).toHaveBeenCalledTimes(2);
   });
 
   it("resets draft, validation, and success state when workspace changes with the same setting", async () => {
