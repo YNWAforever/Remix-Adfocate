@@ -154,7 +154,11 @@ begin
     pending.points_amount,
     pending.cash_amount,
     pending.xp_amount,
-    decision.reason_category
+    case
+      when new.event_type = 'mission_reward_pending_cancelled'
+        then cancellation.reason_category
+      else approval.reason_category
+    end
   into
     v_recipient,
     v_mission_title,
@@ -173,26 +177,41 @@ begin
     on submission.id = pending.mission_submission_id
    and submission.workspace_id = pending.workspace_id
    and submission.creator_id = pending.creator_id
+   and submission.mission_id = pending.mission_id
+   and workflow.mission_submission_id = submission.id
   join public.missions mission
     on mission.id = pending.mission_id
    and mission.workspace_id = pending.workspace_id
    and mission.id = submission.mission_id
-  join public.mission_completion_decisions decision
-    on decision.id::text = new.metadata->>'decision_id'
-   and decision.workspace_id = pending.workspace_id
-   and decision.mission_workflow_id = pending.mission_workflow_id
-   and decision.reward_contract_id = pending.reward_contract_id
+  join public.mission_reward_contracts contract
+    on contract.id = pending.reward_contract_id
+   and contract.workspace_id = pending.workspace_id
+   and contract.mission_workflow_id = pending.mission_workflow_id
+   and contract.mission_submission_id = pending.mission_submission_id
+   and contract.mission_id = pending.mission_id
+  join public.mission_completion_decisions approval
+    on approval.id = pending.completion_decision_id
+   and approval.workspace_id = pending.workspace_id
+   and approval.mission_workflow_id = pending.mission_workflow_id
+   and approval.reward_contract_id = contract.id
+   and approval.decision_kind = 'approved'
+  left join public.mission_completion_decisions cancellation
+    on cancellation.id = pending.cancellation_decision_id
+   and cancellation.workspace_id = pending.workspace_id
+   and cancellation.mission_workflow_id = pending.mission_workflow_id
+   and cancellation.reward_contract_id = contract.id
+   and cancellation.pending_reward_id = pending.id
+   and cancellation.supersedes_decision_id = pending.completion_decision_id
+   and cancellation.decision_kind = 'cancelled'
   where pending.id = new.entity_id
     and pending.workspace_id = new.workspace_id
     and pending.mission_workflow_id = new.mission_workflow_id
     and (
       (new.event_type = 'mission_completion_approved'
-        and decision.decision_kind = 'approved'
-        and decision.id = pending.completion_decision_id)
+        and approval.id::text = new.metadata->>'decision_id')
       or
       (new.event_type = 'mission_reward_pending_cancelled'
-        and decision.decision_kind = 'cancelled'
-        and decision.id = pending.cancellation_decision_id)
+        and cancellation.id::text = new.metadata->>'decision_id')
     );
 
   if v_recipient is null then

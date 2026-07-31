@@ -321,6 +321,71 @@ describe("reward-handoff notification SQL contract", () => {
     expect(trigger).toContain("new.entity_type is distinct from 'mission_pending_reward'");
   });
 
+  it("binds the full canonical reward-handoff ownership chain before notifying", () => {
+    const trigger = rewardHandoffDefinition("private.notify_reward_handoff_event");
+    const notifierCall = trigger.indexOf("perform private.notify_reward_handoff_outcome");
+    const ownershipQuery = trigger.slice(0, notifierCall);
+
+    expect(ownershipQuery).toContain("workflow.id = pending.mission_workflow_id");
+    expect(ownershipQuery).toContain("workflow.workspace_id = pending.workspace_id");
+    expect(ownershipQuery).toContain("workflow.mission_submission_id = submission.id");
+
+    expect(ownershipQuery).toContain("submission.id = pending.mission_submission_id");
+    expect(ownershipQuery).toContain("submission.workspace_id = pending.workspace_id");
+    expect(ownershipQuery).toContain("submission.creator_id = pending.creator_id");
+    expect(ownershipQuery).toContain("submission.mission_id = pending.mission_id");
+    expect(ownershipQuery).toContain("mission.id = pending.mission_id");
+    expect(ownershipQuery).toContain("mission.workspace_id = pending.workspace_id");
+
+    expect(ownershipQuery).toContain("join public.mission_reward_contracts contract");
+    expect(ownershipQuery).toContain("contract.id = pending.reward_contract_id");
+    expect(ownershipQuery).toContain("contract.workspace_id = pending.workspace_id");
+    expect(ownershipQuery).toContain(
+      "contract.mission_workflow_id = pending.mission_workflow_id",
+    );
+    expect(ownershipQuery).toContain(
+      "contract.mission_submission_id = pending.mission_submission_id",
+    );
+    expect(ownershipQuery).toContain("contract.mission_id = pending.mission_id");
+
+    expect(ownershipQuery).toContain("pending.id = new.entity_id");
+    expect(ownershipQuery).toContain("pending.workspace_id = new.workspace_id");
+    expect(ownershipQuery).toContain(
+      "pending.mission_workflow_id = new.mission_workflow_id",
+    );
+
+    expect(ownershipQuery).toContain("join public.mission_completion_decisions approval");
+    expect(ownershipQuery).toContain("approval.id = pending.completion_decision_id");
+    expect(ownershipQuery).toContain("approval.workspace_id = pending.workspace_id");
+    expect(ownershipQuery).toContain(
+      "approval.mission_workflow_id = pending.mission_workflow_id",
+    );
+    expect(ownershipQuery).toContain("approval.reward_contract_id = contract.id");
+    expect(ownershipQuery).toContain(
+      "approval.id::text = new.metadata->>'decision_id'",
+    );
+
+    expect(ownershipQuery).toContain(
+      "left join public.mission_completion_decisions cancellation",
+    );
+    expect(ownershipQuery).toContain("cancellation.id = pending.cancellation_decision_id");
+    expect(ownershipQuery).toContain("cancellation.workspace_id = pending.workspace_id");
+    expect(ownershipQuery).toContain(
+      "cancellation.mission_workflow_id = pending.mission_workflow_id",
+    );
+    expect(ownershipQuery).toContain("cancellation.reward_contract_id = contract.id");
+    expect(ownershipQuery).toContain("cancellation.pending_reward_id = pending.id");
+    expect(ownershipQuery).toContain(
+      "cancellation.supersedes_decision_id = pending.completion_decision_id",
+    );
+    expect(ownershipQuery).toContain(
+      "cancellation.id::text = new.metadata->>'decision_id'",
+    );
+    expect(notifierCall).toBeGreaterThan(
+      ownershipQuery.indexOf("cancellation.supersedes_decision_id"),
+    );
+  });
+
   it("claims one semantic notification per decision and rolls back failed claims", () => {
     const notifier = rewardHandoffDefinition("private.notify_reward_handoff_outcome");
     const trigger = rewardHandoffDefinition("private.notify_reward_handoff_event");
@@ -590,6 +655,101 @@ activeSuite(`active-mission notification live integration${integrationSkipReason
     expect(retried.error).toBeNull();
     expect((await notifsFor(active.creator.jwt)).filter((row) =>
       row.data.submission_id === active.submission.id)).toHaveLength(2);
+  });
+
+  it("does not notify a same-workspace creator through a mismatched reward chain", async () => {
+    const owned = await seedActiveMission({
+      email: `notification-owned-${randomUUID()}@test.local`,
+      slug: `test-notification-owned-${randomUUID()}`,
+      deliverables: [{ title: "Owned publication", platform: "instagram" }],
+    });
+    const foreign = await seedActiveMission({
+      email: `notification-foreign-${randomUUID()}@test.local`,
+      slug: `test-notification-foreign-${randomUUID()}`,
+      deliverables: [{ title: "Foreign publication", platform: "instagram" }],
+    });
+    const service = serviceForTests();
+    const operator = await makeStaff(`notification-chain-${randomUUID()}@test.local`);
+    const ownedWorkflow = await userForJwt(owned.creator.jwt).rpc(
+      "create_mission_workflow",
+      { p_submission: owned.submission.id },
+    );
+    const foreignWorkflow = await userForJwt(foreign.creator.jwt).rpc(
+      "create_mission_workflow",
+      { p_submission: foreign.submission.id },
+    );
+    expect(ownedWorkflow.error).toBeNull();
+    expect(foreignWorkflow.error).toBeNull();
+
+    const foreignContract = await service.from("mission_reward_contracts").insert({
+      workspace_id: DEMO_WS,
+      mission_workflow_id: foreignWorkflow.data.id,
+      mission_submission_id: foreign.submission.id,
+      mission_id: foreign.mission.id,
+      points_amount: 500,
+      cash_amount: 125,
+      currency: "HKD",
+      xp_amount: 0,
+      source: "join",
+      source_mission_updated_at: null,
+    }).select("id").single();
+    expect(foreignContract.error).toBeNull();
+
+    const approval = await service.from("mission_completion_decisions").insert({
+      workspace_id: DEMO_WS,
+      mission_workflow_id: ownedWorkflow.data.id,
+      decision_kind: "approved",
+      reward_contract_id: foreignContract.data!.id,
+      pending_reward_id: null,
+      supersedes_decision_id: null,
+      workflow_revision: 0,
+      required_item_count: 0,
+      verified_required_item_count: 0,
+      evidence_snapshot: {},
+      reason_category: null,
+      reason_note: null,
+      decided_by: operator.userId,
+      idempotency_key: randomUUID(),
+      request_hash: "c".repeat(64),
+    }).select("id").single();
+    expect(approval.error).toBeNull();
+
+    const forgedPending = await service.from("mission_pending_rewards").insert({
+      workspace_id: DEMO_WS,
+      mission_workflow_id: ownedWorkflow.data.id,
+      mission_submission_id: foreign.submission.id,
+      creator_id: foreign.creator.id,
+      mission_id: foreign.mission.id,
+      reward_contract_id: foreignContract.data!.id,
+      completion_decision_id: approval.data!.id,
+      points_amount: 500,
+      cash_amount: 125,
+      currency: "HKD",
+      xp_amount: 0,
+      status: "pending",
+      processing_window_days: null,
+      target_at: null,
+    }).select("id").single();
+    expect(forgedPending.error).toBeNull();
+
+    const forgedEvent = await service.from("mission_workflow_events").insert({
+      workspace_id: DEMO_WS,
+      mission_workflow_id: ownedWorkflow.data.id,
+      mission_work_item_id: null,
+      actor_type: "system",
+      actor_id: null,
+      event_type: "mission_completion_approved",
+      entity_type: "mission_pending_reward",
+      entity_id: forgedPending.data!.id,
+      metadata: { decision_id: approval.data!.id },
+    });
+    expect(forgedEvent.error).toBeNull();
+
+    const wrongCreatorNotifications = (await notifsFor(foreign.creator.jwt)).filter(
+      (notification) => notification.type === "mission_reward_pending"
+        && notification.data.submission_id === foreign.submission.id,
+    );
+    expect(wrongCreatorNotifications).toEqual([]);
   });
 
   it("commits a proof correction after notification failure and permits semantic retry", async () => {

@@ -112,11 +112,22 @@ function hrefFor(row: NotificationRow): string {
   }
 }
 
+function hasValidRewardTarget(data: Record<string, unknown>): boolean {
+  const target = data.target_at;
+  return typeof target === "string"
+    && target.trim().length > 0
+    && !Number.isNaN(Date.parse(target));
+}
+
 export function renderNotification(row: NotificationRow, t: T): RenderedNotification {
   const params = paramsFor(row.data);
+  const bodyKey = row.type === "mission_reward_pending"
+    && !hasValidRewardTarget(row.data)
+    ? "app.notif.mission_reward_pending.bodyNoTarget"
+    : `app.notif.${row.type}.body`;
   return {
     title: t(`app.notif.${row.type}.title`),
-    body: t(`app.notif.${row.type}.body`, params),
+    body: t(bodyKey, params),
     href: hrefFor(row),
     icon: iconFor(row.type),
   };

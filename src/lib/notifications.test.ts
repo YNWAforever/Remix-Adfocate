@@ -128,4 +128,43 @@ describe("renderNotification", () => {
     expect(`${renderedEn.title} ${renderedEn.body} ${renderedZh.title} ${renderedZh.body}`)
       .not.toMatch(/\b(?:paid|payout|credited|available|issued)\b/i);
   });
+
+  it.each([
+    ["missing", {}],
+    ["null", { target_at: null }],
+    ["empty", { target_at: "" }],
+    ["malformed", { target_at: "not-a-date" }],
+  ] as const)(
+    "renders reward-pending %s target payload with explicit bilingual no-date copy",
+    (_label, targetData) => {
+      const data = {
+        mission_title: "Launch",
+        submission_id: "sub-1",
+        ...targetData,
+      };
+      const renderedEn = renderNotification(
+        row("mission_reward_pending", data),
+        makeT("en"),
+      );
+      const renderedZh = renderNotification(
+        row("mission_reward_pending", data),
+        makeT("zh"),
+      );
+
+      expect(renderedEn).toMatchObject({
+        body: "\"Launch\" is complete. Your reward is pending finance review. No target date has been set yet.",
+        href: "/my/sub-1",
+      });
+      expect(renderedZh).toMatchObject({
+        body: "「Launch」已完成。獎勵交接正等待財務審核，目前尚未有目標日期。",
+        href: "/my/sub-1",
+      });
+      expect(`${renderedEn.body} ${renderedZh.body}`).not.toMatch(
+        /Target:\s*\.|目標日期：。|\{target\}/,
+      );
+      expect(`${renderedEn.body} ${renderedZh.body}`).not.toMatch(
+        /\b(?:paid|payout|credited|available|issued)\b/i,
+      );
+    },
+  );
 });
