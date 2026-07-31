@@ -650,8 +650,10 @@ describe("active mission operator routes without a live database", () => {
 
   it("projects exact mission and deliverable identity into every queue item", async () => {
     const { client } = scriptedClient([
-      { table: "workspaces", data: { id: "workspace-1" } },
-      { table: "brand_users", data: { user_id: "operator-1" } },
+      { table: "brand_users", data: {
+        workspace_id: "workspace-1",
+        workspaces: { id: "workspace-1", slug: "demo", reward_processing_window_days: null },
+      } },
       { table: "mission_work_items", data: [{
         id: workItemId,
         mission_workflow_id: workflowId,
@@ -679,7 +681,6 @@ describe("active mission operator routes without a live database", () => {
 
   it("rejects operator queue reads without active workspace membership", async () => {
     const { client } = scriptedClient([
-      { table: "workspaces", data: { id: "workspace-1" } },
       { table: "brand_users", data: null },
     ]);
     await expect(createAdminActiveMissionRepository(client).listQueue({
@@ -697,8 +698,10 @@ describe("active mission operator routes without a live database", () => {
       revision: 0,
     };
     const { client } = scriptedClient([
-      { table: "workspaces", data: { id: "workspace-1" } },
-      { table: "brand_users", data: { user_id: "operator-1" } },
+      { table: "brand_users", data: {
+        workspace_id: "workspace-1",
+        workspaces: { id: "workspace-1", slug: "demo", reward_processing_window_days: null },
+      } },
       { table: "mission_workflows", data: { ...workflow, id: workflowId } },
       { table: "mission_submissions", data: submission },
       { table: "mission_work_items", data: [approvedItem] },
@@ -752,8 +755,10 @@ describe("active mission operator routes without a live database", () => {
       revision: 0,
     };
     const { client } = scriptedClient([
-      { table: "workspaces", data: { id: "workspace-1" } },
-      { table: "brand_users", data: { user_id: "operator-1" } },
+      { table: "brand_users", data: {
+        workspace_id: "workspace-1",
+        workspaces: { id: "workspace-1", slug: "demo", reward_processing_window_days: null },
+      } },
       { table: "mission_workflows", data: { ...workflow, id: workflowId } },
       { table: "mission_submissions", data: submission },
       { table: "mission_work_items", data: [approvedItem] },

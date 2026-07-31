@@ -80,7 +80,7 @@ describe("admin reward handoff route contracts", () => {
       pointsAmount: 500,
       cashAmount: 125.5,
       currency: "hkd",
-      xpAmount: 20,
+      xpAmount: 0,
       sourceMissionUpdatedAt: "2026-07-30T10:00:00.000Z",
       confirmationEvidenceSource: "operator_record",
       confirmationReason: "  Confirmed against the signed operator record.  ",
@@ -127,6 +127,34 @@ describe("admin reward handoff route contracts", () => {
       workspaceSlug: "alpha", operatorId, days: null,
     });
   });
+
+  it.each([undefined, "0", -1, 1, 0.5])(
+    "rejects non-zero or non-numeric backfill XP before repository access: %s",
+    async (xpAmount) => {
+      const backfillRewardContract = vi.fn();
+      const response = await mounted({
+        backfillRewardContract,
+      } as unknown as AdminRewardHandoffRepository).request(
+        `/api/admin/active-missions/${workflowId}/reward-contract`,
+        {
+          method: "POST",
+          headers: { "X-Workspace-Slug": "alpha", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pointsAmount: 500,
+            cashAmount: 125,
+            currency: "HKD",
+            xpAmount,
+            sourceMissionUpdatedAt: "2026-07-30T10:00:00.000Z",
+            confirmationEvidenceSource: "operator_record",
+            confirmationReason: "Confirmed from operator record",
+            idempotencyKey,
+          }),
+        },
+      );
+      expect(response.status).toBe(400);
+      expect(backfillRewardContract).not.toHaveBeenCalled();
+    },
+  );
 
   it("normalizes bounded list filters and defaults to pending-only", async () => {
     const listRewardHandoffs = vi.fn(async () => ({ items: [], rewardProcessingWindowDays: null }));
@@ -191,6 +219,7 @@ describe("admin reward handoff route contracts", () => {
       ["WORKFLOW_STALE", 409],
       ["WRONG_STATE", 409],
       ["IDEMPOTENCY_CONFLICT", 409],
+      ["REWARD_CONTRACT_EXISTS", 409],
       ["REWARD_CONTRACT_REQUIRED", 422],
       ["COMPLETION_NOT_ELIGIBLE", 422],
     ] as const;
@@ -211,9 +240,125 @@ describe("admin reward handoff route contracts", () => {
       }
     }
   });
+
+  it("redacts unknown repository failures at the mounted route boundary", async () => {
+    const getCompletion = vi.fn(async () => {
+      throw new RewardHandoffError("UNKNOWN", "violates secret_constraint with internal SQL");
+    });
+    const response = await mounted({
+      getCompletion,
+    } as unknown as AdminRewardHandoffRepository).request(
+      `/api/admin/active-missions/${workflowId}/completion`,
+      { headers: { "X-Workspace-Slug": "alpha" } },
+    );
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      error: "Reward handoff request failed",
+      code: "UNKNOWN",
+    });
+  });
 });
 
 describe("reward handoff service boundaries", () => {
+  function serviceHarness(options?: {
+    rpcError?: { message: string } | null;
+    queueStatus?: "pending" | "cancelled";
+  }) {
+    const calls: string[] = [];
+    const selects: string[] = [];
+    const orders: Array<[string, unknown]> = [];
+    const decision = {
+      id: "decision-1",
+      decision_kind: "approved",
+      decided_at: "2026-07-31T10:00:00.000Z",
+      required_item_count: 1,
+      verified_required_item_count: 1,
+      evidence_snapshot: { requiredItems: [{ proofAttemptId: "attempt-1" }] },
+      reason_note: "private note",
+      decided_by: operatorId,
+      idempotency_key: idempotencyKey,
+      request_hash: "secret",
+    };
+    const pending = {
+      id: "pending-1",
+      mission_workflow_id: workflowId,
+      mission_submission_id: "submission-1",
+      creator_id: "creator-1",
+      mission_id: "mission-1",
+      reward_contract_id: "contract-1",
+      completion_decision_id: "decision-1",
+      points_amount: 500,
+      cash_amount: 125,
+      currency: "HKD",
+      xp_amount: 0,
+      status: options?.queueStatus ?? "pending",
+      processing_window_days: 7,
+      target_at: "2026-08-07T10:00:00.000Z",
+      cancellation_decision_id: options?.queueStatus === "cancelled" ? "cancel-1" : null,
+      created_at: "2026-07-31T10:00:00.000Z",
+      cancelled_at: options?.queueStatus === "cancelled" ? "2026-08-01T10:00:00.000Z" : null,
+      creators: { display_name: "Creator" },
+      missions: { title: "Mission" },
+      completion_decision: decision,
+    };
+    const dataFor = (table: string) => {
+      if (table === "brand_users") return {
+        workspace_id: "workspace-1",
+        workspaces: {
+          id: "workspace-1",
+          slug: "alpha",
+          reward_processing_window_days: 7,
+        },
+      };
+      if (table === "mission_workflows") return { id: workflowId, state: "proof_verified", revision: 7 };
+      if (table === "mission_work_items") return [];
+      if (table === "mission_reward_contracts") return null;
+      if (table === "mission_pending_rewards") return [pending];
+      if (table === "mission_completion_decisions") return decision;
+      return null;
+    };
+    const from = vi.fn((table: string) => {
+      calls.push(table);
+      const result = { data: dataFor(table), error: null };
+      const chain: Record<string, unknown> = {};
+      for (const op of ["eq", "lt", "lte", "gte", "gt", "is", "limit"]) {
+        chain[op] = vi.fn(() => chain);
+      }
+      chain.select = vi.fn((selection: string) => {
+        selects.push(selection);
+        return chain;
+      });
+      chain.order = vi.fn((field: string, config: unknown) => {
+        orders.push([field, config]);
+        return chain;
+      });
+      chain.maybeSingle = vi.fn(async () => ({
+        data: Array.isArray(result.data) ? result.data[0] ?? null : result.data,
+        error: null,
+      }));
+      chain.then = (yes: (value: unknown) => unknown, no: (reason: unknown) => unknown) =>
+        Promise.resolve(result).then(yes, no);
+      return chain;
+    });
+    const rpc = vi.fn(async (name: string, args: unknown) => {
+      calls.push(`rpc:${name}`);
+      return {
+        data: name === "set_reward_processing_window"
+          ? { workspaceId: "workspace-1", rewardProcessingWindowDays: 7 }
+          : { contract: null, workflow: {}, decision: {}, pendingReward: {}, idempotent: false },
+        error: options?.rpcError ?? null,
+        args,
+      };
+    });
+    return {
+      repository: createRewardHandoffRepository({ from, rpc } as unknown as SupabaseClient),
+      calls,
+      selects,
+      orders,
+      rpc,
+    };
+  }
+
   it("verifies active membership before calling the exact service-role approval RPC", async () => {
     const calls: string[] = [];
     const rpc = vi.fn(async () => {
@@ -230,8 +375,10 @@ describe("reward handoff service boundaries", () => {
     };
     const from = vi.fn((table: string) => {
       calls.push(table);
-      if (table === "workspaces") return builder({ id: "workspace-1" });
-      if (table === "brand_users") return builder({ user_id: operatorId });
+      if (table === "brand_users") return builder({
+        workspace_id: "workspace-1",
+        workspaces: { id: "workspace-1", slug: "alpha", reward_processing_window_days: null },
+      });
       throw new Error(`unexpected table ${table}`);
     });
     const repository = createRewardHandoffRepository({ from, rpc } as unknown as SupabaseClient);
@@ -239,7 +386,7 @@ describe("reward handoff service boundaries", () => {
       workflowId, workspaceSlug: "alpha", operatorId,
       expectedState: "proof_verified", expectedRevision: 7, idempotencyKey,
     });
-    expect(calls.slice(0, 3)).toEqual(["workspaces", "brand_users", "rpc"]);
+    expect(calls.slice(0, 2)).toEqual(["brand_users", "rpc"]);
     expect(rpc).toHaveBeenCalledWith("approve_mission_completion", {
       p_workspace: "workspace-1",
       p_workflow: workflowId,
@@ -260,8 +407,7 @@ describe("reward handoff service boundaries", () => {
       };
       return chain;
     };
-    const from = vi.fn((table: string) =>
-      table === "workspaces" ? builder({ id: "workspace-1" }) : builder(null));
+    const from = vi.fn(() => builder(null));
     const repository = createRewardHandoffRepository({ from, rpc } as unknown as SupabaseClient);
     await expect(repository.approveCompletion({
       workflowId, workspaceSlug: "alpha", operatorId,
@@ -269,6 +415,124 @@ describe("reward handoff service boundaries", () => {
     })).rejects.toMatchObject({ code: "FORBIDDEN" });
     expect(rpc).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["approval", "rpc:approve_mission_completion", (repo: AdminRewardHandoffRepository) => repo.approveCompletion({
+      workflowId, workspaceSlug: "alpha", operatorId,
+      expectedState: "proof_verified", expectedRevision: 7, idempotencyKey,
+    })],
+    ["backfill", "rpc:backfill_mission_reward_contract", (repo: AdminRewardHandoffRepository) => repo.backfillRewardContract({
+      workflowId, workspaceSlug: "alpha", operatorId, pointsAmount: 500, cashAmount: 125,
+      currency: "HKD", xpAmount: 0, sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: "operator_record", confirmationReason: "Confirmed", idempotencyKey,
+    })],
+    ["cancellation", "rpc:cancel_mission_reward_handoff", (repo: AdminRewardHandoffRepository) => repo.cancelRewardHandoff({
+      workflowId, workspaceSlug: "alpha", operatorId, expectedState: "reward_pending",
+      expectedRevision: 8, idempotencyKey, reasonCategory: "other", reasonNote: "Reassess",
+    })],
+    ["settings", "rpc:set_reward_processing_window", (repo: AdminRewardHandoffRepository) => repo.updateSettings({
+      workspaceSlug: "alpha", operatorId, days: 7,
+    })],
+    ["list", "mission_pending_rewards", (repo: AdminRewardHandoffRepository) => repo.listRewardHandoffs({
+      workspaceSlug: "alpha", operatorId, status: "pending",
+    })],
+    ["detail", "mission_workflows", (repo: AdminRewardHandoffRepository) => repo.getCompletion({
+      workflowId, workspaceSlug: "alpha", operatorId,
+    })],
+  ])("authorizes membership before %s target/config access", async (_label, target, action) => {
+    const harness = serviceHarness();
+    await action(harness.repository);
+    expect(harness.calls[0]).toBe("brand_users");
+    expect(harness.calls).not.toContain("workspaces");
+    expect(harness.calls.indexOf(target)).toBeGreaterThan(0);
+  });
+
+  it("forces zero XP into the backfill RPC", async () => {
+    const harness = serviceHarness();
+    await harness.repository.backfillRewardContract({
+      workflowId, workspaceSlug: "alpha", operatorId, pointsAmount: 500, cashAmount: 125,
+      currency: "HKD", xpAmount: 0, sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: "operator_record", confirmationReason: "Confirmed", idempotencyKey,
+    });
+    expect(harness.rpc).toHaveBeenCalledWith(
+      "backfill_mission_reward_contract",
+      expect.objectContaining({ p_xp_amount: 0 }),
+    );
+  });
+
+  it.each([
+    ["idempotency_conflict", "IDEMPOTENCY_CONFLICT"],
+    ["workflow_stale", "WORKFLOW_STALE"],
+    ["wrong_state", "WRONG_STATE"],
+    ["reward_contract_required", "REWARD_CONTRACT_REQUIRED"],
+    ["reward_contract_exists", "REWARD_CONTRACT_EXISTS"],
+    ["completion_not_eligible", "COMPLETION_NOT_ELIGIBLE"],
+    ["pending_reward_exists", "PENDING_REWARD_EXISTS"],
+    ["pending_reward_not_found", "PENDING_REWARD_NOT_FOUND"],
+    ["cancellation_not_allowed", "CANCELLATION_NOT_ALLOWED"],
+    ["validation_failed", "VALIDATION_FAILED"],
+    ["backfill_contract_invalid", "VALIDATION_FAILED"],
+    ["backfill_reason_required", "VALIDATION_FAILED"],
+    ["reward_contract_source_missing", "VALIDATION_FAILED"],
+    ["reward_processing_window_invalid", "VALIDATION_FAILED"],
+    ["not_authorized", "FORBIDDEN"],
+    ["not_found", "FORBIDDEN"],
+    ["reward_workflow_not_found", "FORBIDDEN"],
+    ["workspace_not_found", "FORBIDDEN"],
+  ])("maps expected RPC token %s to bounded code %s", async (message, code) => {
+    const harness = serviceHarness({ rpcError: { message } });
+    await expect(harness.repository.backfillRewardContract({
+      workflowId, workspaceSlug: "alpha", operatorId, pointsAmount: 500, cashAmount: 125,
+      currency: "HKD", xpAmount: 0, sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: "operator_record", confirmationReason: "Confirmed", idempotencyKey,
+    })).rejects.toMatchObject({ code });
+  });
+
+  it("redacts unknown SQL and constraint failures in the service", async () => {
+    const harness = serviceHarness({
+      rpcError: { message: "duplicate key violates secret_internal_constraint DETAIL hidden" },
+    });
+    await expect(harness.repository.backfillRewardContract({
+      workflowId, workspaceSlug: "alpha", operatorId, pointsAmount: 500, cashAmount: 125,
+      currency: "HKD", xpAmount: 0, sourceMissionUpdatedAt: null,
+      confirmationEvidenceSource: "operator_record", confirmationReason: "Confirmed", idempotencyKey,
+    })).rejects.toMatchObject({
+      code: "UNKNOWN",
+      message: "Reward handoff request failed",
+    });
+  });
+
+  it.each(["pending", "cancelled"] as const)(
+    "returns bounded %s queue decision facts, evidence availability, and stable ordering",
+    async (status) => {
+      const harness = serviceHarness({ queueStatus: status });
+      const result = await harness.repository.listRewardHandoffs({
+        workspaceSlug: "alpha", operatorId, status,
+      }) as { items: Array<Record<string, unknown>> };
+      expect(harness.selects.join(" ")).toContain(
+        "mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey",
+      );
+      expect(result.items[0]).toMatchObject({
+        status,
+        completionDecision: {
+          id: "decision-1",
+          kind: "approved",
+          decidedAt: "2026-07-31T10:00:00.000Z",
+          requiredItemCount: 1,
+          verifiedRequiredItemCount: 1,
+          evidenceAvailable: true,
+        },
+      });
+      expect(harness.orders).toEqual([
+        ["target_at", { ascending: true, nullsFirst: false }],
+        ["created_at", { ascending: true }],
+        ["id", { ascending: true }],
+      ]);
+      expect(JSON.stringify(result)).not.toMatch(
+        /reason|operator|actor|idempotency|requestHash|request_hash|primaryUrl|signedUrl|storage/i,
+      );
+    },
+  );
 
   it("normalizes only the creator-safe RPC projection", () => {
     const projection = normalizeCreatorRewardHandoffProjection({

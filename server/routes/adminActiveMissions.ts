@@ -201,18 +201,33 @@ function dbError(error: { message?: string | null } | null): never {
 }
 
 async function workspaceId(client: SupabaseClient, slug: string, operatorId?: string) {
-  const result = await client.from("workspaces").select("id").eq("slug", slug).maybeSingle();
-  if (result.error) dbError(result.error);
-  if (!result.data) throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
-  const resolvedWorkspaceId = result.data.id as string;
   if (operatorId) {
-    const membership = await client.from("brand_users").select("user_id")
-      .eq("workspace_id", resolvedWorkspaceId).eq("user_id", operatorId).eq("active", true).maybeSingle();
+    const membership = await client.from("brand_users")
+      .select("workspace_id, workspaces!brand_users_workspace_id_fkey!inner(id, slug)")
+      .eq("user_id", operatorId)
+      .eq("active", true)
+      .eq("workspaces.slug", slug)
+      .maybeSingle();
     if (membership.error || !membership.data) {
       throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
     }
+    const membershipRow = membership.data as Row;
+    const workspaceValue = membershipRow.workspaces;
+    const workspace = Array.isArray(workspaceValue)
+      ? workspaceValue[0] as Row | undefined
+      : workspaceValue as Row | undefined;
+    const resolvedWorkspaceId = membershipRow.workspace_id;
+    if (typeof resolvedWorkspaceId !== "string"
+      || workspace?.id !== resolvedWorkspaceId
+      || workspace.slug !== slug) {
+      throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
+    }
+    return resolvedWorkspaceId;
   }
-  return resolvedWorkspaceId;
+  const result = await client.from("workspaces").select("id").eq("slug", slug).maybeSingle();
+  if (result.error) dbError(result.error);
+  if (!result.data) throw new OperatorActiveMissionError("NOT_AUTHORIZED", "not_authorized");
+  return result.data.id as string;
 }
 
 function requireData<T>(result: { data: T | null; error: { message?: string | null } | null }): T {

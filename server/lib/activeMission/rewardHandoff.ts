@@ -6,6 +6,7 @@ export type RewardHandoffErrorCode =
   | "VALIDATION_FAILED"
   | "NOT_AUTHENTICATED"
   | "FORBIDDEN"
+  | "REWARD_CONTRACT_EXISTS"
   | "REWARD_CONTRACT_REQUIRED"
   | "COMPLETION_NOT_ELIGIBLE"
   | "WORKFLOW_STALE"
@@ -250,14 +251,17 @@ export function validateBackfillPayload(value: unknown) {
   const pointsAmount = integer(body.pointsAmount);
   const cashAmount = typeof body.cashAmount === "number" ? body.cashAmount : Number.NaN;
   const currency = text(body.currency)?.toUpperCase() ?? "";
-  const xpAmount = integer(body.xpAmount);
+  const xpAmount = body.xpAmount;
   const sourceMissionUpdatedAt = body.sourceMissionUpdatedAt == null
     ? null
     : text(body.sourceMissionUpdatedAt);
   const confirmationEvidenceSource = text(body.confirmationEvidenceSource)?.toLowerCase() ?? "";
   const confirmationReason = text(body.confirmationReason);
-  if (pointsAmount < 0 || !Number.isFinite(cashAmount) || cashAmount < 0 || xpAmount < 0) {
+  if (pointsAmount < 0 || !Number.isFinite(cashAmount) || cashAmount < 0) {
     validation("Reward amounts must be non-negative");
+  }
+  if (typeof xpAmount !== "number" || !Number.isInteger(xpAmount) || xpAmount !== 0) {
+    validation("xpAmount must be exactly zero");
   }
   if (!/^[A-Z]{3}$/.test(currency)) validation("currency must be an ISO-style three-letter code");
   if (sourceMissionUpdatedAt !== null && !Number.isFinite(Date.parse(sourceMissionUpdatedAt))) {
@@ -384,6 +388,24 @@ function decision(value: unknown): PendingRewardDecision | null {
   };
 }
 
+function queueCompletionDecision(value: unknown) {
+  const row = record(Array.isArray(value) ? value[0] : value);
+  const id = text(row.id);
+  const kind = text(row.decision_kind);
+  const decidedAt = text(row.decided_at);
+  if (!id || (kind !== "approved" && kind !== "cancelled") || !decidedAt) return null;
+  const evidence = record(row.evidence_snapshot);
+  const requiredItems = evidence.requiredItems ?? evidence.required_items;
+  return {
+    id,
+    kind,
+    decidedAt,
+    requiredItemCount: Math.max(0, integer(row.required_item_count)),
+    verifiedRequiredItemCount: Math.max(0, integer(row.verified_required_item_count)),
+    evidenceAvailable: Array.isArray(requiredItems) && requiredItems.length > 0,
+  };
+}
+
 function operatorPendingReward(value: unknown, decisionValue?: unknown): PendingReward | null {
   const row = record(value);
   const id = text(row.id);
@@ -479,13 +501,14 @@ export function normalizeOperatorRewardHandoffProjection(input: {
 }
 
 function mapDatabaseError(error: { message?: string | null } | null): never {
-  const message = (error?.message ?? "reward handoff database error").toLowerCase();
-  const mappings: Array<[string, RewardHandoffErrorCode]> = [
+  const message = (error?.message ?? "").toLowerCase();
+  type DatabaseErrorCode = Exclude<RewardHandoffErrorCode, "NOT_AUTHENTICATED" | "UNKNOWN">;
+  const mappings: Array<[string, DatabaseErrorCode]> = [
     ["idempotency_conflict", "IDEMPOTENCY_CONFLICT"],
     ["workflow_stale", "WORKFLOW_STALE"],
     ["wrong_state", "WRONG_STATE"],
     ["reward_contract_required", "REWARD_CONTRACT_REQUIRED"],
-    ["reward_contract_exists", "REWARD_CONTRACT_REQUIRED"],
+    ["reward_contract_exists", "REWARD_CONTRACT_EXISTS"],
     ["completion_not_eligible", "COMPLETION_NOT_ELIGIBLE"],
     ["pending_reward_exists", "PENDING_REWARD_EXISTS"],
     ["pending_reward_not_found", "PENDING_REWARD_NOT_FOUND"],
@@ -493,37 +516,51 @@ function mapDatabaseError(error: { message?: string | null } | null): never {
     ["validation_failed", "VALIDATION_FAILED"],
     ["backfill_contract_invalid", "VALIDATION_FAILED"],
     ["backfill_reason_required", "VALIDATION_FAILED"],
+    ["reward_contract_source_missing", "VALIDATION_FAILED"],
     ["reward_processing_window_invalid", "VALIDATION_FAILED"],
     ["not_authorized", "FORBIDDEN"],
     ["not_found", "FORBIDDEN"],
     ["reward_workflow_not_found", "FORBIDDEN"],
     ["workspace_not_found", "FORBIDDEN"],
   ];
-  const code = mappings.find(([token]) => message.includes(token))?.[1] ?? "UNKNOWN";
-  throw new RewardHandoffError(code, code === "FORBIDDEN" ? "forbidden" : message);
+  const code = mappings.find(([token]) => message.includes(token))?.[1];
+  if (!code) throw new RewardHandoffError("UNKNOWN", "Reward handoff request failed");
+  const safeMessages: Record<DatabaseErrorCode, string> = {
+    VALIDATION_FAILED: "Reward handoff request is invalid",
+    FORBIDDEN: "forbidden",
+    REWARD_CONTRACT_EXISTS: "Reward contract already exists",
+    REWARD_CONTRACT_REQUIRED: "Reward contract is required",
+    COMPLETION_NOT_ELIGIBLE: "Mission completion is not eligible",
+    WORKFLOW_STALE: "Mission workflow is stale",
+    WRONG_STATE: "Mission workflow is in the wrong state",
+    PENDING_REWARD_EXISTS: "Pending reward already exists",
+    PENDING_REWARD_NOT_FOUND: "Pending reward was not found",
+    CANCELLATION_NOT_ALLOWED: "Reward cancellation is not allowed",
+    IDEMPOTENCY_CONFLICT: "Idempotency key conflicts with an earlier request",
+  };
+  throw new RewardHandoffError(code, safeMessages[code]);
 }
 
 async function authorizedWorkspace(client: SupabaseClient, workspaceSlug: string, operatorId: string) {
-  const workspace = await client.from("workspaces")
-    .select("id, reward_processing_window_days")
-    .eq("slug", workspaceSlug)
-    .maybeSingle();
-  if (workspace.error) mapDatabaseError(workspace.error);
-  if (!workspace.data) throw new RewardHandoffError("FORBIDDEN", "forbidden");
-  const workspaceId = (workspace.data as JsonRow).id;
-  if (typeof workspaceId !== "string") throw new RewardHandoffError("FORBIDDEN", "forbidden");
   const membership = await client.from("brand_users")
-    .select("user_id")
-    .eq("workspace_id", workspaceId)
+    .select("workspace_id, workspaces!brand_users_workspace_id_fkey!inner(id, slug, reward_processing_window_days)")
     .eq("user_id", operatorId)
     .eq("active", true)
+    .eq("workspaces.slug", workspaceSlug)
     .maybeSingle();
   if (membership.error || !membership.data) throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  const membershipRow = membership.data as JsonRow;
+  const workspaceValue = membershipRow.workspaces;
+  const workspace = Array.isArray(workspaceValue) ? record(workspaceValue[0]) : record(workspaceValue);
+  const workspaceId = text(membershipRow.workspace_id);
+  if (!workspaceId || text(workspace.id) !== workspaceId || text(workspace.slug) !== workspaceSlug) {
+    throw new RewardHandoffError("FORBIDDEN", "forbidden");
+  }
   return {
     id: workspaceId,
-    rewardProcessingWindowDays: (workspace.data as JsonRow).reward_processing_window_days == null
+    rewardProcessingWindowDays: workspace.reward_processing_window_days == null
       ? null
-      : number((workspace.data as JsonRow).reward_processing_window_days),
+      : number(workspace.reward_processing_window_days),
   };
 }
 
@@ -613,7 +650,7 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
         p_points_amount: input.pointsAmount,
         p_cash_amount: input.cashAmount,
         p_currency: input.currency,
-        p_xp_amount: input.xpAmount,
+        p_xp_amount: 0,
         p_source_mission_updated_at: input.sourceMissionUpdatedAt,
         p_confirmation_evidence_source: input.confirmationEvidenceSource,
         p_confirmation_reason: input.confirmationReason,
@@ -660,7 +697,7 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
     async listRewardHandoffs(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
       let query = client.from("mission_pending_rewards")
-        .select("*, creators!mission_pending_rewards_creator_id_fkey(display_name), missions!mission_pending_rewards_mission_id_fkey(title)")
+        .select("*, creators!mission_pending_rewards_creator_id_fkey(display_name), missions!mission_pending_rewards_mission_id_fkey(title), completion_decision:mission_completion_decisions!mission_pending_rewards_completion_decision_id_fkey(id, decision_kind, decided_at, required_item_count, verified_required_item_count, evidence_snapshot)")
         .eq("workspace_id", workspace.id)
         .eq("status", input.status);
       const now = new Date();
@@ -683,6 +720,7 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
           ...operatorPendingReward(row),
           creatorDisplayName: text(record(row.creators).display_name),
           missionTitle: text(record(row.missions).title),
+          completionDecision: queueCompletionDecision(row.completion_decision),
         })),
         rewardProcessingWindowDays: workspace.rewardProcessingWindowDays,
       };
@@ -713,7 +751,7 @@ export function rewardHandoffStatus(code: RewardHandoffErrorCode): 400 | 401 | 4
   if (code === "FORBIDDEN") return 403;
   if (code === "WORKFLOW_STALE" || code === "WRONG_STATE" || code === "IDEMPOTENCY_CONFLICT"
     || code === "PENDING_REWARD_EXISTS" || code === "PENDING_REWARD_NOT_FOUND"
-    || code === "CANCELLATION_NOT_ALLOWED") return 409;
+    || code === "CANCELLATION_NOT_ALLOWED" || code === "REWARD_CONTRACT_EXISTS") return 409;
   if (code === "REWARD_CONTRACT_REQUIRED" || code === "COMPLETION_NOT_ELIGIBLE") return 422;
   return 500;
 }

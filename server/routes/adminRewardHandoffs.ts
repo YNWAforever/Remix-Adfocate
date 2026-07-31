@@ -36,7 +36,11 @@ function routeError(context: Context<AdminEnv>, error: unknown) {
   if (error instanceof RewardHandoffError) {
     const status = rewardHandoffStatus(error.code);
     return context.json({
-      error: error.code === "FORBIDDEN" ? "forbidden" : error.message,
+      error: error.code === "FORBIDDEN"
+        ? "forbidden"
+        : error.code === "UNKNOWN"
+          ? "Reward handoff request failed"
+          : error.message,
       code: error.code,
     }, status);
   }
