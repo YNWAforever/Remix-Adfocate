@@ -288,6 +288,28 @@ describe("release migration manifest", () => {
     }
   });
 
+  it("rejects a shape-valid migration path that does not match version and name", async () => {
+    const manifest = await buildManifest(await fixture());
+    const first = structuredClone(manifest.migrations[0]);
+    const mismatched = {
+      ...manifest,
+      migrations: [
+        {
+          ...first,
+          path: `supabase/migrations/${first.version}_wrong_name.sql`,
+        },
+        ...manifest.migrations.slice(1),
+      ],
+    } as ReleaseManifest;
+
+    expect(() => parseReleaseManifest(mismatched)).toThrow(
+      "$manifest.migrations[0].path must match version and name",
+    );
+    expect(() => digestManifest(mismatched)).toThrow(
+      "$manifest.migrations[0].path must match version and name",
+    );
+  });
+
   it("does not alias mutable capability metadata between builds", async () => {
     const root = await fixture();
     const first = await buildManifest(root);
@@ -330,13 +352,30 @@ describe("release migration manifest", () => {
     const script = resolve("scripts/release/manifest-cli.ts");
     const { stdout } = await execFileAsync(
       process.execPath,
-      [viteNode, script, "write"],
+      [viteNode, "--script", script, "write"],
       { cwd: root },
     );
     expect(stdout.trim()).toMatch(/^[a-f0-9]{64}$/);
     await expect(
       readFile(join(root, "supabase", "release-manifest.json"), "utf8"),
     ).resolves.toContain('"schemaVersion": 1');
+  });
+
+  it.each([
+    ["missing", []],
+    ["unsupported", ["typo"]],
+  ])("returns a nonzero usage error for a %s direct CLI command", async (_case, args) => {
+    const root = await fixture();
+    const viteNode = resolve("node_modules/vite-node/vite-node.mjs");
+    const script = resolve("scripts/release/manifest-cli.ts");
+    await expect(
+      execFileAsync(process.execPath, [viteNode, "--script", script, ...args], {
+        cwd: root,
+      }),
+    ).rejects.toMatchObject({
+      code: 1,
+      stderr: expect.stringContaining("usage: manifest-cli.ts <write|check>"),
+    });
   });
 
   it("detects checksum drift, missing files, duplicates, and bad dependencies", async () => {

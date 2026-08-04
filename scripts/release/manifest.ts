@@ -890,6 +890,9 @@ export function parseReleaseManifest(value: unknown): ReleaseManifest {
       `${path}.path`,
       /^supabase\/migrations\/\d{14}_[a-z0-9_]+\.sql$/,
     );
+    if (migrationPath !== `supabase/migrations/${version}_${name}.sql`) {
+      invalid(`${path}.path`, "must match version and name");
+    }
     const hash = stringValue(migration.sha256, `${path}.sha256`, /^[a-f0-9]{64}$/);
     if (
       migration.phase !== "active_mission" &&

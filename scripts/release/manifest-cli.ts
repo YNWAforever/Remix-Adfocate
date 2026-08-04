@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   buildManifest,
   digestManifest,
@@ -56,6 +57,9 @@ async function run(command: string | undefined, rootDir: string) {
   throw new Error("usage: manifest-cli.ts <write|check>");
 }
 
-if (process.argv[2] === "write" || process.argv[2] === "check") {
+if (
+  process.argv[1] !== undefined &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   process.stdout.write(`${await run(process.argv[2], process.cwd())}\n`);
 }
