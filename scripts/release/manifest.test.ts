@@ -50,6 +50,7 @@ const REVIEWED_FILES = [
   "20260731120000_reward_handoff_transitions.sql",
   "20260731130000_reward_handoff_notifications.sql",
   "20260731140000_reward_handoff_release_hardening.sql",
+  "20260731150000_enable_pilot_if_empty.sql",
 ] as const;
 
 const execFileAsync = promisify(execFile);
@@ -396,7 +397,7 @@ describe("release migration manifest", () => {
     ).toEqual(
       expect.arrayContaining([
         "checksum drift: 20260715163350",
-        "missing migration file: 20260731140000",
+        "missing migration file: 20260731150000",
         "duplicate migration version",
         "unknown dependency: 19990101000000",
       ]),

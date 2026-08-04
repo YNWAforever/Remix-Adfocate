@@ -83,7 +83,9 @@ async function rowsFrom(client: PilotClient, table: string, filters: Record<stri
   if (Array.isArray(direct)) {
     return asRows(direct).filter((row) => Object.entries(filters).every(([key, value]) => row[key] === value));
   }
-  if (direct && typeof direct === "object" && "data" in direct) return asRows((direct as { data?: unknown }).data);
+  if (direct && typeof direct === "object" && "data" in direct) {
+    return asRows((direct as { data?: unknown }).data).filter((row) => Object.entries(filters).every(([key, value]) => row[key] === value));
+  }
   if (typeof client.from !== "function") throw new Error(`pilot read failed: ${table} client unavailable`);
   try {
     let builder = client.from(table) as QueryBuilder;
@@ -212,8 +214,16 @@ export async function inspectPilotCandidate(
   let activeCount = 0;
   try {
     mission = missionId ? await oneFrom(client, "missions", { id: missionId }) : null;
-    submissions = missionId ? await rowsFrom(client, "mission_submissions", { mission_id: missionId }) : [];
-    workflows = missionId ? await rowsFrom(client, "mission_workflows", { mission_id: missionId }) : [];
+    submissions = missionId
+      ? await rowsFrom(client, "mission_submissions", { workspace_id: workspaceId, mission_id: missionId })
+      : [];
+    // mission_workflows has no mission_id column in the shipped schema. Scope
+    // by workspace, then follow its mission_submission_id relation locally.
+    const submissionIds = new Set(submissions.map((row) => text(row.id)).filter(Boolean));
+    const workspaceWorkflows = workspaceId
+      ? await rowsFrom(client, "mission_workflows", { workspace_id: workspaceId })
+      : [];
+    workflows = workspaceWorkflows.filter((row) => submissionIds.has(text(row.mission_submission_id)));
     activeCount = workspaceId ? await activePilotRows(client, workspaceId, missionId) : 0;
   } catch (error) {
     reasons.push(error instanceof Error ? error.message : "pilot read failed");
@@ -456,7 +466,9 @@ function sanitizedError(error: unknown) {
   return message.replace(/(?:postgres(?:ql)?:\/\/|eyJ)[^\s"']+/gi, "[REDACTED]");
 }
 
-if (!process.env.VITEST && process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+const isViteNodeCli = /(?:^|[\\/])vite-node(?:\\.mjs)?$/i.test(process.argv[1] ?? "");
+const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isViteNodeCli || isDirectNodeCli) {
   try {
     const result = await executePilotCli(process.argv.slice(2), process.env);
     process.stdout.write(`${JSON.stringify(result)}\n`);

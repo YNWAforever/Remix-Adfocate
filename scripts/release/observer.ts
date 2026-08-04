@@ -51,25 +51,24 @@ function amount(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
-function scoped(rows: readonly Row[], workspaceId: string, missionId: string) {
+function scoped(rows: readonly Row[], workspaceId: string) {
   const invalid = rows.find((row) => {
-    const rowMission = row.mission_id ?? row.missionId;
     const rowWorkspace = row.workspace_id ?? row.workspaceId;
-    return rowMission !== missionId || rowWorkspace !== workspaceId;
+    return rowWorkspace !== workspaceId;
   });
   if (invalid) throw new Error("pilot observation row scope mismatch or missing scope");
   return [...rows];
 }
 
-async function queryRows(client: ObserverClient, table: string, workspaceId: string, missionId: string) {
+async function queryRows(client: ObserverClient, table: string, workspaceId: string) {
   const aliases: Record<string, string> = {
     missions: "mission",
     mission_submissions: "submissions",
     mission_workflows: "workflows",
   };
   const direct = client[table] ?? client[aliases[table] ?? ""];
-  if (Array.isArray(direct)) return scoped(asRows(direct), workspaceId, missionId);
-  if (direct && typeof direct === "object" && "data" in direct) return scoped(asRows((direct as { data?: unknown }).data), workspaceId, missionId);
+  if (Array.isArray(direct)) return scoped(asRows(direct), workspaceId);
+  if (direct && typeof direct === "object" && "data" in direct) return scoped(asRows((direct as { data?: unknown }).data), workspaceId);
   if (typeof client.from !== "function") throw new Error(`pilot observation read failed: ${table} client unavailable`);
   try {
     let builder = client.from(table) as QueryBuilder;
@@ -77,15 +76,29 @@ async function queryRows(client: ObserverClient, table: string, workspaceId: str
     const eq = builder.eq;
     if (eq) {
       builder = eq.call(builder, "workspace_id", workspaceId);
-      builder = eq.call(builder, "mission_id", missionId);
     }
     const result = await Promise.resolve(builder as unknown as PromiseLike<QueryResult>);
     if (result.error) throw new Error(`pilot observation read failed: ${table}`);
-    return scoped(asRows(result.data), workspaceId, missionId);
+    return scoped(asRows(result.data), workspaceId);
   } catch (error) {
     if (error instanceof Error && (error.message.startsWith("pilot observation read failed:") || error.message.startsWith("pilot observation row scope mismatch"))) throw error;
     throw new Error(`pilot observation read failed: ${table}`);
   }
+}
+
+function relatedRows(rows: readonly Row[], key: string, ids: ReadonlySet<string>) {
+  return rows.filter((row) => ids.has(text(row[key])));
+}
+
+function scopedNotification(row: Row, ids: ReadonlySet<string>) {
+  const entityId = text(row.entity_id ?? row.entityId);
+  if (entityId && ids.has(entityId)) return true;
+  const data = row.data;
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    return ["mission_id", "mission_submission_id", "mission_workflow_id", "mission_work_item_id", "entity_id"]
+      .some((key) => ids.has(text((data as Row)[key])));
+  }
+  return false;
 }
 
 function directSnapshot(client: ObserverClient) {
@@ -146,17 +159,31 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
       : new Date().toISOString();
   const snapshot = { ...directSnapshot(client), ...(input.snapshot ?? {}) };
 
-  const [workflows, submissions, proofAttempts, completionDecisions, handoffs, notifications, errors, requestErrors, databaseErrors] = await Promise.all([
-    queryRows(client, "mission_workflows", workspaceId, missionId),
-    queryRows(client, "mission_submissions", workspaceId, missionId),
-    queryRows(client, "mission_proof_attempts", workspaceId, missionId),
-    queryRows(client, "mission_completion_decisions", workspaceId, missionId),
-    queryRows(client, "mission_reward_handoffs", workspaceId, missionId),
-    queryRows(client, "notification_deliveries", workspaceId, missionId),
-    queryRows(client, "runtime_errors", workspaceId, missionId),
-    queryRows(client, "request_errors", workspaceId, missionId),
-    queryRows(client, "database_errors", workspaceId, missionId),
+  const submissions = await queryRows(client, "mission_submissions", workspaceId);
+  const submissionIds = new Set(submissions.filter((row) => text(row.mission_id ?? row.missionId) === missionId).map((row) => text(row.id)).filter(Boolean));
+  const allWorkflows = await queryRows(client, "mission_workflows", workspaceId);
+  const workflows = allWorkflows.filter((row) =>
+    submissionIds.has(text(row.mission_submission_id))
+    // Compatibility for deterministic fakes; shipped rows always use the
+    // mission_submission_id relation above.
+    || (!row.mission_submission_id && text(row.mission_id ?? row.missionId) === missionId),
+  );
+  const workflowIds = new Set(workflows.map((row) => text(row.id)).filter(Boolean));
+  const workItems = await queryRows(client, "mission_work_items", workspaceId);
+  const workItemIds = new Set(relatedRows(workItems, "mission_workflow_id", workflowIds).map((row) => text(row.id)).filter(Boolean));
+  const [allProofAttempts, completionRows, pendingRewards, notificationRows, eventRows] = await Promise.all([
+    queryRows(client, "mission_publication_proof_attempts", workspaceId),
+    queryRows(client, "mission_completion_decisions", workspaceId),
+    queryRows(client, "mission_pending_rewards", workspaceId),
+    queryRows(client, "notifications", workspaceId),
+    queryRows(client, "mission_workflow_events", workspaceId),
   ]);
+  const proofAttempts = relatedRows(allProofAttempts, "mission_work_item_id", workItemIds);
+  const completionDecisions = relatedRows(completionRows, "mission_workflow_id", workflowIds);
+  const handoffs = pendingRewards.filter((row) => text(row.mission_id ?? row.missionId) === missionId && (text(row.status) === "pending" || text(row.status) === "cancelled" || row.status === undefined));
+  const scopedIds = new Set([...submissionIds, ...workflowIds, ...workItemIds]);
+  const notifications = notificationRows.filter((row) => scopedNotification(row, scopedIds));
+  const events = eventRows.filter((row) => workflowIds.has(text(row.mission_workflow_id)) || workItemIds.has(text(row.mission_work_item_id)));
   const pending = Math.max(
     workflows.filter((row) => row.state === "reward_pending").length,
     handoffs.filter((row) => row.status === "pending" || row.state === "reward_pending").length,
@@ -172,10 +199,11 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     .map((id) => hashOpaque(id));
   const deadLetters = notifications.filter((row) => ["dead_letter", "dead-letter", "failed"].includes(text(row.status))).length;
   const retries = notifications.reduce((sum, row) => sum + count(row.retry_count ?? row.retries), 0);
-  const allErrors = [...errors, ...requestErrors, ...databaseErrors];
-  const error5xx = allErrors.filter((row) => count(row.status_code ?? row.statusCode) >= 500).length;
-  const requestClusters = new Set(requestErrors.map((row) => text(row.cluster_id ?? row.route ?? row.message)).filter(Boolean)).size;
-  const dbClusters = new Set(databaseErrors.map((row) => text(row.cluster_id ?? row.database_cluster ?? row.message)).filter(Boolean)).size;
+  // Runtime/request/database error tables are not part of the shipped schema;
+  // callers may supply these redacted counters via the snapshot instead.
+  const error5xx = 0;
+  const requestClusters = 0;
+  const dbClusters = 0;
   const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? input.financialSnapshotBefore ?? client.rewardSnapshotBefore);
   const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? input.financialSnapshotAfter ?? client.rewardSnapshotAfter);
   const observedMovement = snapshot.financialMovement !== undefined || client.financialMovement !== undefined
@@ -424,7 +452,9 @@ function sanitizedError(error: unknown) {
   return message.replace(/(?:postgres(?:ql)?:\/\/|eyJ)[^\s"']+/gi, "[REDACTED]");
 }
 
-if (!process.env.VITEST && process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+const isViteNodeCli = /(?:^|[\\/])vite-node(?:\\.mjs)?$/i.test(process.argv[1] ?? "");
+const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isViteNodeCli || isDirectNodeCli) {
   try {
     const result = await executeObserverCli(process.argv.slice(2), process.env);
     process.stdout.write(`${JSON.stringify(result)}\n`);

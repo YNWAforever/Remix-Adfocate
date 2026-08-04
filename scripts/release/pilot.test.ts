@@ -96,7 +96,7 @@ describe("pilot candidate guard", () => {
   });
 
   it("rejects submissions, cross-workspace missions, or a second active pilot", async () => {
-    await expect(inspectPilotCandidate(fakeSupabase({ mission, submissions: [{ id: "s1", mission_id: mission.id }] }), {
+    await expect(inspectPilotCandidate(fakeSupabase({ mission, submissions: [{ id: "s1", workspace_id: "workspace-1", mission_id: mission.id }] }), {
       workspaceId: "workspace-1",
       missionId: "mission-1",
       ...gates(),

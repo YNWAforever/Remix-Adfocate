@@ -1,6 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { executePilotCli } from "./pilot";
 import { executeObserverCli } from "./observer";
@@ -50,6 +51,67 @@ function observation(day: number, completed = 0, pending = 0) {
 }
 
 describe("guarded pilot/observer commands", () => {
+  it("executes the npm/vite-node evaluate boundary even when VITEST is inherited", () => {
+    const runner = process.execPath;
+    const viteNode = resolve("node_modules/vite-node/vite-node.mjs");
+    let output = "";
+    let status = 0;
+    try {
+      output = execFileSync(runner, [viteNode, "--script", resolve("scripts/release/observer-cli.ts"), "evaluate"], {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          VITEST: "1",
+          RELEASE_PILOT_OBSERVATIONS_PATH: "",
+          RELEASE_PILOT_CONTAINMENT_JSON: "",
+          RELEASE_PILOT_CONTAINMENT_PATH: "",
+        },
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } catch (error) {
+      const caught = error as { status?: number; stdout?: Buffer | string; stderr?: Buffer | string; output?: Array<Buffer | string | null> };
+      status = caught.status ?? 1;
+      output = [
+        ...(caught.output ?? []),
+        caught.stdout,
+        caught.stderr,
+      ].filter((value): value is Buffer | string => value !== undefined && value !== null)
+        .map((value) => value.toString())
+        .join("");
+    }
+    expect(status).not.toBe(0);
+    const line = output.trim().split(/\r?\n/).at(-1);
+    expect(line).toBeTruthy();
+    expect(JSON.parse(line!)).toMatchObject({ status: "failed" });
+    expect(output).not.toMatch(/SUPABASE_SERVICE_ROLE_KEY|postgres(?:ql)?:\/\/[^\s"']+/i);
+  }, 30000);
+
+  it("executes the real npm entrypoint and fails closed with JSON", () => {
+    const runner = process.execPath;
+    const viteNode = resolve("node_modules/vite-node/vite-node.mjs");
+    let error: { stdout?: Buffer; stderr?: Buffer } | undefined;
+    try {
+      execFileSync(runner, [viteNode, "--script", resolve("scripts/release/observer-cli.ts"), "evaluate"], {
+        cwd: process.cwd(),
+        env: { ...process.env, RELEASE_PILOT_OBSERVATIONS_PATH: "", RELEASE_PILOT_CONTAINMENT_JSON: "" },
+        encoding: "buffer",
+      });
+    } catch (caught) {
+      error = caught as { stdout?: Buffer; stderr?: Buffer; output?: Array<Buffer | string | null> };
+    }
+    expect(error).toBeDefined();
+    const captured = error as { stdout?: Buffer | string; stderr?: Buffer | string; output?: Array<Buffer | string | null> };
+    const output = [
+      ...(captured.output ?? []),
+      captured.stdout,
+      captured.stderr,
+    ].filter((value): value is Buffer | string => value !== undefined && value !== null)
+      .map((value) => value.toString())
+      .join("");
+    expect(output).toContain("RELEASE_PILOT_OBSERVATIONS_PATH");
+  });
+
   it("refuses pilot inspect without explicit service-client configuration", async () => {
     await expect(executePilotCli(["inspect"], {
       RELEASE_PILOT_WORKSPACE_ID: "workspace-1",

@@ -886,6 +886,22 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260731150000",
+      "name": "enable_pilot_if_empty",
+      "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+      "sha256": "bd3ddfbb8fb0c5b5bf4f8544d7bffa6156630aa19775f0fd9536ce958011b95e",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731140000"
+      ],
+      "capabilities": [
+        "function:public.enable_pilot_if_empty",
+        "grant:service_role.public.enable_pilot_if_empty(uuid,uuid,text,text,text,boolean)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

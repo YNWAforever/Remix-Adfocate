@@ -12,7 +12,7 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    expect(capabilities).toHaveLength(416);
+    expect(capabilities).toHaveLength(418);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 

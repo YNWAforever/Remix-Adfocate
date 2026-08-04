@@ -24,10 +24,10 @@
     "release:evidence": "vite-node scripts/release/evidence.ts",
     "release:execute": "vite-node scripts/release/executor.ts",
     "release:verify-deployment": "vite-node --script scripts/release/deployment.ts",
-    "release:pilot:inspect": "vite-node scripts/release/pilot.ts inspect",
-    "release:pilot:enable": "vite-node scripts/release/pilot.ts enable",
-    "release:pilot:observe": "vite-node scripts/release/observer.ts observe",
-    "release:pilot:evaluate": "vite-node scripts/release/observer.ts evaluate"
+    "release:pilot:inspect": "vite-node --script scripts/release/pilot-cli.ts inspect",
+    "release:pilot:enable": "vite-node --script scripts/release/pilot-cli.ts enable",
+    "release:pilot:observe": "vite-node --script scripts/release/observer-cli.ts observe",
+    "release:pilot:evaluate": "vite-node --script scripts/release/observer-cli.ts evaluate"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",

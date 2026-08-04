@@ -76,7 +76,7 @@ describe("pilot observer and seven-day exit", () => {
   it("records structural counts and hashes identities without leaking raw IDs", async () => {
     const from = vi.fn((table: string) => {
       const rows = table === "mission_workflows"
-        ? [{ id: "workflow-1", mission_id: "mission-1", workspace_id: "workspace-1", state: "reward_pending", creator_id: "creator-1" }]
+      ? [{ id: "workflow-1", mission_submission_id: "submission-1", workspace_id: "workspace-1", state: "reward_pending", creator_id: "creator-1" }]
         : table === "mission_submissions"
           ? [{ id: "submission-1", mission_id: "mission-1", workspace_id: "workspace-1", creator_id: "creator-1" }]
           : [];

@@ -780,6 +780,18 @@ const REVIEWED_MIGRATIONS = [
     transactionExpectation: "transactional",
     replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20260731150000",
+    name: "enable_pilot_if_empty",
+    phase: "reward_handoff",
+    dependsOn: ["20260731140000"],
+    capabilities: [
+      "function:public.enable_pilot_if_empty",
+      "grant:service_role.public.enable_pilot_if_empty(uuid,uuid,text,text,text,boolean)",
+    ],
+    transactionExpectation: "transactional",
+    replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
