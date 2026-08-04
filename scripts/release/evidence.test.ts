@@ -72,6 +72,23 @@ describe("release evidence", () => {
     );
   });
 
+  it("fails closed for malformed external evidence instead of crashing or persisting it", () => {
+    const malformed = { ...buildEvidence(validInput) } as Record<string, unknown>;
+    delete malformed.applicationCommit;
+    delete malformed.preflightHash;
+    delete malformed.roles;
+
+    expect(
+      verifyEvidence(malformed as never, {}, new Date("2026-08-01T12:00:00Z")),
+    ).toEqual(
+      expect.arrayContaining([
+        "evidence.applicationCommit is missing",
+        "evidence.preflightHash is missing",
+        "evidence.roles is missing",
+      ]),
+    );
+  });
+
   it("writes timestamped evidence exclusively and does not overwrite an existing artifact", async () => {
     const evidence = buildEvidence(validInput);
     const writeFile = async () => {

@@ -168,6 +168,8 @@ function expectProductionWorkflowContract(candidate: string) {
   expect(steps[2].env).toEqual({});
   expect(steps[3].env).toEqual({
     RELEASE_DATABASE_URL: '"${{ secrets.SUPABASE_DB_URL }}"',
+    RELEASE_PROJECT_REF: '"${{ vars.SUPABASE_PROJECT_REF }}"',
+    RELEASE_APPLICATION_COMMIT: '"${{ github.sha }}"',
   });
 }
 

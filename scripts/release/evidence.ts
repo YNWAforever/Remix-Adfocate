@@ -12,6 +12,31 @@ import type {
 
 const SENSITIVE_KEY = /(secret|token|password|jwt|email|signed.?url|database.?url)/i;
 const SENSITIVE_VALUE = /(postgres(?:ql)?:\/\/|eyJ[A-Za-z0-9_-]+\.|@[^\s]+\.[^\s]+)/i;
+const SHA256 = /^[a-f0-9]{64}$/;
+const COMMIT = /^[a-f0-9]{40}$/;
+const MIGRATION_VERSION = /^\d{14}$/;
+const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T/;
+const ROLE_KEYS = ["executor", "observer", "containmentOwner", "productOwner", "approver"] as const;
+const EVIDENCE_INPUT_KEYS = [
+  "targetProjectRef",
+  "schemaFingerprint",
+  "manifestDigest",
+  "preflightHash",
+  "rehearsalHash",
+  "applicationCommit",
+  "migrationRange",
+  "migrationChecksums",
+  "recoveryReference",
+  "roles",
+  "testResults",
+  "proposedProductionCommands",
+  "containmentCommands",
+  "warnings",
+  "skippedChecks",
+  "createdAt",
+  "expiresAt",
+] as const;
+const EVIDENCE_KEYS = ["schemaVersion", ...EVIDENCE_INPUT_KEYS, "contentDigest"] as const;
 
 export interface EvidenceInput {
   readonly targetProjectRef: string;
@@ -95,6 +120,125 @@ function nonEmptyString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function exactKeys(source: Record<string, unknown>, keys: readonly string[], path: string, errors: string[]) {
+  const expected = new Set(keys);
+  for (const key of keys) {
+    if (!Object.hasOwn(source, key)) errors.push(`${path}.${key} is missing`);
+  }
+  for (const key of Object.keys(source)) {
+    if (!expected.has(key)) errors.push(`${path}.${key} is unknown`);
+  }
+}
+
+function validString(value: unknown, path: string, errors: string[], pattern?: RegExp) {
+  if (!nonEmptyString(value)) errors.push(`${path} is missing`);
+  else if (pattern && !pattern.test(value)) errors.push(`${path} is invalid`);
+}
+
+function stringArray(value: unknown, path: string, errors: string[]) {
+  if (!Array.isArray(value)) {
+    errors.push(`${path} is invalid`);
+    return;
+  }
+  value.forEach((item, index) => validString(item, `${path}[${index}]`, errors));
+}
+
+function evidenceShapeErrors(value: unknown, requireContentDigest: boolean): string[] {
+  const errors: string[] = [];
+  const source = asRecord(value);
+  if (!source) return ["evidence is invalid"];
+  exactKeys(source, requireContentDigest ? EVIDENCE_KEYS : EVIDENCE_INPUT_KEYS, "evidence", errors);
+  if (requireContentDigest && source.schemaVersion !== 1) errors.push("evidence.schemaVersion is invalid");
+  validString(source.targetProjectRef, "evidence.targetProjectRef", errors);
+  validString(source.schemaFingerprint, "evidence.schemaFingerprint", errors, SHA256);
+  validString(source.manifestDigest, "evidence.manifestDigest", errors, SHA256);
+  validString(source.preflightHash, "evidence.preflightHash", errors, SHA256);
+  validString(source.rehearsalHash, "evidence.rehearsalHash", errors, SHA256);
+  validString(source.applicationCommit, "evidence.applicationCommit", errors, COMMIT);
+  validString(source.recoveryReference, "evidence.recoveryReference", errors);
+  if (requireContentDigest) validString(source.contentDigest, "evidence.contentDigest", errors, SHA256);
+
+  const range = asRecord(source.migrationRange);
+  if (!range) errors.push("evidence.migrationRange is invalid");
+  else {
+    exactKeys(range, ["from", "to"], "evidence.migrationRange", errors);
+    validString(range.from, "evidence.migrationRange.from", errors, MIGRATION_VERSION);
+    validString(range.to, "evidence.migrationRange.to", errors, MIGRATION_VERSION);
+  }
+
+  if (!Array.isArray(source.migrationChecksums) || source.migrationChecksums.length === 0) {
+    errors.push("evidence.migrationChecksums is invalid");
+  } else {
+    source.migrationChecksums.forEach((checksum, index) => {
+      const item = asRecord(checksum);
+      if (!item) {
+        errors.push(`evidence.migrationChecksums[${index}] is invalid`);
+        return;
+      }
+      exactKeys(item, ["version", "sha256"], `evidence.migrationChecksums[${index}]`, errors);
+      validString(item.version, `evidence.migrationChecksums[${index}].version`, errors, MIGRATION_VERSION);
+      validString(item.sha256, `evidence.migrationChecksums[${index}].sha256`, errors, SHA256);
+    });
+  }
+
+  const roles = asRecord(source.roles);
+  if (!roles) errors.push("evidence.roles is missing");
+  else {
+    exactKeys(roles, ROLE_KEYS, "evidence.roles", errors);
+    ROLE_KEYS.forEach((role) => validString(roles[role], `evidence.roles.${role}`, errors));
+  }
+
+  if (!Array.isArray(source.testResults)) errors.push("evidence.testResults is invalid");
+  else {
+    source.testResults.forEach((result, index) => {
+      const item = asRecord(result);
+      if (!item) {
+        errors.push(`evidence.testResults[${index}] is invalid`);
+        return;
+      }
+      exactKeys(item, ["gate", "status", "evidenceHash"], `evidence.testResults[${index}]`, errors);
+      validString(item.gate, `evidence.testResults[${index}].gate`, errors);
+      if (item.status !== "passed" && item.status !== "failed" && item.status !== "skipped") {
+        errors.push(`evidence.testResults[${index}].status is invalid`);
+      }
+      validString(item.evidenceHash, `evidence.testResults[${index}].evidenceHash`, errors, SHA256);
+    });
+  }
+  stringArray(source.proposedProductionCommands, "evidence.proposedProductionCommands", errors);
+  stringArray(source.containmentCommands, "evidence.containmentCommands", errors);
+  stringArray(source.warnings, "evidence.warnings", errors);
+  stringArray(source.skippedChecks, "evidence.skippedChecks", errors);
+  validString(source.createdAt, "evidence.createdAt", errors, ISO_TIMESTAMP);
+  validString(source.expiresAt, "evidence.expiresAt", errors, ISO_TIMESTAMP);
+  if (typeof source.createdAt === "string" && !Number.isFinite(Date.parse(source.createdAt))) {
+    errors.push("evidence.createdAt is invalid");
+  }
+  if (typeof source.expiresAt === "string" && !Number.isFinite(Date.parse(source.expiresAt))) {
+    errors.push("evidence.expiresAt is invalid");
+  }
+  return errors;
+}
+
+export function parseEvidence(value: unknown): { evidence?: ReleaseEvidence; errors: string[] } {
+  const errors = evidenceShapeErrors(value, true);
+  try {
+    assertSanitized(value);
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : "evidence contains sensitive value");
+  }
+  return errors.length ? { errors } : { evidence: value as ReleaseEvidence, errors: [] };
+}
+
+function parseEvidenceInput(value: unknown): { input?: EvidenceInput; errors: string[] } {
+  const errors = evidenceShapeErrors(value, false);
+  try {
+    assertSanitized(value);
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : "evidence contains sensitive value");
+  }
+  return errors.length ? { errors } : { input: value as EvidenceInput, errors: [] };
+}
+
 function contentForDigest(evidence: Omit<ReleaseEvidence, "contentDigest">) {
   return canonicalJson(evidence);
 }
@@ -117,7 +261,9 @@ export function assertSanitized(value: unknown, path = "evidence"): void {
 }
 
 export function buildEvidence(input: EvidenceInput): ReleaseEvidence {
-  assertSanitized(input);
+  const parsed = parseEvidenceInput(input);
+  if (!parsed.input) throw new Error(`invalid evidence input: ${parsed.errors.join("; ")}`);
+  input = parsed.input;
   const evidence = {
     schemaVersion: 1 as const,
     targetProjectRef: input.targetProjectRef,
@@ -158,53 +304,55 @@ export function verifyEvidence(
   expected: ExpectedEvidence,
   now: Date,
 ): string[] {
-  const errors: string[] = [];
-  try {
-    assertSanitized(evidence);
-  } catch (error) {
-    errors.push(error instanceof Error ? error.message : "evidence contains sensitive value");
-  }
-
-  const candidate = asRecord(evidence);
-  if (!candidate || candidate.schemaVersion !== 1) errors.push("evidence schema version mismatch");
-  if (!nonEmptyString(candidate?.recoveryReference)) errors.push("recovery reference is missing");
-  if (!nonEmptyString(candidate?.contentDigest) || contentDigestFor(evidence) !== evidence.contentDigest) {
+  const parsed = parseEvidence(evidence);
+  const candidate = parsed.evidence ?? (asRecord(evidence) as Partial<ReleaseEvidence> | undefined);
+  if (!candidate) return parsed.errors;
+  const errors = [...parsed.errors];
+  if (!nonEmptyString(candidate.recoveryReference)) errors.push("recovery reference is missing");
+  if (contentDigestFor(candidate as ReleaseEvidence) !== candidate.contentDigest) {
     errors.push("evidence content digest mismatch");
   }
-  if (!Number.isFinite(Date.parse(evidence.expiresAt)) || new Date(evidence.expiresAt) <= now) {
+  if (!Number.isFinite(Date.parse(candidate.expiresAt ?? "")) || new Date(candidate.expiresAt ?? "").valueOf() <= now.valueOf()) {
     errors.push("evidence has expired");
   }
-  if (expected.projectRef !== undefined && evidence.targetProjectRef !== expected.projectRef) {
+  if (expected.projectRef !== undefined && candidate.targetProjectRef !== expected.projectRef) {
     errors.push("target project reference mismatch");
   }
-  if (expected.schemaFingerprint !== undefined && evidence.schemaFingerprint !== expected.schemaFingerprint) {
+  if (expected.schemaFingerprint !== undefined && candidate.schemaFingerprint !== expected.schemaFingerprint) {
     errors.push("schema fingerprint mismatch");
   }
-  if (expected.manifestDigest !== undefined && evidence.manifestDigest !== expected.manifestDigest) {
+  if (expected.manifestDigest !== undefined && candidate.manifestDigest !== expected.manifestDigest) {
     errors.push("manifest digest mismatch");
   }
-  if (expected.applicationCommit !== undefined && evidence.applicationCommit !== expected.applicationCommit) {
+  if (expected.applicationCommit !== undefined && candidate.applicationCommit !== expected.applicationCommit) {
     errors.push("application commit mismatch");
   }
-  if (expected.migrationRange !== undefined && !sameCanonical(evidence.migrationRange, expected.migrationRange)) {
+  if (expected.migrationRange !== undefined && !sameCanonical(candidate.migrationRange, expected.migrationRange)) {
     errors.push("migration range mismatch");
   }
   if (
     expected.migrationChecksums !== undefined &&
-    !sameCanonical(evidence.migrationChecksums, expected.migrationChecksums)
+    !sameCanonical(candidate.migrationChecksums, expected.migrationChecksums)
   ) {
     errors.push("migration checksums mismatch");
   }
-  if (expected.recoveryReference !== undefined && evidence.recoveryReference !== expected.recoveryReference) {
+  if (expected.recoveryReference !== undefined && candidate.recoveryReference !== expected.recoveryReference) {
     errors.push("recovery reference mismatch");
   }
+  const roles = asRecord(candidate.roles);
   for (const [role, value] of Object.entries(expected.roles ?? {})) {
-    if (evidence.roles[role as keyof ReleaseRoleAssignments] !== value) {
+    if (roles?.[role as keyof ReleaseRoleAssignments] !== value) {
       errors.push(`role mismatch: ${role}`);
     }
   }
-  if (expected.bundleDigest !== undefined && digestEvidence(evidence) !== expected.bundleDigest) {
-    errors.push("evidence bundle digest mismatch");
+  if (expected.bundleDigest !== undefined) {
+    try {
+      if (digestEvidence(candidate as ReleaseEvidence) !== expected.bundleDigest) {
+        errors.push("evidence bundle digest mismatch");
+      }
+    } catch {
+      errors.push("evidence bundle digest mismatch");
+    }
   }
   return errors;
 }
@@ -214,7 +362,9 @@ export async function persistEvidence(
   directory: string,
   filesystem: EvidenceFilesystem = defaultFilesystem,
 ) {
-  assertSanitized(evidence);
+  const parsed = parseEvidence(evidence);
+  if (!parsed.evidence) throw new Error(`invalid release evidence: ${parsed.errors.join("; ")}`);
+  evidence = parsed.evidence;
   const createdAt = new Date(evidence.createdAt);
   if (!Number.isFinite(createdAt.valueOf())) throw new Error("invalid evidence creation time");
   const digest = digestEvidence(evidence);
@@ -247,8 +397,10 @@ export async function runEvidenceCli(
   deps: EvidenceCliDeps,
 ) {
   const inputPath = evidenceInputPath(args, rootDir);
-  const input = JSON.parse(await deps.readFile(inputPath, "utf8")) as EvidenceInput;
-  const evidence = buildEvidence(input);
+  const input = JSON.parse(await deps.readFile(inputPath, "utf8"));
+  const parsed = parseEvidenceInput(input);
+  if (!parsed.input) throw new Error(`invalid evidence input: ${parsed.errors.join("; ")}`);
+  const evidence = buildEvidence(parsed.input);
   return persistEvidence(evidence, resolve(rootDir, "docs/verification/releases"), deps);
 }
 

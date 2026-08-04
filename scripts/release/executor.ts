@@ -4,8 +4,8 @@ import { tmpdir } from "node:os";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PreflightReport, ReleaseEvidence } from "./contracts";
-import { verifyEvidence } from "./evidence";
-import { digestManifest, parseReleaseManifest } from "./manifest";
+import { parseEvidence, verifyEvidence } from "./evidence";
+import { digestManifest, parseReleaseManifest, validateManifest } from "./manifest";
 import { runPreflight, type PreflightDeps } from "./preflight";
 import { runCommand, type CommandResult, type CommandRunner } from "./process";
 
@@ -16,6 +16,8 @@ export interface ExecuteInput {
   readonly evidenceDigest: string;
   readonly currentSchemaFingerprint: string;
   readonly currentManifestDigest: string;
+  readonly currentApplicationCommit: string;
+  readonly expectedCapabilities: readonly string[];
   readonly expectedMigrationRange?: ReleaseEvidence["migrationRange"];
   readonly expectedMigrationChecksums?: ReleaseEvidence["migrationChecksums"];
   readonly now: Date;
@@ -96,6 +98,7 @@ export async function executeRelease(input: ExecuteInput, deps: ExecuteDeps): Pr
       projectRef: input.projectRef,
       schemaFingerprint: input.currentSchemaFingerprint,
       manifestDigest: input.currentManifestDigest,
+      applicationCommit: input.currentApplicationCommit,
       migrationRange: input.expectedMigrationRange,
       migrationChecksums: input.expectedMigrationChecksums,
       bundleDigest: input.evidenceDigest,
@@ -103,6 +106,9 @@ export async function executeRelease(input: ExecuteInput, deps: ExecuteDeps): Pr
     input.now,
   );
   if (verificationErrors.length) throw new Error(`release evidence rejected: ${verificationErrors.join("; ")}`);
+  if (new Set(input.expectedCapabilities).size === 0) {
+    throw new Error("expected postflight capabilities are required");
+  }
 
   const dryRun = await runPush(deps, input.databaseUrl, true);
   if (!input.apply) {
@@ -127,7 +133,22 @@ export async function executeRelease(input: ExecuteInput, deps: ExecuteDeps): Pr
   if (postflight.manifestDigest !== input.currentManifestDigest) {
     throw new Error("postflight manifest digest mismatch");
   }
-  const missingCapabilities = postflight.capabilities.filter(({ status }) => status !== "present");
+  const expectedCapabilities = new Set(input.expectedCapabilities);
+  const reportedCapabilities = new Map<string, PreflightReport["capabilities"][number]>();
+  for (const capability of postflight.capabilities) {
+    if (reportedCapabilities.has(capability.name)) {
+      throw new Error("postflight capability coverage mismatch");
+    }
+    reportedCapabilities.set(capability.name, capability);
+  }
+  if (
+    reportedCapabilities.size !== expectedCapabilities.size ||
+    [...expectedCapabilities].some((name) => !reportedCapabilities.has(name)) ||
+    [...reportedCapabilities.keys()].some((name) => !expectedCapabilities.has(name))
+  ) {
+    throw new Error("postflight capability coverage mismatch");
+  }
+  const missingCapabilities = [...reportedCapabilities.values()].filter(({ status }) => status !== "present");
   if (missingCapabilities.length) {
     throw new Error(`postflight capabilities are not present: ${missingCapabilities.map(({ name }) => name).join(", ")}`);
   }
@@ -142,6 +163,7 @@ export async function executeRelease(input: ExecuteInput, deps: ExecuteDeps): Pr
 
 interface ExecutorCliDeps extends PreflightDeps {
   readonly readFile: (path: string, encoding: "utf8") => Promise<string>;
+  readonly validateManifest?: typeof validateManifest;
 }
 
 interface ExecutorCliOptions {
@@ -203,28 +225,40 @@ export async function runExecutorCli(
   const options = parseCliArgs(args);
   const databaseUrl = env.RELEASE_DATABASE_URL;
   const environmentProjectRef = env.RELEASE_PROJECT_REF;
+  const applicationCommit = env.RELEASE_APPLICATION_COMMIT ?? env.GITHUB_SHA;
   if (!databaseUrl) throw new Error("RELEASE_DATABASE_URL is required");
   if (!environmentProjectRef) throw new Error("RELEASE_PROJECT_REF is required");
+  if (!applicationCommit) throw new Error("RELEASE_APPLICATION_COMMIT is required");
+  if (!/^[a-f0-9]{40}$/i.test(applicationCommit)) {
+    throw new Error("RELEASE_APPLICATION_COMMIT must be a full commit SHA");
+  }
   if (options.projectRef !== environmentProjectRef) throw new Error("project reference does not match RELEASE_PROJECT_REF");
 
   const bundlePath = approvedBundlePath(rootDir, options.bundlePath);
   const manifest = parseReleaseManifest(
     JSON.parse(await deps.readFile(resolve(rootDir, "supabase/release-manifest.json"), "utf8")),
   );
+  const manifestErrors = await (deps.validateManifest ?? validateManifest)(manifest, rootDir);
+  if (manifestErrors.length) throw new Error(`release manifest rejected: ${manifestErrors.join("; ")}`);
   const manifestDigest = digestManifest(manifest);
   const expectedMigrationRange = {
     from: manifest.migrations[0]?.version ?? "",
     to: manifest.migrations.at(-1)?.version ?? "",
   };
   const expectedMigrationChecksums = manifest.migrations.map(({ version, sha256 }) => ({ version, sha256 }));
-  const evidence = JSON.parse(await deps.readFile(bundlePath, "utf8")) as ReleaseEvidence;
+  const parsedEvidence = parseEvidence(JSON.parse(await deps.readFile(bundlePath, "utf8")));
+  if (!parsedEvidence.evidence) {
+    throw new Error(`release evidence rejected: ${parsedEvidence.errors.join("; ")}`);
+  }
+  const evidence = parsedEvidence.evidence;
+  const expectedCapabilities = [...new Set(manifest.migrations.flatMap((migration) => migration.capabilities))];
   const freshPreflight = () =>
     runPreflight(
       {
         databaseUrl,
         projectRef: environmentProjectRef,
         manifestDigest,
-        expectedCapabilities: [...new Set(manifest.migrations.flatMap((migration) => migration.capabilities))],
+        expectedCapabilities,
         now: new Date(),
       },
       deps,
@@ -238,6 +272,8 @@ export async function runExecutorCli(
       evidenceDigest: options.bundleDigest,
       currentSchemaFingerprint: currentPreflight.schemaFingerprint,
       currentManifestDigest: currentPreflight.manifestDigest,
+      currentApplicationCommit: applicationCommit.toLowerCase(),
+      expectedCapabilities,
       expectedMigrationRange,
       expectedMigrationChecksums,
       now: new Date(),

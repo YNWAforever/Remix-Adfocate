@@ -42,3 +42,5 @@ jobs:
           --apply
         env:
           RELEASE_DATABASE_URL: "${{ secrets.SUPABASE_DB_URL }}"
+          RELEASE_PROJECT_REF: "${{ vars.SUPABASE_PROJECT_REF }}"
+          RELEASE_APPLICATION_COMMIT: "${{ github.sha }}"
