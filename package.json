@@ -20,7 +20,9 @@
     "test:release-workflow": "vitest run scripts/release/supabase-workflow-contract.test.ts",
     "release:manifest:write": "vite-node --script scripts/release/manifest-cli.ts write",
     "release:manifest:check": "vite-node --script scripts/release/manifest-cli.ts check",
-    "release:preflight": "vite-node --script scripts/release/preflight.ts"
+    "release:preflight": "vite-node --script scripts/release/preflight.ts",
+    "release:evidence": "vite-node scripts/release/evidence.ts",
+    "release:execute": "vite-node scripts/release/executor.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",

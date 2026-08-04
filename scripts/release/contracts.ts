@@ -82,3 +82,49 @@ export interface RehearsalReport {
   readonly commands: readonly RehearsalCommandReport[];
   readonly createdAt: string;
 }
+
+export interface ReleaseMigrationRange {
+  readonly from: string;
+  readonly to: string;
+}
+
+export interface ReleaseMigrationChecksum {
+  readonly version: string;
+  readonly sha256: string;
+}
+
+export interface ReleaseRoleAssignments {
+  readonly executor: string;
+  readonly observer: string;
+  readonly containmentOwner: string;
+  readonly productOwner: string;
+  readonly approver: string;
+}
+
+export interface ReleaseTestResult {
+  readonly gate: string;
+  readonly status: "passed" | "failed" | "skipped";
+  readonly evidenceHash: string;
+}
+
+export interface ReleaseEvidence {
+  readonly schemaVersion: 1;
+  readonly targetProjectRef: string;
+  readonly schemaFingerprint: string;
+  readonly manifestDigest: string;
+  readonly preflightHash: string;
+  readonly rehearsalHash: string;
+  readonly applicationCommit: string;
+  readonly migrationRange: ReleaseMigrationRange;
+  readonly migrationChecksums: readonly ReleaseMigrationChecksum[];
+  readonly recoveryReference: string;
+  readonly roles: ReleaseRoleAssignments;
+  readonly testResults: readonly ReleaseTestResult[];
+  readonly proposedProductionCommands: readonly string[];
+  readonly containmentCommands: readonly string[];
+  readonly warnings: readonly string[];
+  readonly skippedChecks: readonly string[];
+  readonly createdAt: string;
+  readonly expiresAt: string;
+  readonly contentDigest: string;
+}
