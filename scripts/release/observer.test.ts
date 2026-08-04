@@ -139,6 +139,8 @@ describe("pilot observer and seven-day exit", () => {
         requestErrorClusters: 0,
         databaseErrorClusters: 0,
         queueHealthy: true,
+        notificationQueueHealthy: true,
+        retryQueueHealthy: true,
       },
     });
     expect(observation.submissionCount).toBe(1);
