@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "node scripts/run-integration-tests.mjs",
+    "test:legacy-integration": "vitest run --no-file-parallelism server/test/missions.test.ts",
     "test:active-missions": "vitest run --no-file-parallelism server/test/run-integration-tests.test.ts server/test/active-mission-schema.test.ts server/test/active-missions.test.ts server/test/reward-contracts.test.ts server/test/reward-handoffs.test.ts server/test/admin-reward-handoffs.test.ts server/test/notifications-triggers.test.ts src/lib/activationAnalytics.test.ts src/lib/activeMission.test.ts src/lib/adminRewardHandoff.test.ts src/lib/queries/activeMission.test.tsx src/components/active-mission/active-mission.test.tsx src/components/active-mission/RewardPendingCard.test.tsx src/components/admin/ActiveMissionReview.test.tsx src/components/admin/MissionCompletionReview.test.tsx src/components/admin/RewardHandoffQueue.test.tsx src/routes/-_app.my.$submissionId.test.tsx src/routes/-admin.active-missions.test.tsx src/routes/-admin.reward-handoffs.test.tsx",
     "ingest:kb": "vite-node scripts/ingest-kb.ts",
     "seed:publication-proof-acceptance": "vite-node scripts/seed-publication-proof-acceptance.ts",

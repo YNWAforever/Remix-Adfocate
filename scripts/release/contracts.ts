@@ -40,3 +40,45 @@ export interface PreflightReport {
   readonly warnings: readonly string[];
   readonly createdAt: string;
 }
+
+export interface RehearsalTarget {
+  readonly ref: string;
+  readonly databaseUrl: string;
+}
+
+export interface RehearsalShapedTarget extends RehearsalTarget {
+  readonly apiUrl: string;
+  readonly anonKey: string;
+  readonly serviceKey: string;
+}
+
+export interface RehearsalProductionTarget extends RehearsalTarget {
+  readonly schemaFingerprint: string;
+}
+
+export interface RehearsalInput {
+  readonly emptyTarget: RehearsalTarget;
+  readonly shapedTarget: RehearsalShapedTarget;
+  readonly production: RehearsalProductionTarget;
+  readonly manifestDigest: string;
+  readonly expectedCapabilities?: readonly string[];
+  readonly now: Date;
+}
+
+export interface RehearsalCommandReport {
+  readonly label: string;
+  readonly code: 0;
+  readonly stdoutHash: string;
+  readonly stderrHash: string;
+}
+
+export interface RehearsalReport {
+  readonly schemaVersion: 1;
+  readonly status: "passed";
+  readonly manifestDigest: string;
+  readonly productionSchemaFingerprint: string;
+  readonly emptySchemaFingerprint: string;
+  readonly shapedSchemaFingerprint: string;
+  readonly commands: readonly RehearsalCommandReport[];
+  readonly createdAt: string;
+}
