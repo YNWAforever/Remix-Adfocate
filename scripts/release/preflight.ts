@@ -74,13 +74,19 @@ function grantValidator(role: string, schemaName: string, object: string, privil
 
   const argumentsPattern = privilege
     .split(",")
-    .map((argument) => escapeRegExp(argument))
+    .map((argument) => {
+      const qualifiedType = "(?:pg_catalog\\s*\\.\\s*)?";
+      if (argument === "timestamptz") {
+        return `${qualifiedType}(?:timestamptz|timestamp\\s+with\\s+time\\s+zone)`;
+      }
+      return `${qualifiedType}${escapeRegExp(argument)}`;
+    })
     .join("\\s*,\\s*");
   return (schema: string) =>
     presentIf(
       statementMatches(
         schema,
-        `GRANT\\s+EXECUTE\\s+ON FUNCTION\\s+${target}\\s*\\(${argumentsPattern}\\)\\s+TO\\s+${grantee}`,
+        `GRANT\\s+(?:EXECUTE|ALL(?:\\s+PRIVILEGES)?)\\s+ON FUNCTION\\s+${target}\\s*\\(${argumentsPattern}\\)\\s+TO\\s+${grantee}`,
       ),
     );
 }
@@ -198,7 +204,7 @@ const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> 
       : `${identifier(schemaName)}\\s*\\.\\s*(?:[a-z][a-z0-9_]*|"[a-z][a-z0-9_]*")`;
     return (schema) =>
       presentIf(
-        statementMatches(schema, `CREATE TRIGGER\\s+${trigger}[\\s\\S]*?\\sON\\s+${target}`),
+        statementMatches(schema, `CREATE TRIGGER\\s+${trigger}[^;]*?\\sON\\s+${target}`),
       );
   },
 };

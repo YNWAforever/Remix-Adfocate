@@ -1,24 +1,33 @@
 import { EventEmitter } from "node:events";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { commandFileFor, createCommandRunner } from "./process";
+import { commandInvocationFor, createCommandRunner } from "./process";
 
 describe("release command runner", () => {
-  it("uses the Windows npx command shim while preserving shell:false", async () => {
+  it("executes npm's npx CLI through Node on Windows while preserving shell:false", async () => {
     const child = Object.assign(new EventEmitter(), {
       stdout: new EventEmitter(),
       stderr: new EventEmitter(),
     });
     const spawn = vi.fn().mockReturnValue(child);
-    const run = createCommandRunner(spawn, "win32");
+    const run = createCommandRunner(spawn, "win32", "C:/node/node.exe");
     const result = run("npx", ["supabase", "migration", "list"]);
 
     child.emit("close", 0);
 
     await expect(result).resolves.toEqual({ code: 0, stdout: "", stderr: "" });
-    expect(commandFileFor("npx", "win32")).toBe("npx.cmd");
+    expect(commandInvocationFor("npx", ["supabase"], "win32", "C:/node/node.exe")).toEqual({
+      file: "C:/node/node.exe",
+      args: [join("C:/node", "node_modules", "npm", "bin", "npx-cli.js"), "supabase"],
+    });
     expect(spawn).toHaveBeenCalledWith(
-      "npx.cmd",
-      ["supabase", "migration", "list"],
+      "C:/node/node.exe",
+      [
+        join("C:/node", "node_modules", "npm", "bin", "npx-cli.js"),
+        "supabase",
+        "migration",
+        "list",
+      ],
       expect.objectContaining({ shell: false, windowsHide: true }),
     );
   });

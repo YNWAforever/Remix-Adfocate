@@ -106,6 +106,31 @@ describe("release preflight", () => {
     ]);
   });
 
+  it("does not let a trigger match across statements to a later target relation", async () => {
+    const report = await runPreflight(
+      {
+        databaseUrl: "postgresql://secret",
+        projectRef: "project-ref",
+        manifestDigest: "a".repeat(64),
+        expectedCapabilities: ["trigger:public.example.example_trigger"],
+        now: new Date(),
+      },
+      {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn().mockResolvedValue([
+          "CREATE TRIGGER example_trigger BEFORE INSERT ON public.other FOR EACH ROW EXECUTE FUNCTION public.example_function();",
+          "CREATE INDEX later_example_index ON public.example (id);",
+        ].join("\n")),
+        rm: vi.fn().mockResolvedValue(undefined),
+        tempFile: () => "C:/temp/schema.sql",
+      },
+    );
+
+    expect(report.capabilities).toEqual([
+      { name: "trigger:public.example.example_trigger", status: "absent" },
+    ]);
+  });
+
   it("redacts a rejected command runner error before rethrowing it", async () => {
     const rejected = Object.assign(new Error("spawn npx postgresql://secret failed"), {
       spawnargs: ["supabase", "migration", "list", "--db-url", "postgresql://secret"],
@@ -127,6 +152,34 @@ describe("release preflight", () => {
         },
       ),
     ).rejects.toThrow("command execution failed: spawn npx [REDACTED] failed");
+  });
+
+  it("accepts pg_dump function grant formatting without broadening table grants", async () => {
+    const report = await runPreflight(
+      {
+        databaseUrl: "postgresql://secret",
+        projectRef: "project-ref",
+        manifestDigest: "a".repeat(64),
+        expectedCapabilities: [
+          "grant:authenticated.public.example_function(uuid,timestamptz)",
+          "grant:authenticated.public.example(all)",
+          "grant:authenticated.public.example(select)",
+        ],
+        now: new Date(),
+      },
+      {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn().mockResolvedValue([
+          "GRANT ALL PRIVILEGES ON FUNCTION public.example_function(pg_catalog.uuid, timestamp with time zone) TO authenticated;",
+          "GRANT ALL ON TABLE public.example TO authenticated;",
+          "GRANT SELECT ON TABLE public.example TO authenticated;",
+        ].join("\n")),
+        rm: vi.fn().mockResolvedValue(undefined),
+        tempFile: () => "C:/temp/schema.sql",
+      },
+    );
+
+    expect(report.capabilities.every((capability) => capability.status === "present")).toBe(true);
   });
 
   it("uses only migration list, dry-run, and schema dump without reporting the URL", async () => {

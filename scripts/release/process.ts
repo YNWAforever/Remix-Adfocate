@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { dirname, join } from "node:path";
 
 export interface CommandResult {
   readonly code: number;
@@ -25,17 +26,33 @@ type SpawnCommand = (
   options: { cwd?: string; env?: NodeJS.ProcessEnv; shell: false; windowsHide: true },
 ) => SpawnedCommand;
 
-export function commandFileFor(file: string, platform = process.platform) {
-  return file === "npx" && platform === "win32" ? "npx.cmd" : file;
+export function commandInvocationFor(
+  file: string,
+  args: readonly string[],
+  platform = process.platform,
+  nodeExecutable = process.execPath,
+) {
+  if (file === "npx" && platform === "win32") {
+    return {
+      file: nodeExecutable,
+      args: [
+        join(dirname(nodeExecutable), "node_modules", "npm", "bin", "npx-cli.js"),
+        ...args,
+      ],
+    };
+  }
+  return { file, args: [...args] };
 }
 
 export function createCommandRunner(
   spawnCommand: SpawnCommand,
   platform = process.platform,
+  nodeExecutable = process.execPath,
 ): CommandRunner {
   return (file, args, options = {}) =>
     new Promise((resolve, reject) => {
-      const child = spawnCommand(commandFileFor(file, platform), args, {
+      const invocation = commandInvocationFor(file, args, platform, nodeExecutable);
+      const child = spawnCommand(invocation.file, invocation.args, {
         cwd: options.cwd,
         env: options.env,
         shell: false,
