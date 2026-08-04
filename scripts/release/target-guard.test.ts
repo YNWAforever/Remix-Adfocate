@@ -31,4 +31,26 @@ describe("rehearsal target guard", () => {
       productionDatabaseUrl: "postgresql://production/db",
     })).toThrow("production database URL");
   });
+
+  it("normalizes postgres URLs and project refs before comparing them", () => {
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetRef: " Rehearsal-Ref ",
+      productionRef: "rehearsal-ref",
+    })).toThrow("production project reference");
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: "postgres://operator:secret@PRODUCTION:5432/db/?source=test#fragment",
+      productionDatabaseUrl: "postgresql://production/db",
+    })).toThrow("production database URL");
+  });
+
+  it("requires a full disposable token and rejects malformed database URLs", () => {
+    for (const targetRef of ["contest-prod", "locality-prod"]) {
+      expect(() => assertDisposableTarget({ ...base, targetRef }))
+        .toThrow("disposable target");
+    }
+    expect(() => assertDisposableTarget({ ...base, targetDatabaseUrl: "not-a-url" }))
+      .toThrow("database URL");
+  });
 });

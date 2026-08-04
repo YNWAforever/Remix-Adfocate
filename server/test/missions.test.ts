@@ -19,6 +19,19 @@ import {
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 
+function activeWorkspaceDbCasesEnabled(env: NodeJS.ProcessEnv) {
+  return env.LEGACY_ONLY !== "1";
+}
+
+const activeWorkspaceDbIt = activeWorkspaceDbCasesEnabled(process.env) ? it : it.skip;
+
+describe("legacy rehearsal test selection", () => {
+  it("skips active-workspace database cases only for the pre-expansion legacy gate", () => {
+    expect(activeWorkspaceDbCasesEnabled({ LEGACY_ONLY: "1" })).toBe(false);
+    expect(activeWorkspaceDbCasesEnabled({})).toBe(true);
+  });
+});
+
 function req(path: string, jwt: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {
     ...init,
@@ -311,7 +324,7 @@ suite("mission join", () => {
     expect(res.status).toBe(404);
   });
 
-  it("creates one workflow for an active-workspace direct join", async () => {
+  activeWorkspaceDbIt("creates one workflow for an active-workspace direct join", async () => {
     const active = await seedActiveMission({
       email: "active-route-join@test.local",
       slug: "test-active-route-join",
@@ -397,7 +410,7 @@ suite("mission submit", () => {
     expect((await res.json()).code).toBe("wrong_state");
   });
 
-  it("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
+  activeWorkspaceDbIt("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
     const active = await seedActiveMission({
       email: "active-route-submit@test.local",
       slug: "test-active-route-submit",

@@ -16,6 +16,7 @@ const baseInput = {
     schemaFingerprint: "prod-shape",
   },
   manifestDigest: "a".repeat(64),
+  expectedCapabilities: ["table:public.mission_workflows"],
   now: new Date("2026-08-01T00:00:00Z"),
 };
 
@@ -25,13 +26,13 @@ describe("release rehearsal", () => {
       .mockResolvedValueOnce({ schemaFingerprint: "prod-shape" })
       .mockResolvedValueOnce({
         schemaFingerprint: "empty-expanded-shape",
-        capabilities: [{ status: "present" }],
+        capabilities: [{ name: "table:public.mission_workflows", status: "present" }],
       })
       .mockResolvedValueOnce({
         schemaFingerprint: "expanded-shape",
-        capabilities: [{ status: "present" }],
+        capabilities: [{ name: "table:public.mission_workflows", status: "present" }],
       });
-    const run = vi.fn().mockResolvedValue({ code: 0, stdout: "pass", stderr: "" });
+    const run = vi.fn().mockResolvedValue({ code: 0, stdout: "No pending migrations", stderr: "" });
 
     const report = await runRehearsal(baseInput, { run, preflight });
 
@@ -51,7 +52,9 @@ describe("release rehearsal", () => {
       SUPABASE_URL: "http://127.0.0.1:54321",
       SUPABASE_ANON_KEY: "disposable-anon-key",
       SUPABASE_SERVICE_KEY: "disposable-service-key",
+      LEGACY_ONLY: "1",
     });
+    expect(run.mock.calls[7]?.[2]?.env?.LEGACY_ONLY).toBeUndefined();
     expect(report.status).toBe("passed");
     expect(JSON.stringify(report)).not.toContain("disposable-anon-key");
     expect(JSON.stringify(report)).not.toContain("disposable-service-key");
@@ -70,6 +73,24 @@ describe("release rehearsal", () => {
     expect(preflight).not.toHaveBeenCalled();
   });
 
+  it("rejects an IPv6 loopback API because the integration runner does not accept it", async () => {
+    await expect(runRehearsal({
+      ...baseInput,
+      shapedTarget: { ...baseInput.shapedTarget, apiUrl: "http://[::1]:54321" },
+    }, { run: vi.fn(), preflight: vi.fn() })).rejects.toThrow("loopback HTTP(S) URL");
+  });
+
+  it("fails closed before process execution without declared capabilities", async () => {
+    const run = vi.fn();
+    const preflight = vi.fn();
+
+    await expect(runRehearsal({ ...baseInput, expectedCapabilities: [] }, { run, preflight }))
+      .rejects.toThrow("declared capabilities");
+
+    expect(run).not.toHaveBeenCalled();
+    expect(preflight).not.toHaveBeenCalled();
+  });
+
   it("does not write a shaped target when its preflight fingerprint drifts", async () => {
     const run = vi.fn();
     const preflight = vi.fn().mockResolvedValue({ schemaFingerprint: "unexpected-shape" });
@@ -81,7 +102,7 @@ describe("release rehearsal", () => {
   });
 
   it("requires every empty-target capability before shaped-target commands", async () => {
-    const run = vi.fn().mockResolvedValue({ code: 0, stdout: "pass", stderr: "" });
+    const run = vi.fn().mockResolvedValue({ code: 0, stdout: "No pending migrations", stderr: "" });
     const preflight = vi.fn()
       .mockResolvedValueOnce({ schemaFingerprint: "prod-shape" })
       .mockResolvedValueOnce({
@@ -96,5 +117,44 @@ describe("release rehearsal", () => {
       "run test:legacy-integration",
       "supabase db reset --db-url postgresql://empty/db --no-seed",
     ]);
+  });
+
+  it("requires every declared capability after shaped-target replay", async () => {
+    const run = vi.fn().mockResolvedValue({ code: 0, stdout: "No pending migrations", stderr: "" });
+    const preflight = vi.fn()
+      .mockResolvedValueOnce({ schemaFingerprint: "prod-shape" })
+      .mockResolvedValueOnce({
+        schemaFingerprint: "empty-expanded-shape",
+        capabilities: [{ name: "table:public.mission_workflows", status: "present" }],
+      })
+      .mockResolvedValueOnce({
+        schemaFingerprint: "expanded-shape",
+        capabilities: [{ name: "table:public.mission_workflows", status: "absent" }],
+      });
+
+    await expect(runRehearsal(baseInput, { run, preflight }))
+      .rejects.toThrow("shaped target missing required capabilities");
+  });
+
+  it.each([
+    ["pass"],
+    ["would be applied: 20260731100000_reward_handoff_schema.sql"],
+  ])("rejects replay output that does not prove a clean migration history: %s", async (replayOutput) => {
+    const run = vi.fn()
+      .mockResolvedValueOnce({ code: 0, stdout: "irrelevant", stderr: "" })
+      .mockResolvedValueOnce({ code: 0, stdout: "irrelevant", stderr: "" })
+      .mockResolvedValueOnce({ code: 0, stdout: "irrelevant", stderr: "" })
+      .mockResolvedValueOnce({ code: 0, stdout: "irrelevant", stderr: "" })
+      .mockResolvedValueOnce({ code: 0, stdout: replayOutput, stderr: "" });
+    const preflight = vi.fn()
+      .mockResolvedValueOnce({ schemaFingerprint: "prod-shape" })
+      .mockResolvedValueOnce({
+        schemaFingerprint: "empty-expanded-shape",
+        capabilities: [{ name: "table:public.mission_workflows", status: "present" }],
+      });
+
+    await expect(runRehearsal(baseInput, { run, preflight }))
+      .rejects.toThrow("did not prove no pending migrations");
+    expect(run).toHaveBeenCalledTimes(5);
   });
 });

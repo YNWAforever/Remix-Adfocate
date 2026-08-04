@@ -61,7 +61,7 @@ export interface RehearsalInput {
   readonly shapedTarget: RehearsalShapedTarget;
   readonly production: RehearsalProductionTarget;
   readonly manifestDigest: string;
-  readonly expectedCapabilities?: readonly string[];
+  readonly expectedCapabilities: readonly string[];
   readonly now: Date;
 }
 
