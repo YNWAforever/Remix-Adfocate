@@ -21,6 +21,7 @@ export interface ContainmentResult {
   readonly passed: boolean;
   readonly drillPassed?: boolean;
   readonly thresholds?: PilotObservationThresholds;
+  readonly approvedEvidence?: { readonly thresholds?: PilotObservationThresholds };
 }
 
 export type PilotExitObservation = Pick<PilotObservation, "observedAt"> & Partial<PilotObservation> & Record<string, unknown>;
@@ -256,7 +257,9 @@ export function evaluatePilotExit(
   if (containReasons.length) return { decision: "contain", reasons: containReasons };
 
   const reasons: string[] = [];
-  const approvedThresholds = containment.thresholds ?? observations.find((item) => item.thresholds)?.thresholds;
+  const approvedThresholds = containment.thresholds
+    ?? containment.approvedEvidence?.thresholds
+    ?? observations.find((item) => item.thresholds)?.thresholds;
   if (!approvedThresholds || REQUIRED_THRESHOLD_KEYS.some((key) => typeof approvedThresholds[key] !== "number" || !Number.isFinite(approvedThresholds[key]))) {
     reasons.push("approved observation thresholds are missing");
   }
