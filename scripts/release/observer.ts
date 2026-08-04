@@ -207,6 +207,7 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
   const handoffs = pendingRewards.filter((row) => text(row.mission_id ?? row.missionId) === missionId && (text(row.status) === "pending" || text(row.status) === "cancelled" || row.status === undefined));
   const events = eventRows.filter((row) => workflowIds.has(text(row.mission_workflow_id)) || workItemIds.has(text(row.mission_work_item_id)));
   const scopedIds = new Set([
+    missionId,
     ...submissionIds,
     ...workflowIds,
     ...workItemIds,
