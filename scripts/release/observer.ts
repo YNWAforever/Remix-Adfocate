@@ -58,7 +58,12 @@ function scoped(rows: readonly Row[], workspaceId: string, missionId: string) {
 }
 
 async function queryRows(client: ObserverClient, table: string, workspaceId: string, missionId: string) {
-  const direct = client[table];
+  const aliases: Record<string, string> = {
+    missions: "mission",
+    mission_submissions: "submissions",
+    mission_workflows: "workflows",
+  };
+  const direct = client[table] ?? client[aliases[table] ?? ""];
   if (Array.isArray(direct)) return scoped(asRows(direct), workspaceId, missionId);
   if (direct && typeof direct === "object" && "data" in direct) return scoped(asRows((direct as { data?: unknown }).data), workspaceId, missionId);
   if (typeof client.from !== "function") return [];
@@ -105,6 +110,16 @@ function movement(value: unknown): PilotObservationFinancialMovement {
     cash: amount(raw.cash ?? raw.cash_amount ?? raw.cashMovement),
     xp: amount(raw.xp ?? raw.xp_amount ?? raw.xpMovement),
     ledgerRows: amount(raw.ledgerRows ?? raw.ledger_rows),
+  };
+}
+
+function movementDelta(before: Record<string, number> | undefined, after: Record<string, number> | undefined) {
+  if (!before || !after) return movement(undefined);
+  return {
+    points: amount((after.points ?? after.points_amount ?? 0) - (before.points ?? before.points_amount ?? 0)),
+    cash: amount((after.cash ?? after.cash_amount ?? 0) - (before.cash ?? before.cash_amount ?? 0)),
+    xp: amount((after.xp ?? after.xp_amount ?? 0) - (before.xp ?? before.xp_amount ?? 0)),
+    ledgerRows: amount((after.ledgerRows ?? after.ledger_rows ?? 0) - (before.ledgerRows ?? before.ledger_rows ?? 0)),
   };
 }
 
@@ -157,9 +172,11 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
   const error5xx = allErrors.filter((row) => count(row.status_code ?? row.statusCode) >= 500).length;
   const requestClusters = new Set(requestErrors.map((row) => text(row.cluster_id ?? row.route ?? row.message)).filter(Boolean)).size;
   const dbClusters = new Set(databaseErrors.map((row) => text(row.cluster_id ?? row.database_cluster ?? row.message)).filter(Boolean)).size;
-  const observedMovement = movement(snapshot.financialMovement ?? client.financialMovement);
   const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? input.financialSnapshotBefore ?? client.rewardSnapshotBefore);
   const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? input.financialSnapshotAfter ?? client.rewardSnapshotAfter);
+  const observedMovement = snapshot.financialMovement !== undefined || client.financialMovement !== undefined
+    ? movement(snapshot.financialMovement ?? client.financialMovement)
+    : movementDelta(snapshotBefore, snapshotAfter);
   const queueHealthy = snapshot.queueHealthy !== false
     && snapshot.notificationQueueHealthy !== false
     && snapshot.retryQueueHealthy !== false;

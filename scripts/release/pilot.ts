@@ -73,7 +73,8 @@ async function runQuery(query: unknown): Promise<QueryResult> {
 }
 
 async function rowsFrom(client: PilotClient, table: string, filters: Record<string, unknown>) {
-  const direct = client[table];
+  const alias = table === "missions" ? "mission" : table === "mission_submissions" ? "submissions" : table === "mission_workflows" ? "workflows" : undefined;
+  const direct = client[table] ?? (alias ? client[alias] : undefined);
   if (Array.isArray(direct)) {
     return asRows(direct).filter((row) => Object.entries(filters).every(([key, value]) => row[key] === value));
   }
@@ -95,7 +96,8 @@ async function rowsFrom(client: PilotClient, table: string, filters: Record<stri
 }
 
 async function oneFrom(client: PilotClient, table: string, filters: Record<string, unknown>) {
-  const direct = client[table];
+  const alias = table === "missions" ? "mission" : undefined;
+  const direct = client[table] ?? (alias ? client[alias] : undefined);
   if (direct && typeof direct === "object" && !Array.isArray(direct)) {
     const row = direct as Row;
     if (Object.entries(filters).every(([key, value]) => row[key] === value)) return row;
