@@ -370,7 +370,7 @@ function completenessReasons(observation: PilotExitObservation, index: number, s
     const value = observation[key];
     if (typeof value !== "number" || !Number.isFinite(value) || value < 0) reasons.push(`${prefix} ${key} is missing, invalid, or negative`);
   }
-  if (typeof observation.completedCreatorCount !== "number" || !Number.isFinite(observation.completedCreatorCount)) reasons.push(`${prefix} completed creator count is missing or invalid`);
+  if (typeof observation.completedCreatorCount !== "number" || !Number.isFinite(observation.completedCreatorCount) || observation.completedCreatorCount < 0) reasons.push(`${prefix} completed creator count is missing, invalid, or negative`);
   if (typeof observation.queueHealthy !== "boolean") reasons.push(`${prefix} queue health is missing`);
   if (observation.telemetryAvailable !== true) reasons.push(`${prefix} operational telemetry is unavailable`);
   if (observation.telemetryAvailable === true) {

@@ -264,6 +264,7 @@ describe("pilot observer and seven-day exit", () => {
     };
     const cases: readonly [Record<string, unknown>, string][] = [
       [{ maxQueueAgeSeconds: -1 }, "observation 1 maxQueueAgeSeconds is missing, invalid, or negative"],
+      [{ completedCreatorCount: -1 }, "observation 1 completed creator count is missing, invalid, or negative"],
       [{ queueOverdue: "false" }, "observation 1 queueOverdue is missing or invalid"],
       [{ notificationQueueHealthy: null }, "observation 1 notificationQueueHealthy is missing or invalid"],
       [{ retryQueueHealthy: "yes" }, "observation 1 retryQueueHealthy is missing or invalid"],
