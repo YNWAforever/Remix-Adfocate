@@ -43,6 +43,10 @@ function count(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0;
 }
 
+function amount(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
 function scoped(rows: readonly Row[], workspaceId: string, missionId: string) {
   return rows.filter((row) => {
     const rowMission = row.mission_id ?? row.missionId;
@@ -66,9 +70,11 @@ async function queryRows(client: ObserverClient, table: string, workspaceId: str
       builder = eq.call(builder, "mission_id", missionId);
     }
     const result = await Promise.resolve(builder as unknown as PromiseLike<QueryResult>);
+    if (result.error) throw new Error(`pilot observation read failed: ${table}`);
     return scoped(asRows(result.data), workspaceId, missionId);
-  } catch {
-    return [];
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("pilot observation read failed:")) throw error;
+    throw new Error(`pilot observation read failed: ${table}`);
   }
 }
 
@@ -94,10 +100,10 @@ function numericRecord(value: unknown): Record<string, number> | undefined {
 function movement(value: unknown): PilotObservationFinancialMovement {
   const raw = value && typeof value === "object" && !Array.isArray(value) ? value as Row : {};
   return {
-    points: count(raw.points ?? raw.points_amount ?? raw.pointsMovement),
-    cash: count(raw.cash ?? raw.cash_amount ?? raw.cashMovement),
-    xp: count(raw.xp ?? raw.xp_amount ?? raw.xpMovement),
-    ledgerRows: count(raw.ledgerRows ?? raw.ledger_rows),
+    points: amount(raw.points ?? raw.points_amount ?? raw.pointsMovement),
+    cash: amount(raw.cash ?? raw.cash_amount ?? raw.cashMovement),
+    xp: amount(raw.xp ?? raw.xp_amount ?? raw.xpMovement),
+    ledgerRows: amount(raw.ledgerRows ?? raw.ledger_rows),
   };
 }
 
@@ -120,7 +126,7 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
       : new Date().toISOString();
   const snapshot = { ...directSnapshot(client), ...(input.snapshot ?? {}) };
 
-  const [workflows, submissions, proofAttempts, completionDecisions, handoffs, notifications, errors] = await Promise.all([
+  const [workflows, submissions, proofAttempts, completionDecisions, handoffs, notifications, errors, requestErrors, databaseErrors] = await Promise.all([
     queryRows(client, "mission_workflows", workspaceId, missionId),
     queryRows(client, "mission_submissions", workspaceId, missionId),
     queryRows(client, "mission_proof_attempts", workspaceId, missionId),
@@ -128,10 +134,17 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     queryRows(client, "mission_reward_handoffs", workspaceId, missionId),
     queryRows(client, "notification_deliveries", workspaceId, missionId),
     queryRows(client, "runtime_errors", workspaceId, missionId),
+    queryRows(client, "request_errors", workspaceId, missionId),
+    queryRows(client, "database_errors", workspaceId, missionId),
   ]);
-  const pending = workflows.filter((row) => row.state === "reward_pending").length
-    + handoffs.filter((row) => row.status === "pending" || row.state === "reward_pending").length;
-  const completed = workflows.filter((row) => ["completed", "reward_pending", "proof_verified"].includes(text(row.state))).length;
+  const pending = Math.max(
+    workflows.filter((row) => row.state === "reward_pending").length,
+    handoffs.filter((row) => row.status === "pending" || row.state === "reward_pending").length,
+  );
+  const completed = Math.max(
+    workflows.filter((row) => ["completed", "reward_pending", "proof_verified"].includes(text(row.state))).length,
+    completionDecisions.filter((row) => ["completed", "approved", "accepted"].includes(text(row.state ?? row.status))).length,
+  );
   const creatorIds = new Set([...workflows, ...submissions].map((row) => text(row.creator_id ?? row.creatorId)).filter(Boolean));
   const workflowHashes = workflows
     .map((row) => text(row.id ?? row.workflow_id ?? row.workflowId))
@@ -139,8 +152,10 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     .map((id) => hashOpaque(id));
   const deadLetters = notifications.filter((row) => ["dead_letter", "dead-letter", "failed"].includes(text(row.status))).length;
   const retries = notifications.reduce((sum, row) => sum + count(row.retry_count ?? row.retries), 0);
-  const error5xx = errors.filter((row) => count(row.status_code ?? row.statusCode) >= 500).length;
-  const dbClusters = new Set(errors.map((row) => text(row.cluster_id ?? row.database_cluster ?? row.message)).filter(Boolean)).size;
+  const allErrors = [...errors, ...requestErrors, ...databaseErrors];
+  const error5xx = allErrors.filter((row) => count(row.status_code ?? row.statusCode) >= 500).length;
+  const requestClusters = new Set(requestErrors.map((row) => text(row.cluster_id ?? row.route ?? row.message)).filter(Boolean)).size;
+  const dbClusters = new Set(databaseErrors.map((row) => text(row.cluster_id ?? row.database_cluster ?? row.message)).filter(Boolean)).size;
   const observedMovement = movement(snapshot.financialMovement ?? client.financialMovement);
   const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? client.rewardSnapshotBefore);
   const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? client.rewardSnapshotAfter);
@@ -172,10 +187,14 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     reviewLatencySeconds: valueOrSnapshot(snapshot, "reviewLatencySeconds", 0),
     overdueItems: valueOrSnapshot(snapshot, "overdueItems", 0),
     unexpected5xx: valueOrSnapshot(snapshot, "unexpected5xx", error5xx),
+    requestErrorClusters: valueOrSnapshot(snapshot, "requestErrorClusters", requestClusters),
     databaseErrorClusters: valueOrSnapshot(snapshot, "databaseErrorClusters", dbClusters),
     financialMovement: observedMovement,
     queueHealthy,
-    ...(input.thresholds ? { thresholds: input.thresholds } : {}),
+    ...(snapshot.queueOverdue !== undefined ? { queueOverdue: snapshot.queueOverdue === true } : {}),
+    ...(input.thresholds || (snapshot.thresholds && typeof snapshot.thresholds === "object")
+      ? { thresholds: input.thresholds ?? snapshot.thresholds as PilotObservationThresholds }
+      : {}),
     ...(snapshotBefore ? { rewardSnapshotBefore: snapshotBefore } : {}),
     ...(snapshotAfter ? { rewardSnapshotAfter: snapshotAfter } : {}),
   };
@@ -238,6 +257,7 @@ export function evaluatePilotExit(
   if (maxMetric(observations, "unexpected5xx") > threshold(observations, "maxUnexpected5xx", 0)) reasons.push("new unexpected 5xx detected");
   if (maxMetric(observations, "databaseErrorClusters") > threshold(observations, "maxDatabaseErrorClusters", 0)) reasons.push("new database error cluster detected");
   if (observations.some((item) => item.queueHealthy === false)) reasons.push("retry queues are unhealthy");
+  if (observations.some((item) => item.queueOverdue === true)) reasons.push("retry queue is over age threshold");
   if (maxMetric(observations, "notificationDeadLetters") > threshold(observations, "maxNotificationDeadLetters", 0)) reasons.push("notification dead letters detected");
   if (maxMetric(observations, "maxQueueAgeSeconds") > threshold(observations, "maxQueueAgeSeconds", Number.POSITIVE_INFINITY)) reasons.push("retry queue is over age threshold");
   if (maxMetric(observations, "reviewLatencySeconds") > threshold(observations, "maxReviewLatencySeconds", Number.POSITIVE_INFINITY)) reasons.push("review latency is over threshold");

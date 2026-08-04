@@ -252,9 +252,11 @@ export interface PilotObservation {
   readonly reviewLatencySeconds: number;
   readonly overdueItems: number;
   readonly unexpected5xx: number;
+  readonly requestErrorClusters: number;
   readonly databaseErrorClusters: number;
   readonly financialMovement: PilotObservationFinancialMovement;
   readonly queueHealthy: boolean;
+  readonly queueOverdue?: boolean;
   readonly thresholds?: PilotObservationThresholds;
   readonly rewardSnapshotBefore?: Record<string, number>;
   readonly rewardSnapshotAfter?: Record<string, number>;

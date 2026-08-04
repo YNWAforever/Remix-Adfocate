@@ -78,7 +78,7 @@ async function rowsFrom(client: PilotClient, table: string, filters: Record<stri
     return asRows(direct).filter((row) => Object.entries(filters).every(([key, value]) => row[key] === value));
   }
   if (direct && typeof direct === "object" && "data" in direct) return asRows((direct as { data?: unknown }).data);
-  if (typeof client.from !== "function") return [];
+  if (typeof client.from !== "function") throw new Error(`pilot read failed: ${table} client unavailable`);
   try {
     let builder = client.from(table) as QueryBuilder;
     if (builder.select) builder = builder.select("*");
@@ -86,9 +86,11 @@ async function rowsFrom(client: PilotClient, table: string, filters: Record<stri
       if (builder.eq) builder = builder.eq(key, value);
     }
     const result = await runQuery(builder);
+    if (result.error) throw new Error(`pilot read failed: ${table}`);
     return asRows(result.data);
-  } catch {
-    return [];
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("pilot read failed:")) throw error;
+    throw new Error(`pilot read failed: ${table}`);
   }
 }
 
@@ -187,7 +189,18 @@ export async function inspectPilotCandidate(
   if (!workspaceId) reasons.push("workspace ID is required");
   if (!missionId) reasons.push("mission ID is required");
 
-  const mission = missionId ? await oneFrom(client, "missions", { id: missionId }) : null;
+  let mission: Row | null = null;
+  let submissions: Row[] = [];
+  let workflows: Row[] = [];
+  let activeCount = 0;
+  try {
+    mission = missionId ? await oneFrom(client, "missions", { id: missionId }) : null;
+    submissions = missionId ? await rowsFrom(client, "mission_submissions", { mission_id: missionId }) : [];
+    workflows = missionId ? await rowsFrom(client, "mission_workflows", { mission_id: missionId }) : [];
+    activeCount = workspaceId ? await activePilotRows(client, workspaceId, missionId) : 0;
+  } catch (error) {
+    reasons.push(error instanceof Error ? error.message : "pilot read failed");
+  }
   if (!mission) {
     reasons.push("mission was not found");
   } else {
@@ -203,15 +216,12 @@ export async function inspectPilotCandidate(
   if (points === null || points < 0) reasons.push("points reward must be non-negative");
   if (cash === null || cash < 0) reasons.push("cash reward must be non-negative");
 
-  const submissions = missionId ? await rowsFrom(client, "mission_submissions", { mission_id: missionId }) : [];
-  const workflows = missionId ? await rowsFrom(client, "mission_workflows", { mission_id: missionId }) : [];
   if (submissions.length > 0) reasons.push("mission already has submissions");
   if (workflows.length > 0) reasons.push("mission already has workflows");
   for (const row of [...submissions, ...workflows]) {
     if (row.workspace_id !== undefined && row.workspace_id !== workspaceId) reasons.push("existing record workspace mismatch");
   }
 
-  const activeCount = workspaceId ? await activePilotRows(client, workspaceId, missionId) : 0;
   if (activeCount > 0) reasons.push("another active workspace pilot exists");
 
   const gate = gateReasons(input, now);
@@ -301,7 +311,20 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
   const expected = `ENABLE PILOT ${workspaceId} ${missionId} ${input.evidenceDigest}`;
   if (input.approval !== expected) throw new Error("pilot enablement requires the exact approval phrase");
 
-  const prior = (input as PilotCandidateReport).gateInput;
+  const prior = (input as PilotCandidateReport).gateInput ?? {
+    approvedEvidenceDigest: input.approvedEvidenceDigest,
+    expectedCapabilities: input.expectedCapabilities,
+    capabilities: input.capabilities,
+    deployment: input.deployment,
+    approvedCommit: input.approvedCommit,
+    compatibilityEvidence: input.compatibilityEvidence,
+    evidenceCreatedAt: input.evidenceCreatedAt,
+    evidenceExpiresAt: input.evidenceExpiresAt,
+    structuralOnly: input.structuralOnly,
+  } satisfies PilotGateInput;
+  if (prior.approvedEvidenceDigest && prior.approvedEvidenceDigest !== input.evidenceDigest) {
+    throw new Error("pilot enablement evidence digest mismatch");
+  }
   const reinspectionInput: PilotInspectionInput = {
     workspaceId,
     missionId,
