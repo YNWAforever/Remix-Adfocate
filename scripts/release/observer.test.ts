@@ -38,6 +38,7 @@ describe("pilot observer and seven-day exit", () => {
       creatorIdentityHash: "1".repeat(64),
       workflowIds: ["2".repeat(64)],
       queueHealthy: true,
+      telemetryAvailable: true,
       financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
       rewardSnapshotBefore: { points: 10, cash: 0, xp: 0 },
       rewardSnapshotAfter: { points: 10, cash: 0, xp: 0 },
@@ -99,6 +100,52 @@ describe("pilot observer and seven-day exit", () => {
     expect(JSON.stringify(observation)).not.toContain("workflow-1");
   });
 
+  it("scopes submissions and workflow relations to the selected mission", async () => {
+    const rowsByTable: Record<string, unknown[]> = {
+      mission_submissions: [
+        { id: "submission-1", mission_id: "mission-1", workspace_id: "workspace-1", creator_id: "creator-1" },
+        { id: "submission-2", mission_id: "mission-2", workspace_id: "workspace-1", creator_id: "creator-2" },
+      ],
+      mission_workflows: [
+        { id: "workflow-1", mission_submission_id: "submission-1", workspace_id: "workspace-1", state: "reward_pending", creator_id: "creator-1" },
+        { id: "workflow-2", mission_submission_id: "submission-2", workspace_id: "workspace-1", state: "reward_pending", creator_id: "creator-2" },
+      ],
+    };
+    const from = vi.fn((table: string) => {
+      const rows = rowsByTable[table] ?? [];
+      const builder: any = {
+        select: () => builder,
+        eq: () => builder,
+        then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: rows, error: null }).then(resolve),
+      };
+      return builder;
+    });
+    const observation = await observePilot({ from }, {
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      observedAt: new Date("2026-08-01T00:00:00Z"),
+      snapshot: {
+        integrityIncidents: 0,
+        tenantIsolationIncidents: 0,
+        illegalTransitions: 0,
+        duplicateDecisions: 0,
+        missingRewardContracts: 0,
+        notificationRetries: 0,
+        notificationDeadLetters: 0,
+        maxQueueAgeSeconds: 0,
+        reviewLatencySeconds: 0,
+        overdueItems: 0,
+        unexpected5xx: 0,
+        requestErrorClusters: 0,
+        databaseErrorClusters: 0,
+        queueHealthy: true,
+      },
+    });
+    expect(observation.submissionCount).toBe(1);
+    expect(observation.workflowCount).toBe(1);
+    expect(JSON.stringify(observation)).not.toContain("creator-2");
+  });
+
   it("rejects missing or mismatched row scope instead of filtering it away", async () => {
     const from = (table: string) => {
       const rows = table === "mission_workflows"
@@ -120,5 +167,53 @@ describe("pilot observer and seven-day exit", () => {
       workspaceId: "workspace-1",
       missionId: "mission-1",
     })).rejects.toThrow("client unavailable");
+  });
+
+  it("holds a structurally complete seven-day sample when operational telemetry is unavailable", () => {
+    const thresholds = {
+      maxQueueAgeSeconds: 3600,
+      maxReviewLatencySeconds: 86400,
+      maxOverdueItems: 0,
+      maxUnexpected5xx: 0,
+      maxDatabaseErrorClusters: 0,
+      maxNotificationDeadLetters: 0,
+    };
+    const observations = Array.from({ length: 7 }, (_, index) => ({
+      observedAt: new Date(Date.UTC(2026, 7, index + 1)).toISOString(),
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      workflowCount: 1,
+      submissionCount: 1,
+      proofAttemptCount: 1,
+      completionDecisionCount: 1,
+      pendingRewards: index === 6 ? 1 : 0,
+      completedWorkflows: index === 6 ? 1 : 0,
+      completedCreatorCount: 1,
+      creatorIdentityHash: "1".repeat(64),
+      workflowIds: ["2".repeat(64)],
+      integrityIncidents: 0,
+      tenantIsolationIncidents: 0,
+      illegalTransitions: 0,
+      duplicateDecisions: 0,
+      missingRewardContracts: 0,
+      notificationRetries: 0,
+      notificationDeadLetters: 0,
+      maxQueueAgeSeconds: 0,
+      reviewLatencySeconds: 0,
+      overdueItems: 0,
+      unexpected5xx: 0,
+      requestErrorClusters: 0,
+      databaseErrorClusters: 0,
+      financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
+      rewardSnapshotBefore: { points: 10 },
+      rewardSnapshotAfter: { points: 10 },
+      queueHealthy: true,
+      telemetryAvailable: false,
+      thresholds,
+    }));
+    expect(evaluatePilotExit(observations, { passed: true, thresholds })).toMatchObject({
+      decision: "hold",
+      reasons: expect.arrayContaining(["observation 1 operational telemetry is unavailable"]),
+    });
   });
 });

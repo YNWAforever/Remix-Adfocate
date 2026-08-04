@@ -144,6 +144,27 @@ function valueOrSnapshot(snapshot: Record<string, unknown>, key: string, fallbac
   return snapshot[key] === undefined ? fallback : count(snapshot[key]);
 }
 
+const OPERATIONAL_TELEMETRY_KEYS = [
+  "integrityIncidents",
+  "tenantIsolationIncidents",
+  "illegalTransitions",
+  "duplicateDecisions",
+  "missingRewardContracts",
+  "notificationRetries",
+  "notificationDeadLetters",
+  "maxQueueAgeSeconds",
+  "reviewLatencySeconds",
+  "overdueItems",
+  "unexpected5xx",
+  "requestErrorClusters",
+  "databaseErrorClusters",
+  "queueHealthy",
+] as const;
+
+function hasOperationalTelemetry(snapshot: Record<string, unknown>) {
+  return OPERATIONAL_TELEMETRY_KEYS.every((key) => snapshot[key] !== undefined);
+}
+
 /**
  * Collects structural pilot telemetry.  Raw creator/workflow identifiers are
  * reduced to one salted hash and opaque workflow hashes before returning.
@@ -159,8 +180,11 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
       : new Date().toISOString();
   const snapshot = { ...directSnapshot(client), ...(input.snapshot ?? {}) };
 
-  const submissions = await queryRows(client, "mission_submissions", workspaceId);
-  const submissionIds = new Set(submissions.filter((row) => text(row.mission_id ?? row.missionId) === missionId).map((row) => text(row.id)).filter(Boolean));
+  const allSubmissions = await queryRows(client, "mission_submissions", workspaceId);
+  // Select the mission before deriving any counts, identities, or relations;
+  // another mission in the same workspace must never influence this pilot.
+  const submissions = allSubmissions.filter((row) => text(row.mission_id ?? row.missionId) === missionId);
+  const submissionIds = new Set(submissions.map((row) => text(row.id)).filter(Boolean));
   const allWorkflows = await queryRows(client, "mission_workflows", workspaceId);
   const workflows = allWorkflows.filter((row) =>
     submissionIds.has(text(row.mission_submission_id))
@@ -181,9 +205,14 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
   const proofAttempts = relatedRows(allProofAttempts, "mission_work_item_id", workItemIds);
   const completionDecisions = relatedRows(completionRows, "mission_workflow_id", workflowIds);
   const handoffs = pendingRewards.filter((row) => text(row.mission_id ?? row.missionId) === missionId && (text(row.status) === "pending" || text(row.status) === "cancelled" || row.status === undefined));
-  const scopedIds = new Set([...submissionIds, ...workflowIds, ...workItemIds]);
-  const notifications = notificationRows.filter((row) => scopedNotification(row, scopedIds));
   const events = eventRows.filter((row) => workflowIds.has(text(row.mission_workflow_id)) || workItemIds.has(text(row.mission_work_item_id)));
+  const scopedIds = new Set([
+    ...submissionIds,
+    ...workflowIds,
+    ...workItemIds,
+    ...events.map((row) => text(row.entity_id)).filter(Boolean),
+  ]);
+  const notifications = notificationRows.filter((row) => scopedNotification(row, scopedIds));
   const pending = Math.max(
     workflows.filter((row) => row.state === "reward_pending").length,
     handoffs.filter((row) => row.status === "pending" || row.state === "reward_pending").length,
@@ -204,12 +233,13 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
   const error5xx = 0;
   const requestClusters = 0;
   const dbClusters = 0;
+  const telemetryAvailable = hasOperationalTelemetry(snapshot);
   const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? input.financialSnapshotBefore ?? client.rewardSnapshotBefore);
   const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? input.financialSnapshotAfter ?? client.rewardSnapshotAfter);
   const observedMovement = snapshot.financialMovement !== undefined || client.financialMovement !== undefined
     ? movement(snapshot.financialMovement ?? client.financialMovement)
     : movementDelta(snapshotBefore, snapshotAfter);
-  const queueHealthy = snapshot.queueHealthy !== false
+  const queueHealthy = telemetryAvailable && snapshot.queueHealthy !== false
     && snapshot.notificationQueueHealthy !== false
     && snapshot.retryQueueHealthy !== false;
 
@@ -241,6 +271,7 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     databaseErrorClusters: valueOrSnapshot(snapshot, "databaseErrorClusters", dbClusters),
     financialMovement: observedMovement,
     queueHealthy,
+    telemetryAvailable,
     ...(snapshot.queueOverdue !== undefined ? { queueOverdue: snapshot.queueOverdue === true } : {}),
     ...(input.thresholds || (snapshot.thresholds && typeof snapshot.thresholds === "object")
       ? { thresholds: input.thresholds ?? snapshot.thresholds as PilotObservationThresholds }
@@ -320,6 +351,7 @@ function completenessReasons(observation: PilotExitObservation, index: number, s
   for (const key of REQUIRED_COUNT_KEYS) if (typeof observation[key] !== "number" || !Number.isFinite(observation[key])) reasons.push(`${prefix} ${key} is missing or invalid`);
   if (typeof observation.completedCreatorCount !== "number" || !Number.isFinite(observation.completedCreatorCount)) reasons.push(`${prefix} completed creator count is missing or invalid`);
   if (typeof observation.queueHealthy !== "boolean") reasons.push(`${prefix} queue health is missing`);
+  if (observation.telemetryAvailable !== true) reasons.push(`${prefix} operational telemetry is unavailable`);
   if (!completeFinancialMovement(observation.financialMovement)) reasons.push(`${prefix} financial movement is incomplete`);
   if (!completeSnapshot(observation.rewardSnapshotBefore) || !completeSnapshot(observation.rewardSnapshotAfter)) reasons.push(`${prefix} financial snapshots are incomplete`);
   if (!completeThresholds(observation.thresholds)) reasons.push(`${prefix} approved thresholds are incomplete`);

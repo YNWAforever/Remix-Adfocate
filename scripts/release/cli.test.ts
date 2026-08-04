@@ -43,6 +43,7 @@ function observation(day: number, completed = 0, pending = 0) {
     requestErrorClusters: 0,
     databaseErrorClusters: 0,
     queueHealthy: true,
+    telemetryAvailable: true,
     financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
     rewardSnapshotBefore: { points: 10, cash: 0, xp: 0 },
     rewardSnapshotAfter: { points: 10, cash: 0, xp: 0 },

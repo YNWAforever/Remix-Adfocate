@@ -279,6 +279,8 @@ export interface PilotObservation {
   readonly databaseErrorClusters: number;
   readonly financialMovement: PilotObservationFinancialMovement;
   readonly queueHealthy: boolean;
+  /** True only when all operational/error/queue counters came from an explicit snapshot. */
+  readonly telemetryAvailable?: boolean;
   readonly queueOverdue?: boolean;
   readonly thresholds?: PilotObservationThresholds;
   readonly rewardSnapshotBefore?: Record<string, number>;
