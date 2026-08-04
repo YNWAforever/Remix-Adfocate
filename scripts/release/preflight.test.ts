@@ -163,6 +163,7 @@ describe("release preflight", () => {
         expectedCapabilities: [
           "grant:authenticated.public.example_function(uuid,timestamptz)",
           "grant:authenticated.public.named_function(uuid,timestamptz)",
+          "grant:service_role.public.submit_mission_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb,uuid[])",
           "grant:authenticated.public.example(all)",
           "grant:authenticated.public.example(select)",
         ],
@@ -173,6 +174,7 @@ describe("release preflight", () => {
         readFile: vi.fn().mockResolvedValue([
           "GRANT ALL PRIVILEGES ON FUNCTION public.example_function(pg_catalog.uuid, timestamp with time zone) TO authenticated;",
           "GRANT ALL ON FUNCTION \"public\".\"named_function\"(\"p_id\" \"uuid\", \"p_at\" \"timestamp with time zone\") TO \"authenticated\";",
+          "GRANT ALL ON FUNCTION \"public\".\"submit_mission_publication_proof\"(\"p_mission\" \"uuid\", \"p_workspace\" \"uuid\", \"p_creator\" \"uuid\", \"p_submission\" \"uuid\", \"p_url\" \"text\", \"p_revision\" \"integer\", \"p_actor\" \"uuid\", \"p_evidence\" \"jsonb\", \"p_asset_ids\" \"uuid\"[]) TO \"service_role\";",
           "GRANT ALL ON TABLE public.example TO authenticated;",
           "GRANT SELECT ON TABLE public.example TO authenticated;",
         ].join("\n")),
