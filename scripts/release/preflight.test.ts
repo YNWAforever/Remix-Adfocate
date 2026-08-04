@@ -1,8 +1,134 @@
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { runPreflight, runPreflightCli } from "./preflight";
+import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
 
 describe("release preflight", () => {
+  it("has a validator for every capability declared by the committed release manifest", () => {
+    const manifest = JSON.parse(
+      readFileSync("supabase/release-manifest.json", "utf8"),
+    ) as { migrations: Array<{ capabilities: string[] }> };
+    const capabilities = [
+      ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+    ];
+
+    expect(capabilities).toHaveLength(416);
+    expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+  });
+
+  it("matches every declared capability kind against its bound schema object", async () => {
+    const schema = [
+      "CREATE TABLE public.example (example_column text, CONSTRAINT example_constraint CHECK (true));",
+      "ALTER TABLE ONLY public.example ADD CONSTRAINT added_constraint CHECK (true);",
+      "ALTER TABLE ONLY public.example ENABLE ROW LEVEL SECURITY;",
+      "CREATE OR REPLACE FUNCTION public.example_function(p_input uuid) RETURNS void;",
+      "GRANT EXECUTE ON FUNCTION public.example_function(uuid) TO authenticated;",
+      "GRANT SELECT ON TABLE public.example TO authenticated;",
+      "CREATE INDEX example_index ON public.example (example_column);",
+      "CREATE POLICY example_policy ON public.example FOR SELECT USING (true);",
+      "CREATE POLICY example_storage_policy ON storage.objects FOR SELECT USING (true);",
+      "CREATE TRIGGER example_trigger BEFORE INSERT ON public.example FOR EACH ROW EXECUTE FUNCTION public.example_function();",
+      "INSERT INTO storage.buckets (id, name) VALUES ('example-bucket', 'example-bucket');",
+    ].join("\n");
+    const report = await runPreflight(
+      {
+        databaseUrl: "postgresql://secret",
+        projectRef: "project-ref",
+        manifestDigest: "a".repeat(64),
+        expectedCapabilities: [
+          "table:public.example",
+          "column:public.example.example_column",
+          "constraint:public.example.example_constraint",
+          "constraint:public.example.added_constraint",
+          "constraint-removed:public.example.no_longer_present",
+          "function:public.example_function",
+          "grant:authenticated.public.example_function(uuid)",
+          "grant:authenticated.public.example(select)",
+          "index:public.example.example_index",
+          "policy:public.example.example_policy",
+          "rls:public.example",
+          "storage-bucket:storage.buckets.example-bucket",
+          "storage-policy:storage.objects.example_storage_policy",
+          "trigger:public.example_trigger",
+          "trigger:public.example.example_trigger",
+        ],
+        now: new Date("2026-08-01T00:00:00Z"),
+      },
+      {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn().mockResolvedValue(schema),
+        rm: vi.fn().mockResolvedValue(undefined),
+        tempFile: () => "C:/temp/schema.sql",
+      },
+    );
+
+    expect(report.capabilities).toEqual([
+      { name: "table:public.example", status: "present" },
+      { name: "column:public.example.example_column", status: "present" },
+      { name: "constraint:public.example.example_constraint", status: "present" },
+      { name: "constraint:public.example.added_constraint", status: "present" },
+      { name: "constraint-removed:public.example.no_longer_present", status: "present" },
+      { name: "function:public.example_function", status: "present" },
+      { name: "grant:authenticated.public.example_function(uuid)", status: "present" },
+      { name: "grant:authenticated.public.example(select)", status: "present" },
+      { name: "index:public.example.example_index", status: "present" },
+      { name: "policy:public.example.example_policy", status: "present" },
+      { name: "rls:public.example", status: "present" },
+      { name: "storage-bucket:storage.buckets.example-bucket", status: "unverifiable" },
+      {
+        name: "storage-policy:storage.objects.example_storage_policy",
+        status: "unverifiable",
+      },
+      { name: "trigger:public.example_trigger", status: "present" },
+      { name: "trigger:public.example.example_trigger", status: "present" },
+    ]);
+  });
+
+  it("does not accept an unrelated column name as evidence for the target table", async () => {
+    const report = await runPreflight(
+      {
+        databaseUrl: "postgresql://secret",
+        projectRef: "project-ref",
+        manifestDigest: "a".repeat(64),
+        expectedCapabilities: ["column:public.example.example_column"],
+        now: new Date("2026-08-01T00:00:00Z"),
+      },
+      {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn().mockResolvedValue("CREATE TABLE public.other (example_column text);"),
+        rm: vi.fn().mockResolvedValue(undefined),
+        tempFile: () => "C:/temp/schema.sql",
+      },
+    );
+
+    expect(report.capabilities).toEqual([
+      { name: "column:public.example.example_column", status: "absent" },
+    ]);
+  });
+
+  it("redacts a rejected command runner error before rethrowing it", async () => {
+    const rejected = Object.assign(new Error("spawn npx postgresql://secret failed"), {
+      spawnargs: ["supabase", "migration", "list", "--db-url", "postgresql://secret"],
+    });
+    await expect(
+      runPreflight(
+        {
+          databaseUrl: "postgresql://secret",
+          projectRef: "project-ref",
+          manifestDigest: "a".repeat(64),
+          expectedCapabilities: [],
+          now: new Date(),
+        },
+        {
+          run: vi.fn().mockRejectedValue(rejected),
+          readFile: vi.fn(),
+          rm: vi.fn().mockResolvedValue(undefined),
+          tempFile: () => "C:/temp/schema.sql",
+        },
+      ),
+    ).rejects.toThrow("command execution failed: spawn npx [REDACTED] failed");
+  });
+
   it("uses only migration list, dry-run, and schema dump without reporting the URL", async () => {
     const run = vi
       .fn()

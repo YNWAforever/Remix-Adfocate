@@ -1,87 +1,220 @@
 import { createHash, randomUUID } from "node:crypto";
 import { readFile, rm, writeFile } from "node:fs/promises";
-import { isAbsolute, relative, resolve } from "node:path";
+import { isAbsolute, relative, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import type { CapabilityStatus, PreflightReport } from "./contracts";
 import { digestManifest, parseReleaseManifest } from "./manifest";
 import { runCommand, type CommandRunner } from "./process";
 
-const CAPABILITY_VALIDATORS: Record<
-  string,
-  { readonly present: RegExp; readonly divergent?: RegExp }
-> = {
-  "table:public.mission_workflows": { present: /CREATE TABLE public\.mission_workflows\b/i },
-  "column:public.missions.creator_workflow_mode": { present: /creator_workflow_mode/i },
-  "function:public.create_mission_workflow": {
-    present: /CREATE(?: OR REPLACE)? FUNCTION public\.create_mission_workflow\(p_submission uuid\)/i,
-    divergent: /FUNCTION public\.create_mission_workflow\b/i,
+type CapabilityValidator = (schema: string) => CapabilityStatus;
+type CapabilityValidatorFactory = (parts: readonly string[]) => CapabilityValidator | undefined;
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function identifier(value: string) {
+  const escaped = escapeRegExp(value);
+  return `(?:${escaped}(?![a-z0-9_])|"${escaped}")`;
+}
+
+function qualified(schema: string, object: string) {
+  return `${identifier(schema)}\\s*\\.\\s*${identifier(object)}`;
+}
+
+function statementMatches(schema: string, expression: string) {
+  return new RegExp(expression, "i").test(schema);
+}
+
+function tableDefinition(schema: string, table: string) {
+  const match = new RegExp(
+    `CREATE TABLE(?: IF NOT EXISTS)?\\s+${table}\\s*\\(([\\s\\S]*?)\\)\\s*;`,
+    "i",
+  ).exec(schema);
+  return match?.[1] ?? "";
+}
+
+function presentIf(matches: boolean): CapabilityStatus {
+  return matches ? "present" : "absent";
+}
+
+function functionValidator(schemaName: string, name: string): CapabilityValidator {
+  const target = qualified(schemaName, name);
+  const anyFunction = `CREATE(?: OR REPLACE)? FUNCTION\\s+${target}`;
+  const requiredParameter =
+    schemaName === "public" && name === "create_mission_workflow"
+      ? "p_submission uuid"
+      : schemaName === "public" && name === "join_active_mission"
+        ? "p_mission uuid"
+        : undefined;
+  if (!requiredParameter) return (schema) => presentIf(statementMatches(schema, anyFunction));
+
+  return (schema) => {
+    if (statementMatches(schema, `${anyFunction}\\s*\\(${requiredParameter}\\)`)) {
+      return "present";
+    }
+    return statementMatches(schema, anyFunction) ? "divergent" : "absent";
+  };
+}
+
+function grantValidator(role: string, schemaName: string, object: string, privilege: string) {
+  const target = qualified(schemaName, object);
+  const grantee = identifier(role);
+  if (privilege === "select" || privilege === "all") {
+    const action = privilege === "all" ? "ALL(?: PRIVILEGES)?" : "SELECT";
+    return (schema: string) =>
+      presentIf(
+        statementMatches(
+          schema,
+          `GRANT\\s+${action}\\s+ON TABLE\\s+${target}\\s+TO\\s+${grantee}`,
+        ),
+      );
+  }
+
+  const argumentsPattern = privilege
+    .split(",")
+    .map((argument) => escapeRegExp(argument))
+    .join("\\s*,\\s*");
+  return (schema: string) =>
+    presentIf(
+      statementMatches(
+        schema,
+        `GRANT\\s+EXECUTE\\s+ON FUNCTION\\s+${target}\\s*\\(${argumentsPattern}\\)\\s+TO\\s+${grantee}`,
+      ),
+    );
+}
+
+const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> = {
+  table: ([schemaName, tableName]) => {
+    if (!schemaName || !tableName) return undefined;
+    const target = qualified(schemaName, tableName);
+    return (schema) => presentIf(statementMatches(schema, `CREATE TABLE(?: IF NOT EXISTS)?\\s+${target}`));
   },
-  "policy:public.mission_workflows.mission_workflows_creator_read": {
-    present: /CREATE POLICY mission_workflows_creator_read ON public\.mission_workflows\b/i,
+  column: ([schemaName, tableName, columnName]) => {
+    if (!schemaName || !tableName || !columnName) return undefined;
+    const target = qualified(schemaName, tableName);
+    const column = identifier(columnName);
+    return (schema) =>
+      presentIf(
+        new RegExp(`(?:^|\\n)\\s*${column}\\s+`, "im").test(tableDefinition(schema, target)) ||
+          statementMatches(
+            schema,
+            `ALTER TABLE(?: ONLY)?\\s+${target}\\s+ADD COLUMN(?: IF NOT EXISTS)?\\s+${column}`,
+          ),
+      );
   },
-  "trigger:public.mission_draft_versions_immutable": {
-    present: /CREATE TRIGGER mission_draft_versions_immutable\b[\s\S]*? ON public\.mission_draft_versions\b/i,
+  constraint: ([schemaName, tableName, constraintName]) => {
+    if (!schemaName || !tableName || !constraintName) return undefined;
+    const target = qualified(schemaName, tableName);
+    const constraint = identifier(constraintName);
+    return (schema) =>
+      presentIf(
+        new RegExp(`CONSTRAINT\\s+${constraint}`, "i").test(tableDefinition(schema, target)) ||
+          statementMatches(
+            schema,
+            `ALTER TABLE(?: ONLY)?\\s+${target}\\s+ADD CONSTRAINT\\s+${constraint}`,
+          ),
+      );
   },
-  "grant:authenticated.public.create_mission_workflow(uuid)": {
-    present: /GRANT EXECUTE ON FUNCTION public\.create_mission_workflow\(uuid\) TO authenticated\b/i,
+  "constraint-removed": ([schemaName, tableName, constraintName]) => {
+    if (!schemaName || !tableName || !constraintName) return undefined;
+    const validator = CAPABILITY_VALIDATOR_REGISTRY.constraint?.([
+      schemaName,
+      tableName,
+      constraintName,
+    ]);
+    if (!validator) return undefined;
+    return (schema) => (validator(schema) === "absent" ? "present" : "divergent");
   },
-  "storage-policy:storage.objects.mission_draft_assets_storage_read": {
-    present: /CREATE POLICY mission_draft_assets_storage_read ON storage\.objects\b/i,
+  function: ([schemaName, functionName]) => {
+    if (!schemaName || !functionName) return undefined;
+    return functionValidator(schemaName, functionName);
   },
-  "table:public.mission_publication_proof_attempts": {
-    present: /CREATE TABLE public\.mission_publication_proof_attempts\b/i,
+  grant: ([role, schemaName, objectAndPrivilege]) => {
+    const openingParenthesis = objectAndPrivilege?.indexOf("(") ?? -1;
+    if (
+      !role ||
+      !schemaName ||
+      openingParenthesis <= 0 ||
+      !objectAndPrivilege?.endsWith(")")
+    ) {
+      return undefined;
+    }
+    const object = objectAndPrivilege.slice(0, openingParenthesis);
+    const privilege = objectAndPrivilege.slice(openingParenthesis + 1, -1);
+    if (
+      !/^[a-z][a-z0-9_]*$/.test(object) ||
+      !privilege ||
+      [...privilege].some((character) => !"abcdefghijklmnopqrstuvwxyz0123456789_,[]".includes(character))
+    ) {
+      return undefined;
+    }
+    return grantValidator(role, schemaName, object, privilege);
   },
-  "policy:public.mission_publication_proof_attempts.mission_publication_proof_attempts_creator_read": {
-    present: /CREATE POLICY mission_publication_proof_attempts_creator_read ON public\.mission_publication_proof_attempts\b/i,
+  index: ([schemaName, tableName, indexName]) => {
+    if (!schemaName || !tableName || !indexName) return undefined;
+    const target = qualified(schemaName, tableName);
+    const index = identifier(indexName);
+    return (schema) =>
+      presentIf(
+        statementMatches(
+          schema,
+          `CREATE(?: UNIQUE)? INDEX\\s+${index}\\s+ON\\s+${target}`,
+        ),
+      );
   },
-  "trigger:public.mission_publication_proof_attempts_immutable": {
-    present: /CREATE TRIGGER mission_publication_proof_attempts_immutable\b[\s\S]*? ON public\.mission_publication_proof_attempts\b/i,
+  policy: ([schemaName, tableName, policyName]) => {
+    if (!schemaName || !tableName || !policyName) return undefined;
+    const target = qualified(schemaName, tableName);
+    const policy = identifier(policyName);
+    return (schema) =>
+      presentIf(statementMatches(schema, `CREATE POLICY\\s+${policy}\\s+ON\\s+${target}`));
   },
-  "table:public.mission_reward_contracts": {
-    present: /CREATE TABLE public\.mission_reward_contracts\b/i,
+  rls: ([schemaName, tableName]) => {
+    if (!schemaName || !tableName) return undefined;
+    const target = qualified(schemaName, tableName);
+    return (schema) =>
+      presentIf(
+        statementMatches(
+          schema,
+          `ALTER TABLE(?: ONLY)?\\s+${target}\\s+ENABLE ROW LEVEL SECURITY\\b`,
+        ),
+      );
   },
-  "table:public.mission_completion_decisions": {
-    present: /CREATE TABLE public\.mission_completion_decisions\b/i,
+  "storage-bucket": ([schemaName, tableName, bucketName]) => {
+    if (schemaName !== "storage" || tableName !== "buckets" || !bucketName) return undefined;
+    return () => "unverifiable";
   },
-  "table:public.mission_pending_rewards": {
-    present: /CREATE TABLE public\.mission_pending_rewards\b/i,
+  "storage-policy": ([schemaName, tableName, policyName]) => {
+    if (schemaName !== "storage" || tableName !== "objects" || !policyName) return undefined;
+    return () => "unverifiable";
   },
-  "rls:public.mission_reward_contracts": {
-    present: /ALTER TABLE(?: ONLY)? public\.mission_reward_contracts ENABLE ROW LEVEL SECURITY/i,
-  },
-  "trigger:public.mission_reward_contracts_immutable": {
-    present: /CREATE TRIGGER mission_reward_contracts_immutable\b[\s\S]*? ON public\.mission_reward_contracts\b/i,
-  },
-  "trigger:public.mission_completion_decisions_immutable": {
-    present: /CREATE TRIGGER mission_completion_decisions_immutable\b[\s\S]*? ON public\.mission_completion_decisions\b/i,
-  },
-  "trigger:public.mission_pending_rewards_guarded_update": {
-    present: /CREATE TRIGGER mission_pending_rewards_guarded_update\b[\s\S]*? ON public\.mission_pending_rewards\b/i,
-  },
-  "function:public.join_active_mission": {
-    present: /CREATE(?: OR REPLACE)? FUNCTION public\.join_active_mission\(p_mission uuid\)/i,
-    divergent: /FUNCTION public\.join_active_mission\b/i,
-  },
-  "grant:authenticated.public.join_active_mission(uuid)": {
-    present: /GRANT EXECUTE ON FUNCTION public\.join_active_mission\(uuid\) TO authenticated\b/i,
-  },
-  "function:public.approve_mission_completion": {
-    present: /CREATE(?: OR REPLACE)? FUNCTION public\.approve_mission_completion\b/i,
-  },
-  "function:public.cancel_mission_reward_handoff": {
-    present: /CREATE(?: OR REPLACE)? FUNCTION public\.cancel_mission_reward_handoff\b/i,
-  },
-  "trigger:public.reward_handoff_workflow_event_notifications": {
-    present: /CREATE TRIGGER reward_handoff_workflow_event_notifications\b/i,
-  },
-  "function:public.retry_reward_handoff_notification": {
-    present: /CREATE(?: OR REPLACE)? FUNCTION public\.retry_reward_handoff_notification\b/i,
-  },
-  "grant:service_role.public.retry_reward_handoff_notification(uuid,uuid,uuid,text)": {
-    present: /GRANT EXECUTE ON FUNCTION public\.retry_reward_handoff_notification\(uuid, uuid, uuid, text\) TO service_role\b/i,
+  trigger: ([schemaName, tableOrTriggerName, tableSpecificTriggerName]) => {
+    if (!schemaName || !tableOrTriggerName) return undefined;
+    const trigger = identifier(tableSpecificTriggerName ?? tableOrTriggerName);
+    const target = tableSpecificTriggerName
+      ? qualified(schemaName, tableOrTriggerName)
+      : `${identifier(schemaName)}\\s*\\.\\s*(?:[a-z][a-z0-9_]*|"[a-z][a-z0-9_]*")`;
+    return (schema) =>
+      presentIf(
+        statementMatches(schema, `CREATE TRIGGER\\s+${trigger}[\\s\\S]*?\\sON\\s+${target}`),
+      );
   },
 };
+
+function validatorFor(name: string) {
+  const separator = name.indexOf(":");
+  if (separator === -1) return undefined;
+  const kind = name.slice(0, separator);
+  const parts = name.slice(separator + 1).split(".");
+  const factory = CAPABILITY_VALIDATOR_REGISTRY[kind ?? ""];
+  return factory?.(parts);
+}
+
+export function hasCapabilityValidator(name: string) {
+  return validatorFor(name) !== undefined;
+}
 
 export interface PreflightInput {
   readonly databaseUrl: string;
@@ -99,11 +232,9 @@ export interface PreflightDeps {
 }
 
 function capabilityStatus(name: string, schema: string): CapabilityStatus {
-  const validator = CAPABILITY_VALIDATORS[name];
+  const validator = validatorFor(name);
   if (!validator) return "unverifiable";
-  if (validator.present.test(schema)) return "present";
-  if (validator.divergent?.test(schema)) return "divergent";
-  return "absent";
+  return validator(schema);
 }
 
 function hash(value: string) {
@@ -114,6 +245,20 @@ function redact(value: string, databaseUrl: string) {
   return value
     .replaceAll(databaseUrl, "[REDACTED]")
     .replace(/postgres(?:ql)?:\/\/[^\s'"`]+/gi, "[REDACTED]");
+}
+
+function commandErrorDetail(error: unknown) {
+  if (typeof error === "object" && error !== null) {
+    const candidate = error as { message?: unknown; spawnargs?: unknown };
+    const parts = [
+      typeof candidate.message === "string" ? candidate.message : undefined,
+      Array.isArray(candidate.spawnargs)
+        ? candidate.spawnargs.map((argument) => String(argument)).join(" ")
+        : undefined,
+    ].filter((part): part is string => Boolean(part));
+    if (parts.length) return parts.join(" ");
+  }
+  return String(error);
 }
 
 export async function runPreflight(
@@ -131,7 +276,14 @@ export async function runPreflight(
 
   try {
     for (const [label, args] of commands) {
-      const result = await deps.run("npx", [...args]);
+      let result: Awaited<ReturnType<CommandRunner>>;
+      try {
+        result = await deps.run("npx", [...args]);
+      } catch (error) {
+        throw new Error(
+          `command execution failed: ${redact(commandErrorDetail(error), input.databaseUrl)}`,
+        );
+      }
       if (result.code !== 0) {
         throw new Error(`${label} failed: ${redact(result.stderr.trim(), input.databaseUrl)}`);
       }
@@ -174,7 +326,9 @@ function outputPath(args: readonly string[], rootDir: string) {
   const pathFromMigrations = relative(migrations, output);
   if (
     pathFromMigrations === "" ||
-    (!pathFromMigrations.startsWith("..") && !isAbsolute(pathFromMigrations))
+    (!pathFromMigrations.startsWith(`..${sep}`) &&
+      pathFromMigrations !== ".." &&
+      !isAbsolute(pathFromMigrations))
   ) {
     throw new Error("preflight output must not be inside supabase/migrations");
   }
