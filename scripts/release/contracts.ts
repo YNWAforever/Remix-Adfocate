@@ -128,3 +128,31 @@ export interface ReleaseEvidence {
   readonly expiresAt: string;
   readonly contentDigest: string;
 }
+
+export interface DeploymentInput {
+  readonly deploymentId: string;
+  readonly teamId: string;
+  readonly token: string;
+  readonly expectedCommit: string;
+  readonly productionAlias: string;
+  readonly appOrigin: string;
+  readonly expectedSchemaFingerprint: string;
+}
+
+export interface DeploymentReport {
+  readonly schemaVersion: 1;
+  readonly status: "passed";
+  readonly deploymentId: string;
+  readonly deploymentStatusCode: number;
+  readonly deploymentReadyState: "READY";
+  readonly deploymentTarget: "production";
+  readonly commit: string;
+  readonly commitRef: "main";
+  readonly productionAlias: string;
+  readonly healthStatusCode: number;
+  readonly homeStatusCode: number;
+  readonly schemaFingerprint: string;
+  readonly createdAt: string;
+  readonly verifiedAt: string;
+  readonly deploymentCreatedAt?: string;
+}
