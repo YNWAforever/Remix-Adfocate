@@ -156,3 +156,118 @@ export interface DeploymentReport {
   readonly verifiedAt: string;
   readonly deploymentCreatedAt?: string;
 }
+
+/**
+ * The release pilot contracts intentionally use structural, database-facing
+ * names.  They are kept independent of Supabase's generated database types so
+ * the selector and observer can be tested with a tiny injected fake client.
+ */
+export interface PilotJoinContract {
+  readonly points_amount: number;
+  readonly cash_amount: number;
+  readonly currency: "HKD";
+  readonly xp_amount: 0;
+}
+
+export interface PilotCapabilityEvidence {
+  readonly name: string;
+  readonly status: CapabilityStatus;
+}
+
+export interface PilotCandidateReport {
+  readonly eligible: boolean;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly reasons: readonly string[];
+  readonly joinContract: PilotJoinContract | null;
+  readonly capabilities: readonly PilotCapabilityEvidence[];
+  readonly deployment?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status">;
+  readonly inspectedAt: string;
+  /** Gate inputs are retained so enablement can re-inspect the same boundary. */
+  readonly gateInput?: PilotGateInput;
+}
+
+export interface PilotEnableReport {
+  readonly enabled: boolean;
+  readonly applied: boolean;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly affectedRows: number;
+  readonly inspectedAt: string;
+}
+
+export interface PilotGateInput {
+  /** Test-only/read-only structural mode; production pilot inspection must carry all gates. */
+  readonly structuralOnly?: boolean;
+  readonly approvedEvidenceDigest?: string;
+  readonly expectedCapabilities?: readonly string[];
+  readonly capabilities?: readonly PilotCapabilityEvidence[];
+  readonly deployment?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status"> & {
+    readonly expectedCommit?: string;
+  };
+  readonly approvedCommit?: string;
+  readonly compatibilityEvidence?: boolean | { readonly passed: boolean };
+  readonly evidenceCreatedAt?: string;
+  readonly evidenceExpiresAt?: string;
+  readonly now?: Date;
+}
+
+export interface PilotObservationFinancialMovement {
+  readonly points: number;
+  readonly cash: number;
+  readonly xp: number;
+  readonly ledgerRows: number;
+}
+
+export interface PilotObservationThresholds {
+  readonly maxQueueAgeSeconds?: number;
+  readonly maxReviewLatencySeconds?: number;
+  readonly maxOverdueItems?: number;
+  readonly maxUnexpected5xx?: number;
+  readonly maxDatabaseErrorClusters?: number;
+  readonly maxNotificationDeadLetters?: number;
+}
+
+export interface PilotObservation {
+  readonly observedAt: string;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly workflowCount: number;
+  readonly submissionCount: number;
+  readonly proofAttemptCount: number;
+  readonly completionDecisionCount: number;
+  readonly pendingRewards: number;
+  readonly completedWorkflows: number;
+  readonly completedCreatorCount: number;
+  readonly creatorIdentityHash?: string;
+  readonly workflowIds: readonly string[];
+  readonly integrityIncidents: number;
+  readonly tenantIsolationIncidents: number;
+  readonly illegalTransitions: number;
+  readonly duplicateDecisions: number;
+  readonly missingRewardContracts: number;
+  readonly notificationRetries: number;
+  readonly notificationDeadLetters: number;
+  readonly maxQueueAgeSeconds: number;
+  readonly reviewLatencySeconds: number;
+  readonly overdueItems: number;
+  readonly unexpected5xx: number;
+  readonly databaseErrorClusters: number;
+  readonly financialMovement: PilotObservationFinancialMovement;
+  readonly queueHealthy: boolean;
+  readonly thresholds?: PilotObservationThresholds;
+  readonly rewardSnapshotBefore?: Record<string, number>;
+  readonly rewardSnapshotAfter?: Record<string, number>;
+}
+
+export interface PilotObserveInput {
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly observedAt?: Date | string;
+  readonly creatorIdentitySalt?: string;
+  readonly thresholds?: PilotObservationThresholds;
+}
+
+export type PilotExitDecision =
+  | { readonly decision: "expand"; readonly reasons: readonly [] }
+  | { readonly decision: "hold" | "contain"; readonly reasons: readonly string[] };
