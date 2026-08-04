@@ -21,3 +21,22 @@ export interface ReleaseManifest {
   readonly generatedFrom: "supabase/migrations";
   readonly migrations: readonly ReleaseMigration[];
 }
+
+export type CapabilityStatus = "present" | "absent" | "divergent" | "unverifiable";
+
+export interface PreflightCapability {
+  readonly name: string;
+  readonly status: CapabilityStatus;
+}
+
+export interface PreflightReport {
+  readonly schemaVersion: 1;
+  readonly targetProjectRef: string;
+  readonly manifestDigest: string;
+  readonly migrationListHash: string;
+  readonly dryRunHash: string;
+  readonly schemaFingerprint: string;
+  readonly capabilities: readonly PreflightCapability[];
+  readonly warnings: readonly string[];
+  readonly createdAt: string;
+}
