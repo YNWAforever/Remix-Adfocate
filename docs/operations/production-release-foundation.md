@@ -92,8 +92,11 @@ Before rehearsal, the operator supplies two explicitly non-production targets:
 an empty loopback database and a disposable production-shaped database. Supply
 their opaque refs, loopback API URL, database URLs, temporary anonymous key,
 temporary service key, approved manifest digest, expected capabilities, and the
-production schema fingerprint through the rehearsal input. Both targets must
-pass the target guard and must differ from the protected project reference.
+production schema fingerprint through `RELEASE_REHEARSAL_EMPTY_TARGET_JSON`,
+`RELEASE_REHEARSAL_SHAPED_TARGET_JSON`, `RELEASE_REHEARSAL_PRODUCTION_JSON`,
+`RELEASE_MANIFEST_DIGEST`, and `RELEASE_EXPECTED_CAPABILITIES_JSON`. Both
+targets must pass the target guard and must differ from the protected project
+reference.
 
 The empty target proves a pristine migration path. The shaped target proves
 compatibility with the approved production schema without contacting or

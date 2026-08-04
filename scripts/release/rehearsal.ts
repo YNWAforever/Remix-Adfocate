@@ -1,12 +1,17 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
+import { readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { PreflightInput, PreflightReport } from "./preflight";
+import { runPreflight, type PreflightDeps } from "./preflight";
 import type {
   RehearsalCommandReport,
   RehearsalInput,
   RehearsalReport,
   RehearsalTarget,
 } from "./contracts";
-import type { CommandRunner } from "./process";
+import { runCommand, type CommandRunner } from "./process";
 import { assertDisposableTarget } from "./target-guard";
 
 type RehearsalPreflight = (
@@ -200,4 +205,65 @@ export async function runRehearsal(
     commands: reports,
     createdAt: input.now.toISOString(),
   };
+}
+
+function envValue(env: NodeJS.ProcessEnv, key: string) {
+  const value = env[key]?.trim();
+  if (!value) throw new Error(`${key} is required`);
+  return value;
+}
+
+function jsonEnv<T>(env: NodeJS.ProcessEnv, key: string): T {
+  const value = envValue(env, key);
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    throw new Error(`${key} must contain valid JSON`);
+  }
+}
+
+function rehearsalInputFromEnv(env: NodeJS.ProcessEnv): RehearsalInput {
+  const rawNow = env.RELEASE_REHEARSAL_NOW;
+  const now = rawNow ? new Date(rawNow) : new Date();
+  if (Number.isNaN(now.getTime())) throw new Error("RELEASE_REHEARSAL_NOW must be a valid timestamp");
+  return {
+    emptyTarget: jsonEnv<RehearsalTarget>(env, "RELEASE_REHEARSAL_EMPTY_TARGET_JSON"),
+    shapedTarget: jsonEnv<RehearsalInput["shapedTarget"]>(env, "RELEASE_REHEARSAL_SHAPED_TARGET_JSON"),
+    production: jsonEnv<RehearsalInput["production"]>(env, "RELEASE_REHEARSAL_PRODUCTION_JSON"),
+    manifestDigest: envValue(env, "RELEASE_MANIFEST_DIGEST"),
+    expectedCapabilities: jsonEnv<readonly string[]>(env, "RELEASE_EXPECTED_CAPABILITIES_JSON"),
+    now,
+  };
+}
+
+const defaultPreflightDeps: PreflightDeps = {
+  run: runCommand,
+  readFile,
+  rm,
+  tempFile: () => resolve(tmpdir(), `adfocate-rehearsal-${randomUUID()}.sql`),
+};
+
+export async function executeRehearsalCli(env: NodeJS.ProcessEnv = process.env) {
+  const input = rehearsalInputFromEnv(env);
+  return runRehearsal(input, {
+    run: runCommand,
+    preflight: async (preflightInput) => runPreflight(preflightInput, defaultPreflightDeps),
+  });
+}
+
+function sanitizedError(error: unknown) {
+  const message = error instanceof Error ? error.message : "rehearsal failed";
+  return message.replace(/(?:postgres(?:ql)?:\/\/|eyJ)[^\s"']+/gi, "[REDACTED]");
+}
+
+const isViteNodeCli = /(?:^|[\\/])vite-node(?:\.mjs)?$/i.test(process.argv[1] ?? "");
+const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isViteNodeCli || isDirectNodeCli) {
+  try {
+    const result = await executeRehearsalCli(process.env);
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+  } catch (error) {
+    process.stderr.write(`${JSON.stringify({ status: "failed", error: sanitizedError(error) })}\n`);
+    process.exitCode = 1;
+  }
 }

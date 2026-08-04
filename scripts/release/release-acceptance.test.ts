@@ -1,4 +1,6 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf8")) as {
@@ -55,4 +57,50 @@ describe("production release foundation acceptance", () => {
       previous = position;
     }
   });
+
+  it("fails closed at the package rehearsal entrypoint without disposable targets", () => {
+    const runner = process.execPath;
+    const viteNode = resolve("node_modules/vite-node/vite-node.mjs");
+    const env = { ...process.env };
+    delete env.VITEST;
+    delete env.RELEASE_REHEARSAL_EMPTY_TARGET_JSON;
+    delete env.RELEASE_REHEARSAL_SHAPED_TARGET_JSON;
+    delete env.RELEASE_REHEARSAL_PRODUCTION_JSON;
+    delete env.RELEASE_MANIFEST_DIGEST;
+    delete env.RELEASE_EXPECTED_CAPABILITIES_JSON;
+
+    let output = "";
+    let status = 0;
+    try {
+      output = execFileSync(runner, [viteNode, resolve("scripts/release/rehearsal.ts")], {
+        cwd: resolve("."),
+        env,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } catch (error) {
+      const caught = error as {
+        status?: number;
+        stdout?: Buffer | string;
+        stderr?: Buffer | string;
+        output?: Array<Buffer | string | null>;
+      };
+      status = caught.status ?? 1;
+      output = [
+        ...(caught.output ?? []),
+        caught.stdout,
+        caught.stderr,
+      ].filter((value): value is Buffer | string => value !== undefined && value !== null)
+        .map((value) => value.toString())
+        .join("");
+    }
+    expect(status).not.toBe(0);
+    const line = output.trim().split(/\r?\n/).at(-1);
+    expect(line).toBeTruthy();
+    expect(JSON.parse(line!)).toEqual({
+      status: "failed",
+      error: "RELEASE_REHEARSAL_EMPTY_TARGET_JSON is required",
+    });
+    expect(output).not.toMatch(/SUPABASE_SERVICE_ROLE_KEY|postgres(?:ql)?:\/\/[^\s"']+/i);
+  }, 30000);
 });
