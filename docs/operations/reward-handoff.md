@@ -5,6 +5,10 @@ operator completes an active mission. It is additive to the active-mission and
 publication-proof runbooks. `reward_pending` means that finance review is
 pending; it does not mean issued, credited, available, withdrawn, or paid.
 
+Follow the [production release foundation](production-release-foundation.md)
+for the ordered release gates, disposable rehearsal, authorization boundary,
+and seven-day pilot handoff before using this runbook.
+
 Use only an authorized disposable local environment for acceptance. Operational
 records may contain opaque workflow, decision, and handoff identifiers plus
 classified outcomes. Never record JWTs, email addresses, proof URLs, signed

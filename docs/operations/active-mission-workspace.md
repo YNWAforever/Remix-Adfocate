@@ -5,6 +5,10 @@ This runbook covers the Phase 2 `active_workspace` rollout. The legacy
 review, fulfilment, revision, and approve-to-publish operations must not change
 its status, points, XP, earnings, or workspace budget.
 
+The ordered release gates, disposable rehearsal, go-live authorization, pilot
+handoff, and containment rules are in the
+[production release foundation](production-release-foundation.md) runbook.
+
 > Phase 3 publication-proof rollout, rollback, feature containment, and operator
 > recovery are governed by the dedicated
 > [publication proof release runbook](publication-proof-release-runbook.md).

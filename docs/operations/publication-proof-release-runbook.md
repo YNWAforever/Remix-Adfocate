@@ -7,6 +7,10 @@ mission slugs, timestamps, response codes, and ticket references. Do not copy
 credentials, JWTs, raw URLs, signed URLs, authored text, account names, or other
 personal data into the ticket.
 
+Use the [production release foundation](production-release-foundation.md) for
+the ordered manifest, preflight, rehearsal, go-live, pilot, and containment
+handoff that gates this runbook.
+
 ## Safety contract
 
 `mission_submissions` remains the assignment and final-reward anchor. Publication
