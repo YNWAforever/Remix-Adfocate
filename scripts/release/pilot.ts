@@ -308,6 +308,7 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
   const workspaceId = text(input.workspaceId).trim() || text((input as PilotCandidateReport).workspaceId).trim();
   const missionId = text(input.missionId).trim() || text((input as PilotCandidateReport).missionId).trim();
   const apply = input.apply === true;
+  const now = nowFrom(input);
   if (!apply) {
     return {
       enabled: false,
@@ -315,7 +316,7 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
       workspaceId,
       missionId,
       affectedRows: 0,
-      inspectedAt: new Date().toISOString(),
+      inspectedAt: now.toISOString(),
     };
   }
   if (!workspaceId || !missionId) throw new Error("pilot enablement requires exact workspace and mission IDs");
@@ -345,7 +346,7 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
   const reinspectionInput: PilotInspectionInput = {
     workspaceId,
     missionId,
-    now: new Date(),
+    now,
     ...(prior ? {
       ...prior,
       // The approved digest is checked again, never silently reused from a
@@ -365,7 +366,7 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
     workspaceId,
     missionId,
     affectedRows,
-    inspectedAt: new Date().toISOString(),
+    inspectedAt: now.toISOString(),
   };
 }
 
