@@ -169,6 +169,51 @@ describe("pilot observer and seven-day exit", () => {
     })).rejects.toThrow("client unavailable");
   });
 
+  it("marks malformed operational snapshot values unavailable", async () => {
+    const from = (table: string) => {
+      const builder: any = {
+        select: () => builder,
+        eq: () => builder,
+        then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve),
+      };
+      return builder;
+    };
+    const validTelemetry = {
+      integrityIncidents: 0,
+      tenantIsolationIncidents: 0,
+      illegalTransitions: 0,
+      duplicateDecisions: 0,
+      missingRewardContracts: 0,
+      notificationRetries: 0,
+      notificationDeadLetters: 0,
+      maxQueueAgeSeconds: 0,
+      reviewLatencySeconds: 0,
+      overdueItems: 0,
+      unexpected5xx: 0,
+      requestErrorClusters: 0,
+      databaseErrorClusters: 0,
+      queueHealthy: true,
+      notificationQueueHealthy: true,
+      retryQueueHealthy: true,
+    };
+    for (const malformed of [
+      { unexpected5xx: "0" },
+      { maxQueueAgeSeconds: -1 },
+      { queueHealthy: null },
+      { notificationQueueHealthy: "yes" },
+      { retryQueueHealthy: 1 },
+      { queueOverdue: "false" },
+    ]) {
+      const observation = await observePilot({ from }, {
+        workspaceId: "workspace-1",
+        missionId: "mission-1",
+        snapshot: { ...validTelemetry, ...malformed },
+      });
+      expect(observation.telemetryAvailable).toBe(false);
+      expect(observation.queueHealthy).toBe(false);
+    }
+  });
+
   it("holds a structurally complete seven-day sample when operational telemetry is unavailable", () => {
     const thresholds = {
       maxQueueAgeSeconds: 3600,

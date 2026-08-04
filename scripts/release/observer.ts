@@ -144,7 +144,7 @@ function valueOrSnapshot(snapshot: Record<string, unknown>, key: string, fallbac
   return snapshot[key] === undefined ? fallback : count(snapshot[key]);
 }
 
-const OPERATIONAL_TELEMETRY_KEYS = [
+const OPERATIONAL_COUNTER_KEYS = [
   "integrityIncidents",
   "tenantIsolationIncidents",
   "illegalTransitions",
@@ -158,11 +158,26 @@ const OPERATIONAL_TELEMETRY_KEYS = [
   "unexpected5xx",
   "requestErrorClusters",
   "databaseErrorClusters",
+] as const;
+
+const REQUIRED_OPERATIONAL_BOOLEAN_KEYS = [
   "queueHealthy",
+  "notificationQueueHealthy",
+  "retryQueueHealthy",
+] as const;
+
+const OPTIONAL_OPERATIONAL_BOOLEAN_KEYS = [
+  "queueOverdue",
 ] as const;
 
 function hasOperationalTelemetry(snapshot: Record<string, unknown>) {
-  return OPERATIONAL_TELEMETRY_KEYS.every((key) => snapshot[key] !== undefined);
+  const countersValid = OPERATIONAL_COUNTER_KEYS.every((key) => {
+    const value = snapshot[key];
+    return typeof value === "number" && Number.isFinite(value) && value >= 0;
+  });
+  if (!countersValid) return false;
+  if (!REQUIRED_OPERATIONAL_BOOLEAN_KEYS.every((key) => typeof snapshot[key] === "boolean")) return false;
+  return OPTIONAL_OPERATIONAL_BOOLEAN_KEYS.every((key) => snapshot[key] === undefined || typeof snapshot[key] === "boolean");
 }
 
 /**
