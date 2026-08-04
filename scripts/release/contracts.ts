@@ -196,6 +196,22 @@ export interface PilotEnableReport {
   readonly inspectedAt: string;
 }
 
+export interface PilotAtomicEnableInput {
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly expectedWorkflowMode: "legacy";
+  readonly nextWorkflowMode: "active_workspace";
+  readonly expectedMissionStatus: "draft";
+  readonly rejectIfSubmissionExists: true;
+}
+
+export interface PilotAtomicEnableResult {
+  readonly data?: unknown;
+  readonly error?: unknown;
+  readonly count?: number | null;
+  readonly affectedRows?: number;
+}
+
 export interface PilotGateInput {
   /** Test-only/read-only structural mode; production pilot inspection must carry all gates. */
   readonly structuralOnly?: boolean;

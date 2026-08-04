@@ -25,6 +25,12 @@ function fakeSupabase(input: {
   const client = {
     mission: tables.missions[0],
     activePilotCount: input.activePilotCount ?? 0,
+    enablePilotAtomically: vi.fn(async (args: { nextWorkflowMode: string }) => {
+      const current = tables.missions[0];
+      if (!current || current.creator_workflow_mode !== "legacy") return { data: [], error: null };
+      Object.assign(current, { creator_workflow_mode: args.nextWorkflowMode });
+      return { data: [{ id: current.id }], error: null };
+    }),
     from(table: string) {
       const rows = tables[table] ?? [];
       const filters: Row = {};
@@ -65,6 +71,7 @@ function gates(digest = "a".repeat(64)) {
     deployment: { status: "passed" as const, deploymentReadyState: "READY" as const, commit: "c".repeat(40) },
     compatibilityEvidence: true,
     evidenceExpiresAt: "2026-08-10T00:00:00.000Z",
+    evidenceCreatedAt: "2026-08-01T00:00:00.000Z",
     now: new Date("2026-08-01T00:00:00Z"),
   };
 }
@@ -119,14 +126,14 @@ describe("pilot candidate guard", () => {
       approval: `ENABLE PILOT workspace-1 mission-1 ${digest}`,
     });
     expect(enabled.applied).toBe(true);
-    expect(client.update).toHaveBeenCalledTimes(1);
+    expect(client.enablePilotAtomically).toHaveBeenCalledTimes(1);
     expect(client.mission?.creator_workflow_mode).toBe("active_workspace");
     expect(client.mission?.status).toBe("draft");
   });
 
   it("rejects a conditional update race and never publishes", async () => {
     const client = fakeSupabase({ mission });
-    client.update.mockResolvedValueOnce({ data: [], error: null });
+    client.enablePilotAtomically.mockResolvedValueOnce({ data: [], error: null });
     const raceDigest = "c".repeat(64);
     const report = await inspectPilotCandidate(client, { workspaceId: "workspace-1", missionId: "mission-1", ...gates(raceDigest) });
     await expect(enablePilot(client, {

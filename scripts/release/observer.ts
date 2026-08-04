@@ -1,5 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { createClient } from "@supabase/supabase-js";
 import { hashOpaque, type PilotClient } from "./pilot";
 import type {
   PilotExitDecision,
@@ -50,12 +52,13 @@ function amount(value: unknown) {
 }
 
 function scoped(rows: readonly Row[], workspaceId: string, missionId: string) {
-  return rows.filter((row) => {
+  const invalid = rows.find((row) => {
     const rowMission = row.mission_id ?? row.missionId;
     const rowWorkspace = row.workspace_id ?? row.workspaceId;
-    return (rowMission === undefined || rowMission === missionId)
-      && (rowWorkspace === undefined || rowWorkspace === workspaceId);
+    return rowMission !== missionId || rowWorkspace !== workspaceId;
   });
+  if (invalid) throw new Error("pilot observation row scope mismatch or missing scope");
+  return [...rows];
 }
 
 async function queryRows(client: ObserverClient, table: string, workspaceId: string, missionId: string) {
@@ -67,7 +70,7 @@ async function queryRows(client: ObserverClient, table: string, workspaceId: str
   const direct = client[table] ?? client[aliases[table] ?? ""];
   if (Array.isArray(direct)) return scoped(asRows(direct), workspaceId, missionId);
   if (direct && typeof direct === "object" && "data" in direct) return scoped(asRows((direct as { data?: unknown }).data), workspaceId, missionId);
-  if (typeof client.from !== "function") return [];
+  if (typeof client.from !== "function") throw new Error(`pilot observation read failed: ${table} client unavailable`);
   try {
     let builder = client.from(table) as QueryBuilder;
     if (builder.select) builder = builder.select("*");
@@ -80,7 +83,7 @@ async function queryRows(client: ObserverClient, table: string, workspaceId: str
     if (result.error) throw new Error(`pilot observation read failed: ${table}`);
     return scoped(asRows(result.data), workspaceId, missionId);
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith("pilot observation read failed:")) throw error;
+    if (error instanceof Error && (error.message.startsWith("pilot observation read failed:") || error.message.startsWith("pilot observation row scope mismatch"))) throw error;
     throw new Error(`pilot observation read failed: ${table}`);
   }
 }
@@ -234,6 +237,14 @@ function hasMovement(observation: PilotExitObservation) {
   return Object.values(raw as unknown as Record<string, unknown>).some((value) => typeof value === "number" && value !== 0);
 }
 
+function snapshotsMoved(observation: PilotExitObservation) {
+  const before = observation.rewardSnapshotBefore;
+  const after = observation.rewardSnapshotAfter;
+  if (!before || !after) return false;
+  const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
+  return [...keys].some((key) => before[key] !== after[key]);
+}
+
 const REQUIRED_THRESHOLD_KEYS: readonly (keyof PilotObservationThresholds)[] = [
   "maxQueueAgeSeconds",
   "maxReviewLatencySeconds",
@@ -242,6 +253,50 @@ const REQUIRED_THRESHOLD_KEYS: readonly (keyof PilotObservationThresholds)[] = [
   "maxDatabaseErrorClusters",
   "maxNotificationDeadLetters",
 ];
+
+const REQUIRED_COUNT_KEYS = [
+  "workflowCount", "submissionCount", "proofAttemptCount", "completionDecisionCount",
+  "pendingRewards", "completedWorkflows", "integrityIncidents", "tenantIsolationIncidents",
+  "illegalTransitions", "duplicateDecisions", "missingRewardContracts", "notificationRetries",
+  "notificationDeadLetters", "maxQueueAgeSeconds", "reviewLatencySeconds", "overdueItems",
+  "unexpected5xx", "requestErrorClusters", "databaseErrorClusters",
+] as const;
+
+function completeThresholds(value: unknown): value is PilotObservationThresholds {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return REQUIRED_THRESHOLD_KEYS.every((key) => typeof record[key] === "number" && Number.isFinite(record[key]));
+}
+
+function completeSnapshot(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const entries = Object.entries(value as Record<string, unknown>);
+  return entries.length > 0 && entries.every(([, item]) => typeof item === "number" && Number.isFinite(item));
+}
+
+function completeFinancialMovement(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return ["points", "cash", "xp", "ledgerRows"].every((key) => typeof record[key] === "number" && Number.isFinite(record[key]));
+}
+
+function completenessReasons(observation: PilotExitObservation, index: number, scope: { workspaceId: string; missionId: string } | null) {
+  const prefix = `observation ${index + 1}`;
+  const reasons: string[] = [];
+  if (typeof observation.observedAt !== "string" || Number.isNaN(Date.parse(observation.observedAt))) reasons.push(`${prefix} observedAt is invalid`);
+  if (typeof observation.workspaceId !== "string" || !observation.workspaceId.trim()) reasons.push(`${prefix} workspace scope is missing`);
+  if (typeof observation.missionId !== "string" || !observation.missionId.trim()) reasons.push(`${prefix} mission scope is missing`);
+  if (scope && (observation.workspaceId !== scope.workspaceId || observation.missionId !== scope.missionId)) reasons.push(`${prefix} scope differs from selected pilot`);
+  if (typeof observation.creatorIdentityHash !== "string" || !/^[a-f0-9]{64}$/i.test(observation.creatorIdentityHash)) reasons.push(`${prefix} creator identity hash is missing or invalid`);
+  if (!Array.isArray(observation.workflowIds) || observation.workflowIds.some((id) => typeof id !== "string" || !/^[a-f0-9]{64}$/i.test(id))) reasons.push(`${prefix} workflow identities are missing or not opaque hashes`);
+  for (const key of REQUIRED_COUNT_KEYS) if (typeof observation[key] !== "number" || !Number.isFinite(observation[key])) reasons.push(`${prefix} ${key} is missing or invalid`);
+  if (typeof observation.completedCreatorCount !== "number" || !Number.isFinite(observation.completedCreatorCount)) reasons.push(`${prefix} completed creator count is missing or invalid`);
+  if (typeof observation.queueHealthy !== "boolean") reasons.push(`${prefix} queue health is missing`);
+  if (!completeFinancialMovement(observation.financialMovement)) reasons.push(`${prefix} financial movement is incomplete`);
+  if (!completeSnapshot(observation.rewardSnapshotBefore) || !completeSnapshot(observation.rewardSnapshotAfter)) reasons.push(`${prefix} financial snapshots are incomplete`);
+  if (!completeThresholds(observation.thresholds)) reasons.push(`${prefix} approved thresholds are incomplete`);
+  return reasons;
+}
 
 /** Pure seven-day exit gate. No database or network access is performed. */
 export function evaluatePilotExit(
@@ -253,14 +308,20 @@ export function evaluatePilotExit(
     containReasons.push("integrity incident detected");
   }
   if (observations.some((item) => count(item.tenantIsolationIncidents) > 0)) containReasons.push("tenant isolation incident detected");
-  if (observations.some(hasMovement)) containReasons.push("financial movement detected");
+  if (observations.some((item) => hasMovement(item) || snapshotsMoved(item))) containReasons.push("financial movement detected");
   if (containReasons.length) return { decision: "contain", reasons: containReasons };
 
   const reasons: string[] = [];
+  const scope = observations.length > 0 && typeof observations[0]?.workspaceId === "string" && typeof observations[0]?.missionId === "string"
+    ? { workspaceId: observations[0].workspaceId, missionId: observations[0].missionId }
+    : null;
+  for (let index = 0; index < observations.length; index += 1) reasons.push(...completenessReasons(observations[index]!, index, scope));
+  if (observations.length === 0) reasons.push("no pilot observations supplied");
+  if (reasons.length) return { decision: "hold", reasons: [...new Set(reasons)] };
   const approvedThresholds = containment.thresholds
     ?? containment.approvedEvidence?.thresholds
     ?? observations.find((item) => item.thresholds)?.thresholds;
-  if (!approvedThresholds || REQUIRED_THRESHOLD_KEYS.some((key) => typeof approvedThresholds[key] !== "number" || !Number.isFinite(approvedThresholds[key]))) {
+  if (!approvedThresholds || !completeThresholds(approvedThresholds)) {
     reasons.push("approved observation thresholds are missing");
   }
   const days = [...new Set(observations.map((item) => day(item.observedAt)).filter((value): value is string => Boolean(value)))].sort();
@@ -278,7 +339,7 @@ export function evaluatePilotExit(
   if (maxMetric(observations, "completedWorkflows") !== 1 || maxMetric(observations, "pendingRewards") !== 1) {
     reasons.push("exactly one completed workflow and pending reward are required");
   }
-  const completedCreators = maxMetric(observations, "completedCreatorCount") || (maxMetric(observations, "completedWorkflows") === 1 ? 1 : 0);
+  const completedCreators = maxMetric(observations, "completedCreatorCount");
   if (completedCreators !== 1) reasons.push("exactly one completed pilot creator is required");
   if (maxMetric(observations, "unexpected5xx") > (approvedThresholds?.maxUnexpected5xx ?? 0)) reasons.push("new unexpected 5xx detected");
   if (maxMetric(observations, "databaseErrorClusters") > (approvedThresholds?.maxDatabaseErrorClusters ?? 0)) reasons.push("new database error cluster detected");
@@ -304,7 +365,72 @@ export async function runObserverCli(
   throw new Error("usage: observer.ts observe|evaluate");
 }
 
-if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.stderr.write("observer.ts requires an injected Supabase service client\n");
-  process.exitCode = 1;
+function envValue(env: NodeJS.ProcessEnv, key: string) {
+  const value = env[key]?.trim();
+  if (!value) throw new Error(`${key} is required`);
+  return value;
+}
+
+function jsonEnv<T>(env: NodeJS.ProcessEnv, key: string): T {
+  const value = envValue(env, key);
+  try { return JSON.parse(value) as T; } catch { throw new Error(`${key} must contain valid JSON`); }
+}
+
+function serviceClient(env: NodeJS.ProcessEnv): ObserverClient {
+  const url = env.RELEASE_SUPABASE_URL ?? env.SUPABASE_URL;
+  const key = env.RELEASE_SUPABASE_SERVICE_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("explicit Supabase service client configuration is required");
+  let parsed: URL;
+  try { parsed = new URL(url); } catch { throw new Error("Supabase service URL is invalid"); }
+  if (!/^https?:$/.test(parsed.protocol)) throw new Error("Supabase service URL is invalid");
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } }) as unknown as ObserverClient;
+}
+
+function parsedFile<T>(path: string, raw: string): T {
+  try { return JSON.parse(raw) as T; } catch { throw new Error(`${path} must contain valid JSON`); }
+}
+
+export async function executeObserverCli(args: readonly string[], env: NodeJS.ProcessEnv = process.env) {
+  const command = args[0] ?? "observe";
+  if (command === "evaluate") {
+    const observationsPath = envValue(env, "RELEASE_PILOT_OBSERVATIONS_PATH");
+    const observations = parsedFile<readonly PilotExitObservation[]>(observationsPath, await readFile(observationsPath, "utf8"));
+    const containment = env.RELEASE_PILOT_CONTAINMENT_JSON
+      ? jsonEnv<ContainmentResult>(env, "RELEASE_PILOT_CONTAINMENT_JSON")
+      : env.RELEASE_PILOT_CONTAINMENT_PATH
+        ? parsedFile<ContainmentResult>(env.RELEASE_PILOT_CONTAINMENT_PATH, await readFile(env.RELEASE_PILOT_CONTAINMENT_PATH, "utf8"))
+        : (() => { throw new Error("RELEASE_PILOT_CONTAINMENT_JSON or RELEASE_PILOT_CONTAINMENT_PATH is required"); })();
+    return runObserverCli("evaluate", {}, { workspaceId: "approved", missionId: "approved" }, observations, containment);
+  }
+  if (command === "observe") {
+    const workspaceId = envValue(env, "RELEASE_PILOT_WORKSPACE_ID");
+    const missionId = envValue(env, "RELEASE_PILOT_MISSION_ID");
+    const thresholds = jsonEnv<PilotObservationThresholds>(env, "RELEASE_PILOT_THRESHOLDS_JSON");
+    const input: ObserverInput = {
+      workspaceId,
+      missionId,
+      observedAt: env.RELEASE_PILOT_OBSERVED_AT ?? new Date().toISOString(),
+      creatorIdentitySalt: env.RELEASE_PILOT_IDENTITY_SALT,
+      thresholds,
+      ...(env.RELEASE_PILOT_SNAPSHOT_JSON ? { snapshot: jsonEnv<ObserverInput["snapshot"]>(env, "RELEASE_PILOT_SNAPSHOT_JSON") } : {}),
+    };
+    return runObserverCli("observe", serviceClient(env), input);
+  }
+  throw new Error("usage: observer.ts observe|evaluate");
+}
+
+function sanitizedError(error: unknown) {
+  const message = error instanceof Error ? error.message : "observer command failed";
+  return message.replace(/(?:postgres(?:ql)?:\/\/|eyJ)[^\s"']+/gi, "[REDACTED]");
+}
+
+if (!process.env.VITEST && process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    const result = await executeObserverCli(process.argv.slice(2), process.env);
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    if ("decision" in (result as object) && (result as { decision: string }).decision !== "expand") process.exitCode = 1;
+  } catch (error) {
+    process.stderr.write(`${JSON.stringify({ status: "failed", error: sanitizedError(error) })}\n`);
+    process.exitCode = 1;
+  }
 }

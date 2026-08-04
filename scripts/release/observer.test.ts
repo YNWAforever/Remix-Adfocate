@@ -3,26 +3,49 @@ import { evaluatePilotExit, observePilot } from "./observer";
 
 describe("pilot observer and seven-day exit", () => {
   it("expands only after seven distinct stable days with one neutral handoff", () => {
+    const thresholds = {
+      maxQueueAgeSeconds: 3600,
+      maxReviewLatencySeconds: 86400,
+      maxOverdueItems: 0,
+      maxUnexpected5xx: 0,
+      maxDatabaseErrorClusters: 0,
+      maxNotificationDeadLetters: 0,
+    };
     const observations = Array.from({ length: 7 }, (_, day) => ({
       observedAt: new Date(Date.UTC(2026, 7, day + 1)).toISOString(),
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      workflowCount: 1,
+      submissionCount: 1,
+      proofAttemptCount: 1,
+      completionDecisionCount: 1,
       unexpected5xx: 0,
       integrityIncidents: 0,
       tenantIsolationIncidents: 0,
+      illegalTransitions: 0,
+      duplicateDecisions: 0,
+      missingRewardContracts: 0,
+      notificationRetries: 0,
       notificationDeadLetters: 0,
+      maxQueueAgeSeconds: 0,
+      reviewLatencySeconds: 0,
+      overdueItems: 0,
+      requestErrorClusters: 0,
+      databaseErrorClusters: 0,
       pendingRewards: day === 6 ? 1 : 0,
       completedWorkflows: day === 6 ? 1 : 0,
+      completedCreatorCount: 1,
+      creatorIdentityHash: "1".repeat(64),
+      workflowIds: ["2".repeat(64)],
+      queueHealthy: true,
       financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
+      rewardSnapshotBefore: { points: 10, cash: 0, xp: 0 },
+      rewardSnapshotAfter: { points: 10, cash: 0, xp: 0 },
+      thresholds,
     }));
     expect(evaluatePilotExit(observations, {
       passed: true,
-      thresholds: {
-        maxQueueAgeSeconds: 3600,
-        maxReviewLatencySeconds: 86400,
-        maxOverdueItems: 0,
-        maxUnexpected5xx: 0,
-        maxDatabaseErrorClusters: 0,
-        maxNotificationDeadLetters: 0,
-      },
+      thresholds,
     })).toEqual({ decision: "expand", reasons: [] });
   });
 
@@ -74,5 +97,28 @@ describe("pilot observer and seven-day exit", () => {
     expect(observation.creatorIdentityHash).toMatch(/^[a-f0-9]{64}$/);
     expect(JSON.stringify(observation)).not.toContain("creator-1");
     expect(JSON.stringify(observation)).not.toContain("workflow-1");
+  });
+
+  it("rejects missing or mismatched row scope instead of filtering it away", async () => {
+    const from = (table: string) => {
+      const rows = table === "mission_workflows"
+        ? [{ id: "workflow-1", mission_id: "mission-1", state: "reward_pending", creator_id: "creator-1" }]
+        : [];
+      const builder: any = {
+        select: () => builder,
+        eq: () => builder,
+        then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: rows, error: null }).then(resolve),
+      };
+      return builder;
+    };
+    await expect(observePilot({ from }, {
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      observedAt: new Date("2026-08-01T00:00:00Z"),
+    })).rejects.toThrow("scope mismatch");
+    await expect(observePilot({}, {
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+    })).rejects.toThrow("client unavailable");
   });
 });

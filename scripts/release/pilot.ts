@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { createClient } from "@supabase/supabase-js";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import type {
@@ -8,14 +9,18 @@ import type {
   PilotEnableReport,
   PilotGateInput,
   PilotJoinContract,
+  PilotAtomicEnableInput,
+  PilotAtomicEnableResult,
 } from "./contracts";
 
 type Row = Record<string, unknown>;
-type QueryResult = { data?: unknown; error?: unknown; count?: number | null };
+type QueryResult = { data?: unknown; error?: unknown; count?: number | null; affectedRows?: number };
 
 /** A deliberately small Supabase-like surface; the real client and test fakes both fit. */
 export interface PilotClient {
   readonly from?: (table: string) => unknown;
+  readonly enablePilotAtomically?: (input: PilotAtomicEnableInput) => Promise<PilotAtomicEnableResult>;
+  readonly rpc?: (fn: string, args: Record<string, unknown>) => Promise<PilotAtomicEnableResult>;
   readonly [key: string]: unknown;
 }
 
@@ -153,11 +158,13 @@ function gateReasons(input: PilotInspectionInput, now: Date) {
   if (compatibility === undefined || (typeof compatibility === "boolean" ? !compatibility : !compatibility.passed)) {
     reasons.push("legacy compatibility evidence is missing or failed");
   }
-  if (input.evidenceExpiresAt) {
-    const expiry = Date.parse(input.evidenceExpiresAt);
-    if (!Number.isFinite(expiry) || now.getTime() > expiry) reasons.push("approved evidence has expired");
-  }
-  if (input.evidenceCreatedAt && Number.isNaN(Date.parse(input.evidenceCreatedAt))) reasons.push("approved evidence timestamp is invalid");
+  if (!input.evidenceCreatedAt) reasons.push("approved evidence creation timestamp is missing");
+  if (!input.evidenceExpiresAt) reasons.push("approved evidence expiry timestamp is missing");
+  const created = input.evidenceCreatedAt ? Date.parse(input.evidenceCreatedAt) : Number.NaN;
+  const expiry = input.evidenceExpiresAt ? Date.parse(input.evidenceExpiresAt) : Number.NaN;
+  if (!Number.isFinite(created) || !Number.isFinite(expiry)) reasons.push("approved evidence timestamp is invalid");
+  if (Number.isFinite(created) && created > now.getTime()) reasons.push("approved evidence creation timestamp is in the future");
+  if (Number.isFinite(expiry) && expiry <= now.getTime()) reasons.push("approved evidence has expired");
   return { reasons, capabilities: capabilityEvidence };
 }
 
@@ -193,6 +200,8 @@ export async function inspectPilotCandidate(
     if (!(input.capabilities?.length || input.postflight?.capabilities?.length || input.schemaPostflight?.capabilities?.length)) reasons.push("schema capability evidence is missing");
     if (!input.deployment && !input.deploymentReport) reasons.push("READY deployment evidence is missing");
     if (input.compatibilityEvidence === undefined && input.legacyCompatibilityEvidence === undefined) reasons.push("legacy compatibility evidence is missing or failed");
+    if (!input.evidenceCreatedAt) reasons.push("approved evidence creation timestamp is missing");
+    if (!input.evidenceExpiresAt) reasons.push("approved evidence expiry timestamp is missing");
   }
   if (!workspaceId) reasons.push("workspace ID is required");
   if (!missionId) reasons.push("mission ID is required");
@@ -269,37 +278,38 @@ export async function inspectPilotCandidate(
 }
 
 function updateCount(result: QueryResult) {
+  if (typeof result.affectedRows === "number") return result.affectedRows;
   if (typeof result.count === "number") return result.count;
   if (Array.isArray(result.data)) return result.data.length;
   return result.data && typeof result.data === "object" ? 1 : 0;
 }
 
 async function conditionalUpdate(client: PilotClient, workspaceId: string, missionId: string): Promise<QueryResult> {
-  const topLevel = client.update;
-  if (typeof topLevel === "function") {
-    return await (topLevel as (args: unknown) => Promise<QueryResult>)({
-      table: "missions",
-      values: { creator_workflow_mode: "active_workspace" },
-      filters: {
-        id: missionId,
-        workspace_id: workspaceId,
-        creator_workflow_mode: "legacy",
-        status: "draft",
-      },
+  const args: PilotAtomicEnableInput = {
+    workspaceId,
+    missionId,
+    expectedWorkflowMode: "legacy",
+    nextWorkflowMode: "active_workspace",
+    expectedMissionStatus: "draft",
+    rejectIfSubmissionExists: true,
+  };
+  if (typeof client.enablePilotAtomically === "function") {
+    return client.enablePilotAtomically(args);
+  }
+  if (typeof client.rpc === "function") {
+    return client.rpc("enable_pilot_if_empty", {
+      p_workspace_id: workspaceId,
+      p_mission_id: missionId,
+      p_expected_workflow_mode: "legacy",
+      p_next_workflow_mode: "active_workspace",
+      p_expected_status: "draft",
+      p_reject_if_submission_exists: true,
     });
   }
-  if (typeof client.from !== "function") return { data: [], error: "update unavailable" };
-  let builder = client.from("missions") as QueryBuilder;
-  if (!builder.update || !builder.eq) return { data: [], error: "update unavailable" };
-  builder = builder.update({ creator_workflow_mode: "active_workspace" });
-  const eq = builder.eq;
-  if (!eq) return { data: [], error: "update unavailable" };
-  builder = eq.call(builder, "id", missionId);
-  builder = eq.call(builder, "workspace_id", workspaceId);
-  builder = eq.call(builder, "creator_workflow_mode", "legacy");
-  builder = eq.call(builder, "status", "draft");
-  if (builder.select) builder = builder.select("id");
-  return runQuery(builder);
+  return {
+    data: [],
+    error: "atomic pilot enablement hook is required; direct table updates are not safe",
+  };
 }
 
 /**
@@ -378,6 +388,25 @@ function envValue(env: NodeJS.ProcessEnv, key: string) {
   return value;
 }
 
+function jsonEnv<T>(env: NodeJS.ProcessEnv, key: string): T {
+  const value = envValue(env, key);
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    throw new Error(`${key} must contain valid JSON`);
+  }
+}
+
+function serviceClient(env: NodeJS.ProcessEnv): PilotClient {
+  const url = env.RELEASE_SUPABASE_URL ?? env.SUPABASE_URL;
+  const key = env.RELEASE_SUPABASE_SERVICE_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("explicit Supabase service client configuration is required");
+  let parsed: URL;
+  try { parsed = new URL(url); } catch { throw new Error("Supabase service URL is invalid"); }
+  if (!/^https?:$/.test(parsed.protocol)) throw new Error("Supabase service URL is invalid");
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } }) as unknown as PilotClient;
+}
+
 /** Injectable CLI adapter; production callers provide a service client. */
 export async function runPilotCli(
   args: readonly string[],
@@ -388,18 +417,27 @@ export async function runPilotCli(
   const workspaceId = env.RELEASE_PILOT_WORKSPACE_ID ?? env.PILOT_WORKSPACE_ID;
   const missionId = env.RELEASE_PILOT_MISSION_ID ?? env.PILOT_MISSION_ID;
   if (!workspaceId || !missionId) throw new Error("RELEASE_PILOT_WORKSPACE_ID and RELEASE_PILOT_MISSION_ID are required");
+  const evidenceDigest = env.RELEASE_EVIDENCE_DIGEST;
   const base = {
     workspaceId,
     missionId,
-    approvedEvidenceDigest: env.RELEASE_EVIDENCE_DIGEST,
-    approvedCommit: env.RELEASE_APPLICATION_COMMIT,
+    approvedEvidenceDigest: evidenceDigest,
+    evidenceDigest,
+    expectedCapabilities: jsonEnv<readonly string[]>(env, "RELEASE_EXPECTED_CAPABILITIES_JSON"),
+    capabilities: jsonEnv<PilotInspectionInput["capabilities"]>(env, "RELEASE_CAPABILITIES_JSON"),
+    deployment: jsonEnv<NonNullable<PilotInspectionInput["deployment"]>>(env, "RELEASE_DEPLOYMENT_JSON"),
+    compatibilityEvidence: jsonEnv<PilotInspectionInput["compatibilityEvidence"]>(env, "RELEASE_COMPATIBILITY_JSON"),
+    approvedCommit: envValue(env, "RELEASE_APPLICATION_COMMIT"),
+    evidenceCreatedAt: envValue(env, "RELEASE_EVIDENCE_CREATED_AT"),
+    evidenceExpiresAt: envValue(env, "RELEASE_EVIDENCE_EXPIRES_AT"),
     now: new Date(),
   } satisfies PilotInspectionInput;
   if (command === "inspect") return inspectPilotCandidate(client, base);
   if (command === "enable") {
-    const evidenceDigest = env.RELEASE_EVIDENCE_DIGEST;
     if (!evidenceDigest) throw new Error("RELEASE_EVIDENCE_DIGEST is required");
+    const report = await inspectPilotCandidate(client, base);
     return enablePilot(client, {
+      ...report,
       ...base,
       evidenceDigest,
       approval: env.RELEASE_PILOT_APPROVAL ?? "",
@@ -409,12 +447,24 @@ export async function runPilotCli(
   throw new Error("usage: pilot.ts inspect|enable");
 }
 
-// The CLI intentionally does not construct a service client implicitly.  A
-// deployment wrapper must inject one, which keeps this module read-only by
-// default in local tooling and tests.
-if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.stderr.write("pilot.ts requires an injected Supabase service client\n");
-  process.exitCode = 1;
+export async function executePilotCli(args: readonly string[], env: NodeJS.ProcessEnv = process.env) {
+  return runPilotCli(args, serviceClient(env), env);
+}
+
+function sanitizedError(error: unknown) {
+  const message = error instanceof Error ? error.message : "pilot command failed";
+  return message.replace(/(?:postgres(?:ql)?:\/\/|eyJ)[^\s"']+/gi, "[REDACTED]");
+}
+
+if (!process.env.VITEST && process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    const result = await executePilotCli(process.argv.slice(2), process.env);
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    if ("eligible" in (result as object) && (result as { eligible: boolean }).eligible === false) process.exitCode = 1;
+  } catch (error) {
+    process.stderr.write(`${JSON.stringify({ status: "failed", error: sanitizedError(error) })}\n`);
+    process.exitCode = 1;
+  }
 }
 
 export function hashOpaque(value: string) {
