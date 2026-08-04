@@ -108,11 +108,16 @@ function hasGateInput(input: PilotInspectionInput) {
   if (input.structuralOnly === true) return false;
   return Boolean(
     input.approvedEvidenceDigest
+    || input.evidenceDigest
     || input.expectedCapabilities
     || input.capabilities
+    || input.postflight?.capabilities
+    || input.schemaPostflight?.capabilities
     || input.deployment
+    || input.deploymentReport
     || input.approvedCommit
     || input.compatibilityEvidence !== undefined
+    || input.legacyCompatibilityEvidence !== undefined
     || input.evidenceCreatedAt
     || input.evidenceExpiresAt,
   );
@@ -126,22 +131,23 @@ function gateReasons(input: PilotInspectionInput, now: Date) {
   if (!hasGateInput(input)) return { reasons: [] as string[], capabilities: [] as { name: string; status: CapabilityStatus }[] };
   const reasons: string[] = [];
   const expected = input.expectedCapabilities ?? [];
-  const capabilities = input.capabilities ?? [];
-  if (!validDigest(input.approvedEvidenceDigest)) reasons.push("approved evidence digest is missing or invalid");
+  const digest = input.approvedEvidenceDigest ?? input.evidenceDigest;
+  if (!validDigest(digest)) reasons.push("approved evidence digest is missing or invalid");
+  const capabilityEvidence = input.capabilities ?? input.postflight?.capabilities ?? input.schemaPostflight?.capabilities ?? [];
   for (const name of expected) {
-    const capability = capabilities.find((item) => item.name === name);
+    const capability = capabilityEvidence.find((item) => item.name === name);
     if (!capability || capability.status !== "present") reasons.push(`capability gate failed: ${name}`);
   }
-  if (input.deployment === undefined) {
+  const deployment = input.deployment ?? input.deploymentReport;
+  if (deployment === undefined) {
     reasons.push("READY deployment evidence is missing");
   } else {
-    const deployment = input.deployment;
     const expectedCommit = input.approvedCommit ?? deployment.expectedCommit;
     if (deployment.status !== "passed" || deployment.deploymentReadyState !== "READY") reasons.push("deployment is not READY");
     if (expectedCommit && deployment.commit !== expectedCommit) reasons.push("deployment commit mismatch");
     if (!expectedCommit) reasons.push("approved deployment commit is missing");
   }
-  const compatibility = input.compatibilityEvidence;
+  const compatibility = input.compatibilityEvidence ?? input.legacyCompatibilityEvidence;
   if (compatibility === undefined || (typeof compatibility === "boolean" ? !compatibility : !compatibility.passed)) {
     reasons.push("legacy compatibility evidence is missing or failed");
   }
@@ -150,7 +156,7 @@ function gateReasons(input: PilotInspectionInput, now: Date) {
     if (!Number.isFinite(expiry) || now.getTime() > expiry) reasons.push("approved evidence has expired");
   }
   if (input.evidenceCreatedAt && Number.isNaN(Date.parse(input.evidenceCreatedAt))) reasons.push("approved evidence timestamp is invalid");
-  return { reasons, capabilities };
+  return { reasons, capabilities: capabilityEvidence };
 }
 
 function activePilotRows(client: PilotClient, workspaceId: string, missionId: string) {
@@ -180,11 +186,11 @@ export async function inspectPilotCandidate(
     // A production candidate is never approved from mission rows alone.  The
     // explicit structuralOnly escape hatch is read-only and intended only for
     // deterministic contract tests/tools.
-    if (!input.approvedEvidenceDigest) reasons.push("approved evidence digest is missing or invalid");
+    if (!input.approvedEvidenceDigest && !input.evidenceDigest) reasons.push("approved evidence digest is missing or invalid");
     if (!input.expectedCapabilities?.length) reasons.push("expected schema capabilities are missing");
-    if (!input.capabilities?.length) reasons.push("schema capability evidence is missing");
-    if (!input.deployment) reasons.push("READY deployment evidence is missing");
-    if (input.compatibilityEvidence === undefined) reasons.push("legacy compatibility evidence is missing or failed");
+    if (!(input.capabilities?.length || input.postflight?.capabilities?.length || input.schemaPostflight?.capabilities?.length)) reasons.push("schema capability evidence is missing");
+    if (!input.deployment && !input.deploymentReport) reasons.push("READY deployment evidence is missing");
+    if (input.compatibilityEvidence === undefined && input.legacyCompatibilityEvidence === undefined) reasons.push("legacy compatibility evidence is missing or failed");
   }
   if (!workspaceId) reasons.push("workspace ID is required");
   if (!missionId) reasons.push("mission ID is required");
@@ -209,10 +215,11 @@ export async function inspectPilotCandidate(
     if (text(mission.creator_workflow_mode) !== "legacy") structuralReason(reasons, "mission is not legacy mode");
   }
 
-  const points = numberOrNull(mission?.points_reward);
-  const cash = mission?.cash_reward === null || mission?.cash_reward === undefined
+  const points = numberOrNull(mission?.points_reward ?? mission?.pointsReward);
+  const cashValue = mission?.cash_reward ?? mission?.cashReward;
+  const cash = cashValue === null || cashValue === undefined
     ? 0
-    : numberOrNull(mission.cash_reward);
+    : numberOrNull(cashValue);
   if (points === null || points < 0) reasons.push("points reward must be non-negative");
   if (cash === null || cash < 0) reasons.push("cash reward must be non-negative");
 
@@ -236,17 +243,22 @@ export async function inspectPilotCandidate(
     reasons: [...new Set(reasons)],
     joinContract,
     capabilities: gate.capabilities,
-    ...(input.deployment ? { deployment: input.deployment } : {}),
+    ...((input.deployment ?? input.deploymentReport) ? { deployment: input.deployment ?? input.deploymentReport } : {}),
     inspectedAt: now.toISOString(),
     ...(hasGateInput(input) ? {
       gateInput: {
-        approvedEvidenceDigest: input.approvedEvidenceDigest,
+        approvedEvidenceDigest: input.approvedEvidenceDigest ?? input.evidenceDigest,
+        evidenceDigest: input.evidenceDigest,
         structuralOnly: input.structuralOnly,
         expectedCapabilities: input.expectedCapabilities,
         capabilities: input.capabilities,
-        deployment: input.deployment,
+        postflight: input.postflight,
+        schemaPostflight: input.schemaPostflight,
+        deployment: input.deployment ?? input.deploymentReport,
+        deploymentReport: input.deploymentReport,
         approvedCommit: input.approvedCommit,
-        compatibilityEvidence: input.compatibilityEvidence,
+        compatibilityEvidence: input.compatibilityEvidence ?? input.legacyCompatibilityEvidence,
+        legacyCompatibilityEvidence: input.legacyCompatibilityEvidence,
         evidenceCreatedAt: input.evidenceCreatedAt,
         evidenceExpiresAt: input.evidenceExpiresAt,
       },
@@ -312,12 +324,17 @@ export async function enablePilot(client: PilotClient, input: PilotEnableInput):
   if (input.approval !== expected) throw new Error("pilot enablement requires the exact approval phrase");
 
   const prior = (input as PilotCandidateReport).gateInput ?? {
-    approvedEvidenceDigest: input.approvedEvidenceDigest,
+    approvedEvidenceDigest: input.approvedEvidenceDigest ?? input.evidenceDigest,
+    evidenceDigest: input.evidenceDigest,
     expectedCapabilities: input.expectedCapabilities,
     capabilities: input.capabilities,
-    deployment: input.deployment,
+    postflight: input.postflight,
+    schemaPostflight: input.schemaPostflight,
+    deployment: input.deployment ?? input.deploymentReport,
+    deploymentReport: input.deploymentReport,
     approvedCommit: input.approvedCommit,
-    compatibilityEvidence: input.compatibilityEvidence,
+    compatibilityEvidence: input.compatibilityEvidence ?? input.legacyCompatibilityEvidence,
+    legacyCompatibilityEvidence: input.legacyCompatibilityEvidence,
     evidenceCreatedAt: input.evidenceCreatedAt,
     evidenceExpiresAt: input.evidenceExpiresAt,
     structuralOnly: input.structuralOnly,

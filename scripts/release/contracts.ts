@@ -200,13 +200,20 @@ export interface PilotGateInput {
   /** Test-only/read-only structural mode; production pilot inspection must carry all gates. */
   readonly structuralOnly?: boolean;
   readonly approvedEvidenceDigest?: string;
+  readonly evidenceDigest?: string;
   readonly expectedCapabilities?: readonly string[];
   readonly capabilities?: readonly PilotCapabilityEvidence[];
+  readonly postflight?: { readonly capabilities?: readonly PilotCapabilityEvidence[] };
+  readonly schemaPostflight?: { readonly capabilities?: readonly PilotCapabilityEvidence[] };
   readonly deployment?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status"> & {
+    readonly expectedCommit?: string;
+  };
+  readonly deploymentReport?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status"> & {
     readonly expectedCommit?: string;
   };
   readonly approvedCommit?: string;
   readonly compatibilityEvidence?: boolean | { readonly passed: boolean };
+  readonly legacyCompatibilityEvidence?: boolean | { readonly passed: boolean };
   readonly evidenceCreatedAt?: string;
   readonly evidenceExpiresAt?: string;
   readonly now?: Date;
@@ -268,6 +275,8 @@ export interface PilotObserveInput {
   readonly observedAt?: Date | string;
   readonly creatorIdentitySalt?: string;
   readonly thresholds?: PilotObservationThresholds;
+  readonly financialSnapshotBefore?: Record<string, number>;
+  readonly financialSnapshotAfter?: Record<string, number>;
 }
 
 export type PilotExitDecision =

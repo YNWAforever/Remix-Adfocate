@@ -13,7 +13,17 @@ describe("pilot observer and seven-day exit", () => {
       completedWorkflows: day === 6 ? 1 : 0,
       financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
     }));
-    expect(evaluatePilotExit(observations, { passed: true })).toEqual({ decision: "expand", reasons: [] });
+    expect(evaluatePilotExit(observations, {
+      passed: true,
+      thresholds: {
+        maxQueueAgeSeconds: 3600,
+        maxReviewLatencySeconds: 86400,
+        maxOverdueItems: 0,
+        maxUnexpected5xx: 0,
+        maxDatabaseErrorClusters: 0,
+        maxNotificationDeadLetters: 0,
+      },
+    })).toEqual({ decision: "expand", reasons: [] });
   });
 
   it("holds for fewer than seven days and contains integrity, isolation, or money movement", () => {

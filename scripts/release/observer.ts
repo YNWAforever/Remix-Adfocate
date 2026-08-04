@@ -20,6 +20,7 @@ export interface ObserverInput extends PilotObserveInput {
 export interface ContainmentResult {
   readonly passed: boolean;
   readonly drillPassed?: boolean;
+  readonly thresholds?: PilotObservationThresholds;
 }
 
 export type PilotExitObservation = Pick<PilotObservation, "observedAt"> & Partial<PilotObservation> & Record<string, unknown>;
@@ -157,8 +158,8 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
   const requestClusters = new Set(requestErrors.map((row) => text(row.cluster_id ?? row.route ?? row.message)).filter(Boolean)).size;
   const dbClusters = new Set(databaseErrors.map((row) => text(row.cluster_id ?? row.database_cluster ?? row.message)).filter(Boolean)).size;
   const observedMovement = movement(snapshot.financialMovement ?? client.financialMovement);
-  const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? client.rewardSnapshotBefore);
-  const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? client.rewardSnapshotAfter);
+  const snapshotBefore = numericRecord(snapshot.rewardSnapshotBefore ?? input.financialSnapshotBefore ?? client.rewardSnapshotBefore);
+  const snapshotAfter = numericRecord(snapshot.rewardSnapshotAfter ?? input.financialSnapshotAfter ?? client.rewardSnapshotAfter);
   const queueHealthy = snapshot.queueHealthy !== false
     && snapshot.notificationQueueHealthy !== false
     && snapshot.retryQueueHealthy !== false;
@@ -215,13 +216,14 @@ function hasMovement(observation: PilotExitObservation) {
   return Object.values(raw as unknown as Record<string, unknown>).some((value) => typeof value === "number" && value !== 0);
 }
 
-function threshold(observations: readonly PilotExitObservation[], key: keyof PilotObservationThresholds, fallback: number) {
-  for (const observation of observations) {
-    const value = observation.thresholds?.[key];
-    if (typeof value === "number" && Number.isFinite(value)) return value;
-  }
-  return fallback;
-}
+const REQUIRED_THRESHOLD_KEYS: readonly (keyof PilotObservationThresholds)[] = [
+  "maxQueueAgeSeconds",
+  "maxReviewLatencySeconds",
+  "maxOverdueItems",
+  "maxUnexpected5xx",
+  "maxDatabaseErrorClusters",
+  "maxNotificationDeadLetters",
+];
 
 /** Pure seven-day exit gate. No database or network access is performed. */
 export function evaluatePilotExit(
@@ -237,6 +239,10 @@ export function evaluatePilotExit(
   if (containReasons.length) return { decision: "contain", reasons: containReasons };
 
   const reasons: string[] = [];
+  const approvedThresholds = containment.thresholds ?? observations.find((item) => item.thresholds)?.thresholds;
+  if (!approvedThresholds || REQUIRED_THRESHOLD_KEYS.some((key) => typeof approvedThresholds[key] !== "number" || !Number.isFinite(approvedThresholds[key]))) {
+    reasons.push("approved observation thresholds are missing");
+  }
   const days = [...new Set(observations.map((item) => day(item.observedAt)).filter((value): value is string => Boolean(value)))].sort();
   if (days.length < 7) reasons.push("fewer than seven distinct stable calendar days");
   else {
@@ -254,14 +260,14 @@ export function evaluatePilotExit(
   }
   const completedCreators = maxMetric(observations, "completedCreatorCount") || (maxMetric(observations, "completedWorkflows") === 1 ? 1 : 0);
   if (completedCreators !== 1) reasons.push("exactly one completed pilot creator is required");
-  if (maxMetric(observations, "unexpected5xx") > threshold(observations, "maxUnexpected5xx", 0)) reasons.push("new unexpected 5xx detected");
-  if (maxMetric(observations, "databaseErrorClusters") > threshold(observations, "maxDatabaseErrorClusters", 0)) reasons.push("new database error cluster detected");
+  if (maxMetric(observations, "unexpected5xx") > (approvedThresholds?.maxUnexpected5xx ?? 0)) reasons.push("new unexpected 5xx detected");
+  if (maxMetric(observations, "databaseErrorClusters") > (approvedThresholds?.maxDatabaseErrorClusters ?? 0)) reasons.push("new database error cluster detected");
   if (observations.some((item) => item.queueHealthy === false)) reasons.push("retry queues are unhealthy");
   if (observations.some((item) => item.queueOverdue === true)) reasons.push("retry queue is over age threshold");
-  if (maxMetric(observations, "notificationDeadLetters") > threshold(observations, "maxNotificationDeadLetters", 0)) reasons.push("notification dead letters detected");
-  if (maxMetric(observations, "maxQueueAgeSeconds") > threshold(observations, "maxQueueAgeSeconds", Number.POSITIVE_INFINITY)) reasons.push("retry queue is over age threshold");
-  if (maxMetric(observations, "reviewLatencySeconds") > threshold(observations, "maxReviewLatencySeconds", Number.POSITIVE_INFINITY)) reasons.push("review latency is over threshold");
-  if (maxMetric(observations, "overdueItems") > threshold(observations, "maxOverdueItems", 0)) reasons.push("overdue workflow items detected");
+  if (maxMetric(observations, "notificationDeadLetters") > (approvedThresholds?.maxNotificationDeadLetters ?? 0)) reasons.push("notification dead letters detected");
+  if (maxMetric(observations, "maxQueueAgeSeconds") > (approvedThresholds?.maxQueueAgeSeconds ?? 0)) reasons.push("retry queue is over age threshold");
+  if (maxMetric(observations, "reviewLatencySeconds") > (approvedThresholds?.maxReviewLatencySeconds ?? 0)) reasons.push("review latency is over threshold");
+  if (maxMetric(observations, "overdueItems") > (approvedThresholds?.maxOverdueItems ?? 0)) reasons.push("overdue workflow items detected");
   if (!containment.passed || containment.drillPassed === false) reasons.push("containment drill failed");
   return reasons.length ? { decision: "hold", reasons } : { decision: "expand", reasons: [] };
 }
