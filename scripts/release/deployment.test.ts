@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { verifyDeployment } from "./deployment";
+import { readFileSync } from "node:fs";
+import { runDeploymentCli, verifyDeployment } from "./deployment";
 
 const expectedSchemaFingerprint = "a".repeat(64);
 
@@ -31,6 +32,16 @@ const baseInput = {
   productionAlias: "adfocate-2.vercel.app",
   appOrigin: "https://adfocate-2.vercel.app",
   expectedSchemaFingerprint,
+};
+
+const cliEnv = {
+  RELEASE_VERCEL_DEPLOYMENT_ID: "dpl_1",
+  RELEASE_VERCEL_TEAM_ID: "team_1",
+  RELEASE_VERCEL_TOKEN: "vercel-secret",
+  RELEASE_APPLICATION_COMMIT: "abc123",
+  RELEASE_PRODUCTION_ALIAS: "adfocate-2.vercel.app",
+  RELEASE_APP_ORIGIN: "https://adfocate-2.vercel.app",
+  RELEASE_SCHEMA_FINGERPRINT: expectedSchemaFingerprint,
 };
 
 describe("production deployment verification", () => {
@@ -155,5 +166,39 @@ describe("production deployment verification", () => {
       "deployment request failed",
     );
     await expect(verifyDeployment(baseInput, { fetch })).rejects.not.toThrow("vercel-secret");
+  });
+
+  it("binds application probes to the verified production alias", async () => {
+    const fetch = successfulFetch();
+
+    await expect(
+      verifyDeployment(
+        { ...baseInput, appOrigin: "https://unrelated.example" },
+        { fetch },
+      ),
+    ).rejects.toThrow("application origin does not match production alias");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when the guarded CLI is missing trusted environment inputs", async () => {
+    const fetch = successfulFetch();
+
+    await expect(runDeploymentCli([], {}, { fetch })).rejects.toThrow(
+      "RELEASE_VERCEL_DEPLOYMENT_ID is required",
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("runs through the package command contract with sanitized environment inputs", async () => {
+    const packageJson = JSON.parse(readFileSync("package.json", "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+    expect(packageJson.scripts?.["release:verify-deployment"]).toBe(
+      "vite-node --script scripts/release/deployment.ts",
+    );
+
+    const report = await runDeploymentCli([], cliEnv, { fetch: successfulFetch() });
+    expect(report.status).toBe("passed");
+    expect(JSON.stringify(report)).not.toContain(cliEnv.RELEASE_VERCEL_TOKEN);
   });
 });

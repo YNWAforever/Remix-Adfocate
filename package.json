@@ -23,7 +23,7 @@
     "release:preflight": "vite-node --script scripts/release/preflight.ts",
     "release:evidence": "vite-node scripts/release/evidence.ts",
     "release:execute": "vite-node scripts/release/executor.ts",
-    "release:verify-deployment": "vite-node scripts/release/deployment.ts"
+    "release:verify-deployment": "vite-node --script scripts/release/deployment.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",
