@@ -95,7 +95,8 @@ function replayProvesNoPendingMigrations(stdout: string, stderr: string) {
 }
 
 function integrationEnv(input: RehearsalInput, legacyOnly = false): NodeJS.ProcessEnv {
-  const { LEGACY_ONLY: _legacyOnly, ...inherited } = process.env;
+  const inherited = { ...process.env };
+  delete inherited.LEGACY_ONLY;
   return {
     ...inherited,
     RUN_INTEGRATION: "1",

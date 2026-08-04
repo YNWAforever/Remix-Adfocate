@@ -295,7 +295,8 @@ export function digestEvidence(evidence: ReleaseEvidence): string {
 }
 
 function contentDigestFor(evidence: ReleaseEvidence) {
-  const { contentDigest: _ignored, ...content } = evidence;
+  const { contentDigest, ...content } = evidence;
+  void contentDigest;
   return sha256(contentForDigest(content));
 }
 

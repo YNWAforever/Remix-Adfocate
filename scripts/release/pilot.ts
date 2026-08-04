@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import type {
   CapabilityStatus,
-  DeploymentReport,
   PilotCandidateReport,
   PilotEnableReport,
   PilotGateInput,

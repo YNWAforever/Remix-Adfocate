@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { evaluatePilotExit, observePilot, type PilotExitObservation } from "./observer";
 
+type TestQueryBuilder = {
+  select: () => TestQueryBuilder;
+  eq: () => TestQueryBuilder;
+  then: (resolve: (result: unknown) => unknown) => Promise<unknown>;
+};
+
 describe("pilot observer and seven-day exit", () => {
   it("expands only after seven distinct stable days with one neutral handoff", () => {
     const thresholds = {
@@ -83,7 +89,7 @@ describe("pilot observer and seven-day exit", () => {
         : table === "mission_submissions"
           ? [{ id: "submission-1", mission_id: "mission-1", workspace_id: "workspace-1", creator_id: "creator-1" }]
           : [];
-      const builder: any = {
+      const builder: TestQueryBuilder = {
         select: () => builder,
         eq: () => builder,
         then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: rows, error: null }).then(resolve),
@@ -115,7 +121,7 @@ describe("pilot observer and seven-day exit", () => {
     };
     const from = vi.fn((table: string) => {
       const rows = rowsByTable[table] ?? [];
-      const builder: any = {
+      const builder: TestQueryBuilder = {
         select: () => builder,
         eq: () => builder,
         then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: rows, error: null }).then(resolve),
@@ -155,7 +161,7 @@ describe("pilot observer and seven-day exit", () => {
       const rows = table === "mission_workflows"
         ? [{ id: "workflow-1", mission_id: "mission-1", state: "reward_pending", creator_id: "creator-1" }]
         : [];
-      const builder: any = {
+      const builder: TestQueryBuilder = {
         select: () => builder,
         eq: () => builder,
         then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: rows, error: null }).then(resolve),
@@ -174,8 +180,8 @@ describe("pilot observer and seven-day exit", () => {
   });
 
   it("marks malformed operational snapshot values unavailable", async () => {
-    const from = (table: string) => {
-      const builder: any = {
+    const from = () => {
+      const builder: TestQueryBuilder = {
         select: () => builder,
         eq: () => builder,
         then: (resolve: (result: unknown) => unknown) => Promise.resolve({ data: [], error: null }).then(resolve),

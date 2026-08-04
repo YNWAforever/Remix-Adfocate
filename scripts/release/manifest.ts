@@ -816,7 +816,7 @@ const MIGRATION_KEYS = [
   "transactionExpectation",
   "replayExpectation",
 ] as const;
-const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_,\[\]]+\))$/;
+const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_,\x5b\x5d]+\))$/;
 
 function sha256(value: string | Buffer) {
   return createHash("sha256").update(value).digest("hex");

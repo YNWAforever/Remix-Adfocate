@@ -14,7 +14,7 @@ import type {
 type Row = Record<string, unknown>;
 type QueryResult = { data?: unknown; error?: unknown };
 
-export interface ObserverClient extends PilotClient {}
+export type ObserverClient = PilotClient;
 export interface ObserverInput extends PilotObserveInput {
   readonly snapshot?: Partial<PilotObservation> & Record<string, unknown>;
 }

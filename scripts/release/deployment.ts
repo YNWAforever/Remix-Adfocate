@@ -215,7 +215,7 @@ export async function verifyDeployment(
   };
 }
 
-export interface DeploymentCliDependencies extends DeploymentDependencies {}
+export type DeploymentCliDependencies = DeploymentDependencies;
 
 function environmentValue(env: NodeJS.ProcessEnv, name: string) {
   const value = env[name];
