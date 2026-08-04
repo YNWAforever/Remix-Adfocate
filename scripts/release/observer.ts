@@ -288,6 +288,8 @@ export async function observePilot(client: ObserverClient, input: ObserverInput)
     financialMovement: observedMovement,
     queueHealthy,
     telemetryAvailable,
+    ...(typeof snapshot.notificationQueueHealthy === "boolean" ? { notificationQueueHealthy: snapshot.notificationQueueHealthy } : {}),
+    ...(typeof snapshot.retryQueueHealthy === "boolean" ? { retryQueueHealthy: snapshot.retryQueueHealthy } : {}),
     ...(snapshot.queueOverdue !== undefined ? { queueOverdue: snapshot.queueOverdue === true } : {}),
     ...(input.thresholds || (snapshot.thresholds && typeof snapshot.thresholds === "object")
       ? { thresholds: input.thresholds ?? snapshot.thresholds as PilotObservationThresholds }
@@ -364,10 +366,21 @@ function completenessReasons(observation: PilotExitObservation, index: number, s
   if (scope && (observation.workspaceId !== scope.workspaceId || observation.missionId !== scope.missionId)) reasons.push(`${prefix} scope differs from selected pilot`);
   if (typeof observation.creatorIdentityHash !== "string" || !/^[a-f0-9]{64}$/i.test(observation.creatorIdentityHash)) reasons.push(`${prefix} creator identity hash is missing or invalid`);
   if (!Array.isArray(observation.workflowIds) || observation.workflowIds.some((id) => typeof id !== "string" || !/^[a-f0-9]{64}$/i.test(id))) reasons.push(`${prefix} workflow identities are missing or not opaque hashes`);
-  for (const key of REQUIRED_COUNT_KEYS) if (typeof observation[key] !== "number" || !Number.isFinite(observation[key])) reasons.push(`${prefix} ${key} is missing or invalid`);
+  for (const key of REQUIRED_COUNT_KEYS) {
+    const value = observation[key];
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0) reasons.push(`${prefix} ${key} is missing, invalid, or negative`);
+  }
   if (typeof observation.completedCreatorCount !== "number" || !Number.isFinite(observation.completedCreatorCount)) reasons.push(`${prefix} completed creator count is missing or invalid`);
   if (typeof observation.queueHealthy !== "boolean") reasons.push(`${prefix} queue health is missing`);
   if (observation.telemetryAvailable !== true) reasons.push(`${prefix} operational telemetry is unavailable`);
+  if (observation.telemetryAvailable === true) {
+    for (const key of REQUIRED_OPERATIONAL_BOOLEAN_KEYS) {
+      if (typeof observation[key] !== "boolean") reasons.push(`${prefix} ${key} is missing or invalid`);
+    }
+  }
+  for (const key of OPTIONAL_OPERATIONAL_BOOLEAN_KEYS) {
+    if (observation[key] !== undefined && typeof observation[key] !== "boolean") reasons.push(`${prefix} ${key} is missing or invalid`);
+  }
   if (!completeFinancialMovement(observation.financialMovement)) reasons.push(`${prefix} financial movement is incomplete`);
   if (!completeSnapshot(observation.rewardSnapshotBefore) || !completeSnapshot(observation.rewardSnapshotAfter)) reasons.push(`${prefix} financial snapshots are incomplete`);
   if (!completeThresholds(observation.thresholds)) reasons.push(`${prefix} approved thresholds are incomplete`);

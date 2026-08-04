@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { evaluatePilotExit, observePilot } from "./observer";
+import { evaluatePilotExit, observePilot, type PilotExitObservation } from "./observer";
 
 describe("pilot observer and seven-day exit", () => {
   it("expands only after seven distinct stable days with one neutral handoff", () => {
@@ -39,6 +39,8 @@ describe("pilot observer and seven-day exit", () => {
       workflowIds: ["2".repeat(64)],
       queueHealthy: true,
       telemetryAvailable: true,
+      notificationQueueHealthy: true,
+      retryQueueHealthy: true,
       financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
       rewardSnapshotBefore: { points: 10, cash: 0, xp: 0 },
       rewardSnapshotAfter: { points: 10, cash: 0, xp: 0 },
@@ -213,6 +215,63 @@ describe("pilot observer and seven-day exit", () => {
       });
       expect(observation.telemetryAvailable).toBe(false);
       expect(observation.queueHealthy).toBe(false);
+    }
+  });
+
+  it("holds malformed imported observations even when telemetryAvailable is forged true", () => {
+    const thresholds = {
+      maxQueueAgeSeconds: 3600,
+      maxReviewLatencySeconds: 86400,
+      maxOverdueItems: 0,
+      maxUnexpected5xx: 0,
+      maxDatabaseErrorClusters: 0,
+      maxNotificationDeadLetters: 0,
+    };
+    const base = {
+      observedAt: "2026-08-01T00:00:00.000Z",
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      workflowCount: 1,
+      submissionCount: 1,
+      proofAttemptCount: 1,
+      completionDecisionCount: 1,
+      pendingRewards: 1,
+      completedWorkflows: 1,
+      completedCreatorCount: 1,
+      creatorIdentityHash: "1".repeat(64),
+      workflowIds: ["2".repeat(64)],
+      integrityIncidents: 0,
+      tenantIsolationIncidents: 0,
+      illegalTransitions: 0,
+      duplicateDecisions: 0,
+      missingRewardContracts: 0,
+      notificationRetries: 0,
+      notificationDeadLetters: 0,
+      maxQueueAgeSeconds: 0,
+      reviewLatencySeconds: 0,
+      overdueItems: 0,
+      unexpected5xx: 0,
+      requestErrorClusters: 0,
+      databaseErrorClusters: 0,
+      financialMovement: { points: 0, cash: 0, xp: 0, ledgerRows: 0 },
+      rewardSnapshotBefore: { points: 10 },
+      rewardSnapshotAfter: { points: 10 },
+      queueHealthy: true,
+      notificationQueueHealthy: true,
+      retryQueueHealthy: true,
+      telemetryAvailable: true,
+      thresholds,
+    };
+    const cases: readonly [Record<string, unknown>, string][] = [
+      [{ maxQueueAgeSeconds: -1 }, "observation 1 maxQueueAgeSeconds is missing, invalid, or negative"],
+      [{ queueOverdue: "false" }, "observation 1 queueOverdue is missing or invalid"],
+      [{ notificationQueueHealthy: null }, "observation 1 notificationQueueHealthy is missing or invalid"],
+      [{ retryQueueHealthy: "yes" }, "observation 1 retryQueueHealthy is missing or invalid"],
+    ];
+    for (const [malformed, reason] of cases) {
+      const imported = JSON.parse(JSON.stringify({ ...base, ...malformed })) as PilotExitObservation;
+      const result = evaluatePilotExit([imported], { passed: true, thresholds });
+      expect(result).toMatchObject({ decision: "hold", reasons: expect.arrayContaining([reason]) });
     }
   });
 
