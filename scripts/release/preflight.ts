@@ -75,11 +75,14 @@ function grantValidator(role: string, schemaName: string, object: string, privil
   const argumentsPattern = privilege
     .split(",")
     .map((argument) => {
-      const qualifiedType = "(?:pg_catalog\\s*\\.\\s*)?";
+      const escapedArgument = escapeRegExp(argument);
+      const optionalArgumentName =
+        '(?:(?:[a-z][a-z0-9_]*|"[a-z][a-z0-9_]*")\\s+)?';
+      const qualifiedType = '(?:(?:pg_catalog|"pg_catalog")\\s*\\.\\s*)?';
       if (argument === "timestamptz") {
-        return `${qualifiedType}(?:timestamptz|timestamp\\s+with\\s+time\\s+zone)`;
+        return `${optionalArgumentName}${qualifiedType}(?:timestamptz|"timestamptz"|timestamp\\s+with\\s+time\\s+zone|"timestamp with time zone")`;
       }
-      return `${qualifiedType}${escapeRegExp(argument)}`;
+      return `${optionalArgumentName}${qualifiedType}(?:${escapedArgument}|"${escapedArgument}")`;
     })
     .join("\\s*,\\s*");
   return (schema: string) =>
