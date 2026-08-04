@@ -1,23 +1,61 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { ReleaseManifest } from "./contracts";
-import { buildManifest, digestManifest, validateManifest } from "./manifest";
+import {
+  buildManifest,
+  digestManifest,
+  parseReleaseManifest,
+  validateManifest,
+} from "./manifest";
 
-const root = process.cwd();
-const path = resolve(root, "supabase/release-manifest.json");
-const command = process.argv[2];
+function manifestPath(rootDir: string) {
+  return resolve(rootDir, "supabase/release-manifest.json");
+}
 
-if (command === "write") {
-  const manifest = await buildManifest(root);
-  await writeFile(path, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-  process.stdout.write(`${digestManifest(manifest)}\n`);
-} else if (command === "check") {
-  const manifest = JSON.parse(
-    await readFile(path, "utf8"),
-  ) as ReleaseManifest;
-  const errors = await validateManifest(manifest, root);
+export async function writeManifest(rootDir: string) {
+  const manifest = await buildManifest(rootDir);
+  const errors = await validateManifest(manifest, rootDir);
   if (errors.length) throw new Error(errors.join("\n"));
-  process.stdout.write(`${digestManifest(manifest)}\n`);
-} else {
+
+  const target = manifestPath(rootDir);
+  const temporary = `${target}.tmp-${process.pid}-${randomUUID()}`;
+  try {
+    await writeFile(
+      temporary,
+      `${JSON.stringify(manifest, null, 2)}\n`,
+      { encoding: "utf8", flag: "wx" },
+    );
+    await rename(temporary, target);
+  } finally {
+    await unlink(temporary).catch((error: unknown) => {
+      if (
+        typeof error !== "object" ||
+        error === null ||
+        !("code" in error) ||
+        error.code !== "ENOENT"
+      ) {
+        throw error;
+      }
+    });
+  }
+  return digestManifest(manifest);
+}
+
+export async function checkManifest(rootDir: string) {
+  const manifest = parseReleaseManifest(
+    JSON.parse(await readFile(manifestPath(rootDir), "utf8")),
+  );
+  const errors = await validateManifest(manifest, rootDir);
+  if (errors.length) throw new Error(errors.join("\n"));
+  return digestManifest(manifest);
+}
+
+async function run(command: string | undefined, rootDir: string) {
+  if (command === "write") return writeManifest(rootDir);
+  if (command === "check") return checkManifest(rootDir);
   throw new Error("usage: manifest-cli.ts <write|check>");
+}
+
+if (process.argv[2] === "write" || process.argv[2] === "check") {
+  process.stdout.write(`${await run(process.argv[2], process.cwd())}\n`);
 }

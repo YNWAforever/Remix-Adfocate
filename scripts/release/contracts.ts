@@ -4,20 +4,20 @@ export type ReleasePhase =
   | "reward_handoff";
 
 export interface ReleaseMigration {
-  version: string;
-  name: string;
-  path: string;
-  sha256: string;
-  phase: ReleasePhase;
-  dependsOn: string[];
-  capabilities: string[];
-  transactionExpectation: "transactional";
-  replayExpectation: "migration_history_noop";
+  readonly version: string;
+  readonly name: string;
+  readonly path: string;
+  readonly sha256: string;
+  readonly phase: ReleasePhase;
+  readonly dependsOn: readonly string[];
+  readonly capabilities: readonly string[];
+  readonly transactionExpectation: "transactional";
+  readonly replayExpectation: "migration_history_noop";
 }
 
 export interface ReleaseManifest {
-  schemaVersion: 1;
-  cliVersion: "2.110.0";
-  generatedFrom: "supabase/migrations";
-  migrations: ReleaseMigration[];
+  readonly schemaVersion: 1;
+  readonly cliVersion: "2.110.0";
+  readonly generatedFrom: "supabase/migrations";
+  readonly migrations: readonly ReleaseMigration[];
 }
