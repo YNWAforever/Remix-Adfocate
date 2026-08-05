@@ -902,6 +902,38 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20260805120000",
+      "name": "review_hardening",
+      "path": "supabase/migrations/20260805120000_review_hardening.sql",
+      "sha256": "faf4018d589db8d4702327c55e6ccc3461ea05fb0e9a8229901638e706f3d65c",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20260731150000"
+      ],
+      "capabilities": [
+        "function:private.mission_brand_update_allowed",
+        "grant:authenticated.private.mission_brand_update_allowed(uuid,text,integer,numeric,numeric,numeric)",
+        "policy:public.missions.missions_brand_update",
+        "policy:public.missions.missions_workspace",
+        "function:public.settle_campaign",
+        "grant:service_role.public.settle_campaign(uuid)",
+        "function:private.join_mission",
+        "function:public.join_mission",
+        "grant:authenticated.public.join_mission(uuid)",
+        "grant:service_role.public.join_mission(uuid)",
+        "function:public.submit_mission",
+        "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+        "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+        "function:public.join_active_mission",
+        "grant:authenticated.public.join_active_mission(uuid)",
+        "function:private.refresh_mission_workflow_state",
+        "function:private.clear_social_account_verification",
+        "trigger:public.creator_social_accounts_clear_verification"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

@@ -792,11 +792,79 @@ const REVIEWED_MIGRATIONS = [
     transactionExpectation: "transactional",
     replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20260805120000",
+    name: "review_hardening",
+    phase: "reward_handoff",
+    dependsOn: ["20260731150000"],
+    capabilities: [
+      "function:private.mission_brand_update_allowed",
+      "grant:authenticated.private.mission_brand_update_allowed(uuid,text,integer,numeric,numeric,numeric)",
+      "policy:public.missions.missions_brand_update",
+      "policy:public.missions.missions_workspace",
+      "function:public.settle_campaign",
+      "grant:service_role.public.settle_campaign(uuid)",
+      "function:private.join_mission",
+      "function:public.join_mission",
+      "grant:authenticated.public.join_mission(uuid)",
+      "grant:service_role.public.join_mission(uuid)",
+      "function:public.submit_mission",
+      "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+      "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+      "function:public.join_active_mission",
+      "grant:authenticated.public.join_active_mission(uuid)",
+      "function:private.refresh_mission_workflow_state",
+      "function:private.clear_social_account_verification",
+      "trigger:public.creator_social_accounts_clear_verification",
+    ],
+    transactionExpectation: "transactional",
+    replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
   "20260618135028_profile_media_private_grants.sql",
   "20260619013000_profile_media_url_validation.sql",
+]);
+
+// The Supabase CLI pushes every file in the migrations directory whose name matches its own
+// `^([0-9]+)_(.*)\.sql$` and skips the rest with a warning, so the numeric prefix is not
+// necessarily a 14-digit timestamp.  Filtering on the timestamp shape instead would drop the
+// 0001-0028 baseline — and any file named outside it — out of the integrity check entirely.
+const CLI_MIGRATION_PATTERN = /^[0-9]+_.*\.sql$/;
+
+// 0001-0028 predate the reviewed range and are already applied in production, so they carry no
+// release phase and never enter the manifest.  The CLI still pushes them into every rebuilt
+// environment, so they are pinned by checksum here: editing one is drift, not a new release.
+const BASELINE_MIGRATIONS = new Map([
+  ["0001_init.sql", "d20b6490261b34fcd0e6d6ed6c3c00b30db838ea3399740bb5b2d4f4862fde1a"],
+  ["0002_harden_rls.sql", "80e2f23b22f85e99878c886dc328b603cb03f3379e9654336c573d3671f53e89"],
+  ["0003_onboarding.sql", "f0e6af66685f4d1922562374dac76e38e8bcff6b5d0bbdb99676834c9c426e6a"],
+  ["0004_grants.sql", "6e2ae37c745e0a60d5a3564212376980b11ad3d148acb3a17ab2018f178c8458"],
+  ["0005_mission_submissions.sql", "212daf37e2a9cd692e82967e615cbeab29194577abf363f8a2d9f45801e9bc78"],
+  ["0006_redemption.sql", "7ed1a5a1f7029f77493239aab4da5eb0af9924eaf87743eb9d92599434f0f05d"],
+  ["0007_earnings.sql", "a4ac74095b165a84457ec3a8730e69e61dbf01dc249c5d373eaee0f945ee03dd"],
+  ["0008_leveling.sql", "7bbcfdb1efd0d40fd16b59b6cb583227984f759a875e4e19139e4e9e0201b550"],
+  ["0009_passport_scores.sql", "7f65410dc23cd01a8bce9f0d54ef0757a9a81f15328f31cb53ca8a337e5c984f"],
+  ["0010_applications.sql", "0376482ce7c5f99d42516c28594ea06fa3b4c043eedbbfe2f32e4a16efe98b57"],
+  ["0011_mission_brief.sql", "7af23f07c0274b3190ac1b952ae80a67f968c1c855eb47d9f0e528fb42546b28"],
+  ["0012_trust_profile_bundle.sql", "3aff06b6f0ad82bd01183c86d03e694cbdcf190e85e4d2424fd0f65e0ed3108b"],
+  ["0013_operator_creator_selection_crm.sql", "cb4f1fde0e91dd99ae41ebe99a99b3fc00312447c9fd0b1dbe44bd81d7d75556"],
+  ["0014_operator_crm_workspace_guard.sql", "26ea349cd128e290ec4cca3da7727dca634a981689adf8f2c50313f6f18c86ea"],
+  ["0015_creator_profile_media.sql", "d63f3f1c33634165b4e29ec10d934cf0fab6dcc4df7e2f3cd0cf550e470bd4ba"],
+  ["0016_assistant.sql", "abf39c31f43bf0bed7cbde0699dda4567be6b6011af57a362365ffb5cc94d4df"],
+  ["0017_social_verification.sql", "3f26ea1d4e5c100794905e6637cb55d00d125752e3f228536985e5421a772da0"],
+  ["0018_mission_authoring.sql", "34591c7feff3dfe6a7cff51b717bc819fd5660a86de9f310e7749b7325d81279"],
+  ["0019_mission_brief_rich.sql", "a4fb5c6578f3fdf469d8c1559acb3486a99d296813f260e5cf221d487054d0fd"],
+  ["0020_staff_auth.sql", "b7fd91202a9caa4acdb7785cf71accdb7272d28b7391e3663edfe3959a058edd"],
+  ["0021_content_hub.sql", "51310b37bb59c94e3ff6c31ada58a375644624f73c4403021a04ab98daf78443"],
+  ["0022_notifications.sql", "e2c8653a85069a30b46bb4642fbd631020603d74627683ad0809a90460c33467"],
+  ["0023_brand_access.sql", "efe11f176a28d2699c187c7c08d8134c2bd898acd5c5c617ecd1ccf120afb283"],
+  ["0024_brand_budget.sql", "c8cc7e3507b20dccb9606aa23337c86597b009e906440921dc3a32b0993c5bab"],
+  ["0025_campaigns.sql", "d9a1ceba293a14786524181b1559dee8d17a23e2469af3a64ce66044fa00fcee"],
+  ["0026_campaigns_s2.sql", "289aab7ed9aa2bf19a0bec701f25b05d9adefcd2cdbe89370a79880b8e9e634f"],
+  ["0027_brand_resources.sql", "141846857c0fbf6ec72c8277fab0fae04b229c96a52f00ef80d5e7fa10e700f8"],
+  ["0028_academy_content.sql", "8eb099a555be979ba179ee1a5f01ce944d577c7c2308993b095b35bccf418e1e"],
 ]);
 
 const TOP_LEVEL_KEYS = [
@@ -979,18 +1047,31 @@ interface RepositoryInspection {
 
 async function inspectRepository(rootDir: string): Promise<RepositoryInspection> {
   const migrationDir = join(rootDir, "supabase", "migrations");
-  const names = (await readdir(migrationDir))
-    .filter((name) => /^\d{14}_.+\.sql$/.test(name))
-    .sort();
+  const entries = (await readdir(migrationDir)).sort();
+  const names = entries.filter((name) => CLI_MIGRATION_PATTERN.test(name));
   const reviewedFiles = new Set(REVIEWED_MIGRATIONS.map(migrationFile));
   const errors: string[] = [];
+  for (const name of entries) {
+    // A .sql the CLI declines to push is still SQL sitting in the release directory: report it
+    // rather than let a rename carry a statement past the checksum comparison.
+    if (name.endsWith(".sql") && !CLI_MIGRATION_PATTERN.test(name)) {
+      errors.push(`unpushable migration: ${name}`);
+    }
+  }
   for (const name of names) {
-    if (!reviewedFiles.has(name) && !NON_RELEASE_TIMESTAMP_MIGRATIONS.has(name)) {
+    if (reviewedFiles.has(name) || NON_RELEASE_TIMESTAMP_MIGRATIONS.has(name)) continue;
+    const baseline = BASELINE_MIGRATIONS.get(name);
+    if (baseline === undefined) {
       errors.push(`unclassified migration: ${name}`);
+    } else if (sha256(await readFile(join(migrationDir, name))) !== baseline) {
+      errors.push(`baseline checksum drift: ${name}`);
     }
   }
 
   const present = new Set(names);
+  for (const name of BASELINE_MIGRATIONS.keys()) {
+    if (!present.has(name)) errors.push(`missing baseline migration: ${name}`);
+  }
   const migrations: ReleaseMigration[] = [];
   for (const metadata of REVIEWED_MIGRATIONS) {
     const filename = migrationFile(metadata);

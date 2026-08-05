@@ -53,6 +53,56 @@ function observation(day: number, completed = 0, pending = 0) {
   };
 }
 
+function runNpmScript(script: string, args: readonly string[], env: NodeJS.ProcessEnv) {
+  try {
+    const stdout = execFileSync("npm", ["run", script, "--", ...args], {
+      cwd: process.cwd(),
+      env: { ...process.env, ...env },
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    return { status: 0, output: stdout };
+  } catch (error) {
+    const caught = error as { status?: number; stdout?: Buffer | string; stderr?: Buffer | string; output?: Array<Buffer | string | null> };
+    return {
+      status: caught.status ?? 1,
+      output: [
+        ...(caught.output ?? []),
+        caught.stdout,
+        caught.stderr,
+      ].filter((value): value is Buffer | string => value !== undefined && value !== null)
+        .map((value) => value.toString())
+        .join(""),
+    };
+  }
+}
+
+describe("release npm entrypoints", () => {
+  it("fails closed when release:execute runs without database configuration", () => {
+    const result = runNpmScript("release:execute", [
+      "--bundle",
+      "nonexistent.json",
+      "--bundle-digest",
+      "a".repeat(64),
+      "--project-ref",
+      "release-project",
+      "--approval",
+      `APPROVE release-project ${"a".repeat(64)}`,
+      "--apply",
+    ], { RELEASE_DATABASE_URL: "", RELEASE_PROJECT_REF: "release-project", RELEASE_APPLICATION_COMMIT: "e".repeat(40) });
+
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain("RELEASE_DATABASE_URL is required");
+  }, 180000);
+
+  it("fails closed when release:evidence runs without an input file", () => {
+    const result = runNpmScript("release:evidence", [], {});
+
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain("usage: evidence.ts --input");
+  }, 180000);
+});
+
 describe("guarded pilot/observer commands", () => {
   it("executes the npm/vite-node evaluate boundary even when VITEST is inherited", () => {
     const runner = process.execPath;

@@ -1,4 +1,5 @@
 import type { useNavigate } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 import { apiFetch, setWorkspaceSlug } from "./api";
 import { resolveWorkspace } from "./workspace";
@@ -37,4 +38,33 @@ export async function finishAuth(navigate: Navigate): Promise<FinishAuthResult> 
     onboardingCompleted: status.onboarding_completed,
     destination,
   };
+}
+
+/** User whose data currently populates the query cache; null once signed out. */
+let cachedUserId: string | null = null;
+
+/**
+ * Single choke point that ties the query cache to the Supabase session: every
+ * identity change (sign-in, sign-out, or a new user replacing another in the
+ * same tab — /login is reachable while still authenticated) wipes the cache, so
+ * no account can ever read the previous account's balance, notifications or
+ * ["me"]. Keyed on the user id rather than the event so a routine hourly token
+ * refresh keeps its cache instead of triggering a refetch storm; INITIAL_SESSION
+ * only records the id, because the cache is empty on a fresh page load.
+ *
+ * The client is passed in rather than imported: router.tsx already reaches
+ * auth-flow through the generated route tree, so importing back would cycle.
+ */
+export function bindQueryCacheToAuth(queryClient: QueryClient): () => void {
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    const userId = session?.user?.id ?? null;
+    if (event === "INITIAL_SESSION") {
+      cachedUserId = userId;
+      return;
+    }
+    if (userId === cachedUserId) return;
+    cachedUserId = userId;
+    queryClient.clear();
+  });
+  return () => data.subscription.unsubscribe();
 }

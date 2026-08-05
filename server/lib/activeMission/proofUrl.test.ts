@@ -215,6 +215,93 @@ describe("inspectProofUrl input policy", () => {
   });
 });
 
+describe("inspectProofUrl without a platform allowlist", () => {
+  it.each([
+    ["an absent platform", undefined],
+    ["a null platform", null],
+    ["an unlisted platform", "threads"],
+    ["an inherited object key", "constructor"],
+  ])("accepts a public HTTPS URL for %s", async (_case, platform) => {
+    const deps = createDeps();
+
+    await expect(
+      inspectProofUrl(
+        { url: "https://www.threads.net/@creator/post/1", platform },
+        deps,
+      ),
+    ).resolves.toMatchObject({
+      normalizedUrl: "https://www.threads.net/@creator/post/1",
+      status: "available",
+    });
+  });
+
+  it.each([
+    ["HTTP", "http://www.threads.net/@creator/post/1"],
+    ["a non-HTTPS scheme", "file:///etc/passwd"],
+    ["credentials", "https://creator:secret@www.threads.net/post/1"],
+    ["userinfo host confusion", "https://www.threads.net@evil.example/post/1"],
+    ["a non-standard port", "https://www.threads.net:8443/post/1"],
+  ])("still rejects %s before DNS or fetch", async (_case, url) => {
+    const deps = createDeps();
+
+    await expectUnsafe(inspectProofUrl({ url, platform: null }, deps));
+
+    expect(deps.resolve).not.toHaveBeenCalled();
+    expect(deps.fetch).not.toHaveBeenCalled();
+  });
+
+  it("still rejects a host that resolves to a reserved address", async () => {
+    const deps = createDeps({
+      resolve: vi.fn(async (hostname: string) => [
+        { address: hostname, family: 4 as const },
+      ]),
+    });
+
+    await expectUnsafe(
+      inspectProofUrl(
+        { url: "https://169.254.169.254/latest/meta-data" },
+        deps,
+      ),
+    );
+
+    expect(deps.fetch).not.toHaveBeenCalled();
+  });
+
+  it("still revalidates URL policy on every redirect hop", async () => {
+    const fetch = vi.fn(async () =>
+      new Response(null, {
+        status: 302,
+        headers: { location: "http://169.254.169.254/latest/meta-data" },
+      }),
+    );
+    const deps = createDeps({ fetch });
+
+    const error = await expectUnsafe(
+      inspectProofUrl(
+        { url: "https://www.threads.net/@creator/post/1", platform: "threads" },
+        deps,
+      ),
+    );
+
+    expect(error.message).toContain("HTTPS");
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("applies the allowlist to a recognized platform whatever its casing", async () => {
+    const deps = createDeps();
+
+    await expectUnsafe(
+      inspectProofUrl(
+        { url: "https://www.threads.net/@creator/post/1", platform: " Instagram " },
+        deps,
+      ),
+    );
+
+    expect(deps.resolve).not.toHaveBeenCalled();
+    expect(deps.fetch).not.toHaveBeenCalled();
+  });
+});
+
 describe("inspectProofUrl DNS and redirects", () => {
   it("resolves twice immediately before the fetch to detect rebinding", async () => {
     const resolve = vi

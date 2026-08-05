@@ -8,6 +8,8 @@ describe("rehearsal target guard", () => {
     productionRef: "mhkoayftiuojxlrkollf",
     productionDatabaseUrl: "postgresql://production/db",
   };
+  const productionDirect = "postgresql://postgres:pw@db.mhkoayftiuojxlrkollf.supabase.co:5432/postgres";
+  const productionPooler = "postgresql://postgres.mhkoayftiuojxlrkollf:pw@aws-0-us-east-1.pooler.supabase.com:6543/postgres";
 
   it("rejects the production ref or production URL", () => {
     expect(() => assertDisposableTarget({ ...base, targetRef: base.productionRef }))
@@ -52,5 +54,63 @@ describe("rehearsal target guard", () => {
     }
     expect(() => assertDisposableTarget({ ...base, targetDatabaseUrl: "not-a-url" }))
       .toThrow("database URL");
+  });
+
+  it("rejects the production database reached through a second connection form", () => {
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: productionDirect,
+      productionDatabaseUrl: productionPooler,
+    })).toThrow("production database URL");
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: productionPooler,
+      productionDatabaseUrl: productionDirect,
+    })).toThrow("production database URL");
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: "postgresql://postgres:pw@mhkoayftiuojxlrkollf.internal.example:5432/postgres",
+      productionDatabaseUrl: productionDirect,
+    })).toThrow("production database URL");
+  });
+
+  it("requires each URL to identify the project reference it is filed under", () => {
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: "postgresql://postgres:pw@db.qwertyuiopasdfghjklz.supabase.co:5432/postgres",
+      productionDatabaseUrl: productionDirect,
+    })).toThrow("target database URL does not identify the target project");
+    expect(() => assertDisposableTarget({
+      ...base,
+      productionDatabaseUrl: "postgresql://postgres:pw@db.qwertyuiopasdfghjklz.supabase.co:5432/postgres",
+    })).toThrow("production database URL does not identify the production project");
+  });
+
+  it("refuses a pooled connection for a target claimed to be disposable", () => {
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: "postgresql://postgres.rehearsal-ref:pw@aws-0-us-east-1.pooler.supabase.com:6543/postgres",
+      productionDatabaseUrl: productionDirect,
+    })).toThrow("pooled target database URL");
+  });
+
+  it("accepts local targets and targets whose URL identifies their own project", () => {
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetRef: "local-empty",
+      targetDatabaseUrl: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+      productionDatabaseUrl: productionPooler,
+    })).not.toThrow();
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetRef: "local-rehearsal-shape",
+      targetDatabaseUrl: "postgresql://postgres:postgres@localhost:54322/postgres",
+      productionDatabaseUrl: productionDirect,
+    })).not.toThrow();
+    expect(() => assertDisposableTarget({
+      ...base,
+      targetDatabaseUrl: "postgresql://postgres:pw@db.rehearsal-ref.supabase.co:5432/postgres",
+      productionDatabaseUrl: productionDirect,
+    })).not.toThrow();
   });
 });

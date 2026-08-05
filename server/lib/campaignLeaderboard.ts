@@ -15,8 +15,26 @@ export function num(v: unknown): number {
   return 0;
 }
 
+// Bootstrap defaults display_name to the account identifier (server/routes/me.ts), so a creator
+// who never set a name carries their email or E.164 phone there. Rows here are read across the
+// whole workspace, so a contact-shaped name is replaced by a label derived from creator_id —
+// stable per creator, and carrying nothing of the address.
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_SHAPE = /^\+?\d{7,15}$/;
+
+export function publicDisplayName(name: string | null | undefined, creatorId: string): string {
+  const trimmed = (name ?? "").trim();
+  if (!trimmed) return "";
+  const digits = trimmed.replace(/[\s()-]/g, "");
+  if (!EMAIL_SHAPE.test(trimmed) && !PHONE_SHAPE.test(digits)) return trimmed;
+  const suffix = creatorId.replace(/-/g, "").slice(0, 4).toUpperCase();
+  return suffix ? `KOC ${suffix}` : "KOC";
+}
+
 export function shapeLeaderboard(
   rows: RankRow[], profiles: CreatorProfile[], prevRanks?: Map<string, number>,
+  // Operator surfaces that already have contact access can opt out; creator-facing callers must not.
+  opts?: { revealContactNames?: boolean },
 ): LeaderboardEntry[] {
   const byId = new Map(profiles.map((p) => [p.id, p]));
   return rows.map((r) => {
@@ -27,7 +45,9 @@ export function shapeLeaderboard(
       rank: num(r.rank),
       approved: num(r.approved),
       avg_quality: num(r.avg_quality),
-      display_name: p?.display_name ?? "",
+      display_name: opts?.revealContactNames
+        ? p?.display_name ?? ""
+        : publicDisplayName(p?.display_name, r.creator_id),
       avatar_url: p?.avatar_url ?? null,
       level: num(p?.level),
       movement: prev == null ? null : prev - num(r.rank),

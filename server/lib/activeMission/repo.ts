@@ -615,7 +615,7 @@ export function createActiveMissionRepository(
 
     async submitProof(owner, workItemId, input) {
       const current = await creatorPublication(client, owner, workItemId);
-      const inspected = await inspectPublicationProof(input, current.platform as never);
+      const inspected = await inspectPublicationProof(input, current.platform);
       const result = await client.rpc("submit_mission_publication_proof", {
         p_submission: owner.submissionId,
         p_creator: owner.creatorId,

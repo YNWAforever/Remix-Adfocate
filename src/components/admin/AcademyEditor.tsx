@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Markdown } from "@/components/Markdown";
@@ -22,13 +22,21 @@ export function AcademyEditor({ id }: { id: string }) {
   const [metaText, setMetaText] = useState("{}");
   const [metaErr, setMetaErr] = useState<string | null>(null);
 
-  useQuery({
+  const existing = useQuery({
     queryKey: academyKeys.adminItem(id), enabled: !isNew,
-    queryFn: async () => {
-      const { item } = await getAdminAcademy(id);
-      setForm(item); setMetaText(JSON.stringify(item.metadata ?? {}, null, 2)); return item;
-    },
+    queryFn: async () => (await getAdminAcademy(id)).item,
   });
+
+  // Seed only when the record identity changes: a background refetch (window focus) must never
+  // overwrite the draft the operator is typing into.
+  const seeded = useRef<string | null>(null);
+  useEffect(() => {
+    const row = existing.data;
+    if (!row || seeded.current === row.id) return;
+    seeded.current = row.id;
+    setForm(row);
+    setMetaText(JSON.stringify(row.metadata ?? {}, null, 2));
+  }, [existing.data]);
 
   const set = (patch: Partial<AdminAcademyRow>) => setForm((f) => ({ ...f, ...patch }));
   const titleField = lang === "zh" ? "title_zh" : "title_en";

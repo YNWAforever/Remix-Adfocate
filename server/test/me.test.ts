@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
+import { parseBootstrapSlugs } from "../routes/me";
+import { makeCreator, makeUser, serviceForTests, cleanup, hasSupabaseEnv, DEMO_WS } from "./helpers";
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -16,6 +17,66 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     },
   });
 }
+
+/** The workspace bootstrap must refuse — a real row, deliberately off the allowlist. The
+ *  "test-brand-ws-" prefix is what cleanup() deletes. */
+const OFF_ALLOWLIST_SLUG = "test-brand-ws-bootstrap-allowlist";
+
+function bootstrap(slug: string, jwt: string) {
+  return app.request("/api/me/bootstrap", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ slug }),
+  });
+}
+
+describe("parseBootstrapSlugs", () => {
+  it("falls back to the deploy's single configured workspace when unset", () => {
+    expect([...parseBootstrapSlugs(undefined, undefined)]).toEqual(["demo"]);
+    expect([...parseBootstrapSlugs("   ", "acme")]).toEqual(["acme"]);
+  });
+
+  it("parses a comma list, trimming, lowercasing and dropping empties", () => {
+    expect([...parseBootstrapSlugs(" Demo , acme ,, ", "ignored")]).toEqual(["demo", "acme"]);
+  });
+});
+
+suite("me/bootstrap workspace allowlist", () => {
+  let user: { userId: string; jwt: string };
+  beforeAll(async () => {
+    await cleanup();
+    const { error } = await serviceForTests()
+      .from("workspaces")
+      .insert({ slug: OFF_ALLOWLIST_SLUG, name: "Bootstrap allowlist test WS" });
+    if (error) throw error;
+    user = await makeUser({ email: "bootallowlist@test.local" });
+  });
+  afterAll(cleanup);
+
+  it("joins the allow-listed workspace", async () => {
+    // Also gives cleanup() a creator row (display_name "%@test.local") to remove afterwards.
+    const res = await bootstrap("demo", user.jwt);
+    expect(res.status).toBe(200);
+    expect((await res.json()).created).toBe(true);
+  });
+
+  it("refuses a real off-allowlist workspace, indistinguishably from an unknown slug", async () => {
+    const real = await bootstrap(OFF_ALLOWLIST_SLUG, user.jwt);
+    const unknown = await bootstrap("no-such-workspace-4f2a", user.jwt);
+    expect(real.status).toBe(404);
+    expect(real.status).toBe(unknown.status);
+    expect(real.headers.get("content-type")).toBe(unknown.headers.get("content-type"));
+    expect(await real.text()).toBe(await unknown.text());
+
+    // The refusal never re-homed the creator away from the workspace they bootstrapped into.
+    const { data } = await serviceForTests()
+      .from("creators")
+      .select("workspace_id")
+      .eq("id", user.userId)
+      .single();
+    expect(data!.workspace_id).toBe(DEMO_WS);
+  });
+});
 
 suite("me/profile endpoint", () => {
   let c1: { userId: string; jwt: string };

@@ -35,12 +35,16 @@ jobs:
       - name: Verify evidence and execute approved migration range
         run: >-
           npm run release:execute --
-          --bundle "${{ inputs.bundle_path }}"
-          --bundle-digest "${{ inputs.bundle_digest }}"
-          --project-ref "${{ inputs.project_ref }}"
-          --approval "${{ inputs.approval }}"
+          --bundle "$BUNDLE_PATH"
+          --bundle-digest "$BUNDLE_DIGEST"
+          --project-ref "$PROJECT_REF"
+          --approval "$APPROVAL"
           --apply
         env:
+          BUNDLE_PATH: "${{ inputs.bundle_path }}"
+          BUNDLE_DIGEST: "${{ inputs.bundle_digest }}"
+          PROJECT_REF: "${{ inputs.project_ref }}"
+          APPROVAL: "${{ inputs.approval }}"
           RELEASE_DATABASE_URL: "${{ secrets.SUPABASE_DB_URL }}"
           RELEASE_PROJECT_REF: "${{ vars.SUPABASE_PROJECT_REF }}"
           RELEASE_APPLICATION_COMMIT: "${{ github.sha }}"

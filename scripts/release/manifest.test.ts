@@ -1,4 +1,6 @@
 import {
+  appendFile,
+  copyFile,
   mkdtemp,
   mkdir,
   readFile,
@@ -51,6 +53,40 @@ const REVIEWED_FILES = [
   "20260731130000_reward_handoff_notifications.sql",
   "20260731140000_reward_handoff_release_hardening.sql",
   "20260731150000_enable_pilot_if_empty.sql",
+  "20260805120000_review_hardening.sql",
+] as const;
+
+// Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+// synthesising content — that is what makes an edit to one of them detectable here.
+const BASELINE_FILES = [
+  "0001_init.sql",
+  "0002_harden_rls.sql",
+  "0003_onboarding.sql",
+  "0004_grants.sql",
+  "0005_mission_submissions.sql",
+  "0006_redemption.sql",
+  "0007_earnings.sql",
+  "0008_leveling.sql",
+  "0009_passport_scores.sql",
+  "0010_applications.sql",
+  "0011_mission_brief.sql",
+  "0012_trust_profile_bundle.sql",
+  "0013_operator_creator_selection_crm.sql",
+  "0014_operator_crm_workspace_guard.sql",
+  "0015_creator_profile_media.sql",
+  "0016_assistant.sql",
+  "0017_social_verification.sql",
+  "0018_mission_authoring.sql",
+  "0019_mission_brief_rich.sql",
+  "0020_staff_auth.sql",
+  "0021_content_hub.sql",
+  "0022_notifications.sql",
+  "0023_brand_access.sql",
+  "0024_brand_budget.sql",
+  "0025_campaigns.sql",
+  "0026_campaigns_s2.sql",
+  "0027_brand_resources.sql",
+  "0028_academy_content.sql",
 ] as const;
 
 const execFileAsync = promisify(execFile);
@@ -72,15 +108,18 @@ async function fixture(
   const root = await mkdtemp(join(tmpdir(), "adfocate-manifest-"));
   const dir = join(root, "supabase", "migrations");
   await mkdir(dir, { recursive: true });
-  await Promise.all(
-    files.map((name) =>
+  await Promise.all([
+    ...files.map((name) =>
       writeFile(
         join(dir, name),
         overrides[name] ?? `select '${name}';\n`,
         "utf8",
       ),
     ),
-  );
+    ...BASELINE_FILES.map((name) =>
+      copyFile(resolve("supabase/migrations", name), join(dir, name)),
+    ),
+  ]);
   return root;
 }
 
@@ -423,11 +462,55 @@ describe("release migration manifest", () => {
     ).toEqual(
       expect.arrayContaining([
         "checksum drift: 20260715163350",
-        "missing migration file: 20260731150000",
+        "missing migration file: 20260805120000",
         "duplicate migration version",
         "unknown dependency: 19990101000000",
       ]),
     );
+  });
+
+  it("detects an edited, deleted, or newly added baseline migration", async () => {
+    const edited = await fixture();
+    await appendFile(
+      join(edited, "supabase", "migrations", "0004_grants.sql"),
+      "grant all on all tables in schema public to anon;\n",
+      "utf8",
+    );
+    await expect(buildManifest(edited)).rejects.toThrow(
+      "baseline checksum drift: 0004_grants.sql",
+    );
+
+    const deleted = await fixture();
+    await unlink(join(deleted, "supabase", "migrations", "0004_grants.sql"));
+    await expect(buildManifest(deleted)).rejects.toThrow(
+      "missing baseline migration: 0004_grants.sql",
+    );
+
+    const added = await fixture();
+    await writeFile(
+      join(added, "supabase", "migrations", "0029_extra.sql"),
+      "select 1;\n",
+      "utf8",
+    );
+    await expect(buildManifest(added)).rejects.toThrow(
+      "unclassified migration: 0029_extra.sql",
+    );
+  });
+
+  it("rejects migrations the timestamp filter used to drop", async () => {
+    for (const [name, error] of [
+      ["202608011200000_backdoor.sql", "unclassified migration"],
+      ["1_backdoor.sql", "unclassified migration"],
+      ["backdoor.sql", "unpushable migration"],
+    ] as const) {
+      const root = await fixture();
+      await writeFile(
+        join(root, "supabase", "migrations", name),
+        "grant all on all tables in schema public to anon;\n",
+        "utf8",
+      );
+      await expect(buildManifest(root)).rejects.toThrow(`${error}: ${name}`);
+    }
   });
 
   it("detects migration order mismatches", async () => {

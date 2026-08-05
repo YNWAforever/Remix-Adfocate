@@ -3,7 +3,7 @@ import { Hono, type Context } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import type { AdminEnv, StaffIdentity } from "../lib/staffAuth.js";
 import { PUBLICATION_PROOF_ASSET_BUCKET, refreshPublicationProofMetadata } from "../lib/activeMission/publicationProof.js";
-import { inspectProofUrl, PLATFORM_HOSTS } from "../lib/activeMission/proofUrl.js";
+import { inspectProofUrl } from "../lib/activeMission/proofUrl.js";
 import { validateProofChecklist } from "../lib/activeMission/state.js";
 import type { ProofChecklist, ProofReviewItemInput } from "../lib/activeMission/types.js";
 import { getOperatorRewardHandoffProjection } from "../lib/activeMission/rewardHandoff.js";
@@ -623,11 +623,14 @@ export function createAdminActiveMissionRepository(client: SupabaseClient): Admi
             p_expected_state: context.expectedState, p_expected_revision: context.expectedRevision,
             p_operator: context.operatorId, p_idempotency_key: context.idempotencyKey,
           })) as Row;
-          if (payload.idempotent) return { primaryUrl: "", platform: "instagram", idempotent: true, result: payload };
-          if (typeof payload.platform !== "string" || !(payload.platform in PLATFORM_HOSTS) || typeof payload.primary_url !== "string") {
+          if (payload.idempotent) return { primaryUrl: "", platform: null, idempotent: true, result: payload };
+          if (typeof payload.primary_url !== "string") {
             throw new OperatorActiveMissionError("VALIDATION_FAILED", "Invalid publication proof refresh target");
           }
-          return { primaryUrl: payload.primary_url, platform: payload.platform as keyof typeof PLATFORM_HOSTS };
+          return {
+            primaryUrl: payload.primary_url,
+            platform: typeof payload.platform === "string" ? payload.platform : null,
+          };
         },
         inspect: (target) => inspectProofUrl(target),
         complete: async (metadata) => publicationRpcData(await client.rpc("complete_publication_proof_metadata_refresh", {
