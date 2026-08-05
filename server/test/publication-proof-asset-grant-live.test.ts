@@ -8,6 +8,7 @@ import {
 import {
   seedPublicationProofReleaseFixture,
 } from "./fixtures/publicationProofRelease";
+import { expectSuccessfulResponse } from "./responseDiagnostics";
 
 const skipReason = activeMissionIntegrationSkipReason();
 const integrationSuite = skipReason === null ? describe : describe.skip;
@@ -36,7 +37,7 @@ integrationSuite("publication proof asset grant live path", () => {
       },
     );
 
-    expect(response.status).toBe(200);
+    await expectSuccessfulResponse(response, "PNG publication proof grant");
     const body = await response.json() as {
       asset?: { id?: string; uploadState?: string };
       expiresInSeconds?: number;
@@ -80,7 +81,7 @@ integrationSuite("publication proof asset grant live path", () => {
       },
     );
 
-    expect(grantResponse.status).toBe(200);
+    await expectSuccessfulResponse(grantResponse, "GIF or MP4 publication proof grant");
     const grant = await grantResponse.json() as {
       asset: { id: string; storageObjectPath: string; uploadState: string };
       token: string;
@@ -109,7 +110,7 @@ integrationSuite("publication proof asset grant live path", () => {
       },
     );
 
-    expect(finalizeResponse.status).toBe(200);
+    await expectSuccessfulResponse(finalizeResponse, "GIF or MP4 publication proof finalize");
     expect(await finalizeResponse.json()).toMatchObject({
       asset: { id: grant.asset.id, uploadState: "finalized", contentType },
     });
