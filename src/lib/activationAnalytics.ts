@@ -6,6 +6,9 @@ export type ActivationAuthErrorCategory =
   | "malformed"
   | "rate_limited"
   | "delivery_failed"
+  | "invalid_credentials"
+  | "weak_password"
+  | "email_taken"
   | "unknown";
 
 const PUBLICATION_ANALYTICS_LOCALES = ["en", "zh"] as const;
@@ -98,12 +101,12 @@ export type ActivationEventMap = {
   signup_completed: {
     locale: string;
     deviceCategory: DeviceCategory;
-    method: "email_magic_link" | "whatsapp" | "google" | "unknown";
+    method: "email_magic_link" | "email_password" | "whatsapp" | "google" | "unknown";
   };
-  auth_link_requested: { locale: string; method: "email_magic_link" };
+  auth_link_requested: { locale: string; method: "email_magic_link" | "email_password" };
   auth_link_failed: {
     locale: string;
-    method: "email_magic_link";
+    method: "email_magic_link" | "email_password";
     errorCategory: ActivationAuthErrorCategory;
   };
   onboarding_step_viewed: { locale: string; step: number };

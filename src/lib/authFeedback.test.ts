@@ -82,6 +82,98 @@ describe("classifyAuthError", () => {
       },
     },
     {
+      name: "wrong password sign-ins",
+      input: { code: "invalid_credentials", status: 400, message: "Invalid login credentials" },
+      expected: {
+        category: "invalid_credentials",
+        titleKey: "app.auth.feedback.invalidCredentials.title",
+        bodyKey: "app.auth.feedback.invalidCredentials.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "legacy invalid_grant password sign-ins",
+      input: { code: "invalid_grant", status: 400, message: "Invalid login credentials" },
+      expected: {
+        category: "invalid_credentials",
+        titleKey: "app.auth.feedback.invalidCredentials.title",
+        bodyKey: "app.auth.feedback.invalidCredentials.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "code-less invalid credential messages",
+      input: { message: "Invalid login credentials" },
+      expected: {
+        category: "invalid_credentials",
+        titleKey: "app.auth.feedback.invalidCredentials.title",
+        bodyKey: "app.auth.feedback.invalidCredentials.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "short passwords",
+      input: { code: "weak_password", status: 422, message: "Password should be at least 6 characters." },
+      expected: {
+        category: "weak_password",
+        titleKey: "app.auth.feedback.weakPassword.title",
+        bodyKey: "app.auth.feedback.weakPassword.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "code-less short password messages",
+      input: { message: "Password is too short" },
+      expected: {
+        category: "weak_password",
+        titleKey: "app.auth.feedback.weakPassword.title",
+        bodyKey: "app.auth.feedback.weakPassword.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "weak passwords reported with failure wording",
+      input: { status: 422, message: "Sign up failed: weak password" },
+      expected: {
+        category: "weak_password",
+        titleKey: "app.auth.feedback.weakPassword.title",
+        bodyKey: "app.auth.feedback.weakPassword.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "sign-ups for an existing account",
+      input: { code: "user_already_exists", status: 422, message: "User already registered" },
+      expected: {
+        category: "email_taken",
+        titleKey: "app.auth.feedback.emailTaken.title",
+        bodyKey: "app.auth.feedback.emailTaken.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
+      name: "email_exists sign-ups",
+      input: {
+        code: "email_exists",
+        status: 422,
+        message: "A user with this email address has already been registered",
+      },
+      expected: {
+        category: "email_taken",
+        titleKey: "app.auth.feedback.emailTaken.title",
+        bodyKey: "app.auth.feedback.emailTaken.body",
+        actionKey: "app.auth.action.retry",
+        action: "retry",
+      },
+    },
+    {
       name: "unknown provider failures",
       input: { code: "unexpected_provider_error", message: "raw upstream failure" },
       expected: {
@@ -99,5 +191,33 @@ describe("classifyAuthError", () => {
     if (input.message) {
       expect(JSON.stringify(result)).not.toContain(input.message);
     }
+  });
+
+  it("keeps throttling ahead of password classification", () => {
+    expect(classifyAuthError({
+      code: "over_request_rate_limit",
+      status: 429,
+      message: "Request rate limit reached",
+    }).category).toBe("rate_limited");
+
+    expect(classifyAuthError({
+      code: "invalid_credentials",
+      status: 429,
+      message: "Invalid login credentials",
+    }).category).toBe("rate_limited");
+  });
+
+  it("keeps link classification ahead of password classification", () => {
+    expect(classifyAuthError({
+      code: "otp_expired",
+      status: 403,
+      message: "Email link is invalid or has expired",
+    }).category).toBe("expired");
+
+    expect(classifyAuthError({
+      code: "email_send_failed",
+      status: 500,
+      message: "Error sending recovery email",
+    }).category).toBe("delivery_failed");
   });
 });

@@ -11,6 +11,9 @@ import { BoldValue } from "@/components/RichText";
 
 export const Route = createFileRoute("/_app/login")({ component: Login });
 
+/** Fast local guard only; Supabase enforces its own minimum server-side. */
+const MIN_PASSWORD_LENGTH = 8;
+
 /** Normalise a HK number to E.164. Accepts "9123 4567", "+85291234567", etc. */
 function toHkE164(raw: string): string {
   const digits = raw.replace(/[^\d+]/g, "");
@@ -123,7 +126,8 @@ function Login() {
     }
   }
 
-  // Until WhatsApp OTP is live, email magic-link is the primary (working) method.
+  // Until WhatsApp OTP is live, email + password is the primary method, with the
+  // magic link kept as a peer for creators who never set one.
   if (!WHATSAPP_LOGIN) {
     return (
       <AuthShell>
@@ -131,10 +135,16 @@ function Login() {
         <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
           {t("app.login.title")}
         </h1>
-        <p className="mt-2 text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHint")}</p>
-        <div className="mt-5">
-          <EmailAndGoogle />
+        <PasswordAuth />
+        {/* Decorative: the section headings carry the structure for assistive tech. */}
+        <div aria-hidden className="mt-5 flex items-center gap-3">
+          <span className="h-0.5 flex-1 bg-[var(--color-ink)]/20" />
+          <span className="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]">
+            {t("app.login.orSeparator")}
+          </span>
+          <span className="h-0.5 flex-1 bg-[var(--color-ink)]/20" />
         </div>
+        <EmailAndGoogle />
       </AuthShell>
     );
   }
@@ -241,9 +251,284 @@ function Login() {
         >
           {t("app.login.otherMethods")}
         </button>
-        {showSecondary && <EmailAndGoogle />}
+        {showSecondary && (
+          <>
+            <PasswordAuth />
+            <EmailAndGoogle />
+          </>
+        )}
       </div>
     </AuthShell>
+  );
+}
+
+type PasswordMode = "signIn" | "signUp" | "forgot";
+
+/**
+ * Email + password, plus the reset request. Sign-up signs the creator straight in
+ * because Supabase runs with email confirmations disabled; the session-less branch
+ * only matters if a project turns confirmations back on.
+ */
+function PasswordAuth() {
+  const { t, lang } = useI18n();
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<PasswordMode>("signIn");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [revealed, setRevealed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  // Each mode owns its result: a stale error or "link sent" must never follow the
+  // creator into the next form.
+  function switchMode(next: PasswordMode) {
+    setMode(next);
+    setFeedback(null);
+    setNotice(null);
+    setRevealed(false);
+  }
+
+  function fail(error: unknown) {
+    const nextFeedback = feedbackForError(error);
+    setFeedback(nextFeedback);
+    trackActivationEvent("auth_link_failed", {
+      locale: lang,
+      method: "email_password",
+      errorCategory: nextFeedback.category,
+    });
+  }
+
+  function begin() {
+    setBusy(true);
+    setFeedback(null);
+    setNotice(null);
+    trackActivationEvent("auth_link_requested", {
+      locale: lang,
+      method: "email_password",
+    });
+  }
+
+  async function signIn() {
+    begin();
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) {
+        fail(error);
+        return;
+      }
+      await finishAuth(navigate);
+    } catch (error) {
+      fail(error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function signUp() {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setNotice(null);
+      setFeedback(classifyAuthError({ code: "weak_password" }));
+      return;
+    }
+    begin();
+    try {
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+      if (error) {
+        fail(error);
+        return;
+      }
+      if (!data.session) {
+        // Reachable only where email confirmations are enabled for the project.
+        setNotice(t("app.login.magicLinkSent"));
+        return;
+      }
+      await finishAuth(navigate);
+    } catch (error) {
+      fail(error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function requestReset() {
+    begin();
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+      if (error) {
+        fail(error);
+        return;
+      }
+      setNotice(t("app.login.forgotSent"));
+    } catch (error) {
+      fail(error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (mode === "forgot") {
+      void requestReset();
+      return;
+    }
+    if (mode === "signUp") {
+      void signUp();
+      return;
+    }
+    void signIn();
+  }
+
+  const heading =
+    mode === "forgot"
+      ? t("app.login.forgotTitle")
+      : mode === "signUp"
+        ? t("app.login.signUpHeading")
+        : t("app.login.passwordHeading");
+  const cta =
+    mode === "forgot"
+      ? t("app.login.forgotCta")
+      : mode === "signUp"
+        ? t("app.login.signUpCta")
+        : t("app.login.passwordCta");
+  const busyLabel =
+    mode === "forgot"
+      ? t("app.login.sending")
+      : mode === "signUp"
+        ? t("app.login.signingUp")
+        : t("common.signingIn");
+  // Point aria-invalid at the field the error is actually about; a rate limit or an
+  // unknown failure blames neither.
+  const emailInvalid =
+    feedback?.category === "invalid_credentials" || feedback?.category === "email_taken";
+  const passwordInvalid =
+    feedback?.category === "invalid_credentials" || feedback?.category === "weak_password";
+
+  return (
+    <section
+      aria-labelledby="login-password-heading"
+      className="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+    >
+      <h2
+        id="login-password-heading"
+        className="font-heading text-base font-bold text-[var(--color-ink)]"
+      >
+        {heading}
+      </h2>
+      {feedback && (
+        <div id="login-password-error">
+          <AuthFeedback feedback={feedback} onRetry={() => setFeedback(null)} />
+        </div>
+      )}
+      {notice && (
+        <p role="status" aria-live="polite" className="text-sm text-[var(--color-soft-ink)]">
+          <BoldValue template={notice} value={email.trim()} />
+        </p>
+      )}
+      <form onSubmit={submit} className="space-y-2" aria-busy={busy}>
+        <label
+          htmlFor="login-password-email"
+          className="block font-heading text-sm font-bold text-[var(--color-ink)]"
+        >
+          {t("app.login.emailLabel")}
+        </label>
+        {mode === "forgot" && (
+          <p id="login-forgot-help" className="text-sm text-[var(--color-soft-ink)]">
+            {t("app.login.forgotHelp")}
+          </p>
+        )}
+        <input
+          id="login-password-email"
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+          aria-describedby={mode === "forgot" ? "login-forgot-help" : undefined}
+          aria-errormessage={emailInvalid ? "login-password-error" : undefined}
+          aria-invalid={emailInvalid}
+        />
+        {mode !== "forgot" && (
+          <>
+            <label
+              htmlFor="login-password"
+              className="block font-heading text-sm font-bold text-[var(--color-ink)]"
+            >
+              {t("app.login.passwordLabel")}
+            </label>
+            <p id="login-password-help" className="text-sm text-[var(--color-soft-ink)]">
+              {t("app.login.passwordHelp")}
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                id="login-password"
+                type={revealed ? "text" : "password"}
+                required
+                autoComplete={mode === "signUp" ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                aria-describedby="login-password-help"
+                aria-errormessage={passwordInvalid ? "login-password-error" : undefined}
+                aria-invalid={passwordInvalid}
+              />
+              <button
+                type="button"
+                onClick={() => setRevealed((r) => !r)}
+                aria-pressed={revealed}
+                className="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              >
+                {revealed ? t("app.login.hidePassword") : t("app.login.showPassword")}
+              </button>
+            </div>
+          </>
+        )}
+        <button
+          type="submit"
+          disabled={busy}
+          className="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+        >
+          {busy ? busyLabel : cta}
+        </button>
+        {busy && (
+          <p role="status" aria-live="polite" className="sr-only">
+            {busyLabel}
+          </p>
+        )}
+      </form>
+      <div className="space-y-2">
+        {mode === "signIn" && (
+          <button
+            type="button"
+            onClick={() => switchMode("forgot")}
+            disabled={busy}
+            className="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+          >
+            {t("app.login.forgotPasswordCta")}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => switchMode(mode === "signIn" ? "signUp" : "signIn")}
+          disabled={busy}
+          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+        >
+          {mode === "signIn"
+            ? t("app.login.switchToSignUp")
+            : mode === "signUp"
+              ? t("app.login.switchToSignIn")
+              : t("app.login.backToSignIn")}
+        </button>
+      </div>
+    </section>
   );
 }
 
@@ -311,44 +596,53 @@ function EmailAndGoogle() {
 
   return (
     <div className="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4">
-      {feedback && (
-        <div id="login-email-error">
-          <AuthFeedback feedback={feedback} onRetry={() => void requestLink()} />
-        </div>
-      )}
-      {sent ? (
-        <p role="status" aria-live="polite" className="text-sm text-[var(--color-soft-ink)]">
-          <BoldValue template={t("app.login.magicLinkSent")} value={email.trim()} />
-        </p>
-      ) : (
-        <form onSubmit={sendLink} className="space-y-2" aria-busy={busy}>
-          <label htmlFor="login-email" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
-            {t("app.login.emailLabel")}
-          </label>
-          <p id="login-email-help" className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHelp")}</p>
-          <input
-            id="login-email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
-            aria-describedby="login-email-help"
-            aria-errormessage={feedback ? "login-email-error" : undefined}
-            aria-invalid={Boolean(feedback)}
-          />
-          <button
-            type="submit"
-            disabled={busy}
-            className="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
-          >
-            {busy ? t("app.login.sending") : t("app.login.emailCta")}
-          </button>
-          {busy && <p role="status" aria-live="polite" className="sr-only">{t("app.login.sendingStatus")}</p>}
-        </form>
-      )}
+      {/* Google sits outside the labelled region: it is a peer method, not a link. */}
+      <section aria-labelledby="login-magic-heading" className="space-y-3">
+        <h2
+          id="login-magic-heading"
+          className="font-heading text-base font-bold text-[var(--color-ink)]"
+        >
+          {t("app.login.magicLinkHeading")}
+        </h2>
+        {feedback && (
+          <div id="login-email-error">
+            <AuthFeedback feedback={feedback} onRetry={() => void requestLink()} />
+          </div>
+        )}
+        {sent ? (
+          <p role="status" aria-live="polite" className="text-sm text-[var(--color-soft-ink)]">
+            <BoldValue template={t("app.login.magicLinkSent")} value={email.trim()} />
+          </p>
+        ) : (
+          <form onSubmit={sendLink} className="space-y-2" aria-busy={busy}>
+            <label htmlFor="login-email" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
+              {t("app.login.emailLabel")}
+            </label>
+            <p id="login-email-help" className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHelp")}</p>
+            <input
+              id="login-email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              aria-describedby="login-email-help"
+              aria-errormessage={feedback ? "login-email-error" : undefined}
+              aria-invalid={Boolean(feedback)}
+            />
+            <button
+              type="submit"
+              disabled={busy}
+              className="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+            >
+              {busy ? t("app.login.sending") : t("app.login.emailCta")}
+            </button>
+            {busy && <p role="status" aria-live="polite" className="sr-only">{t("app.login.sendingStatus")}</p>}
+          </form>
+        )}
+      </section>
       {GOOGLE_LOGIN && (
         <button
           type="button"
