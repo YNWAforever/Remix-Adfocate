@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: "2.110.0" }
       # Placeholder Twilio token: enables phone auth so the phone-primary bootstrap test
       # can sign in via [auth.sms.test_otp]. No real SMS is ever sent (test number only).
       - run: supabase start
