@@ -22,7 +22,7 @@ function workspace(): ActiveMissionWorkspace {
   return {
     workflow: {
       id: "workflow-1", submissionId: "sub-1", state: "drafting", acceptedAt: "2026-07-15T00:00:00Z",
-      deadline: null, fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48,
+      deadline: null, revision: 0, fulfillmentRequired: false, revisionLimit: 2, reviewSlaHours: 48,
       revisionResponseHours: 48, createdAt: "2026-07-15T00:00:00Z", updatedAt: "2026-07-15T00:00:00Z",
     },
     mission: {
@@ -38,6 +38,10 @@ function workspace(): ActiveMissionWorkspace {
       currentSubmittedVersionId: null, approvedVersionId: null, reviewStartedAt: null, reviewDueAt: null,
     }],
     events: [],
+    rewardContract: null,
+    completionEligibility: { eligible: false, blockers: ["reward_contract_required"],
+      requiredItemCount: 1, verifiedRequiredItemCount: 0 },
+    pendingReward: null,
     nextAction: { kind: "continue_draft", workItemId: "item-1", deadline: null, blockedReason: null },
   };
 }

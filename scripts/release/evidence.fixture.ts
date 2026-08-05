@@ -1,0 +1,31 @@
+export const validEvidenceInput = {
+  targetProjectRef: "mhkoayftiuojxlrkollf",
+  schemaFingerprint: "b".repeat(64),
+  manifestDigest: "a".repeat(64),
+  preflightHash: "c".repeat(64),
+  rehearsalHash: "d".repeat(64),
+  applicationCommit: "e".repeat(40),
+  migrationRange: { from: "20260715163350", to: "20260731140000" },
+  migrationChecksums: [{ version: "20260715163350", sha256: "f".repeat(64) }],
+  recoveryReference: "backup-2026-08-01T00:00Z",
+  roles: {
+    executor: "release-executor",
+    observer: "release-observer",
+    containmentOwner: "incident-owner",
+    productOwner: "product-owner",
+    approver: "production-approver",
+  },
+  testResults: [
+    {
+      gate: "production-shape-rehearsal",
+      status: "passed" as const,
+      evidenceHash: "1".repeat(64),
+    },
+  ],
+  proposedProductionCommands: ["npm run release:execute -- --apply"],
+  containmentCommands: ["close pilot mission", "restore compatible deployment"],
+  warnings: [],
+  skippedChecks: [],
+  createdAt: "2026-08-01T00:00:00.000Z",
+  expiresAt: "2026-08-02T00:00:00.000Z",
+};

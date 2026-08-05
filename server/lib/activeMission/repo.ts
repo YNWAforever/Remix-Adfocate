@@ -12,13 +12,23 @@ import {
   type SubmitDraftInput,
   type UploadGrantInput,
 } from "./creatorActions.js";
-
+import {
+  buildCompletionEligibility,
+  normalizeCreatorRewardHandoffProjection,
+  type CompletionEligibility,
+  type PendingReward,
+  type RewardContract,
+} from "./rewardHandoff.js";
 
 
 export type ActiveMissionOwner = {
   submissionId: string;
   creatorId: string;
   workspaceId: string;
+};
+
+export type ActiveMissionRepositoryOptions = {
+  rewardHandoffClient?: SupabaseClient;
 };
 
 export type DraftSaveInput = DraftPatch & { revision: number };
@@ -42,6 +52,7 @@ export type MissionWorkflow = {
   state: WorkflowState;
   acceptedAt: string;
   deadline: string | null;
+  revision: number;
   fulfillmentRequired: boolean;
   revisionLimit: number;
   reviewSlaHours: number;
@@ -153,6 +164,9 @@ export type ActiveMissionWorkspace = {
   workItems: MissionWorkItemView[];
   events: MissionWorkflowEvent[];
   nextAction: { kind: string; workItemId: string | null; deadline: string | null; blockedReason: string | null };
+  rewardContract: RewardContract | null;
+  completionEligibility: CompletionEligibility;
+  pendingReward: PendingReward | null;
 };
 
 export type PublicationInstructionView = {
@@ -225,9 +239,9 @@ export interface ActiveMissionRepository {
 const SUBMISSION_SELECT =
   "id, mission_id, creator_id, workspace_id, missions!mission_submissions_mission_workspace_fk(id, slug, title, mission_type, description, deliverables, requirements, platforms, effort, target_audience, dos, donts, key_messages, reference_links)";
 const WORKFLOW_SELECT =
-  "id, workspace_id, mission_submission_id, state, accepted_at, deadline, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, created_at, updated_at";
+  "id, workspace_id, mission_submission_id, state, accepted_at, deadline, revision, fulfillment_required, revision_limit, review_sla_hours, revision_response_hours, created_at, updated_at";
 const ITEM_SELECT =
-  "id, workspace_id, mission_workflow_id, title, platform, requirements_snapshot, required, position, deadline, state, current_submitted_version_id, approved_version_id, review_started_at, review_due_at, created_at, updated_at";
+  "id, workspace_id, mission_workflow_id, title, platform, requirements_snapshot, required, position, deadline, state, current_submitted_version_id, approved_version_id, current_proof_attempt_id, verified_proof_attempt_id, review_started_at, review_due_at, created_at, updated_at";
 const DRAFT_SELECT =
   "id, workspace_id, mission_work_item_id, caption_text, external_draft_url, checklist_answers, revision, last_saved_at, archived_at";
 const FULFILLMENT_SELECT =
@@ -287,6 +301,7 @@ function toWorkflow(row: JsonRow): MissionWorkflow {
     state: row.state,
     acceptedAt: row.accepted_at,
     deadline: row.deadline ?? null,
+    revision: row.revision,
     fulfillmentRequired: row.fulfillment_required,
     revisionLimit: row.revision_limit,
     reviewSlaHours: row.review_sla_hours,
@@ -587,7 +602,12 @@ function proofRpcFailure(error: { message?: string | null }): never {
   dbFailure(error);
 }
 
-export function createActiveMissionRepository(client: SupabaseClient): ActiveMissionRepository {
+export function createActiveMissionRepository(
+  client: SupabaseClient,
+  options: ActiveMissionRepositoryOptions = {},
+): ActiveMissionRepository {
+  const rewardHandoffClient = options.rewardHandoffClient ?? client;
+
   return {
     async getPublication(owner, workItemId) {
       return creatorPublication(client, owner, workItemId);
@@ -627,6 +647,11 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
 
     async getWorkspace(owner) {
       const { submission, workflow } = await ownedAnchor(client, owner);
+      const handoffResult = await rewardHandoffClient.rpc("get_my_mission_reward_handoff", {
+        p_submission: owner.submissionId,
+      });
+      if (handoffResult.error) dbFailure(handoffResult.error);
+      const pendingReward = normalizeCreatorRewardHandoffProjection(handoffResult.data);
       const fulfillmentQuery = client
         .from("mission_fulfillments")
         .select(FULFILLMENT_SELECT)
@@ -796,6 +821,14 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
           operationalNote: fulfillment.operational_note ?? null,
         } : null,
         workItems,
+        rewardContract: null,
+        completionEligibility: buildCompletionEligibility({
+          workflowState: workflow.state,
+          requiredItems: itemRows,
+          contract: pendingReward ? true : null,
+          pendingReward,
+        }),
+        pendingReward,
         events: ((eventsResult.data ?? []) as JsonRow[]).map((row) => ({
           id: row.id,
           workItemId: row.mission_work_item_id ?? null,

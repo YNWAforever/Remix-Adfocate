@@ -217,17 +217,26 @@ export async function joinMissionWithWorkflowRecovery(
   creatorId: string,
   workspaceId: string,
 ) {
-  const joined = await supabase.rpc("join_mission", { p_mission: mission.id });
-  let submission = joined.data;
+  if (mission.creator_workflow_mode !== "active_workspace") {
+    const joined = await supabase.rpc("join_mission", { p_mission: mission.id });
+    return { data: joined.data, error: joined.error };
+  }
 
-  if (joined.error) {
-    if (
-      mission.creator_workflow_mode !== "active_workspace"
-      || joined.error.message !== "already_joined"
-    ) {
-      return { data: null, error: joined.error };
-    }
+  const joined = await supabase.rpc("join_active_mission", {
+    p_mission: mission.id,
+  });
+  if (!joined.error) {
+    return { data: joined.data, error: null };
+  }
 
+  if (joined.error.message !== "already_joined") {
+    return { data: null, error: joined.error };
+  }
+
+  // Historical joined submissions deliberately recover only the workflow. Their
+  // joined reward values are unknown and require the audited operator backfill.
+  let submission;
+  {
     const existing = await supabase
       .from("mission_submissions")
       .select("*")
@@ -242,18 +251,14 @@ export async function joinMissionWithWorkflowRecovery(
     submission = existing.data;
   }
 
-  if (mission.creator_workflow_mode === "active_workspace") {
-    const workflow = await supabase.rpc("create_mission_workflow", {
-      p_submission: submission.id,
-    });
-    if (workflow.error) return { data: null, error: workflow.error };
-    return {
-      data: { submission, workflow: workflow.data },
-      error: null,
-    };
-  }
-
-  return { data: submission, error: null };
+  const workflow = await supabase.rpc("create_mission_workflow", {
+    p_submission: submission.id,
+  });
+  if (workflow.error) return { data: null, error: workflow.error };
+  return {
+    data: { submission, workflow: workflow.data },
+    error: null,
+  };
 }
 
 export async function submitMissionForMode(

@@ -99,28 +99,28 @@ The persistence model currently uses these statuses:
 
 Active mission summaries treat `joined`, `submitted`, and `under_review` as active. Durable activation uses the existence of any persisted mission record; only `joined` produces the current submit-proof next action.
 
-## Target mission workflow for the next phase
+## Active mission completion and future finance states
 
-The current statuses should not be relabeled to imply unsupported operations. A future design should add or derive creator-facing stages only after backend ownership and transition rules are agreed:
+The active-workspace workflow now supports a verified completion handoff:
 
-1. Applied.
-2. Under review.
-3. Accepted.
-4. Product pending.
-5. Product received.
-6. Draft in progress.
-7. Draft submitted.
-8. Revision requested.
-9. Approved to publish.
-10. Published.
-11. Proof submitted.
-12. Validating.
-13. Completed.
-14. Reward pending.
-15. Paid.
+```text
+proof_verified
+  -> authorized completion approval
+reward_pending
+  -> authorized cancellation before issuance
+proof_verified
+```
 
-Every stage needs current status, plain-language explanation, responsible party, next action, deadline, completion requirements, reward impact, support route, and immutable history. Mapping these stages onto existing records is a product/backend decision, not part of the activation slice.
+`reward_pending` is the canonical creator-facing state after mission completion.
+It freezes the joined reward and workspace processing-window facts for finance
+review without changing the legacy submission state, creator points, XP,
+earnings, issued-reward records, redemptions, or workspace budget. Cancellation
+preserves proof history and returns the mission to reassessment; it does not
+reverse credited funds.
 
+Reward issuance, ledger posting, available balance, withdrawal, payout
+processing, paid, failed, and reversed remain future states. The interface must
+not infer or promise them from a pending handoff.
 ## Submission and revision states
 
 Current mission detail accepts one or more content URLs for a joined mission and then shows the persisted status. It does not provide:
@@ -176,4 +176,4 @@ They must not include direct creator identifiers or creator-authored content: em
 
 ## Ownership boundary
 
-This document defines the implemented first-session experience through the first mission decision. The next product phase owns active mission, revision, publication, proof, validation, reward pending, payout, disputes, and retention mechanics. Those states require backend facts and product-owner decisions before they can become user-facing promises.
+This document defines the implemented first-session experience through the first mission decision. Active mission, revision, publication proof, validation, and the reward-pending finance handoff now have backend-owned states. Reward issuance, ledger posting, withdrawal, payout, disputes, and retention remain future phases and require backend facts and product-owner decisions before they become user-facing promises.

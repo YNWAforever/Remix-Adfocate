@@ -19,6 +19,19 @@ import {
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 
+function activeWorkspaceDbCasesEnabled(env: NodeJS.ProcessEnv) {
+  return env.LEGACY_ONLY !== "1";
+}
+
+const activeWorkspaceDbIt = activeWorkspaceDbCasesEnabled(process.env) ? it : it.skip;
+
+describe("legacy rehearsal test selection", () => {
+  it("skips active-workspace database cases only for the pre-expansion legacy gate", () => {
+    expect(activeWorkspaceDbCasesEnabled({ LEGACY_ONLY: "1" })).toBe(false);
+    expect(activeWorkspaceDbCasesEnabled({})).toBe(true);
+  });
+});
+
 function req(path: string, jwt: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {
     ...init,
@@ -146,7 +159,7 @@ describe("mission route behavior without a live database", () => {
 
 
 
-  it("recovers an active-workspace join after workflow creation failed", async () => {
+  it("retries an active-workspace join atomically after workflow creation failed", async () => {
     const mission = { id: "mission-1", creator_workflow_mode: "active_workspace" };
     const submission = {
       id: "submission-1",
@@ -155,51 +168,28 @@ describe("mission route behavior without a live database", () => {
       workspace_id: "workspace-1",
       status: "joined",
     };
-    let storedSubmission: typeof submission | null = null;
     let xp = 0;
     let filled = 0;
-    let workflowAttempts = 0;
-    const events: string[] = [];
+    let joinAttempts = 0;
     const rpc = vi.fn(async (name: string, args: Record<string, string>) => {
-      events.push(`rpc:${name}:${JSON.stringify(args)}`);
-      if (name === "join_mission") {
-        if (storedSubmission) {
-          return { data: null, error: { message: "already_joined" } };
-        }
-        storedSubmission = submission;
-        xp += 10;
-        filled += 1;
-        return { data: submission, error: null };
+      expect(name).toBe("join_active_mission");
+      expect(args).toEqual({ p_mission: mission.id });
+      joinAttempts += 1;
+      if (joinAttempts === 1) {
+        return { data: null, error: { message: "workflow_failed" } };
       }
-      if (name === "create_mission_workflow") {
-        workflowAttempts += 1;
-        if (workflowAttempts === 1) {
-          return { data: null, error: { message: "workflow_failed" } };
-        }
-        return {
-          data: { id: "workflow-1", mission_submission_id: submission.id },
-          error: null,
-        };
-      }
-      throw new Error(`unexpected RPC ${name}`);
+      xp += 10;
+      filled += 1;
+      return {
+        data: {
+          submission,
+          workflow: { id: "workflow-1", mission_submission_id: submission.id },
+          rewardContract: { id: "contract-1", xp_amount: 0 },
+        },
+        error: null,
+      };
     });
-    const maybeSingle = vi.fn(async () => {
-      events.push("query:maybeSingle");
-      return { data: storedSubmission, error: null };
-    });
-    const eq = vi.fn((column: string, value: string) => {
-      events.push(`query:eq:${column}:${value}`);
-      return { eq, maybeSingle };
-    });
-    const select = vi.fn((columns: string) => {
-      events.push(`query:select:${columns}`);
-      return { eq };
-    });
-    const from = vi.fn((table: string) => {
-      expect(table).toBe("mission_submissions");
-      events.push(`query:from:${table}`);
-      return { select };
-    });
+    const from = vi.fn();
     const client = { rpc, from } as unknown as SupabaseClient;
 
     const first = await joinMissionWithWorkflowRecovery(
@@ -220,35 +210,15 @@ describe("mission route behavior without a live database", () => {
       data: {
         submission,
         workflow: { id: "workflow-1", mission_submission_id: submission.id },
+        rewardContract: { id: "contract-1", xp_amount: 0 },
       },
       error: null,
     });
     expect(rpc.mock.calls).toEqual([
-      ["join_mission", { p_mission: "mission-1" }],
-      ["create_mission_workflow", { p_submission: "submission-1" }],
-      ["join_mission", { p_mission: "mission-1" }],
-      ["create_mission_workflow", { p_submission: "submission-1" }],
+      ["join_active_mission", { p_mission: "mission-1" }],
+      ["join_active_mission", { p_mission: "mission-1" }],
     ]);
-    expect(events).toEqual([
-      'rpc:join_mission:{"p_mission":"mission-1"}',
-      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
-      'rpc:join_mission:{"p_mission":"mission-1"}',
-      "query:from:mission_submissions",
-      "query:select:*",
-      "query:eq:mission_id:mission-1",
-      "query:eq:creator_id:creator-1",
-      "query:eq:workspace_id:workspace-1",
-      "query:maybeSingle",
-      'rpc:create_mission_workflow:{"p_submission":"submission-1"}',
-    ]);
-    expect(rpc.mock.calls.filter(([name]) => name === "join_mission")).toHaveLength(2);
-    expect(rpc.mock.calls.filter(([name]) => name === "create_mission_workflow")).toHaveLength(2);
-    expect(select).toHaveBeenCalledWith("*");
-    expect(eq.mock.calls).toEqual([
-      ["mission_id", "mission-1"],
-      ["creator_id", "creator-1"],
-      ["workspace_id", "workspace-1"],
-    ]);
+    expect(from).not.toHaveBeenCalled();
     expect({ xp, filled }).toEqual({ xp: 10, filled: 1 });
   });
 
@@ -354,7 +324,7 @@ suite("mission join", () => {
     expect(res.status).toBe(404);
   });
 
-  it("creates one workflow for an active-workspace direct join", async () => {
+  activeWorkspaceDbIt("creates one workflow for an active-workspace direct join", async () => {
     const active = await seedActiveMission({
       email: "active-route-join@test.local",
       slug: "test-active-route-join",
@@ -440,7 +410,7 @@ suite("mission submit", () => {
     expect((await res.json()).code).toBe("wrong_state");
   });
 
-  it("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
+  activeWorkspaceDbIt("rejects legacy submit for active-workspace missions without mutating rewards", async () => {
     const active = await seedActiveMission({
       email: "active-route-submit@test.local",
       slug: "test-active-route-submit",

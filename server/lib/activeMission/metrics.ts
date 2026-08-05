@@ -63,8 +63,8 @@ function rateMetric(numerator: number, denominator: number): RateMetric {
   return { numerator, denominator, rate: denominator === 0 ? 0 : numerator / denominator };
 }
 
-function validTimestamp(value: string | null): number | null {
-  if (value === null) return null;
+function validTimestamp(value: unknown): number | null {
+  if (typeof value !== "string") return null;
   const timestamp = Date.parse(value);
   return Number.isFinite(timestamp) ? timestamp : null;
 }
@@ -150,5 +150,60 @@ export function calculatePublicationProofOperationalMetrics(
         Number.isFinite(row.staleRecoveryCount) && row.staleRecoveryCount > 0).length,
       submittedRows.length,
     ),
+  };
+}
+
+export type RewardHandoffMetricRow = {
+  status: "pending" | "cancelled";
+  targetAt: string | null;
+  proofVerifiedAt: string | null;
+  rewardPendingAt: string | null;
+  completionApprovedAt: string | null;
+  cancelledAt: string | null;
+  rewardContractId: string | null;
+};
+
+export type RewardHandoffOperationalMetrics = {
+  pendingCount: number;
+  overdueCount: number;
+  cancellationRate: number;
+  medianProofVerifiedToPendingMinutes: number | null;
+  missingContractCount: number;
+};
+
+export function calculateRewardHandoffOperationalMetrics(
+  rows: readonly RewardHandoffMetricRow[],
+  now: Date,
+): RewardHandoffOperationalMetrics {
+  const nowTimestamp = now.getTime();
+  const pendingRows = rows.filter((row) => row.status === "pending");
+  const approvalDecisionCount = rows.filter(
+    (row) => validTimestamp(row.completionApprovedAt) !== null,
+  ).length;
+  const cancellationDecisionCount = rows.filter(
+    (row) => validTimestamp(row.cancelledAt) !== null,
+  ).length;
+  const decisionCount = approvalDecisionCount + cancellationDecisionCount;
+  const durationsMinutes = rows.flatMap((row) => {
+    const proofVerifiedAt = validTimestamp(row.proofVerifiedAt);
+    const rewardPendingAt = validTimestamp(row.rewardPendingAt);
+    if (proofVerifiedAt === null || rewardPendingAt === null) return [];
+    const minutes = (rewardPendingAt - proofVerifiedAt) / (60 * 1000);
+    return Number.isFinite(minutes) && minutes >= 0 ? [minutes] : [];
+  });
+
+  return {
+    pendingCount: pendingRows.length,
+    overdueCount: Number.isFinite(nowTimestamp)
+      ? pendingRows.filter((row) => {
+        const targetAt = validTimestamp(row.targetAt);
+        return targetAt !== null && targetAt < nowTimestamp;
+      }).length
+      : 0,
+    cancellationRate: decisionCount === 0
+      ? 0
+      : cancellationDecisionCount / decisionCount,
+    medianProofVerifiedToPendingMinutes: median(durationsMinutes),
+    missingContractCount: rows.filter((row) => row.rewardContractId === null).length,
   };
 }
