@@ -36,13 +36,35 @@ export function classifyPublicationProofGrantBoundary(input: {
 
 export async function cleanupPublicationProofProbeAsset(input: {
   assetId: unknown;
+  workspaceId: unknown;
+  creatorId: unknown;
+  submissionId: unknown;
+  workItemId: unknown;
   storageObjectPath: unknown;
   abandon: () => Promise<{ error?: unknown }>;
-  fallbackDelete: () => Promise<unknown>;
+  fallbackDelete: (scope: {
+    assetId: string;
+    workspaceId: string;
+    creatorId: string;
+    submissionId: string;
+    workItemId: string;
+    uploadState: "pending";
+    storageObjectPath?: string;
+  }) => Promise<unknown>;
 }): Promise<void> {
-  if (typeof input.assetId !== "string" || input.assetId.trim() === "") return;
-  let needsFallback = typeof input.storageObjectPath !== "string"
-    || input.storageObjectPath.trim() === "";
+  const requiredScope = [
+    input.assetId,
+    input.workspaceId,
+    input.creatorId,
+    input.submissionId,
+    input.workItemId,
+  ];
+  if (requiredScope.some((value) => typeof value !== "string" || value.trim() === "")) return;
+  const storageObjectPath = typeof input.storageObjectPath === "string"
+    && input.storageObjectPath.trim() !== ""
+    ? input.storageObjectPath
+    : undefined;
+  let needsFallback = storageObjectPath === undefined;
   if (!needsFallback) {
     try {
       const abandoned = await input.abandon();
@@ -53,7 +75,15 @@ export async function cleanupPublicationProofProbeAsset(input: {
   }
   if (!needsFallback) return;
   try {
-    await input.fallbackDelete();
+    await input.fallbackDelete({
+      assetId: input.assetId as string,
+      workspaceId: input.workspaceId as string,
+      creatorId: input.creatorId as string,
+      submissionId: input.submissionId as string,
+      workItemId: input.workItemId as string,
+      uploadState: "pending",
+      ...(storageObjectPath ? { storageObjectPath } : {}),
+    });
   } catch {
     // Diagnostic cleanup is best effort; never print a raw service error.
   }

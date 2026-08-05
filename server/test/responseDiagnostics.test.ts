@@ -74,33 +74,51 @@ describe("integration response diagnostics", () => {
   });
 
   it("falls back to deleting a probe asset when guarded cleanup cannot complete", async () => {
+    const scope = {
+      assetId: "asset-id",
+      workspaceId: "workspace-id",
+      creatorId: "creator-id",
+      submissionId: "submission-id",
+      workItemId: "work-item-id",
+    };
     const deleteMissingPath = vi.fn().mockResolvedValue(undefined);
     const abandonMissingPath = vi.fn();
     await cleanupPublicationProofProbeAsset({
-      assetId: "asset-id",
+      ...scope,
       storageObjectPath: undefined,
       abandon: abandonMissingPath,
       fallbackDelete: deleteMissingPath,
     });
     expect(abandonMissingPath).not.toHaveBeenCalled();
-    expect(deleteMissingPath).toHaveBeenCalledOnce();
+    expect(deleteMissingPath).toHaveBeenCalledWith({
+      ...scope,
+      uploadState: "pending",
+    });
 
     const deleteAfterThrow = vi.fn().mockResolvedValue(undefined);
     await cleanupPublicationProofProbeAsset({
-      assetId: "asset-id",
+      ...scope,
       storageObjectPath: "object-path",
       abandon: vi.fn().mockRejectedValue(new Error("raw service error")),
       fallbackDelete: deleteAfterThrow,
     });
-    expect(deleteAfterThrow).toHaveBeenCalledOnce();
+    expect(deleteAfterThrow).toHaveBeenCalledWith({
+      ...scope,
+      uploadState: "pending",
+      storageObjectPath: "object-path",
+    });
 
     const deleteAfterError = vi.fn().mockResolvedValue(undefined);
     await cleanupPublicationProofProbeAsset({
-      assetId: "asset-id",
+      ...scope,
       storageObjectPath: "object-path",
       abandon: vi.fn().mockResolvedValue({ error: new Error("raw service error") }),
       fallbackDelete: deleteAfterError,
     });
-    expect(deleteAfterError).toHaveBeenCalledOnce();
+    expect(deleteAfterError).toHaveBeenCalledWith({
+      ...scope,
+      uploadState: "pending",
+      storageObjectPath: "object-path",
+    });
   });
 });

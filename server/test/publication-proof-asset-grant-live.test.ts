@@ -88,6 +88,10 @@ async function diagnoseGrantFailureBoundary(input: {
   }
   const cleanup = () => cleanupPublicationProofProbeAsset({
     assetId: row.id,
+    workspaceId: input.workspaceId,
+    creatorId: input.creatorId,
+    submissionId: input.submissionId,
+    workItemId: input.workItemId,
     storageObjectPath: row.storage_object_path,
     abandon: async () => await service.rpc("abandon_publication_proof_asset", {
       p_submission: input.submissionId,
@@ -97,10 +101,20 @@ async function diagnoseGrantFailureBoundary(input: {
       p_asset: row.id,
       p_storage_object_path: row.storage_object_path,
     }),
-    fallbackDelete: async () => await service
-      .from("mission_publication_proof_assets")
-      .delete()
-      .eq("id", row.id),
+    fallbackDelete: async (scope) => {
+      const deletion = service
+        .from("mission_publication_proof_assets")
+        .delete()
+        .eq("id", scope.assetId)
+        .eq("workspace_id", scope.workspaceId)
+        .eq("creator_id", scope.creatorId)
+        .eq("mission_submission_id", scope.submissionId)
+        .eq("mission_work_item_id", scope.workItemId)
+        .eq("upload_state", scope.uploadState);
+      return await (scope.storageObjectPath
+        ? deletion.eq("storage_object_path", scope.storageObjectPath)
+        : deletion);
+    },
   });
   if (rpc.error || !row.storage_object_path) {
     await cleanup();
