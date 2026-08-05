@@ -818,8 +818,13 @@ const MIGRATION_KEYS = [
 ] as const;
 const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_,\x5b\x5d]+\))$/;
 
+function canonicalSqlText(value: string | Buffer): Buffer {
+  const text = typeof value === "string" ? value : value.toString("utf8");
+  return Buffer.from(text.replace(/\r\n?/g, "\n"), "utf8");
+}
+
 function sha256(value: string | Buffer) {
-  return createHash("sha256").update(value).digest("hex");
+  return createHash("sha256").update(canonicalSqlText(value)).digest("hex");
 }
 
 function migrationFile(metadata: ReviewedMigration) {

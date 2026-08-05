@@ -113,6 +113,32 @@ describe("release migration manifest", () => {
     expect(await validateManifest(manifest, root)).toEqual([]);
   });
 
+  it("normalizes LF, CRLF, and lone CR migration checkouts before hashing", async () => {
+    const first = REVIEWED_FILES[0]!;
+    const logical = "select 'line-ending-proof';\nselect 'same-bytes';\n";
+    const roots = await Promise.all([
+      fixture(REVIEWED_FILES, { [first]: logical }),
+      fixture(REVIEWED_FILES, {
+        [first]: logical.replaceAll("\n", "\r\n"),
+      }),
+      fixture(REVIEWED_FILES, {
+        [first]: logical.replaceAll("\n", "\r"),
+      }),
+    ]);
+    const manifests = await Promise.all(roots.map(buildManifest));
+    const hashes = manifests.map((manifest) => manifest.migrations[0]!.sha256);
+    const digests = manifests.map(digestManifest);
+
+    expect(hashes).toEqual([hashes[0], hashes[0], hashes[0]]);
+    expect(digests).toEqual([digests[0], digests[0], digests[0]]);
+    for (const [root, manifest] of roots.map((root, index) => [
+      root,
+      manifests[index]!,
+    ] as const)) {
+      expect(await validateManifest(manifest, root)).toEqual([]);
+    }
+  });
+
   it("declares capabilities for migrations previously emitted as empty", async () => {
     const manifest = await buildManifest(await fixture());
     expect(

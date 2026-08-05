@@ -7,7 +7,7 @@
       "version": "20260715163350",
       "name": "active_mission_workspace",
       "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
-      "sha256": "7e84755bcacf066809e3201ce51eada0b51673e27841b9d44da70442730f560a",
+      "sha256": "00b6a2fb39a9f5f05d5822dcc0ad906857b960130ff9ffe22774b2e3cad8ecd5",
       "phase": "active_mission",
       "dependsOn": [],
       "capabilities": [
@@ -172,7 +172,7 @@
       "version": "20260717190420",
       "name": "receive_mission_fulfillment",
       "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
-      "sha256": "b32f533964cda379d60a5d01c6d39c2f348aa9927d063b5a39ad9305778cfc63",
+      "sha256": "e00bed624f8f7d13cee3d422d921e28d79d64ae70fd1b03717ac2da2b24a32e4",
       "phase": "active_mission",
       "dependsOn": [
         "20260715163350"
@@ -189,7 +189,7 @@
       "version": "20260718134500",
       "name": "active_mission_operator_lifecycle",
       "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
-      "sha256": "df002f9bc6d350363678950a1f51c14a18deae45f583e742a9eb2cda609e7266",
+      "sha256": "16b757e808eaa97e2d9df160a4416b167f006d7e66c5dd5f71e95fcb9d31bf96",
       "phase": "active_mission",
       "dependsOn": [
         "20260717190420"
@@ -220,7 +220,7 @@
       "version": "20260718193000",
       "name": "harden_active_mission_operator_lifecycle",
       "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
-      "sha256": "c666fe36add211a6bc40419ea761dc857585a904ea61e4ef87e3be22b6022846",
+      "sha256": "a6fc1fd8ab7b56a483ab08b4bf3bbca2151e4ea553221cf7b08f52bc48c717eb",
       "phase": "active_mission",
       "dependsOn": [
         "20260718134500"
@@ -238,7 +238,7 @@
       "version": "20260718210000",
       "name": "author_active_mission_workflow_policies",
       "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
-      "sha256": "d15b28e3cccab1d4885c3cb33f08177ef1dd8023a694497a1f31f8ec8fe9ae6c",
+      "sha256": "6adc69efe2ee6c4e3ec1eb5c667c8044ba208298775886ffcff9fae4e44435bb",
       "phase": "active_mission",
       "dependsOn": [
         "20260718193000"
@@ -257,7 +257,7 @@
       "version": "20260718213000",
       "name": "guard_mission_authoring_snapshot_race",
       "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
-      "sha256": "24a5d5afb2eb9f1b8a51814d789e9f68d9deeb4df09b94a35886f7d70935b4eb",
+      "sha256": "f8cf31e74e9be0ea92e16b3ba060b68e37992117fa204384a58bb5b9b0c2ef8d",
       "phase": "active_mission",
       "dependsOn": [
         "20260718210000"
@@ -273,7 +273,7 @@
       "version": "20260719133000",
       "name": "submit_active_mission_draft",
       "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
-      "sha256": "33121d68fb072cf98a1243170264a796d0f08b2d7f5427f7854ccff69277e54c",
+      "sha256": "6f59d84a299fb09c31b8d5c1e073f47b7e75bd6200c75f57d5c1b3ad06ec25f2",
       "phase": "active_mission",
       "dependsOn": [
         "20260718213000"
@@ -299,7 +299,7 @@
       "version": "20260719160000",
       "name": "abandon_active_mission_asset",
       "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
-      "sha256": "57f0c0dfd9f306f5e38140c3e064ae05815dbd30be47f9b488659491b0b29038",
+      "sha256": "6cbb7ed6b21a5eab470f1cc31e418af7cf4859ffbda0a5ab562cbd5a41b445b0",
       "phase": "active_mission",
       "dependsOn": [
         "20260719133000"
@@ -316,7 +316,7 @@
       "version": "20260719200000",
       "name": "active_mission_workflow_notifications",
       "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
-      "sha256": "1bc2c60e3e93a06fcbabbe4e43a4731c343b5263ad46156dce80d055393533f7",
+      "sha256": "f0b46aa8f23fca4ab327a12d4e22ba4ab667c7882b1558613c64c6ee828d50b1",
       "phase": "active_mission",
       "dependsOn": [
         "20260719160000"
@@ -342,7 +342,7 @@
       "version": "20260719220000",
       "name": "migrate_pristine_joined_active_mission",
       "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
-      "sha256": "e1c81a85674242e21db02621f2c3d9cc801b4c3a34822cc5d1b5842e5be23c42",
+      "sha256": "9bc00424e195d9daaaa218434a737c4608aade5f07d5533e46e433e13dfaeef2",
       "phase": "active_mission",
       "dependsOn": [
         "20260719200000"
@@ -358,7 +358,7 @@
       "version": "20260720033542",
       "name": "final_review_active_mission_contracts",
       "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
-      "sha256": "01a6378ca4ef51fc733fce49298b55c796572be8dd04376ebc1f39dad54dd60c",
+      "sha256": "5055cf4e22c43a968426d48b3d50c5d908786ea0428632d610ea2bf04860de3e",
       "phase": "active_mission",
       "dependsOn": [
         "20260719220000"
@@ -385,7 +385,7 @@
       "version": "20260720175319",
       "name": "grant_service_role_budget_read",
       "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
-      "sha256": "0d311dfcff44c09dc5418d16ded82bad66b2ce879e8c5f5d7e627880bfbf433a",
+      "sha256": "d7e9f431f9effb2f3473ea1f2514c58c8cf6e2c2c7110ac44db9a7626d68955f",
       "phase": "active_mission",
       "dependsOn": [
         "20260720033542"
@@ -401,7 +401,7 @@
       "version": "20260720193637",
       "name": "resolve_mission_submission_relationships",
       "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
-      "sha256": "d0ce9f11f0b66ddf1d1ac76a6c2669839327f85f553d6349037ff1fded68cbd3",
+      "sha256": "47db6932bbfe05aff34d6f91e2f8717ae3dd14c3ccf0041d5678ee29a8e16436",
       "phase": "active_mission",
       "dependsOn": [
         "20260720175319"
@@ -418,7 +418,7 @@
       "version": "20260723090000",
       "name": "publication_proof_validation",
       "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
-      "sha256": "15a79586bd3421739defd2f3985ff62e353a78e9fda1e76e30c968269070c079",
+      "sha256": "64fa33b5f47eccdd17f4a0a8c638a055aea0472c36bb1f388d63eb208cc0f5b5",
       "phase": "publication_proof",
       "dependsOn": [
         "20260720193637"
@@ -590,7 +590,7 @@
       "version": "20260725090000",
       "name": "publication_proof_rollout_compat",
       "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
-      "sha256": "566956e437be029039ac55f1e626d3e5ea2f5db6605ecffbb2dd8cab056ed465",
+      "sha256": "3dd13606c2e9d70824805fc6656a2d29dd86faf5567262d0a1f41d777f6e3766",
       "phase": "publication_proof",
       "dependsOn": [
         "20260723170000"
@@ -626,7 +626,7 @@
       "version": "20260725130000",
       "name": "publication_proof_asset_mutation_guards",
       "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
-      "sha256": "e4f25b7083f0f6d46c9c52c0494194513ac635004abf147026f70ca7313b2da1",
+      "sha256": "2ec12b4e672552b018fcfdd7e5737044ade0ed790f421796e02f342a95c301b0",
       "phase": "publication_proof",
       "dependsOn": [
         "20260725110000"
@@ -678,7 +678,7 @@
       "version": "20260725150000",
       "name": "publication_proof_public_rpc_final",
       "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
-      "sha256": "93f996508c82da6df1200347050cd9dbe8e7024d6aa5e33f0ed63aba800a3f5f",
+      "sha256": "8e7f1e4893f081d1196f7fe66268e308dbbb2d27796373d54f37ef3b34dbb7f3",
       "phase": "publication_proof",
       "dependsOn": [
         "20260725143000"
@@ -715,7 +715,7 @@
       "version": "20260727130000",
       "name": "publication_proof_existing_setup",
       "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
-      "sha256": "7552f2d601067b5e6b3a304886255f99d35b8abe2c60af59fb28082f6ad6ec12",
+      "sha256": "cbb412dc35c2d3f0ab33926229c4009ace7459c4ffaf80045b47d8cac0cbc248",
       "phase": "publication_proof",
       "dependsOn": [
         "20260727120000"
@@ -763,7 +763,7 @@
       "version": "20260731100000",
       "name": "reward_handoff_schema",
       "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
-      "sha256": "001d47a1aa076592ff90ecbd3cad4f18610cba93644addcbbaa86b5d9e72c30c",
+      "sha256": "b4966d226b2dc72759a1a5d768b90cb67cc8b84b996a0f1cf60541c2af548674",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260729010000"
@@ -807,7 +807,7 @@
       "version": "20260731110000",
       "name": "reward_contract_capture",
       "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
-      "sha256": "f0c3f0d51a5c71258b8cd2ac870f5a1fc8ded72b05b489ecbeb6615c192de260",
+      "sha256": "90e97bc465c59ce71bba076eb5aa4dd769436ac41435623fbe9583e7bbe4c973",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260731100000"
@@ -829,7 +829,7 @@
       "version": "20260731120000",
       "name": "reward_handoff_transitions",
       "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
-      "sha256": "b543fa6c5b8ccc2db167544abd0f36489e824f752e16d0efb7ac58242e61d7ef",
+      "sha256": "a12096f7fc26e514dbbebb28462de365fa9d2b9a07fead61c48ccd10cd505632",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260731110000"
@@ -851,7 +851,7 @@
       "version": "20260731130000",
       "name": "reward_handoff_notifications",
       "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
-      "sha256": "4dd020d97905e398947fe4d535d56004283b02425d41787c265794e385912cf5",
+      "sha256": "2f0d71622ff3b906ceb8f07d918869c7b3ac18f9a1f46e786f779a1298a4c1a8",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260731120000"
@@ -870,7 +870,7 @@
       "version": "20260731140000",
       "name": "reward_handoff_release_hardening",
       "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
-      "sha256": "f7a8409e7497ae250e1bd795d6985eff814f3f2e4fdbfca196072e4c630fe896",
+      "sha256": "17ed4ee4542bb4f658137accfab9325976cf5a48d00ef587d7bd1d111c8c1d5b",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260731130000"
