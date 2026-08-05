@@ -3,9 +3,9 @@ const MAX_DIAGNOSTIC_TEXT = 160;
 const REDACTIONS: Array<[RegExp, string]> = [
   [/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "[REDACTED_BEARER]"],
   [/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, "[REDACTED_JWT]"],
-  [/\b(api[_-]?key|token|secret|password|authorization)\s*=\s*[^\s\"'&;]+/gi, "$1=[REDACTED_CREDENTIAL]"],
-  [/(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s\"'<>]+/gi, "[REDACTED_CONNECTION]"],
-  [/https?:\/\/[^\s\"'<>]+/gi, "[REDACTED_URL]"],
+  [/\b(api[_-]?key|token|secret|password|authorization)\s*=\s*[^\s"'&;]+/gi, "$1=[REDACTED_CREDENTIAL]"],
+  [/(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s"'<>]+/gi, "[REDACTED_CONNECTION]"],
+  [/https?:\/\/[^\s"'<>]+/gi, "[REDACTED_URL]"],
   [/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]"],
   [/\b[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}\b/g, "[REDACTED_ID]"],
 ];

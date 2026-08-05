@@ -9,7 +9,7 @@ function integrationJob() {
   const start = lines.indexOf("  integration:");
   expect(start).toBeGreaterThanOrEqual(0);
   const end = lines.findIndex(
-    (line, index) => index > start && /^  [A-Za-z0-9_-]+:/.test(line),
+    (line, index) => index > start && /^ {2}[A-Za-z0-9_-]+:/.test(line),
   );
   return lines.slice(start, end === -1 ? lines.length : end).join("\n");
 }
