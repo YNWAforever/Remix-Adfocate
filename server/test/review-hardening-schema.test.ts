@@ -152,7 +152,7 @@ describe("review hardening migration contract", () => {
     expect(sql).toContain("grant execute on function public.join_active_mission(uuid) to authenticated;");
   });
 
-  it("D: short-circuits operator-owned workflow states and closes the public refresh wrapper", () => {
+  it("D: short-circuits operator-owned workflow states in the refresh derivation", () => {
     const sql = migrationSql();
     const refresh = functionBlock(sql, "private.refresh_mission_workflow_state");
 
@@ -163,11 +163,10 @@ describe("review hardening migration contract", () => {
     expect(refresh.indexOf("'reward_pending', 'cancelled', 'expired'"))
       .toBeLessThan(refresh.indexOf("update public.mission_workflows"));
 
+    // The short-circuit is the whole fix: the wrapper keeps its own ownership check, so it stays
+    // creator-callable and active-mission-schema.test.ts keeps pinning that contract.
     expect(sql).toContain(
-      "revoke execute on function public.refresh_mission_workflow_state(uuid) from authenticated;",
-    );
-    expect(sql).not.toContain(
-      "grant execute on function public.refresh_mission_workflow_state(uuid) to authenticated",
+      "grant execute on function public.refresh_mission_workflow_state(uuid) to authenticated, service_role;",
     );
   });
 

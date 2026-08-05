@@ -907,7 +907,7 @@
       "version": "20260805120000",
       "name": "review_hardening",
       "path": "supabase/migrations/20260805120000_review_hardening.sql",
-      "sha256": "1ad200ca6ad991455cf254348404569762fa337c05371bd90a0825d8f2618ace",
+      "sha256": "faf4018d589db8d4702327c55e6ccc3461ea05fb0e9a8229901638e706f3d65c",
       "phase": "reward_handoff",
       "dependsOn": [
         "20260731150000"

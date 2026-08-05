@@ -499,9 +499,11 @@ $$;
 
 revoke all on function private.refresh_mission_workflow_state(uuid)
   from public, anon, authenticated, service_role;
--- Every creator-facing transition already refreshes inside its own RPC; nothing in the browser
--- needs to force one, and the wrapper was the only way to reach the recompute from a session token.
-revoke execute on function public.refresh_mission_workflow_state(uuid) from authenticated;
+-- The public wrapper stays creator-callable: it carries its own ownership check (a workflow the
+-- caller does not own raises 'not_found'), and every state it can still derive comes from work
+-- items the creator already drives through their own RPCs. The short-circuit above is what closes
+-- the escalation, so revoking the wrapper would remove a granted capability without adding safety.
+grant execute on function public.refresh_mission_workflow_state(uuid) to authenticated, service_role;
 
 -- E. a verified badge may not follow a handle to another account --------------------------------
 -- 0012 grants column UPDATE on (handle, profile_url) and the self-update policy never looks at
