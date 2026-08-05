@@ -14,7 +14,7 @@ import {
   type ActiveMissionRepository,
   type DraftSaveInput,
 } from "../lib/activeMission/repo.js";
-import { serviceClient } from "../lib/supabase.js";
+import { makeUserClient, serviceClient } from "../lib/supabase.js";
 
 function proofMutation(idempotencyKey: string | undefined, body: unknown) {
   const input = body && typeof body === "object" && !Array.isArray(body)
@@ -42,7 +42,10 @@ function errorResponse(c: Parameters<Parameters<Hono<Env>["onError"]>[0]>[1], er
 
 export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepository) {
   const routes = new Hono<Env>();
-  const repository = () => injectedRepository ?? createActiveMissionRepository(serviceClient());
+  const repository = (c?: { get(name: "jwt"): string }) => injectedRepository ?? createActiveMissionRepository(
+    serviceClient(),
+    c ? { rewardHandoffClient: makeUserClient(c.get("jwt")) } : undefined,
+  );
   const owner = (c: { req: { param(name: string): string }; get(name: "userId" | "workspaceId"): string }): ActiveMissionOwner => ({
     submissionId: c.req.param("submissionId"),
     creatorId: c.get("userId"),
@@ -51,7 +54,7 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
 
   routes.get("/:submissionId/workspace", async (c) => {
     try {
-      return c.json(await repository().getWorkspace(owner(c)));
+      return c.json(await repository(c).getWorkspace(owner(c)));
     } catch (error) {
       return errorResponse(c, error);
     }
@@ -110,8 +113,9 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
       const mutation = proofMutation(c.req.header("Idempotency-Key"), body);
-      const workspace = await repository().getWorkspace(owner(c));
-      const result = await repository().createProofEvidenceUploadGrant({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), mutation);
+      const repo = repository(c);
+      const workspace = await repo.getWorkspace(owner(c));
+      const result = await repo.createProofEvidenceUploadGrant({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId") }, validateProofEvidenceUploadInput(body), mutation);
       return c.json(result);
     } catch (error) { return errorResponse(c, error); }
   });
@@ -120,8 +124,9 @@ export function createActiveMissionRoutes(injectedRepository?: ActiveMissionRepo
     try {
       const body = await c.req.json().catch(() => { throw new ActiveMissionError("VALIDATION_FAILED", "Request body must be valid JSON"); });
       const mutation = proofMutation(c.req.header("Idempotency-Key"), body);
-      const workspace = await repository().getWorkspace(owner(c));
-      const asset = await repository().finalizeProofEvidence({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), mutation);
+      const repo = repository(c);
+      const workspace = await repo.getWorkspace(owner(c));
+      const asset = await repo.finalizeProofEvidence({ ...owner(c), workflowId: workspace.workflow.id, workItemId: c.req.param("workItemId"), assetId: c.req.param("assetId") }, validateProofEvidenceFinalizeInput(body), mutation);
       return c.json({ asset });
     } catch (error) { return errorResponse(c, error); }
   });

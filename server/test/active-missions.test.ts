@@ -121,6 +121,28 @@ const anchor = (): Script[] => [
 ];
 
 describe("active mission repository without a live database", () => {
+  it("uses the request-scoped client only for the creator reward handoff read", async () => {
+    const service = scriptedClient([
+      ...anchor(),
+      { table: "mission_fulfillments", data: null },
+      { table: "mission_work_items", data: [] },
+      { table: "mission_workflow_events", data: [] },
+    ]);
+    const authenticated = scriptedClient([
+      { table: "rpc:get_my_mission_reward_handoff", data: null },
+    ]);
+
+    await createActiveMissionRepository(service.client, { rewardHandoffClient: authenticated.client }).getWorkspace(owner);
+
+    expect(authenticated.calls).toEqual([{
+      table: "rpc:get_my_mission_reward_handoff",
+      op: "rpc",
+      args: [{ p_submission: owner.submissionId }],
+    }]);
+    expect(service.calls.some((call) => call.table === "rpc:get_my_mission_reward_handoff")).toBe(false);
+    expect(service.remaining()).toBe(0);
+  });
+
   it("constrains workspace read ownership and shapes the creator view", async () => {
     const scripted = scriptedClient([
       ...anchor(),

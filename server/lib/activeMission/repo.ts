@@ -27,6 +27,10 @@ export type ActiveMissionOwner = {
   workspaceId: string;
 };
 
+export type ActiveMissionRepositoryOptions = {
+  rewardHandoffClient?: SupabaseClient;
+};
+
 export type DraftSaveInput = DraftPatch & { revision: number };
 
 export type MissionBriefSnapshot = {
@@ -598,7 +602,12 @@ function proofRpcFailure(error: { message?: string | null }): never {
   dbFailure(error);
 }
 
-export function createActiveMissionRepository(client: SupabaseClient): ActiveMissionRepository {
+export function createActiveMissionRepository(
+  client: SupabaseClient,
+  options: ActiveMissionRepositoryOptions = {},
+): ActiveMissionRepository {
+  const rewardHandoffClient = options.rewardHandoffClient ?? client;
+
   return {
     async getPublication(owner, workItemId) {
       return creatorPublication(client, owner, workItemId);
@@ -638,7 +647,7 @@ export function createActiveMissionRepository(client: SupabaseClient): ActiveMis
 
     async getWorkspace(owner) {
       const { submission, workflow } = await ownedAnchor(client, owner);
-      const handoffResult = await client.rpc("get_my_mission_reward_handoff", {
+      const handoffResult = await rewardHandoffClient.rpc("get_my_mission_reward_handoff", {
         p_submission: owner.submissionId,
       });
       if (handoffResult.error) dbFailure(handoffResult.error);
