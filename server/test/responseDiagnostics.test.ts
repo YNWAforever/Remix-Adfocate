@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { expectSuccessfulResponse } from "./responseDiagnostics";
+import {
+  expectSuccessfulResponse,
+  sanitizeDiagnosticText,
+} from "./responseDiagnostics";
 
 describe("integration response diagnostics", () => {
   it("does not consume a successful response body", async () => {
@@ -8,11 +11,27 @@ describe("integration response diagnostics", () => {
     await expect(response.json()).resolves.toEqual({ ok: true });
   });
 
-  it("keeps only stable fields and redacts sensitive values", async () => {
+  it("redacts credential key-value pairs and UUID-like identifiers", () => {
+    const sanitized = sanitizeDiagnosticText(
+      "api_key=api-secret token=token-secret secret=secret-value password=password-value authorization=authorization-value",
+    );
+    const identifier = sanitizeDiagnosticText("11111111-1111-9111-c111-111111111111");
+
+    expect(sanitized).toContain("api_key=[REDACTED_CREDENTIAL]");
+    expect(sanitized).toContain("token=[REDACTED_CREDENTIAL]");
+    expect(sanitized).toContain("secret=[REDACTED_CREDENTIAL]");
+    expect(sanitized).toContain("password=[REDACTED_CREDENTIAL]");
+    expect(sanitized).toContain("authorization=[REDACTED_CREDENTIAL]");
+    expect(identifier).toBe("[REDACTED_ID]");
+    expect(sanitized).not.toContain("api-secret");
+    expect(identifier).not.toContain("11111111-1111-9111-c111-111111111111");
+  });
+
+  it("emits only status, safe code, and category for selected failure fields", async () => {
     const response = new Response(JSON.stringify({
       code: "UNKNOWN",
-      error: "request https://example.test/upload?token=secret for alice@example.test",
-      message: "Bearer secret-token eyJheader.payload.signature 11111111-1111-4111-8111-111111111111",
+      error: "authored content in error must not be printed api_key=api-secret",
+      message: "authored content in message must not be printed 11111111-1111-9111-c111-111111111111",
       details: "authored content must not be printed",
     }), { status: 500 });
     let thrown = "";
@@ -24,10 +43,11 @@ describe("integration response diagnostics", () => {
 
     expect(thrown).toContain('"status":500');
     expect(thrown).toContain('"code":"UNKNOWN"');
-    expect(thrown).not.toContain("secret-token");
-    expect(thrown).not.toContain("example.test");
-    expect(thrown).not.toContain("alice@example.test");
-    expect(thrown).not.toContain("11111111-1111-4111-8111-111111111111");
+    expect(thrown).toContain('"category":"system_failure"');
+    expect(thrown).not.toContain("authored content in error");
+    expect(thrown).not.toContain("authored content in message");
+    expect(thrown).not.toContain("api-secret");
+    expect(thrown).not.toContain("11111111-1111-9111-c111-111111111111");
     expect(thrown).not.toContain("authored content must not be printed");
   });
 });

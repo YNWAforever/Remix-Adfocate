@@ -3,17 +3,17 @@ const MAX_DIAGNOSTIC_TEXT = 160;
 const REDACTIONS: Array<[RegExp, string]> = [
   [/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "[REDACTED_BEARER]"],
   [/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, "[REDACTED_JWT]"],
+  [/\b(api[_-]?key|token|secret|password|authorization)\s*=\s*[^\s\"'&;]+/gi, "$1=[REDACTED_CREDENTIAL]"],
   [/(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s\"'<>]+/gi, "[REDACTED_CONNECTION]"],
   [/https?:\/\/[^\s\"'<>]+/gi, "[REDACTED_URL]"],
   [/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[REDACTED_EMAIL]"],
-  [/\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi, "[REDACTED_ID]"],
+  [/\b[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}\b/g, "[REDACTED_ID]"],
 ];
 
 export type ResponseDiagnostic = {
   status: number;
   code?: string;
-  error?: string;
-  message?: string;
+  category?: "client_failure" | "system_failure";
 };
 
 export function sanitizeDiagnosticText(value: unknown): string | undefined {
@@ -40,9 +40,12 @@ export async function expectSuccessfulResponse(
     ? payload as Record<string, unknown>
     : {};
   const diagnostic: ResponseDiagnostic = { status: response.status };
-  for (const key of ["code", "error", "message"] as const) {
-    const value = sanitizeDiagnosticText(record[key]);
-    if (value !== undefined) diagnostic[key] = value;
+  const code = sanitizeDiagnosticText(record.code);
+  if (code !== undefined && /^[A-Z][A-Z0-9_]{0,63}$/.test(code)) {
+    diagnostic.code = code;
+  }
+  if (typeof record.error === "string" || typeof record.message === "string") {
+    diagnostic.category = response.status >= 500 ? "system_failure" : "client_failure";
   }
   throw new Error(label + " failed: " + JSON.stringify(diagnostic));
 }
