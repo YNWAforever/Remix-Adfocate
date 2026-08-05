@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  classifyPublicationProofGrantBoundary,
   expectSuccessfulResponse,
   sanitizeDiagnosticText,
 } from "./responseDiagnostics";
@@ -48,6 +49,26 @@ describe("integration response diagnostics", () => {
     expect(thrown).not.toContain("authored content in message");
     expect(thrown).not.toContain("api-secret");
     expect(thrown).not.toContain("11111111-1111-9111-c111-111111111111");
+    expect(thrown).not.toContain("authored content must not be printed");
+  });
+
+  it("emits only a fixed publication-proof failure boundary", async () => {
+    expect(classifyPublicationProofGrantBoundary({ workspaceOk: false })).toBe("workspace_lookup");
+    expect(classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: false })).toBe("publication_rpc");
+    expect(classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: true, signingOk: false })).toBe("storage_signing");
+    expect(classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: true, signingOk: true })).toBe("route_or_unknown");
+
+    const response = new Response(JSON.stringify({
+      error: "authored content must not be printed",
+    }), { status: 500 });
+    let thrown = "";
+    try {
+      await expectSuccessfulResponse(response, "grant", "publication_rpc");
+    } catch (error) {
+      thrown = error instanceof Error ? error.message : String(error);
+    }
+
+    expect(thrown).toContain('"boundary":"publication_rpc"');
     expect(thrown).not.toContain("authored content must not be printed");
   });
 });

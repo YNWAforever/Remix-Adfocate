@@ -14,7 +14,25 @@ export type ResponseDiagnostic = {
   status: number;
   code?: string;
   category?: "client_failure" | "system_failure";
+  boundary?: PublicationProofGrantBoundary;
 };
+
+export type PublicationProofGrantBoundary =
+  | "workspace_lookup"
+  | "publication_rpc"
+  | "storage_signing"
+  | "route_or_unknown";
+
+export function classifyPublicationProofGrantBoundary(input: {
+  workspaceOk: boolean;
+  rpcOk?: boolean;
+  signingOk?: boolean;
+}): PublicationProofGrantBoundary {
+  if (!input.workspaceOk) return "workspace_lookup";
+  if (!input.rpcOk) return "publication_rpc";
+  if (!input.signingOk) return "storage_signing";
+  return "route_or_unknown";
+}
 
 export function sanitizeDiagnosticText(value: unknown): string | undefined {
   if (typeof value !== "string" || value.trim() === "") return undefined;
@@ -28,6 +46,7 @@ export function sanitizeDiagnosticText(value: unknown): string | undefined {
 export async function expectSuccessfulResponse(
   response: Response,
   label: string,
+  boundary?: PublicationProofGrantBoundary,
 ): Promise<void> {
   if (response.ok) return;
   let payload: unknown = null;
@@ -47,5 +66,6 @@ export async function expectSuccessfulResponse(
   if (typeof record.error === "string" || typeof record.message === "string") {
     diagnostic.category = response.status >= 500 ? "system_failure" : "client_failure";
   }
+  if (boundary !== undefined) diagnostic.boundary = boundary;
   throw new Error(label + " failed: " + JSON.stringify(diagnostic));
 }
