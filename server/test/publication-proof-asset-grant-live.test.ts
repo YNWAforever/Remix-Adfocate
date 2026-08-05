@@ -10,6 +10,7 @@ import {
 } from "./fixtures/publicationProofRelease";
 import {
   classifyPublicationProofGrantBoundary,
+  cleanupPublicationProofProbeAsset,
   expectSuccessfulResponse,
   type PublicationProofGrantBoundary,
 } from "./responseDiagnostics";
@@ -82,7 +83,27 @@ async function diagnoseGrantFailureBoundary(input: {
     return classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: false });
   }
   const row = rpc.data as { id?: string; storage_object_path?: string } | null;
-  if (rpc.error || !row?.id || !row.storage_object_path) {
+  if (!row?.id) {
+    return classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: false });
+  }
+  const cleanup = () => cleanupPublicationProofProbeAsset({
+    assetId: row.id,
+    storageObjectPath: row.storage_object_path,
+    abandon: async () => await service.rpc("abandon_publication_proof_asset", {
+      p_submission: input.submissionId,
+      p_creator: input.creatorId,
+      p_workspace: input.workspaceId,
+      p_work_item: input.workItemId,
+      p_asset: row.id,
+      p_storage_object_path: row.storage_object_path,
+    }),
+    fallbackDelete: async () => await service
+      .from("mission_publication_proof_assets")
+      .delete()
+      .eq("id", row.id),
+  });
+  if (rpc.error || !row.storage_object_path) {
+    await cleanup();
     return classifyPublicationProofGrantBoundary({ workspaceOk: true, rpcOk: false });
   }
 
@@ -102,21 +123,7 @@ async function diagnoseGrantFailureBoundary(input: {
       signingOk: false,
     });
   } finally {
-    try {
-      const abandoned = await service.rpc("abandon_publication_proof_asset", {
-        p_submission: input.submissionId,
-        p_creator: input.creatorId,
-        p_workspace: input.workspaceId,
-        p_work_item: input.workItemId,
-        p_asset: row.id,
-        p_storage_object_path: row.storage_object_path,
-      });
-      if (abandoned.error) {
-        await service.from("mission_publication_proof_assets").delete().eq("id", row.id);
-      }
-    } catch {
-      // Diagnostic cleanup is best effort; never print a raw service error.
-    }
+    await cleanup();
   }
 }
 

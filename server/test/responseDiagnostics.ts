@@ -34,6 +34,31 @@ export function classifyPublicationProofGrantBoundary(input: {
   return "route_or_unknown";
 }
 
+export async function cleanupPublicationProofProbeAsset(input: {
+  assetId: unknown;
+  storageObjectPath: unknown;
+  abandon: () => Promise<{ error?: unknown }>;
+  fallbackDelete: () => Promise<unknown>;
+}): Promise<void> {
+  if (typeof input.assetId !== "string" || input.assetId.trim() === "") return;
+  let needsFallback = typeof input.storageObjectPath !== "string"
+    || input.storageObjectPath.trim() === "";
+  if (!needsFallback) {
+    try {
+      const abandoned = await input.abandon();
+      needsFallback = Boolean(abandoned.error);
+    } catch {
+      needsFallback = true;
+    }
+  }
+  if (!needsFallback) return;
+  try {
+    await input.fallbackDelete();
+  } catch {
+    // Diagnostic cleanup is best effort; never print a raw service error.
+  }
+}
+
 export function sanitizeDiagnosticText(value: unknown): string | undefined {
   if (typeof value !== "string" || value.trim() === "") return undefined;
   let sanitized = value.replace(/\s+/g, " ").trim();

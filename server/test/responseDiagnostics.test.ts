@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   classifyPublicationProofGrantBoundary,
+  cleanupPublicationProofProbeAsset,
   expectSuccessfulResponse,
   sanitizeDiagnosticText,
 } from "./responseDiagnostics";
@@ -70,5 +71,36 @@ describe("integration response diagnostics", () => {
 
     expect(thrown).toContain('"boundary":"publication_rpc"');
     expect(thrown).not.toContain("authored content must not be printed");
+  });
+
+  it("falls back to deleting a probe asset when guarded cleanup cannot complete", async () => {
+    const deleteMissingPath = vi.fn().mockResolvedValue(undefined);
+    const abandonMissingPath = vi.fn();
+    await cleanupPublicationProofProbeAsset({
+      assetId: "asset-id",
+      storageObjectPath: undefined,
+      abandon: abandonMissingPath,
+      fallbackDelete: deleteMissingPath,
+    });
+    expect(abandonMissingPath).not.toHaveBeenCalled();
+    expect(deleteMissingPath).toHaveBeenCalledOnce();
+
+    const deleteAfterThrow = vi.fn().mockResolvedValue(undefined);
+    await cleanupPublicationProofProbeAsset({
+      assetId: "asset-id",
+      storageObjectPath: "object-path",
+      abandon: vi.fn().mockRejectedValue(new Error("raw service error")),
+      fallbackDelete: deleteAfterThrow,
+    });
+    expect(deleteAfterThrow).toHaveBeenCalledOnce();
+
+    const deleteAfterError = vi.fn().mockResolvedValue(undefined);
+    await cleanupPublicationProofProbeAsset({
+      assetId: "asset-id",
+      storageObjectPath: "object-path",
+      abandon: vi.fn().mockResolvedValue({ error: new Error("raw service error") }),
+      fallbackDelete: deleteAfterError,
+    });
+    expect(deleteAfterError).toHaveBeenCalledOnce();
   });
 });
