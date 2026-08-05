@@ -35,6 +35,41 @@ describe("release evidence", () => {
     ).toThrow("sensitive evidence value");
   });
 
+  it("rejects literal credentials pasted into free-form command and note fields", () => {
+    const literals = [
+      "supabase login --token sbp_0102030405060708090a0b0c0d0e0f1011121314",
+      "curl -H 'apikey: sb_secret_9aB3xQ7zLmNpQrStUvWxYz' https://api",
+      "PGPASSWORD=SuperSecret123 psql -h db.internal -U postgres",
+      "supabase link --project-ref abc --password Hunter2Prod!",
+    ];
+
+    for (const command of literals) {
+      expect(() => buildEvidence({ ...validInput, containmentCommands: [command] })).toThrow("sensitive evidence value");
+      expect(() => buildEvidence({ ...validInput, proposedProductionCommands: [command] })).toThrow("sensitive evidence value");
+      expect(() => buildEvidence({ ...validInput, warnings: [command] })).toThrow("sensitive evidence value");
+      expect(() => buildEvidence({ ...validInput, skippedChecks: [command] })).toThrow("sensitive evidence value");
+      expect(() => buildEvidence({ ...validInput, recoveryReference: command })).toThrow("sensitive evidence value");
+    }
+  });
+
+  it("accepts placeholder-templated runbook commands", () => {
+    const placeholders = [
+      "supabase login --token $SUPABASE_ACCESS_TOKEN",
+      'supabase link --project-ref abc --password "$PGPASSWORD"',
+      "PGPASSWORD=$PGPASSWORD psql -h db.internal -U postgres",
+      'PGPASSWORD="${PGPASSWORD}" psql -f supabase/rollback.sql',
+      "supabase link --project-ref abc --password <PRODUCTION_DB_PASSWORD>",
+    ];
+
+    expect(() =>
+      buildEvidence({
+        ...validInput,
+        proposedProductionCommands: placeholders,
+        containmentCommands: placeholders,
+      }),
+    ).not.toThrow();
+  });
+
   it("reports every fail-closed verification mismatch", () => {
     const evidence = buildEvidence(validInput);
 

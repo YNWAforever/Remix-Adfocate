@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ActiveMissionError } from "./errors.js";
-import { inspectProofUrl, type PLATFORM_HOSTS, type ProofUrlDependencies } from "./proofUrl.js";
+import { inspectProofUrl, type ProofUrlDependencies } from "./proofUrl.js";
 import { normalizeProofInput } from "./state.js";
 import type { ProofInput } from "./types.js";
 
@@ -205,7 +205,7 @@ export type InspectedPublicationProof = {
 
 export async function inspectPublicationProof(
   input: ProofInput,
-  platform: keyof typeof PLATFORM_HOSTS,
+  platform: string | null,
   deps?: ProofUrlDependencies,
 ): Promise<{ proof: InspectedPublicationProof; evidenceAssetIds: string[] }> {
   const normalized = normalizeProofInput(input);
@@ -254,7 +254,9 @@ export type PublicationProofMetadataRefreshInput = {
 
 type MetadataRefreshTarget = {
   primaryUrl: string;
-  platform: keyof typeof PLATFORM_HOSTS;
+  // Nullable to match mission_work_items.platform: an item may carry no platform,
+  // or one outside the allowlist, and still needs its metadata refreshed.
+  platform: string | null;
   idempotent?: boolean;
   result?: unknown;
 };
@@ -263,7 +265,7 @@ export type PublicationProofMetadataRefreshDependencies = {
   prepare(input: PublicationProofMetadataRefreshInput): Promise<MetadataRefreshTarget>;
   inspect(input: {
     url: string;
-    platform: keyof typeof PLATFORM_HOSTS;
+    platform: string | null;
   }): ReturnType<typeof inspectProofUrl>;
   complete(input: {
     metadataStatus: "available" | "unavailable";

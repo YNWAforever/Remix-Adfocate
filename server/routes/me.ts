@@ -21,6 +21,24 @@ const ME_PROJECTION =
 
 type SocialHandle = { platform: string; handle: string; followers?: number | null; verified?: boolean };
 
+/** Same launch-brand default as src/lib/workspace.ts resolveWorkspace(). */
+const DEFAULT_WORKSPACE = "demo";
+
+/** Parse BOOTSTRAP_WORKSPACE_SLUGS (comma-separated workspace slugs) into a lowercased Set.
+ *  Unset/blank falls back to the single workspace this deploy serves (`fallback`, i.e.
+ *  VITE_DEFAULT_WORKSPACE — Vercel exposes project env to the functions too — else "demo"),
+ *  so one-brand-per-deploy self-signup works with zero config. It deliberately never falls
+ *  back to "any workspace": creators.workspace_id is the tenant boundary. Pure. */
+export function parseBootstrapSlugs(raw: string | undefined, fallback: string | undefined): Set<string> {
+  const src = raw && raw.trim() ? raw : fallback && fallback.trim() ? fallback : DEFAULT_WORKSPACE;
+  return new Set(
+    src
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean),
+  );
+}
+
 /** Unguarded: runs before a creator row exists. Resolves workspace from body slug. */
 export const meBootstrap = new Hono<Env>();
 meBootstrap.post("/bootstrap", async (c) => {
@@ -35,9 +53,20 @@ meBootstrap.post("/bootstrap", async (c) => {
   const { data: u } = await user.auth.getUser();
   if (!u.user) return c.json({ error: "Invalid token", code: "bad_token" }, 401);
 
+  // Self-signup joins whatever workspace the body names, so only allow-listed slugs may be
+  // joined — creators.workspace_id is the tenant boundary every creator RLS policy derives
+  // from. A disallowed slug answers exactly like a non-existent one so the endpoint cannot be
+  // used to enumerate workspace slugs.
+  const unknownWorkspace = () => c.json({ error: "Unknown workspace", code: "no_workspace" }, 404);
+  const allowed = parseBootstrapSlugs(
+    process.env.BOOTSTRAP_WORKSPACE_SLUGS,
+    process.env.VITE_DEFAULT_WORKSPACE,
+  );
+  if (!allowed.has(slug.trim().toLowerCase())) return unknownWorkspace();
+
   const svc = serviceClient();
   const { data: ws } = await svc.from("workspaces").select("id").eq("slug", slug).single();
-  if (!ws) return c.json({ error: "Unknown workspace", code: "no_workspace" }, 404);
+  if (!ws) return unknownWorkspace();
 
   // Identity may be phone-primary or email — derive a non-empty display name.
   // Phone-OTP users carry email === "" (empty string, not null), so use || not ??.

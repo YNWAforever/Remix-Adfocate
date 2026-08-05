@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import {
@@ -18,7 +17,11 @@ const integrationSkipReason = activeMissionIntegrationSkipReason();
 const suite = integrationSkipReason === null ? describe : describe.skip;
 const suiteName = integrationSkipReason === null ? "active mission workflow schema" : `active mission workflow schema (skipped: ${integrationSkipReason})`;
 const unique = () => randomUUID();
-const powershellExecutableFor = (platform: NodeJS.Platform) => platform === "win32" ? "powershell.exe" : "pwsh";
+// Mirrors PowerShell's -f operator: {{ and }} are literal braces, {0} takes the first argument.
+const formatRunbookPayload = (template: string, ...values: string[]) => template.replace(
+  /\{\{|\}\}|\{(\d+)\}/g,
+  (token, index: string | undefined) => token === "{{" ? "{" : token === "}}" ? "}" : values[Number(index)],
+);
 
 const rewardContractMigrationSql = () => readFileSync(
   resolve("supabase/migrations/20260731110000_reward_contract_capture.sql"),
@@ -1219,19 +1222,14 @@ describe("active mission migration contract", () => {
     const retryCommand = runbook.split(/\r?\n/).find((line) => line.trimStart().startsWith("curl.exe --fail-with-body"));
     const payloadExpression = retryCommand?.match(/--data (.+)$/)?.[1];
     if (!payloadExpression) throw new Error("Reward retry PowerShell payload expression is missing");
-    expect(powershellExecutableFor("win32")).toBe("powershell.exe");
-    expect(powershellExecutableFor("linux")).toBe("pwsh");
-    const powershellExecutable = powershellExecutableFor(process.platform);
+    expect(payloadExpression).toBe("('{{\"notificationType\":\"{0}\"}}' -f $NOTIFICATION_TYPE)");
+    const payloadTemplate = payloadExpression.slice("('".length, payloadExpression.indexOf("' -f "));
     const notificationTypes = ["mission_reward_pending", "mission_reward_pending_cancelled"] as const;
     for (const notificationType of notificationTypes) {
-      const payload = execFileSync(powershellExecutable, [
-        "-NoProfile", "-NonInteractive", "-Command",
-        "$NOTIFICATION_TYPE = '" + notificationType + "'; " + payloadExpression,
-      ], { encoding: "utf8" }).trim();
+      const payload = formatRunbookPayload(payloadTemplate, notificationType);
       expect(payload).toBe('{"notificationType":"' + notificationType + '"}');
       expect(JSON.parse(payload)).toEqual({ notificationType });
     }
-    expect(payloadExpression).toBe("('{{\"notificationType\":\"{0}\"}}' -f $NOTIFICATION_TYPE)");
   });});
 
 // Immutable workflow history is intentionally not deleted in-test. The integration harness

@@ -11,6 +11,8 @@ export const PLATFORM_HOSTS = {
   facebook: ["facebook.com", "www.facebook.com"],
 } as const;
 
+export type ProofPlatform = keyof typeof PLATFORM_HOSTS;
+
 export type ProofMetadataErrorCategory =
   | "timeout"
   | "network"
@@ -23,7 +25,9 @@ export type ProofMetadataErrorCategory =
 
 export interface ProofUrlInspectionInput {
   url: string;
-  platform: keyof typeof PLATFORM_HOSTS;
+  // Work items may carry no platform at all, or one outside the allowlist;
+  // that only removes the host allowlist, never the other URL checks.
+  platform?: string | null;
   unsafeBehavior?: "throw" | "report";
 }
 
@@ -307,7 +311,7 @@ export async function inspectProofUrl(
 
 function parseAllowedUrl(
   rawUrl: string,
-  platform: keyof typeof PLATFORM_HOSTS,
+  platform: string | null | undefined,
 ):
   | { safe: true; url: URL }
   | { safe: false; url: URL | null; reason: string } {
@@ -328,11 +332,8 @@ function parseAllowedUrl(
     return { safe: false, url, reason: "URL must use the standard HTTPS port" };
   }
 
-  const platformHosts = PLATFORM_HOSTS[platform];
-  if (
-    !platformHosts ||
-    !(platformHosts as readonly string[]).includes(url.hostname)
-  ) {
+  const platformHosts = platformHostAllowlist(platform);
+  if (platformHosts && !platformHosts.includes(url.hostname)) {
     return {
       safe: false,
       url,
@@ -341,6 +342,17 @@ function parseAllowedUrl(
   }
 
   return { safe: true, url };
+}
+
+// A work item without a platform still has to clear every check above; there
+// is simply no platform allowlist to narrow its host with.
+function platformHostAllowlist(
+  platform: string | null | undefined,
+): readonly string[] | null {
+  const key = platform?.trim().toLowerCase();
+  return key && Object.hasOwn(PLATFORM_HOSTS, key)
+    ? PLATFORM_HOSTS[key as ProofPlatform]
+    : null;
 }
 
 async function validateResolvedDestination(

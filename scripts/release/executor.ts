@@ -291,6 +291,8 @@ const defaultDeps: ExecutorCliDeps = {
   tempFile: () => resolve(tmpdir(), `adfocate-executor-preflight-${randomUUID()}.sql`),
 };
 
-if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+const isViteNodeCli = /(?:^|[\\/])vite-node(?:\.mjs)?$/i.test(process.argv[1] ?? "");
+const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isViteNodeCli || isDirectNodeCli) {
   await runExecutorCli(process.argv.slice(2), process.cwd(), process.env, defaultDeps);
 }

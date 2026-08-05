@@ -11,7 +11,10 @@ import type {
 } from "./contracts";
 
 const SENSITIVE_KEY = /(secret|token|password|jwt|email|signed.?url|database.?url)/i;
-const SENSITIVE_VALUE = /(postgres(?:ql)?:\/\/|eyJ[A-Za-z0-9_-]+\.|@[^\s]+\.[^\s]+)/i;
+const SENSITIVE_VALUE = /(postgres(?:ql)?:\/\/|eyJ[A-Za-z0-9_-]+\.|@[^\s]+\.[^\s]+|sbp_[a-z0-9]{16,}|sb_(?:secret|publishable)_[a-z0-9_-]{8,})/i;
+// Command arrays carry no keys to screen, so literal credentials are rejected while the placeholder forms
+// the runbook tells operators to run ($VAR, "${VAR}", <PLACEHOLDER>) stay usable.
+const SENSITIVE_CREDENTIAL_ARG = /(?:--[a-z-]*(?:token|password)(?:\s+|=)|\b[a-z0-9_]*(?:password|token|secret)=)["']?[^$<"'\s]/i;
 const SHA256 = /^[a-f0-9]{64}$/;
 const COMMIT = /^[a-f0-9]{40}$/;
 const MIGRATION_VERSION = /^\d{14}$/;
@@ -255,7 +258,7 @@ export function assertSanitized(value: unknown, path = "evidence"): void {
     }
     return;
   }
-  if (typeof value === "string" && SENSITIVE_VALUE.test(value)) {
+  if (typeof value === "string" && (SENSITIVE_VALUE.test(value) || SENSITIVE_CREDENTIAL_ARG.test(value))) {
     throw new Error(`sensitive evidence value: ${path}`);
   }
 }
@@ -407,6 +410,8 @@ export async function runEvidenceCli(
 
 const defaultCliDeps: EvidenceCliDeps = { ...defaultFilesystem, readFile };
 
-if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+const isViteNodeCli = /(?:^|[\\/])vite-node(?:\.mjs)?$/i.test(process.argv[1] ?? "");
+const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isViteNodeCli || isDirectNodeCli) {
   process.stdout.write(`${JSON.stringify(await runEvidenceCli(process.argv.slice(2), process.cwd(), defaultCliDeps))}\n`);
 }

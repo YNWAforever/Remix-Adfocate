@@ -17,7 +17,7 @@ type Scalar = {
 };
 
 const guardedExecutor =
-  'npm run release:execute -- --bundle "${{ inputs.bundle_path }}" --bundle-digest "${{ inputs.bundle_digest }}" --project-ref "${{ inputs.project_ref }}" --approval "${{ inputs.approval }}" --apply';
+  'npm run release:execute -- --bundle "$BUNDLE_PATH" --bundle-digest "$BUNDLE_DIGEST" --project-ref "$PROJECT_REF" --approval "$APPROVAL" --apply';
 
 function indentation(line: string) {
   return line.length - line.trimStart().length;
@@ -157,6 +157,11 @@ function expectProductionWorkflowContract(candidate: string) {
   expect(scalarValue(migrate, "environment")).toBe("production");
 
   const steps = executableSteps(mappingBlock(migrate, "steps", 4));
+  // Actions expands ${{ }} into the shell source before bash parses it, so dispatch
+  // inputs must reach commands through env bindings read as quoted shell variables.
+  for (const step of steps) {
+    expect(step.run ?? "").not.toContain("${{");
+  }
   expect(steps.map((step) => step.uses ?? step.run)).toEqual([
     "actions/checkout@v4",
     "actions/setup-node@v4",
@@ -167,6 +172,10 @@ function expectProductionWorkflowContract(candidate: string) {
   expect(scalarValue(steps[1].lines, "cache")).toBe("npm");
   expect(steps[2].env).toEqual({});
   expect(steps[3].env).toEqual({
+    BUNDLE_PATH: '"${{ inputs.bundle_path }}"',
+    BUNDLE_DIGEST: '"${{ inputs.bundle_digest }}"',
+    PROJECT_REF: '"${{ inputs.project_ref }}"',
+    APPROVAL: '"${{ inputs.approval }}"',
     RELEASE_DATABASE_URL: '"${{ secrets.SUPABASE_DB_URL }}"',
     RELEASE_PROJECT_REF: '"${{ vars.SUPABASE_PROJECT_REF }}"',
     RELEASE_APPLICATION_COMMIT: '"${{ github.sha }}"',
@@ -190,6 +199,14 @@ const unsafeMutations = [
   [
     "a psql write step",
     workflow.replace("      - run: npm ci", "      - run: npm ci\n      - run: psql $DATABASE_URL"),
+  ],
+  [
+    "a dispatch input interpolated into the command",
+    workflow.replace('--bundle "$BUNDLE_PATH"', '--bundle "${{ inputs.bundle_path }}"'),
+  ],
+  [
+    "a context expansion in an unrelated command",
+    workflow.replace("      - run: npm ci", '      - run: npm ci --userconfig "${{ inputs.approval }}"'),
   ],
   [
     "an indirect write script",

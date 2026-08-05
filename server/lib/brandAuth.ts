@@ -25,16 +25,29 @@ export async function resolveBrand(svc: SupabaseClient, userId: string): Promise
   return row && row.active ? row : null;
 }
 
-/** Accept-or-resolve: if a brand_users row exists → return its identity (returning brand,
- *  keeps existing workspace). Else consume a valid pending invite for the *verified* email →
- *  create the membership, stamp accepted_at. Else null (no access). `svc` MUST be the service
- *  client (writes brand_users / brand_invites, which are RLS-closed). */
+/** Accept-or-resolve: if an ACTIVE brand_users row exists → return its identity (returning brand,
+ *  keeps existing workspace); a deactivated row is a durable revocation → null. Else consume a
+ *  valid pending invite for the *verified* email → create the membership, stamp accepted_at.
+ *  Else null (no access). `svc` MUST be the service client (writes brand_users / brand_invites,
+ *  which are RLS-closed). */
 export async function acceptBrandInvite(
   svc: SupabaseClient,
   { userId, email, now }: { userId: string; email: string; now: string },
 ): Promise<BrandIdentity | null> {
-  const existing = await resolveBrand(svc, userId);
-  if (existing) return { userId, email: existing.email, workspaceId: existing.workspace_id, role: existing.role };
+  const { data: existingData, error: exErr } = await svc
+    .from("brand_users")
+    .select("user_id, workspace_id, email, role, active")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (exErr) throw exErr;
+  // The raw row is authoritative — resolveBrand collapses "revoked" into "absent", which here
+  // would let a revoked user re-consume an invite for the same address and reactivate themselves.
+  const existing = existingData as BrandRow | null;
+  if (existing) {
+    return existing.active
+      ? { userId, email: existing.email, workspaceId: existing.workspace_id, role: existing.role }
+      : null;
+  }
 
   const lower = email.toLowerCase();
   const { data: invite, error } = await svc
@@ -49,15 +62,30 @@ export async function acceptBrandInvite(
   if (error) throw error;
   if (!invite) return null;
 
+  // Claim before writing the membership: stamping accepted_at only while it is still null makes
+  // the invite single-use, and doing it first means a caller that loses the race never creates a
+  // membership off an invite someone else consumed.
+  const { data: claimed, error: claimErr } = await svc
+    .from("brand_invites")
+    .update({ accepted_at: now })
+    .eq("id", invite.id)
+    .is("accepted_at", null)
+    .select("id, workspace_id, role")
+    .maybeSingle();
+  if (claimErr) throw claimErr;
+  // Lost the race: the winner creates the same membership, so read it back rather than lock the
+  // user out of an invite that was consumed on their behalf.
+  if (!claimed) {
+    const winner = await resolveBrand(svc, userId);
+    return winner ? { userId, email: winner.email, workspaceId: winner.workspace_id, role: winner.role } : null;
+  }
+
   const { data: row, error: upErr } = await svc
     .from("brand_users")
-    .upsert({ user_id: userId, workspace_id: invite.workspace_id, email: lower, role: invite.role, active: true }, { onConflict: "user_id" })
+    .upsert({ user_id: userId, workspace_id: claimed.workspace_id, email: lower, role: claimed.role, active: true }, { onConflict: "user_id" })
     .select("user_id, workspace_id, email, role, active")
     .single();
   if (upErr) throw upErr;
-  // Best-effort stamp: a missed update leaves the invite consumable again, but the user
-  // already has a brand_users membership, so they are never locked out.
-  await svc.from("brand_invites").update({ accepted_at: now }).eq("id", invite.id);
   const r = row as BrandRow;
   return { userId, email: r.email, workspaceId: r.workspace_id, role: r.role };
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Markdown } from "@/components/Markdown";
@@ -16,11 +16,21 @@ export function ContentEditor({ id }: { id: string }) {
   const [lang, setLang] = useState<"zh" | "en">("zh");
   const [form, setForm] = useState<Partial<AdminContentRow>>(EMPTY);
 
-  useQuery({
+  const existing = useQuery({
     queryKey: contentKeys.adminItem(id), enabled: !isNew,
-    queryFn: async () => { const { item } = await getAdminContent(id); setForm(item); return item; },
+    queryFn: async () => (await getAdminContent(id)).item,
   });
   const cats = useQuery({ queryKey: contentKeys.categories(), queryFn: listCategories });
+
+  // Seed only when the record identity changes: a background refetch (window focus) must never
+  // overwrite the draft the operator is typing into.
+  const seeded = useRef<string | null>(null);
+  useEffect(() => {
+    const row = existing.data;
+    if (!row || seeded.current === row.id) return;
+    seeded.current = row.id;
+    setForm(row);
+  }, [existing.data]);
 
   const set = (patch: Partial<AdminContentRow>) => setForm((f) => ({ ...f, ...patch }));
   const titleField = lang === "zh" ? "title_zh" : "title_en";
