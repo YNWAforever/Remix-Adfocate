@@ -82,6 +82,50 @@ describe("activation analytics", () => {
       method: "email_magic_link",
     })).toBe(false);
   });
+  it("delivers password auth events without carrying the submitted email", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent("auth_link_requested", { locale: "en", method: "email_password" });
+    trackActivationEvent("auth_link_failed", {
+      locale: "en",
+      method: "email_password",
+      errorCategory: "invalid_credentials",
+      email: "creator@example.com",
+      password: "hunter2",
+    } as never);
+    trackActivationEvent("signup_completed", {
+      locale: "zh-HK",
+      deviceCategory: "mobile",
+      method: "email_password",
+    });
+
+    expect(sink.mock.calls.map(([event]) => event)).toEqual([
+      { name: "auth_link_requested", properties: { locale: "en", method: "email_password" } },
+      { name: "auth_link_failed", properties: {
+        locale: "en", method: "email_password", errorCategory: "invalid_credentials",
+      } },
+      { name: "signup_completed", properties: {
+        locale: "zh-HK", deviceCategory: "mobile", method: "email_password",
+      } },
+    ]);
+  });
+  it("reports every password auth error category", () => {
+    const sink = vi.fn();
+    setActivationAnalyticsSink(sink);
+
+    for (const errorCategory of ["invalid_credentials", "weak_password", "email_taken"] as const) {
+      trackActivationEvent("auth_link_failed", {
+        locale: "en",
+        method: "email_password",
+        errorCategory,
+      });
+    }
+
+    expect(sink.mock.calls.map(([event]) => event.properties.errorCategory)).toEqual([
+      "invalid_credentials", "weak_password", "email_taken",
+    ]);
+  });
   it("delivers the ten Phase 2 events with privacy-limited payloads", () => {
     const sink = vi.fn();
     setActivationAnalyticsSink(sink);

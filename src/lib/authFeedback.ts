@@ -46,6 +46,27 @@ const feedbackByCategory: Record<AuthErrorCategory, AuthFeedbackState> = {
     actionKey: "app.auth.action.retry",
     action: "retry",
   },
+  invalid_credentials: {
+    category: "invalid_credentials",
+    titleKey: "app.auth.feedback.invalidCredentials.title",
+    bodyKey: "app.auth.feedback.invalidCredentials.body",
+    actionKey: "app.auth.action.retry",
+    action: "retry",
+  },
+  weak_password: {
+    category: "weak_password",
+    titleKey: "app.auth.feedback.weakPassword.title",
+    bodyKey: "app.auth.feedback.weakPassword.body",
+    actionKey: "app.auth.action.retry",
+    action: "retry",
+  },
+  email_taken: {
+    category: "email_taken",
+    titleKey: "app.auth.feedback.emailTaken.title",
+    bodyKey: "app.auth.feedback.emailTaken.body",
+    actionKey: "app.auth.action.retry",
+    action: "retry",
+  },
   unknown: {
     category: "unknown",
     titleKey: "app.auth.feedback.unknown.title",
@@ -93,6 +114,32 @@ export function classifyAuthError(input: {
     /\b(rate limit|too many (requests|attempts))\b/.test(message)
   ) {
     return feedback("rate_limited");
+  }
+
+  // Password branches sit below rate limiting so a throttled attempt still tells the
+  // creator to wait, and above delivery failures so credential wording wins over the
+  // generic "failed" copy.
+  if (
+    code === "invalid_credentials" ||
+    code === "invalid_grant" ||
+    /\binvalid login credentials\b/.test(message)
+  ) {
+    return feedback("invalid_credentials");
+  }
+
+  if (
+    code === "weak_password" ||
+    /\b(password should be at least|password is too short|weak password)\b/.test(message)
+  ) {
+    return feedback("weak_password");
+  }
+
+  if (
+    code === "user_already_exists" ||
+    code === "email_exists" ||
+    /\b(user already registered|already been registered)\b/.test(message)
+  ) {
+    return feedback("email_taken");
   }
 
   if (
