@@ -133,7 +133,13 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     workItem.assets.push(clone(asset));
     this.refreshWorkItemValidation(workItem);
     this.refreshNextAction();
-    const result = { asset: clone(asset), uploadUrl: `memory://creator-studio-assets/${asset.storagePath}` };
+    const result: UploadGrant = {
+      bucket: "creator-studio-assets",
+      path: asset.storagePath,
+      token: `memory-upload-token-${asset.id}`,
+      assetId: asset.id,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    };
     this.recordEvent("asset.reserved", workItem.id, { assetId: asset.id, byteSize: asset.byteSize });
     return this.commit(context, input.commandId, requestHash, result);
   }

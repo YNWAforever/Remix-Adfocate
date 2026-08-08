@@ -97,7 +97,7 @@ describe("InMemoryCreatorStudioRepository", () => {
       mimeType: "image/jpeg",
       byteSize: 1024,
     });
-    const finalized = await repository.finalizeAsset(context, "work-item-2", grant.value.asset.id, {
+    const finalized = await repository.finalizeAsset(context, "work-item-2", grant.value.assetId, {
       commandId: "revision-asset-finalize",
       byteSize: 1024,
       mimeType: "image/jpeg",
@@ -171,7 +171,7 @@ describe("InMemoryCreatorStudioRepository", () => {
       mimeType: "image/jpeg",
       byteSize: 1024,
     });
-    const finalized = await repository.finalizeAsset(context, "work-item-1", grant.value.asset.id, {
+    const finalized = await repository.finalizeAsset(context, "work-item-1", grant.value.assetId, {
       commandId: "finalization-command",
       byteSize: 1024,
       mimeType: "image/jpeg",
@@ -183,7 +183,7 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(finalized.value.workflow.state).toBe("changes_requested");
   });
 
-  it("uses a server-controlled asset path with an allowlisted extension", async () => {
+  it("returns the exact server-generated upload grant contract", async () => {
     const repository = makeRepository();
     const grant = await repository.createUploadGrant(creatorContext(), "work-item-1", {
       commandId: "path-grant",
@@ -192,8 +192,15 @@ describe("InMemoryCreatorStudioRepository", () => {
       byteSize: 1024,
     });
 
-    expect(grant.value.asset.storagePath).toBe("creator-1/workflow-1/work-item-1/asset-1.jpg");
-    expect(grant.value.asset.storagePath).not.toContain("untrusted");
+    expect(grant.value).toEqual({
+      bucket: "creator-studio-assets",
+      path: "creator-1/workflow-1/work-item-1/asset-1.jpg",
+      token: "memory-upload-token-asset-1",
+      assetId: "asset-1",
+      expiresAt: expect.any(String),
+    });
+    expect(grant.value.path).not.toContain("untrusted");
+    expect(new Date(grant.value.expiresAt).getTime()).toBeGreaterThan(Date.now());
   });
 
   it("accepts video/mp4 at the 50 MiB upload limit without allocating upload bytes", async () => {
@@ -207,10 +214,10 @@ describe("InMemoryCreatorStudioRepository", () => {
       byteSize: maxUploadBytes,
     });
 
-    expect(grant.value.asset).toMatchObject({
-      mimeType: "video/mp4",
-      byteSize: maxUploadBytes,
-      storagePath: "creator-1/workflow-1/work-item-1/asset-1.mp4",
+    expect(grant.value).toMatchObject({
+      bucket: "creator-studio-assets",
+      path: "creator-1/workflow-1/work-item-1/asset-1.mp4",
+      assetId: "asset-1",
     });
   });
 

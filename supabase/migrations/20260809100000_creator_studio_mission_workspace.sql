@@ -269,6 +269,9 @@ create trigger mission_review_rounds_append_only
 create trigger mission_review_items_append_only
   before update or delete or truncate on public.mission_review_items
   for each statement execute function public.reject_creator_studio_immutable_mutation();
+create trigger mission_workflow_commands_append_only
+  before update or delete or truncate on public.mission_workflow_commands
+  for each statement execute function public.reject_creator_studio_immutable_mutation();
 create trigger mission_workflow_events_append_only
   before update or delete or truncate on public.mission_workflow_events
   for each statement execute function public.reject_creator_studio_immutable_mutation();
@@ -279,30 +282,52 @@ language plpgsql security definer set search_path = public, pg_temp
 as $$
 declare
   v_work_item public.mission_work_items;
+  v_asset public.mission_draft_assets;
 begin
+  if tg_op = 'DELETE' then
+    v_asset := old;
+  else
+    v_asset := new;
+  end if;
+
+  if tg_op <> 'INSERT' and old.upload_state = 'finalized' then
+    raise exception 'asset_finalized' using errcode = '55000';
+  end if;
+
   select * into v_work_item
   from public.mission_work_items
-  where id = new.mission_work_item_id
-    and mission_workflow_id = new.mission_workflow_id
-    and mission_submission_id = new.mission_submission_id
-    and creator_id = new.creator_id
-    and workspace_id = new.workspace_id
+  where id = v_asset.mission_work_item_id
+    and mission_workflow_id = v_asset.mission_workflow_id
+    and mission_submission_id = v_asset.mission_submission_id
+    and creator_id = v_asset.creator_id
+    and workspace_id = v_asset.workspace_id
   for update;
 
   if v_work_item.id is null then raise exception 'work_item_not_found'; end if;
   if v_work_item.state not in ('not_started', 'drafting', 'ready_to_submit', 'changes_requested') then
     raise exception 'invalid_transition' using errcode = '55000';
   end if;
+  if tg_op = 'DELETE' then return old; end if;
   return new;
 end;
 $$;
 
 create trigger mission_draft_assets_editable_work_item
-  before insert or update of upload_state on public.mission_draft_assets
+  before insert or update or delete on public.mission_draft_assets
   for each row execute function public.require_creator_studio_asset_work_item_editable();
 
-insert into storage.buckets (id, name, public) values ('creator-studio-assets', 'creator-studio-assets', false)
-on conflict (id) do nothing;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'creator-studio-assets',
+  'creator-studio-assets',
+  false,
+  52428800,
+  array['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'application/pdf']::text[]
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 create policy creator_studio_assets_read on storage.objects for select to authenticated using (
   bucket_id = 'creator-studio-assets' and exists (
     select 1 from public.mission_draft_assets asset

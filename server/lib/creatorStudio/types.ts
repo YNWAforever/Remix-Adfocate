@@ -148,8 +148,11 @@ export type DraftCommandResult = {
 };
 
 export type UploadGrant = {
-  asset: DraftAsset;
-  uploadUrl: string;
+  bucket: string;
+  path: string;
+  token: string;
+  assetId: string;
+  expiresAt: string;
 };
 
 export type FinalizedAsset = {

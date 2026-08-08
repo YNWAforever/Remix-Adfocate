@@ -86,6 +86,7 @@ describe("creator studio mission workspace migration", () => {
       "mission_draft_versions",
       "mission_review_rounds",
       "mission_review_items",
+      "mission_workflow_commands",
       "mission_workflow_events",
     ]) {
       expect(sql).toContain(`create trigger ${table}_append_only`);
@@ -93,18 +94,42 @@ describe("creator studio mission workspace migration", () => {
     }
   });
 
-  it("enforces editable work-item state before reserving or finalizing an asset", () => {
+  it("keeps finalized asset metadata immutable while preserving editable pending reservations", () => {
     const sql = readFileSync(migrationPath, "utf8");
     const assetStateGuard = sql.slice(
       sql.indexOf("create or replace function public.require_creator_studio_asset_work_item_editable"),
       sql.indexOf("create trigger mission_draft_assets_editable_work_item"),
     );
 
+    expect(assetStateGuard).toContain("v_asset public.mission_draft_assets");
+    expect(assetStateGuard).toContain("if tg_op <> 'INSERT' and old.upload_state = 'finalized' then");
+    expect(assetStateGuard).toContain("raise exception 'asset_finalized'");
     expect(assetStateGuard).toContain("for update");
     expect(assetStateGuard).toContain("not_started', 'drafting', 'ready_to_submit', 'changes_requested");
     expect(assetStateGuard).toContain("raise exception 'invalid_transition'");
     expect(sql).toContain("create trigger mission_draft_assets_editable_work_item");
-    expect(sql).toContain("before insert or update of upload_state on public.mission_draft_assets");
+    expect(sql).toContain("before insert or update or delete on public.mission_draft_assets");
+  });
+
+  it("configures the private Creator Studio bucket with the exact upload constraints", () => {
+    const sql = readFileSync(migrationPath, "utf8");
+    const bucketSetup = sql.slice(
+      sql.indexOf("insert into storage.buckets"),
+      sql.indexOf("create policy creator_studio_assets_read"),
+    );
+
+    expect(bucketSetup).toContain("file_size_limit");
+    expect(bucketSetup).toContain("allowed_mime_types");
+    expect(bucketSetup).toContain("52428800");
+    expect(bucketSetup).toContain("'image/jpeg'");
+    expect(bucketSetup).toContain("'image/png'");
+    expect(bucketSetup).toContain("'image/webp'");
+    expect(bucketSetup).toContain("'video/mp4'");
+    expect(bucketSetup).toContain("'application/pdf'");
+    expect(bucketSetup).toMatch(/array\[\s*'image\/jpeg',\s*'image\/png',\s*'image\/webp',\s*'video\/mp4',\s*'application\/pdf'\s*\]::text\[\]/);
+    expect(bucketSetup).toContain("on conflict (id) do update set");
+    expect(bucketSetup).toContain("file_size_limit = excluded.file_size_limit");
+    expect(bucketSetup).toContain("allowed_mime_types = excluded.allowed_mime_types");
   });
 
   it("allows the owner to select pending upload reservations while retaining finalized asset reads", () => {
