@@ -278,13 +278,13 @@ create policy creator_studio_assets_insert on storage.objects for insert to auth
   )
 );
 create policy creator_studio_assets_update on storage.objects for update to authenticated using (
-  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()) and exists (
+  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()::text) and exists (
     select 1 from public.mission_draft_assets asset
     where asset.storage_object_path = name and asset.creator_id = (select auth.uid())
       and asset.upload_state = 'pending' and asset.upload_grant_expires_at > now()
   )
 ) with check (
-  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()) and exists (
+  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()::text) and exists (
     select 1 from public.mission_draft_assets asset
     where asset.storage_object_path = name and asset.creator_id = (select auth.uid())
       and asset.upload_state = 'pending' and asset.upload_grant_expires_at > now()

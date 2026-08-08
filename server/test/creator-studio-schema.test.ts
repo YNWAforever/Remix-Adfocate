@@ -39,6 +39,8 @@ describe("creator studio mission workspace migration", () => {
       sql.indexOf("create policy creator_studio_assets_update"),
       sql.indexOf("create or replace function public.refresh_creator_studio_state"),
     );
+    expect(storageUpdatePolicy.match(/owner_id = \(select auth\.uid\(\)::text\)/g)).toHaveLength(2);
+    expect(storageUpdatePolicy).not.toContain("owner_id = (select auth.uid())");
     expect(storageUpdatePolicy).toContain("asset.storage_object_path = name");
     expect(storageUpdatePolicy).toContain("asset.upload_state = 'pending'");
     expect(storageUpdatePolicy).toContain("asset.upload_grant_expires_at > now()");
