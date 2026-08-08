@@ -164,9 +164,8 @@ create table public.mission_workflow_commands (
   created_at timestamptz not null default now(),
   unique (id, workspace_id),
   unique (mission_submission_id, actor_id, command_id),
-  foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
-  foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade,
-  foreign key (actor_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
+  constraint mission_workflow_commands_actor_is_creator check (actor_id = creator_id),
+  constraint mission_workflow_commands_submission_creator_lineage_fk foreign key (mission_submission_id, creator_id, workspace_id) references public.mission_submissions(id, creator_id, workspace_id) on delete cascade
 );
 
 create table public.mission_workflow_events (
@@ -240,6 +239,28 @@ grant all on public.mission_review_rounds to service_role;
 grant all on public.mission_review_items to service_role;
 grant all on public.mission_workflow_commands to service_role;
 grant all on public.mission_workflow_events to service_role;
+
+create or replace function public.reject_creator_studio_immutable_mutation()
+returns trigger
+language plpgsql
+as $$
+begin
+  raise exception '% is append-only', tg_table_name using errcode = '55000';
+end;
+$$;
+
+create trigger mission_draft_versions_append_only
+  before update or delete or truncate on public.mission_draft_versions
+  for each statement execute function public.reject_creator_studio_immutable_mutation();
+create trigger mission_review_rounds_append_only
+  before update or delete or truncate on public.mission_review_rounds
+  for each statement execute function public.reject_creator_studio_immutable_mutation();
+create trigger mission_review_items_append_only
+  before update or delete or truncate on public.mission_review_items
+  for each statement execute function public.reject_creator_studio_immutable_mutation();
+create trigger mission_workflow_events_append_only
+  before update or delete or truncate on public.mission_workflow_events
+  for each statement execute function public.reject_creator_studio_immutable_mutation();
 
 insert into storage.buckets (id, name, public) values ('creator-studio-assets', 'creator-studio-assets', false)
 on conflict (id) do nothing;

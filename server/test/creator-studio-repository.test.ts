@@ -53,6 +53,9 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(first.value.draft.version).toBe(1);
     expect(first.value.workItem.state).toBe("ready_to_submit");
     expect(repository.events()).toHaveLength(1);
+    await expect(repository.getWorkspace(context)).resolves.toMatchObject({
+      nextAction: { workItemId: "work-item-1", state: "ready_to_submit", label: "Submit Story" },
+    });
   });
 
   it("rejects a changed payload that reuses a command id without changing state", async () => {
@@ -68,10 +71,11 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(repository.getDraft("work-item-1")?.caption).toBe("First");
   });
 
-  it("does not disclose a work item owned by another creator", async () => {
-    const repository = makeRepository({ creatorId: "other-creator" });
-    await expect(repository.getWorkspace(creatorContext())).resolves.toBeNull();
-    await expect(repository.saveDraft(creatorContext(), "work-item-1", {
+  it("rejects a command for the exact submission when the creator does not own it", async () => {
+    const repository = makeRepository();
+    const mismatchedCreator = { ...creatorContext(), actorId: "other-creator" };
+    await expect(repository.getWorkspace(mismatchedCreator)).resolves.toBeNull();
+    await expect(repository.saveDraft(mismatchedCreator, "work-item-1", {
       commandId: "cross-owner",
       expectedVersion: 0,
       patch: { caption: "Must not write" },

@@ -128,6 +128,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.assets.set(id, clone(asset));
     workItem.assets.push(clone(asset));
     this.refreshWorkItemValidation(workItem);
+    this.refreshNextAction();
     const result = { asset: clone(asset), uploadUrl: `memory://creator-studio-assets/${asset.storagePath}` };
     this.recordEvent("asset.reserved", workItem.id, { assetId: asset.id, byteSize: asset.byteSize });
     return this.commit(context, input.commandId, payload, result);
@@ -279,6 +280,28 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       : states.includes("drafting") ? "drafting"
       : "not_started";
     this.workspace.workflow = { ...this.workspace.workflow, state, revision: this.workspace.workflow.revision + 1 };
+    this.refreshNextAction();
+  }
+
+  private refreshNextAction(): void {
+    const workItem = [...this.workspace.workItems]
+      .sort((left, right) => left.position - right.position)
+      .find((candidate) => candidate.state !== "approved");
+    if (!workItem) {
+      this.workspace.nextAction = null;
+      return;
+    }
+
+    const label = {
+      not_started: `Start ${workItem.title}`,
+      drafting: `Continue ${workItem.title}`,
+      ready_to_submit: `Submit ${workItem.title}`,
+      submitted: `Await review for ${workItem.title}`,
+      changes_requested: `Revise ${workItem.title}`,
+      resubmitted: `Await review for ${workItem.title}`,
+      approved: `Review ${workItem.title}`,
+    } satisfies Record<WorkItemState, string>;
+    this.workspace.nextAction = { workItemId: workItem.id, state: workItem.state, label: label[workItem.state] };
   }
 
   private recordEvent(
