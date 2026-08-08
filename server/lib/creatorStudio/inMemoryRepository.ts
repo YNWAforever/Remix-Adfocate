@@ -199,8 +199,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     if (replay) return replay;
     this.validateExpectedVersion(input.expectedVersion);
 
-    const version = this.drafts.get(workItem.id)?.version ?? 0;
-    if (input.expectedVersion !== version) throw new CreatorStudioError("version_conflict", "The draft was updated elsewhere");
+    const draft = this.drafts.get(workItem.id);
+    if (!draft) throw new CreatorStudioError("invalid_transition", "Complete the required draft fields and assets");
+    if (input.expectedVersion !== draft.version) throw new CreatorStudioError("version_conflict", "The draft was updated elsewhere");
     const validation = this.workItemValidation(workItem);
     if (!Object.values(validation).every(Boolean)) {
       throw new CreatorStudioError("invalid_transition", "Complete the required draft fields and assets");

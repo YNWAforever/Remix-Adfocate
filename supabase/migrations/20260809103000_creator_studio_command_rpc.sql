@@ -46,7 +46,7 @@ begin
     raise exception 'draft_invalid' using errcode = '22023';
   end if;
   if p_patch ? 'external_url' and p_patch->>'external_url' is not null
-    and p_patch->>'external_url' !~* '^https?://' then
+    and p_patch->>'external_url' !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::[0-9]{1,5})?(?:[/?#][^[:space:]]*)?$' then
     raise exception 'draft_invalid' using errcode = '22023';
   end if;
 
@@ -193,13 +193,6 @@ declare
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
     or coalesce(length(btrim(p_request_hash)), 0) = 0 then raise exception 'command_required' using errcode = '22023'; end if;
-  if coalesce(length(btrim(p_file_name)), 0) = 0 or length(p_file_name) > 255 then raise exception 'file_not_allowed' using errcode = '22023'; end if;
-  v_extension := case p_mime_type
-    when 'image/jpeg' then 'jpg' when 'image/png' then 'png' when 'image/webp' then 'webp'
-    when 'video/mp4' then 'mp4' when 'application/pdf' then 'pdf' else null end;
-  if v_extension is null then raise exception 'file_not_allowed' using errcode = '22023'; end if;
-  if p_byte_size is null or p_byte_size < 1 or p_byte_size > 52428800 then raise exception 'file_too_large' using errcode = '22023'; end if;
-
   select workflow.* into v_workflow from public.mission_workflows workflow
   where workflow.mission_submission_id = p_submission_id and workflow.creator_id = auth.uid() and workflow.workspace_id = p_workspace_id
   for update;
@@ -211,16 +204,15 @@ begin
   for update;
   if found then
     if v_existing_hash <> p_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
-    select * into v_asset from public.mission_draft_assets
-    where id = (v_existing_response #>> '{grant,asset_id}')::uuid and workspace_id = p_workspace_id
-    for update;
-    if v_asset.id is null then raise exception 'asset_not_found'; end if;
-    if v_asset.upload_state <> 'pending' then raise exception 'asset_finalized' using errcode = '55000'; end if;
-    update public.mission_draft_assets set upload_grant_expires_at = now() + interval '15 minutes'
-      where id = v_asset.id returning * into v_asset;
-    return v_existing_response || jsonb_build_object('replayed', true, 'grant',
-      (v_existing_response->'grant') || jsonb_build_object('expires_at', v_asset.upload_grant_expires_at));
+    return v_existing_response || jsonb_build_object('replayed', true);
   end if;
+
+  if coalesce(length(btrim(p_file_name)), 0) = 0 or length(p_file_name) > 255 then raise exception 'file_not_allowed' using errcode = '22023'; end if;
+  v_extension := case p_mime_type
+    when 'image/jpeg' then 'jpg' when 'image/png' then 'png' when 'image/webp' then 'webp'
+    when 'video/mp4' then 'mp4' when 'application/pdf' then 'pdf' else null end;
+  if v_extension is null then raise exception 'file_not_allowed' using errcode = '22023'; end if;
+  if p_byte_size is null or p_byte_size < 1 or p_byte_size > 52428800 then raise exception 'file_too_large' using errcode = '22023'; end if;
 
   select * into v_item from public.mission_work_items
   where id = p_work_item_id and mission_workflow_id = v_workflow.id and mission_submission_id = p_submission_id
