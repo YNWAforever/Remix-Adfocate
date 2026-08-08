@@ -1,5 +1,12 @@
 import { NOTE_CATEGORIES, REVIEW_STATUSES, RISK_LEVELS } from "../operatorCrm/types";
-import type { CreatorReviewQueue, CreatorReviewQueueFilters } from "./types";
+import { readOptional } from "./enrichment";
+import type {
+  CreatorReviewQueue,
+  CreatorReviewQueueFilters,
+  MissionHistoryProjection,
+  ProfileProjection,
+  SocialProjection,
+} from "./types";
 import type { CreatorCaseRepository } from "./repository";
 import { CreatorCaseError } from "./errors";
 import type {
@@ -12,7 +19,13 @@ import type {
   CreatorReviewNote,
 } from "./types";
 
-export type InMemoryFailurePoint = "after_review" | "after_note" | "after_audit";
+export type InMemoryFailurePoint = "before_get_case" | "after_review" | "after_note" | "after_audit";
+
+export type InMemoryEnrichmentReaders = Partial<{
+  social: (creatorCase: CreatorCaseReadModel) => Promise<SocialProjection>;
+  profile: (creatorCase: CreatorCaseReadModel) => Promise<ProfileProjection>;
+  missionHistory: (creatorCase: CreatorCaseReadModel) => Promise<MissionHistoryProjection>;
+}>;
 
 type CompletedCommand = {
   payload: unknown;
@@ -23,6 +36,7 @@ export type InMemoryCreatorCaseRepositoryOptions = {
   cases: CreatorCaseReadModel[];
   failurePoint?: InMemoryFailurePoint;
   knownMissionIds?: string[];
+  enrichmentReaders?: InMemoryEnrichmentReaders;
 };
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -49,10 +63,12 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   private readonly completedCommands = new Map<string, CompletedCommand>();
   private readonly failurePoint?: InMemoryFailurePoint;
   private readonly knownMissionIds?: ReadonlySet<string>;
+  private readonly enrichmentReaders: InMemoryEnrichmentReaders;
 
   constructor(options: InMemoryCreatorCaseRepositoryOptions) {
     this.failurePoint = options.failurePoint;
     this.knownMissionIds = options.knownMissionIds ? new Set(options.knownMissionIds) : undefined;
+    this.enrichmentReaders = options.enrichmentReaders ?? {};
     for (const creatorCase of options.cases) {
       this.cases.set(this.caseKey(creatorCase.creator.workspaceId, creatorCase.creator.id), clone(creatorCase));
     }
@@ -104,7 +120,15 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   }
 
   async getCase(context: CreatorCaseReadContext, creatorId: string): Promise<CreatorCaseReadModel> {
-    return clone(this.findCase(context, creatorId));
+    this.validateContext(context);
+    this.failIf("before_get_case");
+    const creatorCase = clone(this.findCase(context, creatorId));
+    return {
+      ...creatorCase,
+      social: await this.readEnrichment("social", creatorCase),
+      profile: await this.readEnrichment("profile", creatorCase),
+      missionHistory: await this.readEnrichment("missionHistory", creatorCase),
+    };
   }
 
   async applyReview(context: CreatorCaseCommandContext, command: ApplyCreatorReviewCommand): Promise<CreatorCaseReadModel> {
@@ -232,6 +256,15 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     throw new CreatorCaseError("creator_not_found", "Creator was not found");
   }
 
+  private async readEnrichment<K extends keyof InMemoryEnrichmentReaders>(
+    key: K,
+    creatorCase: CreatorCaseReadModel,
+  ): Promise<CreatorCaseReadModel[K]> {
+    const reader = this.enrichmentReaders[key];
+    if (!reader) return creatorCase[key];
+    return readOptional(() => reader(creatorCase)) as CreatorCaseReadModel[K];
+  }
+
   private validateReview(command: ApplyCreatorReviewCommand): void {
     if (!(REVIEW_STATUSES as readonly string[]).includes(command.status)) throw new CreatorCaseError("bad_review_status", "Invalid review status");
     if (!(RISK_LEVELS as readonly string[]).includes(command.riskLevel)) throw new CreatorCaseError("bad_risk_level", "Invalid risk level");
@@ -266,7 +299,7 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   }
 
   private failIf(point: InMemoryFailurePoint): void {
-    if (this.failurePoint === point) throw new Error("in-memory failure");
+    if (this.failurePoint === point) throw new CreatorCaseError("db_error", "in-memory failure");
   }
 
   private replay(commandId: string, payload: unknown): CreatorCaseReadModel | undefined {

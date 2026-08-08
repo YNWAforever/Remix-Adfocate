@@ -64,12 +64,17 @@ export function projectLink(row: LinkRow): ProfileMediaLink {
   };
 }
 
-async function getCreatorBasics(supabase: SupabaseClient, creatorId: string): Promise<CreatorBasics> {
-  const { data, error } = await supabase
+async function getCreatorBasics(
+  supabase: SupabaseClient,
+  creatorId: string,
+  workspaceId?: string,
+): Promise<CreatorBasics> {
+  let query = supabase
     .from("creators")
     .select("id, workspace_id, display_name, avatar_url, categories")
-    .eq("id", creatorId)
-    .single();
+    .eq("id", creatorId);
+  if (workspaceId) query = query.eq("workspace_id", workspaceId);
+  const { data, error } = await query.single();
   if (error) failDb(error);
   return data as CreatorBasics;
 }
@@ -86,25 +91,41 @@ export async function listProfileMediaLinks(supabase: SupabaseClient, creatorId:
 }
 
 export async function getProfileMedia(supabase: SupabaseClient, creatorId: string): Promise<CreatorProfileMedia> {
-  const [creator, linksRes, snapshotRes, socialRes] = await Promise.all([
-    getCreatorBasics(supabase, creatorId),
-    supabase
+  return getProfileMediaForWorkspace(supabase, creatorId);
+}
+
+export async function getProfileMediaForWorkspace(
+  supabase: SupabaseClient,
+  creatorId: string,
+  workspaceId?: string,
+): Promise<CreatorProfileMedia> {
+  let linksQuery = supabase
       .from("creator_portfolio_links")
       .select(LINK_PROJECTION)
       .eq("creator_id", creatorId)
       .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true }),
-    supabase
+      .order("created_at", { ascending: true });
+  let snapshotQuery = supabase
       .from("creator_public_profile_snapshots")
       .select("avatar_url, highlights, published_at")
-      .eq("creator_id", creatorId)
-      .maybeSingle(),
-    supabase
+      .eq("creator_id", creatorId);
+  let socialQuery = supabase
       .from("creator_social_accounts")
       .select("id")
       .eq("creator_id", creatorId)
       .eq("sync_status", "synced")
-      .limit(1),
+      .limit(1);
+  if (workspaceId) {
+    linksQuery = linksQuery.eq("workspace_id", workspaceId);
+    snapshotQuery = snapshotQuery.eq("workspace_id", workspaceId);
+    socialQuery = socialQuery.eq("workspace_id", workspaceId);
+  }
+
+  const [creator, linksRes, snapshotRes, socialRes] = await Promise.all([
+    getCreatorBasics(supabase, creatorId, workspaceId),
+    linksQuery,
+    snapshotQuery.maybeSingle(),
+    socialQuery,
   ]);
   if (linksRes.error) failDb(linksRes.error);
   if (snapshotRes.error) failDb(snapshotRes.error);

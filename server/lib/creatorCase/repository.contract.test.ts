@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CreatorCaseReadModel } from "./types";
+import { CreatorCaseError } from "./errors";
 import { InMemoryCreatorCaseRepository } from "./inMemoryRepository";
 
 const makeCase = (
@@ -160,6 +161,38 @@ describe("InMemoryCreatorCaseRepository contract", () => {
     expect(result.social.status).toBe("unavailable");
     expect(result.profile.status).toBe("unavailable");
     expect(result.missionHistory.status).toBe("unavailable");
+  });
+
+  it.each(["social", "profile", "missionHistory"] as const)("isolates a failed %s enrichment from strict case data", async (failedEnrichment) => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" }, {
+        review: { status: "approved", riskLevel: "low", summary: "Ready", reviewedBy: "operator-1", lastReviewedAt: "2026-08-08T00:00:00.000Z", updatedAt: "2026-08-08T00:00:00.000Z" },
+        social: { status: "available", value: { accounts: [], summary: { platforms: [], syncStatus: "synced", followerCount: 100, engagementRate: 2, apiSyncedAt: "2026-08-08T00:00:00.000Z", label: "API-synced", ownershipLabel: "Ownership not verified" } } },
+        profile: { status: "available", value: { avatarUrl: null, portfolioLinks: [], publicHighlights: [], published: {}, completeness: { score: 80, items: [] } } },
+        missionHistory: { status: "available", value: [] },
+      })],
+      enrichmentReaders: {
+        [failedEnrichment]: async () => { throw new Error(`${failedEnrichment} unavailable`); },
+      },
+    });
+
+    const result = await repo.getCase(context, "creator-1");
+
+    expect(result[failedEnrichment].status).toBe("unavailable");
+    expect(result[failedEnrichment]).toMatchObject({ status: "unavailable", reason: "source_error" });
+    expect(result.social.status).toBe(failedEnrichment === "social" ? "unavailable" : "available");
+    expect(result.profile.status).toBe(failedEnrichment === "profile" ? "unavailable" : "available");
+    expect(result.missionHistory.status).toBe(failedEnrichment === "missionHistory" ? "unavailable" : "available");
+    expect(result.review.status).toBe("approved");
+  });
+
+  it("propagates a strict-core read failure as CreatorCaseError", async () => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })],
+      failurePoint: "before_get_case",
+    });
+
+    await expect(repo.getCase(context, "creator-1")).rejects.toBeInstanceOf(CreatorCaseError);
   });
 
   it("rejects invalid strict-core values before mutating state", async () => {
