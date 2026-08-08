@@ -315,9 +315,15 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   }
 
   private isHttpUrl(value: string): boolean {
+    if (!value || value !== value.trim()) return false;
     try {
       const url = new URL(value);
-      return url.protocol === "http:" || url.protocol === "https:";
+      const port = url.port === "" ? null : Number(url.port);
+      return (url.protocol === "http:" || url.protocol === "https:")
+        && Boolean(url.hostname)
+        && !url.username
+        && !url.password
+        && (port === null || (Number.isInteger(port) && port >= 1 && port <= 65535));
     } catch {
       return false;
     }

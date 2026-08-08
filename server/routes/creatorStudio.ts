@@ -25,6 +25,20 @@ type JsonRecord = Record<string, unknown>;
 const invalidCommand = (message = "Invalid Creator Studio command") => new CreatorStudioError("draft_invalid", message);
 const isRecord = (value: unknown): value is JsonRecord => Boolean(value) && typeof value === "object" && !Array.isArray(value);
 const hasOnlyKeys = (value: JsonRecord, allowed: string[]) => Object.keys(value).every((key) => allowed.includes(key));
+const isHttpUrl = (value: string): boolean => {
+  if (!value || value !== value.trim()) return false;
+  try {
+    const url = new URL(value);
+    const port = url.port === "" ? null : Number(url.port);
+    return (url.protocol === "http:" || url.protocol === "https:")
+      && Boolean(url.hostname)
+      && !url.username
+      && !url.password
+      && (port === null || (Number.isInteger(port) && port >= 1 && port <= 65535));
+  } catch {
+    return false;
+  }
+};
 
 async function requestJson(c: Context<Env>): Promise<unknown> {
   try {
@@ -48,14 +62,7 @@ function parsePatch(value: unknown): SaveDraftInput["patch"] {
   if (!isRecord(value) || !hasOnlyKeys(value, ["caption", "external_url", "checklist"])) throw invalidCommand();
   if (value.caption !== undefined && typeof value.caption !== "string") throw invalidCommand();
   if (value.external_url !== undefined && value.external_url !== null) {
-    if (typeof value.external_url !== "string") throw invalidCommand();
-    try {
-      const url = new URL(value.external_url);
-      if (url.protocol !== "http:" && url.protocol !== "https:") throw invalidCommand();
-    } catch (error) {
-      if (error instanceof CreatorStudioError) throw error;
-      throw invalidCommand();
-    }
+    if (typeof value.external_url !== "string" || !isHttpUrl(value.external_url)) throw invalidCommand();
   }
   if (value.checklist !== undefined) {
     if (!isRecord(value.checklist) || !Object.values(value.checklist).every((entry) => typeof entry === "boolean")) {

@@ -189,6 +189,13 @@ describe("Creator Studio mutation routes", () => {
       { command_id: "fractional", expected_version: 0.5, patch: {} },
       { command_id: "negative", expected_version: -1, patch: {} },
       { command_id: "bad-url", expected_version: 0, patch: { external_url: "ftp://example.com" } },
+      { command_id: "empty-url", expected_version: 0, patch: { external_url: "" } },
+      { command_id: "missing-authority", expected_version: 0, patch: { external_url: "https://" } },
+      { command_id: "bad-authority", expected_version: 0, patch: { external_url: "https://[gg]" } },
+      { command_id: "credential-url", expected_version: 0, patch: { external_url: "https://creator:secret@example.com" } },
+      { command_id: "space-url", expected_version: 0, patch: { external_url: " https://example.com" } },
+      { command_id: "zero-port", expected_version: 0, patch: { external_url: "https://example.com:0" } },
+      { command_id: "bad-port", expected_version: 0, patch: { external_url: "https://example.com:65536" } },
       { command_id: "bad-checklist", expected_version: 0, patch: { checklist: { disclosure: "yes" } } },
       { commandId: "camel-case", expectedVersion: 0, patch: { caption: "ignored" } },
     ]) {
@@ -270,7 +277,37 @@ describe("Creator Studio mutation routes", () => {
     expect(rpcCalls[1]?.args).toEqual(rpcCalls[0]?.args);
   });
 
-  it("keeps persisted URL validation strict and checks upload-grant replay before current item state", () => {
+  it("requires a stored upload object before finalization and validates persisted URLs for drafts and submit", () => {
+    const sql = readFileSync(commandMigrationPath, "utf8");
+    const draft = sql.slice(
+      sql.indexOf("create or replace function public.creator_studio_save_draft"),
+      sql.indexOf("create or replace function public.creator_studio_create_upload_grant"),
+    );
+    const finalize = sql.slice(
+      sql.indexOf("create or replace function public.creator_studio_finalize_asset"),
+      sql.indexOf("create or replace function public.creator_studio_submit_work_item"),
+    );
+    const submit = sql.slice(
+      sql.indexOf("create or replace function public.creator_studio_submit_work_item"),
+      sql.indexOf("revoke all on function public.creator_studio_save_draft"),
+    );
+    const uploadGrant = sql.slice(
+      sql.indexOf("create or replace function public.creator_studio_create_upload_grant"),
+      sql.indexOf("create or replace function public.creator_studio_finalize_asset"),
+    );
+
+    const strictHttpUrl = "^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\\[[0-9a-f:.]+\\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
+    expect(draft).toContain(strictHttpUrl);
+    expect(submit).toContain(strictHttpUrl);
+    expect(draft).toContain("not between 1 and 65535");
+    expect(submit).toContain("not between 1 and 65535");
+    expect(finalize).toContain("from storage.objects object");
+    expect(finalize).toContain("object.bucket_id = 'creator-studio-assets'");
+    expect(finalize).toContain("object.name = v_asset.storage_object_path");
+    expect(finalize.indexOf("from storage.objects object")).toBeLessThan(finalize.indexOf("set upload_state = 'finalized'"));
+  });
+
+  it("checks upload-grant replay before current item state", () => {
     const sql = readFileSync(commandMigrationPath, "utf8");
     const submit = sql.slice(
       sql.indexOf("create or replace function public.creator_studio_submit_work_item"),
@@ -281,7 +318,6 @@ describe("Creator Studio mutation routes", () => {
       sql.indexOf("create or replace function public.creator_studio_finalize_asset"),
     );
 
-    expect(sql).toContain("^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\\[[0-9a-f:.]+\\])(?::[0-9]{1,5})?(?:[/?#][^[:space:]]*)?$");
     expect(submit.indexOf("from public.mission_workflow_commands command")).toBeLessThan(submit.indexOf("from public.mission_work_items"));
     expect(uploadGrant.indexOf("from public.mission_workflow_commands command")).toBeLessThan(uploadGrant.indexOf("from public.mission_work_items"));
     expect(uploadGrant.indexOf("from public.mission_workflow_commands command")).toBeLessThan(uploadGrant.indexOf("if coalesce(length(btrim(p_file_name))"));

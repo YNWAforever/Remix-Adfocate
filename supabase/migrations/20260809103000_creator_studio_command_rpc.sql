@@ -31,6 +31,8 @@ declare
   v_requires_caption boolean;
   v_requires_external_url boolean;
   v_ready boolean;
+  v_url text;
+  v_url_port text;
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
     or coalesce(length(btrim(p_request_hash)), 0) = 0 or p_expected_version is null or p_expected_version < 0 then
@@ -45,9 +47,16 @@ begin
     )) then
     raise exception 'draft_invalid' using errcode = '22023';
   end if;
-  if p_patch ? 'external_url' and p_patch->>'external_url' is not null
-    and p_patch->>'external_url' !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::[0-9]{1,5})?(?:[/?#][^[:space:]]*)?$' then
-    raise exception 'draft_invalid' using errcode = '22023';
+  if p_patch ? 'external_url' and p_patch->>'external_url' is not null then
+    v_url := p_patch->>'external_url';
+    if btrim(v_url) = ''
+      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
+      raise exception 'draft_invalid' using errcode = '22023';
+    end if;
+    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
+    if v_url_port is not null and v_url_port::integer not between 1 and 65535 then
+      raise exception 'draft_invalid' using errcode = '22023';
+    end if;
   end if;
 
   select workflow.* into v_workflow
@@ -315,6 +324,13 @@ begin
     or v_asset.byte_size <> p_byte_size or v_asset.mime_type <> p_mime_type then
     raise exception 'asset_not_uploaded' using errcode = '55000';
   end if;
+  if not exists (
+    select 1 from storage.objects object
+    where object.bucket_id = 'creator-studio-assets'
+      and object.name = v_asset.storage_object_path
+  ) then
+    raise exception 'asset_not_uploaded' using errcode = '55000';
+  end if;
   update public.mission_draft_assets
   set upload_state = 'finalized', checksum_sha256 = p_checksum_sha256, finalized_at = now()
   where id = v_asset.id
@@ -388,6 +404,8 @@ declare
   v_checklist_key text;
   v_requires_caption boolean;
   v_requires_external_url boolean;
+  v_url text;
+  v_url_port text;
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
     or coalesce(length(btrim(p_request_hash)), 0) = 0 or p_expected_version is null or p_expected_version < 0 then raise exception 'command_required' using errcode = '22023'; end if;
@@ -423,8 +441,20 @@ begin
   v_requires_external_url := coalesce((v_item.requirements->>'external_url')::boolean, false)
     or coalesce((v_item.requirements->>'externalUrl')::boolean, false)
     or exists (select 1 from jsonb_array_elements_text(v_requirement_list) requirement where lower(regexp_replace(requirement, '[[:space:]_-]+', '', 'g')) = 'externalurl');
-  if (v_requires_caption and coalesce(btrim(v_draft.caption), '') = '')
-    or (v_requires_external_url and v_draft.external_url is null) then raise exception 'invalid_transition' using errcode = '55000'; end if;
+  if v_requires_caption and coalesce(btrim(v_draft.caption), '') = '' then
+    raise exception 'invalid_transition' using errcode = '55000';
+  end if;
+  if v_requires_external_url then
+    v_url := v_draft.external_url;
+    if v_url is null or btrim(v_url) = ''
+      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
+      raise exception 'invalid_transition' using errcode = '55000';
+    end if;
+    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
+    if v_url_port is not null and v_url_port::integer not between 1 and 65535 then
+      raise exception 'invalid_transition' using errcode = '55000';
+    end if;
+  end if;
   for v_checklist_key in
     select distinct requirement from (
       select requirement from jsonb_array_elements_text(v_requirement_list) requirement
