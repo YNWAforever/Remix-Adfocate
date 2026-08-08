@@ -83,6 +83,29 @@ describe("creator studio mission workspace migration", () => {
     expect(sql).toContain("before insert or update of upload_state on public.mission_draft_assets");
   });
 
+  it("allows the owner to select pending upload reservations while retaining finalized asset reads", () => {
+    const sql = readFileSync(migrationPath, "utf8");
+    const pendingReadPolicyStart = sql.indexOf("create policy creator_studio_assets_pending_read");
+    const finalizedReadPolicy = sql.slice(
+      sql.indexOf("create policy creator_studio_assets_read"),
+      pendingReadPolicyStart,
+    );
+    const pendingReadPolicy = sql.slice(
+      pendingReadPolicyStart,
+      sql.indexOf("create policy creator_studio_assets_insert"),
+    );
+
+    expect(finalizedReadPolicy).toContain("asset.storage_object_path = name");
+    expect(finalizedReadPolicy).toContain("asset.upload_state = 'finalized'");
+    expect(pendingReadPolicy).toContain("for select to authenticated using");
+    expect(pendingReadPolicy).toContain("bucket_id = 'creator-studio-assets'");
+    expect(pendingReadPolicy).toContain("owner_id = (select auth.uid()::text)");
+    expect(pendingReadPolicy).toContain("asset.storage_object_path = name");
+    expect(pendingReadPolicy).toContain("asset.creator_id = (select auth.uid())");
+    expect(pendingReadPolicy).toContain("asset.upload_state = 'pending'");
+    expect(pendingReadPolicy).toContain("asset.upload_grant_expires_at > now()");
+  });
+
   it("keeps mission submission lifecycle status distinct from Creator Studio workflow state", () => {
     const types = readFileSync(typesPath, "utf8");
 
