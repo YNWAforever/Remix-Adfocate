@@ -196,6 +196,44 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(grant.value.asset.storagePath).not.toContain("untrusted");
   });
 
+  it("accepts video/mp4 at the 50 MiB upload limit without allocating upload bytes", async () => {
+    const repository = makeRepository();
+    const maxUploadBytes = 50 * 1024 * 1024;
+
+    const grant = await repository.createUploadGrant(creatorContext(), "work-item-1", {
+      commandId: "video-max-size-grant",
+      fileName: "launch-reel.mp4",
+      mimeType: "video/mp4",
+      byteSize: maxUploadBytes,
+    });
+
+    expect(grant.value.asset).toMatchObject({
+      mimeType: "video/mp4",
+      byteSize: maxUploadBytes,
+      storagePath: "creator-1/workflow-1/work-item-1/asset-1.mp4",
+    });
+  });
+
+  it("rejects unsupported MIME types and byte sizes above the 50 MiB upload limit", async () => {
+    const repository = makeRepository();
+    const maxUploadBytes = 50 * 1024 * 1024;
+
+    await expect(repository.createUploadGrant(creatorContext(), "work-item-1", {
+      commandId: "unsupported-mime-grant",
+      fileName: "launch-reel.mov",
+      mimeType: "video/quicktime",
+      byteSize: 1024,
+    })).rejects.toMatchObject({ code: "file_not_allowed" });
+    await expect(repository.createUploadGrant(creatorContext(), "work-item-1", {
+      commandId: "over-limit-grant",
+      fileName: "launch.jpg",
+      mimeType: "image/jpeg",
+      byteSize: maxUploadBytes + 1,
+    })).rejects.toMatchObject({ code: "file_too_large" });
+
+    expect(repository.events()).toEqual([]);
+  });
+
   it.each(["submitted", "resubmitted", "approved"] as const)("rejects asset reservations and finalization for %s work without changing it", async (state) => {
     const workspace = makeWorkspace();
     const workItem = workspace.workItems[0];

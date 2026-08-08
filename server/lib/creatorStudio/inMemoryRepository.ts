@@ -29,11 +29,12 @@ export type InMemoryCreatorStudioRepositoryOptions = {
   workspace: SubmissionWorkspace;
 };
 
-const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const ALLOWED_UPLOAD_EXTENSIONS = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
   ["image/webp", "webp"],
+  ["video/mp4", "mp4"],
   ["application/pdf", "pdf"],
 ]);
 const clone = <T>(value: T): T => structuredClone(value);
