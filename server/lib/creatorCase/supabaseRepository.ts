@@ -166,6 +166,7 @@ function snapshotFromRpc(value: unknown): CreatorCaseReadModel {
     social: { status: "unavailable", reason: "not_configured" },
     profile: { status: "unavailable", reason: "not_configured" },
     missionHistory: { status: "unavailable", reason: "not_configured" },
+    ...(snapshot.insertedNote ? { insertedNote: { ...snapshot.insertedNote } } : {}),
   };
 }
 

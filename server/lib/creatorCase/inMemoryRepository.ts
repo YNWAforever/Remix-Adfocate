@@ -88,7 +88,7 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     context: CreatorCaseReadContext,
     filters: CreatorReviewQueueFilters,
   ): Promise<CreatorReviewQueue> {
-    this.validateContext(context);
+    this.validateReadContext(context);
     if (filters.missionId && this.knownMissionIds && !this.knownMissionIds.has(filters.missionId)) {
       throw new CreatorCaseError("mission_not_found", "Mission was not found");
     }
@@ -139,7 +139,7 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   }
 
   async getCase(context: CreatorCaseReadContext, creatorId: string): Promise<CreatorCaseReadModel> {
-    this.validateContext(context);
+    this.validateReadContext(context);
     this.failIf("before_get_case");
     const creatorCase = clone(this.findCase(context, creatorId));
     return {
@@ -151,7 +151,7 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   }
 
   async applyReview(context: CreatorCaseCommandContext, command: ApplyCreatorReviewCommand): Promise<CreatorCaseReadModel> {
-    this.validateContext(context);
+    this.validateCommandContext(context);
     const payload = { context, command };
     const replay = this.replay(context.commandId, payload);
     if (replay) return replay;
@@ -170,8 +170,11 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     };
     this.failIf("after_review");
 
-    if (command.note) {
-      working.notes.push(this.makeNote(context, command.creatorId, command.note, `${context.commandId}:note`, timestamp));
+    const insertedNote = command.note
+      ? this.makeNote(context, command.creatorId, command.note, `${context.commandId}:note`, timestamp)
+      : undefined;
+    if (insertedNote) {
+      working.notes.push(insertedNote);
       this.failIf("after_note");
     }
 
@@ -187,11 +190,11 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     }
     this.failIf("after_audit");
 
-    return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working);
+    return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working, insertedNote);
   }
 
   async appendNote(context: CreatorCaseCommandContext, command: AppendCreatorNoteCommand): Promise<CreatorCaseReadModel> {
-    this.validateContext(context);
+    this.validateCommandContext(context);
     const payload = { context, command };
     const replay = this.replay(context.commandId, payload);
     if (replay) return replay;
@@ -200,11 +203,12 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     this.validateNote(command.category, command.body);
     const working = clone(current);
     const timestamp = new Date().toISOString();
-    working.notes.push(this.makeNote(context, command.creatorId, command, `${context.commandId}:note`, timestamp));
+    const insertedNote = this.makeNote(context, command.creatorId, command, `${context.commandId}:note`, timestamp);
+    working.notes.push(insertedNote);
     working.audit.push(this.makeAudit(context, command.creatorId, "creator_note.created", `${context.commandId}:note`, timestamp, {
       category: command.category,
     }));
-    return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working);
+    return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working, insertedNote);
   }
 
   private caseKey(workspaceId: string, creatorId: string): string {
@@ -285,9 +289,19 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     return 0;
   }
 
-  private validateContext(context: CreatorCaseReadContext & Partial<Pick<CreatorCaseCommandContext, "commandId">>): void {
-    if (!context.workspaceId) throw new CreatorCaseError("workspace_required", "workspaceId is required");
-    if ("commandId" in context && !context.commandId) throw new CreatorCaseError("db_error", "commandId is required");
+  private requireContextText(value: unknown, code: "workspace_required" | "actor_required" | "actor_label_required" | "command_required", label: string): void {
+    if (typeof value !== "string" || !value.trim()) throw new CreatorCaseError(code, `${label} is required`);
+  }
+
+  private validateReadContext(context: CreatorCaseReadContext): void {
+    this.requireContextText(context.workspaceId, "workspace_required", "workspaceId");
+    this.requireContextText(context.actorId, "actor_required", "actorId");
+    this.requireContextText(context.actorLabel, "actor_label_required", "actorLabel");
+  }
+
+  private validateCommandContext(context: CreatorCaseCommandContext): void {
+    this.validateReadContext(context);
+    this.requireContextText(context.commandId, "command_required", "commandId");
   }
 
   private findCase(context: CreatorCaseReadContext, creatorId: string): CreatorCaseReadModel {
@@ -352,10 +366,19 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     return clone(completed.result);
   }
 
-  private commit(commandId: string, payload: unknown, workspaceId: string, creatorId: string, result: CreatorCaseReadModel): CreatorCaseReadModel {
+  private commit(
+    commandId: string,
+    payload: unknown,
+    workspaceId: string,
+    creatorId: string,
+    result: CreatorCaseReadModel,
+    insertedNote?: CreatorReviewNote,
+  ): CreatorCaseReadModel {
     const stored = clone(result);
+    delete stored.insertedNote;
     this.cases.set(this.caseKey(workspaceId, creatorId), stored);
-    this.completedCommands.set(commandId, { payload: clone(payload), result: clone(stored) });
-    return clone(stored);
+    const response = insertedNote ? { ...stored, insertedNote: clone(insertedNote) } : stored;
+    this.completedCommands.set(commandId, { payload: clone(payload), result: clone(response) });
+    return clone(response);
   }
 }

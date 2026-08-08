@@ -197,7 +197,7 @@ export function createAdminOperatorCrmRoutes(
         category,
         body: noteBody,
       });
-    return c.json({ note: creatorCase.notes.at(-1) ?? null });
+    return c.json({ note: creatorCase.insertedNote ?? null });
   } catch (error) {
     return creatorCaseError(c, error);
   }

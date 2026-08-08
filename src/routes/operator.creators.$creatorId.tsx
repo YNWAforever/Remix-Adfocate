@@ -113,6 +113,11 @@ function OperatorCreatorDetailRoute() {
     if (detail.error instanceof AdminAuthError) reportAuthError(detail.error);
   }, [detail.error, reportAuthError]);
 
+  useEffect(() => {
+    pendingNoteCommandId.current = null;
+    setNoteBody("");
+  }, [workspace, creatorId]);
+
   return (
     <>
       <div className="mx-auto max-w-6xl space-y-4 p-4">

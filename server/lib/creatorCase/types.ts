@@ -117,4 +117,5 @@ export type CreatorCaseReadModel = {
   social: CreatorCaseEnrichment<SocialProjection>;
   profile: CreatorCaseEnrichment<ProfileProjection>;
   missionHistory: CreatorCaseEnrichment<MissionHistoryProjection>;
+  insertedNote?: CreatorReviewNote;
 };

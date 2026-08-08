@@ -104,6 +104,30 @@ describe("operator creator detail", () => {
     expect(hoisted.postCreatorNote.mock.calls[0][3]).toEqual(hoisted.postCreatorNote.mock.calls[1][3]);
   });
 
+  it("resets the note draft and command id when creator identity changes", async () => {
+    hoisted.postCreatorNote.mockRejectedValueOnce(new Error("temporary failure")).mockResolvedValueOnce({ note: {} });
+    const rendered = renderRoute();
+    await screen.findByText("Amy Chan");
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Do not carry this note." } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(1));
+    const firstCommandId = hoisted.postCreatorNote.mock.calls[0][3];
+
+    hoisted.workspace = "workspace-2";
+    vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-2" } as never);
+    const Component = Route.options.component as React.ComponentType;
+    rendered.rerender(<QueryClientProvider client={new QueryClient()}><Component /></QueryClientProvider>);
+
+    await waitFor(() => expect(screen.getByLabelText("New internal note")).toHaveValue(""));
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Only creator two." } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
+
+    expect(hoisted.postCreatorNote.mock.calls[1][3]).not.toBe(firstCommandId);
+    expect(hoisted.postCreatorNote.mock.calls[1][0]).toBe("workspace-2");
+    expect(hoisted.postCreatorNote.mock.calls[1][1]).toBe("creator-2");
+  });
+
   it("reuses the review command id when a submission is retried", async () => {
     hoisted.postCreatorReview.mockRejectedValueOnce(new Error("temporary failure")).mockResolvedValueOnce({ review: {} });
     renderRoute();

@@ -90,6 +90,43 @@ describe("InMemoryCreatorCaseRepository contract", () => {
     await expect(repo.getCase(context, "creator-1")).rejects.toMatchObject({ code: "workspace_mismatch" });
   });
 
+  it.each([
+    ["workspaceId", "", "workspace_required"],
+    ["workspaceId", "   ", "workspace_required"],
+    ["actorId", "", "actor_required"],
+    ["actorId", " \t", "actor_required"],
+    ["actorLabel", "", "actor_label_required"],
+    ["actorLabel", "  ", "actor_label_required"],
+  ] as const)("rejects blank %s before reading case data", async (field, value, code) => {
+    const repo = new InMemoryCreatorCaseRepository({ cases: [] });
+    const invalidContext = { ...context, [field]: value };
+
+    await expect(repo.getCase(invalidContext, "creator-1")).rejects.toMatchObject({ code });
+    await expect(repo.listReviewQueue(invalidContext, { page: 1, pageSize: 25, sort: "last_activity" })).rejects.toMatchObject({ code });
+  });
+
+  it.each([
+    ["workspaceId", "", "workspace_required"],
+    ["actorId", "", "actor_required"],
+    ["actorLabel", "", "actor_label_required"],
+    ["commandId", "", "command_required"],
+    ["commandId", "  ", "command_required"],
+  ] as const)("rejects invalid command context %s before data access", async (field, value, code) => {
+    const repo = new InMemoryCreatorCaseRepository({ cases: [] });
+    const invalidContext = { ...context, [field]: value };
+
+    await expect(repo.applyReview(invalidContext, approvedCommand)).rejects.toMatchObject({ code });
+    await expect(repo.appendNote(invalidContext, { creatorId: "creator-1", category: "other", body: "Note" })).rejects.toMatchObject({ code });
+  });
+
+  it("maps a missing commandId to command_required before data access", async () => {
+    const repo = new InMemoryCreatorCaseRepository({ cases: [] });
+    const { commandId: _commandId, ...missingCommandId } = context;
+
+    await expect(repo.applyReview(missingCommandId as never, approvedCommand)).rejects.toMatchObject({ code: "command_required" });
+    await expect(repo.appendNote(missingCommandId as never, { creatorId: "creator-1", category: "other", body: "Note" })).rejects.toMatchObject({ code: "command_required" });
+  });
+
   it("rejects a missing Creator", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [] });
 
@@ -154,6 +191,7 @@ describe("InMemoryCreatorCaseRepository contract", () => {
 
     expect(result.review.status).toBe("needs_review");
     expect(result.notes).toHaveLength(1);
+    expect(result.insertedNote).toEqual(result.notes[0]);
     expect(result.audit.map((event) => event.eventType)).toEqual(["creator_note.created"]);
   });
 

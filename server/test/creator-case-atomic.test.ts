@@ -179,6 +179,7 @@ suite("creator case atomic commands", () => {
 
     expect(result.notes).toHaveLength(1);
     expect(result.notes[0]).toMatchObject({ category: "fit", body: "Strong audience fit." });
+    expect(result.insertedNote).toEqual(result.notes[0]);
     expect(result.audit.map((event) => event.eventType)).toEqual(["creator_note.created"]);
   });
 

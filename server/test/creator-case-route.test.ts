@@ -113,6 +113,34 @@ describe("Creator case admin routes", () => {
     );
   });
 
+  it("returns the repository-provided inserted note when timestamps tie", async () => {
+    const insertedNote = {
+      id: "inserted-note",
+      creatorId: "creator-1",
+      workspaceId: "workspace-1",
+      operatorId: "staff-1",
+      category: "fit" as const,
+      body: "Inserted note",
+      createdAt: "2026-08-08T00:00:00.000Z",
+    };
+    const trailingNote = { ...insertedNote, id: "trailing-note", body: "Trailing note" };
+    const repository: CreatorCaseRepository = {
+      listReviewQueue: async () => ({ creators: [], page: 1, pageSize: 25, total: 0 }),
+      getCase: async () => makeCase(),
+      applyReview: async () => makeCase(),
+      appendNote: async () => ({ ...makeCase(), notes: [insertedNote, trailingNote], insertedNote }),
+    };
+
+    const response = await routeFor(repository).request("/creators/creator-1/notes?workspace=workspace-1", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ command_id: "note-command-1", category: "fit", body: "Inserted note" }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ note: insertedNote });
+  });
+
   it("routes review commands through the injected workspace-scoped repository", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
     const applyReview = vi.spyOn(repo, "applyReview");

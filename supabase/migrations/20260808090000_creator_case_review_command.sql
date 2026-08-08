@@ -118,6 +118,7 @@ declare
   v_payload jsonb;
   v_result jsonb;
   v_note_body text;
+  v_inserted_note public.creator_review_notes%rowtype;
 begin
   v_note_body := nullif(btrim(p_note_body), '');
   v_payload := jsonb_build_object(
@@ -251,7 +252,8 @@ begin
       p_operator_id,
       p_note_category,
       v_note_body
-    );
+    )
+    returning * into v_inserted_note;
 
     insert into public.operator_audit_events (
       workspace_id,
@@ -276,6 +278,19 @@ begin
   end if;
 
   v_result := private.creator_case_command_snapshot(p_workspace_id, p_creator_id);
+  if v_note_body is not null then
+    v_result := v_result || jsonb_build_object(
+      'insertedNote', jsonb_build_object(
+        'id', v_inserted_note.id,
+        'creatorId', v_inserted_note.creator_id,
+        'workspaceId', v_inserted_note.workspace_id,
+        'operatorId', v_inserted_note.operator_id,
+        'category', v_inserted_note.category,
+        'body', v_inserted_note.body,
+        'createdAt', v_inserted_note.created_at
+      )
+    );
+  end if;
   insert into public.creator_case_command_receipts (
     command_id,
     workspace_id,
@@ -310,6 +325,7 @@ declare
   v_payload jsonb;
   v_result jsonb;
   v_note_body text;
+  v_inserted_note public.creator_review_notes%rowtype;
 begin
   v_note_body := nullif(btrim(p_note_body), '');
   v_payload := jsonb_build_object(
@@ -368,7 +384,8 @@ begin
     p_operator_id,
     p_note_category,
     v_note_body
-  );
+  )
+  returning * into v_inserted_note;
 
   insert into public.operator_audit_events (
     workspace_id,
@@ -392,6 +409,17 @@ begin
   );
 
   v_result := private.creator_case_command_snapshot(p_workspace_id, p_creator_id);
+  v_result := v_result || jsonb_build_object(
+    'insertedNote', jsonb_build_object(
+      'id', v_inserted_note.id,
+      'creatorId', v_inserted_note.creator_id,
+      'workspaceId', v_inserted_note.workspace_id,
+      'operatorId', v_inserted_note.operator_id,
+      'category', v_inserted_note.category,
+      'body', v_inserted_note.body,
+      'createdAt', v_inserted_note.created_at
+    )
+  );
   insert into public.creator_case_command_receipts (
     command_id,
     workspace_id,
