@@ -1,5 +1,5 @@
-import { NOTE_CATEGORIES, REVIEW_STATUSES, RISK_LEVELS } from "../operatorCrm/types";
-import { readOptional } from "./enrichment";
+import { NOTE_CATEGORIES, REVIEW_STATUSES, RISK_LEVELS } from "../operatorCrm/types.js";
+import { readOptional } from "./enrichment.js";
 import type {
   CreatorReviewQueue,
   CreatorReviewQueueFilters,
@@ -7,9 +7,9 @@ import type {
   MissionHistoryProjection,
   ProfileProjection,
   SocialProjection,
-} from "./types";
-import type { CreatorCaseRepository } from "./repository";
-import { CreatorCaseError } from "./errors";
+} from "./types.js";
+import type { CreatorCaseRepository } from "./repository.js";
+import { CreatorCaseError } from "./errors.js";
 import type {
   AppendCreatorNoteCommand,
   ApplyCreatorReviewCommand,
@@ -18,7 +18,7 @@ import type {
   CreatorCaseReadContext,
   CreatorCaseReadModel,
   CreatorReviewNote,
-} from "./types";
+} from "./types.js";
 
 export type InMemoryFailurePoint = "before_get_case" | "after_review" | "after_note" | "after_audit";
 

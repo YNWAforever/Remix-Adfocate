@@ -1,10 +1,26 @@
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { createApp } from "../app";
 import { SupabaseCreatorCaseRepository } from "../lib/creatorCase/supabaseRepository";
-import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, serviceForTests } from "./helpers";
+import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, makeMission, serviceForTests } from "./helpers";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
+process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
+const { app } = createApp();
+
+function adminreq(path: string, init: RequestInit = {}) {
+  return app.request(`/api${path}`, {
+    ...init,
+    headers: {
+      "x-admin-secret": process.env.ADMIN_SECRET,
+      "x-operator-id": "creator-case-http-test",
+      "x-operator-label": "Creator Case HTTP Test",
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+}
 
 describe("SupabaseCreatorCaseRepository context validation", () => {
   const repo = new SupabaseCreatorCaseRepository({} as SupabaseClient);
@@ -235,5 +251,223 @@ suite("creator case atomic commands", () => {
 
     expect(missingStatus.error?.message).toContain("bad_review_status");
     expect(missingRisk.error?.message).toContain("bad_risk_level");
+  });
+});
+
+suite("creator case HTTP integration", () => {
+  beforeAll(cleanup);
+  afterAll(cleanup);
+
+  it("serves a workspace-scoped queue and retains the strict core when enrichment is available", async () => {
+    const creator = await makeCreator("creator-case-http-queue@test.local");
+    const response = await adminreq(`/admin/creators/review?workspace=${DEMO_WS}&q=creator-case-http-queue`);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    const row = body.creators.find((item: { id: string }) => item.id === creator.userId);
+    expect(row.review).toMatchObject({ status: "needs_review", riskLevel: "unknown" });
+    expect(row.enrichment.social).toMatchObject({ status: "available" });
+  });
+
+  it("commits review, note, and audit state through the workspace-scoped route", async () => {
+    const creator = await makeCreator("creator-case-http-review@test.local");
+    const response = await adminreq(`/admin/creators/${creator.userId}/review?workspace=${DEMO_WS}`, {
+      method: "POST",
+      body: JSON.stringify({
+        command_id: randomUUID(),
+        status: "approved",
+        risk_level: "low",
+        summary: "Strong fit for skincare missions.",
+        note: "Prior delivery was on brief.",
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      review: { status: "approved", riskLevel: "low", summary: "Strong fit for skincare missions." },
+    });
+
+    const service = serviceForTests();
+    const [notes, audits] = await Promise.all([
+      service.from("creator_review_notes").select("body, category").eq("creator_id", creator.userId),
+      service.from("operator_audit_events").select("event_type, operator_id, actor_label").eq("creator_id", creator.userId),
+    ]);
+    expect(notes.data).toEqual([{ body: "Prior delivery was on brief.", category: "other" }]);
+    expect(audits.data?.map((event) => event.event_type).sort()).toEqual(["creator_note.created", "creator_review.updated"]);
+    expect(audits.data?.every((event) => event.operator_id === "creator-case-http-test")).toBe(true);
+  });
+
+  it("returns detail enrichment and keeps mission shortlist projection separate", async () => {
+    const creator = await makeCreator("creator-case-http-detail@test.local");
+    const mission = await makeMission({ slug: "test-creator-case-http-detail" });
+    const service = serviceForTests();
+    await service.from("creator_social_accounts").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      platform: "instagram",
+      handle: "detailcreator",
+      sync_status: "synced",
+      follower_count: 22000,
+      engagement_rate: 4.1,
+      api_synced_at: "2026-06-18T03:00:00.000Z",
+    });
+    await service.from("creator_portfolio_links").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      url: "https://example.com/creator-case-http-portfolio",
+      title: "Operator-visible work",
+      platform_type: "website",
+      caption: "Private review caption",
+      sort_order: 1,
+      public_highlight: true,
+    });
+    await adminreq(`/admin/missions/${mission.id}/shortlist`, {
+      method: "POST",
+      body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "Add to launch list." }),
+    });
+
+    const response = await adminreq(`/admin/creators/${creator.userId}?workspace=${DEMO_WS}`);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.creator.id).toBe(creator.userId);
+    expect(body.social).toMatchObject({ status: "available", value: { summary: { followerCount: 22000 } } });
+    expect(body.profile).toMatchObject({ status: "available", value: { portfolioLinks: [expect.objectContaining({ title: "Operator-visible work" })] } });
+    expect(body.shortlists[0]).toMatchObject({ mission_id: mission.id, status: "shortlisted" });
+  });
+
+  it("rejects unscoped and cross-workspace commands without writing state", async () => {
+    const creator = await makeCreator("creator-case-http-mismatch@test.local");
+    const service = serviceForTests();
+    const missingWorkspace = await adminreq(`/admin/creators/${creator.userId}/notes`, {
+      method: "POST",
+      body: JSON.stringify({ command_id: randomUUID(), category: "fit", body: "Must not write." }),
+    });
+    const mismatch = await adminreq(`/admin/creators/${creator.userId}/review?workspace=00000000-0000-0000-0000-0000000000bb`, {
+      method: "POST",
+      body: JSON.stringify({ command_id: randomUUID(), status: "approved", risk_level: "low", summary: "Must not write." }),
+    });
+    const notes = await service.from("creator_review_notes").select("id", { count: "exact", head: true }).eq("creator_id", creator.userId);
+    const audits = await service.from("operator_audit_events").select("id", { count: "exact", head: true }).eq("creator_id", creator.userId);
+
+    expect(missingWorkspace.status).toBe(422);
+    expect(mismatch.status).toBe(404);
+    expect(await mismatch.json()).toMatchObject({ code: "creator_not_found" });
+    expect(notes.count).toBe(0);
+    expect(audits.count).toBe(0);
+  });
+
+  it("hides flagged creators by default in a mission-scoped queue", async () => {
+    const approved = await makeCreator("creator-case-http-approved@test.local");
+    const flagged = await makeCreator("creator-case-http-flagged@test.local");
+    const mission = await makeMission({ slug: "test-creator-case-http-mission-filter" });
+    const service = serviceForTests();
+    await service.from("creator_portfolio_links").insert([
+      {
+        creator_id: flagged.userId,
+        workspace_id: DEMO_WS,
+        url: "https://example.com/creator-case-http-flagged-1",
+        title: "Flagged work 1",
+        platform_type: "website",
+        caption: null,
+        sort_order: 1,
+        public_highlight: true,
+      },
+      {
+        creator_id: flagged.userId,
+        workspace_id: DEMO_WS,
+        url: "https://example.com/creator-case-http-flagged-2",
+        title: "Flagged work 2",
+        platform_type: "instagram",
+        caption: null,
+        sort_order: 2,
+        public_highlight: false,
+      },
+    ]);
+    await adminreq(`/admin/creators/${approved.userId}/review?workspace=${DEMO_WS}`, {
+      method: "POST",
+      body: JSON.stringify({ command_id: randomUUID(), status: "approved", risk_level: "low", summary: "Ready." }),
+    });
+    await adminreq(`/admin/creators/${flagged.userId}/review?workspace=${DEMO_WS}`, {
+      method: "POST",
+      body: JSON.stringify({
+        command_id: randomUUID(),
+        status: "flagged",
+        risk_level: "high",
+        summary: "Hidden by default.",
+        note: "Hold for operator review.",
+      }),
+    });
+
+    const queue = await adminreq(`/admin/creators/review?workspace=${DEMO_WS}&mission_id=${mission.id}`);
+    expect(queue.status).toBe(200);
+    const ids = (await queue.json()).creators.map((row: { id: string }) => row.id);
+    expect(ids).toContain(approved.userId);
+    expect(ids).not.toContain(flagged.userId);
+
+    const flaggedQueue = await adminreq(`/admin/creators/review?workspace=${DEMO_WS}&mission_id=${mission.id}&status=flagged`);
+    expect(flaggedQueue.status).toBe(200);
+    const flaggedBody = await flaggedQueue.json();
+    expect(flaggedBody.creators.map((row: { id: string }) => row.id)).toContain(flagged.userId);
+    expect(flaggedBody.creators[0].profileMedia).toMatchObject({ portfolioCount: 2, publicHighlightCount: 1 });
+  });
+
+  it("keeps Creator avatar identity separate from social-source avatars", async () => {
+    const creator = await makeCreator("creator-case-http-social-avatar@test.local");
+    await serviceForTests().from("creator_social_accounts").insert({
+      creator_id: creator.userId,
+      workspace_id: DEMO_WS,
+      platform: "instagram",
+      handle: "socialavataronly",
+      sync_status: "synced",
+      external_avatar_url: "https://cdn.example.com/social-only-avatar.jpg",
+      api_synced_at: "2026-06-18T02:00:00.000Z",
+    });
+
+    const response = await adminreq(`/admin/creators/review?workspace=${DEMO_WS}&q=creator-case-http-social-avatar`);
+    expect(response.status).toBe(200);
+    const row = (await response.json()).creators.find((item: { id: string }) => item.id === creator.userId);
+    expect(row).toMatchObject({ avatarUrl: null, social: { label: "API-synced" } });
+  });
+
+  it("sorts approved creators before the selected mission-queue secondary sort", async () => {
+    const approved = await makeCreator("creator-case-http-approved-first@test.local");
+    const needsReview = await makeCreator("creator-case-http-needs-review@test.local");
+    const mission = await makeMission({ slug: "test-creator-case-http-approved-first" });
+    await adminreq(`/admin/creators/${approved.userId}/review?workspace=${DEMO_WS}`, {
+      method: "POST",
+      body: JSON.stringify({
+        command_id: randomUUID(),
+        status: "approved",
+        risk_level: "low",
+        summary: "Approved for mission queue ordering.",
+      }),
+    });
+    await serviceForTests().from("creator_social_accounts").insert([
+      {
+        creator_id: approved.userId,
+        workspace_id: DEMO_WS,
+        platform: "instagram",
+        handle: "approvedfirst",
+        sync_status: "synced",
+        follower_count: 20000,
+        engagement_rate: 4.1,
+        api_synced_at: "2026-06-18T01:00:00.000Z",
+      },
+      {
+        creator_id: needsReview.userId,
+        workspace_id: DEMO_WS,
+        platform: "instagram",
+        handle: "needsfirst",
+        sync_status: "synced",
+        follower_count: 18000,
+        engagement_rate: 3.9,
+        api_synced_at: "2026-06-18T03:00:00.000Z",
+      },
+    ]);
+
+    const response = await adminreq(`/admin/creators/review?workspace=${DEMO_WS}&mission_id=${mission.id}&sort=social_freshness`);
+    expect(response.status).toBe(200);
+    const ids = (await response.json()).creators.map((row: { id: string }) => row.id);
+    expect(ids.indexOf(approved.userId)).toBeLessThan(ids.indexOf(needsReview.userId));
   });
 });

@@ -89,6 +89,7 @@ describe("Creator case admin routes", () => {
 
   it("routes Creator queue, detail, and note reads through the injected seam", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
+    const appendNote = vi.spyOn(repo, "appendNote");
     const app = routeFor(repo);
 
     const queue = await app.request("/creators/review?workspace=workspace-1");
@@ -106,10 +107,15 @@ describe("Creator case admin routes", () => {
     });
     expect(note.status).toBe(200);
     expect(await note.json()).toMatchObject({ note: { category: "fit", body: "Good audience fit." } });
+    expect(appendNote).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceId: "workspace-1", actorId: "staff-1", commandId: "note-command-1" }),
+      expect.objectContaining({ creatorId: "creator-1", category: "fit", body: "Good audience fit." }),
+    );
   });
 
   it("routes review commands through the injected workspace-scoped repository", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
+    const applyReview = vi.spyOn(repo, "applyReview");
     const response = await routeFor(repo).request(
       "/creators/creator-1/review?workspace=workspace-1",
       reviewRequest(),
@@ -117,6 +123,10 @@ describe("Creator case admin routes", () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ review: { status: "approved", riskLevel: "low" } });
+    expect(applyReview).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceId: "workspace-1", actorId: "staff-1", commandId: "command-1" }),
+      expect.objectContaining({ creatorId: "creator-1", status: "approved", riskLevel: "low" }),
+    );
     expect(
       (await repo.getCase({ workspaceId: "workspace-1", actorId: "staff-1", actorLabel: "staff@example.com" }, "creator-1"))
         .review.reviewedBy,
@@ -159,27 +169,28 @@ describe("Creator case admin routes", () => {
     }));
   });
 
-  it("requires an explicit workspace before invoking a Creator case command", async () => {
+  it("requires an explicit workspace before invoking any Creator case repository method", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
-    const response = await routeFor(repo).request("/creators/creator-1/review", reviewRequest());
+    const listReviewQueue = vi.spyOn(repo, "listReviewQueue");
+    const getCase = vi.spyOn(repo, "getCase");
+    const applyReview = vi.spyOn(repo, "applyReview");
+    const appendNote = vi.spyOn(repo, "appendNote");
+    const app = routeFor(repo);
+    const response = await app.request("/creators/creator-1/review", reviewRequest());
 
     expect(response.status).toBe(422);
     expect(await response.json()).toMatchObject({ code: "workspace_required" });
-    expect((await repo.getCase({ workspaceId: "workspace-1", actorId: "staff-1", actorLabel: "staff@example.com" }, "creator-1")).review.status)
-      .toBe("needs_review");
-  });
-
-  it("requires a workspace for Creator queue and detail reads", async () => {
-    const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
-    const app = routeFor(repo);
-
-    const queue = await app.request("/creators/review");
-    expect(queue.status).toBe(422);
-    expect(await queue.json()).toMatchObject({ code: "workspace_required" });
-
-    const detail = await app.request("/creators/creator-1");
-    expect(detail.status).toBe(422);
-    expect(await detail.json()).toMatchObject({ code: "workspace_required" });
+    expect((await app.request("/creators/review")).status).toBe(422);
+    expect((await app.request("/creators/creator-1")).status).toBe(422);
+    expect((await app.request("/creators/creator-1/notes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ command_id: "note-command-1", category: "fit", body: "No workspace." }),
+    })).status).toBe(422);
+    expect(listReviewQueue).not.toHaveBeenCalled();
+    expect(getCase).not.toHaveBeenCalled();
+    expect(applyReview).not.toHaveBeenCalled();
+    expect(appendNote).not.toHaveBeenCalled();
   });
 
   it("requires a command id for Creator case mutations", async () => {

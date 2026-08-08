@@ -6,7 +6,7 @@ import type {
   CreatorCaseReadModel,
   CreatorReviewQueue,
   CreatorReviewQueueFilters,
-} from "./types";
+} from "./types.js";
 
 export interface CreatorCaseRepository {
   listReviewQueue(

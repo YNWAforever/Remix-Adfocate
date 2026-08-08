@@ -41,111 +41,13 @@ suite("operator CRM admin API", () => {
   beforeAll(cleanup);
   afterAll(cleanup);
 
-  it("lists creators with default needs_review status when no review row exists", async () => {
-    const creator = await makeCreator("operator-crm-queue@test.local");
-    const res = await adminreq("/admin/creators/review?q=operator-crm-queue");
-    expect(res.status).toBe(200);
-
-    const body = await res.json();
-    const row = body.creators.find((item: { id: string }) => item.id === creator.userId);
-    expect(row.review).toMatchObject({ status: "needs_review", riskLevel: "unknown" });
-    expect(row.social.ownershipLabel).toBe("Ownership not verified");
-  });
-
-  it("updates review status, creates an optional note, and writes audit events", async () => {
-    const creator = await makeCreator("operator-crm-review@test.local");
-    const review = await adminreq(`/admin/creators/${creator.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({
-        status: "approved",
-        risk_level: "low",
-        summary: "Strong fit for skincare missions.",
-        note: "Prior delivery was on brief.",
-      }),
-    });
-    expect(review.status).toBe(200);
-    expect(await review.json()).toMatchObject({
-      review: { status: "approved", riskLevel: "low", summary: "Strong fit for skincare missions." },
-    });
-
-    const svc = serviceForTests();
-    const notes = await svc.from("creator_review_notes").select("body, category").eq("creator_id", creator.userId);
-    expect(notes.data).toEqual([{ body: "Prior delivery was on brief.", category: "other" }]);
-
-    const audits = await svc
-      .from("operator_audit_events")
-      .select("event_type, operator_id, actor_label")
-      .eq("creator_id", creator.userId)
-      .order("created_at");
-    expect(audits.data?.map((event) => event.event_type).sort()).toEqual(["creator_note.created", "creator_review.updated"]);
-    expect(audits.data?.every((event) => event.operator_id === "crm-test" && event.actor_label === "CRM Test")).toBe(true);
-  });
-
-  it("returns creator detail with notes, shortlists, social summary, mission history, and audit timeline", async () => {
-    const creator = await makeCreator("operator-crm-detail@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-detail" });
-    const svc = serviceForTests();
-    await svc.from("creator_social_accounts").insert({
-      creator_id: creator.userId,
-      workspace_id: DEMO_WS,
-      platform: "instagram",
-      handle: "detailcreator",
-      sync_status: "synced",
-      follower_count: 22000,
-        engagement_rate: 4.1,
-        api_synced_at: "2026-06-18T03:00:00.000Z",
-      });
-    await svc.from("creator_portfolio_links").insert({
-      creator_id: creator.userId,
-      workspace_id: DEMO_WS,
-      url: "https://example.com/operator-portfolio",
-      title: "Operator-visible work",
-      platform_type: "website",
-      caption: "Private review caption",
-      sort_order: 1,
-      public_highlight: true,
-    });
-    await adminreq(`/admin/creators/${creator.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({ status: "approved", risk_level: "low", summary: "Ready for mission selection." }),
-    });
-    await adminreq(`/admin/missions/${mission.id}/shortlist`, {
-      method: "POST",
-      body: JSON.stringify({ creator_id: creator.userId, source: "manual", notes: "Add to launch list." }),
-    });
-
-    const res = await adminreq(`/admin/creators/${creator.userId}`);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.creator.id).toBe(creator.userId);
-    expect(body.social.followerCount).toBe(22000);
-    expect(body.review.status).toBe("approved");
-    expect(body.profileMedia.portfolioLinks[0]).toMatchObject({
-      title: "Operator-visible work",
-      publicHighlight: true,
-    });
-    expect(body.profileMedia.completeness.score).toBeGreaterThan(0);
-    expect(body.shortlists[0]).toMatchObject({ mission_id: mission.id, status: "shortlisted" });
-    expect(body.audit.some((event: { event_type: string }) => event.event_type === "mission_shortlist.created")).toBe(true);
-  });
-
-  it("requires a note when flagging a creator review", async () => {
-    const creator = await makeCreator("operator-crm-flag-review@test.local");
-    const res = await adminreq(`/admin/creators/${creator.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({ status: "flagged", risk_level: "high", summary: "Needs senior review." }),
-    });
-
-    expect(res.status).toBe(400);
-    expect((await res.json()).code).toBe("flagged_review_note_required");
-  });
-
   it("requires a note when shortlisting a flagged creator", async () => {
     const creator = await makeCreator("operator-crm-flag-note@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-flag-note" });
-    await adminreq(`/admin/creators/${creator.userId}/review`, {
+    await adminreq(`/admin/creators/${creator.userId}/review?workspace=${DEMO_WS}`, {
       method: "POST",
       body: JSON.stringify({
+        command_id: "operator-crm-flag-note-review",
         status: "flagged",
         risk_level: "high",
         summary: "Needs senior review.",
@@ -164,9 +66,10 @@ suite("operator CRM admin API", () => {
   it("blocks invited status for a flagged creator", async () => {
     const creator = await makeCreator("operator-crm-flag-invite@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-flag-invite" });
-    await adminreq(`/admin/creators/${creator.userId}/review`, {
+    await adminreq(`/admin/creators/${creator.userId}/review?workspace=${DEMO_WS}`, {
       method: "POST",
       body: JSON.stringify({
+        command_id: "operator-crm-flag-invite-review",
         status: "flagged",
         risk_level: "high",
         summary: "Needs senior review.",
@@ -275,22 +178,6 @@ suite("operator CRM admin API", () => {
     expect([rows.data?.[0].created_by, rows.data?.[0].updated_by].sort()).toEqual(["operator-a", "operator-b"]);
   });
 
-  it("creates creator notes through the admin note endpoint", async () => {
-    const creator = await makeCreator("operator-crm-note-endpoint@test.local");
-    const res = await adminreq(`/admin/creators/${creator.userId}/notes`, {
-      method: "POST",
-      body: JSON.stringify({ category: "fit", body: "Great match for wellness launches." }),
-    });
-
-    expect(res.status).toBe(200);
-    expect((await res.json()).note).toMatchObject({
-      creator_id: creator.userId,
-      category: "fit",
-      body: "Great match for wellness launches.",
-      operator_id: "crm-test",
-    });
-  });
-
   it("lists mission shortlist rows through the admin shortlist endpoint", async () => {
     const creator = await makeCreator("operator-crm-shortlist-list@test.local");
     const mission = await makeMission({ slug: "test-operator-crm-shortlist-list" });
@@ -380,131 +267,4 @@ suite("operator CRM admin API", () => {
     }
   });
 
-  it("hides flagged creators by default in a mission-scoped queue", async () => {
-    const approved = await makeCreator("operator-crm-approved@test.local");
-    const flagged = await makeCreator("operator-crm-hidden-flagged@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-mission-filter" });
-    const svc = serviceForTests();
-    await svc.from("creator_portfolio_links").insert([
-      {
-        creator_id: flagged.userId,
-        workspace_id: DEMO_WS,
-        url: "https://example.com/flagged-work-1",
-        title: "Flagged work 1",
-        platform_type: "website",
-        caption: null,
-        sort_order: 1,
-        public_highlight: true,
-      },
-      {
-        creator_id: flagged.userId,
-        workspace_id: DEMO_WS,
-        url: "https://example.com/flagged-work-2",
-        title: "Flagged work 2",
-        platform_type: "instagram",
-        caption: null,
-        sort_order: 2,
-        public_highlight: false,
-      },
-    ]);
-    await adminreq(`/admin/creators/${approved.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({ status: "approved", risk_level: "low", summary: "Ready." }),
-    });
-    await adminreq(`/admin/creators/${flagged.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({
-        status: "flagged",
-        risk_level: "high",
-        summary: "Hidden by default.",
-        note: "Hold for operator review.",
-      }),
-    });
-
-    const res = await adminreq(`/admin/creators/review?mission_id=${mission.id}`);
-    expect(res.status).toBe(200);
-    const ids = (await res.json()).creators.map((row: { id: string }) => row.id);
-    expect(ids).toContain(approved.userId);
-    expect(ids).not.toContain(flagged.userId);
-
-    const flaggedRes = await adminreq(`/admin/creators/review?mission_id=${mission.id}&status=flagged`);
-    expect(flaggedRes.status).toBe(200);
-    const flaggedBody = await flaggedRes.json();
-    const flaggedIds = flaggedBody.creators.map((row: { id: string }) => row.id);
-    expect(flaggedIds).toContain(flagged.userId);
-    expect(flaggedBody.creators[0].profileMedia).toMatchObject({
-      portfolioCount: 2,
-      publicHighlightCount: 1,
-      completenessScore: expect.any(Number),
-    });
-    expect(flaggedBody.creators[0].profileMedia.completenessScore).toBeGreaterThan(0);
-  });
-
-  it("does not use social-source avatars as queue avatars", async () => {
-    const creator = await makeCreator("operator-crm-social-avatar@test.local");
-    const svc = serviceForTests();
-    await svc.from("creator_social_accounts").insert({
-      creator_id: creator.userId,
-      workspace_id: DEMO_WS,
-      platform: "instagram",
-      handle: "socialavataronly",
-      sync_status: "synced",
-      external_avatar_url: "https://cdn.example.com/social-only-avatar.jpg",
-      api_synced_at: "2026-06-18T02:00:00.000Z",
-    });
-
-    const res = await adminreq("/admin/creators/review?q=operator-crm-social-avatar");
-    expect(res.status).toBe(200);
-
-    const row = (await res.json()).creators.find((item: { id: string }) => item.id === creator.userId);
-    expect(row).toBeTruthy();
-    expect(row.avatarUrl).toBeNull();
-    expect(row.social.label).toBe("API-synced");
-  });
-
-  it("keeps approved creators first in mission queues before applying the secondary sort", async () => {
-    const approved = await makeCreator("operator-crm-queue-approved-first@test.local");
-    const needsReview = await makeCreator("operator-crm-queue-needs-review@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-approved-first" });
-    const svc = serviceForTests();
-
-    await adminreq(`/admin/creators/${approved.userId}/review`, {
-      method: "POST",
-      body: JSON.stringify({ status: "approved", risk_level: "low", summary: "Approved for mission queue ordering." }),
-    });
-
-    await svc.from("creator_social_accounts").insert([
-      {
-        creator_id: approved.userId,
-        workspace_id: DEMO_WS,
-        platform: "instagram",
-        handle: "approvedfirst",
-        sync_status: "synced",
-        follower_count: 20000,
-        engagement_rate: 4.1,
-        api_synced_at: "2026-06-18T01:00:00.000Z",
-      },
-      {
-        creator_id: needsReview.userId,
-        workspace_id: DEMO_WS,
-        platform: "instagram",
-        handle: "needsfirst",
-        sync_status: "synced",
-        follower_count: 18000,
-        engagement_rate: 3.9,
-        api_synced_at: "2026-06-18T03:00:00.000Z",
-      },
-    ]);
-
-    const res = await adminreq(`/admin/creators/review?mission_id=${mission.id}&sort=social_freshness`);
-    expect(res.status).toBe(200);
-
-    const ids = (await res.json()).creators.map((row: { id: string }) => row.id);
-    const approvedIndex = ids.indexOf(approved.userId);
-    const needsReviewIndex = ids.indexOf(needsReview.userId);
-
-    expect(approvedIndex).toBeGreaterThanOrEqual(0);
-    expect(needsReviewIndex).toBeGreaterThanOrEqual(0);
-    expect(approvedIndex).toBeLessThan(needsReviewIndex);
-  });
 });

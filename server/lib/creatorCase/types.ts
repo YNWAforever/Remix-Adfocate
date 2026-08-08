@@ -7,7 +7,7 @@ import type {
   OperatorProfileMediaSummary,
   ReviewProjection,
   SocialSummaryProjection,
-} from "../operatorCrm/types";
+} from "../operatorCrm/types.js";
 
 export type CreatorCaseReadContext = {
   workspaceId: string;

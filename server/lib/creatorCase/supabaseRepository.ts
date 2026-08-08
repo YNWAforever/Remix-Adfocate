@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { lastActivityAt, projectReviewStatus, summarizeSocialAccounts } from "../operatorCrm/serializers";
-import type { CreatorReviewRow, MissionShortlistSource, MissionShortlistStatus, ReviewProjection } from "../operatorCrm/types";
-import { getProfileMediaForWorkspace } from "../profileMedia/repo";
-import { readOptional } from "./enrichment";
-import { CreatorCaseError, type CreatorCaseErrorCode } from "./errors";
-import type { CreatorCaseRepository } from "./repository";
+import { lastActivityAt, projectReviewStatus, summarizeSocialAccounts } from "../operatorCrm/serializers.js";
+import type { CreatorReviewRow, MissionShortlistSource, MissionShortlistStatus, ReviewProjection } from "../operatorCrm/types.js";
+import { getProfileMediaForWorkspace } from "../profileMedia/repo.js";
+import { readOptional } from "./enrichment.js";
+import { CreatorCaseError, type CreatorCaseErrorCode } from "./errors.js";
+import type { CreatorCaseRepository } from "./repository.js";
 import type {
   AppendCreatorNoteCommand,
   ApplyCreatorReviewCommand,
@@ -19,7 +19,7 @@ import type {
   MissionHistoryProjection,
   ProfileProjection,
   SocialProjection,
-} from "./types";
+} from "./types.js";
 
 type CreatorRow = {
   id: string;
