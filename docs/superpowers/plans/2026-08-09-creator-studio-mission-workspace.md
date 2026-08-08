@@ -958,7 +958,7 @@ The approved design and current code establish these boundaries:
   npm.cmd run type-check
   npm.cmd run lint
   npm.cmd run build
-  git diff --check HEAD~6 HEAD
+  git diff --check 2ee2d06 HEAD
   git status --short --branch
   ```
 
