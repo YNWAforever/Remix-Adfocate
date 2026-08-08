@@ -6,6 +6,13 @@ export const CREATOR_STUDIO_STATES = [
 export type CreatorStudioState = (typeof CREATOR_STUDIO_STATES)[number];
 export type WorkItemState = CreatorStudioState;
 
+export const CREATOR_STUDIO_MAX_COMMAND_ID_LENGTH = 128;
+export const CREATOR_STUDIO_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+export const CREATOR_STUDIO_UPLOAD_MIME_TYPES = [
+  "image/jpeg", "image/png", "image/webp", "video/mp4", "application/pdf",
+] as const;
+export type CreatorStudioUploadMimeType = (typeof CREATOR_STUDIO_UPLOAD_MIME_TYPES)[number];
+
 export const MISSION_SUBMISSION_STATUSES = [
   "applied", "joined", "submitted", "under_review", "approved", "rejected", "expired", "declined",
 ] as const;

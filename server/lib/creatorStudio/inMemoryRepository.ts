@@ -1,6 +1,11 @@
 import { hashCommand } from "./command.js";
 import { CreatorStudioError } from "./errors.js";
 import type { CreatorStudioRepository } from "./repository.js";
+import {
+  CREATOR_STUDIO_MAX_COMMAND_ID_LENGTH,
+  CREATOR_STUDIO_MAX_UPLOAD_BYTES,
+  CREATOR_STUDIO_UPLOAD_MIME_TYPES,
+} from "./types.js";
 import type {
   CommandResult,
   CreateUploadGrantInput,
@@ -29,7 +34,6 @@ export type InMemoryCreatorStudioRepositoryOptions = {
   workspace: SubmissionWorkspace;
 };
 
-const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const ALLOWED_UPLOAD_EXTENSIONS = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
@@ -75,6 +79,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const requestHash = hashCommand(payload);
     const replay = this.replay<DraftCommandResult>(context, input.commandId, requestHash);
     if (replay) return replay;
+    this.validateDraftInput(input);
 
     const current = this.drafts.get(workItem.id);
     const currentVersion = current?.version ?? 0;
@@ -116,6 +121,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const replay = this.replay<UploadGrant>(context, input.commandId, requestHash);
     if (replay) return replay;
     this.requireEditableAssetWorkItem(workItem);
+    this.validateUploadGrantInput(input);
     this.validateFile(input.mimeType, input.byteSize);
 
     const id = `asset-${++this.sequence}`;
@@ -140,7 +146,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       assetId: asset.id,
       expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
     };
-    this.recordEvent("asset.reserved", workItem.id, { assetId: asset.id, byteSize: asset.byteSize });
+    this.recordEvent("asset.reserved", workItem.id, { assetId: asset.id });
     return this.commit(context, input.commandId, requestHash, result);
   }
 
@@ -157,6 +163,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const replay = this.replay<FinalizedAsset>(context, input.commandId, requestHash);
     if (replay) return replay;
     this.requireEditableAssetWorkItem(workItem);
+    this.validateFinalizeInput(input);
 
     const asset = this.assets.get(assetId);
     if (!asset || !workItem.assets.some((candidate) => candidate.id === assetId)) {
@@ -190,12 +197,13 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const requestHash = hashCommand(payload);
     const replay = this.replay<SubmittedWorkItem>(context, input.commandId, requestHash);
     if (replay) return replay;
+    this.validateExpectedVersion(input.expectedVersion);
 
     const version = this.drafts.get(workItem.id)?.version ?? 0;
     if (input.expectedVersion !== version) throw new CreatorStudioError("version_conflict", "The draft was updated elsewhere");
     const validation = this.workItemValidation(workItem);
     if (!Object.values(validation).every(Boolean)) {
-      throw new CreatorStudioError("draft_invalid", "Complete the required draft fields and assets");
+      throw new CreatorStudioError("invalid_transition", "Complete the required draft fields and assets");
     }
     if (workItem.state === "ready_to_submit") workItem.state = "submitted";
     else if (workItem.state === "changes_requested") workItem.state = "resubmitted";
@@ -232,7 +240,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   }
 
   private requireCommand(commandId: string): void {
-    if (!commandId.trim()) throw new CreatorStudioError("command_required", "commandId is required");
+    if (typeof commandId !== "string" || !commandId.trim() || commandId.length > CREATOR_STUDIO_MAX_COMMAND_ID_LENGTH) {
+      throw new CreatorStudioError("command_required", "commandId is required");
+    }
   }
 
   private commandKey(context: CreatorStudioContext, commandId: string): string {
@@ -254,9 +264,61 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   }
 
   private validateFile(mimeType: string, byteSize: number): void {
-    if (!ALLOWED_UPLOAD_EXTENSIONS.has(mimeType)) throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
-    if (!Number.isInteger(byteSize) || byteSize < 1 || byteSize > MAX_UPLOAD_BYTES) {
+    if (!(CREATOR_STUDIO_UPLOAD_MIME_TYPES as readonly string[]).includes(mimeType)) {
+      throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
+    }
+    if (!Number.isInteger(byteSize) || byteSize < 1 || byteSize > CREATOR_STUDIO_MAX_UPLOAD_BYTES) {
       throw new CreatorStudioError("file_too_large", "File is too large");
+    }
+  }
+
+  private validateDraftInput(input: SaveDraftInput): void {
+    this.validateExpectedVersion(input.expectedVersion);
+    const patch = input.patch;
+    if (!patch || typeof patch !== "object" || Array.isArray(patch)) {
+      throw new CreatorStudioError("draft_invalid", "Draft patch is invalid");
+    }
+    if (patch.caption !== undefined && typeof patch.caption !== "string") {
+      throw new CreatorStudioError("draft_invalid", "Draft caption is invalid");
+    }
+    if (patch.externalUrl !== undefined && patch.externalUrl !== null) {
+      if (typeof patch.externalUrl !== "string" || !this.isHttpUrl(patch.externalUrl)) {
+        throw new CreatorStudioError("draft_invalid", "Draft URL is invalid");
+      }
+    }
+    if (patch.checklist !== undefined) {
+      if (!patch.checklist || typeof patch.checklist !== "object" || Array.isArray(patch.checklist)
+        || !Object.values(patch.checklist).every((value) => typeof value === "boolean")) {
+        throw new CreatorStudioError("draft_invalid", "Draft checklist is invalid");
+      }
+    }
+  }
+
+  private validateUploadGrantInput(input: CreateUploadGrantInput): void {
+    if (typeof input.fileName !== "string" || !input.fileName.trim() || input.fileName.length > 255) {
+      throw new CreatorStudioError("file_not_allowed", "File name is invalid");
+    }
+  }
+
+  private validateFinalizeInput(input: FinalizeAssetInput): void {
+    if (input.checksumSha256 !== null && (typeof input.checksumSha256 !== "string" || !/^[a-f0-9]{64}$/i.test(input.checksumSha256))) {
+      throw new CreatorStudioError("asset_not_uploaded", "Asset checksum is invalid");
+    }
+    this.validateFile(input.mimeType, input.byteSize);
+  }
+
+  private validateExpectedVersion(expectedVersion: number): void {
+    if (!Number.isInteger(expectedVersion) || expectedVersion < 0) {
+      throw new CreatorStudioError("draft_invalid", "Draft version is invalid");
+    }
+  }
+
+  private isHttpUrl(value: string): boolean {
+    try {
+      const url = new URL(value);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
     }
   }
 

@@ -3,20 +3,30 @@ import { randomUUID } from "node:crypto";
 import { CreatorStudioError } from "./errors.js";
 import type { CreatorStudioRepository } from "./repository.js";
 import type {
+  CommandResult,
+  CreateUploadGrantInput,
   CreatorStudioContext,
+  DraftCommandResult,
   DraftAsset,
+  FinalizeAssetInput,
+  FinalizedAsset,
   MissionBrief,
   MissionSubmissionStatus,
   NextAction,
   OptionalSection,
   ReviewFeedback,
+  SaveDraftInput,
   SubmissionSummary,
   SubmissionWorkspace,
+  SubmittedWorkItem,
+  SubmitWorkItemInput,
+  UploadGrant,
   WorkItem,
   WorkItemRequirements,
   WorkItemState,
   WorkingDraft,
 } from "./types.js";
+import { hashCommand } from "./command.js";
 
 type Row = Record<string, unknown>;
 
@@ -87,6 +97,43 @@ function mapAsset(row: Row): DraftAsset {
     state: row.upload_state === "finalized" ? "finalized" : "pending",
     storagePath: text(row, "storage_object_path"),
   };
+}
+
+function mapCommandWorkItem(row: Row): WorkItem {
+  const draft = mapDraft(isRow(row.draft) ? row.draft : undefined);
+  const assets = Array.isArray(row.assets) ? row.assets.map(asRow).map(mapAsset) : [];
+  const item: WorkItem = {
+    id: text(row, "id"),
+    position: Number(row.position ?? 0),
+    title: text(row, "title"),
+    instructions: text(row, "instructions"),
+    requirements: mapRequirements(row.requirements),
+    requiresAsset: bool(row.requires_asset),
+    state: mapState(row.state),
+    validation: { caption: false, externalUrl: false, checklist: false, assets: false },
+    draft,
+    assets,
+    reviewFeedback: { status: "unavailable", reason: "temporarily_unavailable" },
+  };
+  item.validation = validationFor(item);
+  return item;
+}
+
+function mapCommandWorkflow(row: Row) {
+  return {
+    id: text(row, "id"),
+    state: mapState(row.state),
+    revision: typeof row.revision === "number" ? row.revision : Number(row.revision ?? 0),
+  };
+}
+
+function isRow(value: unknown): value is Row {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function requiredRow(value: unknown, label: string): Row {
+  if (!isRow(value)) throw new Error(`Creator Studio command RPC returned no ${label}`);
+  return value;
 }
 
 function validationFor(item: Pick<WorkItem, "requirements" | "requiresAsset" | "draft" | "assets">) {
@@ -242,10 +289,142 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     }
   }
 
-  async saveDraft(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async createUploadGrant(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async finalizeAsset(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async submitWorkItem(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
+  async saveDraft(
+    context: CreatorStudioContext,
+    workItemId: string,
+    input: SaveDraftInput,
+  ): Promise<CommandResult<DraftCommandResult>> {
+    this.validateContext(context);
+    const payload = { type: "save_draft", context, workItemId, input };
+    const response = await this.commandRpc("creator_studio_save_draft", {
+      p_submission_id: context.submissionId,
+      p_workspace_id: context.workspaceId,
+      p_work_item_id: workItemId,
+      p_command_id: input.commandId,
+      p_request_hash: hashCommand(payload),
+      p_expected_version: input.expectedVersion,
+      p_patch: {
+        ...(input.patch.caption === undefined ? {} : { caption: input.patch.caption }),
+        ...(input.patch.externalUrl === undefined ? {} : { external_url: input.patch.externalUrl }),
+        ...(input.patch.checklist === undefined ? {} : { checklist: input.patch.checklist }),
+      },
+    });
+    try {
+      const draft = mapDraft(requiredRow(response.draft, "draft"));
+      if (!draft) throw new Error("Creator Studio command RPC returned no draft");
+      return {
+        replayed: response.replayed === true,
+        value: {
+          draft,
+          workItem: mapCommandWorkItem(requiredRow(response.work_item, "work item")),
+          workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
+        },
+      };
+    } catch (error) {
+      throw this.repositoryError(error);
+    }
+  }
+
+  async createUploadGrant(
+    context: CreatorStudioContext,
+    workItemId: string,
+    input: CreateUploadGrantInput,
+  ): Promise<CommandResult<UploadGrant>> {
+    this.validateContext(context);
+    const payload = { type: "create_upload_grant", context, workItemId, input };
+    const response = await this.commandRpc("creator_studio_create_upload_grant", {
+      p_submission_id: context.submissionId,
+      p_workspace_id: context.workspaceId,
+      p_work_item_id: workItemId,
+      p_command_id: input.commandId,
+      p_request_hash: hashCommand(payload),
+      p_file_name: input.fileName,
+      p_mime_type: input.mimeType,
+      p_byte_size: input.byteSize,
+    });
+    try {
+      const grant = requiredRow(response.grant, "upload grant");
+      const bucket = text(grant, "bucket");
+      const path = text(grant, "path");
+      const assetId = text(grant, "asset_id");
+      const expiresAt = text(grant, "expires_at");
+      if (!bucket || !path || !assetId || !expiresAt) throw new Error("Creator Studio grant RPC returned an invalid grant");
+      const { data, error } = await this.client.storage.from(bucket).createSignedUploadUrl(path);
+      if (error || !data?.token) {
+        const correlationId = randomUUID();
+        console.error("Creator Studio storage signing failed", { correlationId, error });
+        throw new CreatorStudioError("storage_error", "Storage upload could not be prepared", correlationId);
+      }
+      return {
+        replayed: response.replayed === true,
+        value: { bucket, path, token: data.token, assetId, expiresAt },
+      };
+    } catch (error) {
+      if (error instanceof CreatorStudioError) throw error;
+      throw this.repositoryError(error);
+    }
+  }
+
+  async finalizeAsset(
+    context: CreatorStudioContext,
+    workItemId: string,
+    assetId: string,
+    input: FinalizeAssetInput,
+  ): Promise<CommandResult<FinalizedAsset>> {
+    this.validateContext(context);
+    const payload = { type: "finalize_asset", context, workItemId, assetId, input };
+    const response = await this.commandRpc("creator_studio_finalize_asset", {
+      p_submission_id: context.submissionId,
+      p_workspace_id: context.workspaceId,
+      p_work_item_id: workItemId,
+      p_asset_id: assetId,
+      p_command_id: input.commandId,
+      p_request_hash: hashCommand(payload),
+      p_byte_size: input.byteSize,
+      p_mime_type: input.mimeType,
+      p_checksum_sha256: input.checksumSha256,
+    });
+    try {
+      return {
+        replayed: response.replayed === true,
+        value: {
+          asset: mapAsset(requiredRow(response.asset, "asset")),
+          workItem: mapCommandWorkItem(requiredRow(response.work_item, "work item")),
+          workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
+        },
+      };
+    } catch (error) {
+      throw this.repositoryError(error);
+    }
+  }
+
+  async submitWorkItem(
+    context: CreatorStudioContext,
+    workItemId: string,
+    input: SubmitWorkItemInput,
+  ): Promise<CommandResult<SubmittedWorkItem>> {
+    this.validateContext(context);
+    const payload = { type: "submit_work_item", context, workItemId, input };
+    const response = await this.commandRpc("creator_studio_submit_work_item", {
+      p_submission_id: context.submissionId,
+      p_workspace_id: context.workspaceId,
+      p_work_item_id: workItemId,
+      p_command_id: input.commandId,
+      p_request_hash: hashCommand(payload),
+      p_expected_version: input.expectedVersion,
+    });
+    try {
+      return {
+        replayed: response.replayed === true,
+        value: {
+          workItem: mapCommandWorkItem(requiredRow(response.work_item, "work item")),
+          workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
+        },
+      };
+    } catch (error) {
+      throw this.repositoryError(error);
+    }
+  }
 
   private async readDrafts(context: CreatorStudioContext, workItemIds: string[]): Promise<Row[]> {
     if (workItemIds.length === 0) return [];
@@ -315,9 +494,30 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     }
   }
 
+  private async commandRpc(name: string, args: Record<string, unknown>): Promise<Row> {
+    try {
+      const { data, error } = await this.client.rpc(name, args);
+      if (error) throw error;
+      if (!isRow(data)) throw new Error("Creator Studio command RPC returned an invalid response");
+      return data;
+    } catch (error) {
+      if (error instanceof CreatorStudioError) throw error;
+      throw this.repositoryError(error);
+    }
+  }
+
   private repositoryError(error: unknown): CreatorStudioError {
     const correlationId = randomUUID();
-    console.error("Creator Studio repository read failed", { correlationId, error });
+    const message = error instanceof Error ? error.message : "";
+    const safeCode = [
+      "command_required", "command_conflict", "version_conflict", "submission_not_found", "work_item_not_found",
+      "invalid_transition", "draft_invalid", "file_not_allowed", "file_too_large", "asset_not_found",
+      "asset_not_uploaded", "asset_finalized",
+    ].find((candidate) => message.includes(candidate));
+    if (safeCode) {
+      return new CreatorStudioError(safeCode as ConstructorParameters<typeof CreatorStudioError>[0], "Creator Studio command was rejected");
+    }
+    console.error("Creator Studio repository operation failed", { correlationId, error });
     return new CreatorStudioError("db_error", "repository read failed", correlationId);
   }
 }
