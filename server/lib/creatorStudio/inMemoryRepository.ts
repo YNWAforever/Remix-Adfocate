@@ -186,11 +186,14 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
 
     const version = this.drafts.get(workItem.id)?.version ?? 0;
     if (input.expectedVersion !== version) throw new CreatorStudioError("version_conflict", "The draft was updated elsewhere");
-    this.refreshWorkItemValidation(workItem);
-    if (!this.isReady(workItem)) throw new CreatorStudioError("draft_invalid", "Complete the required draft fields and assets");
+    const validation = this.workItemValidation(workItem);
+    if (!Object.values(validation).every(Boolean)) {
+      throw new CreatorStudioError("draft_invalid", "Complete the required draft fields and assets");
+    }
     if (workItem.state === "ready_to_submit") workItem.state = "submitted";
     else if (workItem.state === "changes_requested") workItem.state = "resubmitted";
     else throw new CreatorStudioError("invalid_transition", "This work item is not ready to submit");
+    this.refreshWorkItemValidation(workItem);
     this.refreshWorkflow();
 
     const result = { workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
@@ -253,7 +256,12 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   private refreshWorkItemValidation(workItem: WorkItem): void {
     const draft = this.drafts.get(workItem.id) ?? null;
     workItem.draft = draft ? clone(draft) : null;
-    workItem.validation = {
+    workItem.validation = this.workItemValidation(workItem);
+  }
+
+  private workItemValidation(workItem: WorkItem) {
+    const draft = this.drafts.get(workItem.id) ?? null;
+    return {
       caption: !workItem.requirements.caption || Boolean(draft?.caption?.trim()),
       externalUrl: !workItem.requirements.externalUrl || Boolean(draft?.externalUrl),
       checklist: workItem.requirements.checklist.every((key) => draft?.checklist[key] === true),

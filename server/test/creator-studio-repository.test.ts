@@ -113,6 +113,42 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(resubmitted.value.workItem.state).toBe("resubmitted");
   });
 
+  it("rejects a submit without changing the workspace, event log, draft, or command ledger", async () => {
+    const workspace = makeWorkspace();
+    const workItem = workspace.workItems[0];
+    workItem.state = "drafting";
+    workItem.draft = {
+      caption: "Complete launch copy",
+      externalUrl: "https://example.com/post",
+      checklist: { disclosure: true, brandTag: true },
+      version: 0,
+      updatedAt: "2026-08-09T00:00:00.000Z",
+    };
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+    const context = creatorContext();
+    const before = {
+      workspace: await repository.getWorkspace(context),
+      events: repository.events(),
+      draft: repository.getDraft(workItem.id),
+    };
+
+    await expect(repository.submitWorkItem(context, workItem.id, {
+      commandId: "rejected-submit-command",
+      expectedVersion: 0,
+    })).rejects.toMatchObject({ code: "invalid_transition" });
+
+    expect({
+      workspace: await repository.getWorkspace(context),
+      events: repository.events(),
+      draft: repository.getDraft(workItem.id),
+    }).toEqual(before);
+    await expect(repository.saveDraft(context, workItem.id, {
+      commandId: "rejected-submit-command",
+      expectedVersion: 0,
+      patch: { caption: "Corrected launch copy" },
+    })).resolves.toMatchObject({ replayed: false, value: { draft: { version: 1 } } });
+  });
+
   it("makes a complete draft submittable when its required asset is finalized", async () => {
     const workspace = makeWorkspace();
     workspace.workItems[0].requiresAsset = true;
@@ -144,7 +180,7 @@ describe("InMemoryCreatorStudioRepository", () => {
 
     expect(drafted.value.workItem.state).toBe("drafting");
     expect(finalized.value.workItem.state).toBe("ready_to_submit");
-    expect(finalized.value.workflow.state).toBe("ready_to_submit");
+    expect(finalized.value.workflow.state).toBe("changes_requested");
   });
 
   it("uses a server-controlled asset path with an allowlisted extension", async () => {
