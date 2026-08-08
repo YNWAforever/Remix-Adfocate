@@ -77,4 +77,82 @@ describe("InMemoryCreatorStudioRepository", () => {
       patch: { caption: "Must not write" },
     })).rejects.toMatchObject({ code: "submission_not_found" });
   });
+
+  it("resubmits a changed-request work item after editing and completing its required asset", async () => {
+    const repository = makeRepository();
+    const context = creatorContext();
+
+    const edited = await repository.saveDraft(context, "work-item-2", {
+      commandId: "revision-edit",
+      expectedVersion: 0,
+      patch: { caption: "Updated reel copy" },
+    });
+    const grant = await repository.createUploadGrant(context, "work-item-2", {
+      commandId: "revision-asset-grant",
+      fileName: "updated-reel.jpg",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    });
+    const finalized = await repository.finalizeAsset(context, "work-item-2", grant.value.asset.id, {
+      commandId: "revision-asset-finalize",
+      byteSize: 1024,
+      mimeType: "image/jpeg",
+      checksumSha256: null,
+    });
+    const resubmitted = await repository.submitWorkItem(context, "work-item-2", {
+      commandId: "revision-resubmit",
+      expectedVersion: 1,
+    });
+
+    expect(edited.value.workItem.state).toBe("changes_requested");
+    expect(finalized.value.workItem.state).toBe("changes_requested");
+    expect(resubmitted.value.workItem.state).toBe("resubmitted");
+  });
+
+  it("makes a complete draft submittable when its required asset is finalized", async () => {
+    const workspace = makeWorkspace();
+    workspace.workItems[0].requiresAsset = true;
+    workspace.workItems[0].validation.assets = false;
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+    const context = creatorContext();
+
+    const drafted = await repository.saveDraft(context, "work-item-1", {
+      commandId: "draft-before-finalization",
+      expectedVersion: 0,
+      patch: {
+        caption: "Launch copy",
+        externalUrl: "https://example.com/post",
+        checklist: { disclosure: true, brandTag: true },
+      },
+    });
+    const grant = await repository.createUploadGrant(context, "work-item-1", {
+      commandId: "finalization-grant",
+      fileName: "launch.jpg",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    });
+    const finalized = await repository.finalizeAsset(context, "work-item-1", grant.value.asset.id, {
+      commandId: "finalization-command",
+      byteSize: 1024,
+      mimeType: "image/jpeg",
+      checksumSha256: null,
+    });
+
+    expect(drafted.value.workItem.state).toBe("drafting");
+    expect(finalized.value.workItem.state).toBe("ready_to_submit");
+    expect(finalized.value.workflow.state).toBe("ready_to_submit");
+  });
+
+  it("uses a server-controlled asset path with an allowlisted extension", async () => {
+    const repository = makeRepository();
+    const grant = await repository.createUploadGrant(creatorContext(), "work-item-1", {
+      commandId: "path-grant",
+      fileName: "..\\untrusted/name.JPG",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    });
+
+    expect(grant.value.asset.storagePath).toBe("creator-1/workflow-1/work-item-1/asset-1.jpg");
+    expect(grant.value.asset.storagePath).not.toContain("untrusted");
+  });
 });

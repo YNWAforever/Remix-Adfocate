@@ -6,6 +6,11 @@ export const CREATOR_STUDIO_STATES = [
 export type CreatorStudioState = (typeof CREATOR_STUDIO_STATES)[number];
 export type WorkItemState = CreatorStudioState;
 
+export const MISSION_SUBMISSION_STATUSES = [
+  "applied", "joined", "submitted", "under_review", "approved", "rejected", "expired", "declined",
+] as const;
+export type MissionSubmissionStatus = (typeof MISSION_SUBMISSION_STATUSES)[number];
+
 export type CreatorStudioContext = {
   actorId: string;
   workspaceId: string;
@@ -52,7 +57,7 @@ export type SubmissionSummary = {
   creatorId: string;
   workspaceId: string;
   missionId: string;
-  status: "joined";
+  status: MissionSubmissionStatus;
 };
 
 export type MissionBrief = {
@@ -150,6 +155,7 @@ export type UploadGrant = {
 export type FinalizedAsset = {
   asset: DraftAsset;
   workItem: WorkItem;
+  workflow: WorkflowSummary;
 };
 
 export type SubmittedWorkItem = {

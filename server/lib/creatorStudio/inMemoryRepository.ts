@@ -30,7 +30,12 @@ export type InMemoryCreatorStudioRepositoryOptions = {
 };
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
-const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+const ALLOWED_UPLOAD_EXTENSIONS = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+  ["application/pdf", "pdf"],
+]);
 const clone = <T>(value: T): T => structuredClone(value);
 
 export class InMemoryCreatorStudioRepository implements CreatorStudioRepository {
@@ -89,7 +94,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.draftVersions.set(workItem.id, [...(this.draftVersions.get(workItem.id) ?? []), clone(draft)]);
     workItem.draft = clone(draft);
     this.refreshWorkItemValidation(workItem);
-    workItem.state = this.isReady(workItem) ? "ready_to_submit" : "drafting";
+    this.refreshEditableWorkItemState(workItem);
     this.refreshWorkflow();
 
     const result = { draft: clone(draft), workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
@@ -110,6 +115,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.validateFile(input.mimeType, input.byteSize);
 
     const id = `asset-${++this.sequence}`;
+    const extension = this.extensionForMime(input.mimeType);
     const asset: DraftAsset = {
       id,
       fileName: input.fileName.trim(),
@@ -117,7 +123,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       byteSize: input.byteSize,
       checksumSha256: null,
       state: "pending",
-      storagePath: `${context.actorId}/${this.workspace.workflow.id}/${workItem.id}/${id}/${input.fileName.trim()}`,
+      storagePath: `${context.actorId}/${this.workspace.workflow.id}/${workItem.id}/${id}.${extension}`,
     };
     this.assets.set(id, clone(asset));
     workItem.assets.push(clone(asset));
@@ -153,7 +159,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.assets.set(asset.id, clone(asset));
     workItem.assets = workItem.assets.map((candidate) => candidate.id === asset.id ? clone(asset) : candidate);
     this.refreshWorkItemValidation(workItem);
-    const result = { asset: clone(asset), workItem: clone(workItem) };
+    this.refreshEditableWorkItemState(workItem);
+    this.refreshWorkflow();
+    const result = { asset: clone(asset), workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
     this.recordEvent("asset.finalized", workItem.id, { assetId: asset.id });
     return this.commit(context, input.commandId, payload, result);
   }
@@ -229,7 +237,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   }
 
   private validateFile(mimeType: string, byteSize: number): void {
-    if (!ALLOWED_MIME_TYPES.has(mimeType)) throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
+    if (!ALLOWED_UPLOAD_EXTENSIONS.has(mimeType)) throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
     if (!Number.isInteger(byteSize) || byteSize < 1 || byteSize > MAX_UPLOAD_BYTES) {
       throw new CreatorStudioError("file_too_large", "File is too large");
     }
@@ -248,6 +256,17 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
 
   private isReady(workItem: WorkItem): boolean {
     return Object.values(workItem.validation).every(Boolean);
+  }
+
+  private extensionForMime(mimeType: string): string {
+    const extension = ALLOWED_UPLOAD_EXTENSIONS.get(mimeType);
+    if (!extension) throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
+    return extension;
+  }
+
+  private refreshEditableWorkItemState(workItem: WorkItem): void {
+    if (workItem.state === "changes_requested") return;
+    workItem.state = this.isReady(workItem) ? "ready_to_submit" : "drafting";
   }
 
   private refreshWorkflow(): void {

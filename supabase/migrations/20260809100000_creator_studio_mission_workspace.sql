@@ -5,6 +5,8 @@ alter table public.creators
   add constraint creators_id_workspace_key unique (id, workspace_id);
 alter table public.mission_submissions
   add constraint mission_submissions_id_workspace_key unique (id, workspace_id);
+alter table public.mission_submissions
+  add constraint mission_submissions_id_creator_workspace_key unique (id, creator_id, workspace_id);
 
 create table public.mission_workflows (
   id uuid primary key default gen_random_uuid(),
@@ -17,7 +19,9 @@ create table public.mission_workflows (
   updated_at timestamptz not null default now(),
   unique (id, workspace_id),
   unique (mission_submission_id, workspace_id),
+  constraint mission_workflows_id_submission_creator_workspace_key unique (id, mission_submission_id, creator_id, workspace_id),
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
+  constraint mission_workflows_submission_lineage_fk foreign key (mission_submission_id, creator_id, workspace_id) references public.mission_submissions(id, creator_id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
 );
 
@@ -38,7 +42,9 @@ create table public.mission_work_items (
   updated_at timestamptz not null default now(),
   unique (id, workspace_id),
   unique (mission_workflow_id, position, workspace_id),
+  constraint mission_work_items_id_workflow_submission_creator_workspace_key unique (id, mission_workflow_id, mission_submission_id, creator_id, workspace_id),
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
+  constraint mission_work_items_workflow_lineage_fk foreign key (mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_workflows(id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
 );
@@ -58,6 +64,7 @@ create table public.mission_working_drafts (
   unique (id, workspace_id),
   unique (mission_work_item_id, workspace_id),
   foreign key (mission_work_item_id, workspace_id) references public.mission_work_items(id, workspace_id) on delete cascade,
+  constraint mission_working_drafts_item_lineage_fk foreign key (mission_work_item_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_work_items(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
@@ -78,6 +85,7 @@ create table public.mission_draft_versions (
   unique (id, workspace_id),
   unique (mission_work_item_id, version, workspace_id),
   foreign key (mission_work_item_id, workspace_id) references public.mission_work_items(id, workspace_id) on delete cascade,
+  constraint mission_draft_versions_item_lineage_fk foreign key (mission_work_item_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_work_items(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
@@ -101,6 +109,7 @@ create table public.mission_draft_assets (
   created_at timestamptz not null default now(),
   unique (id, workspace_id),
   foreign key (mission_work_item_id, workspace_id) references public.mission_work_items(id, workspace_id) on delete cascade,
+  constraint mission_draft_assets_item_lineage_fk foreign key (mission_work_item_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_work_items(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
@@ -115,7 +124,9 @@ create table public.mission_review_rounds (
   outcome text not null check (outcome in ('changes_requested','approved')),
   created_at timestamptz not null default now(),
   unique (id, workspace_id),
+  unique (id, mission_workflow_id, mission_submission_id, creator_id, workspace_id),
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
+  constraint mission_review_rounds_workflow_lineage_fk foreign key (mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_workflows(id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
 );
@@ -133,7 +144,9 @@ create table public.mission_review_items (
   created_at timestamptz not null default now(),
   unique (id, workspace_id),
   foreign key (mission_review_round_id, workspace_id) references public.mission_review_rounds(id, workspace_id) on delete cascade,
+  constraint mission_review_items_round_lineage_fk foreign key (mission_review_round_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_review_rounds(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_work_item_id, workspace_id) references public.mission_work_items(id, workspace_id) on delete cascade,
+  constraint mission_review_items_item_lineage_fk foreign key (mission_work_item_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_work_items(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
@@ -168,60 +181,16 @@ create table public.mission_workflow_events (
   created_at timestamptz not null default now(),
   unique (id, workspace_id),
   foreign key (mission_workflow_id, workspace_id) references public.mission_workflows(id, workspace_id) on delete cascade,
+  constraint mission_workflow_events_workflow_lineage_fk foreign key (mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_workflows(id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_work_item_id, workspace_id) references public.mission_work_items(id, workspace_id) on delete cascade,
+  constraint mission_workflow_events_item_lineage_fk foreign key (mission_work_item_id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) references public.mission_work_items(id, mission_workflow_id, mission_submission_id, creator_id, workspace_id) on delete cascade,
   foreign key (mission_submission_id, workspace_id) references public.mission_submissions(id, workspace_id) on delete cascade,
   foreign key (creator_id, workspace_id) references public.creators(id, workspace_id) on delete cascade
 );
 
--- Composite owner keys prevent a child from pairing a valid workspace with a
--- different creator's workflow, work item, review round, or submission.
-alter table public.mission_submissions
-  add constraint mission_submissions_id_creator_workspace_key unique (id, creator_id, workspace_id);
-alter table public.mission_workflows
-  add constraint mission_workflows_id_creator_workspace_key unique (id, creator_id, workspace_id);
-alter table public.mission_work_items
-  add constraint mission_work_items_id_creator_workspace_key unique (id, creator_id, workspace_id);
-alter table public.mission_review_rounds
-  add constraint mission_review_rounds_id_creator_workspace_key unique (id, creator_id, workspace_id);
-
-alter table public.mission_work_items
-  add constraint mission_work_items_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_working_drafts
-  add constraint mission_working_drafts_item_owner_fk foreign key (mission_work_item_id, creator_id, workspace_id)
-    references public.mission_work_items(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_working_drafts_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_draft_versions
-  add constraint mission_draft_versions_item_owner_fk foreign key (mission_work_item_id, creator_id, workspace_id)
-    references public.mission_work_items(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_draft_versions_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_draft_assets
-  add constraint mission_draft_assets_item_owner_fk foreign key (mission_work_item_id, creator_id, workspace_id)
-    references public.mission_work_items(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_draft_assets_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_review_rounds
-  add constraint mission_review_rounds_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_review_items
-  add constraint mission_review_items_round_owner_fk foreign key (mission_review_round_id, creator_id, workspace_id)
-    references public.mission_review_rounds(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_review_items_item_owner_fk foreign key (mission_work_item_id, creator_id, workspace_id)
-    references public.mission_work_items(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_review_items_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_workflow_commands
-  add constraint mission_workflow_commands_submission_owner_fk foreign key (mission_submission_id, creator_id, workspace_id)
-    references public.mission_submissions(id, creator_id, workspace_id) on delete cascade;
-alter table public.mission_workflow_events
-  add constraint mission_workflow_events_workflow_owner_fk foreign key (mission_workflow_id, creator_id, workspace_id)
-    references public.mission_workflows(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_workflow_events_item_owner_fk foreign key (mission_work_item_id, creator_id, workspace_id)
-    references public.mission_work_items(id, creator_id, workspace_id) on delete cascade,
-  add constraint mission_workflow_events_submission_owner_fk foreign key (mission_submission_id, creator_id, workspace_id)
-    references public.mission_submissions(id, creator_id, workspace_id) on delete cascade;
+-- Composite lineage keys bind every descendant to its exact submission,
+-- workflow, and work item; the existing workspace-pair keys remain for
+-- publication-proof relationships created by earlier migrations.
 
 create index mission_workflows_owner_idx on public.mission_workflows (workspace_id, creator_id, mission_submission_id);
 create index mission_work_items_owner_idx on public.mission_work_items (workspace_id, creator_id, mission_submission_id);
@@ -288,8 +257,18 @@ create policy creator_studio_assets_insert on storage.objects for insert to auth
   )
 );
 create policy creator_studio_assets_update on storage.objects for update to authenticated using (
-  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid())
-) with check (bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()));
+  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()) and exists (
+    select 1 from public.mission_draft_assets asset
+    where asset.storage_object_path = name and asset.creator_id = (select auth.uid())
+      and asset.upload_state = 'pending' and asset.upload_grant_expires_at > now()
+  )
+) with check (
+  bucket_id = 'creator-studio-assets' and owner_id = (select auth.uid()) and exists (
+    select 1 from public.mission_draft_assets asset
+    where asset.storage_object_path = name and asset.creator_id = (select auth.uid())
+      and asset.upload_state = 'pending' and asset.upload_grant_expires_at > now()
+  )
+);
 
 create or replace function public.refresh_creator_studio_state(p_mission_workflow_id uuid)
 returns public.mission_workflows
