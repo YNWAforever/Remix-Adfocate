@@ -230,6 +230,17 @@ grant select on public.mission_review_rounds to authenticated;
 grant select on public.mission_review_items to authenticated;
 grant select on public.mission_workflow_commands to authenticated;
 grant select on public.mission_workflow_events to authenticated;
+
+revoke insert, update, delete on public.mission_workflows from anon, authenticated;
+revoke insert, update, delete on public.mission_work_items from anon, authenticated;
+revoke insert, update, delete on public.mission_working_drafts from anon, authenticated;
+revoke insert, update, delete on public.mission_draft_versions from anon, authenticated;
+revoke insert, update, delete on public.mission_draft_assets from anon, authenticated;
+revoke insert, update, delete on public.mission_review_rounds from anon, authenticated;
+revoke insert, update, delete on public.mission_review_items from anon, authenticated;
+revoke insert, update, delete on public.mission_workflow_commands from anon, authenticated;
+revoke insert, update, delete on public.mission_workflow_events from anon, authenticated;
+
 grant all on public.mission_workflows to service_role;
 grant all on public.mission_work_items to service_role;
 grant all on public.mission_working_drafts to service_role;

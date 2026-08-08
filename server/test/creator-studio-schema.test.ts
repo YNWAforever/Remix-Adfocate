@@ -46,6 +46,30 @@ describe("creator studio mission workspace migration", () => {
     expect(storageUpdatePolicy).toContain("asset.upload_grant_expires_at > now()");
   });
 
+  it("explicitly closes direct Creator Studio table writes to anon and authenticated roles", () => {
+    const sql = readFileSync(migrationPath, "utf8");
+    const tables = [
+      "mission_workflows", "mission_work_items", "mission_working_drafts", "mission_draft_versions", "mission_draft_assets",
+      "mission_review_rounds", "mission_review_items", "mission_workflow_commands", "mission_workflow_events",
+    ];
+
+    for (const table of tables) {
+      for (const role of ["anon", "authenticated"]) {
+        const revokedPrivileges = Array.from(sql.matchAll(new RegExp(
+          `revoke\\s+([^;]+)\\s+on\\s+(?:table\\s+)?public\\.${table}\\s+from\\s+([^;]+);`,
+          "gi",
+        )))
+          .filter(([, , grantees]) => new RegExp(`\\b${role}\\b`, "i").test(grantees))
+          .map(([, privileges]) => privileges)
+          .join(" ");
+
+        for (const privilege of ["insert", "update", "delete"]) {
+          expect(revokedPrivileges).toMatch(new RegExp(`\\b(?:${privilege}|all(?:\\s+privileges)?)\\b`, "i"));
+        }
+      }
+    }
+  });
+
   it("uses a creator-submission lineage key and append-only guards for immutable ledgers", () => {
     const sql = readFileSync(migrationPath, "utf8");
 
