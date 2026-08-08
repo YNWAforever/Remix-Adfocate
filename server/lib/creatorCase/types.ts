@@ -4,6 +4,7 @@ import type {
   CreatorReviewRow,
   CreatorReviewStatus,
   CreatorRiskLevel,
+  OperatorProfileMediaSummary,
   ReviewProjection,
   SocialSummaryProjection,
 } from "../operatorCrm/types";
@@ -78,8 +79,17 @@ export type MissionHistoryProjection = Array<Record<string, unknown>>;
 
 export type CreatorReviewQueueFilters = Omit<CreatorQueueFilters, "workspace">;
 
+export type CreatorReviewQueueEnrichment = {
+  social: CreatorCaseEnrichment<CreatorReviewRow["social"]>;
+  profile: CreatorCaseEnrichment<OperatorProfileMediaSummary>;
+};
+
+export type CreatorReviewQueueRow = CreatorReviewRow & {
+  enrichment: CreatorReviewQueueEnrichment;
+};
+
 export type CreatorReviewQueue = {
-  creators: CreatorReviewRow[];
+  creators: CreatorReviewQueueRow[];
   page: number;
   pageSize: number;
   total: number;

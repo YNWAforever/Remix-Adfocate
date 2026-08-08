@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { CreatorCaseReadModel } from "./types";
 import { CreatorCaseError } from "./errors";
 import { InMemoryCreatorCaseRepository } from "./inMemoryRepository";
+import { newestRowsByCreator } from "./supabaseRepository";
+import { getProfileMediaForWorkspace } from "../profileMedia/repo";
 
 const makeCase = (
   overrides: Partial<CreatorCaseReadModel["creator"]> = {},
@@ -51,6 +53,21 @@ const approvedCommand = {
 };
 
 describe("InMemoryCreatorCaseRepository contract", () => {
+  it("keeps the first newest shortlist row for a creator", () => {
+    const shortlists = newestRowsByCreator([
+      { creator_id: "creator-1", updated_at: "2026-08-10T00:00:00.000Z" },
+      { creator_id: "creator-1", updated_at: "2026-08-03T00:00:00.000Z" },
+    ]);
+
+    expect(shortlists.get("creator-1")?.updated_at).toBe("2026-08-10T00:00:00.000Z");
+  });
+
+  it("requires a workspace for the workspace-scoped profile-media reader", async () => {
+    await expect(getProfileMediaForWorkspace({} as never, "creator-1", "")).rejects.toMatchObject({
+      code: "db_error",
+    });
+  });
+
   it("commits review, optional note, and audit as one logical command", async () => {
     const repo = new InMemoryCreatorCaseRepository({
       cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })],
@@ -161,6 +178,44 @@ describe("InMemoryCreatorCaseRepository contract", () => {
     expect(result.social.status).toBe("unavailable");
     expect(result.profile.status).toBe("unavailable");
     expect(result.missionHistory.status).toBe("unavailable");
+  });
+
+  it.each(["social", "profile"] as const)("keeps queue rows readable when the %s reader fails", async (failedEnrichment) => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" }, {
+        social: { status: "available", value: { accounts: [], summary: { platforms: ["instagram"], syncStatus: "synced", followerCount: 100, engagementRate: 2, apiSyncedAt: "2026-08-09T00:00:00.000Z", label: "API-synced", ownershipLabel: "Ownership not verified" } } },
+        profile: { status: "available", value: { avatarUrl: null, portfolioLinks: [], publicHighlights: [], published: {}, completeness: { score: 80, items: [] } } },
+      })],
+      enrichmentReaders: {
+        [failedEnrichment]: async () => { throw new Error(`${failedEnrichment} unavailable`); },
+      },
+    });
+
+    const result = await repo.listReviewQueue(context, { page: 1, pageSize: 25, sort: "last_activity" });
+    const row = result.creators[0]!;
+
+    expect(row.enrichment[failedEnrichment]).toMatchObject({ status: "unavailable", reason: "source_error" });
+    expect(row.enrichment[failedEnrichment === "social" ? "profile" : "social"].status).toBe("available");
+    expect(row.social).toMatchObject(failedEnrichment === "social" ? { platforms: [], label: "Not synced" } : { platforms: ["instagram"] });
+  });
+
+  it("uses the newest shortlist row and includes it in queue activity", async () => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1", createdAt: "2026-08-01T00:00:00.000Z" }, {
+        review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-02T00:00:00.000Z" },
+      })],
+      shortlists: [
+        { creatorId: "creator-1", status: "invited", source: "manual", notes: "Newest", updatedAt: "2026-08-10T00:00:00.000Z" },
+        { creatorId: "creator-1", status: "shortlisted", source: "manual", notes: "Older", updatedAt: "2026-08-03T00:00:00.000Z" },
+      ],
+    });
+
+    const result = await repo.listReviewQueue(context, { page: 1, pageSize: 25, sort: "last_activity" });
+
+    expect(result.creators[0]).toMatchObject({
+      shortlist: { status: "invited", notes: "Newest", updatedAt: "2026-08-10T00:00:00.000Z" },
+      lastActivityAt: "2026-08-10T00:00:00.000Z",
+    });
   });
 
   it.each(["social", "profile", "missionHistory"] as const)("isolates a failed %s enrichment from strict case data", async (failedEnrichment) => {

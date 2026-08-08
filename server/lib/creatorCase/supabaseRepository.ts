@@ -15,6 +15,7 @@ import type {
   CreatorReviewNote,
   CreatorReviewQueue,
   CreatorReviewQueueFilters,
+  CreatorReviewQueueRow,
   MissionHistoryProjection,
   ProfileProjection,
   SocialProjection,
@@ -233,6 +234,14 @@ function reviewMatchesFilter(review: ReviewProjection, filters: CreatorReviewQue
   return true;
 }
 
+export function newestRowsByCreator<T extends { creator_id: string }>(rows: readonly T[]): Map<string, T> {
+  const newest = new Map<string, T>();
+  for (const row of rows) {
+    if (!newest.has(row.creator_id)) newest.set(row.creator_id, row);
+  }
+  return newest;
+}
+
 export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
@@ -278,9 +287,7 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
       ? { data: [], error: null }
       : await this.readShortlists(context.workspaceId, creatorIds, filters.missionId);
     if (shortlistsRes.error) failDb(shortlistsRes.error);
-    const shortlists = new Map(
-      ((shortlistsRes.data ?? []) as ShortlistRow[]).map((shortlist) => [shortlist.creator_id, shortlist]),
-    );
+    const shortlists = newestRowsByCreator((shortlistsRes.data ?? []) as ShortlistRow[]);
 
     const [socials, profiles] = await Promise.all([
       readOptional(() => this.readSocialMap(context.workspaceId, creatorIds)),
@@ -318,7 +325,7 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
             updatedAt: shortlist.updated_at,
           } : null,
           lastActivityAt: lastActivityAt([review.updatedAt, shortlist?.updated_at, social.apiSyncedAt, creator.created_at]),
-        };
+        } satisfies CreatorReviewQueueRow;
       })
       .filter((row) => reviewMatchesFilter(row.review, filters))
       .filter((row) => !(filters.missionId && !filters.status && row.review.status === "flagged"));

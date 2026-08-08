@@ -3,6 +3,7 @@ import { readOptional } from "./enrichment";
 import type {
   CreatorReviewQueue,
   CreatorReviewQueueFilters,
+  CreatorReviewQueueRow,
   MissionHistoryProjection,
   ProfileProjection,
   SocialProjection,
@@ -27,6 +28,10 @@ export type InMemoryEnrichmentReaders = Partial<{
   missionHistory: (creatorCase: CreatorCaseReadModel) => Promise<MissionHistoryProjection>;
 }>;
 
+export type InMemoryShortlist = NonNullable<CreatorReviewQueueRow["shortlist"]> & {
+  creatorId: string;
+};
+
 type CompletedCommand = {
   payload: unknown;
   result: CreatorCaseReadModel;
@@ -37,6 +42,7 @@ export type InMemoryCreatorCaseRepositoryOptions = {
   failurePoint?: InMemoryFailurePoint;
   knownMissionIds?: string[];
   enrichmentReaders?: InMemoryEnrichmentReaders;
+  shortlists?: InMemoryShortlist[];
 };
 
 const DEFAULT_PAGE_SIZE = 25;
@@ -64,11 +70,15 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   private readonly failurePoint?: InMemoryFailurePoint;
   private readonly knownMissionIds?: ReadonlySet<string>;
   private readonly enrichmentReaders: InMemoryEnrichmentReaders;
+  private readonly shortlists = new Map<string, InMemoryShortlist>();
 
   constructor(options: InMemoryCreatorCaseRepositoryOptions) {
     this.failurePoint = options.failurePoint;
     this.knownMissionIds = options.knownMissionIds ? new Set(options.knownMissionIds) : undefined;
     this.enrichmentReaders = options.enrichmentReaders ?? {};
+    for (const shortlist of options.shortlists ?? []) {
+      if (!this.shortlists.has(shortlist.creatorId)) this.shortlists.set(shortlist.creatorId, clone(shortlist));
+    }
     for (const creatorCase of options.cases) {
       this.cases.set(this.caseKey(creatorCase.creator.workspaceId, creatorCase.creator.id), clone(creatorCase));
     }
@@ -83,9 +93,18 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
       throw new CreatorCaseError("mission_not_found", "Mission was not found");
     }
 
-    const rows = [...this.cases.values()]
-      .filter((creatorCase) => creatorCase.creator.workspaceId === context.workspaceId)
-      .map((creatorCase) => this.toQueueRow(creatorCase))
+    const rows = (await Promise.all(
+      [...this.cases.values()]
+        .filter((creatorCase) => creatorCase.creator.workspaceId === context.workspaceId)
+        .map(async (creatorCase) => {
+          const queueCase = clone(creatorCase);
+          const [social, profile] = await Promise.all([
+            this.readEnrichment("social", queueCase),
+            this.readEnrichment("profile", queueCase),
+          ]);
+          return this.toQueueRow(queueCase, social, profile);
+        }),
+    ))
       .filter((row) => {
         if (filters.status && row.review.status !== filters.status) return false;
         if (filters.riskLevel && row.review.riskLevel !== filters.riskLevel) return false;
@@ -192,15 +211,20 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     return `${workspaceId}:${creatorId}`;
   }
 
-  private toQueueRow(creatorCase: CreatorCaseReadModel): CreatorReviewQueue["creators"][number] {
-    const social = creatorCase.social.status === "available"
-      ? creatorCase.social.value.summary
+  private toQueueRow(
+    creatorCase: CreatorCaseReadModel,
+    socialEnrichment: CreatorCaseReadModel["social"],
+    profileEnrichment: CreatorCaseReadModel["profile"],
+  ): CreatorReviewQueueRow {
+    const social = socialEnrichment.status === "available"
+      ? socialEnrichment.value.summary
       : {
           platforms: [], syncStatus: null, followerCount: null, engagementRate: null,
           apiSyncedAt: null, label: "Not synced" as const, ownershipLabel: "Ownership not verified" as const,
         };
-    const lastActivityAt = [creatorCase.creator.createdAt, creatorCase.review.updatedAt, social.apiSyncedAt]
-      .filter((value): value is string => value !== null)
+    const shortlist = this.shortlists.get(creatorCase.creator.id) ?? null;
+    const lastActivityAt = [creatorCase.creator.createdAt, creatorCase.review.updatedAt, social.apiSyncedAt, shortlist?.updatedAt]
+      .filter((value): value is string => value != null)
       .sort()
       .at(-1) ?? null;
     return {
@@ -215,10 +239,29 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
         avatarUrl: creatorCase.creator.avatarUrl,
         portfolioCount: 0,
         publicHighlightCount: 0,
-        completenessScore: creatorCase.profile.status === "available" ? creatorCase.profile.value.completeness.score : 0,
+        completenessScore: profileEnrichment.status === "available" ? profileEnrichment.value.completeness.score : 0,
       },
       review: clone(creatorCase.review),
-      shortlist: null,
+      enrichment: {
+        social: clone(socialEnrichment),
+        profile: profileEnrichment.status === "available"
+          ? {
+              status: "available",
+              value: {
+                avatarUrl: profileEnrichment.value.avatarUrl,
+                portfolioCount: profileEnrichment.value.portfolioLinks.length,
+                publicHighlightCount: profileEnrichment.value.publicHighlights.length,
+                completenessScore: profileEnrichment.value.completeness.score,
+              },
+            }
+          : clone(profileEnrichment),
+      },
+      shortlist: shortlist ? {
+        status: shortlist.status,
+        source: shortlist.source,
+        notes: shortlist.notes,
+        updatedAt: shortlist.updatedAt,
+      } : null,
       lastActivityAt,
     };
   }

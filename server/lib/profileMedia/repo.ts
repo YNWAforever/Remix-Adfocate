@@ -91,10 +91,19 @@ export async function listProfileMediaLinks(supabase: SupabaseClient, creatorId:
 }
 
 export async function getProfileMedia(supabase: SupabaseClient, creatorId: string): Promise<CreatorProfileMedia> {
-  return getProfileMediaForWorkspace(supabase, creatorId);
+  return getProfileMediaWithScope(supabase, creatorId);
 }
 
 export async function getProfileMediaForWorkspace(
+  supabase: SupabaseClient,
+  creatorId: string,
+  workspaceId: string,
+): Promise<CreatorProfileMedia> {
+  if (!workspaceId.trim()) throw new ProfileMediaError("db_error", "workspaceId is required");
+  return getProfileMediaWithScope(supabase, creatorId, workspaceId);
+}
+
+async function getProfileMediaWithScope(
   supabase: SupabaseClient,
   creatorId: string,
   workspaceId?: string,
