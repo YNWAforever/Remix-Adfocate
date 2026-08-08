@@ -1,5 +1,8 @@
 export type CreatorCaseErrorCode =
   | "workspace_required"
+  | "actor_required"
+  | "actor_label_required"
+  | "command_required"
   | "creator_not_found"
   | "mission_not_found"
   | "workspace_mismatch"

@@ -66,6 +66,9 @@ const AUDIT_PROJECTION = "id, workspace_id, operator_id, actor_label, event_type
 
 const KNOWN_ERROR_CODES: CreatorCaseErrorCode[] = [
   "workspace_required",
+  "actor_required",
+  "actor_label_required",
+  "command_required",
   "creator_not_found",
   "mission_not_found",
   "workspace_mismatch",
@@ -83,6 +86,46 @@ function failDb(error: { message?: string | null } | null): never {
   const code = KNOWN_ERROR_CODES.find((candidate) => message.includes(candidate));
   if (code) throw new CreatorCaseError(code, message);
   throw new CreatorCaseError("db_error", message);
+}
+
+function requireContextText(value: unknown, code: CreatorCaseErrorCode, label: string): void {
+  if (typeof value !== "string" || !value.trim()) throw new CreatorCaseError(code, `${label} is required`);
+}
+
+function validateReadContext(context: CreatorCaseReadContext): void {
+  requireContextText(context.workspaceId, "workspace_required", "workspaceId");
+  requireContextText(context.actorId, "actor_required", "actorId");
+  requireContextText(context.actorLabel, "actor_label_required", "actorLabel");
+}
+
+function validateCommandContext(context: CreatorCaseCommandContext): void {
+  validateReadContext(context);
+  requireContextText(context.commandId, "command_required", "commandId");
+}
+
+function snapshotFromRpc(value: unknown): CreatorCaseReadModel {
+  const snapshot = value as Partial<CreatorCaseReadModel> | null;
+  if (!snapshot
+    || !snapshot.creator
+    || !snapshot.review
+    || !Array.isArray(snapshot.notes)
+    || !Array.isArray(snapshot.audit)) {
+    throw new CreatorCaseError("db_error", "Creator case command returned an invalid result snapshot");
+  }
+
+  return {
+    creator: {
+      ...snapshot.creator,
+      categories: snapshot.creator.categories ?? [],
+      scores: snapshot.creator.scores ?? {},
+    },
+    review: { ...snapshot.review },
+    notes: snapshot.notes.map((note) => ({ ...note })),
+    audit: snapshot.audit.map((event) => ({ ...event, metadata: event.metadata ?? {} })),
+    social: { status: "unavailable", reason: "not_configured" },
+    profile: { status: "unavailable", reason: "not_configured" },
+    missionHistory: { status: "unavailable", reason: "not_configured" },
+  };
 }
 
 function toNote(row: NoteRow): CreatorReviewNote {
@@ -117,14 +160,15 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
   constructor(private readonly supabase: SupabaseClient) {}
 
   async listReviewQueue(
-    _context: CreatorCaseReadContext,
+    context: CreatorCaseReadContext,
     _filters: CreatorReviewQueueFilters,
   ): Promise<CreatorReviewQueue> {
+    validateReadContext(context);
     throw new CreatorCaseError("enrichment_unavailable", "Creator review queue is not implemented by the command adapter");
   }
 
   async getCase(context: CreatorCaseReadContext, creatorId: string): Promise<CreatorCaseReadModel> {
-    if (!context.workspaceId) throw new CreatorCaseError("workspace_required", "workspaceId is required");
+    validateReadContext(context);
 
     const creatorRes = await this.supabase
       .from("creators")
@@ -182,7 +226,8 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
   }
 
   async applyReview(context: CreatorCaseCommandContext, command: ApplyCreatorReviewCommand): Promise<CreatorCaseReadModel> {
-    const { error } = await this.supabase.rpc("apply_creator_review", {
+    validateCommandContext(context);
+    const { data, error } = await this.supabase.rpc("apply_creator_review", {
       p_command_id: context.commandId,
       p_workspace_id: context.workspaceId,
       p_creator_id: command.creatorId,
@@ -195,11 +240,12 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
       p_note_body: command.note?.body ?? null,
     });
     if (error) failDb(error);
-    return this.getCase(context, command.creatorId);
+    return snapshotFromRpc(data);
   }
 
   async appendNote(context: CreatorCaseCommandContext, command: AppendCreatorNoteCommand): Promise<CreatorCaseReadModel> {
-    const { error } = await this.supabase.rpc("append_creator_review_note", {
+    validateCommandContext(context);
+    const { data, error } = await this.supabase.rpc("append_creator_review_note", {
       p_command_id: context.commandId,
       p_workspace_id: context.workspaceId,
       p_creator_id: command.creatorId,
@@ -209,6 +255,6 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
       p_note_body: command.body,
     });
     if (error) failDb(error);
-    return this.getCase(context, command.creatorId);
+    return snapshotFromRpc(data);
   }
 }

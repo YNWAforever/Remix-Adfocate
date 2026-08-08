@@ -11,6 +11,90 @@ create table public.creator_case_command_receipts (
 alter table public.creator_case_command_receipts enable row level security;
 grant all on public.creator_case_command_receipts to service_role;
 
+create or replace function private.creator_case_command_snapshot(
+  p_workspace_id uuid,
+  p_creator_id uuid
+)
+returns jsonb
+language sql
+security invoker
+set search_path = public, pg_temp
+as $$
+  select jsonb_build_object(
+    'creator', (
+      select jsonb_build_object(
+        'id', creator.id,
+        'workspaceId', creator.workspace_id,
+        'displayName', creator.display_name,
+        'avatarUrl', creator.avatar_url,
+        'level', creator.level,
+        'categories', coalesce(to_jsonb(creator.categories), '[]'::jsonb),
+        'scores', coalesce(creator.scores, '{}'::jsonb),
+        'socialHandles', creator.social_handles,
+        'createdAt', creator.created_at
+      )
+      from public.creators creator
+      where creator.id = p_creator_id
+        and creator.workspace_id = p_workspace_id
+    ),
+    'review', coalesce((
+      select jsonb_build_object(
+        'status', review.status,
+        'riskLevel', review.risk_level,
+        'summary', review.summary,
+        'reviewedBy', review.reviewed_by,
+        'lastReviewedAt', review.last_reviewed_at,
+        'updatedAt', review.updated_at
+      )
+      from public.creator_review_statuses review
+      where review.creator_id = p_creator_id
+        and review.workspace_id = p_workspace_id
+    ), jsonb_build_object(
+      'status', 'needs_review',
+      'riskLevel', 'unknown',
+      'summary', null,
+      'reviewedBy', null,
+      'lastReviewedAt', null,
+      'updatedAt', null
+    )),
+    'notes', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', note.id,
+        'creatorId', note.creator_id,
+        'workspaceId', note.workspace_id,
+        'operatorId', note.operator_id,
+        'category', note.category,
+        'body', note.body,
+        'createdAt', note.created_at
+      ) order by note.created_at, note.id)
+      from public.creator_review_notes note
+      where note.creator_id = p_creator_id
+        and note.workspace_id = p_workspace_id
+    ), '[]'::jsonb),
+    'audit', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', audit.id,
+        'workspaceId', audit.workspace_id,
+        'operatorId', audit.operator_id,
+        'actorLabel', audit.actor_label,
+        'eventType', audit.event_type,
+        'targetType', audit.target_type,
+        'targetId', audit.target_id,
+        'creatorId', audit.creator_id,
+        'missionId', audit.mission_id,
+        'metadata', audit.metadata,
+        'createdAt', audit.created_at
+      ) order by audit.created_at, audit.id)
+      from public.operator_audit_events audit
+      where audit.creator_id = p_creator_id
+        and audit.workspace_id = p_workspace_id
+    ), '[]'::jsonb),
+    'social', jsonb_build_object('status', 'unavailable', 'reason', 'not_configured'),
+    'profile', jsonb_build_object('status', 'unavailable', 'reason', 'not_configured'),
+    'missionHistory', jsonb_build_object('status', 'unavailable', 'reason', 'not_configured')
+  );
+$$;
+
 create or replace function public.apply_creator_review(
   p_command_id uuid,
   p_workspace_id uuid,
@@ -68,14 +152,17 @@ begin
   from public.creators
   where id = p_creator_id;
 
-  if not found or v_workspace_id <> p_workspace_id then
+  if not found then
     raise exception 'creator_not_found';
   end if;
+  if v_workspace_id <> p_workspace_id then
+    raise exception 'workspace_mismatch';
+  end if;
 
-  if p_status not in ('needs_review', 'approved', 'flagged') then
+  if p_status is null or p_status not in ('needs_review', 'approved', 'flagged') then
     raise exception 'bad_review_status';
   end if;
-  if p_risk_level not in ('low', 'medium', 'high', 'unknown') then
+  if p_risk_level is null or p_risk_level not in ('low', 'medium', 'high', 'unknown') then
     raise exception 'bad_risk_level';
   end if;
   if p_note_category is not null
@@ -188,12 +275,7 @@ begin
     );
   end if;
 
-  v_result := jsonb_build_object(
-    'command_id', p_command_id,
-    'workspace_id', p_workspace_id,
-    'creator_id', p_creator_id,
-    'command_type', 'apply_review'
-  );
+  v_result := private.creator_case_command_snapshot(p_workspace_id, p_creator_id);
   insert into public.creator_case_command_receipts (
     command_id,
     workspace_id,
@@ -259,8 +341,11 @@ begin
   from public.creators
   where id = p_creator_id;
 
-  if not found or v_workspace_id <> p_workspace_id then
+  if not found then
     raise exception 'creator_not_found';
+  end if;
+  if v_workspace_id <> p_workspace_id then
+    raise exception 'workspace_mismatch';
   end if;
   if p_note_category is null
     or p_note_category not in ('quality', 'brand_safety', 'fit', 'social', 'other') then
@@ -306,12 +391,7 @@ begin
     jsonb_build_object('command_id', p_command_id, 'category', p_note_category)
   );
 
-  v_result := jsonb_build_object(
-    'command_id', p_command_id,
-    'workspace_id', p_workspace_id,
-    'creator_id', p_creator_id,
-    'command_type', 'append_note'
-  );
+  v_result := private.creator_case_command_snapshot(p_workspace_id, p_creator_id);
   insert into public.creator_case_command_receipts (
     command_id,
     workspace_id,
@@ -331,3 +411,6 @@ grant execute on function public.apply_creator_review(uuid, uuid, uuid, text, te
 
 revoke execute on function public.append_creator_review_note(uuid, uuid, uuid, text, text, text, text) from public, anon, authenticated;
 grant execute on function public.append_creator_review_note(uuid, uuid, uuid, text, text, text, text) to service_role;
+
+revoke execute on function private.creator_case_command_snapshot(uuid, uuid) from public, anon, authenticated;
+grant execute on function private.creator_case_command_snapshot(uuid, uuid) to service_role;

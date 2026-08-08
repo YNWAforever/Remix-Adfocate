@@ -104,6 +104,27 @@ suite("operator CRM schema and RLS", () => {
     expect(note.error).toBeNull();
   });
 
+  it("denies restricted creator case commands to authenticated non-service callers", async () => {
+    const creator = await makeCreator("operator-crm-command-denied@test.local");
+    const user = userForJwt(creator.jwt);
+
+    const result = await user.rpc("apply_creator_review", {
+      p_command_id: randomUUID(),
+      p_workspace_id: DEMO_WS,
+      p_creator_id: creator.userId,
+      p_operator_id: "creator-case-test",
+      p_actor_label: "Creator Case Test",
+      p_status: "approved",
+      p_risk_level: "low",
+      p_summary: null,
+      p_note_category: null,
+      p_note_body: null,
+    });
+
+    expect(result.error).not.toBeNull();
+    expect(result.data).toBeNull();
+  });
+
   it("denies authenticated creators direct read access to operator CRM tables", async () => {
     const svc = serviceForTests();
     const creator = await makeCreator("operator-crm-hidden@test.local");
