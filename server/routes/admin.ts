@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
+import adminOperatorCrmRoutes from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";

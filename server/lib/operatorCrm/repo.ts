@@ -534,6 +534,25 @@ export async function getCreatorOperatorDetail(supabase: SupabaseClient, creator
   };
 }
 
+/**
+ * Read-only mission-shortlist projection kept with the mission-shortlist module.
+ * CreatorCase composes this at the HTTP boundary after it has verified workspace access.
+ */
+export async function listCreatorShortlistMemberships(
+  supabase: SupabaseClient,
+  creatorId: string,
+  workspaceId: string,
+) {
+  const { data, error } = await supabase
+    .from("mission_shortlists")
+    .select(SHORTLIST_PROJECTION)
+    .eq("creator_id", creatorId)
+    .eq("workspace_id", workspaceId)
+    .order("updated_at", { ascending: false });
+  if (error) failDb(error);
+  return ((data ?? []) as ShortlistRow[]).map(normalizeShortlistRow);
+}
+
 export async function updateCreatorReview(
   supabase: SupabaseClient,
   input: {
