@@ -3,6 +3,13 @@ import { randomUUID } from "node:crypto";
 import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, makeMission, serviceForTests, userForJwt } from "./helpers";
 
 const suite = hasSupabaseEnv ? describe : describe.skip;
+const OPERATOR_CRM_TABLES = [
+  "creator_review_statuses",
+  "creator_review_notes",
+  "mission_shortlists",
+  "operator_audit_events",
+  "creator_case_command_receipts",
+];
 
 suite("operator CRM schema and RLS", () => {
   beforeAll(cleanup);
@@ -67,6 +74,36 @@ suite("operator CRM schema and RLS", () => {
     expect(audit.error).toBeNull();
   });
 
+  it("allows the service role to call the restricted creator case commands", async () => {
+    const svc = serviceForTests();
+    const creator = await makeCreator("operator-crm-command-rpc@test.local");
+
+    const review = await svc.rpc("apply_creator_review", {
+      p_command_id: randomUUID(),
+      p_workspace_id: DEMO_WS,
+      p_creator_id: creator.userId,
+      p_operator_id: "schema-test",
+      p_actor_label: "Schema Test",
+      p_status: "approved",
+      p_risk_level: "low",
+      p_summary: "RPC command availability test.",
+      p_note_category: null,
+      p_note_body: null,
+    });
+    expect(review.error).toBeNull();
+
+    const note = await svc.rpc("append_creator_review_note", {
+      p_command_id: randomUUID(),
+      p_workspace_id: DEMO_WS,
+      p_creator_id: creator.userId,
+      p_operator_id: "schema-test",
+      p_actor_label: "Schema Test",
+      p_note_category: "other",
+      p_note_body: "RPC command availability note.",
+    });
+    expect(note.error).toBeNull();
+  });
+
   it("denies authenticated creators direct read access to operator CRM tables", async () => {
     const svc = serviceForTests();
     const creator = await makeCreator("operator-crm-hidden@test.local");
@@ -109,7 +146,7 @@ suite("operator CRM schema and RLS", () => {
     });
 
     const user = userForJwt(creator.jwt);
-    for (const table of ["creator_review_statuses", "creator_review_notes", "mission_shortlists", "operator_audit_events"]) {
+    for (const table of OPERATOR_CRM_TABLES) {
       const { data, error } = await user.from(table).select("*");
       expect(error).not.toBeNull();
       expect(data).toBeNull();

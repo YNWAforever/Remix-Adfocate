@@ -319,6 +319,7 @@ export async function cleanup() {
   const byPhone = await service().from("creators").select("id").like("phone", "+1555%");
   const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
   if (ids.length) {
+    await service().from("creator_case_command_receipts").delete().in("creator_id", ids);
     await service().from("operator_audit_events").delete().in("creator_id", ids);
     await service().from("creator_review_notes").delete().in("creator_id", ids);
     await service().from("creator_review_statuses").delete().in("creator_id", ids);
