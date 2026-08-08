@@ -5,6 +5,9 @@ import { meBootstrap, meRoutes } from "./routes/me.js";
 import { onboardingRoutes } from "./routes/onboarding.js";
 import { walletRoutes } from "./routes/wallet.js";
 import { missionRoutes } from "./routes/missions.js";
+import { createCreatorStudioRoutes } from "./routes/creatorStudio.js";
+import { SupabaseCreatorStudioRepository } from "./lib/creatorStudio/supabaseRepository.js";
+import { makeUserClient } from "./lib/supabase.js";
 import { redemptionRoutes } from "./routes/redemption.js";
 import { adminRoutes } from "./routes/admin.js";
 import { matchRoutes } from "./routes/match.js";
@@ -44,6 +47,10 @@ export function createApp() {
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);
+  const creatorStudioRoutes = createCreatorStudioRoutes({
+    repositoryForRequest: (c) => new SupabaseCreatorStudioRepository(makeUserClient(c.get("jwt"))),
+  });
+  guarded.route("/my-missions", creatorStudioRoutes);
   guarded.route("/campaigns", campaignRoutes);
   guarded.route("/match", matchRoutes);
   guarded.route("/notifications", notificationRoutes);
