@@ -159,4 +159,73 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(grant.value.asset.storagePath).toBe("creator-1/workflow-1/work-item-1/asset-1.jpg");
     expect(grant.value.asset.storagePath).not.toContain("untrusted");
   });
+
+  it.each(["submitted", "resubmitted", "approved"] as const)("rejects asset reservations and finalization for %s work without changing it", async (state) => {
+    const workspace = makeWorkspace();
+    const workItem = workspace.workItems[0];
+    workItem.state = state;
+    workItem.assets = [{
+      id: "pending-asset",
+      fileName: "pending.jpg",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+      checksumSha256: null,
+      state: "pending",
+      storagePath: "creator-1/workflow-1/work-item-1/pending-asset.jpg",
+    }];
+    workspace.workflow.state = state;
+    workspace.nextAction = { workItemId: workItem.id, state, label: `Await review for ${workItem.title}` };
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+    const context = creatorContext();
+    const before = await repository.getWorkspace(context);
+
+    await expect(repository.createUploadGrant(context, workItem.id, {
+      commandId: `locked-grant-${state}`,
+      fileName: "late.jpg",
+      mimeType: "image/jpeg",
+      byteSize: 1024,
+    })).rejects.toMatchObject({ code: "invalid_transition" });
+    await expect(repository.finalizeAsset(context, workItem.id, "pending-asset", {
+      commandId: `locked-finalize-${state}`,
+      byteSize: 1024,
+      mimeType: "image/jpeg",
+      checksumSha256: null,
+    })).rejects.toMatchObject({ code: "invalid_transition" });
+
+    expect(await repository.getWorkspace(context)).toEqual(before);
+    expect(repository.events()).toEqual([]);
+  });
+
+  it("rejects non-JSON commands before any mutation and leaves the command id reusable", async () => {
+    const context = creatorContext();
+    const invalidPatches: unknown[] = [
+      { caption: undefined },
+      { caption: () => "not JSON" },
+    ];
+    const cyclic: Record<string, unknown> = {};
+    cyclic.self = cyclic;
+    invalidPatches.push({ checklist: cyclic });
+
+    for (const [index, patch] of invalidPatches.entries()) {
+      const repository = makeRepository();
+      const commandId = `invalid-command-${index}`;
+      const before = await repository.getWorkspace(context);
+
+      await expect(repository.saveDraft(context, "work-item-1", {
+        commandId,
+        expectedVersion: 0,
+        patch,
+      } as unknown as SaveDraftInput)).rejects.toThrow("JSON serializable");
+
+      expect(repository.getDraft("work-item-1")).toBeUndefined();
+      expect(repository.events()).toEqual([]);
+      expect(await repository.getWorkspace(context)).toEqual(before);
+
+      await expect(repository.saveDraft(context, "work-item-1", {
+        commandId,
+        expectedVersion: 0,
+        patch: { caption: "Valid after rejection" },
+      })).resolves.toMatchObject({ replayed: false, value: { draft: { version: 1 } } });
+    }
+  });
 });

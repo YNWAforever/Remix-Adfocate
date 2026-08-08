@@ -262,6 +262,34 @@ create trigger mission_workflow_events_append_only
   before update or delete or truncate on public.mission_workflow_events
   for each statement execute function public.reject_creator_studio_immutable_mutation();
 
+create or replace function public.require_creator_studio_asset_work_item_editable()
+returns trigger
+language plpgsql security definer set search_path = public, pg_temp
+as $$
+declare
+  v_work_item public.mission_work_items;
+begin
+  select * into v_work_item
+  from public.mission_work_items
+  where id = new.mission_work_item_id
+    and mission_workflow_id = new.mission_workflow_id
+    and mission_submission_id = new.mission_submission_id
+    and creator_id = new.creator_id
+    and workspace_id = new.workspace_id
+  for update;
+
+  if v_work_item.id is null then raise exception 'work_item_not_found'; end if;
+  if v_work_item.state not in ('not_started', 'drafting', 'ready_to_submit', 'changes_requested') then
+    raise exception 'invalid_transition' using errcode = '55000';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger mission_draft_assets_editable_work_item
+  before insert or update of upload_state on public.mission_draft_assets
+  for each row execute function public.require_creator_studio_asset_work_item_editable();
+
 insert into storage.buckets (id, name, public) values ('creator-studio-assets', 'creator-studio-assets', false)
 on conflict (id) do nothing;
 create policy creator_studio_assets_read on storage.objects for select to authenticated using (

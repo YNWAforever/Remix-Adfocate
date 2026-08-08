@@ -71,7 +71,8 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.requireCommand(input.commandId);
     const workItem = this.requireWorkItem(context, workItemId);
     const payload = { type: "save_draft", context, workItemId, input };
-    const replay = this.replay<DraftCommandResult>(context, input.commandId, payload);
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<DraftCommandResult>(context, input.commandId, requestHash);
     if (replay) return replay;
 
     const current = this.drafts.get(workItem.id);
@@ -99,7 +100,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
 
     const result = { draft: clone(draft), workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
     this.recordEvent("draft.saved", workItem.id, { version: draft.version });
-    return this.commit(context, input.commandId, payload, result);
+    return this.commit(context, input.commandId, requestHash, result);
   }
 
   async createUploadGrant(
@@ -110,8 +111,10 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.requireCommand(input.commandId);
     const workItem = this.requireWorkItem(context, workItemId);
     const payload = { type: "create_upload_grant", context, workItemId, input };
-    const replay = this.replay<UploadGrant>(context, input.commandId, payload);
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<UploadGrant>(context, input.commandId, requestHash);
     if (replay) return replay;
+    this.requireEditableAssetWorkItem(workItem);
     this.validateFile(input.mimeType, input.byteSize);
 
     const id = `asset-${++this.sequence}`;
@@ -131,7 +134,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.refreshNextAction();
     const result = { asset: clone(asset), uploadUrl: `memory://creator-studio-assets/${asset.storagePath}` };
     this.recordEvent("asset.reserved", workItem.id, { assetId: asset.id, byteSize: asset.byteSize });
-    return this.commit(context, input.commandId, payload, result);
+    return this.commit(context, input.commandId, requestHash, result);
   }
 
   async finalizeAsset(
@@ -143,8 +146,10 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.requireCommand(input.commandId);
     const workItem = this.requireWorkItem(context, workItemId);
     const payload = { type: "finalize_asset", context, workItemId, assetId, input };
-    const replay = this.replay<FinalizedAsset>(context, input.commandId, payload);
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<FinalizedAsset>(context, input.commandId, requestHash);
     if (replay) return replay;
+    this.requireEditableAssetWorkItem(workItem);
 
     const asset = this.assets.get(assetId);
     if (!asset || !workItem.assets.some((candidate) => candidate.id === assetId)) {
@@ -164,7 +169,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.refreshWorkflow();
     const result = { asset: clone(asset), workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
     this.recordEvent("asset.finalized", workItem.id, { assetId: asset.id });
-    return this.commit(context, input.commandId, payload, result);
+    return this.commit(context, input.commandId, requestHash, result);
   }
 
   async submitWorkItem(
@@ -175,7 +180,8 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.requireCommand(input.commandId);
     const workItem = this.requireWorkItem(context, workItemId);
     const payload = { type: "submit_work_item", context, workItemId, input };
-    const replay = this.replay<SubmittedWorkItem>(context, input.commandId, payload);
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<SubmittedWorkItem>(context, input.commandId, requestHash);
     if (replay) return replay;
 
     const version = this.drafts.get(workItem.id)?.version ?? 0;
@@ -189,7 +195,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
 
     const result = { workItem: clone(workItem), workflow: clone(this.workspace.workflow) };
     this.recordEvent("work_item.submitted", workItem.id, { state: workItem.state });
-    return this.commit(context, input.commandId, payload, result);
+    return this.commit(context, input.commandId, requestHash, result);
   }
 
   events(): CreatorStudioEvent[] {
@@ -223,17 +229,17 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     return `${context.submissionId}:${context.actorId}:${commandId}`;
   }
 
-  private replay<T>(context: CreatorStudioContext, commandId: string, payload: unknown): CommandResult<T> | null {
+  private replay<T>(context: CreatorStudioContext, commandId: string, requestHash: string): CommandResult<T> | null {
     const completed = this.commands.get(this.commandKey(context, commandId));
     if (!completed) return null;
-    if (completed.hash !== hashCommand(payload)) {
+    if (completed.hash !== requestHash) {
       throw new CreatorStudioError("command_conflict", "Command id was already used with a different request");
     }
     return { value: clone(completed.result as T), replayed: true };
   }
 
-  private commit<T>(context: CreatorStudioContext, commandId: string, payload: unknown, result: T): CommandResult<T> {
-    this.commands.set(this.commandKey(context, commandId), { hash: hashCommand(payload), result: clone(result) });
+  private commit<T>(context: CreatorStudioContext, commandId: string, requestHash: string, result: T): CommandResult<T> {
+    this.commands.set(this.commandKey(context, commandId), { hash: requestHash, result: clone(result) });
     return { value: clone(result), replayed: false };
   }
 
@@ -263,6 +269,12 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const extension = ALLOWED_UPLOAD_EXTENSIONS.get(mimeType);
     if (!extension) throw new CreatorStudioError("file_not_allowed", "File type is not allowed");
     return extension;
+  }
+
+  private requireEditableAssetWorkItem(workItem: WorkItem): void {
+    if (workItem.state === "not_started" || workItem.state === "drafting"
+      || workItem.state === "ready_to_submit" || workItem.state === "changes_requested") return;
+    throw new CreatorStudioError("invalid_transition", "This work item cannot accept asset changes");
   }
 
   private refreshEditableWorkItemState(workItem: WorkItem): void {

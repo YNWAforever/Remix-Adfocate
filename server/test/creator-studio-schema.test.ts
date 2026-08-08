@@ -69,6 +69,20 @@ describe("creator studio mission workspace migration", () => {
     }
   });
 
+  it("enforces editable work-item state before reserving or finalizing an asset", () => {
+    const sql = readFileSync(migrationPath, "utf8");
+    const assetStateGuard = sql.slice(
+      sql.indexOf("create or replace function public.require_creator_studio_asset_work_item_editable"),
+      sql.indexOf("create trigger mission_draft_assets_editable_work_item"),
+    );
+
+    expect(assetStateGuard).toContain("for update");
+    expect(assetStateGuard).toContain("not_started', 'drafting', 'ready_to_submit', 'changes_requested");
+    expect(assetStateGuard).toContain("raise exception 'invalid_transition'");
+    expect(sql).toContain("create trigger mission_draft_assets_editable_work_item");
+    expect(sql).toContain("before insert or update of upload_state on public.mission_draft_assets");
+  });
+
   it("keeps mission submission lifecycle status distinct from Creator Studio workflow state", () => {
     const types = readFileSync(typesPath, "utf8");
 
