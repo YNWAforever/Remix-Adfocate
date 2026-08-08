@@ -1,19 +1,20 @@
-import type { AdminReviewStatus, AdminRiskLevel, AdminShortlistStatus } from "@/lib/admin";
+import type { AdminShortlistStatus } from "@/lib/admin";
+import type { CreatorReviewStatus, CreatorRiskLevel } from "@/lib/creatorCase";
 
-const reviewTone: Record<AdminReviewStatus, string> = {
+const reviewTone: Record<CreatorReviewStatus, string> = {
   approved: "bg-[var(--color-acid)]",
   needs_review: "bg-white",
   flagged: "bg-[var(--color-magenta)] text-white",
 };
 
-const riskTone: Record<AdminRiskLevel, string> = {
+const riskTone: Record<CreatorRiskLevel, string> = {
   low: "bg-[var(--color-acid)]",
   medium: "bg-[var(--color-sky)]",
   high: "bg-[var(--color-magenta)] text-white",
   unknown: "bg-white",
 };
 
-export function ReviewBadge({ status }: { status: AdminReviewStatus }) {
+export function ReviewBadge({ status }: { status: CreatorReviewStatus }) {
   return (
     <span className={`rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 text-xs font-bold ${reviewTone[status]}`}>
       {status}
@@ -21,7 +22,7 @@ export function ReviewBadge({ status }: { status: AdminReviewStatus }) {
   );
 }
 
-export function RiskBadge({ risk }: { risk: AdminRiskLevel }) {
+export function RiskBadge({ risk }: { risk: CreatorRiskLevel }) {
   return (
     <span className={`rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 text-xs font-bold ${riskTone[risk]}`}>
       risk: {risk}

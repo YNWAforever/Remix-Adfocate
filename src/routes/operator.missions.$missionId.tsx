@@ -10,9 +10,8 @@ import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
   AdminAuthError,
   fetchMissionShortlist,
-  type AdminReviewStatus,
 } from "@/lib/admin";
-import { fetchCreatorReviewQueue } from "@/lib/creatorCase";
+import { fetchCreatorReviewQueue, type CreatorReviewStatus } from "@/lib/creatorCase";
 
 export const Route = createFileRoute("/operator/missions/$missionId")({
   component: OperatorMissionShortlistRoute,
@@ -23,20 +22,20 @@ function OperatorMissionShortlistRoute() {
   const { missionId } = Route.useParams();
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
-  const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
+  const [status, setStatus] = useState<CreatorReviewStatus | "all">("all");
   const queryClient = useQueryClient();
   const selectedStatus = status === "all" ? undefined : status;
 
   const shortlist = useQuery({
     queryKey: ["admin-mission-shortlist", missionId],
-    enabled: authed && Boolean(workspace),
+    enabled: authed,
     retry: false,
     queryFn: () => fetchMissionShortlist(missionId),
   });
 
   const queue = useQuery({
-    queryKey: ["admin-creators-review", { missionId, status: selectedStatus }],
-    enabled: authed,
+    queryKey: ["admin-creators-review", { workspace, missionId, status: selectedStatus }],
+    enabled: authed && Boolean(workspace),
     retry: false,
     queryFn: () =>
       fetchCreatorReviewQueue(workspace, {
@@ -98,7 +97,7 @@ function OperatorMissionShortlistRoute() {
               <select
                 aria-label="Status filter"
                 value={status}
-                onChange={(event) => setStatus(event.target.value as AdminReviewStatus | "all")}
+                onChange={(event) => setStatus(event.target.value as CreatorReviewStatus | "all")}
                 className="h-9 min-w-[140px] rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
               >
                 <option value="all">all</option>

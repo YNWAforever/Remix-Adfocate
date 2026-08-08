@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Flag } from "lucide-react";
 import {
@@ -21,6 +21,7 @@ type ReviewActionPanelProps = {
 
 export function ReviewActionPanel({ workspaceId, creator, variant = "compact", onSuccess }: ReviewActionPanelProps) {
   const queryClient = useQueryClient();
+  const pendingCommandId = useRef<string | null>(null);
   const [status, setStatus] = useState<CreatorReviewStatus>(creator.review.status);
   const [riskLevel, setRiskLevel] = useState<CreatorRiskLevel>(creator.review.riskLevel);
   const [summary, setSummary] = useState(creator.review.summary ?? "");
@@ -28,6 +29,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
   const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
+    pendingCommandId.current = null;
     setStatus(creator.review.status);
     setRiskLevel(creator.review.riskLevel);
     setSummary(creator.review.summary ?? "");
@@ -36,17 +38,32 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
   }, [creator.review]);
 
   const mutation = useMutation({
-    mutationFn: (body: {
+    mutationFn: ({ body, commandId }: {
+      body: {
       status: CreatorReviewStatus;
       riskLevel: CreatorRiskLevel;
       summary: string;
       note?: string;
-    }) => postCreatorReview(workspaceId, creator.id, body),
+      };
+      commandId: string;
+    }) => postCreatorReview(workspaceId, creator.id, body, commandId),
     onSuccess: async () => {
+      pendingCommandId.current = null;
       await queryClient.invalidateQueries({ queryKey: ["admin-creators-review"] });
       onSuccess?.();
     },
   });
+
+  const submitReview = (body: {
+    status: CreatorReviewStatus;
+    riskLevel: CreatorRiskLevel;
+    summary: string;
+    note?: string;
+  }) => {
+    const commandId = pendingCommandId.current ?? crypto.randomUUID();
+    pendingCommandId.current = commandId;
+    mutation.mutate({ body, commandId });
+  };
 
   if (variant === "full") {
     return (
@@ -58,6 +75,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
               aria-label="Review status"
               value={status}
               onChange={(event) => {
+                pendingCommandId.current = null;
                 setStatus(event.target.value as CreatorReviewStatus);
                 setValidationError("");
               }}
@@ -73,7 +91,10 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
             <select
               aria-label="Risk level"
               value={riskLevel}
-              onChange={(event) => setRiskLevel(event.target.value as CreatorRiskLevel)}
+              onChange={(event) => {
+                pendingCommandId.current = null;
+                setRiskLevel(event.target.value as CreatorRiskLevel);
+              }}
               className="h-10 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-medium text-[var(--color-ink)]"
             >
               <option value="unknown">Unknown</option>
@@ -89,7 +110,10 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
           <textarea
             aria-label="Review summary"
             value={summary}
-            onChange={(event) => setSummary(event.target.value)}
+            onChange={(event) => {
+              pendingCommandId.current = null;
+              setSummary(event.target.value);
+            }}
             rows={3}
             className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-3 text-sm outline-none"
           />
@@ -101,6 +125,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
             aria-label="Review note"
             value={note}
             onChange={(event) => {
+              pendingCommandId.current = null;
               setNote(event.target.value);
               setValidationError("");
             }}
@@ -121,7 +146,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
               setValidationError("Flagged reviews require a note");
               return;
             }
-            mutation.mutate({
+            submitReview({
               status,
               riskLevel,
               summary: summary.trim(),
@@ -144,7 +169,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
         title="Approve creator"
         disabled={mutation.isPending}
         onClick={() =>
-          mutation.mutate({
+          submitReview({
             status: "approved",
             riskLevel: "low",
             summary: "Approved from creator review queue.",
@@ -160,7 +185,7 @@ export function ReviewActionPanel({ workspaceId, creator, variant = "compact", o
         title="Flag creator"
         disabled={mutation.isPending}
         onClick={() =>
-          mutation.mutate({
+          submitReview({
             status: "flagged",
             riskLevel: "high",
             summary: "Flagged from creator review queue.",

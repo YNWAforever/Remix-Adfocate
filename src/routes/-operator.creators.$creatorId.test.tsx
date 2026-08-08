@@ -89,7 +89,30 @@ describe("operator creator detail", () => {
     await screen.findByText("Amy Chan");
     fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Great for launch." } });
     fireEvent.click(screen.getByLabelText("Save internal note"));
-    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledWith("workspace-1", "creator-1", { category: "other", body: "Great for launch." }));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledWith("workspace-1", "creator-1", { category: "other", body: "Great for launch." }, expect.any(String)));
+  });
+
+  it("reuses the note command id when a submission is retried", async () => {
+    hoisted.postCreatorNote.mockRejectedValueOnce(new Error("temporary failure")).mockResolvedValueOnce({ note: {} });
+    renderRoute();
+    await screen.findByText("Amy Chan");
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Retry this note." } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorNote.mock.calls[0][3]).toEqual(hoisted.postCreatorNote.mock.calls[1][3]);
+  });
+
+  it("reuses the review command id when a submission is retried", async () => {
+    hoisted.postCreatorReview.mockRejectedValueOnce(new Error("temporary failure")).mockResolvedValueOnce({ review: {} });
+    renderRoute();
+    await screen.findByText("Amy Chan");
+    fireEvent.click(screen.getByLabelText("Save review action"));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByLabelText("Save review action"));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorReview.mock.calls[0][3]).toEqual(hoisted.postCreatorReview.mock.calls[1][3]);
   });
 
   it("does not request a case before a workspace is selected", () => {

@@ -48,6 +48,40 @@ describe("creator case client", () => {
     );
   });
 
+  it("adds workspace and review filters to the focused queue URL", async () => {
+    await fetchCreatorReviewQueue("workspace-1", {
+      status: "approved",
+      riskLevel: "low",
+      missionId: "mission-1",
+      q: "amy",
+      page: 2,
+      pageSize: 10,
+      sort: "trust_score",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/admin/creators/review?workspace=workspace-1&status=approved&risk_level=low&mission_id=mission-1&q=amy&page=2&page_size=10&sort=trust_score",
+      expect.any(Object),
+    );
+  });
+
+  it("reads workspace-scoped creator case detail from the focused client", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({
+        creator: { id: "creator-1", workspaceId: "workspace-1", displayName: "Ada", avatarUrl: null, level: "L2", categories: [], scores: {}, socialHandles: null, createdAt: "2026-01-01T00:00:00.000Z" },
+        review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null },
+        notes: [], audit: [], social: { status: "unavailable", reason: "not_configured" }, profile: { status: "unavailable", reason: "not_configured" }, missionHistory: { status: "unavailable", reason: "not_configured" }, shortlists: [],
+      }),
+    });
+
+    const detail = await fetchCreatorDetail("workspace-1", "creator-1");
+
+    expect(detail.creator).toMatchObject({ workspaceId: "workspace-1", displayName: "Ada" });
+    expect(fetchMock).toHaveBeenCalledWith("/api/admin/creators/creator-1?workspace=workspace-1", expect.any(Object));
+  });
+
   it.each([
     ["queue", () => fetchCreatorReviewQueue("", {})],
     ["detail", () => fetchCreatorDetail("", "creator-1")],

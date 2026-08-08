@@ -6,6 +6,7 @@ const hoisted = vi.hoisted(() => ({
   fetchMissionShortlist: vi.fn(),
   fetchCreatorReviewQueue: vi.fn(),
   patchMissionShortlist: vi.fn(),
+  workspace: "workspace-1",
 }));
 
 vi.mock("@tanstack/react-router", async () => {
@@ -24,22 +25,22 @@ vi.mock("@/lib/admin", async () => ({
 }));
 vi.mock("@/lib/creatorCase", () => ({ fetchCreatorReviewQueue: hoisted.fetchCreatorReviewQueue }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
-vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "workspace-1", setWorkspace: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: hoisted.workspace, setWorkspace: vi.fn() }) }));
 
 import { Route } from "./operator.missions.$missionId";
 
 function renderRoute() {
   const C = Route.options.component as React.ComponentType;
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
-      <C />
-    </QueryClientProvider>,
-  );
+  const client = new QueryClient();
+  const ui = () => <QueryClientProvider client={client}><C /></QueryClientProvider>;
+  const view = render(ui());
+  return { ...view, rerenderRoute: () => view.rerender(ui()) };
 }
 
 describe("operator mission shortlist page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.workspace = "workspace-1";
     vi.spyOn(Route, "useParams").mockReturnValue({ missionId: "mission-1" } as never);
     hoisted.fetchMissionShortlist.mockResolvedValue({
       mission: { id: "mission-1", slug: "test-mission", title: "夏日面膜" },
@@ -173,5 +174,29 @@ describe("operator mission shortlist page", () => {
     );
     expect(await screen.findByText("Flagged Finn")).toBeInTheDocument();
     expect(screen.queryByText("Approved Ada")).not.toBeInTheDocument();
+  });
+
+  it("does not fetch the Creator queue without a workspace", async () => {
+    hoisted.workspace = "";
+    renderRoute();
+
+    await waitFor(() => expect(hoisted.fetchMissionShortlist).toHaveBeenCalledWith("mission-1"));
+    expect(hoisted.fetchCreatorReviewQueue).not.toHaveBeenCalled();
+  });
+
+  it("uses a workspace-specific queue cache key when the workspace changes", async () => {
+    hoisted.fetchCreatorReviewQueue
+      .mockResolvedValueOnce({ creators: [{ id: "creator-1", displayName: "Workspace one", avatarUrl: null, level: "L1", categories: [], scores: {}, social: { platforms: [], syncStatus: null, followerCount: null, engagementRate: null, apiSyncedAt: null, label: "Not synced", ownershipLabel: "Ownership not verified" }, profileMedia: { avatarUrl: null, portfolioCount: 0, publicHighlightCount: 0, completenessScore: 0 }, review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null }, enrichment: { social: { status: "available", value: { platforms: [], syncStatus: null, followerCount: null, engagementRate: null, apiSyncedAt: null, label: "Not synced", ownershipLabel: "Ownership not verified" } }, profile: { status: "available", value: { avatarUrl: null, portfolioCount: 0, publicHighlightCount: 0, completenessScore: 0 } } }, shortlist: null, lastActivityAt: null }], page: 1, pageSize: 25, total: 1 })
+      .mockResolvedValueOnce({ creators: [{ id: "creator-2", displayName: "Workspace two", avatarUrl: null, level: "L1", categories: [], scores: {}, social: { platforms: [], syncStatus: null, followerCount: null, engagementRate: null, apiSyncedAt: null, label: "Not synced", ownershipLabel: "Ownership not verified" }, profileMedia: { avatarUrl: null, portfolioCount: 0, publicHighlightCount: 0, completenessScore: 0 }, review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: null }, enrichment: { social: { status: "available", value: { platforms: [], syncStatus: null, followerCount: null, engagementRate: null, apiSyncedAt: null, label: "Not synced", ownershipLabel: "Ownership not verified" } }, profile: { status: "available", value: { avatarUrl: null, portfolioCount: 0, publicHighlightCount: 0, completenessScore: 0 } } }, shortlist: null, lastActivityAt: null }], page: 1, pageSize: 25, total: 1 });
+
+    const view = renderRoute();
+    expect(await screen.findByText("Workspace one")).toBeInTheDocument();
+    hoisted.workspace = "workspace-2";
+    view.rerenderRoute();
+
+    expect(await screen.findByText("Workspace two")).toBeInTheDocument();
+    expect(screen.queryByText("Workspace one")).not.toBeInTheDocument();
+    expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(1, "workspace-1", expect.any(Object));
+    expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(2, "workspace-2", expect.any(Object));
   });
 });

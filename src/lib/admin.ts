@@ -2,196 +2,12 @@
 // (Authorization: Bearer), resolved server-side against staff_users. Staff are global, so
 // no X-Workspace-Slug is sent (workspace scoping is the ?workspace/?ws query convenience).
 import { adminFetch } from "@/lib/adminTransport";
+import type { CreatorReviewStatus, CreatorRiskLevel } from "@/lib/creatorCase";
 
 export { AdminAuthError, AdminRequestError, adminFetch } from "@/lib/adminTransport";
 
-export type AdminReviewStatus = "needs_review" | "approved" | "flagged";
-export type AdminRiskLevel = "low" | "medium" | "high" | "unknown";
-export type AdminNoteCategory = "quality" | "brand_safety" | "fit" | "social" | "other";
 export type AdminShortlistStatus = "shortlisted" | "invited" | "dismissed" | "accepted" | "declined";
 export type AdminShortlistSource = "manual" | "applicant" | "match" | "review_queue";
-
-export type AdminReviewProjection = {
-  status: AdminReviewStatus;
-  riskLevel: AdminRiskLevel;
-  summary: string | null;
-  reviewedBy: string | null;
-  lastReviewedAt: string | null;
-  updatedAt: string | null;
-};
-
-export type AdminProfileMediaLink = {
-  id: string;
-  creatorId: string;
-  workspaceId: string;
-  url: string;
-  title: string;
-  platformType: string;
-  caption: string | null;
-  sortOrder: number;
-  publicHighlight: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type AdminProfileMedia = {
-  avatarUrl: string | null;
-  portfolioLinks: AdminProfileMediaLink[];
-  publicHighlights: Array<{
-    url: string;
-    title: string;
-    platform_type: string;
-    caption: string | null;
-    sort_order: number;
-  }>;
-  published: {
-    avatarUrl: string | null;
-    highlights: Array<{
-      url: string;
-      title: string;
-      platform_type: string;
-      caption: string | null;
-      sort_order: number;
-    }>;
-    publishedAt: string | null;
-  };
-  completeness: {
-    score: number;
-    items: Array<{ key: string; label: string; complete: boolean }>;
-  };
-};
-
-export type AdminCreatorReviewRow = {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-  level: string;
-  categories: string[];
-  scores: Record<string, number | null>;
-  social: {
-    platforms: string[];
-    syncStatus: string | null;
-    followerCount: number | null;
-    engagementRate: number | null;
-    apiSyncedAt: string | null;
-    label: "API-synced" | "Not synced";
-    ownershipLabel: "Ownership not verified";
-  };
-  profileMedia: {
-    avatarUrl: string | null;
-    portfolioCount: number;
-    publicHighlightCount: number;
-    completenessScore: number;
-  };
-  review: AdminReviewProjection;
-  shortlist: { status: AdminShortlistStatus; source: AdminShortlistSource; notes: string | null; updatedAt: string } | null;
-  lastActivityAt: string | null;
-};
-
-export type CreatorReviewQueueFilters = {
-  status?: AdminReviewStatus;
-  riskLevel?: AdminRiskLevel;
-  missionId?: string;
-  workspace?: string;
-  q?: string;
-  page?: number;
-  pageSize?: number;
-  sort?: "last_activity" | "trust_score" | "level" | "social_freshness";
-};
-
-type AdminCreatorDetailResponse = {
-  creator: {
-    id: string;
-    workspace_id: string;
-    display_name: string | null;
-    avatar_url: string | null;
-    level: string;
-    categories: string[];
-    scores: Record<string, number | null>;
-    social_handles: unknown;
-    created_at: string;
-  };
-  socialAccounts: Array<{
-    id: string;
-    platform: string;
-    handle: string | null;
-    sync_status: string | null;
-    follower_count: number | null;
-    engagement_rate: number | null;
-    api_synced_at: string | null;
-    external_avatar_url: string | null;
-    bio: string | null;
-    post_count: number | null;
-    following_count: number | null;
-    avg_likes: number | null;
-    avg_comments: number | null;
-    posting_frequency: number | null;
-    freshness_score: number | null;
-    content_themes: string[] | null;
-  }>;
-  social: AdminCreatorReviewRow["social"];
-  profileMedia: AdminProfileMedia;
-  review: AdminReviewProjection;
-  notes: Array<{ id: string; creator_id: string; workspace_id: string; operator_id: string; category: AdminNoteCategory; body: string; created_at: string }>;
-  shortlists: Array<{
-    mission_id: string;
-    creator_id: string;
-    workspace_id: string;
-    status: AdminShortlistStatus;
-    source: AdminShortlistSource;
-    notes: string | null;
-    created_by: string;
-    updated_by: string;
-    created_at: string;
-    updated_at: string;
-  }>;
-  audit: Array<Record<string, unknown>>;
-  missionHistory: Array<Record<string, unknown>>;
-};
-
-function queryString(filters: CreatorReviewQueueFilters): string {
-  const qs = new URLSearchParams();
-  if (filters.status) qs.set("status", filters.status);
-  if (filters.riskLevel) qs.set("risk_level", filters.riskLevel);
-  if (filters.missionId) qs.set("mission_id", filters.missionId);
-  if (filters.workspace) qs.set("workspace", filters.workspace);
-  if (filters.q) qs.set("q", filters.q);
-  qs.set("page", String(filters.page ?? 1));
-  qs.set("page_size", String(filters.pageSize ?? 25));
-  qs.set("sort", filters.sort ?? "last_activity");
-  return qs.toString();
-}
-
-/** @deprecated Creator-case screens use the workspace-required focused client. */
-export function fetchCreatorReviewQueue(filters: CreatorReviewQueueFilters = {}) {
-  return adminFetch<{ creators: AdminCreatorReviewRow[]; page: number; pageSize: number; total: number }>(
-    `/admin/creators/review?${queryString(filters)}`,
-  );
-}
-
-/** @deprecated Creator-case screens use the workspace-required focused client. */
-export function fetchCreatorDetail(creatorId: string) {
-  return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`);
-}
-
-/** @deprecated Creator-case screens use the workspace-required focused client. */
-export function postCreatorReview(
-  creatorId: string,
-  body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string },
-) {
-  return adminFetch<{ review: AdminReviewProjection }>(`/admin/creators/${creatorId}/review`, {
-    method: "POST",
-    body: JSON.stringify({ status: body.status, risk_level: body.riskLevel, summary: body.summary, note: body.note }),
-  });
-}
-
-/** @deprecated Creator-case screens use the workspace-required focused client. */
-export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string }) {
-  return adminFetch<{ note: { id: string; category: AdminNoteCategory; body: string; created_at: string } }>(
-    `/admin/creators/${creatorId}/notes`,
-    { method: "POST", body: JSON.stringify(body) },
-  );
-}
 
 export function fetchMissionShortlist(missionId: string) {
   return adminFetch<{
@@ -251,7 +67,7 @@ export type Application = {
   id: string;
   mission_id?: string;
   creator_id?: string;
-  creator_review?: { status: AdminReviewStatus; risk_level: AdminRiskLevel } | null;
+  creator_review?: { status: CreatorReviewStatus; risk_level: CreatorRiskLevel } | null;
   mission_shortlist?: { status: string } | null;
   creators: { display_name: string };
   missions: { slug: string; title: string; points_reward: number };
@@ -422,7 +238,7 @@ export type MissionActivityRow = {
   created_at: string;
   creators: { display_name: string };
   missions: { slug: string; title: string; points_reward: number };
-  creator_review: { status: AdminReviewStatus; risk_level: AdminRiskLevel };
+  creator_review: { status: CreatorReviewStatus; risk_level: CreatorRiskLevel };
   mission_shortlist: { status: string } | null;
 };
 

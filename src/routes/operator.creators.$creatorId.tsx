@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, NotebookPen, ShieldCheck, UserRound } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
@@ -71,6 +71,7 @@ function OperatorCreatorDetailRoute() {
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const [noteBody, setNoteBody] = useState("");
+  const pendingNoteCommandId = useRef<string | null>(null);
 
   const detail = useQuery({
     queryKey: ["admin-creator-detail", creatorId, workspace],
@@ -80,8 +81,10 @@ function OperatorCreatorDetailRoute() {
   });
 
   const noteMutation = useMutation({
-    mutationFn: (body: { category: CreatorNoteCategory; body: string }) => postCreatorNote(workspace, creatorId, body),
+    mutationFn: ({ body, commandId }: { body: { category: CreatorNoteCategory; body: string }; commandId: string }) =>
+      postCreatorNote(workspace, creatorId, body, commandId),
     onSuccess: async () => {
+      pendingNoteCommandId.current = null;
       setNoteBody("");
       await queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] });
     },
@@ -361,7 +364,10 @@ function OperatorCreatorDetailRoute() {
                     <textarea
                       aria-label="New internal note"
                       value={noteBody}
-                      onChange={(event) => setNoteBody(event.target.value)}
+                      onChange={(event) => {
+                        pendingNoteCommandId.current = null;
+                        setNoteBody(event.target.value);
+                      }}
                       rows={4}
                       className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-3 text-sm outline-none"
                     />
@@ -369,7 +375,11 @@ function OperatorCreatorDetailRoute() {
                       type="button"
                       aria-label="Save internal note"
                       disabled={noteMutation.isPending || noteBody.trim().length === 0}
-                      onClick={() => noteMutation.mutate({ category: "other", body: noteBody.trim() })}
+                      onClick={() => {
+                        const commandId = pendingNoteCommandId.current ?? crypto.randomUUID();
+                        pendingNoteCommandId.current = commandId;
+                        noteMutation.mutate({ body: { category: "other", body: noteBody.trim() }, commandId });
+                      }}
                       className="inline-flex h-10 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 text-sm font-heading font-bold disabled:opacity-50"
                     >
                       Save note

@@ -1,18 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  AdminAuthError,
-  AdminRequestError,
-  adminFetch,
   approveSubmission,
   createMission,
   fetchAdminMissions,
-  fetchCreatorDetail,
-  fetchCreatorReviewQueue,
   fetchEngagedUsers,
   fetchMissionShortlist,
   fetchSubmissions,
-  postCreatorReview,
 } from "./admin";
+import { AdminAuthError, AdminRequestError, adminFetch } from "./adminTransport";
 import { supabase } from "@/lib/supabase";
 
 vi.mock("@/lib/supabase", () => ({
@@ -45,55 +40,6 @@ describe("admin client helpers", () => {
     await expect(adminFetch("/admin/ping")).rejects.toBeInstanceOf(AdminAuthError);
   });
 
-  it("adds review queue filters to the admin URL", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ creators: [], page: 2, pageSize: 10, total: 0 }), { status: 200 }),
-    );
-
-    await fetchCreatorReviewQueue({
-      status: "approved",
-      riskLevel: "low",
-      missionId: "mission-1",
-      q: "amy",
-      page: 2,
-      pageSize: 10,
-      sort: "trust_score",
-    });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/admin/creators/review?status=approved&risk_level=low&mission_id=mission-1&q=amy&page=2&page_size=10&sort=trust_score",
-      expect.objectContaining({
-        headers: expect.objectContaining({ Authorization: "Bearer jwt-123" }),
-      }),
-    );
-  });
-
-  it("posts creator review bodies with snake_case API keys", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ review: { status: "approved", riskLevel: "low" } }), { status: 200 }),
-    );
-
-    await postCreatorReview("creator-1", {
-      status: "approved",
-      riskLevel: "low",
-      summary: "Ready.",
-      note: "Strong samples.",
-    });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/admin/creators/creator-1/review",
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({
-          status: "approved",
-          risk_level: "low",
-          summary: "Ready.",
-          note: "Strong samples.",
-        }),
-      }),
-    );
-  });
-
   it("reads mission shortlist responses from the shortlists key", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
@@ -110,95 +56,6 @@ describe("admin client helpers", () => {
     expect(result.shortlists).toHaveLength(1);
     expect(result.shortlists[0]).toMatchObject({ creator_id: "creator-1", status: "shortlisted" });
     expect(fetchMock).toHaveBeenCalledWith("/api/admin/missions/mission-1/shortlist", expect.any(Object));
-  });
-
-  it("preserves snake_case creator detail fields", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          creator: {
-            id: "creator-1",
-            workspace_id: "workspace-1",
-            display_name: "Ada",
-            avatar_url: null,
-            level: "L2",
-            categories: ["fashion"],
-            scores: { trust: 0.9 },
-            social_handles: [{ platform: "instagram", handle: "@ada" }],
-            created_at: "2025-01-01T00:00:00.000Z",
-          },
-          social: {
-            platforms: ["instagram"],
-            syncStatus: "synced",
-            followerCount: 1000,
-            engagementRate: 0.12,
-            apiSyncedAt: "2025-01-01T00:00:00.000Z",
-            label: "API-synced",
-            ownershipLabel: "Ownership not verified",
-          },
-          socialAccounts: [
-            {
-              id: "social-1",
-              platform: "instagram",
-              handle: "@ada",
-              sync_status: "synced",
-              follower_count: 1000,
-              engagement_rate: 0.12,
-              api_synced_at: "2025-01-01T00:00:00.000Z",
-              external_avatar_url: null,
-              bio: "Creative director",
-              post_count: 120,
-              following_count: 80,
-              avg_likes: 500,
-              avg_comments: 12,
-              posting_frequency: 4,
-              freshness_score: 0.9,
-              content_themes: ["fashion", "lifestyle"],
-            },
-          ],
-          review: {
-            status: "approved",
-            riskLevel: "low",
-            summary: null,
-            reviewedBy: null,
-            lastReviewedAt: null,
-            updatedAt: null,
-          },
-          notes: [],
-          shortlists: [],
-          audit: [],
-          missionHistory: [],
-        }),
-        { status: 200 },
-      ),
-    );
-
-    const detail = await fetchCreatorDetail("creator-1");
-
-    const creator: {
-      id: string;
-      workspace_id: string;
-      display_name: string | null;
-      avatar_url: string | null;
-      level: string;
-      categories: string[];
-      scores: Record<string, number | null>;
-      social_handles: unknown;
-      created_at: string;
-    } = detail.creator;
-
-    expect(creator.workspace_id).toBe("workspace-1");
-    expect(creator.display_name).toBe("Ada");
-    expect(creator.social_handles).toEqual([{ platform: "instagram", handle: "@ada" }]);
-    expect(detail.socialAccounts).toHaveLength(1);
-    expect(detail.socialAccounts[0]).toMatchObject({
-      id: "social-1",
-      platform: "instagram",
-      sync_status: "synced",
-      external_avatar_url: null,
-      content_themes: ["fashion", "lifestyle"],
-    });
-    expect(detail.shortlists).toEqual([]);
   });
 
   it("approveSubmission posts notes + quality_rating", async () => {
