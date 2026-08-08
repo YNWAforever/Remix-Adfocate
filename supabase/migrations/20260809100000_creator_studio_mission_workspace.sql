@@ -316,6 +316,19 @@ create trigger mission_draft_assets_editable_work_item
   before insert or update or delete on public.mission_draft_assets
   for each row execute function public.require_creator_studio_asset_work_item_editable();
 
+create or replace function public.reject_creator_studio_asset_truncate()
+returns trigger
+language plpgsql
+as $$
+begin
+  raise exception 'creator_studio_asset_truncate_prohibited' using errcode = '55000';
+end;
+$$;
+
+create trigger mission_draft_assets_prevent_truncate
+  before truncate on public.mission_draft_assets
+  for each statement execute function public.reject_creator_studio_asset_truncate();
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'creator-studio-assets',

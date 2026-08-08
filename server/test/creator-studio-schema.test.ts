@@ -109,6 +109,9 @@ describe("creator studio mission workspace migration", () => {
     expect(assetStateGuard).toContain("raise exception 'invalid_transition'");
     expect(sql).toContain("create trigger mission_draft_assets_editable_work_item");
     expect(sql).toContain("before insert or update or delete on public.mission_draft_assets");
+    expect(sql).toContain("create trigger mission_draft_assets_prevent_truncate");
+    expect(sql).toContain("before truncate on public.mission_draft_assets");
+    expect(sql).toContain("for each statement execute function public.reject_creator_studio_asset_truncate()");
   });
 
   it("configures the private Creator Studio bucket with the exact upload constraints", () => {
