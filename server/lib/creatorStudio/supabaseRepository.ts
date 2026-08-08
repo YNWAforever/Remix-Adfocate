@@ -31,13 +31,28 @@ const asRow = (value: unknown): Row => value && typeof value === "object" && !Ar
 const text = (row: Row, key: string, fallback = ""): string => typeof row[key] === "string" ? row[key] : fallback;
 const strings = (value: unknown): string[] => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 const bool = (value: unknown): boolean => value === true;
+const requirementKey = (value: string): string => value.trim().toLowerCase().replace(/[\s_-]+/g, "");
 
 function mapRequirements(value: unknown): WorkItemRequirements {
-  const requirements = asRow(asRow(value).requirements);
+  const snapshot = asRow(value);
+  if (Array.isArray(snapshot.requirements)) {
+    const requirements = strings(snapshot.requirements);
+    return {
+      caption: requirements.some((requirement) => requirementKey(requirement) === "caption"),
+      externalUrl: requirements.some((requirement) => requirementKey(requirement) === "externalurl"),
+      checklist: requirements.filter((requirement) => {
+        const key = requirementKey(requirement);
+        return key !== "caption" && key !== "externalurl";
+      }),
+    };
+  }
+
+  const requirements = asRow(snapshot.requirements);
+  const domainRequirements = Object.keys(requirements).length > 0 ? requirements : snapshot;
   return {
-    caption: bool(requirements.caption),
-    externalUrl: bool(requirements.externalUrl) || bool(requirements.external_url),
-    checklist: strings(requirements.checklist),
+    caption: bool(domainRequirements.caption),
+    externalUrl: bool(domainRequirements.externalUrl) || bool(domainRequirements.external_url),
+    checklist: strings(domainRequirements.checklist),
   };
 }
 

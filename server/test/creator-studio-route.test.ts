@@ -137,7 +137,7 @@ describe("Creator Studio workspace route", () => {
     expect(JSON.stringify(body)).not.toContain("private database details");
   });
 
-  it("maps nested persisted requirements and sorts tied workspace projections deterministically", async () => {
+  it("maps persisted requirement arrays and sorts tied workspace projections deterministically", async () => {
     const repository = new SupabaseCreatorStudioRepository(fakeSupabaseClient({
       mission_submissions: {
         data: {
@@ -149,8 +149,8 @@ describe("Creator Studio workspace route", () => {
       mission_workflows: { data: { id: "workflow-1", state: "drafting", revision: 3 }, error: null },
       mission_work_items: {
         data: [
-          { id: "work-item-b", position: 1, title: "Reel", instructions: "Create a reel", requirements: { requirements: { caption: false, external_url: false, checklist: [] }, platforms: ["instagram"] }, requires_asset: false, state: "not_started" },
-          { id: "work-item-a", position: 1, title: "Story", instructions: "Create a story", requirements: { requirements: { caption: true, external_url: true, checklist: ["disclosure"] }, platforms: ["instagram"] }, requires_asset: true, state: "drafting" },
+          { id: "work-item-b", position: 1, title: "Reel", instructions: "Create a reel", requirements: { requirements: [], platforms: ["instagram"] }, requires_asset: false, state: "not_started" },
+          { id: "work-item-a", position: 1, title: "Story", instructions: "Create a story", requirements: { requirements: ["caption", "external_url", "disclosure"], platforms: ["instagram"] }, requires_asset: true, state: "drafting" },
         ],
         error: null,
       },
