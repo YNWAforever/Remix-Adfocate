@@ -1,4 +1,5 @@
 import { NOTE_CATEGORIES, REVIEW_STATUSES, RISK_LEVELS } from "../operatorCrm/types";
+import type { CreatorReviewQueue, CreatorReviewQueueFilters } from "./types";
 import type { CreatorCaseRepository } from "./repository";
 import { CreatorCaseError } from "./errors";
 import type {
@@ -21,17 +22,37 @@ type CompletedCommand = {
 export type InMemoryCreatorCaseRepositoryOptions = {
   cases: CreatorCaseReadModel[];
   failurePoint?: InMemoryFailurePoint;
+  knownMissionIds?: string[];
 };
 
+const DEFAULT_PAGE_SIZE = 25;
+const MAX_PAGE_SIZE = 100;
+
 const clone = <T>(value: T): T => structuredClone(value);
+
+const canonicalize = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, nested]) => [key, canonicalize(nested)]),
+    );
+  }
+  return value;
+};
+
+const fingerprint = (value: unknown): string => JSON.stringify(canonicalize(value));
 
 export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   private readonly cases = new Map<string, CreatorCaseReadModel>();
   private readonly completedCommands = new Map<string, CompletedCommand>();
   private readonly failurePoint?: InMemoryFailurePoint;
+  private readonly knownMissionIds?: ReadonlySet<string>;
 
   constructor(options: InMemoryCreatorCaseRepositoryOptions) {
     this.failurePoint = options.failurePoint;
+    this.knownMissionIds = options.knownMissionIds ? new Set(options.knownMissionIds) : undefined;
     for (const creatorCase of options.cases) {
       this.cases.set(this.caseKey(creatorCase.creator.workspaceId, creatorCase.creator.id), clone(creatorCase));
     }
@@ -39,52 +60,46 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
 
   async listReviewQueue(
     context: CreatorCaseReadContext,
-    filters: {
-      status?: CreatorCaseReadModel["review"]["status"];
-      riskLevel?: CreatorCaseReadModel["review"]["riskLevel"];
-      missionId?: string;
-      q?: string;
-      page: number;
-      pageSize: number;
-      sort: "last_activity" | "trust_score" | "level" | "social_freshness";
-    },
-  ) {
+    filters: CreatorReviewQueueFilters,
+  ): Promise<CreatorReviewQueue> {
     this.validateContext(context);
-    const matches = [...this.cases.values()].filter((creatorCase) => {
-      if (creatorCase.creator.workspaceId !== context.workspaceId) return false;
-      if (filters.status && creatorCase.review.status !== filters.status) return false;
-      if (filters.riskLevel && creatorCase.review.riskLevel !== filters.riskLevel) return false;
-      if (filters.q && !creatorCase.creator.displayName?.toLowerCase().includes(filters.q.toLowerCase())) return false;
-      return true;
+    if (filters.missionId && this.knownMissionIds && !this.knownMissionIds.has(filters.missionId)) {
+      throw new CreatorCaseError("mission_not_found", "Mission was not found");
+    }
+
+    const rows = [...this.cases.values()]
+      .filter((creatorCase) => creatorCase.creator.workspaceId === context.workspaceId)
+      .map((creatorCase) => this.toQueueRow(creatorCase))
+      .filter((row) => {
+        if (filters.status && row.review.status !== filters.status) return false;
+        if (filters.riskLevel && row.review.riskLevel !== filters.riskLevel) return false;
+        if (filters.q && !row.displayName.toLowerCase().includes(filters.q.toLowerCase())) return false;
+        if (filters.missionId && !filters.status && row.review.status === "flagged") return false;
+        return true;
+      });
+
+    rows.sort((left, right) => {
+      if (filters.missionId) {
+        const missionPriority = (left.review.status === "approved" ? 0 : 1) - (right.review.status === "approved" ? 0 : 1);
+        if (missionPriority !== 0) return missionPriority;
+      }
+      switch (filters.sort) {
+        case "trust_score": return this.compareNullableDesc(this.trustScore(left.scores), this.trustScore(right.scores));
+        case "level": return this.compareNullableDesc(this.levelRank(left.level), this.levelRank(right.level));
+        case "social_freshness": return this.compareNullableDesc(left.social.apiSyncedAt, right.social.apiSyncedAt);
+        case "last_activity":
+        default: return this.compareNullableDesc(left.lastActivityAt, right.lastActivityAt);
+      }
     });
-    const start = (filters.page - 1) * filters.pageSize;
+
+    const page = Math.max(filters.page || 1, 1);
+    const pageSize = Math.min(Math.max(filters.pageSize || DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
+    const start = (page - 1) * pageSize;
     return {
-      creators: matches.slice(start, start + filters.pageSize).map((creatorCase) => ({
-        id: creatorCase.creator.id,
-        displayName: creatorCase.creator.displayName ?? "",
-        avatarUrl: creatorCase.creator.avatarUrl,
-        level: creatorCase.creator.level ?? "",
-        categories: clone(creatorCase.creator.categories),
-        scores: clone(creatorCase.creator.scores),
-        social: creatorCase.social.status === "available"
-          ? creatorCase.social.value.summary
-          : {
-              platforms: [], syncStatus: null, followerCount: null, engagementRate: null,
-              apiSyncedAt: null, label: "Not synced" as const, ownershipLabel: "Ownership not verified" as const,
-            },
-        profileMedia: {
-          avatarUrl: creatorCase.creator.avatarUrl,
-          portfolioCount: 0,
-          publicHighlightCount: 0,
-          completenessScore: creatorCase.profile.status === "available" ? creatorCase.profile.value.completeness.score : 0,
-        },
-        review: clone(creatorCase.review),
-        shortlist: null,
-        lastActivityAt: creatorCase.review.updatedAt,
-      })),
-      page: filters.page,
-      pageSize: filters.pageSize,
-      total: matches.length,
+      creators: rows.slice(start, start + pageSize),
+      page,
+      pageSize,
+      total: rows.length,
     };
   }
 
@@ -153,6 +168,56 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     return `${workspaceId}:${creatorId}`;
   }
 
+  private toQueueRow(creatorCase: CreatorCaseReadModel): CreatorReviewQueue["creators"][number] {
+    const social = creatorCase.social.status === "available"
+      ? creatorCase.social.value.summary
+      : {
+          platforms: [], syncStatus: null, followerCount: null, engagementRate: null,
+          apiSyncedAt: null, label: "Not synced" as const, ownershipLabel: "Ownership not verified" as const,
+        };
+    const lastActivityAt = [creatorCase.creator.createdAt, creatorCase.review.updatedAt, social.apiSyncedAt]
+      .filter((value): value is string => value !== null)
+      .sort()
+      .at(-1) ?? null;
+    return {
+      id: creatorCase.creator.id,
+      displayName: creatorCase.creator.displayName ?? creatorCase.creator.id,
+      avatarUrl: creatorCase.creator.avatarUrl,
+      level: creatorCase.creator.level ?? "L0",
+      categories: clone(creatorCase.creator.categories),
+      scores: clone(creatorCase.creator.scores),
+      social,
+      profileMedia: {
+        avatarUrl: creatorCase.creator.avatarUrl,
+        portfolioCount: 0,
+        publicHighlightCount: 0,
+        completenessScore: creatorCase.profile.status === "available" ? creatorCase.profile.value.completeness.score : 0,
+      },
+      review: clone(creatorCase.review),
+      shortlist: null,
+      lastActivityAt,
+    };
+  }
+
+  private trustScore(scores: Record<string, number | null>): number {
+    const values = Object.values(scores).filter((value): value is number => typeof value === "number");
+    return values.length === 0 ? -1 : values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  private levelRank(level: string): number {
+    const numeric = Number(level.replace(/^L/i, ""));
+    return Number.isFinite(numeric) ? numeric : -1;
+  }
+
+  private compareNullableDesc(left: string | number | null, right: string | number | null): number {
+    if (left == null && right == null) return 0;
+    if (left == null) return 1;
+    if (right == null) return -1;
+    if (left > right) return -1;
+    if (left < right) return 1;
+    return 0;
+  }
+
   private validateContext(context: CreatorCaseReadContext & Partial<Pick<CreatorCaseCommandContext, "commandId">>): void {
     if (!context.workspaceId) throw new CreatorCaseError("workspace_required", "workspaceId is required");
     if ("commandId" in context && !context.commandId) throw new CreatorCaseError("db_error", "commandId is required");
@@ -207,7 +272,7 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
   private replay(commandId: string, payload: unknown): CreatorCaseReadModel | undefined {
     const completed = this.completedCommands.get(commandId);
     if (!completed) return undefined;
-    if (JSON.stringify(completed.payload) !== JSON.stringify(payload)) throw new CreatorCaseError("command_conflict", "Command id was already used with a different payload");
+    if (fingerprint(completed.payload) !== fingerprint(payload)) throw new CreatorCaseError("command_conflict", "Command id was already used with a different payload");
     return clone(completed.result);
   }
 

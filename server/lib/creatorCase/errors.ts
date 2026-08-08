@@ -1,6 +1,7 @@
 export type CreatorCaseErrorCode =
   | "workspace_required"
   | "creator_not_found"
+  | "mission_not_found"
   | "workspace_mismatch"
   | "bad_review_status"
   | "bad_risk_level"

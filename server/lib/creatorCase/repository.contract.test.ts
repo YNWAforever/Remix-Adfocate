@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { CreatorCaseReadModel } from "./types";
-import { CreatorCaseError } from "./errors";
 import { InMemoryCreatorCaseRepository } from "./inMemoryRepository";
 
 const makeCase = (
   overrides: Partial<CreatorCaseReadModel["creator"]> = {},
+  caseOverrides: Partial<Omit<CreatorCaseReadModel, "creator">> = {},
 ): CreatorCaseReadModel => ({
   creator: {
     id: "creator-default",
@@ -31,6 +31,7 @@ const makeCase = (
   social: { status: "unavailable", reason: "not_configured" },
   profile: { status: "unavailable", reason: "not_configured" },
   missionHistory: { status: "unavailable", reason: "not_configured" },
+  ...caseOverrides,
 });
 
 const context = {
@@ -102,6 +103,28 @@ describe("InMemoryCreatorCaseRepository contract", () => {
     await expect(repo.applyReview(context, { ...approvedCommand, summary: "Different" })).rejects.toMatchObject({ code: "command_conflict" });
   });
 
+  it("replays an equivalent command when object properties were inserted in a different order", async () => {
+    const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })] });
+    const reorderedContext = {
+      commandId: context.commandId,
+      actorLabel: context.actorLabel,
+      actorId: context.actorId,
+      workspaceId: context.workspaceId,
+    };
+    const reorderedCommand = {
+      note: approvedCommand.note,
+      summary: approvedCommand.summary,
+      riskLevel: approvedCommand.riskLevel,
+      status: approvedCommand.status,
+      creatorId: approvedCommand.creatorId,
+    };
+
+    const first = await repo.applyReview(context, approvedCommand);
+    const replay = await repo.applyReview(reorderedContext, reorderedCommand);
+
+    expect(replay).toEqual(first);
+  });
+
   it("appends a note without changing the review", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })] });
 
@@ -149,11 +172,105 @@ describe("InMemoryCreatorCaseRepository contract", () => {
   it("exposes CreatorCaseError codes for validation failures", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })] });
 
-    try {
-      await repo.applyReview({ ...context, workspaceId: "" }, approvedCommand);
-    } catch (error) {
-      expect(error).toBeInstanceOf(CreatorCaseError);
-      expect((error as CreatorCaseError).code).toBe("workspace_required");
-    }
+    await expect(repo.applyReview({ ...context, workspaceId: "" }, approvedCommand)).rejects.toMatchObject({
+      code: "workspace_required",
+    });
+  });
+
+  it("preserves queue filters, requested sort, bounded pagination, totals, and metadata", async () => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [
+        makeCase({ creatorId: "creator-high", workspaceId: "workspace-1", displayName: "High Match", level: "L4", scores: { trust: 90 } }, {
+          review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-05T00:00:00.000Z" },
+        }),
+        makeCase({ creatorId: "creator-low", workspaceId: "workspace-1", displayName: "Low Match", level: "L2", scores: { trust: 40 } }, {
+          review: { status: "approved", riskLevel: "high", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-06T00:00:00.000Z" },
+        }),
+        makeCase({ creatorId: "creator-other", workspaceId: "workspace-1", displayName: "Other", level: "L9", scores: { trust: 100 } }, {
+          review: { status: "needs_review", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-07T00:00:00.000Z" },
+        }),
+      ],
+    });
+
+    const result = await repo.listReviewQueue(context, {
+      status: "approved",
+      riskLevel: "low",
+      q: "match",
+      page: 0,
+      pageSize: 500,
+      sort: "trust_score",
+    });
+
+    expect(result.creators.map((creator) => creator.id)).toEqual(["creator-high"]);
+    expect(result).toMatchObject({ page: 1, pageSize: 100, total: 1 });
+  });
+
+  it("applies mission queue priority and excludes flagged cases without an explicit status", async () => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [
+        makeCase({ creatorId: "creator-flagged", workspaceId: "workspace-1", displayName: "Flagged" }, {
+          review: { status: "flagged", riskLevel: "high", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-08T00:00:00.000Z" },
+        }),
+        makeCase({ creatorId: "creator-approved", workspaceId: "workspace-1", displayName: "Approved" }, {
+          review: { status: "approved", riskLevel: "low", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-01T00:00:00.000Z" },
+        }),
+        makeCase({ creatorId: "creator-needs-review", workspaceId: "workspace-1", displayName: "Needs review" }, {
+          review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-09T00:00:00.000Z" },
+        }),
+      ],
+    });
+
+    const result = await repo.listReviewQueue(context, {
+      missionId: "mission-1",
+      page: 1,
+      pageSize: 25,
+      sort: "last_activity",
+    });
+
+    expect(result.creators.map((creator) => creator.id)).toEqual(["creator-approved", "creator-needs-review"]);
+    expect(result.total).toBe(2);
+  });
+
+  it("rejects an unknown mission before listing a mission queue", async () => {
+    const repo = new InMemoryCreatorCaseRepository({
+      cases: [makeCase({ creatorId: "creator-1", workspaceId: "workspace-1" })],
+      knownMissionIds: ["mission-1"],
+    });
+
+    await expect(repo.listReviewQueue(context, {
+      missionId: "missing-mission",
+      page: 1,
+      pageSize: 25,
+      sort: "last_activity",
+    })).rejects.toMatchObject({ code: "mission_not_found" });
+  });
+
+  it.each([
+    ["last_activity", "creator-newest"],
+    ["trust_score", "creator-high-score"],
+    ["level", "creator-high-level"],
+    ["social_freshness", "creator-fresh-social"],
+  ] as const)("supports %s queue ordering", async (sort, firstId) => {
+    const cases = sort === "last_activity"
+      ? [
+          makeCase({ creatorId: "creator-old", workspaceId: "workspace-1" }, { review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-01T00:00:00.000Z" } }),
+          makeCase({ creatorId: "creator-newest", workspaceId: "workspace-1" }, { review: { status: "needs_review", riskLevel: "unknown", summary: null, reviewedBy: null, lastReviewedAt: null, updatedAt: "2026-08-09T00:00:00.000Z" } }),
+        ]
+      : sort === "trust_score"
+        ? [makeCase({ creatorId: "creator-low-score", workspaceId: "workspace-1", scores: { trust: 10 } }), makeCase({ creatorId: "creator-high-score", workspaceId: "workspace-1", scores: { trust: 99 } })]
+        : sort === "level"
+          ? [makeCase({ creatorId: "creator-low-level", workspaceId: "workspace-1", level: "L1" }), makeCase({ creatorId: "creator-high-level", workspaceId: "workspace-1", level: "L9" })]
+          : [
+              makeCase({ creatorId: "creator-stale-social", workspaceId: "workspace-1", socialHandles: {} }),
+              makeCase({ creatorId: "creator-fresh-social", workspaceId: "workspace-1", socialHandles: {} }, { social: { status: "available", value: { accounts: [], summary: { platforms: [], syncStatus: "synced", followerCount: 1, engagementRate: 1, apiSyncedAt: "2026-08-10T00:00:00.000Z", label: "API-synced", ownershipLabel: "Ownership not verified" } } } }),
+            ];
+
+    const repo = new InMemoryCreatorCaseRepository({
+      cases,
+    });
+
+    const result = await repo.listReviewQueue(context, { page: 1, pageSize: 1, sort });
+
+    expect(result.creators[0]?.id).toBe(firstId);
   });
 });
