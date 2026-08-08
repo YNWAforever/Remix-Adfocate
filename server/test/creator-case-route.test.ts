@@ -1,11 +1,30 @@
 import { Hono } from "hono";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CreatorCaseError } from "../lib/creatorCase/errors";
 import { InMemoryCreatorCaseRepository } from "../lib/creatorCase/inMemoryRepository";
 import type { CreatorCaseRepository } from "../lib/creatorCase/repository";
 import type { CreatorCaseReadModel } from "../lib/creatorCase/types";
 import type { AdminEnv } from "../lib/staffAuth";
 import { createAdminOperatorCrmRoutes } from "../routes/adminOperatorCrm";
+
+const missionShortlistSpies = vi.hoisted(() => ({
+  serviceClient: vi.fn(() => ({ source: "mission-shortlist-route-test" })),
+  listMissionShortlist: vi.fn(),
+  upsertMissionShortlist: vi.fn(),
+  updateMissionShortlistStatus: vi.fn(),
+}));
+
+vi.mock("../lib/supabase.js", () => ({ serviceClient: missionShortlistSpies.serviceClient }));
+
+vi.mock("../lib/operatorCrm/repo.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/operatorCrm/repo")>();
+  return {
+    ...actual,
+    listMissionShortlist: missionShortlistSpies.listMissionShortlist,
+    upsertMissionShortlist: missionShortlistSpies.upsertMissionShortlist,
+    updateMissionShortlistStatus: missionShortlistSpies.updateMissionShortlistStatus,
+  };
+});
 
 const makeCase = (overrides: Partial<CreatorCaseReadModel["creator"]> = {}): CreatorCaseReadModel => ({
   creator: {
@@ -64,6 +83,10 @@ function reviewRequest(commandId = "command-1", body: Record<string, unknown> = 
 }
 
 describe("Creator case admin routes", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("routes Creator queue, detail, and note reads through the injected seam", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
     const app = routeFor(repo);
@@ -100,6 +123,42 @@ describe("Creator case admin routes", () => {
     ).toBe("staff-1");
   });
 
+  it("keeps mission shortlist routes delegated to the existing shortlist repository", async () => {
+    missionShortlistSpies.listMissionShortlist.mockResolvedValue({ mission: { id: "mission-1" }, shortlists: [] });
+    missionShortlistSpies.upsertMissionShortlist.mockResolvedValue({ mission_id: "mission-1", creator_id: "creator-1" });
+    missionShortlistSpies.updateMissionShortlistStatus.mockResolvedValue({ mission_id: "mission-1", creator_id: "creator-1", status: "invited" });
+    const app = routeFor(new InMemoryCreatorCaseRepository({ cases: [makeCase()] }));
+
+    expect((await app.request("/missions/mission-1/shortlist")).status).toBe(200);
+    expect(
+      (await app.request("/missions/mission-1/shortlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ creator_id: "creator-1", source: "manual" }),
+      })).status,
+    ).toBe(200);
+    expect(
+      (await app.request("/missions/mission-1/shortlist/creator-1", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "invited" }),
+      })).status,
+    ).toBe(200);
+
+    expect(missionShortlistSpies.listMissionShortlist).toHaveBeenCalledWith(expect.anything(), "mission-1");
+    expect(missionShortlistSpies.upsertMissionShortlist).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      missionId: "mission-1",
+      creatorId: "creator-1",
+      context: { operatorId: "staff-1", actorLabel: "staff@example.com" },
+    }));
+    expect(missionShortlistSpies.updateMissionShortlistStatus).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      missionId: "mission-1",
+      creatorId: "creator-1",
+      status: "invited",
+      context: { operatorId: "staff-1", actorLabel: "staff@example.com" },
+    }));
+  });
+
   it("requires an explicit workspace before invoking a Creator case command", async () => {
     const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
     const response = await routeFor(repo).request("/creators/creator-1/review", reviewRequest());
@@ -108,6 +167,19 @@ describe("Creator case admin routes", () => {
     expect(await response.json()).toMatchObject({ code: "workspace_required" });
     expect((await repo.getCase({ workspaceId: "workspace-1", actorId: "staff-1", actorLabel: "staff@example.com" }, "creator-1")).review.status)
       .toBe("needs_review");
+  });
+
+  it("requires a workspace for Creator queue and detail reads", async () => {
+    const repo = new InMemoryCreatorCaseRepository({ cases: [makeCase()] });
+    const app = routeFor(repo);
+
+    const queue = await app.request("/creators/review");
+    expect(queue.status).toBe(422);
+    expect(await queue.json()).toMatchObject({ code: "workspace_required" });
+
+    const detail = await app.request("/creators/creator-1");
+    expect(detail.status).toBe(422);
+    expect(await detail.json()).toMatchObject({ code: "workspace_required" });
   });
 
   it("requires a command id for Creator case mutations", async () => {
