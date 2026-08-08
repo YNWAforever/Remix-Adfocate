@@ -33,7 +33,7 @@ const strings = (value: unknown): string[] => Array.isArray(value) ? value.filte
 const bool = (value: unknown): boolean => value === true;
 
 function mapRequirements(value: unknown): WorkItemRequirements {
-  const requirements = asRow(value);
+  const requirements = asRow(asRow(value).requirements);
   return {
     caption: bool(requirements.caption),
     externalUrl: bool(requirements.externalUrl) || bool(requirements.external_url),
@@ -140,9 +140,13 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
         .eq("mission_submission_id", context.submissionId)
         .eq("creator_id", context.actorId)
         .eq("workspace_id", context.workspaceId)
-        .order("position", { ascending: true });
+        .order("position", { ascending: true })
+        .order("id", { ascending: true });
       if (workItemError) throw workItemError;
-      const workItemRows = (workItemData ?? []).map(asRow).sort((left, right) => Number(left.position) - Number(right.position));
+      const workItemRows = (workItemData ?? []).map(asRow).sort((left, right) => (
+        Number(left.position) - Number(right.position)
+        || text(left, "id").localeCompare(text(right, "id"))
+      ));
       const workItemIds = workItemRows.map((row) => text(row, "id")).filter(Boolean);
 
       const [draftRows, assetRows, reviewFeedback] = await Promise.all([
@@ -167,7 +171,10 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
         const id = text(row, "id");
         const draft = mapDraft(draftsByItemId.get(id));
         const assets = (assetsByItemId.get(id) ?? [])
-          .sort((left, right) => text(left, "created_at").localeCompare(text(right, "created_at")))
+          .sort((left, right) => (
+            text(left, "created_at").localeCompare(text(right, "created_at"))
+            || text(left, "id").localeCompare(text(right, "id"))
+          ))
           .map(mapAsset);
         const item: WorkItem = {
           id,
@@ -220,10 +227,10 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     }
   }
 
-  async saveDraft(): never { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async createUploadGrant(): never { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async finalizeAsset(): never { throw new Error("Creator Studio commands are not implemented in this task"); }
-  async submitWorkItem(): never { throw new Error("Creator Studio commands are not implemented in this task"); }
+  async saveDraft(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
+  async createUploadGrant(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
+  async finalizeAsset(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
+  async submitWorkItem(): Promise<never> { throw new Error("Creator Studio commands are not implemented in this task"); }
 
   private async readDrafts(context: CreatorStudioContext, workItemIds: string[]): Promise<Row[]> {
     if (workItemIds.length === 0) return [];
@@ -247,7 +254,9 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
       .eq("workspace_id", context.workspaceId)
       .eq("mission_submission_id", context.submissionId)
       .in("mission_work_item_id", workItemIds)
-      .in("upload_state", ["pending", "finalized"]);
+      .in("upload_state", ["pending", "finalized"])
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
     if (error) throw error;
     return (data ?? []).map(asRow);
   }
@@ -264,12 +273,16 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
       .eq("workspace_id", context.workspaceId)
       .eq("mission_submission_id", context.submissionId)
       .in("mission_work_item_id", workItemIds)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
     if (error) return { status: "unavailable", reason: "temporarily_unavailable" };
     return {
       status: "available",
       value: (data ?? []).map(asRow)
-        .sort((left, right) => text(left, "created_at").localeCompare(text(right, "created_at")))
+        .sort((left, right) => (
+          text(left, "created_at").localeCompare(text(right, "created_at"))
+          || text(left, "id").localeCompare(text(right, "id"))
+        ))
         .map((row) => ({
           workItemId: text(row, "mission_work_item_id"),
           value: {
