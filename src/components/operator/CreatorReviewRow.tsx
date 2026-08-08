@@ -11,11 +11,12 @@ import {
 } from "@/components/operator/OperatorBadges";
 import {
   postMissionShortlist,
-  type AdminCreatorReviewRow,
 } from "@/lib/admin";
+import type { CreatorReviewQueueRow } from "@/lib/creatorCase";
 
 type CreatorReviewRowProps = {
-  creator: AdminCreatorReviewRow;
+  workspaceId: string;
+  creator: CreatorReviewQueueRow;
   missionId?: string;
   onShortlistSuccess?: () => void;
 };
@@ -33,7 +34,7 @@ export function formatAdminErrorMessage(error: unknown) {
   return "Something went wrong";
 }
 
-function formatTrustSummary(scores: AdminCreatorReviewRow["scores"]) {
+function formatTrustSummary(scores: CreatorReviewQueueRow["scores"]) {
   const entries = Object.entries(scores).filter(([, value]) => typeof value === "number") as Array<[string, number]>;
   if (entries.length === 0) {
     return "No trust scores";
@@ -53,7 +54,7 @@ function formatLastActivity(lastActivityAt: string | null) {
   });
 }
 
-export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: CreatorReviewRowProps) {
+export function CreatorReviewRow({ workspaceId, creator, missionId, onShortlistSuccess }: CreatorReviewRowProps) {
   const queryClient = useQueryClient();
   const [showShortlistNote, setShowShortlistNote] = useState(false);
   const [shortlistNote, setShortlistNote] = useState("");
@@ -154,7 +155,7 @@ export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: Cre
               Shortlist
             </button>
           ) : null}
-          <ReviewActionPanel creator={creator} />
+          <ReviewActionPanel workspaceId={workspaceId} creator={creator} />
         </div>
 
         {missionId && showShortlistNote ? (

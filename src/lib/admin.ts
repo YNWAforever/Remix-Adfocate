@@ -1,7 +1,9 @@
 // Admin/operator API client. B3a: authenticates with the staff member's Supabase JWT
 // (Authorization: Bearer), resolved server-side against staff_users. Staff are global, so
 // no X-Workspace-Slug is sent (workspace scoping is the ?workspace/?ws query convenience).
-import { supabase } from "@/lib/supabase";
+import { adminFetch } from "@/lib/adminTransport";
+
+export { AdminAuthError, AdminRequestError, adminFetch } from "@/lib/adminTransport";
 
 export type AdminReviewStatus = "needs_review" | "approved" | "flagged";
 export type AdminRiskLevel = "low" | "medium" | "high" | "unknown";
@@ -147,39 +149,6 @@ type AdminCreatorDetailResponse = {
   missionHistory: Array<Record<string, unknown>>;
 };
 
-export class AdminAuthError extends Error {}
-
-export class AdminRequestError extends Error {
-  code?: string;
-  fields?: Record<string, string>;
-  constructor(message: string, code?: string, fields?: Record<string, string>) {
-    super(message);
-    this.code = code;
-    this.fields = fields;
-  }
-}
-
-export async function adminFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  const res = await fetch(`/api${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(init.headers ?? {}),
-    },
-  });
-  if (res.status === 401) {
-    throw new AdminAuthError("unauthorized");
-  }
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields);
-  }
-  return res.json() as Promise<T>;
-}
-
 function queryString(filters: CreatorReviewQueueFilters): string {
   const qs = new URLSearchParams();
   if (filters.status) qs.set("status", filters.status);
@@ -193,31 +162,30 @@ function queryString(filters: CreatorReviewQueueFilters): string {
   return qs.toString();
 }
 
+/** @deprecated Creator-case screens use the workspace-required focused client. */
 export function fetchCreatorReviewQueue(filters: CreatorReviewQueueFilters = {}) {
   return adminFetch<{ creators: AdminCreatorReviewRow[]; page: number; pageSize: number; total: number }>(
     `/admin/creators/review?${queryString(filters)}`,
   );
 }
 
+/** @deprecated Creator-case screens use the workspace-required focused client. */
 export function fetchCreatorDetail(creatorId: string) {
   return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`);
 }
 
+/** @deprecated Creator-case screens use the workspace-required focused client. */
 export function postCreatorReview(
   creatorId: string,
   body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string },
 ) {
   return adminFetch<{ review: AdminReviewProjection }>(`/admin/creators/${creatorId}/review`, {
     method: "POST",
-    body: JSON.stringify({
-      status: body.status,
-      risk_level: body.riskLevel,
-      summary: body.summary,
-      note: body.note,
-    }),
+    body: JSON.stringify({ status: body.status, risk_level: body.riskLevel, summary: body.summary, note: body.note }),
   });
 }
 
+/** @deprecated Creator-case screens use the workspace-required focused client. */
 export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string }) {
   return adminFetch<{ note: { id: string; category: AdminNoteCategory; body: string; created_at: string } }>(
     `/admin/creators/${creatorId}/notes`,

@@ -4,10 +4,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const h = vi.hoisted(() => ({ fetchCreatorReviewQueue: vi.fn() }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
-vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "", setWorkspace: vi.fn() }) }));
-vi.mock("@/lib/admin", () => ({ fetchCreatorReviewQueue: h.fetchCreatorReviewQueue, AdminAuthError: class AdminAuthError extends Error {} }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "workspace-1", setWorkspace: vi.fn() }) }));
+vi.mock("@/lib/adminTransport", () => ({ AdminAuthError: class AdminAuthError extends Error {} }));
+vi.mock("@/lib/creatorCase", () => ({ fetchCreatorReviewQueue: h.fetchCreatorReviewQueue }));
 vi.mock("@/components/operator/CreatorReviewRow", () => ({
-  CreatorReviewRow: ({ creator }: { creator: { display_name: string } }) => <div>{creator.display_name}</div>,
+  CreatorReviewRow: ({ creator }: { creator: { displayName: string } }) => <div>{creator.displayName}</div>,
 }));
 
 import { Route } from "./admin.creators";
@@ -25,7 +26,7 @@ describe("admin creators tab", () => {
   });
 
   it("renders the creator review queue rows", async () => {
-    h.fetchCreatorReviewQueue.mockResolvedValue({ creators: [{ id: "c1", display_name: "Amy" }], page: 1, pageSize: 25, total: 1 });
+    h.fetchCreatorReviewQueue.mockResolvedValue({ creators: [{ id: "c1", displayName: "Amy" }], page: 1, pageSize: 25, total: 1 });
     r();
     await screen.findByText("Amy");
     expect(screen.getByText("Amy")).toBeInTheDocument();

@@ -3,25 +3,26 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Flag } from "lucide-react";
 import {
   postCreatorReview,
-  type AdminRiskLevel,
-  type AdminReviewProjection,
-  type AdminReviewStatus,
-} from "@/lib/admin";
+  type CreatorRiskLevel,
+  type CreatorReviewProjection,
+  type CreatorReviewStatus,
+} from "@/lib/creatorCase";
 
 type ReviewActionPanelProps = {
+  workspaceId: string;
   creator: {
     id: string;
     displayName: string;
-    review: AdminReviewProjection;
+    review: CreatorReviewProjection;
   };
   variant?: "compact" | "full";
   onSuccess?: () => void;
 };
 
-export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: ReviewActionPanelProps) {
+export function ReviewActionPanel({ workspaceId, creator, variant = "compact", onSuccess }: ReviewActionPanelProps) {
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<AdminReviewStatus>(creator.review.status);
-  const [riskLevel, setRiskLevel] = useState<AdminRiskLevel>(creator.review.riskLevel);
+  const [status, setStatus] = useState<CreatorReviewStatus>(creator.review.status);
+  const [riskLevel, setRiskLevel] = useState<CreatorRiskLevel>(creator.review.riskLevel);
   const [summary, setSummary] = useState(creator.review.summary ?? "");
   const [note, setNote] = useState("");
   const [validationError, setValidationError] = useState("");
@@ -36,11 +37,11 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
 
   const mutation = useMutation({
     mutationFn: (body: {
-      status: AdminReviewStatus;
-      riskLevel: AdminRiskLevel;
+      status: CreatorReviewStatus;
+      riskLevel: CreatorRiskLevel;
       summary: string;
       note?: string;
-    }) => postCreatorReview(creator.id, body),
+    }) => postCreatorReview(workspaceId, creator.id, body),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["admin-creators-review"] });
       onSuccess?.();
@@ -57,7 +58,7 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
               aria-label="Review status"
               value={status}
               onChange={(event) => {
-                setStatus(event.target.value as AdminReviewStatus);
+                setStatus(event.target.value as CreatorReviewStatus);
                 setValidationError("");
               }}
               className="h-10 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-medium text-[var(--color-ink)]"
@@ -72,7 +73,7 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
             <select
               aria-label="Risk level"
               value={riskLevel}
-              onChange={(event) => setRiskLevel(event.target.value as AdminRiskLevel)}
+              onChange={(event) => setRiskLevel(event.target.value as CreatorRiskLevel)}
               className="h-10 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-medium text-[var(--color-ink)]"
             >
               <option value="unknown">Unknown</option>

@@ -6,12 +6,13 @@ import { useI18n } from "@/lib/i18n";
 import { MissionShortlistPanel } from "@/components/operator/MissionShortlistPanel";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
   AdminAuthError,
-  fetchCreatorReviewQueue,
   fetchMissionShortlist,
   type AdminReviewStatus,
 } from "@/lib/admin";
+import { fetchCreatorReviewQueue } from "@/lib/creatorCase";
 
 export const Route = createFileRoute("/operator/missions/$missionId")({
   component: OperatorMissionShortlistRoute,
@@ -21,13 +22,14 @@ function OperatorMissionShortlistRoute() {
   const { t } = useI18n();
   const { missionId } = Route.useParams();
   const { authed, reportAuthError } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
   const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
   const queryClient = useQueryClient();
   const selectedStatus = status === "all" ? undefined : status;
 
   const shortlist = useQuery({
     queryKey: ["admin-mission-shortlist", missionId],
-    enabled: authed,
+    enabled: authed && Boolean(workspace),
     retry: false,
     queryFn: () => fetchMissionShortlist(missionId),
   });
@@ -37,7 +39,7 @@ function OperatorMissionShortlistRoute() {
     enabled: authed,
     retry: false,
     queryFn: () =>
-      fetchCreatorReviewQueue({
+      fetchCreatorReviewQueue(workspace, {
         missionId,
         status: selectedStatus,
         page: 1,
@@ -116,6 +118,7 @@ function OperatorMissionShortlistRoute() {
             {queue.data?.creators.map((creator) => (
               <CreatorReviewRow
                 key={creator.id}
+                workspaceId={workspace}
                 creator={creator}
                 missionId={missionId}
                 onShortlistSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-mission-shortlist", missionId] })}

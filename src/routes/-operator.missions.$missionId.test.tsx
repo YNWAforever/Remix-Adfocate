@@ -19,11 +19,12 @@ vi.mock("@tanstack/react-router", async () => {
 vi.mock("@/lib/admin", async () => ({
   ...(await vi.importActual<object>("@/lib/admin")),
   fetchMissionShortlist: hoisted.fetchMissionShortlist,
-  fetchCreatorReviewQueue: hoisted.fetchCreatorReviewQueue,
   patchMissionShortlist: hoisted.patchMissionShortlist,
   AdminAuthError: class AdminAuthError extends Error {},
 }));
+vi.mock("@/lib/creatorCase", () => ({ fetchCreatorReviewQueue: hoisted.fetchCreatorReviewQueue }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "workspace-1", setWorkspace: vi.fn() }) }));
 
 import { Route } from "./operator.missions.$missionId";
 
@@ -152,7 +153,7 @@ describe("operator mission shortlist page", () => {
     expect(await screen.findByText("Approved Ada")).toBeInTheDocument();
     expect(screen.getByText("Needs Nora")).toBeInTheDocument();
     expect(screen.queryByText("Flagged Finn")).not.toBeInTheDocument();
-    expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(1, {
+    expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(1, "workspace-1", {
       missionId: "mission-1",
       page: 1,
       pageSize: 25,
@@ -162,7 +163,7 @@ describe("operator mission shortlist page", () => {
     fireEvent.change(screen.getByLabelText("Status filter"), { target: { value: "flagged" } });
 
     await waitFor(() =>
-      expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(2, {
+      expect(hoisted.fetchCreatorReviewQueue).toHaveBeenNthCalledWith(2, "workspace-1", {
         missionId: "mission-1",
         status: "flagged",
         page: 1,

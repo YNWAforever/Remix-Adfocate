@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, NotebookPen, ShieldCheck, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import {
   RiskBadge,
   ReviewBadge,
@@ -10,12 +11,12 @@ import {
   SocialSyncBadge,
 } from "@/components/operator/OperatorBadges";
 import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
+import { AdminAuthError } from "@/lib/adminTransport";
 import {
-  AdminAuthError,
   fetchCreatorDetail,
   postCreatorNote,
-  type AdminNoteCategory,
-} from "@/lib/admin";
+  type CreatorNoteCategory,
+} from "@/lib/creatorCase";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/operator/creators/$creatorId")({
@@ -68,28 +69,32 @@ function OperatorCreatorDetailRoute() {
   const { creatorId } = Route.useParams();
   const queryClient = useQueryClient();
   const { authed, reportAuthError } = useAdminAuth();
+  const { workspace } = useAdminWorkspace();
   const [noteBody, setNoteBody] = useState("");
 
   const detail = useQuery({
-    queryKey: ["admin-creator-detail", creatorId],
-    enabled: authed,
+    queryKey: ["admin-creator-detail", creatorId, workspace],
+    enabled: authed && Boolean(workspace),
     retry: false,
-    queryFn: () => fetchCreatorDetail(creatorId),
+    queryFn: () => fetchCreatorDetail(workspace, creatorId),
   });
 
   const noteMutation = useMutation({
-    mutationFn: (body: { category: AdminNoteCategory; body: string }) => postCreatorNote(creatorId, body),
+    mutationFn: (body: { category: CreatorNoteCategory; body: string }) => postCreatorNote(workspace, creatorId, body),
     onSuccess: async () => {
       setNoteBody("");
-      await queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] });
     },
   });
 
   const creator = detail.data?.creator;
   const detailData = detail.data;
   const review = detail.data?.review;
-  const selectedSocial = detail.data?.socialAccounts[0] ?? null;
-  const selectedAvatar = detailData?.profileMedia.avatarUrl ?? null;
+  const social = detailData?.social.status === "available" ? detailData.social.value : null;
+  const profile = detailData?.profile.status === "available" ? detailData.profile.value : null;
+  const missionHistory = detailData?.missionHistory.status === "available" ? detailData.missionHistory.value : null;
+  const selectedSocial = social?.accounts[0] ?? null;
+  const selectedAvatar = profile?.avatarUrl ?? creator?.avatarUrl ?? null;
   const unselectedSocialAvatar = selectedSocial?.external_avatar_url ?? null;
 
   const scoreEntries = useMemo(() => {
@@ -126,6 +131,7 @@ function OperatorCreatorDetailRoute() {
           </Link>
         </div>
 
+        {!workspace ? <p className="text-sm text-[var(--color-soft-ink)]">Select a workspace to view this creator case.</p> : null}
         {detail.isLoading ? <p className="text-sm">{t("common.loading")}</p> : null}
 
         {creator && review && detailData ? (
@@ -142,7 +148,7 @@ function OperatorCreatorDetailRoute() {
                   </div>
                   <div className="min-w-0 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="truncate font-heading text-2xl font-bold">{creator.display_name ?? "Unknown creator"}</h2>
+                      <h2 className="truncate font-heading text-2xl font-bold">{creator.displayName ?? "Unknown creator"}</h2>
                       <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
                         {creator.level}
                       </span>
@@ -151,10 +157,8 @@ function OperatorCreatorDetailRoute() {
                       {creator.categories.join(", ") || "No categories"}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <SocialSyncBadge label={detailData.social.label} />
-                      <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
-                        {detailData.social.ownershipLabel}
-                      </span>
+                      {social ? <SocialSyncBadge label={social.summary.label} /> : null}
+                      {social ? <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">{social.summary.ownershipLabel}</span> : null}
                     </div>
                     <p className="text-xs text-[var(--color-soft-ink)]">
                       Last reviewed: {formatDateTime(review.lastReviewedAt)}
@@ -164,8 +168,8 @@ function OperatorCreatorDetailRoute() {
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                   {[
-                    formatCount(detailData.social.followerCount, "followers"),
-                    formatPercent(detailData.social.engagementRate),
+                    formatCount(social?.summary.followerCount, "followers"),
+                    formatPercent(social?.summary.engagementRate),
                     formatCount(selectedSocial?.avg_likes ?? null, "avg likes"),
                     formatCount(selectedSocial?.avg_comments ?? null, "avg comments"),
                     formatCount(selectedSocial?.freshness_score ?? null, "freshness"),
@@ -245,7 +249,9 @@ function OperatorCreatorDetailRoute() {
                     ) : null}
                   </div>
                 ) : (
-                  <p className="text-sm text-[var(--color-soft-ink)]">No synced social account</p>
+                  <p className="text-sm text-[var(--color-soft-ink)]">
+                    {detailData.social.status === "unavailable" ? "Social data is currently unavailable." : "No synced social account"}
+                  </p>
                 )}
               </div>
             </section>
@@ -279,15 +285,15 @@ function OperatorCreatorDetailRoute() {
                   <h3 className="font-heading font-bold">Profile media</h3>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold">
-                      {detailData.profileMedia.completeness.score}% complete
+                      {profile?.completeness.score ?? 0}% complete
                     </span>
                     <span className="text-sm text-[var(--color-soft-ink)]">
-                      {detailData.profileMedia.portfolioLinks.length} portfolio links
+                      {profile?.portfolioLinks.length ?? 0} portfolio links
                     </span>
                   </div>
                   <div className="space-y-2">
-                    {detailData.profileMedia.portfolioLinks.length > 0 ? (
-                      detailData.profileMedia.portfolioLinks.map((item) => (
+                    {profile?.portfolioLinks.length ? (
+                      profile.portfolioLinks.map((item) => (
                         <a
                           key={item.id}
                           href={item.url}
@@ -310,7 +316,7 @@ function OperatorCreatorDetailRoute() {
                         </a>
                       ))
                     ) : (
-                      <p className="text-sm text-[var(--color-soft-ink)]">No portfolio links</p>
+                      <p className="text-sm text-[var(--color-soft-ink)]">{detailData.profile.status === "unavailable" ? "Profile media is currently unavailable." : "No portfolio links"}</p>
                     )}
                   </div>
                 </section>
@@ -318,8 +324,8 @@ function OperatorCreatorDetailRoute() {
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Mission history</h3>
                   <div className="space-y-2">
-                    {detailData.missionHistory.length > 0 ? (
-                      detailData.missionHistory.map((entry, index) => (
+                    {missionHistory?.length ? (
+                      missionHistory.map((entry, index) => (
                         <div
                           key={readString(entry, "id") ?? `mission-${index}`}
                           className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm"
@@ -329,7 +335,7 @@ function OperatorCreatorDetailRoute() {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-[var(--color-soft-ink)]">No mission history</p>
+                      <p className="text-sm text-[var(--color-soft-ink)]">{detailData.missionHistory.status === "unavailable" ? "Mission history is currently unavailable." : "No mission history"}</p>
                     )}
                   </div>
                 </section>
@@ -344,7 +350,7 @@ function OperatorCreatorDetailRoute() {
                       <div key={item.id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">{item.category}</span>
-                          <span className="text-xs text-[var(--color-soft-ink)]">{formatDateTime(item.created_at)}</span>
+                          <span className="text-xs text-[var(--color-soft-ink)]">{formatDateTime(item.createdAt)}</span>
                         </div>
                         <p className="mt-2 text-sm">{item.body}</p>
                       </div>
@@ -378,11 +384,12 @@ function OperatorCreatorDetailRoute() {
                   <ReviewActionPanel
                     creator={{
                       id: creator.id,
-                      displayName: creator.display_name ?? "Unknown creator",
+                      displayName: creator.displayName ?? "Unknown creator",
                       review,
                     }}
+                    workspaceId={workspace}
                     variant="full"
-                    onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId] })}
+                    onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] })}
                   />
                 </section>
 
@@ -413,15 +420,15 @@ function OperatorCreatorDetailRoute() {
                   <div className="space-y-2">
                     {detailData.audit.length > 0 ? (
                       detailData.audit.map((entry, index) => {
-                        const eventType = readString(entry, "event_type") ?? "unknown_event";
+                        const eventType = entry.eventType ?? "unknown_event";
                         return (
                           <div
-                            key={readString(entry, "id") ?? `audit-${index}`}
+                            key={entry.id ?? `audit-${index}`}
                             className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2"
                           >
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <span className="text-sm font-bold">{eventType}</span>
-                              <span className="text-xs text-[var(--color-soft-ink)]">{formatDateTime(readString(entry, "created_at"))}</span>
+                              <span className="text-xs text-[var(--color-soft-ink)]">{formatDateTime(entry.createdAt)}</span>
                             </div>
                           </div>
                         );

@@ -5,13 +5,13 @@ import { Search } from "lucide-react";
 import { CreatorReviewRow } from "@/components/operator/CreatorReviewRow";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+import { AdminAuthError } from "@/lib/adminTransport";
 import {
-  AdminAuthError,
   fetchCreatorReviewQueue,
-  type AdminReviewStatus,
-  type AdminRiskLevel,
+  type CreatorReviewStatus,
+  type CreatorRiskLevel,
   type CreatorReviewQueueFilters,
-} from "@/lib/admin";
+} from "@/lib/creatorCase";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/creators")({
@@ -25,23 +25,22 @@ function CreatorsTab() {
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState<AdminReviewStatus | "all">("all");
-  const [risk, setRisk] = useState<AdminRiskLevel | "all">("all");
+  const [status, setStatus] = useState<CreatorReviewStatus | "all">("all");
+  const [risk, setRisk] = useState<CreatorRiskLevel | "all">("all");
   const [sort, setSort] = useState<CreatorReviewQueueFilters["sort"]>("last_activity");
   const { mission_id: missionId } = Route.useSearch();
 
   const creators = useQuery({
     queryKey: ["admin-creators-review", { q, status, risk, sort, missionId, workspace }],
-    enabled: authed,
+    enabled: authed && Boolean(workspace),
     retry: false,
     queryFn: () =>
-      fetchCreatorReviewQueue({
+      fetchCreatorReviewQueue(workspace, {
         q,
         status: status === "all" ? undefined : status,
         riskLevel: risk === "all" ? undefined : risk,
         sort,
         missionId,
-        workspace: workspace || undefined,
         page: 1,
         pageSize: 25,
       }),
@@ -63,7 +62,7 @@ function CreatorsTab() {
           </label>
           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
             <span>Status</span>
-            <select aria-label="Status filter" value={status} onChange={(e) => setStatus(e.target.value as AdminReviewStatus | "all")} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
+            <select aria-label="Status filter" value={status} onChange={(e) => setStatus(e.target.value as CreatorReviewStatus | "all")} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
               <option value="all">all</option>
               <option value="needs_review">Needs review</option>
               <option value="approved">Approved</option>
@@ -72,7 +71,7 @@ function CreatorsTab() {
           </label>
           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
             <span>Risk</span>
-            <select aria-label="Risk filter" value={risk} onChange={(e) => setRisk(e.target.value as AdminRiskLevel | "all")} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
+            <select aria-label="Risk filter" value={risk} onChange={(e) => setRisk(e.target.value as CreatorRiskLevel | "all")} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
               <option value="all">all</option>
               <option value="unknown">unknown</option>
               <option value="low">low</option>
@@ -96,6 +95,7 @@ function CreatorsTab() {
         </div>
       </section>
 
+      {!workspace ? <p className="text-sm text-[var(--color-soft-ink)]">Select a workspace to review creators.</p> : null}
       {creators.isLoading && <p className="text-sm">{t("common.loading")}</p>}
       {!creators.isLoading && creators.data?.creators.length === 0 && (
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.creatorsEmpty")}</p>
@@ -103,7 +103,7 @@ function CreatorsTab() {
 
       <div className="space-y-3">
         {creators.data?.creators.map((creator) => (
-          <CreatorReviewRow key={creator.id} creator={creator} missionId={missionId} />
+          <CreatorReviewRow key={creator.id} workspaceId={workspace} creator={creator} missionId={missionId} />
         ))}
       </div>
     </div>
