@@ -5,6 +5,7 @@ import {
   CREATOR_STUDIO_MAX_COMMAND_ID_LENGTH,
   CREATOR_STUDIO_MAX_UPLOAD_BYTES,
   CREATOR_STUDIO_UPLOAD_MIME_TYPES,
+  isStrictHttpUrl,
 } from "./types.js";
 import type {
   CommandResult,
@@ -41,6 +42,7 @@ const ALLOWED_UPLOAD_EXTENSIONS = new Map([
   ["video/mp4", "mp4"],
   ["application/pdf", "pdf"],
 ]);
+
 const clone = <T>(value: T): T => structuredClone(value);
 
 export class InMemoryCreatorStudioRepository implements CreatorStudioRepository {
@@ -283,7 +285,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       throw new CreatorStudioError("draft_invalid", "Draft caption is invalid");
     }
     if (patch.externalUrl !== undefined && patch.externalUrl !== null) {
-      if (typeof patch.externalUrl !== "string" || !this.isHttpUrl(patch.externalUrl)) {
+      if (typeof patch.externalUrl !== "string" || !isStrictHttpUrl(patch.externalUrl)) {
         throw new CreatorStudioError("draft_invalid", "Draft URL is invalid");
       }
     }
@@ -314,21 +316,6 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     }
   }
 
-  private isHttpUrl(value: string): boolean {
-    if (!value || value !== value.trim()) return false;
-    try {
-      const url = new URL(value);
-      const port = url.port === "" ? null : Number(url.port);
-      return (url.protocol === "http:" || url.protocol === "https:")
-        && Boolean(url.hostname)
-        && !url.username
-        && !url.password
-        && (port === null || (Number.isInteger(port) && port >= 1 && port <= 65535));
-    } catch {
-      return false;
-    }
-  }
-
   private refreshWorkItemValidation(workItem: WorkItem): void {
     const draft = this.drafts.get(workItem.id) ?? null;
     workItem.draft = draft ? clone(draft) : null;
@@ -339,7 +326,7 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const draft = this.drafts.get(workItem.id) ?? null;
     return {
       caption: !workItem.requirements.caption || Boolean(draft?.caption?.trim()),
-      externalUrl: !workItem.requirements.externalUrl || Boolean(draft?.externalUrl),
+      externalUrl: !workItem.requirements.externalUrl || isStrictHttpUrl(draft?.externalUrl ?? ""),
       checklist: workItem.requirements.checklist.every((key) => draft?.checklist[key] === true),
       assets: !workItem.requiresAsset || workItem.assets.some((asset) => asset.state === "finalized"),
     };

@@ -149,6 +149,63 @@ describe("InMemoryCreatorStudioRepository", () => {
     })).resolves.toMatchObject({ replayed: false, value: { draft: { version: 1 } } });
   });
 
+  it.each(["https://a-.example", "https://example..com"])("rejects a malformed persisted URL (%s) without mutation", async (externalUrl) => {
+    const workspace = makeWorkspace();
+    const workItem = workspace.workItems[0];
+    workItem.state = "ready_to_submit";
+    workItem.draft = {
+      caption: "Complete launch copy",
+      externalUrl,
+      checklist: { disclosure: true, brandTag: true },
+      version: 0,
+      updatedAt: "2026-08-09T00:00:00.000Z",
+    };
+    workspace.workflow.state = "ready_to_submit";
+    workspace.nextAction = { workItemId: workItem.id, state: "ready_to_submit", label: "Submit Story" };
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+    const context = creatorContext();
+    const before = {
+      workspace: await repository.getWorkspace(context),
+      events: repository.events(),
+      draft: repository.getDraft(workItem.id),
+    };
+
+    await expect(repository.submitWorkItem(context, workItem.id, {
+      commandId: "malformed-persisted-url-submit",
+      expectedVersion: 0,
+    })).rejects.toMatchObject({ code: "invalid_transition" });
+
+    expect({
+      workspace: await repository.getWorkspace(context),
+      events: repository.events(),
+      draft: repository.getDraft(workItem.id),
+    }).toEqual(before);
+    await expect(repository.saveDraft(context, workItem.id, {
+      commandId: "malformed-persisted-url-submit",
+      expectedVersion: 0,
+      patch: { externalUrl: "https://example.com/valid" },
+    })).resolves.toMatchObject({ replayed: false, value: { draft: { version: 1 } } });
+  });
+
+  it("accepts a valid persisted HTTP(S) URL when submitting", async () => {
+    const workspace = makeWorkspace();
+    const workItem = workspace.workItems[0];
+    workItem.state = "ready_to_submit";
+    workItem.draft = {
+      caption: "Complete launch copy",
+      externalUrl: "https://valid.example.com:443/post",
+      checklist: { disclosure: true, brandTag: true },
+      version: 0,
+      updatedAt: "2026-08-09T00:00:00.000Z",
+    };
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+
+    await expect(repository.submitWorkItem(creatorContext(), workItem.id, {
+      commandId: "valid-persisted-url-submit",
+      expectedVersion: 0,
+    })).resolves.toMatchObject({ value: { workItem: { state: "submitted" } }, replayed: false });
+  });
+
   it("makes a complete draft submittable when its required asset is finalized", async () => {
     const workspace = makeWorkspace();
     workspace.workItems[0].requiresAsset = true;

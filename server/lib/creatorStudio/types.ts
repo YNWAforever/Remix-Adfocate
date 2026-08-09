@@ -13,6 +13,36 @@ export const CREATOR_STUDIO_UPLOAD_MIME_TYPES = [
 ] as const;
 export type CreatorStudioUploadMimeType = (typeof CREATOR_STUDIO_UPLOAD_MIME_TYPES)[number];
 
+export const isStrictHttpUrl = (value: string): boolean => {
+  if (!value || value !== value.trim() || /\s/.test(value)) return false;
+
+  const authority = value.slice(value.indexOf("://") + 3).split(/[/?#]/, 1)[0];
+  if (!authority || authority.includes("@")) return false;
+
+  let port: string | undefined;
+  if (authority.startsWith("[")) {
+    const ipv6 = authority.match(/^\[([0-9a-f:.]+)\](?::([0-9]{1,5}))?$/i);
+    if (!ipv6) return false;
+    port = ipv6[2];
+  } else {
+    const host = authority.match(/^([a-z0-9.-]+)(?::([0-9]{1,5}))?$/i);
+    if (!host) return false;
+    if (host[1].split(".").some((label) => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label))) return false;
+    port = host[2];
+  }
+  if (port !== undefined && (Number(port) < 1 || Number(port) > 65535)) return false;
+
+  try {
+    const url = new URL(value);
+    return (url.protocol === "http:" || url.protocol === "https:")
+      && Boolean(url.hostname)
+      && !url.username
+      && !url.password;
+  } catch {
+    return false;
+  }
+};
+
 export const MISSION_SUBMISSION_STATUSES = [
   "applied", "joined", "submitted", "under_review", "approved", "rejected", "expired", "declined",
 ] as const;

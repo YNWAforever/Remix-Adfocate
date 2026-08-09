@@ -192,6 +192,8 @@ describe("Creator Studio mutation routes", () => {
       { command_id: "empty-url", expected_version: 0, patch: { external_url: "" } },
       { command_id: "missing-authority", expected_version: 0, patch: { external_url: "https://" } },
       { command_id: "bad-authority", expected_version: 0, patch: { external_url: "https://[gg]" } },
+      { command_id: "bad-host-label", expected_version: 0, patch: { external_url: "https://a-.example" } },
+      { command_id: "double-dot-host", expected_version: 0, patch: { external_url: "https://example..com" } },
       { command_id: "credential-url", expected_version: 0, patch: { external_url: "https://creator:secret@example.com" } },
       { command_id: "space-url", expected_version: 0, patch: { external_url: " https://example.com" } },
       { command_id: "zero-port", expected_version: 0, patch: { external_url: "https://example.com:0" } },
