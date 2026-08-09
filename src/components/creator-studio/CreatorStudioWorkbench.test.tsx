@@ -7,7 +7,14 @@ const mocks = vi.hoisted(() => ({
   grant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   finalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   submit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofAttempt: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofGrant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofFinalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofCancel: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofSubmit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofRefresh: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   upload: vi.fn(),
+  uploadProof: vi.fn(),
 }));
 
 vi.mock("@/lib/queries/creatorStudio", () => ({
@@ -15,7 +22,14 @@ vi.mock("@/lib/queries/creatorStudio", () => ({
   useCreateDraftAssetGrant: () => mocks.grant,
   useFinalizeDraftAsset: () => mocks.finalize,
   useSubmitWorkItem: () => mocks.submit,
+  useCreatePublicationProofAttempt: () => mocks.proofAttempt,
+  useCreateProofEvidenceGrant: () => mocks.proofGrant,
+  useFinalizeProofEvidence: () => mocks.proofFinalize,
+  useCancelProofEvidence: () => mocks.proofCancel,
+  useSubmitPublicationProof: () => mocks.proofSubmit,
+  useRefreshProofMetadata: () => mocks.proofRefresh,
   uploadDraftAsset: mocks.upload,
+  uploadPublicationProofEvidence: mocks.uploadProof,
   creatorStudioKeys: { workspace: (submissionId: string) => ["creator-studio", "workspace", submissionId] },
 }));
 
@@ -29,13 +43,15 @@ function draftingWorkspace(): SubmissionWorkspace {
     workItems: [
       {
         id: "story", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: false, checklist: ["Disclosure"] }, requiresAsset: false,
-        state: "drafting", validation: { caption: true, externalUrl: true, checklist: false, assets: true },
+        proofRequirement: null, publicationProof: { required: false, currentAttempt: null, history: [] },
+        state: "drafting", validation: { caption: true, externalUrl: true, checklist: false, assets: true, publicationProof: true },
         draft: { caption: "Draft caption", externalUrl: null, checklist: { Disclosure: false }, version: 2, updatedAt: "2026-08-09T00:00:00.000Z" },
         assets: [], reviewFeedback: { status: "available", value: [] },
       },
       {
         id: "reel", position: 2, title: "Reel", instructions: "Create a reel", requirements: { caption: false, externalUrl: true, checklist: [] }, requiresAsset: false,
-        state: "not_started", validation: { caption: false, externalUrl: false, checklist: true, assets: true }, draft: null, assets: [],
+        proofRequirement: null, publicationProof: { required: false, currentAttempt: null, history: [] },
+        state: "not_started", validation: { caption: false, externalUrl: false, checklist: true, assets: true, publicationProof: true }, draft: null, assets: [],
         reviewFeedback: { status: "unavailable", reason: "temporarily_unavailable" },
       },
     ],
@@ -49,7 +65,7 @@ function changesRequestedWorkspace(): SubmissionWorkspace {
   workspace.workItems[0] = {
     ...workspace.workItems[0],
     state: "changes_requested",
-    validation: { caption: true, externalUrl: true, checklist: true, assets: true },
+    validation: { caption: true, externalUrl: true, checklist: true, assets: true, publicationProof: true },
     draft: { caption: "Corrected caption", externalUrl: null, checklist: { Disclosure: true }, version: 3, updatedAt: "2026-08-09T01:00:00.000Z" },
     assets: [{ id: "asset-1", fileName: "proof.png", mimeType: "image/png", byteSize: 1, checksumSha256: null, state: "finalized", storagePath: "proof.png" }],
     reviewFeedback: { status: "available", value: [{ id: "feedback-1", state: "changes_requested", message: "Add the disclosure line" }] },
@@ -68,6 +84,18 @@ function approvedWorkspace(): SubmissionWorkspace {
   return workspace;
 }
 
+function publicationProofWorkspace(): SubmissionWorkspace {
+  const workspace = draftingWorkspace();
+  workspace.workItems[0] = {
+    ...workspace.workItems[0],
+    proofRequirement: { kind: "publication_url", allowedPlatforms: ["instagram", "youtube"], evidence: "optional" },
+    publicationProof: { required: true, currentAttempt: null, history: [] },
+    validation: { ...workspace.workItems[0].validation, publicationProof: false },
+  };
+  workspace.nextAction = { workItemId: "story", state: "drafting", label: "Complete publication proof" };
+  return workspace;
+}
+
 function resetMutation(mutation: { mutateAsync: ReturnType<typeof vi.fn>; isPending: boolean; error: Error | null }) {
   mutation.mutateAsync.mockReset();
   mutation.mutateAsync.mockResolvedValue({});
@@ -81,8 +109,16 @@ beforeEach(() => {
   resetMutation(mocks.grant);
   resetMutation(mocks.finalize);
   resetMutation(mocks.submit);
+  resetMutation(mocks.proofAttempt);
+  resetMutation(mocks.proofGrant);
+  resetMutation(mocks.proofFinalize);
+  resetMutation(mocks.proofCancel);
+  resetMutation(mocks.proofSubmit);
+  resetMutation(mocks.proofRefresh);
   mocks.upload.mockReset();
   mocks.upload.mockResolvedValue(undefined);
+  mocks.uploadProof.mockReset();
+  mocks.uploadProof.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -99,7 +135,7 @@ describe("CreatorStudioWorkbench", () => {
 
     expect(screen.getByRole("heading", { name: "Spring launch mission" })).toBeInTheDocument();
     expect(screen.getByText("Create a spring launch story with a clear disclosure.")).toBeInTheDocument();
-    expect(screen.getByText("Deadline: 2026-09-01")).toBeInTheDocument();
+    expect(screen.getByText("2026-09-01")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Deliverables" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Draft caption");
     expect(screen.getByRole("button", { name: "Save draft" })).toBeInTheDocument();
@@ -111,6 +147,65 @@ describe("CreatorStudioWorkbench", () => {
 
     expect(screen.getByRole("region", { name: "Review feedback" })).toHaveTextContent("Add the disclosure line");
     expect(screen.getByRole("button", { name: "Resubmit deliverable" })).toBeEnabled();
+  });
+
+  it("renders the publication proof form and persists a new attempt", async () => {
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={publicationProofWorkspace()} />);
+
+    expect(screen.getByRole("heading", { name: "Publication proof" })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("textbox", { name: "Published URL" }), { target: { value: "https://example.com/published" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create proof attempt" }));
+
+    await waitFor(() => expect(mocks.proofAttempt.mutateAsync).toHaveBeenCalledWith({
+      commandId: expect.any(String), publishedUrl: "https://example.com/published", platform: "instagram",
+    }));
+    expect(await screen.findByText("Proof details saved.")).toBeInTheDocument();
+  });
+
+  it("uploads, finalizes, and submits optional publication evidence", async () => {
+    const workspace = publicationProofWorkspace();
+    workspace.workItems[0].publicationProof = {
+      required: true,
+      currentAttempt: {
+        id: "attempt-1", workItemId: "story", parentAttemptId: null, sequence: 1,
+        publishedUrl: "https://example.com/published", platform: "instagram", state: "draft",
+        metadataState: "unavailable", metadata: null, operatorMessage: null,
+        submittedAt: null, decidedAt: null, evidence: [],
+      },
+      history: [],
+    };
+    mocks.proofGrant.mutateAsync.mockResolvedValue({ bucket: "mission-publication-proof-assets", path: "creator-1/workflow-1/story/proof-evidence/evidence-1.png", token: "signed-token", assetId: "evidence-1", expiresAt: "2026-08-10T01:00:00.000Z" });
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+
+    fireEvent.change(screen.getByLabelText("Publication proof evidence"), { target: { files: [new File(["proof"], "proof.png", { type: "image/png" })] } });
+    await waitFor(() => expect(mocks.proofGrant.mutateAsync).toHaveBeenCalledWith(expect.objectContaining({ commandId: expect.any(String), fileName: "proof.png", mimeType: "image/png" })));
+    await waitFor(() => expect(mocks.proofFinalize.mutateAsync).toHaveBeenCalledWith(expect.objectContaining({ commandId: expect.any(String), byteSize: 5, mimeType: "image/png" })));
+    expect(mocks.uploadProof).toHaveBeenCalledWith(expect.objectContaining({ assetId: "evidence-1" }), expect.any(File));
+    fireEvent.click(await screen.findByRole("button", { name: "Submit publication proof" }));
+    await waitFor(() => expect(mocks.proofSubmit.mutateAsync).toHaveBeenCalledWith({ commandId: expect.any(String) }));
+  });
+
+  it("discards a pending publication evidence reservation", async () => {
+    const workspace = publicationProofWorkspace();
+    workspace.workItems[0].publicationProof = {
+      required: true,
+      currentAttempt: {
+        id: "attempt-1", workItemId: "story", parentAttemptId: null, sequence: 1,
+        publishedUrl: "https://example.com/published", platform: "instagram", state: "draft",
+        metadataState: "unavailable", metadata: null, operatorMessage: null,
+        submittedAt: null, decidedAt: null,
+        evidence: [{
+          id: "evidence-1", attemptId: "attempt-1", storagePath: "creator-1/workflow-1/story/evidence-1.png",
+          mimeType: "image/png", byteSize: 0, checksumSha256: null, status: "pending",
+        }],
+      },
+      history: [],
+    };
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Discard pending evidence" }));
+
+    await waitFor(() => expect(mocks.proofCancel.mutateAsync).toHaveBeenCalledWith({ commandId: expect.any(String) }));
   });
 
   it("requires saving local draft edits before the primary submit action can mutate", () => {
@@ -130,7 +225,7 @@ describe("CreatorStudioWorkbench", () => {
     workspace.workItems[0].requiresAsset = true;
     render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
 
-    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["x"], "proof.png", { type: "image/png" }));
+    fireEvent.change(screen.getByLabelText("Proof asset"), { target: { files: [new File(["x"], "proof.png", { type: "image/png" })] } });
 
     expect(await screen.findByText("Upload failed. Retry without losing your draft.")).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Draft caption");
@@ -178,7 +273,7 @@ describe("CreatorStudioWorkbench", () => {
     workspace.workItems[0].requiresAsset = true;
     render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
 
-    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["x"], "proof.png", { type: "image/png" }));
+    fireEvent.change(screen.getByLabelText("Proof asset"), { target: { files: [new File(["x"], "proof.png", { type: "image/png" })] } });
     await waitFor(() => expect(mocks.finalize.mutateAsync).toHaveBeenCalledWith(expect.objectContaining({ commandId: expect.any(String) })));
     expect(mocks.upload).toHaveBeenCalledWith(expect.objectContaining({ assetId: "asset-42" }), expect.any(File));
     expect(await screen.findByText("Proof asset finalized.")).toBeInTheDocument();
@@ -210,7 +305,7 @@ describe("CreatorStudioWorkbench", () => {
     workspace.workItems[0] = {
       ...workspace.workItems[0],
       state: "ready_to_submit",
-      validation: { caption: true, externalUrl: true, checklist: true, assets: true },
+      validation: { caption: true, externalUrl: true, checklist: true, assets: true, publicationProof: true },
     };
     workspace.nextAction = { workItemId: "story", state: "ready_to_submit", label: "Submit deliverable" };
     const freshWorkspace = structuredClone(workspace);
@@ -230,7 +325,7 @@ describe("CreatorStudioWorkbench", () => {
     await waitFor(() => expect(mocks.submit.mutateAsync).toHaveBeenCalledTimes(1));
     const staleCommand = mocks.submit.mutateAsync.mock.calls[0][0];
 
-    fireEvent.click(screen.getByRole("button", { name: "Reload latest draft" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Reload latest draft" })[0]);
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Fresh server draft"));
     fireEvent.click(screen.getByRole("button", { name: "Submit deliverable" }));
 
@@ -244,7 +339,7 @@ describe("CreatorStudioWorkbench", () => {
     workspace.workItems[0] = {
       ...workspace.workItems[0],
       state: "ready_to_submit",
-      validation: { caption: true, externalUrl: true, checklist: true, assets: true },
+      validation: { caption: true, externalUrl: true, checklist: true, assets: true, publicationProof: true },
     };
     workspace.nextAction = { workItemId: "story", state: "ready_to_submit", label: "Submit deliverable" };
     const reloadWorkspace = vi.fn().mockResolvedValue(workspace);
@@ -290,10 +385,10 @@ describe("CreatorStudioWorkbench", () => {
     workspace.workItems[0].requiresAsset = true;
     render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
 
-    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["first"], "first.png", { type: "image/png", lastModified: 1 }));
+    fireEvent.change(screen.getByLabelText("Proof asset"), { target: { files: [new File(["first"], "first.png", { type: "image/png", lastModified: 1 })] } });
     await waitFor(() => expect(mocks.grant.mutateAsync).toHaveBeenCalledTimes(1));
     const firstCommandId = mocks.grant.mutateAsync.mock.calls[0][0].commandId;
-    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["second"], "second.png", { type: "image/png", lastModified: 2 }));
+    fireEvent.change(screen.getByLabelText("Proof asset"), { target: { files: [new File(["second"], "second.png", { type: "image/png", lastModified: 2 })] } });
     await waitFor(() => expect(mocks.grant.mutateAsync).toHaveBeenCalledTimes(2));
     expect(mocks.grant.mutateAsync.mock.calls[1][0].commandId).not.toBe(firstCommandId);
   });
@@ -314,13 +409,13 @@ describe("CreatorStudioWorkbench", () => {
 
   it("focuses proof and review controls for their primary actions", () => {
     const workspace = changesRequestedWorkspace();
-    workspace.workItems[0] = { ...workspace.workItems[0], state: "drafting", requiresAsset: true, validation: { caption: true, externalUrl: true, checklist: true, assets: false } };
+    workspace.workItems[0] = { ...workspace.workItems[0], state: "drafting", requiresAsset: true, validation: { caption: true, externalUrl: true, checklist: true, assets: false, publicationProof: true } };
     workspace.nextAction = { workItemId: "story", state: "drafting", label: "Upload proof" };
     const { rerender } = render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
     fireEvent.click(screen.getByRole("button", { name: "Upload proof" }));
     expect(document.activeElement).toBe(screen.getByLabelText("Proof asset"));
 
-    workspace.workItems[0] = { ...workspace.workItems[0], state: "changes_requested", validation: { caption: false, externalUrl: true, checklist: true, assets: true } };
+    workspace.workItems[0] = { ...workspace.workItems[0], state: "changes_requested", validation: { caption: false, externalUrl: true, checklist: true, assets: true, publicationProof: true } };
     workspace.nextAction = { workItemId: "story", state: "changes_requested", label: "Review requested changes" };
     rerender(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
     fireEvent.click(screen.getByRole("button", { name: "Review requested changes" }));

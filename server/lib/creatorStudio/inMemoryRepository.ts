@@ -18,6 +18,8 @@ import {
 } from "./types.js";
 import type {
   CommandResult,
+  CancelProofEvidenceInput,
+  CancelledProofEvidence,
   CreatePublicationProofAttemptInput,
   CreateProofEvidenceGrantInput,
   CreateUploadGrantInput,
@@ -396,6 +398,33 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     this.refreshProofDerivedState(workItem);
     this.recordEvent("proof.evidence_finalized", workItem.id, { attemptId: attempt.id, evidenceId: evidence.id });
     return this.commit(context, input.commandId, requestHash, clone(evidence));
+  }
+
+  async cancelProofEvidence(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    evidenceId: string,
+    input: CancelProofEvidenceInput,
+  ): Promise<CommandResult<CancelledProofEvidence>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "cancel_proof_evidence", context, workItemId, attemptId, evidenceId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<CancelledProofEvidence>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const attempt = this.requireEditableProofAttempt(workItem, attemptId);
+    const evidenceIndex = attempt.evidence.findIndex((candidate) => candidate.id === evidenceId);
+    const evidence = evidenceIndex >= 0 ? attempt.evidence[evidenceIndex] : undefined;
+    if (!evidence || evidence.status !== "pending") {
+      throw new CreatorStudioError("proof_evidence_invalid", "Only pending evidence can be discarded");
+    }
+
+    attempt.evidence.splice(evidenceIndex, 1);
+    this.refreshProofDerivedState(workItem);
+    this.recordEvent("proof.evidence_cancelled", workItem.id, { attemptId: attempt.id, evidenceId });
+    return this.commit(context, input.commandId, requestHash, { evidenceId });
   }
 
   async submitPublicationProof(

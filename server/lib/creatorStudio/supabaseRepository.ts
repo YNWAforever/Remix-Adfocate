@@ -4,6 +4,8 @@ import { CreatorStudioError } from "./errors.js";
 import type { CreatorStudioRepository } from "./repository.js";
 import type {
   CommandResult,
+  CancelProofEvidenceInput,
+  CancelledProofEvidence,
   CreatePublicationProofAttemptInput,
   CreateProofEvidenceGrantInput,
   CreateUploadGrantInput,
@@ -780,6 +782,38 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
       return {
         replayed: response.replayed === true,
         value: mapProofEvidence(requiredRow(response.evidence, "publication proof evidence")),
+      };
+    } catch (error) {
+      throw this.repositoryError(error);
+    }
+  }
+
+  async cancelProofEvidence(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    evidenceId: string,
+    input: CancelProofEvidenceInput,
+  ): Promise<CommandResult<CancelledProofEvidence>> {
+    this.validateContext(context);
+    const payload = { type: "cancel_proof_evidence", context, workItemId, attemptId, evidenceId, input };
+    const response = await this.commandRpc("creator_studio_cancel_proof_evidence", {
+      p_submission_id: context.submissionId,
+      p_workspace_id: context.workspaceId,
+      p_work_item_id: workItemId,
+      p_attempt_id: attemptId,
+      p_evidence_id: evidenceId,
+      p_command_id: input.commandId,
+      p_request_hash: hashCommand(payload),
+    });
+    try {
+      const cancelledEvidenceId = text(response, "evidence_id");
+      if (!cancelledEvidenceId || cancelledEvidenceId !== evidenceId) {
+        throw new CreatorStudioError("proof_evidence_invalid", "Proof evidence cancellation returned an invalid id");
+      }
+      return {
+        replayed: response.replayed === true,
+        value: { evidenceId: cancelledEvidenceId },
       };
     } catch (error) {
       throw this.repositoryError(error);

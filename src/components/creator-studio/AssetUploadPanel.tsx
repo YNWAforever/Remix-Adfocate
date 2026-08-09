@@ -88,14 +88,14 @@ export function AssetUploadPanel({ submissionId, workItem }: { submissionId: str
 
   const pending = phase === "grant" || phase === "upload" || phase === "ready-to-finalize" || phase === "finalize" || createGrant.isPending || finalizeAsset.isPending;
   return (
-    <section aria-labelledby={`proof-asset-${workItem.id}`} className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+    <section aria-label="Asset upload" className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
       <h3 id={`proof-asset-${workItem.id}`} className="font-heading font-bold">Proof asset</h3>
       <label className="block text-sm font-medium">Proof asset<input id={`creator-proof-asset-${workItem.id}`} aria-label="Proof asset" type="file" accept={acceptedMimeTypes} disabled={pending} onChange={(event) => { const file = event.target.files?.[0]; if (!file) return; if (attempt && attempt.identity !== fileIdentity(file)) commandIds.current = {}; void requestGrant(file); }} className="mt-1 block w-full text-sm" /></label>
       <ul className="text-sm" aria-label="Asset status">
+        {phase === "grant" ? <li>Requesting upload authorization</li> : null}
+        {phase === "upload" ? <li>Uploading proof asset</li> : null}
+        {phase === "ready-to-finalize" || phase === "finalize" ? <li>Finalizing proof asset</li> : null}
         {workItem.assets.map((asset) => <li key={asset.id}>{asset.fileName}: {asset.state}</li>)}
-        {phase === "grant" ? <li>Requesting upload authorization…</li> : null}
-        {phase === "upload" ? <li>Uploading proof asset…</li> : null}
-        {phase === "ready-to-finalize" || phase === "finalize" ? <li>Finalizing proof asset…</li> : null}
         {phase === "finalized" ? <li>Proof asset finalized.</li> : null}
       </ul>
       {phase === "error" ? <div role="alert" className="space-y-2 text-sm text-[var(--color-magenta)]"><p>Upload failed. Retry without losing your draft.</p><button type="button" onClick={() => void retry()} className="underline">Retry upload</button></div> : null}

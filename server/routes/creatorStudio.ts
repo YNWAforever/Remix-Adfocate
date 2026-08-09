@@ -3,11 +3,15 @@ import { randomUUID } from "node:crypto";
 import type { Env } from "../app.js";
 import { CreatorStudioError } from "../lib/creatorStudio/errors.js";
 import type { CreatorStudioRepository } from "../lib/creatorStudio/repository.js";
+import { validatePublicationProofUrl } from "../lib/creatorStudio/publicationProof.js";
 import { isStrictHttpUrl } from "../lib/creatorStudio/types.js";
 import { recordCreatorStudioEvent, type CreatorStudioMetricsSink } from "../lib/creatorStudio/metrics.js";
 import type {
+  CreateProofEvidenceGrantInput,
+  CreatePublicationProofAttemptInput,
   CreateUploadGrantInput,
   FinalizeAssetInput,
+  FinalizeProofEvidenceInput,
   SaveDraftInput,
   SubmitWorkItemInput,
 } from "../lib/creatorStudio/types.js";
@@ -17,10 +21,16 @@ export type CreatorStudioRouteDeps = {
   metricsSink?: CreatorStudioMetricsSink;
 };
 
-const conflictCodes = new Set(["command_conflict", "version_conflict", "invalid_transition", "asset_finalized"]);
+const conflictCodes = new Set([
+  "command_conflict", "version_conflict", "invalid_transition", "asset_finalized",
+  "proof_attempt_immutable", "proof_attempt_transition_invalid",
+]);
 const constraintCodes = new Set([
   "command_required", "draft_invalid", "file_not_allowed", "file_too_large", "asset_not_uploaded",
+  "proof_url_invalid", "proof_platform_invalid", "proof_evidence_invalid", "proof_metadata_refresh_failed",
 ]);
+const proofEvidenceMimes = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+const maxProofEvidenceBytes = 50 * 1024 * 1024;
 const safeWorkspaceReadError = "Unable to load Creator Studio workspace";
 
 type JsonRecord = Record<string, unknown>;
@@ -93,8 +103,54 @@ function parseSubmit(value: unknown): SubmitWorkItemInput {
   return { commandId: commandId(value.command_id), expectedVersion: expectedVersion(value.expected_version) };
 }
 
-function safeDatabaseError(c: Context<Env>, correlationId = randomUUID()) {
-  return c.json({ error: safeWorkspaceReadError, code: "db_error", correlationId }, 500);
+function parseCreatePublicationProofAttempt(value: unknown): CreatePublicationProofAttemptInput {
+  if (!isRecord(value) || !hasOnlyKeys(value, ["command_id", "published_url", "platform"])) throw invalidCommand();
+  if (typeof value.published_url !== "string" || !validatePublicationProofUrl(value.published_url)
+    || typeof value.platform !== "string" || !value.platform.trim()) {
+    throw invalidCommand();
+  }
+  return {
+    commandId: commandId(value.command_id),
+    publishedUrl: value.published_url,
+    platform: value.platform,
+  };
+}
+
+function parseCreateProofEvidenceGrant(value: unknown): CreateProofEvidenceGrantInput {
+  if (!isRecord(value) || !hasOnlyKeys(value, ["command_id", "file_name", "mime_type", "byte_size"])) throw invalidCommand();
+  if (typeof value.file_name !== "string" || !value.file_name.trim() || value.file_name.length > 255
+    || typeof value.mime_type !== "string" || !proofEvidenceMimes.has(value.mime_type)
+    || !Number.isSafeInteger(value.byte_size) || (value.byte_size as number) < 1
+    || (value.byte_size as number) > maxProofEvidenceBytes) {
+    throw invalidCommand();
+  }
+  return {
+    commandId: commandId(value.command_id), fileName: value.file_name,
+    mimeType: value.mime_type, byteSize: value.byte_size as number,
+  };
+}
+
+function parseFinalizeProofEvidence(value: unknown): FinalizeProofEvidenceInput {
+  if (!isRecord(value) || !hasOnlyKeys(value, ["command_id", "byte_size", "mime_type", "checksum_sha256"])) throw invalidCommand();
+  if (typeof value.mime_type !== "string" || !proofEvidenceMimes.has(value.mime_type)
+    || !Number.isSafeInteger(value.byte_size) || (value.byte_size as number) < 1
+    || (value.byte_size as number) > maxProofEvidenceBytes
+    || (value.checksum_sha256 !== null && (typeof value.checksum_sha256 !== "string" || !/^[a-f0-9]{64}$/i.test(value.checksum_sha256)))) {
+    throw invalidCommand();
+  }
+  return {
+    commandId: commandId(value.command_id), byteSize: value.byte_size as number,
+    mimeType: value.mime_type, checksumSha256: value.checksum_sha256 as string | null,
+  };
+}
+
+function parseProofCommand(value: unknown): { commandId: string } {
+  if (!isRecord(value) || !hasOnlyKeys(value, ["command_id"])) throw invalidCommand();
+  return { commandId: commandId(value.command_id) };
+}
+
+function safeDatabaseError(c: Context<Env>, correlationId?: string) {
+  return c.json({ error: safeWorkspaceReadError, code: "db_error", correlationId: correlationId ?? randomUUID() }, 500);
 }
 
 function errorResponse(c: Context<Env>, error: CreatorStudioError) {
@@ -109,23 +165,27 @@ function errorResponse(c: Context<Env>, error: CreatorStudioError) {
 export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<Env> {
   const routes = new Hono<Env>();
 
-  const requestContext = (c: Context<Env>) => ({
-    actorId: c.get("userId"),
-    workspaceId: c.get("workspaceId"),
-    submissionId: c.req.param("submissionId"),
-  });
+  const requestContext = (c: Context<Env>) => {
+    const submissionId = c.req.param("submissionId");
+    if (!submissionId) throw invalidCommand("Invalid Creator Studio submission");
+    return { actorId: c.get("userId"), workspaceId: c.get("workspaceId"), submissionId };
+  };
 
   const record = (
     name: "workspace_opened" | "changes_viewed",
     c: Context<Env>,
     workItemId?: string,
-  ) => recordCreatorStudioEvent({
-    name,
-    workspaceId: c.get("workspaceId"),
-    submissionId: c.req.param("submissionId"),
-    ...(workItemId ? { workItemId } : {}),
-    createdAt: new Date().toISOString(),
-  }, deps.metricsSink);
+  ) => {
+    const submissionId = c.req.param("submissionId");
+    if (!submissionId) return;
+    return recordCreatorStudioEvent({
+      name,
+      workspaceId: c.get("workspaceId"),
+      submissionId,
+      ...(workItemId ? { workItemId } : {}),
+      createdAt: new Date().toISOString(),
+    }, deps.metricsSink);
+  };
 
   const runCommand = async <T>(c: Context<Env>, command: () => Promise<{ value: T; replayed: boolean }>) => {
     try {
@@ -180,6 +240,46 @@ export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<En
   routes.post("/:submissionId/work-items/:workItemId/submit", async (c) => runCommand(c, async () => {
     const input = parseSubmit(await requestJson(c));
     return deps.repositoryForRequest(c).submitWorkItem(requestContext(c), c.req.param("workItemId"), input);
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts", async (c) => runCommand(c, async () => {
+    const input = parseCreatePublicationProofAttempt(await requestJson(c));
+    return deps.repositoryForRequest(c).createPublicationProofAttempt(requestContext(c), c.req.param("workItemId"), input);
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts/:attemptId/evidence/upload-grant", async (c) => runCommand(c, async () => {
+    const input = parseCreateProofEvidenceGrant(await requestJson(c));
+    return deps.repositoryForRequest(c).createProofEvidenceGrant(
+      requestContext(c), c.req.param("workItemId"), c.req.param("attemptId"), input,
+    );
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts/:attemptId/evidence/:evidenceId/finalize", async (c) => runCommand(c, async () => {
+    const input = parseFinalizeProofEvidence(await requestJson(c));
+    return deps.repositoryForRequest(c).finalizeProofEvidence(
+      requestContext(c), c.req.param("workItemId"), c.req.param("attemptId"), c.req.param("evidenceId"), input,
+    );
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts/:attemptId/evidence/:evidenceId/cancel", async (c) => runCommand(c, async () => {
+    const input = parseProofCommand(await requestJson(c));
+    return deps.repositoryForRequest(c).cancelProofEvidence(
+      requestContext(c), c.req.param("workItemId"), c.req.param("attemptId"), c.req.param("evidenceId"), input,
+    );
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts/:attemptId/submit", async (c) => runCommand(c, async () => {
+    const input = parseProofCommand(await requestJson(c));
+    return deps.repositoryForRequest(c).submitPublicationProof(
+      requestContext(c), c.req.param("workItemId"), c.req.param("attemptId"), input,
+    );
+  }));
+
+  routes.post("/:submissionId/work-items/:workItemId/publication-proof/attempts/:attemptId/metadata/refresh", async (c) => runCommand(c, async () => {
+    const input = parseProofCommand(await requestJson(c));
+    return deps.repositoryForRequest(c).refreshProofMetadata(
+      requestContext(c), c.req.param("workItemId"), c.req.param("attemptId"), input,
+    );
   }));
 
   return routes;

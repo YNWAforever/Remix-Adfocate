@@ -60,6 +60,51 @@ export type WorkItemValidation = {
   externalUrl: boolean;
   checklist: boolean;
   assets: boolean;
+  publicationProof: boolean;
+};
+
+export type PublicationProofRequirement = {
+  kind: "publication_url";
+  allowedPlatforms: string[];
+  evidence: "optional";
+};
+
+export type PublicationProofMetadata = {
+  title: string | null;
+  author: string | null;
+  publishedAt: string | null;
+};
+
+export type PublicationProofEvidence = {
+  id: string;
+  attemptId: string;
+  storagePath: string;
+  mimeType: "image/jpeg" | "image/png" | "image/webp" | "application/pdf";
+  byteSize: number;
+  checksumSha256: string | null;
+  status: "pending" | "finalized";
+};
+
+export type PublicationProofAttempt = {
+  id: string;
+  workItemId: string;
+  parentAttemptId: string | null;
+  sequence: number;
+  publishedUrl: string;
+  platform: string | null;
+  state: "draft" | "submitted" | "verified" | "changes_requested";
+  metadataState: "pending" | "available" | "unavailable" | "failed";
+  metadata: PublicationProofMetadata | null;
+  operatorMessage: string | null;
+  submittedAt: string | null;
+  decidedAt: string | null;
+  evidence: PublicationProofEvidence[];
+};
+
+export type PublicationProofSnapshot = {
+  required: boolean;
+  currentAttempt: PublicationProofAttempt | null;
+  history: PublicationProofAttempt[];
 };
 
 export type WorkingDraft = {
@@ -93,10 +138,12 @@ export type WorkItem = {
   instructions: string;
   requirements: WorkItemRequirements;
   requiresAsset: boolean;
+  proofRequirement: PublicationProofRequirement | null;
   state: CreatorStudioState;
   validation: WorkItemValidation;
   draft: WorkingDraft | null;
   assets: DraftAsset[];
+  publicationProof: PublicationProofSnapshot;
   reviewFeedback: OptionalSection<ReviewFeedback[]>;
 };
 
@@ -160,6 +207,32 @@ export type FinalizeAssetCommandInput = {
 };
 
 export type SubmitWorkItemCommandInput = { commandId: string; expectedVersion: number };
+
+export type CreatePublicationProofAttemptCommandInput = {
+  commandId: string;
+  publishedUrl: string;
+  platform: string;
+};
+
+export type CreateProofEvidenceGrantCommandInput = {
+  commandId: string;
+  fileName: string;
+  mimeType: string;
+  byteSize: number;
+};
+
+export type FinalizeProofEvidenceCommandInput = {
+  commandId: string;
+  byteSize: number;
+  mimeType: string;
+  checksumSha256: string | null;
+};
+
+export type ProofCommandInput = { commandId: string };
+export type PublicationProofAttemptCommandResponse = PublicationProofAttempt & { replayed: boolean };
+export type PublicationProofEvidenceCommandResponse = PublicationProofEvidence & { replayed: boolean };
+export type CancelledProofEvidenceCommandResponse = { evidenceId: string; replayed: boolean };
+export type ProofUploadGrantCommandResponse = UploadGrantCommandResponse;
 
 export const creatorStudioKeys = {
   workspace: (submissionId: string) => ["creator-studio", "workspace", submissionId] as const,
@@ -231,7 +304,75 @@ export function useSubmitWorkItem(submissionId: string, workItemId: string) {
   });
 }
 
+export function useCreatePublicationProofAttempt(submissionId: string, workItemId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreatePublicationProofAttemptCommandInput) => apiFetch<PublicationProofAttemptCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId, published_url: input.publishedUrl, platform: input.platform }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
+export function useCreateProofEvidenceGrant(submissionId: string, workItemId: string, attemptId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateProofEvidenceGrantCommandInput) => apiFetch<ProofUploadGrantCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts/${attemptId}/evidence/upload-grant`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId, file_name: input.fileName, mime_type: input.mimeType, byte_size: input.byteSize }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
+export function useFinalizeProofEvidence(submissionId: string, workItemId: string, attemptId: string, evidenceId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: FinalizeProofEvidenceCommandInput) => apiFetch<PublicationProofEvidenceCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts/${attemptId}/evidence/${evidenceId}/finalize`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId, byte_size: input.byteSize, mime_type: input.mimeType, checksum_sha256: input.checksumSha256 }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
+export function useCancelProofEvidence(submissionId: string, workItemId: string, attemptId: string, evidenceId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ProofCommandInput) => apiFetch<CancelledProofEvidenceCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts/${attemptId}/evidence/${evidenceId}/cancel`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
+export function useSubmitPublicationProof(submissionId: string, workItemId: string, attemptId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ProofCommandInput) => apiFetch<PublicationProofAttemptCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts/${attemptId}/submit`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
+export function useRefreshProofMetadata(submissionId: string, workItemId: string, attemptId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ProofCommandInput) => apiFetch<PublicationProofAttemptCommandResponse>(
+      `/my-missions/${submissionId}/work-items/${workItemId}/publication-proof/attempts/${attemptId}/metadata/refresh`,
+      { method: "POST", body: JSON.stringify({ command_id: input.commandId }) },
+    ),
+    onSuccess: () => invalidateWorkspace(queryClient, submissionId),
+  });
+}
+
 export async function uploadDraftAsset(grant: UploadGrant, file: File) {
   const { error } = await supabase.storage.from(grant.bucket).uploadToSignedUrl(grant.path, grant.token, file);
   if (error) throw error;
 }
+
+export const uploadPublicationProofEvidence = uploadDraftAsset;

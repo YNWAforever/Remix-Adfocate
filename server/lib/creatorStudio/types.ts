@@ -112,6 +112,14 @@ export type FinalizeProofEvidenceInput = {
   checksumSha256: string | null;
 };
 
+export type CancelProofEvidenceInput = {
+  commandId: string;
+};
+
+export type CancelledProofEvidence = {
+  evidenceId: string;
+};
+
 export type SubmitPublicationProofInput = {
   commandId: string;
 };
@@ -252,6 +260,7 @@ export type CreatorStudioEvent = {
     | "work_item.submitted"
     | "proof.attempt_created"
     | "proof.evidence_reserved"
+    | "proof.evidence_cancelled"
     | "proof.evidence_finalized"
     | "proof.submitted"
     | "proof.metadata_refreshed";

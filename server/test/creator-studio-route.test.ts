@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CreatorStudioError } from "../lib/creatorStudio/errors.js";
 import { InMemoryCreatorStudioRepository } from "../lib/creatorStudio/inMemoryRepository.js";
 import type { CreatorStudioRepository } from "../lib/creatorStudio/repository.js";
@@ -53,6 +53,7 @@ const failingRepository = (): CreatorStudioRepository => ({
   async createPublicationProofAttempt() { throw new Error("not implemented"); },
   async createProofEvidenceGrant() { throw new Error("not implemented"); },
   async finalizeProofEvidence() { throw new Error("not implemented"); },
+  async cancelProofEvidence() { throw new Error("not implemented"); },
   async submitPublicationProof() { throw new Error("not implemented"); },
   async refreshProofMetadata() { throw new Error("not implemented"); },
 });
@@ -68,9 +69,39 @@ const unknownFailingRepository = (): CreatorStudioRepository => ({
   async createPublicationProofAttempt() { throw new Error("not implemented"); },
   async createProofEvidenceGrant() { throw new Error("not implemented"); },
   async finalizeProofEvidence() { throw new Error("not implemented"); },
+  async cancelProofEvidence() { throw new Error("not implemented"); },
   async submitPublicationProof() { throw new Error("not implemented"); },
   async refreshProofMetadata() { throw new Error("not implemented"); },
 });
+
+const proofRepository = () => {
+  const attempt = {
+    id: "attempt-1", workItemId: "work-item-1", parentAttemptId: null, sequence: 1,
+    publishedUrl: "https://example.com/published", platform: "instagram", state: "draft" as const,
+    metadataState: "pending" as const, metadata: null, operatorMessage: null,
+    submittedAt: null, decidedAt: null, evidence: [],
+  };
+  const evidence = {
+    id: "evidence-1", attemptId: "attempt-1", storagePath: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+    mimeType: "image/png" as const, byteSize: 10, checksumSha256: null, status: "finalized" as const,
+  };
+  return {
+    getWorkspace: vi.fn().mockResolvedValue(makeWorkspace()),
+    saveDraft: vi.fn(),
+    createUploadGrant: vi.fn(),
+    finalizeAsset: vi.fn(),
+    submitWorkItem: vi.fn(),
+    createPublicationProofAttempt: vi.fn().mockResolvedValue({ value: attempt, replayed: false }),
+    createProofEvidenceGrant: vi.fn().mockResolvedValue({
+      value: { bucket: "mission-publication-proof-assets", path: evidence.storagePath, token: "signed-token", assetId: evidence.id, expiresAt: "2026-08-10T01:00:00.000Z" },
+      replayed: false,
+    }),
+    finalizeProofEvidence: vi.fn().mockResolvedValue({ value: evidence, replayed: false }),
+    cancelProofEvidence: vi.fn().mockResolvedValue({ value: { evidenceId: evidence.id }, replayed: false }),
+    submitPublicationProof: vi.fn().mockResolvedValue({ value: { ...attempt, state: "submitted" as const, submittedAt: "2026-08-10T00:00:00.000Z" }, replayed: false }),
+    refreshProofMetadata: vi.fn().mockResolvedValue({ value: { ...attempt, metadataState: "unavailable" as const }, replayed: false }),
+  } as unknown as CreatorStudioRepository;
+};
 
 type QueryResult = { data: unknown; error: unknown };
 type FakeQuery = {
@@ -202,5 +233,103 @@ describe("Creator Studio workspace route", () => {
       ],
     });
     expect(workspace?.nextAction).toMatchObject({ workItemId: "work-item-a", state: "drafting" });
+  });
+
+  it("routes publication-proof commands through the repository adapter", async () => {
+    const repository = proofRepository();
+    const app = appForRepository(repository);
+    const json = (value: unknown) => ({ headers: { "content-type": "application/json" }, body: JSON.stringify(value) });
+
+    const attemptResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts",
+      { method: "POST", ...json({ command_id: "proof-create", published_url: "https://example.com/published", platform: "instagram" }) },
+    );
+    expect(attemptResponse.status).toBe(200);
+    expect(repository.createPublicationProofAttempt).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1",
+      { commandId: "proof-create", publishedUrl: "https://example.com/published", platform: "instagram" },
+    );
+
+    const grantResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/evidence/upload-grant",
+      { method: "POST", ...json({ command_id: "proof-grant", file_name: "proof.png", mime_type: "image/png", byte_size: 10 }) },
+    );
+    expect(grantResponse.status).toBe(200);
+    expect(repository.createProofEvidenceGrant).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1", "attempt-1",
+      { commandId: "proof-grant", fileName: "proof.png", mimeType: "image/png", byteSize: 10 },
+    );
+
+    const finalizeResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/evidence/evidence-1/finalize",
+      { method: "POST", ...json({ command_id: "proof-finalize", byte_size: 10, mime_type: "image/png", checksum_sha256: null }) },
+    );
+    expect(finalizeResponse.status).toBe(200);
+    expect(repository.finalizeProofEvidence).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1", "attempt-1", "evidence-1",
+      { commandId: "proof-finalize", byteSize: 10, mimeType: "image/png", checksumSha256: null },
+    );
+
+    const cancelResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/evidence/evidence-1/cancel",
+      { method: "POST", ...json({ command_id: "proof-cancel" }) },
+    );
+    expect(cancelResponse.status).toBe(200);
+    expect(repository.cancelProofEvidence).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1", "attempt-1", "evidence-1", { commandId: "proof-cancel" },
+    );
+
+    const submitResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/submit",
+      { method: "POST", ...json({ command_id: "proof-submit" }) },
+    );
+    expect(submitResponse.status).toBe(200);
+    expect(repository.submitPublicationProof).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1", "attempt-1", { commandId: "proof-submit" },
+    );
+
+    const refreshResponse = await app.request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/metadata/refresh",
+      { method: "POST", ...json({ command_id: "proof-refresh" }) },
+    );
+    expect(refreshResponse.status).toBe(200);
+    expect(repository.refreshProofMetadata).toHaveBeenCalledWith(
+      { actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" },
+      "work-item-1", "attempt-1", { commandId: "proof-refresh" },
+    );
+  });
+
+  it("rejects invalid proof commands before reaching the repository", async () => {
+    const repository = proofRepository();
+    const response = await appForRepository(repository).request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts",
+      { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ command_id: "proof-create", published_url: "http://example.com", platform: "instagram" }) },
+    );
+
+    expect(response.status).toBe(422);
+    expect(await response.json()).toMatchObject({ code: "draft_invalid" });
+    expect(repository.createPublicationProofAttempt).not.toHaveBeenCalled();
+  });
+
+  it("maps immutable proof transitions to a conflict response", async () => {
+    const repository = proofRepository();
+    (repository.submitPublicationProof as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new CreatorStudioError("proof_attempt_immutable", "Only the current draft proof attempt can be edited"),
+    );
+    const response = await appForRepository(repository).request(
+      "/my-missions/submission-1/work-items/work-item-1/publication-proof/attempts/attempt-1/submit",
+      { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ command_id: "proof-submit" }) },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: "Only the current draft proof attempt can be edited",
+      code: "proof_attempt_immutable",
+    });
   });
 });

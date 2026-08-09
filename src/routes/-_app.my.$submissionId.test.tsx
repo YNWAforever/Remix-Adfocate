@@ -9,7 +9,14 @@ const hoisted = vi.hoisted(() => ({
   grant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   finalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   submit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofAttempt: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofGrant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofFinalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofCancel: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofSubmit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  proofRefresh: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   upload: vi.fn(),
+  proofUpload: vi.fn(),
 }));
 
 vi.mock("@/lib/queries/creatorStudio", () => ({
@@ -18,7 +25,14 @@ vi.mock("@/lib/queries/creatorStudio", () => ({
   useCreateDraftAssetGrant: () => hoisted.grant,
   useFinalizeDraftAsset: () => hoisted.finalize,
   useSubmitWorkItem: () => hoisted.submit,
+  useCreatePublicationProofAttempt: () => hoisted.proofAttempt,
+  useCreateProofEvidenceGrant: () => hoisted.proofGrant,
+  useFinalizeProofEvidence: () => hoisted.proofFinalize,
+  useCancelProofEvidence: () => hoisted.proofCancel,
+  useSubmitPublicationProof: () => hoisted.proofSubmit,
+  useRefreshProofMetadata: () => hoisted.proofRefresh,
   uploadDraftAsset: hoisted.upload,
+  uploadPublicationProofEvidence: hoisted.proofUpload,
   creatorStudioKeys: { workspace: (submissionId: string) => ["creator-studio", "workspace", submissionId] },
 }));
 
@@ -31,8 +45,8 @@ function makeWorkspace() {
     brief: { missionId: "mission-1", title: "Launch mission", description: null, deliverables: ["Story", "Reel"], requirements: ["Disclosure"], platforms: ["instagram"] },
     workflow: { id: "workflow-1", state: "drafting" as const, revision: 1 },
     workItems: [
-      { id: "story", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: false, checklist: [] }, requiresAsset: false, state: "drafting" as const, validation: { caption: true, externalUrl: true, checklist: true, assets: true }, draft: { caption: "Draft", externalUrl: null, checklist: {}, version: 1, updatedAt: "2026-08-09T00:00:00.000Z" }, assets: [], reviewFeedback: { status: "available" as const, value: [] } },
-      { id: "reel", position: 2, title: "Reel", instructions: "Create a reel", requirements: { caption: false, externalUrl: true, checklist: ["Disclosure"] }, requiresAsset: true, state: "not_started" as const, validation: { caption: false, externalUrl: false, checklist: false, assets: false }, draft: null, assets: [], reviewFeedback: { status: "unavailable" as const, reason: "temporarily_unavailable" as const } },
+      { id: "story", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: false, checklist: [] }, requiresAsset: false, proofRequirement: null, publicationProof: { required: false, currentAttempt: null, history: [] }, state: "drafting" as const, validation: { caption: true, externalUrl: true, checklist: true, assets: true, publicationProof: true }, draft: { caption: "Draft", externalUrl: null, checklist: {}, version: 1, updatedAt: "2026-08-09T00:00:00.000Z" }, assets: [], reviewFeedback: { status: "available" as const, value: [] } },
+      { id: "reel", position: 2, title: "Reel", instructions: "Create a reel", requirements: { caption: false, externalUrl: true, checklist: ["Disclosure"] }, requiresAsset: true, proofRequirement: null, publicationProof: { required: false, currentAttempt: null, history: [] }, state: "not_started" as const, validation: { caption: false, externalUrl: false, checklist: false, assets: false, publicationProof: true }, draft: null, assets: [], reviewFeedback: { status: "unavailable" as const, reason: "temporarily_unavailable" as const } },
     ],
     nextAction: { workItemId: "story", state: "drafting" as const, label: "Finish Story" },
   };
@@ -62,7 +76,26 @@ beforeEach(() => {
   hoisted.submit.mutateAsync.mockReset();
   hoisted.submit.isPending = false;
   hoisted.submit.error = null;
+  hoisted.proofAttempt.mutateAsync.mockReset();
+  hoisted.proofAttempt.isPending = false;
+  hoisted.proofAttempt.error = null;
+  hoisted.proofGrant.mutateAsync.mockReset();
+  hoisted.proofGrant.isPending = false;
+  hoisted.proofGrant.error = null;
+  hoisted.proofFinalize.mutateAsync.mockReset();
+  hoisted.proofFinalize.isPending = false;
+  hoisted.proofFinalize.error = null;
+  hoisted.proofCancel.mutateAsync.mockReset();
+  hoisted.proofCancel.isPending = false;
+  hoisted.proofCancel.error = null;
+  hoisted.proofSubmit.mutateAsync.mockReset();
+  hoisted.proofSubmit.isPending = false;
+  hoisted.proofSubmit.error = null;
+  hoisted.proofRefresh.mutateAsync.mockReset();
+  hoisted.proofRefresh.isPending = false;
+  hoisted.proofRefresh.error = null;
   hoisted.upload.mockReset();
+  hoisted.proofUpload.mockReset();
 });
 
 afterEach(() => {
@@ -84,7 +117,26 @@ afterEach(() => {
   hoisted.submit.mutateAsync.mockReset();
   hoisted.submit.isPending = false;
   hoisted.submit.error = null;
+  hoisted.proofAttempt.mutateAsync.mockReset();
+  hoisted.proofAttempt.isPending = false;
+  hoisted.proofAttempt.error = null;
+  hoisted.proofGrant.mutateAsync.mockReset();
+  hoisted.proofGrant.isPending = false;
+  hoisted.proofGrant.error = null;
+  hoisted.proofFinalize.mutateAsync.mockReset();
+  hoisted.proofFinalize.isPending = false;
+  hoisted.proofFinalize.error = null;
+  hoisted.proofCancel.mutateAsync.mockReset();
+  hoisted.proofCancel.isPending = false;
+  hoisted.proofCancel.error = null;
+  hoisted.proofSubmit.mutateAsync.mockReset();
+  hoisted.proofSubmit.isPending = false;
+  hoisted.proofSubmit.error = null;
+  hoisted.proofRefresh.mutateAsync.mockReset();
+  hoisted.proofRefresh.isPending = false;
+  hoisted.proofRefresh.error = null;
   hoisted.upload.mockReset();
+  hoisted.proofUpload.mockReset();
 });
 
 describe("Creator Studio submission route", () => {

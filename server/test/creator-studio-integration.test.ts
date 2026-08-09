@@ -21,11 +21,31 @@ const suite = hasSupabaseEnv ? describe : describe.skip;
 const ownedStoragePaths = new Set<string>();
 let sequence = 0;
 const publicationProofRpcMigrationPath = resolve(process.cwd(), "supabase/migrations/20260809113000_creator_studio_publication_proof_rpc.sql");
+const publicationProofCancellationMigrationPath = resolve(process.cwd(), "supabase/migrations/20260810120000_creator_studio_cancel_proof_evidence.sql");
 
-const json = (body: unknown, method = "POST"): RequestInit => ({
-  method,
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body),
+describe("Creator Studio publication-proof cancellation migration contract", () => {
+  it("abandons only the current pending evidence reservation through an atomic command", () => {
+    const sql = readFileSync(publicationProofCancellationMigrationPath, "utf8");
+    const functionName = "creator_studio_cancel_proof_evidence";
+    const functionStart = sql.indexOf(`create or replace function public.${functionName}(`);
+    const bodyStart = sql.indexOf("as $$", functionStart);
+    const bodyEnd = sql.indexOf("$$;", bodyStart);
+    expect(functionStart).toBeGreaterThanOrEqual(0);
+    expect(bodyStart).toBeGreaterThan(functionStart);
+    expect(bodyEnd).toBeGreaterThan(bodyStart);
+    const functionBody = sql.slice(functionStart, bodyEnd);
+    expect(functionBody).toContain("p_command_id text");
+    expect(functionBody).toContain("p_request_hash text");
+    expect(functionBody).toContain("from public.mission_workflow_commands command");
+    expect(functionBody).toContain("v_latest.id <> v_attempt.id or v_attempt.state <> 'draft'");
+    expect(functionBody).toContain("v_asset.upload_state <> 'pending'");
+    expect(functionBody).toContain("set upload_state = 'abandoned'");
+    expect(functionBody).toContain("insert into public.mission_publication_proof_events");
+    expect(functionBody).toContain("insert into public.mission_workflow_events");
+    expect(functionBody).toContain("insert into public.mission_workflow_commands");
+    expect(sql).toContain(`revoke all on function public.${functionName}`);
+    expect(sql).toContain(`grant execute on function public.${functionName}`);
+  });
 });
 
 function makeRouteApp(repository: SupabaseCreatorStudioRepository, creatorId: string, events: CreatorStudioMetricEvent[]) {

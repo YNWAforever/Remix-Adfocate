@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { InMemoryCreatorStudioRepository, type PublicationProofMetadataResolver } from "../lib/creatorStudio/inMemoryRepository.js";
 import { SupabaseCreatorStudioRepository } from "../lib/creatorStudio/supabaseRepository.js";
-import type { CreatorStudioContext, SaveDraftInput, SubmissionWorkspace } from "../lib/creatorStudio/types.js";
+import type { CreatorStudioContext, PublicationProofMetadata, SaveDraftInput, SubmissionWorkspace } from "../lib/creatorStudio/types.js";
 
 const creatorContext = (): CreatorStudioContext => ({
   actorId: "creator-1",
@@ -449,7 +449,9 @@ describe("InMemoryCreatorStudioRepository", () => {
       platform: "tiktok",
     })).rejects.toMatchObject({ code: "proof_platform_invalid" });
     await expect(repository.getWorkspace(context)).resolves.toMatchObject({
-      workItems: [{ publicationProof: { currentAttempt: null, history: [] } }],
+      workItems: expect.arrayContaining([
+        expect.objectContaining({ publicationProof: expect.objectContaining({ currentAttempt: null, history: [] }) }),
+      ]),
     });
   });
 
@@ -489,7 +491,14 @@ describe("InMemoryCreatorStudioRepository", () => {
       state: "draft",
     });
     await expect(repository.getWorkspace(creatorContext())).resolves.toMatchObject({
-      workItems: [{ publicationProof: { currentAttempt: { id: correction.value.id, state: "draft" }, history: [previous] } }],
+      workItems: expect.arrayContaining([
+        expect.objectContaining({
+          publicationProof: expect.objectContaining({
+            currentAttempt: expect.objectContaining({ id: correction.value.id, state: "draft" }),
+            history: [previous],
+          }),
+        }),
+      ]),
     });
   });
 
@@ -540,8 +549,48 @@ describe("InMemoryCreatorStudioRepository", () => {
     });
     expect(finalized.value).toMatchObject({ id: grant.value.assetId, attemptId: draft.value.id, status: "finalized" });
     await expect(repository.getWorkspace(context)).resolves.toMatchObject({
-      workItems: [{ publicationProof: { currentAttempt: { evidence: [{ id: grant.value.assetId, status: "finalized" }] } } }],
+      workItems: expect.arrayContaining([
+        expect.objectContaining({
+          publicationProof: expect.objectContaining({
+            currentAttempt: expect.objectContaining({
+              evidence: expect.arrayContaining([
+                expect.objectContaining({ id: grant.value.assetId, status: "finalized" }),
+              ]),
+            }),
+          }),
+        }),
+      ]),
     });
+  });
+
+  it("cancels pending proof evidence so a failed upload does not block submission", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-cancel-create",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    const grant = await repository.createProofEvidenceGrant(context, "work-item-1", draft.value.id, {
+      commandId: "proof-cancel-grant",
+      fileName: "screen.png",
+      mimeType: "image/png",
+      byteSize: 1024,
+    });
+
+    await expect(repository.cancelProofEvidence(context, "work-item-1", draft.value.id, grant.value.assetId, {
+      commandId: "proof-cancel-evidence",
+    })).resolves.toEqual({ replayed: false, value: { evidenceId: grant.value.assetId } });
+    await expect(repository.getWorkspace(context)).resolves.toMatchObject({
+      workItems: expect.arrayContaining([
+        expect.objectContaining({
+          publicationProof: expect.objectContaining({ currentAttempt: expect.objectContaining({ evidence: [] }) }),
+        }),
+      ]),
+    });
+    await expect(repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: "proof-cancel-submit",
+    })).resolves.toMatchObject({ value: { state: "submitted" } });
   });
 
   it("does not submit a proof while an evidence reservation is pending", async () => {
@@ -563,14 +612,20 @@ describe("InMemoryCreatorStudioRepository", () => {
       commandId: "pending-proof-submit",
     })).rejects.toMatchObject({ code: "proof_evidence_invalid" });
     await expect(repository.getWorkspace(context)).resolves.toMatchObject({
-      workItems: [{ publicationProof: { currentAttempt: { state: "draft" } } }],
+      workItems: expect.arrayContaining([
+        expect.objectContaining({
+          publicationProof: expect.objectContaining({
+            currentAttempt: expect.objectContaining({ state: "draft" }),
+          }),
+        }),
+      ]),
     });
   });
 
   it.each([
-    ["available", async () => ({ title: "Video title", author: "Creator", publishedAt: "2026-08-09T00:00:00.000Z" })],
-    ["unavailable", async () => null],
-    ["failed", async () => { throw new Error("resolver offline"); }],
+    ["available", async (): Promise<PublicationProofMetadata> => ({ title: "Video title", author: "Creator", publishedAt: "2026-08-09T00:00:00.000Z" })],
+    ["unavailable", async (): Promise<PublicationProofMetadata | null> => null],
+    ["failed", async (): Promise<PublicationProofMetadata | null> => { throw new Error("resolver offline"); }],
   ] as const)("preserves manual review when metadata is %s", async (expectedState, resolver) => {
     const repository = makeProofRepository({ metadataResolver: resolver });
     const context = creatorContext();
@@ -632,7 +687,9 @@ describe("InMemoryCreatorStudioRepository", () => {
       platform: "youtube",
     })).rejects.toMatchObject({ code: "submission_not_found" });
     await expect(repository.getWorkspace(creatorContext())).resolves.toMatchObject({
-      workItems: [{ publicationProof: { currentAttempt: null, history: [] } }],
+      workItems: expect.arrayContaining([
+        expect.objectContaining({ publicationProof: expect.objectContaining({ currentAttempt: null, history: [] }) }),
+      ]),
     });
   });
 

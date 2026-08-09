@@ -138,7 +138,7 @@ describe("Creator Studio mutation routes", () => {
 
     const first = await app.request(grantPath, json(grantCommand));
     const replay = await app.request(grantPath, json(grantCommand));
-    const granted = await first.json() as { bucket: string; path: string; token: string; assetId: string; expiresAt: string };
+    const granted = await first.json() as { bucket: string; path: string; token: string; assetId: string; expiresAt: string; replayed: boolean };
     const replayed = await replay.json() as { assetId: string };
     const finalizePath = `/my-missions/submission-1/work-items/work-item-1/assets/${granted.assetId}/finalize`;
     const finalized = await app.request(finalizePath, json({
@@ -151,7 +151,7 @@ describe("Creator Studio mutation routes", () => {
     expect(first.status).toBe(200);
     expect(granted).toEqual({
       bucket: "creator-studio-assets", path: expect.stringContaining("asset-1.png"), token: expect.any(String),
-      assetId: "asset-1", expiresAt: expect.any(String),
+      assetId: "asset-1", expiresAt: expect.any(String), replayed: false,
     });
     expect(replayed.assetId).toBe(granted.assetId);
     expect(finalized.status).toBe(200);
@@ -373,6 +373,8 @@ describe("Creator Studio mutation routes", () => {
     expect(submit).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(draft).toContain("not between 1 and 65535");
     expect(finalize).toContain("v_url_port::integer between 1 and 65535");
+    expect(uploadGrant).toContain("'bucket', 'creator-studio-assets'");
+    expect(uploadGrant).toContain("p_byte_size > 52428800");
     expect(submit).toContain("not between 1 and 65535");
     expect(finalize).toContain("from storage.objects object");
     expect(finalize).toContain("object.bucket_id = 'creator-studio-assets'");

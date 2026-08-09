@@ -1,5 +1,7 @@
 import type {
   CommandResult,
+  CancelProofEvidenceInput,
+  CancelledProofEvidence,
   CreateUploadGrantInput,
   CreatePublicationProofAttemptInput,
   CreateProofEvidenceGrantInput,
@@ -42,6 +44,13 @@ export interface CreatorStudioRepository {
     evidenceId: string,
     input: FinalizeProofEvidenceInput,
   ): Promise<CommandResult<PublicationProofEvidence>>;
+  cancelProofEvidence(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    evidenceId: string,
+    input: CancelProofEvidenceInput,
+  ): Promise<CommandResult<CancelledProofEvidence>>;
   submitPublicationProof(
     context: CreatorStudioContext,
     workItemId: string,
