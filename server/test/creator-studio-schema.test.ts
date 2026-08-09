@@ -174,9 +174,9 @@ describe("creator studio mission workspace migration", () => {
     expect(sql.match(/v_request_hash\s*:=\s*md5\(jsonb_build_object/g)).toHaveLength(4);
     expect(sql.match(/v_existing_hash\s*<>\s*v_request_hash/g)).toHaveLength(4);
     expect(sql).not.toContain("v_existing_hash <> p_request_hash");
-    expect(sql.match(/request_hash,\s*v_request_hash/g)).toHaveLength(4);
     for (const action of ["save_draft", "create_upload_grant", "finalize_asset", "submit_work_item"]) {
       expect(sql).toContain(`'action', '${action}'`);
+      expect(sql).toMatch(new RegExp(`'${action}',\\s*v_request_hash`));
     }
     expect(sql).toContain("'actor_id', auth.uid()");
     expect(sql).toContain("'submission_id', p_submission_id");
