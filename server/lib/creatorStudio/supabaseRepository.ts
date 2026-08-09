@@ -28,6 +28,7 @@ import type {
 } from "./types.js";
 import { isStrictHttpUrl } from "./types.js";
 import { hashCommand } from "./command.js";
+import { recordCreatorStudioEvent, type CreatorStudioMetricsSink } from "./metrics.js";
 
 type Row = Record<string, unknown>;
 
@@ -165,7 +166,7 @@ function nextActionFor(workItems: WorkItem[]): NextAction | null {
 }
 
 export class SupabaseCreatorStudioRepository implements CreatorStudioRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: SupabaseClient, private readonly metricsSink?: CreatorStudioMetricsSink) {}
 
   async getWorkspace(context: CreatorStudioContext): Promise<SubmissionWorkspace | null> {
     this.validateContext(context);
@@ -316,7 +317,7 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     try {
       const draft = mapDraft(requiredRow(response.draft, "draft"));
       if (!draft) throw new Error("Creator Studio command RPC returned no draft");
-      return {
+      const result = {
         replayed: response.replayed === true,
         value: {
           draft,
@@ -324,6 +325,8 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
           workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
         },
       };
+      if (!result.replayed) this.record("draft_saved", context, workItemId, input.commandId);
+      return result;
     } catch (error) {
       throw this.repositoryError(error);
     }
@@ -389,7 +392,7 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
       p_checksum_sha256: input.checksumSha256,
     });
     try {
-      return {
+      const result = {
         replayed: response.replayed === true,
         value: {
           asset: mapAsset(requiredRow(response.asset, "asset")),
@@ -397,6 +400,8 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
           workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
         },
       };
+      if (!result.replayed) this.record("asset_finalized", context, workItemId, input.commandId);
+      return result;
     } catch (error) {
       throw this.repositoryError(error);
     }
@@ -418,13 +423,20 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
       p_expected_version: input.expectedVersion,
     });
     try {
-      return {
+      const result = {
         replayed: response.replayed === true,
         value: {
           workItem: mapCommandWorkItem(requiredRow(response.work_item, "work item")),
           workflow: mapCommandWorkflow(requiredRow(response.workflow, "workflow")),
         },
       };
+      if (!result.replayed) this.record(
+        result.value.workItem.state === "resubmitted" ? "work_item_resubmitted" : "work_item_submitted",
+        context,
+        workItemId,
+        input.commandId,
+      );
+      return result;
     } catch (error) {
       throw this.repositoryError(error);
     }
@@ -496,6 +508,22 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     if (!context.actorId.trim() || !context.workspaceId.trim() || !context.submissionId.trim()) {
       throw new CreatorStudioError("submission_not_found", "Submission was not found");
     }
+  }
+
+  private record(
+    name: "draft_saved" | "asset_finalized" | "work_item_submitted" | "work_item_resubmitted",
+    context: CreatorStudioContext,
+    workItemId: string,
+    commandId: string,
+  ): void {
+    recordCreatorStudioEvent({
+      name,
+      workspaceId: context.workspaceId,
+      submissionId: context.submissionId,
+      workItemId,
+      commandId,
+      createdAt: new Date().toISOString(),
+    }, this.metricsSink);
   }
 
   private async commandRpc(name: string, args: Record<string, unknown>): Promise<Row> {

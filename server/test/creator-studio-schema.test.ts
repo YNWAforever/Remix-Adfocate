@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const migrationPath = resolve(process.cwd(), "supabase/migrations/20260809100000_creator_studio_mission_workspace.sql");
 const typesPath = resolve(process.cwd(), "server/lib/creatorStudio/types.ts");
+const metricsPath = resolve(process.cwd(), "server/lib/creatorStudio/metrics.ts");
 
 describe("creator studio mission workspace migration", () => {
   it("establishes owner-scoped tables, RLS, grants, trigger/backfill, replay uniqueness, lineage, and storage policies", () => {
@@ -164,5 +165,24 @@ describe("creator studio mission workspace migration", () => {
     expect(types).toContain('export type MissionSubmissionStatus = (typeof MISSION_SUBMISSION_STATUSES)[number];');
     expect(types).toContain('status: MissionSubmissionStatus;');
     expect(types).toContain('"applied", "joined", "submitted", "under_review", "approved", "rejected", "expired", "declined"');
+  });
+
+  it("keeps Creator Studio metrics allowlisted and free of private creator payloads", () => {
+    const metrics = readFileSync(metricsPath, "utf8");
+    const expectedEvents = [
+      "workspace_opened", "draft_saved", "asset_finalized", "work_item_submitted",
+      "changes_viewed", "work_item_resubmitted", "work_item_approved",
+    ];
+
+    for (const eventName of expectedEvents) expect(metrics).toContain(`"${eventName}"`);
+    expect(metrics).toContain("export function recordCreatorStudioEvent");
+    expect(metrics).toContain("workspaceId");
+    expect(metrics).toContain("submissionId");
+    expect(metrics).toContain("workItemId");
+    expect(metrics).toContain("commandId");
+    expect(metrics).toContain("createdAt");
+    for (const forbidden of ["caption", "checklist", "byteSize", "token", "externalUrl", "storagePath", "signed"]) {
+      expect(metrics).not.toMatch(new RegExp(`\\b${forbidden}\\b`));
+    }
   });
 });

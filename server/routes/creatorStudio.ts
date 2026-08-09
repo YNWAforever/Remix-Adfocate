@@ -4,6 +4,7 @@ import type { Env } from "../app.js";
 import { CreatorStudioError } from "../lib/creatorStudio/errors.js";
 import type { CreatorStudioRepository } from "../lib/creatorStudio/repository.js";
 import { isStrictHttpUrl } from "../lib/creatorStudio/types.js";
+import { recordCreatorStudioEvent, type CreatorStudioMetricsSink } from "../lib/creatorStudio/metrics.js";
 import type {
   CreateUploadGrantInput,
   FinalizeAssetInput,
@@ -13,6 +14,7 @@ import type {
 
 export type CreatorStudioRouteDeps = {
   repositoryForRequest: (context: Context<Env>) => CreatorStudioRepository;
+  metricsSink?: CreatorStudioMetricsSink;
 };
 
 const conflictCodes = new Set(["command_conflict", "version_conflict", "invalid_transition", "asset_finalized"]);
@@ -113,6 +115,18 @@ export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<En
     submissionId: c.req.param("submissionId"),
   });
 
+  const record = (
+    name: "workspace_opened" | "changes_viewed" | "work_item_approved",
+    c: Context<Env>,
+    workItemId?: string,
+  ) => recordCreatorStudioEvent({
+    name,
+    workspaceId: c.get("workspaceId"),
+    submissionId: c.req.param("submissionId"),
+    ...(workItemId ? { workItemId } : {}),
+    createdAt: new Date().toISOString(),
+  }, deps.metricsSink);
+
   const runCommand = async <T>(c: Context<Env>, command: () => Promise<{ value: T; replayed: boolean }>) => {
     try {
       const result = await command();
@@ -133,6 +147,13 @@ export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<En
         submissionId: c.req.param("submissionId"),
       });
       if (!workspace) return c.json({ error: "submission_not_found", code: "submission_not_found" }, 404);
+      record("workspace_opened", c);
+      for (const item of workspace.workItems) {
+        if (item.state === "approved") record("work_item_approved", c, item.id);
+        if (item.reviewFeedback.status === "available" && item.reviewFeedback.value.some((feedback) => feedback.state === "changes_requested")) {
+          record("changes_viewed", c, item.id);
+        }
+      }
       return c.json(workspace);
     } catch (error) {
       if (error instanceof CreatorStudioError) return errorResponse(c, error);
