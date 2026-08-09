@@ -109,6 +109,17 @@ describe("CreatorStudioWorkbench", () => {
     expect(screen.getByRole("button", { name: "Resubmit deliverable" })).toBeEnabled();
   });
 
+  it("requires saving local draft edits before the primary submit action can mutate", () => {
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={changesRequestedWorkspace()} />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Caption" }), { target: { value: "Unsaved correction" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save latest draft" }));
+
+    expect(mocks.submit.mutateAsync).not.toHaveBeenCalled();
+    expect(screen.getByText("Save your latest draft before submitting.")).toBeInTheDocument();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Save draft" }));
+  });
+
   it("keeps an upload error retryable without discarding the draft", async () => {
     mocks.grant.mutateAsync.mockRejectedValueOnce(new Error("grant failed"));
     const workspace = draftingWorkspace();

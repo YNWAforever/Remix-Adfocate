@@ -8,20 +8,88 @@ import { ReviewFeedback } from "./ReviewFeedback";
 import { WorkspaceHeader, type WorkspaceSaveStatus } from "./WorkspaceHeader";
 
 const commandId = (prefix: string) => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+const draftFingerprint = (value: DraftFormValue) => JSON.stringify({
+  caption: value.caption,
+  externalUrl: value.externalUrl,
+  checklist: Object.entries(value.checklist).sort(([left], [right]) => left.localeCompare(right)),
+  version: value.version,
+});
+const sameDraft = (left: DraftFormValue, right: DraftFormValue) => draftFingerprint(left) === draftFingerprint(right);
+
 export type CreatorStudioWorkbenchProps = { submissionId: string; workspace: SubmissionWorkspace; onReloadWorkspace?: () => Promise<SubmissionWorkspace | undefined> };
 
 export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorkspace }: CreatorStudioWorkbenchProps) {
   const workItems = useMemo(() => [...workspace.workItems].sort((left, right) => left.position - right.position), [workspace.workItems]);
   const [activeWorkItemId, setActiveWorkItemId] = useState<string | null>(() => workspace.nextAction?.workItemId ?? workItems[0]?.id ?? null);
-  const [drafts, setDrafts] = useState<Record<string, DraftFormValue>>({}); const [saveStatus, setSaveStatus] = useState<WorkspaceSaveStatus>("idle"); const previousSubmissionId = useRef(submissionId); const submitCommand = useRef({ submissionId, workItemId: null as string | null, expectedVersion: null as number | null, id: null as string | null });
+  const [drafts, setDrafts] = useState<Record<string, DraftFormValue>>({});
+  const [persistedDrafts, setPersistedDrafts] = useState<Record<string, DraftFormValue>>({});
+  const [saveStatus, setSaveStatus] = useState<WorkspaceSaveStatus>("idle");
+  const previousSubmissionId = useRef(submissionId);
+  const submitCommand = useRef({ submissionId, workItemId: null as string | null, expectedVersion: null as number | null, id: null as string | null });
   const resetSubmitCommand = () => { submitCommand.current = { submissionId, workItemId: null, expectedVersion: null, id: null }; };
-  useEffect(() => { const contextChanged = previousSubmissionId.current !== submissionId; previousSubmissionId.current = submissionId; setActiveWorkItemId((current) => workItems.some((item) => item.id === current) ? current : (workspace.nextAction?.workItemId ?? workItems[0]?.id ?? null)); setDrafts((current) => { const next = contextChanged ? {} : { ...current }; workItems.forEach((item) => { next[item.id] ??= draftFormValue(item); }); return next; }); if (contextChanged) { resetSubmitCommand(); setSaveStatus("idle"); } }, [submissionId, workItems, workspace.nextAction?.workItemId]);
-  const activeWorkItem = workItems.find((item) => item.id === activeWorkItemId) ?? workItems[0]; const activeDraft = activeWorkItem ? drafts[activeWorkItem.id] ?? draftFormValue(activeWorkItem) : undefined; const submitWorkItem = useSubmitWorkItem(submissionId, activeWorkItem?.id ?? "");
+
+  useEffect(() => {
+    const contextChanged = previousSubmissionId.current !== submissionId;
+    previousSubmissionId.current = submissionId;
+    setActiveWorkItemId((current) => workItems.some((item) => item.id === current) ? current : (workspace.nextAction?.workItemId ?? workItems[0]?.id ?? null));
+    setDrafts((current) => {
+      const next = contextChanged ? {} : { ...current };
+      workItems.forEach((item) => { next[item.id] ??= draftFormValue(item); });
+      return next;
+    });
+    setPersistedDrafts((current) => {
+      const next = contextChanged ? {} : { ...current };
+      workItems.forEach((item) => { next[item.id] ??= draftFormValue(item); });
+      return next;
+    });
+    if (contextChanged) { resetSubmitCommand(); setSaveStatus("idle"); }
+  }, [submissionId, workItems, workspace.nextAction?.workItemId]);
+
+  const activeWorkItem = workItems.find((item) => item.id === activeWorkItemId) ?? workItems[0];
+  const activeDraft = activeWorkItem ? drafts[activeWorkItem.id] ?? draftFormValue(activeWorkItem) : undefined;
+  const persistedActiveDraft = activeWorkItem ? persistedDrafts[activeWorkItem.id] ?? draftFormValue(activeWorkItem) : undefined;
+  const activeDraftDirty = Boolean(activeDraft && persistedActiveDraft && !sameDraft(activeDraft, persistedActiveDraft));
+  const activeServerReady = Boolean(activeWorkItem && activeWorkItem.validation.caption && activeWorkItem.validation.externalUrl && activeWorkItem.validation.checklist && activeWorkItem.validation.assets);
+  const submitWorkItem = useSubmitWorkItem(submissionId, activeWorkItem?.id ?? "");
+
   useEffect(() => { if (submitCommand.current.workItemId !== activeWorkItem?.id) resetSubmitCommand(); }, [activeWorkItem?.id, submissionId]);
-  const updateDraft = (value: DraftFormValue) => { if (activeWorkItem) setDrafts((current) => ({ ...current, [activeWorkItem.id]: value })); };
-  const applySavedDraft = (draft: WorkingDraft) => { if (activeWorkItem) setDrafts((current) => ({ ...current, [activeWorkItem.id]: { caption: draft.caption ?? "", externalUrl: draft.externalUrl ?? "", checklist: { ...draft.checklist }, version: draft.version } })); };
-  const reloadLatestDraft = async () => { if (!activeWorkItem || !onReloadWorkspace) return null; const latestWorkspace = await onReloadWorkspace(); const latestWorkItem = latestWorkspace?.workItems.find((item) => item.id === activeWorkItem.id); if (!latestWorkItem) return null; const latestDraft = draftFormValue(latestWorkItem); setDrafts((current) => ({ ...current, [latestWorkItem.id]: latestDraft })); resetSubmitCommand(); setSaveStatus("idle"); return latestDraft; };
+
+  const updateDraft = (value: DraftFormValue) => {
+    if (activeWorkItem) setDrafts((current) => ({ ...current, [activeWorkItem.id]: value }));
+  };
+  const applySavedDraft = (draft: WorkingDraft) => {
+    if (!activeWorkItem) return;
+    const persisted = { caption: draft.caption ?? "", externalUrl: draft.externalUrl ?? "", checklist: { ...draft.checklist }, version: draft.version };
+    setDrafts((current) => ({ ...current, [activeWorkItem.id]: persisted }));
+    setPersistedDrafts((current) => ({ ...current, [activeWorkItem.id]: persisted }));
+    resetSubmitCommand();
+  };
+  const reloadLatestDraft = async () => {
+    if (!activeWorkItem || !onReloadWorkspace) return null;
+    const latestWorkspace = await onReloadWorkspace();
+    const latestWorkItem = latestWorkspace?.workItems.find((item) => item.id === activeWorkItem.id);
+    if (!latestWorkItem) return null;
+    const latestDraft = draftFormValue(latestWorkItem);
+    setDrafts((current) => ({ ...current, [latestWorkItem.id]: latestDraft }));
+    setPersistedDrafts((current) => ({ ...current, [latestWorkItem.id]: latestDraft }));
+    resetSubmitCommand();
+    setSaveStatus("idle");
+    return latestDraft;
+  };
   const focus = (id: string) => document.getElementById(id)?.focus();
-  const submit = async () => { if (!activeWorkItem || !activeDraft) return; const current = submitCommand.current; const command = current.submissionId === submissionId && current.workItemId === activeWorkItem.id && current.expectedVersion === activeDraft.version && current.id ? current : { submissionId, workItemId: activeWorkItem.id, expectedVersion: activeDraft.version, id: commandId("creator-submit") }; submitCommand.current = command; try { await submitWorkItem.mutateAsync({ commandId: command.id, expectedVersion: activeDraft.version }); resetSubmitCommand(); } catch { /* Keep the local draft for an unchanged retry; the server projection remains authoritative. */ } };
-  return <main className="mx-auto w-full max-w-7xl space-y-4 p-4"><WorkspaceHeader workspace={workspace} saveStatus={saveStatus} />{activeWorkItem && activeDraft ? <div className="grid gap-4 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_minmax(14rem,0.9fr)]"><DeliverableNavigator workItems={workItems} activeWorkItemId={activeWorkItem.id} onSelect={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); setSaveStatus("idle"); }} /><div className="space-y-4"><DraftEditor key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} value={activeDraft} onChange={updateDraft} onSaved={applySavedDraft} onSaveStatus={setSaveStatus} onReloadLatestDraft={reloadLatestDraft} /><AssetUploadPanel key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} /></div><aside className="space-y-4"><NextActionPanel nextAction={workspace.nextAction} workItems={workItems} activeWorkItem={activeWorkItem} submitting={submitWorkItem.isPending} onNavigate={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); }} onSubmit={() => void submit()} onFocusEditor={() => focus(`creator-draft-editor-${activeWorkItem.id}`)} onFocusSave={() => focus(`creator-save-draft-${activeWorkItem.id}`)} onFocusAsset={() => focus(`creator-proof-asset-${activeWorkItem.id}`)} onFocusReview={() => focus(`creator-review-feedback-${activeWorkItem.id}`)} /><ReviewFeedback workItem={activeWorkItem} /></aside></div> : <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"><h2 className="font-heading font-bold">No deliverables are available.</h2></section>}</main>;
+  const focusSaveDraft = () => { if (activeWorkItem) focus(`creator-save-draft-${activeWorkItem.id}`); };
+  const submit = async () => {
+    if (!activeWorkItem || !activeDraft || activeDraftDirty || !activeServerReady) { if (activeDraftDirty) focusSaveDraft(); return; }
+    const current = submitCommand.current;
+    const command = current.submissionId === submissionId && current.workItemId === activeWorkItem.id && current.expectedVersion === activeDraft.version && current.id
+      ? current
+      : { submissionId, workItemId: activeWorkItem.id, expectedVersion: activeDraft.version, id: commandId("creator-submit") };
+    submitCommand.current = command;
+    try {
+      await submitWorkItem.mutateAsync({ commandId: command.id, expectedVersion: activeDraft.version });
+      resetSubmitCommand();
+    } catch { /* Keep the local draft for an unchanged retry; the server projection remains authoritative. */ }
+  };
+
+  return <main className="mx-auto w-full max-w-7xl space-y-4 p-4"><WorkspaceHeader workspace={workspace} saveStatus={saveStatus} />{activeWorkItem && activeDraft ? <div className="grid gap-4 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_minmax(14rem,0.9fr)]"><DeliverableNavigator workItems={workItems} activeWorkItemId={activeWorkItem.id} onSelect={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); setSaveStatus("idle"); }} /><div className="space-y-4"><DraftEditor key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} value={activeDraft} onChange={updateDraft} onSaved={applySavedDraft} onSaveStatus={setSaveStatus} onReloadLatestDraft={reloadLatestDraft} /><AssetUploadPanel key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} /></div><aside className="space-y-4"><NextActionPanel nextAction={workspace.nextAction} workItems={workItems} activeWorkItem={activeWorkItem} submitting={submitWorkItem.isPending} hasUnsavedDraft={activeDraftDirty} onNavigate={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); }} onSubmit={() => void submit()} onFocusEditor={() => focus(`creator-draft-editor-${activeWorkItem.id}`)} onFocusSave={focusSaveDraft} onFocusAsset={() => focus(`creator-proof-asset-${activeWorkItem.id}`)} onFocusReview={() => focus(`creator-review-feedback-${activeWorkItem.id}`)} /><ReviewFeedback workItem={activeWorkItem} /></aside></div> : <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"><h2 className="font-heading font-bold">No deliverables are available.</h2></section>}</main>;
 }
