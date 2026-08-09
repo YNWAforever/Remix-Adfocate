@@ -93,6 +93,17 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
         this.draftVersions.set(workItem.id, [clone(workItem.draft)]);
       }
       for (const asset of workItem.assets) this.assets.set(asset.id, clone(asset));
+      for (const attempt of [
+        ...(workItem.publicationProof.currentAttempt ? [workItem.publicationProof.currentAttempt] : []),
+        ...workItem.publicationProof.history,
+      ]) {
+        const attemptNumber = Number(attempt.id.match(/^proof-attempt-(\d+)$/)?.[1] ?? 0);
+        if (attemptNumber > this.proofAttemptSequence) this.proofAttemptSequence = attemptNumber;
+        for (const evidence of attempt.evidence) {
+          const evidenceNumber = Number(evidence.id.match(/^proof-evidence-(\d+)$/)?.[1] ?? 0);
+          if (evidenceNumber > this.proofEvidenceSequence) this.proofEvidenceSequence = evidenceNumber;
+        }
+      }
     }
   }
 
@@ -419,8 +430,8 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     if (!attempt || workItem.publicationProof.currentAttempt?.id !== attempt.id) {
       throw new CreatorStudioError("proof_attempt_immutable", "Only the current proof attempt can be refreshed");
     }
-    if (attempt.state !== "submitted") {
-      throw new CreatorStudioError("proof_attempt_immutable", "Only a submitted proof attempt can be refreshed");
+    if (attempt.state !== "draft") {
+      throw new CreatorStudioError("proof_attempt_immutable", "Only the current draft proof attempt can be refreshed");
     }
 
     let metadataState: PublicationProofAttempt["metadataState"];

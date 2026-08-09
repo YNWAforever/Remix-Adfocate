@@ -481,6 +481,7 @@ describe("InMemoryCreatorStudioRepository", () => {
     });
 
     expect(correction.value).toMatchObject({
+      id: "proof-attempt-2",
       sequence: 2,
       parentAttemptId: previous.id,
       state: "draft",
@@ -557,15 +558,16 @@ describe("InMemoryCreatorStudioRepository", () => {
       publishedUrl: "https://www.youtube.com/watch?v=abc",
       platform: "youtube",
     });
-    await repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
-      commandId: `metadata-submit-${expectedState}`,
-    });
     const refreshed = await repository.refreshProofMetadata(context, "work-item-1", draft.value.id, {
       commandId: `metadata-refresh-${expectedState}`,
     });
+    const submitted = await repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: `metadata-submit-${expectedState}`,
+    });
 
-    expect(refreshed.value).toMatchObject({ state: "submitted", metadataState: expectedState });
-    expect(refreshed.value.state).not.toBe("verified");
+    expect(refreshed.value).toMatchObject({ state: "draft", metadataState: expectedState });
+    expect(submitted.value).toMatchObject({ state: "submitted", metadataState: expectedState });
+    expect(submitted.value.state).not.toBe("verified");
   });
 
   it("does not expose or mutate proof state across creator ownership boundaries", async () => {
