@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { NotificationRow } from "@/lib/notifications";
+import type { CreatorStudioState } from "./creatorStudio";
 
 export type SubmissionStatus = "joined" | "submitted" | "under_review" | "approved" | "rejected" | "expired";
 export type Mission = {
@@ -404,6 +405,8 @@ export type MyMission = {
   submitted_at?: string | null;
   reviewed_at?: string | null;
   created_at: string;
+  creator_studio_state: CreatorStudioState | null;
+  creator_studio_available: boolean;
   missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string };
 };
 

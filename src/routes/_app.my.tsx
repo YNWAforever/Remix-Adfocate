@@ -31,11 +31,14 @@ function MyMissions() {
           <section key={g.labelKey} className="space-y-2">
             <h2 className="font-heading font-bold">{t(g.labelKey)}</h2>
             <div className="grid gap-2 lg:grid-cols-2">
-            {items.map((s) => (
+            {items.map((s) => {
+              const href = s.creator_studio_available
+                ? { to: "/my/$submissionId" as const, params: { submissionId: s.id } }
+                : { to: "/mission/$missionSlug" as const, params: { missionSlug: s.missions.slug } };
+              return (
               <Link
                 key={s.id}
-                to="/mission/$missionSlug"
-                params={{ missionSlug: s.missions.slug }}
+                {...href}
                 className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
               >
                 <span className="font-heading">{s.missions.title}</span>
@@ -45,7 +48,8 @@ function MyMissions() {
                     : t("app.my.pointsReward", { n: String(s.missions.points_reward) })}
                 </span>
               </Link>
-            ))}
+              );
+            })}
             </div>
           </section>
         );

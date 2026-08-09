@@ -1,8 +1,10 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { randomUUID } from "node:crypto";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
 import type { PostgrestError } from "@supabase/supabase-js";
+import type { CreatorStudioState } from "../lib/creatorStudio/types.js";
 
 export const missionRoutes = new Hono<Env>();
 
@@ -56,7 +58,45 @@ missionRoutes.get("/my", async (c) => {
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ submissions: data ?? [] });
+
+  const submissions = data ?? [];
+  if (submissions.length === 0) return c.json({ submissions });
+
+  const { data: workflows, error: workflowError } = await supabase
+    .from("mission_workflows")
+    .select("mission_submission_id, state")
+    .eq("creator_id", c.get("userId"))
+    .eq("workspace_id", c.get("workspaceId"))
+    .in("mission_submission_id", submissions.map((submission) => submission.id));
+
+  if (workflowError) {
+    const correlationId = randomUUID();
+    console.warn("Creator Studio availability projection failed", {
+      correlationId,
+      code: workflowError.code ?? "unknown",
+    });
+    return c.json({
+      submissions: submissions.map((submission) => ({
+        ...submission,
+        creator_studio_available: false,
+        creator_studio_state: null,
+      })),
+    });
+  }
+
+  const statesBySubmissionId = new Map<string, CreatorStudioState>(
+    (workflows ?? []).map((workflow) => [workflow.mission_submission_id, workflow.state as CreatorStudioState]),
+  );
+  return c.json({
+    submissions: submissions.map((submission) => {
+      const state = statesBySubmissionId.get(submission.id);
+      return {
+        ...submission,
+        creator_studio_available: Boolean(state),
+        creator_studio_state: state ?? null,
+      };
+    }),
+  });
 });
 
 missionRoutes.get("/:slug", async (c) => {
