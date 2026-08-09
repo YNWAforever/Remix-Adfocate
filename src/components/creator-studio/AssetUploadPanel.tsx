@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { type UploadGrant, type WorkItem, uploadDraftAsset, useCreateDraftAssetGrant, useFinalizeDraftAsset } from "@/lib/queries/creatorStudio";
 
 type UploadFailurePhase = "grant" | "upload" | "finalize";
-type UploadAttempt = { file: File; grant?: UploadGrant };
+type UploadAttempt = { file: File; identity: string; grant?: UploadGrant };
 type UploadPhase = "idle" | "grant" | "upload" | "ready-to-finalize" | "finalize" | "finalized" | "error";
 
 const commandId = (prefix: string) => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+const fileIdentity = (file: File) => `${file.name}:${file.type}:${file.size}:${file.lastModified}`;
 
 export function AssetUploadPanel({ submissionId, workItem }: { submissionId: string; workItem: WorkItem }) {
   const createGrant = useCreateDraftAssetGrant(submissionId, workItem.id);
@@ -61,14 +62,15 @@ export function AssetUploadPanel({ submissionId, workItem }: { submissionId: str
   };
 
   const requestGrant = async (file: File) => {
-    setAttempt({ file });
+    const identity = fileIdentity(file);
+    setAttempt({ file, identity });
     setPhase("grant");
     setFailure(null);
     try {
       const id = commandIds.current.grant ?? commandId("creator-asset-grant");
       commandIds.current.grant = id;
       const grant = await createGrant.mutateAsync({ commandId: id, fileName: file.name, mimeType: file.type, byteSize: file.size });
-      setAttempt({ file, grant });
+      setAttempt({ file, identity, grant });
       await upload(grant, file);
     } catch {
       setPhase("error");
@@ -87,7 +89,7 @@ export function AssetUploadPanel({ submissionId, workItem }: { submissionId: str
   return (
     <section aria-labelledby={`proof-asset-${workItem.id}`} className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
       <h3 id={`proof-asset-${workItem.id}`} className="font-heading font-bold">Proof asset</h3>
-      <label className="block text-sm font-medium">Proof asset<input aria-label="Proof asset" type="file" disabled={pending} onChange={(event) => { const file = event.target.files?.[0]; if (file) void requestGrant(file); }} className="mt-1 block w-full text-sm" /></label>
+      <label className="block text-sm font-medium">Proof asset<input id={`creator-proof-asset-${workItem.id}`} aria-label="Proof asset" type="file" disabled={pending} onChange={(event) => { const file = event.target.files?.[0]; if (!file) return; if (attempt && attempt.identity !== fileIdentity(file)) commandIds.current = {}; void requestGrant(file); }} className="mt-1 block w-full text-sm" /></label>
       <ul className="text-sm" aria-label="Asset status">
         {workItem.assets.map((asset) => <li key={asset.id}>{asset.fileName}: {asset.state}</li>)}
         {phase === "grant" ? <li>Requesting upload authorization…</li> : null}

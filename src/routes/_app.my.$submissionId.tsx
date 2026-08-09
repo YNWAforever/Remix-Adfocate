@@ -16,5 +16,5 @@ function CreatorStudioSubmissionRoute() {
     return <main className="mx-auto max-w-lg space-y-3 p-4" role="alert"><p>Unable to load Creator Studio workspace.</p><button type="button" className="underline" onClick={() => workspace.refetch()}>Retry</button></main>;
   }
   if (!workspace.data) return <main className="mx-auto max-w-lg p-4"><p>Creator Studio submission not found.</p></main>;
-  return <CreatorStudioWorkbench submissionId={submissionId} workspace={workspace.data} />;
+  return <CreatorStudioWorkbench submissionId={submissionId} workspace={workspace.data} onReloadWorkspace={async () => (await workspace.refetch()).data} />;
 }

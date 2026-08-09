@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { SubmissionWorkspace } from "@/lib/queries/creatorStudio";
 
 const mocks = vi.hoisted(() => ({
-  save: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  save: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null, reset: vi.fn() },
   grant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   finalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
   submit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
@@ -77,6 +77,7 @@ function resetMutation(mutation: { mutateAsync: ReturnType<typeof vi.fn>; isPend
 
 beforeEach(() => {
   resetMutation(mocks.save);
+  mocks.save.reset.mockReset();
   resetMutation(mocks.grant);
   resetMutation(mocks.finalize);
   resetMutation(mocks.submit);
@@ -166,5 +167,93 @@ describe("CreatorStudioWorkbench", () => {
     await waitFor(() => expect(mocks.finalize.mutateAsync).toHaveBeenCalledWith(expect.objectContaining({ commandId: expect.any(String) })));
     expect(mocks.upload).toHaveBeenCalledWith(expect.objectContaining({ assetId: "asset-42" }), expect.any(File));
     expect(await screen.findByText("Proof asset finalized.")).toBeInTheDocument();
+  });
+
+  it("reloads the fresh draft after a version conflict", async () => {
+    const freshWorkspace = draftingWorkspace();
+    freshWorkspace.workItems[0].draft = { caption: "Fresh server draft", externalUrl: null, checklist: { Disclosure: true }, version: 3, updatedAt: "2026-08-09T03:00:00.000Z" };
+    const reloadWorkspace = vi.fn().mockResolvedValue(freshWorkspace);
+    mocks.save.error = Object.assign(new Error("Version conflict"), { code: "version_conflict" });
+    mocks.save.mutateAsync.mockRejectedValue(new Error("Version conflict"));
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={draftingWorkspace()} onReloadWorkspace={reloadWorkspace} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(1));
+    const staleCommandId = mocks.save.mutateAsync.mock.calls[0][0].commandId;
+    fireEvent.click(screen.getByRole("button", { name: "Reload latest draft" }));
+
+    await waitFor(() => expect(reloadWorkspace).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Fresh server draft");
+    expect(mocks.save.reset).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.save.mutateAsync.mock.calls[1][0].commandId).not.toBe(staleCommandId);
+  });
+
+  it("uses a fresh save command ID after draft input changes", async () => {
+    mocks.save.mutateAsync.mockRejectedValue(new Error("offline"));
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={draftingWorkspace()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(1));
+    const firstCommandId = mocks.save.mutateAsync.mock.calls[0][0].commandId;
+    fireEvent.change(screen.getByRole("textbox", { name: "Caption" }), { target: { value: "Changed caption" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.save.mutateAsync.mock.calls[1][0].commandId).not.toBe(firstCommandId);
+  });
+
+  it("keeps a save command ID for an unchanged retry", async () => {
+    mocks.save.mutateAsync.mockRejectedValue(new Error("offline"));
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={draftingWorkspace()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
+    await waitFor(() => expect(mocks.save.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.save.mutateAsync.mock.calls[1][0].commandId).toBe(mocks.save.mutateAsync.mock.calls[0][0].commandId);
+  });
+
+  it("starts a new upload command sequence for a different replacement file", async () => {
+    mocks.grant.mutateAsync.mockRejectedValue(new Error("grant failed"));
+    const workspace = draftingWorkspace();
+    workspace.workItems[0].requiresAsset = true;
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+
+    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["first"], "first.png", { type: "image/png", lastModified: 1 }));
+    await waitFor(() => expect(mocks.grant.mutateAsync).toHaveBeenCalledTimes(1));
+    const firstCommandId = mocks.grant.mutateAsync.mock.calls[0][0].commandId;
+    fireEvent.upload(screen.getByLabelText("Proof asset"), new File(["second"], "second.png", { type: "image/png", lastModified: 2 }));
+    await waitFor(() => expect(mocks.grant.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.grant.mutateAsync.mock.calls[1][0].commandId).not.toBe(firstCommandId);
+  });
+
+  it("focuses the authoritative action target instead of exposing a no-op", () => {
+    const workspace = draftingWorkspace();
+    workspace.workItems[0] = { ...workspace.workItems[0], state: "not_started" };
+    workspace.nextAction = { workItemId: "story", state: "not_started", label: "Start drafting" };
+    const { rerender } = render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+    fireEvent.click(screen.getByRole("button", { name: "Start drafting" }));
+    expect(document.activeElement).toBe(screen.getByTestId("creator-draft-editor-story"));
+
+    workspace.nextAction = { workItemId: "story", state: "drafting", label: "Finish draft" };
+    rerender(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+    fireEvent.click(screen.getByRole("button", { name: "Finish draft" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Save draft" }));
+  });
+
+  it("focuses proof and review controls for their primary actions", () => {
+    const workspace = changesRequestedWorkspace();
+    workspace.workItems[0] = { ...workspace.workItems[0], state: "drafting", requiresAsset: true, validation: { caption: true, externalUrl: true, checklist: true, assets: false } };
+    workspace.nextAction = { workItemId: "story", state: "drafting", label: "Upload proof" };
+    const { rerender } = render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+    fireEvent.click(screen.getByRole("button", { name: "Upload proof" }));
+    expect(document.activeElement).toBe(screen.getByLabelText("Proof asset"));
+
+    workspace.workItems[0] = { ...workspace.workItems[0], state: "changes_requested", validation: { caption: false, externalUrl: true, checklist: true, assets: true } };
+    workspace.nextAction = { workItemId: "story", state: "changes_requested", label: "Review requested changes" };
+    rerender(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
+    fireEvent.click(screen.getByRole("button", { name: "Review requested changes" }));
+    expect(document.activeElement).toBe(screen.getByTestId("creator-review-feedback-story"));
   });
 });
