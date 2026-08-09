@@ -171,9 +171,17 @@ suite("Creator Studio Supabase acceptance", () => {
     const { data: versions, error } = await serviceForTests().from("mission_draft_versions")
       .select("id").eq("mission_work_item_id", item.id);
     if (error) throw error;
+    const { data: commands, error: commandsError } = await serviceForTests().from("mission_workflow_commands")
+      .select("id").eq("mission_submission_id", journey.context.submissionId);
+    if (commandsError) throw commandsError;
+    const { data: workflowEvents, error: workflowEventsError } = await serviceForTests().from("mission_workflow_events")
+      .select("id").eq("mission_submission_id", journey.context.submissionId);
+    if (workflowEventsError) throw workflowEventsError;
 
     expect(replay).toEqual({ ...first, replayed: true });
     expect(versions).toHaveLength(1);
+    expect(commands).toHaveLength(1);
+    expect(workflowEvents).toHaveLength(1);
     expect(journey.events.filter((event) => event.name === "draft_saved")).toHaveLength(1);
   });
 
@@ -239,15 +247,31 @@ suite("Creator Studio Supabase acceptance", () => {
   it("keeps ordinary deliverable assets out of the publication-proof lane", async () => {
     const journey = await createJourney();
     const item = journey.workspace.workItems[0]!;
+    const proofFixturePath = `${journey.owner.userId}/${journey.workspace.workflow.id}/${item.id}/proof-evidence/00000000-0000-4000-8000-${String(sequence).padStart(12, "0")}.png`;
+    const { error: proofFixtureError } = await serviceForTests().rpc("create_publication_proof_asset", {
+      p_submission: journey.context.submissionId,
+      p_creator: journey.owner.userId,
+      p_workspace: DEMO_WS,
+      p_work_item: item.id,
+      p_filename: "publication-proof.png",
+      p_mime_type: "image/png",
+      p_byte_size: 1,
+      p_storage_object_path: proofFixturePath,
+    });
+    if (proofFixtureError) throw proofFixtureError;
     const grant = await journey.repository.createUploadGrant(journey.context, item.id, {
       commandId: "ordinary-asset", fileName: "ordinary.png", mimeType: "image/png", byteSize: 1,
     });
-    const proofPath = `${journey.owner.userId}/${journey.workspace.workflow.id}/${item.id}/proof-evidence/not-ordinary.png`;
+    const proofWritePath = `${journey.owner.userId}/${journey.workspace.workflow.id}/${item.id}/proof-evidence/not-ordinary.png`;
     const { error: proofWriteError } = await userForJwt(journey.owner.jwt)
-      .storage.from("mission-publication-proof-assets").upload(proofPath, new Uint8Array([1]), { contentType: "image/png", upsert: false });
+      .storage.from("mission-publication-proof-assets").upload(proofWritePath, new Uint8Array([1]), { contentType: "image/png", upsert: false });
+    const projectedWorkspace = await journey.repository.getWorkspace(journey.context);
+    if (!projectedWorkspace) throw new Error("Creator Studio workspace disappeared while checking publication-proof isolation");
 
     expect(grant.value.bucket).toBe("creator-studio-assets");
     expect(grant.value.path).not.toContain("proof-evidence");
+    expect(projectedWorkspace.workItems.find((workItem) => workItem.id === item.id)?.assets)
+      .not.toContainEqual(expect.objectContaining({ storagePath: proofFixturePath }));
     expect(proofWriteError).toBeTruthy();
     await expect(journey.repository.finalizeAsset(journey.context, item.id, "publication-proof-asset", {
       commandId: "ordinary-finalize-proof", byteSize: 1, mimeType: "image/png", checksumSha256: null,
