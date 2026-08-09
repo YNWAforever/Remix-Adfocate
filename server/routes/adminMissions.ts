@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import {
   type MissionInput, type MissionRecord, validateMission, validateEdit,
-  normalizeBrief, nextDuplicateSlug,
+  normalizeBrief, normalizeDeliverableSpecs, nextDuplicateSlug,
 } from "../lib/missionAuthoring.js";
 import { normalizePortfolioUrl } from "../lib/profileMedia/service.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
@@ -20,13 +20,15 @@ const MISSION_COLS =
   "id, workspace_id, slug, title, description, category, mission_type, access_type, required_level, " +
   "points_reward, cash_reward, cpm_rate, cpm_budget_pool, deadline, quota, filled, status, " +
   "deliverables, requirements, platforms, effort, " +
+  "deliverable_specs, " +
   "target_audience, dos, donts, key_messages, reference_links, " +
   "created_at, updated_at, published_at, closed_at";
 
-const EDITABLE_COLS: (keyof MissionInput)[] = [
+const EDITABLE_COLS: Array<keyof MissionInput | "deliverable_specs"> = [
   "slug", "title", "description", "category", "mission_type", "access_type", "required_level",
   "points_reward", "cash_reward", "cpm_rate", "cpm_budget_pool", "deadline", "quota",
   "deliverables", "requirements", "platforms", "effort",
+  "deliverable_specs",
   "target_audience", "dos", "donts", "key_messages", "reference_links",
 ];
 
@@ -36,6 +38,13 @@ const EDITABLE_COLS: (keyof MissionInput)[] = [
 function normalizeBriefForWrite(input: MissionInput) {
   const brief = normalizeBrief(input);
   return { ...brief, reference_links: brief.reference_links.map((u) => normalizePortfolioUrl(u)) };
+}
+
+type MissionCommandInput = MissionInput & { deliverable_specs?: unknown };
+
+function parseDeliverableSpecs(body: MissionCommandInput): MissionInput {
+  if (!Object.prototype.hasOwnProperty.call(body, "deliverable_specs")) return body;
+  return { ...body, deliverableSpecs: body.deliverable_specs as MissionInput["deliverableSpecs"] };
 }
 
 // Asia/Hong_Kong YYYY-MM-DD. The route (not the pure module) is where the clock lives.
@@ -91,7 +100,7 @@ adminMissionRoutes.get("/missions/:id", async (c) => {
 });
 
 adminMissionRoutes.post("/missions", async (c) => {
-  const body = await c.req.json<MissionInput>().catch(() => ({}) as MissionInput);
+  const body = parseDeliverableSpecs(await c.req.json<MissionCommandInput>().catch(() => ({}) as MissionCommandInput));
   const { ok, errors } = validateMission(body, "draft");
   if (!ok) return c.json({ error: "請修正欄位後再儲存", code: "validation", fields: errors }, 422);
 
@@ -103,6 +112,7 @@ adminMissionRoutes.post("/missions", async (c) => {
     cpm_rate: body.cpm_rate ?? null, cpm_budget_pool: body.cpm_budget_pool ?? null,
     deadline: body.deadline ?? null, quota: body.quota ?? 10,
     deliverables: body.deliverables ?? [], requirements: body.requirements ?? [], platforms: body.platforms ?? [],
+    deliverable_specs: normalizeDeliverableSpecs(body),
     effort: body.effort ?? null, status: "draft",
     ...normalizeBriefForWrite(body),
   };
@@ -118,7 +128,7 @@ adminMissionRoutes.post("/missions", async (c) => {
 
 adminMissionRoutes.patch("/missions/:id", async (c) => {
   const id = c.req.param("id");
-  const patch = await c.req.json<MissionInput>().catch(() => ({}) as MissionInput);
+  const patch = parseDeliverableSpecs(await c.req.json<MissionCommandInput>().catch(() => ({}) as MissionCommandInput));
   const svc = serviceClient();
 
   const { data: existing, error: exErr } = await svc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
@@ -137,6 +147,9 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
 
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
   for (const k of EDITABLE_COLS) if (Object.prototype.hasOwnProperty.call(patch, k)) updates[k] = patch[k];
+  if (Object.prototype.hasOwnProperty.call(patch, "deliverableSpecs")) {
+    updates.deliverable_specs = normalizeDeliverableSpecs(patch);
+  }
 
   // Normalize brief fields that were actually sent (don't resurrect absent ones).
   const briefDefaults = normalizeBriefForWrite(patch);

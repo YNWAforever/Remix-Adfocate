@@ -18,13 +18,14 @@ suite("0018 mission authoring schema", () => {
     const { data, error } = await svc
       .from("missions")
       .insert({ workspace_id: DEMO_WS, slug: "test-schema-draft", title: "x", mission_type: "ugc", status: "draft" })
-      .select("id, status, updated_at, published_at, closed_at, created_by")
+      .select("id, status, updated_at, published_at, closed_at, created_by, deliverable_specs")
       .single();
     expect(error).toBeFalsy();
     expect(data?.status).toBe("draft");
     expect(data?.updated_at).toBeTruthy();
     expect(data?.published_at).toBeNull();
     expect(data?.created_by).toBeNull();
+    expect(data?.deliverable_specs).toEqual([]);
     await svc.from("missions").delete().eq("id", data!.id);
   });
 });

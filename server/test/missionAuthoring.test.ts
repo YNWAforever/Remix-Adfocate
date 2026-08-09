@@ -2,11 +2,66 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
+import { normalizeDeliverableSpecs, validateDeliverableSpecs } from "../lib/missionAuthoring";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const ADMIN_SECRET = process.env.ADMIN_SECRET!;
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
+
+describe("structured deliverable specs", () => {
+  it("keeps legacy string deliverables valid and emits no proof requirement", () => {
+    const result = normalizeDeliverableSpecs({
+      deliverables: ["Publish one review"],
+    });
+
+    expect(result).toEqual([{
+      title: "Publish one review",
+      instructions: "",
+      requirements: { caption: false, externalUrl: false, checklist: [] },
+      requiresAsset: false,
+      proofRequirement: null,
+    }]);
+  });
+
+  it("accepts a publication URL proof requirement with optional evidence", () => {
+    expect(validateDeliverableSpecs([{
+      title: "Publish one review",
+      instructions: "Publish on an allowed platform.",
+      requirements: { caption: true, externalUrl: true, checklist: ["Use the campaign tag"] },
+      requiresAsset: false,
+      proofRequirement: {
+        kind: "publication_url",
+        allowedPlatforms: ["instagram", "youtube"],
+        evidence: "optional",
+      },
+    }])).toEqual([]);
+  });
+
+  it("returns stable codes for invalid publication proof requirements", () => {
+    expect(validateDeliverableSpecs([{
+      title: "",
+      instructions: "",
+      requirements: { caption: false, externalUrl: false, checklist: [] },
+      requiresAsset: false,
+      proofRequirement: { kind: "publication_url", allowedPlatforms: ["instagram"], evidence: "optional" },
+    }])).toContain("deliverable_specs.0.title_required");
+    expect(validateDeliverableSpecs([{
+      title: "Publish one review",
+      instructions: "",
+      requirements: { caption: false, externalUrl: false, checklist: [] },
+      requiresAsset: false,
+      proofRequirement: { kind: "unsupported" as "publication_url", allowedPlatforms: ["instagram"], evidence: "optional" },
+    }])).toContain("deliverable_specs.0.proof_requirement.kind_invalid");
+    expect(validateDeliverableSpecs([{
+      title: "Publish one review",
+      instructions: "",
+      requirements: { caption: false, externalUrl: false, checklist: [] },
+      requiresAsset: false,
+      proofRequirement: { kind: "publication_url", allowedPlatforms: [], evidence: "optional" },
+    }])).toContain("deliverable_specs.0.proof_requirement.allowed_platforms_required");
+  });
+});
 
 function koreq(path: string, jwt: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {

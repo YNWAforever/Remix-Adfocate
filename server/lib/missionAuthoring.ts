@@ -21,6 +21,25 @@ export const EFFORTS = ["low", "medium", "high"] as const;
 export const MAX_BRIEF_ITEMS = 12;
 export const MAX_BRIEF_ITEM_LEN = 200;
 export const MAX_AUDIENCE_LEN = 500;
+export const MAX_DELIVERABLE_PLATFORM_LEN = 64;
+
+export type PublicationProofRequirementInput = {
+  kind: "publication_url";
+  allowedPlatforms: string[];
+  evidence: "optional";
+};
+
+export type DeliverableSpecInput = {
+  title: string;
+  instructions: string;
+  requirements: {
+    caption: boolean;
+    externalUrl: boolean;
+    checklist: string[];
+  };
+  requiresAsset: boolean;
+  proofRequirement: PublicationProofRequirementInput | null;
+};
 
 export function normBriefArray(items: string[] | null | undefined): string[] {
   return (items ?? [])
@@ -102,6 +121,7 @@ export type MissionInput = {
   deadline?: string | null;
   quota?: number | null;
   deliverables?: string[];
+  deliverableSpecs?: DeliverableSpecInput[];
   requirements?: string[];
   platforms?: string[];
   effort?: string | null;
@@ -111,6 +131,97 @@ export type MissionInput = {
   key_messages?: string[];
   reference_links?: string[];
 };
+
+type DeliverableSpecSource = Pick<MissionInput, "deliverables" | "deliverableSpecs">;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function trimString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeChecklist(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  return value.reduce<string[]>((items, entry) => {
+    const item = trimString(entry);
+    if (item && !seen.has(item)) {
+      seen.add(item);
+      items.push(item);
+    }
+    return items;
+  }, []);
+}
+
+function normalizeProofRequirement(value: unknown): PublicationProofRequirementInput | null {
+  if (!isRecord(value)) return null;
+  const allowedPlatforms = Array.isArray(value.allowedPlatforms)
+    ? value.allowedPlatforms
+      .map((platform) => trimString(platform).toLowerCase())
+      .filter(Boolean)
+    : [];
+  return {
+    kind: trimString(value.kind) as PublicationProofRequirementInput["kind"],
+    allowedPlatforms,
+    evidence: trimString(value.evidence) as PublicationProofRequirementInput["evidence"],
+  };
+}
+
+/** Normalizes legacy strings into their structured, proof-compatible equivalents. */
+export function normalizeDeliverableSpecs(input: DeliverableSpecSource): DeliverableSpecInput[] {
+  const source = input.deliverableSpecs ?? input.deliverables ?? [];
+  if (!Array.isArray(source)) return [];
+  return source.map((item) => {
+    if (typeof item === "string") {
+      return {
+        title: item.trim(),
+        instructions: "",
+        requirements: { caption: false, externalUrl: false, checklist: [] },
+        requiresAsset: false,
+        proofRequirement: null,
+      };
+    }
+    const value = isRecord(item) ? item : {};
+    const requirements = isRecord(value.requirements) ? value.requirements : {};
+    return {
+      title: trimString(value.title),
+      instructions: trimString(value.instructions),
+      requirements: {
+        caption: requirements.caption === true,
+        externalUrl: requirements.externalUrl === true,
+        checklist: normalizeChecklist(requirements.checklist),
+      },
+      requiresAsset: value.requiresAsset === true,
+      proofRequirement: normalizeProofRequirement(value.proofRequirement),
+    };
+  });
+}
+
+/** Stable, database-free validation codes for structured authoring input. */
+export function validateDeliverableSpecs(input: unknown): string[] {
+  if (!Array.isArray(input)) return ["deliverable_specs.invalid"];
+  const errors: string[] = [];
+  input.forEach((item, index) => {
+    const prefix = `deliverable_specs.${index}`;
+    const value = isRecord(item) ? item : {};
+    if (!trimString(value.title)) errors.push(`${prefix}.title_required`);
+    const requirements = isRecord(value.requirements) ? value.requirements : {};
+    if (Array.isArray(requirements.checklist) && requirements.checklist.some((entry) => !trimString(entry))) {
+      errors.push(`${prefix}.requirements.checklist_entry_required`);
+    }
+    if (!Object.prototype.hasOwnProperty.call(value, "proofRequirement") || value.proofRequirement == null) return;
+    const proof = isRecord(value.proofRequirement) ? value.proofRequirement : {};
+    if (proof.kind !== "publication_url") errors.push(`${prefix}.proof_requirement.kind_invalid`);
+    if (!Array.isArray(proof.allowedPlatforms) || proof.allowedPlatforms.length === 0 || proof.allowedPlatforms.every((platform) => !trimString(platform))) {
+      errors.push(`${prefix}.proof_requirement.allowed_platforms_required`);
+    } else if (proof.allowedPlatforms.some((platform) => trimString(platform).length > MAX_DELIVERABLE_PLATFORM_LEN)) {
+      errors.push(`${prefix}.proof_requirement.platform_too_long`);
+    }
+  });
+  return errors;
+}
 
 // The existing record for an edit, as read from the DB.
 export type MissionRecord = MissionInput & {
@@ -186,6 +297,12 @@ export function validateMission(
   }
 
   Object.assign(errors, briefErrors(input));
+  if (input.deliverables && input.deliverableSpecs && input.deliverables.length !== input.deliverableSpecs.length) {
+    errors.deliverable_specs = "deliverable_specs.count_mismatch";
+  } else if (input.deliverableSpecs) {
+    const deliverableErrors = validateDeliverableSpecs(input.deliverableSpecs);
+    if (deliverableErrors.length) errors.deliverable_specs = deliverableErrors.join(",");
+  }
 
   return { ok: Object.keys(errors).length === 0, errors };
 }
@@ -243,6 +360,12 @@ export function validateEdit(
   }
 
   Object.assign(errors, briefErrors(patch));
+  if (patch.deliverables && patch.deliverableSpecs && patch.deliverables.length !== patch.deliverableSpecs.length) {
+    errors.deliverable_specs = "deliverable_specs.count_mismatch";
+  } else if (patch.deliverableSpecs) {
+    const deliverableErrors = validateDeliverableSpecs(patch.deliverableSpecs);
+    if (deliverableErrors.length) errors.deliverable_specs = deliverableErrors.join(",");
+  }
 
   return { ok: Object.keys(errors).length === 0, errors };
 }
