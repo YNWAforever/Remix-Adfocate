@@ -336,6 +336,8 @@ describe("creator studio publication proof migration", () => {
     expect(sql).toContain("mission_publication_proof_attempt_id uuid not null");
     expect(sql).toContain("mission_publication_proof_attempts_mutation");
     expect(sql).toContain("publication_proof_attempt_transition_invalid");
+    expect(sql).toContain("new.created_at <> old.created_at");
+    expect(sql).toContain("new.submitted_at is distinct from old.submitted_at");
     expect(sql).toContain("check (state in ('draft','submitted','verified','changes_requested'))");
     expect(sql).toContain("check (metadata_state in ('pending','available','unavailable','failed'))");
     expect(sql).toContain("mission_publication_proof_attempts_owner_idx");
@@ -381,6 +383,7 @@ describe("creator studio publication proof migration", () => {
     expect(initializer).toContain("proof_requirement");
     expect(initializer).toContain("v_spec -> 'proofRequirement'");
     expect(initializer).toContain("raise exception 'invalid_deliverable_specs'");
+    expect(initializer).toContain("jsonb_typeof(v_mission.deliverable_specs) <> 'array'");
     expect(initializer).toContain("jsonb_typeof(source.spec) <> 'object'");
     expect(initializer).toContain("if exists (select 1 from public.mission_work_items where mission_workflow_id = v_workflow.id) then return v_workflow; end if;");
   });

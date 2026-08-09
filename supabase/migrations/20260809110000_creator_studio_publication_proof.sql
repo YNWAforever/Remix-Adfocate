@@ -304,6 +304,9 @@ begin
      or new.workspace_id <> old.workspace_id
      or new.parent_attempt_id is distinct from old.parent_attempt_id
      or new.sequence <> old.sequence
+     or new.created_at <> old.created_at
+     or new.submitted_at is distinct from old.submitted_at
+        and old.state <> 'draft'
      or new.published_url is distinct from old.published_url
         and old.state <> 'draft'
      or new.platform is distinct from old.platform
@@ -544,8 +547,11 @@ begin
 
   if v_mission.id is null then raise exception 'mission_not_found'; end if;
 
-  if jsonb_typeof(v_mission.deliverable_specs) = 'array'
-     and exists (
+  if jsonb_typeof(v_mission.deliverable_specs) <> 'array' then
+    raise exception 'invalid_deliverable_specs' using errcode = '22023';
+  end if;
+
+  if exists (
        select 1
        from jsonb_array_elements(v_mission.deliverable_specs) as source(spec)
        where jsonb_typeof(source.spec) <> 'object'
@@ -555,7 +561,7 @@ begin
             and jsonb_typeof(source.spec -> 'proofRequirement') not in ('object', 'null')
           )
      )
-  then
+  ) then
     raise exception 'invalid_deliverable_specs' using errcode = '22023';
   end if;
 
