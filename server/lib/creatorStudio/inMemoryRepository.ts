@@ -45,6 +45,11 @@ type CompletedCommand = {
   result: unknown;
 };
 
+type PendingMetadataRefresh = {
+  hash: string;
+  promise: Promise<CommandResult<PublicationProofAttempt>>;
+};
+
 export type InMemoryCreatorStudioRepositoryOptions = {
   workspace: SubmissionWorkspace;
   metadataResolver?: PublicationProofMetadataResolver;
@@ -74,6 +79,7 @@ const clone = <T>(value: T): T => structuredClone(value);
 
 export class InMemoryCreatorStudioRepository implements CreatorStudioRepository {
   private readonly commands = new Map<string, CompletedCommand>();
+  private readonly pendingMetadataRefreshes = new Map<string, PendingMetadataRefresh>();
   private readonly eventLog: CreatorStudioEvent[] = [];
   private readonly drafts = new Map<string, WorkingDraft>();
   private readonly assets = new Map<string, DraftAsset>();
@@ -426,6 +432,35 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     const replay = this.replay<PublicationProofAttempt>(context, input.commandId, requestHash);
     if (replay) return replay;
 
+    const commandKey = this.commandKey(context, input.commandId);
+    const pending = this.pendingMetadataRefreshes.get(commandKey);
+    if (pending) {
+      if (pending.hash !== requestHash) {
+        throw new CreatorStudioError("command_conflict", "Command id was already used with a different request");
+      }
+      const result = await pending.promise;
+      return { value: clone(result.value), replayed: true };
+    }
+
+    const promise = this.refreshProofMetadataOnce(context, workItem, attemptId, input.commandId, requestHash);
+    this.pendingMetadataRefreshes.set(commandKey, { hash: requestHash, promise });
+    try {
+      return await promise;
+    } finally {
+      if (this.pendingMetadataRefreshes.get(commandKey)?.promise === promise) {
+        this.pendingMetadataRefreshes.delete(commandKey);
+      }
+    }
+  }
+
+  private async refreshProofMetadataOnce(
+    context: CreatorStudioContext,
+    workItem: WorkItem,
+    attemptId: string,
+    commandId: string,
+    requestHash: string,
+  ): Promise<CommandResult<PublicationProofAttempt>> {
+
     const attempt = this.findProofAttempt(workItem, attemptId);
     if (!attempt || workItem.publicationProof.currentAttempt?.id !== attempt.id) {
       throw new CreatorStudioError("proof_attempt_immutable", "Only the current proof attempt can be refreshed");
@@ -433,6 +468,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     if (attempt.state !== "draft") {
       throw new CreatorStudioError("proof_attempt_immutable", "Only the current draft proof attempt can be refreshed");
     }
+
+    const originalPublishedUrl = attempt.publishedUrl;
+    const originalPlatform = attempt.platform;
 
     let metadataState: PublicationProofAttempt["metadataState"];
     let metadata: PublicationProofMetadata | null = null;
@@ -450,11 +488,17 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
         metadataState = "failed";
       }
     }
+    if (workItem.publicationProof.currentAttempt?.id !== attempt.id
+      || attempt.state !== "draft"
+      || attempt.publishedUrl !== originalPublishedUrl
+      || attempt.platform !== originalPlatform) {
+      throw new CreatorStudioError("proof_attempt_transition_invalid", "The proof changed while metadata was refreshing");
+    }
     attempt.metadataState = metadataState;
     attempt.metadata = metadata;
     this.refreshProofDerivedState(workItem);
     this.recordEvent("proof.metadata_refreshed", workItem.id, { attemptId: attempt.id, metadataState });
-    return this.commit(context, input.commandId, requestHash, clone(attempt));
+    return this.commit(context, commandId, requestHash, clone(attempt));
   }
 
   events(): CreatorStudioEvent[] {

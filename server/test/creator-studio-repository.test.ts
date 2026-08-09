@@ -570,6 +570,36 @@ describe("InMemoryCreatorStudioRepository", () => {
     expect(submitted.value.state).not.toBe("verified");
   });
 
+  it("coalesces concurrent metadata refreshes with the same command", async () => {
+    let signalResolverStarted!: () => void;
+    let releaseResolver!: (value: { title: string; author: string; publishedAt: string }) => void;
+    const resolverStarted = new Promise<void>((resolve) => { signalResolverStarted = resolve; });
+    const resolver: PublicationProofMetadataResolver = async () => {
+      signalResolverStarted();
+      return new Promise((resolve) => { releaseResolver = resolve; });
+    };
+    const repository = makeProofRepository({ metadataResolver: resolver });
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "concurrent-metadata-create",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+
+    const first = repository.refreshProofMetadata(context, "work-item-1", draft.value.id, {
+      commandId: "concurrent-metadata-refresh",
+    });
+    await resolverStarted;
+    const second = repository.refreshProofMetadata(context, "work-item-1", draft.value.id, {
+      commandId: "concurrent-metadata-refresh",
+    });
+    releaseResolver({ title: "Video title", author: "Creator", publishedAt: "2026-08-09T00:00:00.000Z" });
+
+    await expect(first).resolves.toMatchObject({ replayed: false, value: { metadataState: "available" } });
+    await expect(second).resolves.toMatchObject({ replayed: true, value: { metadataState: "available" } });
+    expect(repository.events().filter((event) => event.type === "proof.metadata_refreshed")).toHaveLength(1);
+  });
+
   it("does not expose or mutate proof state across creator ownership boundaries", async () => {
     const repository = makeProofRepository();
     const foreignContext = { ...creatorContext(), actorId: "creator-2" };
