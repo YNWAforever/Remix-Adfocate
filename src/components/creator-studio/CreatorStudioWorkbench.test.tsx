@@ -190,6 +190,40 @@ describe("CreatorStudioWorkbench", () => {
     expect(mocks.save.mutateAsync.mock.calls[1][0].commandId).not.toBe(staleCommandId);
   });
 
+  it("uses a new submit command after reloading a conflicted draft version", async () => {
+    const workspace = draftingWorkspace();
+    workspace.workItems[0] = {
+      ...workspace.workItems[0],
+      state: "ready_to_submit",
+      validation: { caption: true, externalUrl: true, checklist: true, assets: true },
+    };
+    workspace.nextAction = { workItemId: "story", state: "ready_to_submit", label: "Submit deliverable" };
+    const freshWorkspace = structuredClone(workspace);
+    freshWorkspace.workItems[0].draft = {
+      caption: "Fresh server draft",
+      externalUrl: null,
+      checklist: { Disclosure: true },
+      version: 3,
+      updatedAt: "2026-08-09T04:00:00.000Z",
+    };
+    const reloadWorkspace = vi.fn().mockResolvedValue(freshWorkspace);
+    mocks.submit.mutateAsync.mockRejectedValue(new Error("Version conflict"));
+    mocks.save.error = Object.assign(new Error("Version conflict"), { code: "version_conflict" });
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} onReloadWorkspace={reloadWorkspace} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit deliverable" }));
+    await waitFor(() => expect(mocks.submit.mutateAsync).toHaveBeenCalledTimes(1));
+    const staleCommand = mocks.submit.mutateAsync.mock.calls[0][0];
+
+    fireEvent.click(screen.getByRole("button", { name: "Reload latest draft" }));
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Fresh server draft"));
+    fireEvent.click(screen.getByRole("button", { name: "Submit deliverable" }));
+
+    await waitFor(() => expect(mocks.submit.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.submit.mutateAsync.mock.calls[1][0]).toMatchObject({ expectedVersion: 3 });
+    expect(mocks.submit.mutateAsync.mock.calls[1][0].commandId).not.toBe(staleCommand.commandId);
+  });
+
   it("uses a fresh save command ID after draft input changes", async () => {
     mocks.save.mutateAsync.mockRejectedValue(new Error("offline"));
     render(<CreatorStudioWorkbench submissionId="submission-1" workspace={draftingWorkspace()} />);
