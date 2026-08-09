@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { InMemoryCreatorStudioRepository, type PublicationProofMetadataResolver } from "../lib/creatorStudio/inMemoryRepository.js";
+import { SupabaseCreatorStudioRepository } from "../lib/creatorStudio/supabaseRepository.js";
 import type { CreatorStudioContext, SaveDraftInput, SubmissionWorkspace } from "../lib/creatorStudio/types.js";
 
 const creatorContext = (): CreatorStudioContext => ({
@@ -491,6 +493,25 @@ describe("InMemoryCreatorStudioRepository", () => {
     });
   });
 
+  it("does not open a replacement attempt over a submitted proof", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-submitted-attempt",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    await repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: "proof-submitted-attempt-submit",
+    });
+
+    await expect(repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-replacement-without-review",
+      publishedUrl: "https://www.youtube.com/watch?v=changed",
+      platform: "youtube",
+    })).rejects.toMatchObject({ code: "proof_attempt_immutable" });
+  });
+
   it("creates and finalizes proof evidence under the proof-specific storage path", async () => {
     const repository = makeProofRepository();
     const context = creatorContext();
@@ -613,5 +634,267 @@ describe("InMemoryCreatorStudioRepository", () => {
     await expect(repository.getWorkspace(creatorContext())).resolves.toMatchObject({
       workItems: [{ publicationProof: { currentAttempt: null, history: [] } }],
     });
+  });
+
+  describe("SupabaseCreatorStudioRepository", () => {
+  it("maps all publication-proof RPCs and signs proof evidence with the returned storage path", async () => {
+    const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    const signedPaths: Array<{ bucket: string; path: string }> = [];
+    const attempt = {
+      id: "proof-attempt-1",
+      mission_work_item_id: "work-item-1",
+      parent_attempt_id: null,
+      sequence: 1,
+      published_url: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+      state: "draft",
+      metadata_state: "pending",
+      metadata: null,
+      operator_message: null,
+      submitted_at: null,
+      decided_at: null,
+      evidence: [],
+    };
+    const client = {
+      rpc: async (name: string, args: Record<string, unknown>) => {
+        calls.push({ name, args });
+        if (name === "creator_studio_create_proof_evidence_grant") {
+          return {
+            data: {
+              replayed: false,
+              grant: {
+                bucket: "mission-publication-proof-assets",
+                path: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+                asset_id: "evidence-1",
+                expires_at: "2026-08-10T01:00:00.000Z",
+              },
+            },
+            error: null,
+          };
+        }
+        if (name === "creator_studio_finalize_proof_evidence") {
+          return {
+            data: {
+              replayed: false,
+              evidence: {
+                id: "evidence-1",
+                mission_publication_proof_attempt_id: "proof-attempt-1",
+                storage_object_path: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+                mime_type: "image/png",
+                byte_size: 1024,
+                content_checksum: null,
+                upload_state: "finalized",
+              },
+            },
+            error: null,
+          };
+        }
+        if (name === "creator_studio_submit_publication_proof") {
+          return {
+            data: {
+              replayed: false,
+              attempt: {
+                ...attempt,
+                state: "submitted",
+                submitted_at: "2026-08-10T00:00:00.000Z",
+                evidence: [{
+                  id: "evidence-1",
+                  mission_publication_proof_attempt_id: "proof-attempt-1",
+                  storage_object_path: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+                  mime_type: "image/png",
+                  byte_size: 1024,
+                  content_checksum: null,
+                  upload_state: "finalized",
+                }],
+              },
+            },
+            error: null,
+          };
+        }
+        return { data: { replayed: false, attempt }, error: null };
+      },
+      storage: {
+        from: (bucket: string) => ({
+          createSignedUploadUrl: async (path: string) => {
+            signedPaths.push({ bucket, path });
+            return { data: { token: "proof-upload-token" }, error: null };
+          },
+        }),
+      },
+    } as unknown as SupabaseClient;
+    const repository = new SupabaseCreatorStudioRepository(client);
+    const context = creatorContext();
+
+    const created = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "adapter-proof-create",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    const grant = await repository.createProofEvidenceGrant(context, "work-item-1", created.value.id, {
+      commandId: "adapter-proof-grant",
+      fileName: "evidence.png",
+      mimeType: "image/png",
+      byteSize: 1024,
+    });
+    const finalized = await repository.finalizeProofEvidence(context, "work-item-1", created.value.id, grant.value.assetId, {
+      commandId: "adapter-proof-finalize",
+      byteSize: 1024,
+      mimeType: "image/png",
+      checksumSha256: null,
+    });
+    const submitted = await repository.submitPublicationProof(context, "work-item-1", created.value.id, { commandId: "adapter-proof-submit" });
+    const refreshed = await repository.refreshProofMetadata(context, "work-item-1", created.value.id, { commandId: "adapter-proof-refresh" });
+
+    expect(created.value).toMatchObject({ id: "proof-attempt-1", workItemId: "work-item-1", state: "draft" });
+    expect(grant.value).toEqual({
+      bucket: "mission-publication-proof-assets",
+      path: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+      token: "proof-upload-token",
+      assetId: "evidence-1",
+      expiresAt: "2026-08-10T01:00:00.000Z",
+    });
+    expect(finalized.value).toMatchObject({ id: "evidence-1", attemptId: "proof-attempt-1", status: "finalized" });
+    expect(submitted.value.evidence).toEqual([{
+      id: "evidence-1",
+      attemptId: "proof-attempt-1",
+      storagePath: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+      mimeType: "image/png",
+      byteSize: 1024,
+      checksumSha256: null,
+      status: "finalized",
+    }]);
+    expect(signedPaths).toEqual([{
+      bucket: "mission-publication-proof-assets",
+      path: "creator-1/workflow-1/work-item-1/proof-evidence/evidence-1.png",
+    }]);
+    expect(submitted.value.state).toBe("submitted");
+    expect(refreshed.value.state).toBe("draft");
+    expect(calls.map(({ name }) => name)).toEqual([
+      "creator_studio_create_publication_proof_attempt",
+      "creator_studio_create_proof_evidence_grant",
+      "creator_studio_finalize_proof_evidence",
+      "creator_studio_submit_publication_proof",
+      "creator_studio_refresh_proof_metadata",
+    ]);
+    expect(calls[0]?.args).toMatchObject({
+      p_submission_id: "submission-1",
+      p_workspace_id: "workspace-1",
+      p_work_item_id: "work-item-1",
+      p_command_id: "adapter-proof-create",
+      p_published_url: "https://www.youtube.com/watch?v=abc",
+      p_platform: "youtube",
+    });
+    expect(calls[1]?.args).toMatchObject({ p_attempt_id: "proof-attempt-1", p_file_name: "evidence.png", p_mime_type: "image/png", p_byte_size: 1024 });
+    expect(calls[2]?.args).toMatchObject({ p_attempt_id: "proof-attempt-1", p_evidence_id: "evidence-1", p_byte_size: 1024, p_mime_type: "image/png" });
+  });
+
+  it("maps an invalid publication-proof RPC response to a safe db_error", async () => {
+    const client = {
+      rpc: async () => ({ data: { replayed: false }, error: null }),
+    } as unknown as SupabaseClient;
+    const repository = new SupabaseCreatorStudioRepository(client);
+
+    await expect(repository.createPublicationProofAttempt(creatorContext(), "work-item-1", {
+      commandId: "adapter-invalid-response",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    })).rejects.toMatchObject({ code: "db_error", publicMessage: "repository read failed" });
+  });
+
+  it("hydrates proof state into an ordinary mutation response", async () => {
+    const proofAttempt = {
+      id: "proof-attempt-1",
+      mission_work_item_id: "work-item-1",
+      parent_attempt_id: null,
+      sequence: 1,
+      published_url: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+      state: "submitted",
+      metadata_state: "unavailable",
+      metadata: null,
+      operator_message: null,
+      submitted_at: "2026-08-10T00:00:00.000Z",
+      decided_at: null,
+    };
+    const rows: Record<string, unknown> = {
+      mission_publication_proof_attempts: [proofAttempt],
+      mission_publication_proof_assets: [],
+    };
+    const client = {
+      rpc: async () => ({
+        data: {
+          replayed: false,
+          draft: { caption: "Caption", external_url: null, checklist: {}, version: 1, updated_at: "2026-08-10T00:00:00.000Z" },
+          work_item: {
+            id: "work-item-1",
+            position: 1,
+            title: "Story",
+            instructions: "Create a story",
+            requirements: {},
+            requires_asset: false,
+            proof_requirement: { kind: "publication_url", allowedPlatforms: ["youtube"], evidence: "optional" },
+            state: "drafting",
+            draft: { caption: "Caption", external_url: null, checklist: {}, version: 1, updated_at: "2026-08-10T00:00:00.000Z" },
+            assets: [],
+          },
+          workflow: { id: "workflow-1", state: "drafting", revision: 1 },
+        },
+        error: null,
+      }),
+      from: (table: string) => {
+        const result = Promise.resolve({ data: rows[table] ?? [], error: null });
+        const query = {
+          select: () => query,
+          eq: () => query,
+          in: () => query,
+          order: () => query,
+          then: result.then.bind(result),
+        };
+        return query;
+      },
+    } as unknown as SupabaseClient;
+    const repository = new SupabaseCreatorStudioRepository(client);
+
+    const result = await repository.saveDraft(creatorContext(), "work-item-1", {
+      commandId: "adapter-hydrate-proof",
+      expectedVersion: 0,
+      patch: {},
+    });
+
+    expect(result.value.workItem.publicationProof.currentAttempt).toMatchObject({
+      id: "proof-attempt-1",
+      state: "submitted",
+      metadataState: "unavailable",
+    });
+  });
+
+  it("fails closed when a publication-proof RPC returns an unknown attempt state", async () => {
+    const client = {
+      rpc: async () => ({
+        data: {
+          replayed: false,
+          attempt: {
+            id: "proof-attempt-invalid",
+            mission_work_item_id: "work-item-1",
+            sequence: 1,
+            published_url: "https://www.youtube.com/watch?v=abc",
+            platform: "youtube",
+            state: "tampered",
+            metadata_state: "pending",
+            metadata: null,
+            evidence: [],
+          },
+        },
+        error: null,
+      }),
+    } as unknown as SupabaseClient;
+    const repository = new SupabaseCreatorStudioRepository(client);
+
+    await expect(repository.createPublicationProofAttempt(creatorContext(), "work-item-1", {
+      commandId: "adapter-invalid-state",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    })).rejects.toMatchObject({ code: "db_error", publicMessage: "repository read failed" });
+  });
   });
 });

@@ -294,6 +294,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       this.recordEvent("proof.attempt_created", workItem.id, { attemptId: current.id, sequence: current.sequence });
       return this.commit(context, input.commandId, requestHash, result);
     }
+    if (current && current.state !== "changes_requested") {
+      throw new CreatorStudioError("proof_attempt_immutable", "A new proof attempt requires operator-requested changes");
+    }
 
     const parent = current ?? workItem.publicationProof.history.at(-1) ?? null;
     const attempt: PublicationProofAttempt = {

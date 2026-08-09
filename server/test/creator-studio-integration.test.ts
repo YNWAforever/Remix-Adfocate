@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { Hono } from "hono";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CreatorStudioError } from "../lib/creatorStudio/errors.js";
@@ -18,6 +20,7 @@ import {
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const ownedStoragePaths = new Set<string>();
 let sequence = 0;
+const publicationProofRpcMigrationPath = resolve(process.cwd(), "supabase/migrations/20260809113000_creator_studio_publication_proof_rpc.sql");
 
 const json = (body: unknown, method = "POST"): RequestInit => ({
   method,
@@ -322,5 +325,56 @@ suite("Creator Studio Supabase acceptance", () => {
     await expect(journey.repository.finalizeAsset(journey.context, item.id, "publication-proof-asset", {
       commandId: "ordinary-finalize-proof", byteSize: 1, mimeType: "image/png", checksumSha256: null,
     })).rejects.toMatchObject({ code: "asset_not_found" });
+  });
+});
+
+describe("Creator Studio publication-proof RPC migration contract", () => {
+  it("defines the atomic proof command functions and least-privilege execution boundary", () => {
+    const sql = readFileSync(publicationProofRpcMigrationPath, "utf8");
+    for (const functionName of [
+      "creator_studio_create_publication_proof_attempt",
+      "creator_studio_create_proof_evidence_grant",
+      "creator_studio_finalize_proof_evidence",
+      "creator_studio_submit_publication_proof",
+      "creator_studio_refresh_proof_metadata",
+    ]) {
+      const functionStart = sql.indexOf("create or replace function public." + functionName + "(");
+      const bodyStart = sql.indexOf("as $$", functionStart);
+      const bodyEnd = sql.indexOf("$$;", bodyStart);
+      expect(functionStart).toBeGreaterThanOrEqual(0);
+      expect(bodyStart).toBeGreaterThan(functionStart);
+      expect(bodyEnd).toBeGreaterThan(bodyStart);
+      const functionBody = sql.slice(functionStart, bodyEnd);
+      expect(functionBody).toContain("p_command_id text");
+      expect(functionBody).toContain("p_request_hash text");
+      expect(functionBody).toContain("from public.mission_workflow_commands command");
+      expect(functionBody).toContain("insert into public.mission_workflow_commands");
+      expect(functionBody).toContain("insert into public.mission_workflow_events");
+      expect(sql).toContain(`create or replace function public.${functionName}(`);
+      expect(sql).toContain("p_command_id text");
+      expect(sql).toContain("p_request_hash text");
+      expect(sql).toContain("from public.mission_workflow_commands command");
+      expect(sql).toContain("insert into public.mission_workflow_commands");
+      expect(sql).toContain("insert into public.mission_workflow_events");
+      expect(sql).toContain(`revoke all on function public.${functionName}`);
+      expect(sql).toContain(`grant execute on function public.${functionName}`);
+    }
+    expect(sql).toContain("mission-publication-proof-assets");
+    expect(sql).toContain("storage.objects object");
+    expect(sql).toContain("language plpgsql");
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("auth.uid()");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("insert into public.mission_publication_proof_events");
+    expect(sql).toContain("upload_state = 'pending'");
+    expect(sql).toContain("metadata->>'mimetype'");
+    expect(sql).toContain("new.metadata_state is distinct from old.metadata_state");
+    expect(sql).toContain("v_current.state <> 'changes_requested'");
+    expect(sql).toContain("'evidence', coalesce");
+    expect(sql).toContain("v_request_hash := md5(jsonb_build_object");
+    expect(sql).toContain("return v_existing_response || jsonb_build_object('replayed', true);");
+    expect(sql).toContain("raise exception 'command_conflict'");
+    expect(sql).toContain("metadata_state");
+    expect(sql).toContain("-- Metadata refresh never sets verified");
   });
 });

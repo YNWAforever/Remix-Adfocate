@@ -16,12 +16,14 @@ const makeWorkspace = (): SubmissionWorkspace => ({
   workItems: [
     {
       id: "work-item-1", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: true, checklist: ["disclosure"] }, requiresAsset: false,
-      state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: true }, draft: null, assets: [],
+      proofRequirement: null, state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: true, publicationProof: true }, draft: null, assets: [],
+      publicationProof: { required: false, currentAttempt: null, history: [] },
       reviewFeedback: { status: "available", value: [] },
     },
     {
       id: "work-item-2", position: 2, title: "Reel", instructions: "Create a reel", requirements: { caption: true, externalUrl: false, checklist: [] }, requiresAsset: true,
-      state: "not_started", validation: { caption: false, externalUrl: true, checklist: true, assets: false }, draft: null, assets: [],
+      proofRequirement: null, state: "not_started", validation: { caption: false, externalUrl: true, checklist: true, assets: false, publicationProof: true }, draft: null, assets: [],
+      publicationProof: { required: false, currentAttempt: null, history: [] },
       reviewFeedback: { status: "available", value: [] },
     },
   ],
@@ -48,6 +50,11 @@ const failingRepository = (): CreatorStudioRepository => ({
   async createUploadGrant() { throw new Error("not implemented"); },
   async finalizeAsset() { throw new Error("not implemented"); },
   async submitWorkItem() { throw new Error("not implemented"); },
+  async createPublicationProofAttempt() { throw new Error("not implemented"); },
+  async createProofEvidenceGrant() { throw new Error("not implemented"); },
+  async finalizeProofEvidence() { throw new Error("not implemented"); },
+  async submitPublicationProof() { throw new Error("not implemented"); },
+  async refreshProofMetadata() { throw new Error("not implemented"); },
 });
 
 const unknownFailingRepository = (): CreatorStudioRepository => ({
@@ -58,6 +65,11 @@ const unknownFailingRepository = (): CreatorStudioRepository => ({
   async createUploadGrant() { throw new Error("not implemented"); },
   async finalizeAsset() { throw new Error("not implemented"); },
   async submitWorkItem() { throw new Error("not implemented"); },
+  async createPublicationProofAttempt() { throw new Error("not implemented"); },
+  async createProofEvidenceGrant() { throw new Error("not implemented"); },
+  async finalizeProofEvidence() { throw new Error("not implemented"); },
+  async submitPublicationProof() { throw new Error("not implemented"); },
+  async refreshProofMetadata() { throw new Error("not implemented"); },
 });
 
 type QueryResult = { data: unknown; error: unknown };
@@ -149,8 +161,8 @@ describe("Creator Studio workspace route", () => {
       mission_workflows: { data: { id: "workflow-1", state: "drafting", revision: 3 }, error: null },
       mission_work_items: {
         data: [
-          { id: "work-item-b", position: 1, title: "Reel", instructions: "Create a reel", requirements: { requirements: [], platforms: ["instagram"] }, requires_asset: false, state: "not_started" },
-          { id: "work-item-a", position: 1, title: "Story", instructions: "Create a story", requirements: { requirements: ["caption", "external_url", "disclosure"], platforms: ["instagram"] }, requires_asset: true, state: "drafting" },
+          { id: "work-item-b", position: 1, title: "Reel", instructions: "Create a reel", requirements: { requirements: [], platforms: ["instagram"] }, requires_asset: false, proof_requirement: null, state: "not_started" },
+          { id: "work-item-a", position: 1, title: "Story", instructions: "Create a story", requirements: { requirements: ["caption", "external_url", "disclosure"], platforms: ["instagram"] }, requires_asset: true, proof_requirement: null, state: "drafting" },
         ],
         error: null,
       },

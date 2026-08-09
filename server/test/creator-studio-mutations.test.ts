@@ -74,7 +74,7 @@ const persistedWorkspaceClient = (externalUrl: string): SupabaseClient => {
     mission_workflows: { id: "workflow-1", state: "ready_to_submit", revision: 1 },
     mission_work_items: [{
       id: "work-item-1", position: 1, title: "Proof", instructions: "Post proof",
-      requirements: { externalUrl: true }, requires_asset: false, state: "ready_to_submit",
+      requirements: { externalUrl: true }, requires_asset: false, proof_requirement: null, state: "ready_to_submit",
     }],
     mission_working_drafts: [{
       mission_work_item_id: "work-item-1", caption: null, external_url: externalUrl, checklist: {}, version: 1,
