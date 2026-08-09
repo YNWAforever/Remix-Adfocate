@@ -11,6 +11,12 @@ export type CreatorStudioErrorCode =
   | "asset_not_found"
   | "asset_not_uploaded"
   | "asset_finalized"
+  | "proof_url_invalid"
+  | "proof_platform_invalid"
+  | "proof_attempt_immutable"
+  | "proof_attempt_transition_invalid"
+  | "proof_evidence_invalid"
+  | "proof_metadata_refresh_failed"
   | "storage_error"
   | "db_error";
 

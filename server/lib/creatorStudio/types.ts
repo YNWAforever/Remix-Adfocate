@@ -1,3 +1,16 @@
+import type {
+  PublicationProofRequirement,
+  PublicationProofSnapshot,
+} from "./publicationProof.js";
+
+export type {
+  PublicationProofAttempt,
+  PublicationProofEvidence,
+  PublicationProofMetadata,
+  PublicationProofRequirement,
+  PublicationProofSnapshot,
+} from "./publicationProof.js";
+
 export const CREATOR_STUDIO_STATES = [
   "not_started", "drafting", "ready_to_submit", "submitted",
   "changes_requested", "resubmitted", "approved",
@@ -79,6 +92,34 @@ export type SubmitWorkItemInput = {
   expectedVersion: number;
 };
 
+export type CreatePublicationProofAttemptInput = {
+  commandId: string;
+  publishedUrl: string;
+  platform: string;
+};
+
+export type CreateProofEvidenceGrantInput = {
+  commandId: string;
+  fileName: string;
+  mimeType: string;
+  byteSize: number;
+};
+
+export type FinalizeProofEvidenceInput = {
+  commandId: string;
+  byteSize: number;
+  mimeType: string;
+  checksumSha256: string | null;
+};
+
+export type SubmitPublicationProofInput = {
+  commandId: string;
+};
+
+export type RefreshProofMetadataInput = {
+  commandId: string;
+};
+
 export type OptionalSection<T> =
   | { status: "available"; value: T }
   | { status: "unavailable"; reason: "not_configured" | "temporarily_unavailable" };
@@ -118,6 +159,7 @@ export type WorkItemValidation = {
   externalUrl: boolean;
   checklist: boolean;
   assets: boolean;
+  publicationProof: boolean;
 };
 
 export type WorkingDraft = {
@@ -151,10 +193,12 @@ export type WorkItem = {
   instructions: string;
   requirements: WorkItemRequirements;
   requiresAsset: boolean;
+  proofRequirement: PublicationProofRequirement | null;
   state: WorkItemState;
   validation: WorkItemValidation;
   draft: WorkingDraft | null;
   assets: DraftAsset[];
+  publicationProof: PublicationProofSnapshot;
   reviewFeedback: OptionalSection<ReviewFeedback[]>;
 };
 
