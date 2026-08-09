@@ -313,12 +313,29 @@ describe("creator studio publication proof migration", () => {
     ]) {
       expect(sql).toContain(`create table public.${table}`);
       expect(sql).toContain(`alter table public.${table} enable row level security`);
+    }
+
+    for (const table of [
+      "mission_publication_proof_decisions",
+      "mission_publication_proof_events",
+    ]) {
       expect(sql).toContain(`create trigger ${table}_append_only`);
+    }
+    for (const table of [
+      "mission_publication_proof_attempts",
+      "mission_publication_proof_assets",
+    ]) {
+      expect(sql).toContain(`create trigger ${table}_mutation`);
+      expect(sql).toContain(`create trigger ${table}_prevent_truncate`);
     }
 
     expect(sql).toContain("mission_publication_proof_attempts_item_lineage_fk");
     expect(sql).toContain("mission_publication_proof_attempts_parent_lineage_fk");
     expect(sql).toContain("unique (mission_work_item_id, sequence, workspace_id)");
+    expect(sql).toContain("unique (\n    id,\n    mission_work_item_id,\n    mission_workflow_id,\n    mission_submission_id,\n    creator_id,\n    workspace_id\n  )");
+    expect(sql).toContain("mission_publication_proof_attempt_id uuid not null");
+    expect(sql).toContain("mission_publication_proof_attempts_mutation");
+    expect(sql).toContain("publication_proof_attempt_transition_invalid");
     expect(sql).toContain("check (state in ('draft','submitted','verified','changes_requested'))");
     expect(sql).toContain("check (metadata_state in ('pending','available','unavailable','failed'))");
     expect(sql).toContain("mission_publication_proof_attempts_owner_idx");
@@ -346,6 +363,9 @@ describe("creator studio publication proof migration", () => {
     expect(sql).toContain("asset.creator_id = (select auth.uid())");
     expect(sql).toContain("asset.mission_workflow_id = attempt.mission_workflow_id");
     expect(sql).toContain("asset.mission_work_item_id = attempt.mission_work_item_id");
+    expect(sql).toContain("attempt.mission_submission_id = asset.mission_submission_id");
+    expect(sql).toContain("attempt.creator_id = asset.creator_id");
+    expect(sql).toContain("attempt.workspace_id = asset.workspace_id");
   });
 
   it("initializes frozen structured proof requirements while preserving legacy idempotency", () => {
@@ -360,6 +380,8 @@ describe("creator studio publication proof migration", () => {
     expect(initializer).toContain("v_mission.deliverables");
     expect(initializer).toContain("proof_requirement");
     expect(initializer).toContain("v_spec -> 'proofRequirement'");
+    expect(initializer).toContain("raise exception 'invalid_deliverable_specs'");
+    expect(initializer).toContain("jsonb_typeof(source.spec) <> 'object'");
     expect(initializer).toContain("if exists (select 1 from public.mission_work_items where mission_workflow_id = v_workflow.id) then return v_workflow; end if;");
   });
 });
