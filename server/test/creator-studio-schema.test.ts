@@ -14,6 +14,7 @@ import type { SubmissionWorkspace } from "../lib/creatorStudio/types.js";
 
 const migrationPath = resolve(process.cwd(), "supabase/migrations/20260809100000_creator_studio_mission_workspace.sql");
 const commandRpcPath = resolve(process.cwd(), "supabase/migrations/20260809103000_creator_studio_command_rpc.sql");
+const publicationProofMigrationPath = resolve(process.cwd(), "supabase/migrations/20260809110000_creator_studio_publication_proof.sql");
 const typesPath = resolve(process.cwd(), "server/lib/creatorStudio/types.ts");
 const metricsPath = resolve(process.cwd(), "server/lib/creatorStudio/metrics.ts");
 
@@ -295,5 +296,70 @@ describe("creator studio publication proof contract", () => {
     expect(proofRequirement).toBeNull();
     expect(publicationProof).toEqual({ required: false, currentAttempt: null, history: [] });
     expect(existingFields).toEqual(legacyWorkItem);
+  });
+});
+
+describe("creator studio publication proof migration", () => {
+  it("adds the structured mission snapshot and proof lineage schema", () => {
+    const sql = readFileSync(publicationProofMigrationPath, "utf8");
+
+    expect(sql).toContain("add column deliverable_specs jsonb not null default '[]'::jsonb");
+    expect(sql).toContain("add column proof_requirement jsonb");
+    for (const table of [
+      "mission_publication_proof_attempts",
+      "mission_publication_proof_assets",
+      "mission_publication_proof_decisions",
+      "mission_publication_proof_events",
+    ]) {
+      expect(sql).toContain(`create table public.${table}`);
+      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(`create trigger ${table}_append_only`);
+    }
+
+    expect(sql).toContain("mission_publication_proof_attempts_item_lineage_fk");
+    expect(sql).toContain("mission_publication_proof_attempts_parent_lineage_fk");
+    expect(sql).toContain("unique (mission_work_item_id, sequence, workspace_id)");
+    expect(sql).toContain("check (state in ('draft','submitted','verified','changes_requested'))");
+    expect(sql).toContain("check (metadata_state in ('pending','available','unavailable','failed'))");
+    expect(sql).toContain("mission_publication_proof_attempts_owner_idx");
+    expect(sql).toContain("mission_publication_proof_attempts_sequence_idx");
+  });
+
+  it("keeps proof reads creator-owned and all writes service-only", () => {
+    const sql = readFileSync(publicationProofMigrationPath, "utf8");
+
+    for (const table of [
+      "mission_publication_proof_attempts",
+      "mission_publication_proof_assets",
+      "mission_publication_proof_decisions",
+      "mission_publication_proof_events",
+    ]) {
+      expect(sql).toContain(`create policy ${table}_creator_read`);
+      expect(sql).toContain(`grant select on public.${table} to authenticated`);
+      expect(sql).toContain(`revoke insert, update, delete on public.${table} from anon, authenticated`);
+      expect(sql).toContain(`grant all on public.${table} to service_role`);
+    }
+
+    expect(sql).toContain("'mission-publication-proof-assets'");
+    expect(sql).toContain("false");
+    expect(sql).toContain("asset.storage_object_path = name");
+    expect(sql).toContain("asset.creator_id = (select auth.uid())");
+    expect(sql).toContain("asset.mission_workflow_id = attempt.mission_workflow_id");
+    expect(sql).toContain("asset.mission_work_item_id = attempt.mission_work_item_id");
+  });
+
+  it("initializes frozen structured proof requirements while preserving legacy idempotency", () => {
+    const sql = readFileSync(publicationProofMigrationPath, "utf8");
+    const functionStart = sql.indexOf("create or replace function public.initialize_creator_studio_workflow(p_mission_submission_id uuid)");
+    const functionEnd = sql.indexOf("\n$$;", functionStart);
+    const initializer = sql.slice(functionStart, functionEnd);
+
+    expect(functionStart).toBeGreaterThanOrEqual(0);
+    expect(functionEnd).toBeGreaterThan(functionStart);
+    expect(initializer).toContain("jsonb_array_elements(v_mission.deliverable_specs)");
+    expect(initializer).toContain("v_mission.deliverables");
+    expect(initializer).toContain("proof_requirement");
+    expect(initializer).toContain("v_spec -> 'proofRequirement'");
+    expect(initializer).toContain("if exists (select 1 from public.mission_work_items where mission_workflow_id = v_workflow.id) then return v_workflow; end if;");
   });
 });
