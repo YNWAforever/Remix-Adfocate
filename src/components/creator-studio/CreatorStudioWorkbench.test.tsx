@@ -23,8 +23,8 @@ import { CreatorStudioWorkbench } from "./CreatorStudioWorkbench";
 
 function draftingWorkspace(): SubmissionWorkspace {
   return {
-    submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined" },
-    brief: { missionId: "mission-1", title: "Spring launch mission", deliverables: ["Story", "Reel"], requirements: ["Include disclosure"], platforms: ["instagram"] },
+    submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined", deadline: null },
+    brief: { missionId: "mission-1", title: "Spring launch mission", description: null, deliverables: ["Story", "Reel"], requirements: ["Include disclosure"], platforms: ["instagram"] },
     workflow: { id: "workflow-1", state: "drafting", revision: 1 },
     workItems: [
       {
@@ -92,10 +92,14 @@ afterEach(() => {
 describe("CreatorStudioWorkbench", () => {
   it("shows the focused editor, navigator, and disables submission until server readiness", () => {
     const workspace = draftingWorkspace();
+    workspace.brief.description = "Create a spring launch story with a clear disclosure.";
+    workspace.submission.deadline = "2026-09-01";
     workspace.nextAction = { workItemId: "story", state: "ready_to_submit", label: "Submit deliverable" };
     render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} />);
 
     expect(screen.getByRole("heading", { name: "Spring launch mission" })).toBeInTheDocument();
+    expect(screen.getByText("Create a spring launch story with a clear disclosure.")).toBeInTheDocument();
+    expect(screen.getByText("Deadline: 2026-09-01")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Deliverables" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Draft caption");
     expect(screen.getByRole("button", { name: "Save draft" })).toBeInTheDocument();
@@ -233,6 +237,27 @@ describe("CreatorStudioWorkbench", () => {
     await waitFor(() => expect(mocks.submit.mutateAsync).toHaveBeenCalledTimes(2));
     expect(mocks.submit.mutateAsync.mock.calls[1][0]).toMatchObject({ expectedVersion: 3 });
     expect(mocks.submit.mutateAsync.mock.calls[1][0].commandId).not.toBe(staleCommand.commandId);
+  });
+
+  it("surfaces a submit version conflict and reloads the latest draft", async () => {
+    const workspace = draftingWorkspace();
+    workspace.workItems[0] = {
+      ...workspace.workItems[0],
+      state: "ready_to_submit",
+      validation: { caption: true, externalUrl: true, checklist: true, assets: true },
+    };
+    workspace.nextAction = { workItemId: "story", state: "ready_to_submit", label: "Submit deliverable" };
+    const reloadWorkspace = vi.fn().mockResolvedValue(workspace);
+    mocks.submit.mutateAsync.mockRejectedValueOnce(Object.assign(new Error("Version conflict"), { code: "version_conflict" }));
+
+    render(<CreatorStudioWorkbench submissionId="submission-1" workspace={workspace} onReloadWorkspace={reloadWorkspace} />);
+    fireEvent.click(screen.getByRole("button", { name: "Submit deliverable" }));
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("This submission changed elsewhere. Reload the latest draft before retrying.");
+    fireEvent.click(screen.getByRole("button", { name: "Reload latest draft" }));
+    await waitFor(() => expect(reloadWorkspace).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
   });
 
   it("uses a fresh save command ID after draft input changes", async () => {

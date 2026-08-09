@@ -173,7 +173,7 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
     try {
       const { data: submissionData, error: submissionError } = await this.client
         .from("mission_submissions")
-        .select("id, creator_id, workspace_id, mission_id, status, missions!inner(id, title, deliverables, requirements, platforms)")
+        .select("id, creator_id, workspace_id, mission_id, status, missions!inner(id, title, description, deadline, deliverables, requirements, platforms)")
         .eq("id", context.submissionId)
         .eq("creator_id", context.actorId)
         .eq("workspace_id", context.workspaceId)
@@ -268,10 +268,12 @@ export class SupabaseCreatorStudioRepository implements CreatorStudioRepository 
         workspaceId: text(submissionRow, "workspace_id"),
         missionId: text(submissionRow, "mission_id"),
         status: mapSubmissionStatus(submissionRow.status),
+        deadline: typeof missionRow.deadline === "string" ? missionRow.deadline : null,
       };
       const brief: MissionBrief = {
         missionId: text(missionRow, "id"),
         title: text(missionRow, "title"),
+        description: typeof missionRow.description === "string" ? missionRow.description : null,
         deliverables: strings(missionRow.deliverables),
         requirements: strings(missionRow.requirements),
         platforms: strings(missionRow.platforms),

@@ -196,6 +196,17 @@ suite("Creator Studio Supabase acceptance", () => {
     await expect(journey.repository.saveDraft(journey.context, item.id, {
       commandId: "conflicting-draft", expectedVersion: 0, patch: { caption: "changed content" },
     })).rejects.toMatchObject({ code: "command_conflict" });
+
+    const { error: directRpcError } = await userForJwt(journey.owner.jwt).rpc("creator_studio_save_draft", {
+      p_submission_id: journey.context.submissionId,
+      p_workspace_id: journey.context.workspaceId,
+      p_work_item_id: item.id,
+      p_command_id: "conflicting-draft",
+      p_request_hash: "caller-controlled-hash-must-not-authorize-replay",
+      p_expected_version: 0,
+      p_patch: { caption: "a different direct RPC payload" },
+    });
+    expect(directRpcError?.message).toContain("command_conflict");
   });
 
   it("submits a complete finalized deliverable and rejects missing prerequisites", async () => {

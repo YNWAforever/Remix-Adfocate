@@ -27,8 +27,8 @@ vi.spyOn(Route, "useParams").mockImplementation(() => hoisted.params as never);
 
 function makeWorkspace() {
   return {
-    submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined" as const },
-    brief: { missionId: "mission-1", title: "Launch mission", deliverables: ["Story", "Reel"], requirements: ["Disclosure"], platforms: ["instagram"] },
+    submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined" as const, deadline: null },
+    brief: { missionId: "mission-1", title: "Launch mission", description: null, deliverables: ["Story", "Reel"], requirements: ["Disclosure"], platforms: ["instagram"] },
     workflow: { id: "workflow-1", state: "drafting" as const, revision: 1 },
     workItems: [
       { id: "story", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: false, checklist: [] }, requiresAsset: false, state: "drafting" as const, validation: { caption: true, externalUrl: true, checklist: true, assets: true }, draft: { caption: "Draft", externalUrl: null, checklist: {}, version: 1, updatedAt: "2026-08-09T00:00:00.000Z" }, assets: [], reviewFeedback: { status: "available" as const, value: [] } },

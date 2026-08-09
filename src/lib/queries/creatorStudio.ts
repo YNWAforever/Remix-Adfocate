@@ -31,11 +31,13 @@ export type SubmissionSummary = {
   workspaceId: string;
   missionId: string;
   status: MissionSubmissionStatus;
+  deadline: string | null;
 };
 
 export type MissionBrief = {
   missionId: string;
   title: string;
+  description: string | null;
   deliverables: string[];
   requirements: string[];
   platforms: string[];

@@ -116,7 +116,7 @@ export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<En
   });
 
   const record = (
-    name: "workspace_opened" | "changes_viewed" | "work_item_approved",
+    name: "workspace_opened" | "changes_viewed",
     c: Context<Env>,
     workItemId?: string,
   ) => recordCreatorStudioEvent({
@@ -149,7 +149,6 @@ export function createCreatorStudioRoutes(deps: CreatorStudioRouteDeps): Hono<En
       if (!workspace) return c.json({ error: "submission_not_found", code: "submission_not_found" }, 404);
       record("workspace_opened", c);
       for (const item of workspace.workItems) {
-        if (item.state === "approved") record("work_item_approved", c, item.id);
         if (item.reviewFeedback.status === "available" && item.reviewFeedback.value.some((feedback) => feedback.state === "changes_requested")) {
           record("changes_viewed", c, item.id);
         }

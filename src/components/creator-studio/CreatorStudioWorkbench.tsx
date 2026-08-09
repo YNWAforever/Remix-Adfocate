@@ -8,6 +8,7 @@ import { ReviewFeedback } from "./ReviewFeedback";
 import { WorkspaceHeader, type WorkspaceSaveStatus } from "./WorkspaceHeader";
 
 const commandId = (prefix: string) => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+const errorCode = (error: unknown) => error && typeof error === "object" && "code" in error ? String(error.code) : undefined;
 const draftFingerprint = (value: DraftFormValue) => JSON.stringify({
   caption: value.caption,
   externalUrl: value.externalUrl,
@@ -24,6 +25,7 @@ export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorksp
   const [drafts, setDrafts] = useState<Record<string, DraftFormValue>>({});
   const [persistedDrafts, setPersistedDrafts] = useState<Record<string, DraftFormValue>>({});
   const [saveStatus, setSaveStatus] = useState<WorkspaceSaveStatus>("idle");
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const previousSubmissionId = useRef(submissionId);
   const submitCommand = useRef({ submissionId, workItemId: null as string | null, expectedVersion: null as number | null, id: null as string | null });
   const resetSubmitCommand = () => { submitCommand.current = { submissionId, workItemId: null, expectedVersion: null, id: null }; };
@@ -42,7 +44,7 @@ export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorksp
       workItems.forEach((item) => { next[item.id] ??= draftFormValue(item); });
       return next;
     });
-    if (contextChanged) { resetSubmitCommand(); setSaveStatus("idle"); }
+    if (contextChanged) { resetSubmitCommand(); setSaveStatus("idle"); setSubmitError(null); }
   }, [submissionId, workItems, workspace.nextAction?.workItemId]);
 
   const activeWorkItem = workItems.find((item) => item.id === activeWorkItemId) ?? workItems[0];
@@ -63,6 +65,7 @@ export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorksp
     setDrafts((current) => ({ ...current, [activeWorkItem.id]: persisted }));
     setPersistedDrafts((current) => ({ ...current, [activeWorkItem.id]: persisted }));
     resetSubmitCommand();
+    setSubmitError(null);
   };
   const reloadLatestDraft = async () => {
     if (!activeWorkItem || !onReloadWorkspace) return null;
@@ -74,6 +77,7 @@ export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorksp
     setPersistedDrafts((current) => ({ ...current, [latestWorkItem.id]: latestDraft }));
     resetSubmitCommand();
     setSaveStatus("idle");
+    setSubmitError(null);
     return latestDraft;
   };
   const focus = (id: string) => document.getElementById(id)?.focus();
@@ -88,8 +92,14 @@ export function CreatorStudioWorkbench({ submissionId, workspace, onReloadWorksp
     try {
       await submitWorkItem.mutateAsync({ commandId: command.id, expectedVersion: activeDraft.version });
       resetSubmitCommand();
-    } catch { /* Keep the local draft for an unchanged retry; the server projection remains authoritative. */ }
+      setSubmitError(null);
+    } catch (error) {
+      setSubmitError(errorCode(error) ?? "submit_failed");
+    }
   };
 
-  return <main className="mx-auto w-full max-w-7xl space-y-4 p-4"><WorkspaceHeader workspace={workspace} saveStatus={saveStatus} />{activeWorkItem && activeDraft ? <div className="grid gap-4 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_minmax(14rem,0.9fr)]"><DeliverableNavigator workItems={workItems} activeWorkItemId={activeWorkItem.id} onSelect={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); setSaveStatus("idle"); }} /><div className="space-y-4"><DraftEditor key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} value={activeDraft} onChange={updateDraft} onSaved={applySavedDraft} onSaveStatus={setSaveStatus} onReloadLatestDraft={reloadLatestDraft} /><AssetUploadPanel key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} /></div><aside className="space-y-4"><NextActionPanel nextAction={workspace.nextAction} workItems={workItems} activeWorkItem={activeWorkItem} submitting={submitWorkItem.isPending} hasUnsavedDraft={activeDraftDirty} onNavigate={(id) => { resetSubmitCommand(); setActiveWorkItemId(id); }} onSubmit={() => void submit()} onFocusEditor={() => focus(`creator-draft-editor-${activeWorkItem.id}`)} onFocusSave={focusSaveDraft} onFocusAsset={() => focus(`creator-proof-asset-${activeWorkItem.id}`)} onFocusReview={() => focus(`creator-review-feedback-${activeWorkItem.id}`)} /><ReviewFeedback workItem={activeWorkItem} /></aside></div> : <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"><h2 className="font-heading font-bold">No deliverables are available.</h2></section>}</main>;
+  const submitErrorMessage = submitError === "version_conflict"
+    ? "This submission changed elsewhere. Reload the latest draft before retrying."
+    : "Submission could not be completed. Retry or reload the latest draft.";
+  return <main className="mx-auto w-full max-w-7xl space-y-4 p-4"><WorkspaceHeader workspace={workspace} saveStatus={saveStatus} />{submitError ? <div role="alert" className="space-y-2 rounded-lg border-2 border-[var(--color-magenta)] bg-white p-3 text-sm text-[var(--color-magenta)]"><p>{submitErrorMessage}</p>{onReloadWorkspace ? <button type="button" onClick={() => void reloadLatestDraft()} className="underline">Reload latest draft</button> : null}</div> : null}{activeWorkItem && activeDraft ? <div className="grid gap-4 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_minmax(14rem,0.9fr)]"><DeliverableNavigator workItems={workItems} activeWorkItemId={activeWorkItem.id} onSelect={(id) => { resetSubmitCommand(); setSubmitError(null); setActiveWorkItemId(id); setSaveStatus("idle"); }} /><div className="space-y-4"><DraftEditor key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} value={activeDraft} onChange={updateDraft} onSaved={applySavedDraft} onSaveStatus={setSaveStatus} onReloadLatestDraft={reloadLatestDraft} /><AssetUploadPanel key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} /></div><aside className="space-y-4"><NextActionPanel nextAction={workspace.nextAction} workItems={workItems} activeWorkItem={activeWorkItem} submitting={submitWorkItem.isPending} hasUnsavedDraft={activeDraftDirty} onNavigate={(id) => { resetSubmitCommand(); setSubmitError(null); setActiveWorkItemId(id); }} onSubmit={() => void submit()} onFocusEditor={() => focus(`creator-draft-editor-${activeWorkItem.id}`)} onFocusSave={focusSaveDraft} onFocusAsset={() => focus(`creator-proof-asset-${activeWorkItem.id}`)} onFocusReview={() => focus(`creator-review-feedback-${activeWorkItem.id}`)} /><ReviewFeedback workItem={activeWorkItem} /></aside></div> : <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"><h2 className="font-heading font-bold">No deliverables are available.</h2></section>}</main>;
 }

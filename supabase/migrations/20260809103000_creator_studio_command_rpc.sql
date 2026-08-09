@@ -24,6 +24,7 @@ declare
   v_draft public.mission_working_drafts;
   v_existing_hash text;
   v_existing_response jsonb;
+  v_request_hash text;
   v_response jsonb;
   v_assets jsonb;
   v_requirement_list jsonb;
@@ -35,7 +36,7 @@ declare
   v_url_port text;
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
-    or coalesce(length(btrim(p_request_hash)), 0) = 0 or p_expected_version is null or p_expected_version < 0 then
+    or p_expected_version is null or p_expected_version < 0 then
     raise exception 'command_required' using errcode = '22023';
   end if;
   if p_patch is null or jsonb_typeof(p_patch) <> 'object'
@@ -58,6 +59,11 @@ begin
       raise exception 'draft_invalid' using errcode = '22023';
     end if;
   end if;
+  v_request_hash := md5(jsonb_build_object(
+    'action', 'save_draft', 'actor_id', auth.uid(), 'workspace_id', p_workspace_id,
+    'submission_id', p_submission_id, 'work_item_id', p_work_item_id, 'command_id', p_command_id,
+    'expected_version', p_expected_version, 'patch', p_patch
+  )::text);
 
   select workflow.* into v_workflow
   from public.mission_workflows workflow
@@ -75,7 +81,7 @@ begin
     and command.command_id = p_command_id
   for update;
   if found then
-    if v_existing_hash <> p_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
+    if v_existing_hash <> v_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
     return v_existing_response || jsonb_build_object('replayed', true);
   end if;
 
@@ -178,7 +184,7 @@ begin
   insert into public.mission_workflow_commands
     (mission_submission_id, actor_id, creator_id, workspace_id, command_id, action, request_hash, response)
   values
-    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'save_draft', p_request_hash, v_response);
+    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'save_draft', v_request_hash, v_response);
   return v_response;
 end;
 $$;
@@ -202,12 +208,17 @@ declare
   v_asset public.mission_draft_assets;
   v_existing_hash text;
   v_existing_response jsonb;
+  v_request_hash text;
   v_response jsonb;
   v_asset_id uuid;
   v_extension text;
 begin
-  if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
-    or coalesce(length(btrim(p_request_hash)), 0) = 0 then raise exception 'command_required' using errcode = '22023'; end if;
+  if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128 then raise exception 'command_required' using errcode = '22023'; end if;
+  v_request_hash := md5(jsonb_build_object(
+    'action', 'create_upload_grant', 'actor_id', auth.uid(), 'workspace_id', p_workspace_id,
+    'submission_id', p_submission_id, 'work_item_id', p_work_item_id, 'command_id', p_command_id,
+    'file_name', p_file_name, 'mime_type', p_mime_type, 'byte_size', p_byte_size
+  )::text);
   select workflow.* into v_workflow from public.mission_workflows workflow
   where workflow.mission_submission_id = p_submission_id and workflow.creator_id = auth.uid() and workflow.workspace_id = p_workspace_id
   for update;
@@ -218,7 +229,7 @@ begin
     and command.workspace_id = p_workspace_id and command.command_id = p_command_id
   for update;
   if found then
-    if v_existing_hash <> p_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
+    if v_existing_hash <> v_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
     return v_existing_response || jsonb_build_object('replayed', true);
   end if;
 
@@ -260,7 +271,7 @@ begin
   insert into public.mission_workflow_commands
     (mission_submission_id, actor_id, creator_id, workspace_id, command_id, action, request_hash, response)
   values
-    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'create_upload_grant', p_request_hash, v_response);
+    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'create_upload_grant', v_request_hash, v_response);
   return v_response;
 end;
 $$;
@@ -285,6 +296,7 @@ declare
   v_asset public.mission_draft_assets;
   v_existing_hash text;
   v_existing_response jsonb;
+  v_request_hash text;
   v_response jsonb;
   v_assets jsonb;
   v_draft public.mission_working_drafts;
@@ -296,9 +308,14 @@ declare
   v_url text;
   v_url_port text;
 begin
-  if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
-    or coalesce(length(btrim(p_request_hash)), 0) = 0 then raise exception 'command_required' using errcode = '22023'; end if;
+  if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128 then raise exception 'command_required' using errcode = '22023'; end if;
   if p_checksum_sha256 is not null and p_checksum_sha256 !~* '^[a-f0-9]{64}$' then raise exception 'asset_not_uploaded' using errcode = '22023'; end if;
+  v_request_hash := md5(jsonb_build_object(
+    'action', 'finalize_asset', 'actor_id', auth.uid(), 'workspace_id', p_workspace_id,
+    'submission_id', p_submission_id, 'work_item_id', p_work_item_id, 'asset_id', p_asset_id,
+    'command_id', p_command_id, 'byte_size', p_byte_size, 'mime_type', p_mime_type,
+    'checksum_sha256', p_checksum_sha256
+  )::text);
 
   select workflow.* into v_workflow from public.mission_workflows workflow
   where workflow.mission_submission_id = p_submission_id and workflow.creator_id = auth.uid() and workflow.workspace_id = p_workspace_id
@@ -310,7 +327,7 @@ begin
     and command.workspace_id = p_workspace_id and command.command_id = p_command_id
   for update;
   if found then
-    if v_existing_hash <> p_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
+    if v_existing_hash <> v_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
     return v_existing_response || jsonb_build_object('replayed', true);
   end if;
 
@@ -390,7 +407,7 @@ begin
   insert into public.mission_workflow_commands
     (mission_submission_id, actor_id, creator_id, workspace_id, command_id, action, request_hash, response)
   values
-    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'finalize_asset', p_request_hash, v_response);
+    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'finalize_asset', v_request_hash, v_response);
   return v_response;
 end;
 $$;
@@ -412,6 +429,7 @@ declare
   v_draft public.mission_working_drafts;
   v_existing_hash text;
   v_existing_response jsonb;
+  v_request_hash text;
   v_response jsonb;
   v_assets jsonb;
   v_requirement_list jsonb;
@@ -422,7 +440,12 @@ declare
   v_url_port text;
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
-    or coalesce(length(btrim(p_request_hash)), 0) = 0 or p_expected_version is null or p_expected_version < 0 then raise exception 'command_required' using errcode = '22023'; end if;
+    or p_expected_version is null or p_expected_version < 0 then raise exception 'command_required' using errcode = '22023'; end if;
+  v_request_hash := md5(jsonb_build_object(
+    'action', 'submit_work_item', 'actor_id', auth.uid(), 'workspace_id', p_workspace_id,
+    'submission_id', p_submission_id, 'work_item_id', p_work_item_id, 'command_id', p_command_id,
+    'expected_version', p_expected_version
+  )::text);
   select workflow.* into v_workflow from public.mission_workflows workflow
   where workflow.mission_submission_id = p_submission_id and workflow.creator_id = auth.uid() and workflow.workspace_id = p_workspace_id
   for update;
@@ -433,7 +456,7 @@ begin
     and command.workspace_id = p_workspace_id and command.command_id = p_command_id
   for update;
   if found then
-    if v_existing_hash <> p_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
+    if v_existing_hash <> v_request_hash then raise exception 'command_conflict' using errcode = '23505'; end if;
     return v_existing_response || jsonb_build_object('replayed', true);
   end if;
   select * into v_item from public.mission_work_items
@@ -504,7 +527,7 @@ begin
   insert into public.mission_workflow_commands
     (mission_submission_id, actor_id, creator_id, workspace_id, command_id, action, request_hash, response)
   values
-    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'submit_work_item', p_request_hash, v_response);
+    (p_submission_id, auth.uid(), v_item.creator_id, p_workspace_id, p_command_id, 'submit_work_item', v_request_hash, v_response);
   return v_response;
 end;
 $$;

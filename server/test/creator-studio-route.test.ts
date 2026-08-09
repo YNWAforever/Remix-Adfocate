@@ -10,8 +10,8 @@ import type { Env } from "../app.js";
 import { createCreatorStudioRoutes } from "../routes/creatorStudio.js";
 
 const makeWorkspace = (): SubmissionWorkspace => ({
-  submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined" },
-  brief: { missionId: "mission-1", title: "Launch mission", deliverables: ["Story", "Reel"], requirements: ["Disclosure"], platforms: ["instagram"] },
+  submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined", deadline: null },
+  brief: { missionId: "mission-1", title: "Launch mission", description: null, deliverables: ["Story", "Reel"], requirements: ["Disclosure"], platforms: ["instagram"] },
   workflow: { id: "workflow-1", state: "not_started", revision: 0 },
   workItems: [
     {

@@ -17,8 +17,8 @@ const json = (body: unknown, method = "POST"): RequestInit => ({
 });
 
 const workspace = (): SubmissionWorkspace => ({
-  submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined" },
-  brief: { missionId: "mission-1", title: "Launch", deliverables: ["Proof"], requirements: [], platforms: ["instagram"] },
+  submission: { id: "submission-1", creatorId: "creator-1", workspaceId: "workspace-1", missionId: "mission-1", status: "joined", deadline: null },
+  brief: { missionId: "mission-1", title: "Launch", description: null, deliverables: ["Proof"], requirements: [], platforms: ["instagram"] },
   workflow: { id: "workflow-1", state: "not_started", revision: 0 },
   workItems: [{
     id: "work-item-1", position: 1, title: "Proof", instructions: "Post proof",
