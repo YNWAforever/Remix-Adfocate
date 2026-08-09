@@ -245,6 +245,21 @@ export function PublicationProofPanel({ submissionId, workItem }: { submissionId
         </div>
       ) : null}
 
+      {workItem.publicationProof.history.length > 0 ? (
+        <div role="region" aria-label="Publication proof history" className="space-y-2 rounded-lg border border-[var(--color-ink)] p-3">
+          <h3 className="font-heading font-bold">Attempt history</h3>
+          <ol className="space-y-2 text-sm">
+            {workItem.publicationProof.history.map((attempt) => (
+              <li key={attempt.id} className="rounded-md border border-[var(--color-ink)] p-2">
+                <p className="font-semibold">Attempt {attempt.sequence}: {attempt.state}</p>
+                <p>{attempt.publishedUrl} · {attempt.platform ?? "Platform unavailable"}</p>
+                {attempt.operatorMessage ? <p className="text-[var(--color-magenta)]">{attempt.operatorMessage}</p> : null}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+
       {currentAttempt?.state === "draft" ? (
         <div className="space-y-3 rounded-lg border border-[var(--color-ink)] p-3">
           <h3 className="font-heading font-bold">Optional evidence</h3>
