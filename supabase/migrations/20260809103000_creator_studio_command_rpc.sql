@@ -353,11 +353,11 @@ begin
     or coalesce((v_item.requirements->>'externalUrl')::boolean, false)
     or exists (select 1 from jsonb_array_elements_text(v_requirement_list) requirement where lower(regexp_replace(requirement, '[[:space:]_-]+', '', 'g')) = 'externalurl');
   v_url := v_draft.external_url;
-  v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
+  v_url_port := (regexp_match(v_url, '^https?://[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
   v_ready := (not v_requires_caption or coalesce(btrim(v_draft.caption), '') <> '')
     and (not v_requires_external_url or (
       v_url is not null and btrim(v_url) <> ''
-      and v_url ~* '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$'
+      and v_url ~* '^https?://[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$'
       and (v_url_port is null or v_url_port::integer between 1 and 65535)
     ));
   for v_checklist_key in

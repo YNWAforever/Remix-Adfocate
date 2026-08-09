@@ -362,12 +362,16 @@ describe("Creator Studio mutation routes", () => {
 
     const strictHttpUrl = "^https?://[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
     expect(draft).toContain(strictHttpUrl);
+    expect(finalize).toContain(strictHttpUrl);
     expect(submit).toContain(strictHttpUrl);
     expect(draft).not.toContain("|\\[[0-9a-f:.]+\\]");
+    expect(finalize).not.toContain("|\\[[0-9a-f:.]+\\]");
     expect(submit).not.toContain("|\\[[0-9a-f:.]+\\]");
     expect(draft).not.toContain("[[:alnum:].-]*[[:alnum:]]");
+    expect(finalize).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(submit).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(draft).toContain("not between 1 and 65535");
+    expect(finalize).toContain("v_url_port::integer between 1 and 65535");
     expect(submit).toContain("not between 1 and 65535");
     expect(finalize).toContain("from storage.objects object");
     expect(finalize).toContain("object.bucket_id = 'creator-studio-assets'");
