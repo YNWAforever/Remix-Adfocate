@@ -237,6 +237,7 @@ describe("Creator Studio mutation routes", () => {
       { command_id: "empty-url", expected_version: 0, patch: { external_url: "" } },
       { command_id: "missing-authority", expected_version: 0, patch: { external_url: "https://" } },
       { command_id: "bad-authority", expected_version: 0, patch: { external_url: "https://[gg]" } },
+      { command_id: "malformed-bracket-host", expected_version: 0, patch: { external_url: "https://[::::]/" } },
       { command_id: "bad-host-label", expected_version: 0, patch: { external_url: "https://a-.example" } },
       { command_id: "double-dot-host", expected_version: 0, patch: { external_url: "https://example..com" } },
       { command_id: "credential-url", expected_version: 0, patch: { external_url: "https://creator:secret@example.com" } },
@@ -260,6 +261,22 @@ describe("Creator Studio mutation routes", () => {
 
     expect(await repository.getWorkspace({ actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1" })).toEqual(before);
     expect(repository.events()).toEqual([]);
+  });
+
+  it("accepts ordinary HTTP(S) hosts with valid ports", async () => {
+    const app = appFor(new InMemoryCreatorStudioRepository({ workspace: workspace() }));
+
+    const http = await app.request(draftPath, json({
+      command_id: "http-port", expected_version: 0,
+      patch: { external_url: "http://example.com:8080/post" },
+    }, "PATCH"));
+    const https = await app.request(draftPath, json({
+      command_id: "https-port", expected_version: 1,
+      patch: { external_url: "https://sub.example.com:65535/post" },
+    }, "PATCH"));
+
+    expect(http.status).toBe(200);
+    expect(https.status).toBe(200);
   });
 
   it("does not write command evidence when a validly parsed request fails a state prerequisite", async () => {
@@ -343,9 +360,11 @@ describe("Creator Studio mutation routes", () => {
       sql.indexOf("create or replace function public.creator_studio_finalize_asset"),
     );
 
-    const strictHttpUrl = "^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\\[[0-9a-f:.]+\\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
+    const strictHttpUrl = "^https?://[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
     expect(draft).toContain(strictHttpUrl);
     expect(submit).toContain(strictHttpUrl);
+    expect(draft).not.toContain("|\\[[0-9a-f:.]+\\]");
+    expect(submit).not.toContain("|\\[[0-9a-f:.]+\\]");
     expect(draft).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(submit).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(draft).toContain("not between 1 and 65535");

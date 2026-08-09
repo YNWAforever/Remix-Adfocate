@@ -19,17 +19,11 @@ export const isStrictHttpUrl = (value: string): boolean => {
   const authority = value.slice(value.indexOf("://") + 3).split(/[/?#]/, 1)[0];
   if (!authority || authority.includes("@")) return false;
 
-  let port: string | undefined;
-  if (authority.startsWith("[")) {
-    const ipv6 = authority.match(/^\[([0-9a-f:.]+)\](?::([0-9]{1,5}))?$/i);
-    if (!ipv6) return false;
-    port = ipv6[2];
-  } else {
-    const host = authority.match(/^([a-z0-9.-]+)(?::([0-9]{1,5}))?$/i);
-    if (!host) return false;
-    if (host[1].split(".").some((label) => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label))) return false;
-    port = host[2];
-  }
+  if (authority.startsWith("[")) return false;
+  const host = authority.match(/^([a-z0-9.-]+)(?::([0-9]{1,5}))?$/i);
+  if (!host) return false;
+  if (host[1].split(".").some((label) => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label))) return false;
+  const port = host[2];
   if (port !== undefined && (Number(port) < 1 || Number(port) > 65535)) return false;
 
   try {
