@@ -50,10 +50,10 @@ begin
   if p_patch ? 'external_url' and p_patch->>'external_url' is not null then
     v_url := p_patch->>'external_url';
     if btrim(v_url) = ''
-      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
+      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
       raise exception 'draft_invalid' using errcode = '22023';
     end if;
-    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
+    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
     if v_url_port is not null and v_url_port::integer not between 1 and 65535 then
       raise exception 'draft_invalid' using errcode = '22023';
     end if;
@@ -125,8 +125,14 @@ begin
     or coalesce((v_item.requirements->>'externalUrl')::boolean, false)
     or exists (select 1 from jsonb_array_elements_text(v_requirement_list) requirement
       where lower(regexp_replace(requirement, '[[:space:]_-]+', '', 'g')) = 'externalurl');
+  v_url := v_draft.external_url;
+  v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
   v_ready := (not v_requires_caption or coalesce(btrim(v_draft.caption), '') <> '')
-    and (not v_requires_external_url or v_draft.external_url is not null);
+    and (not v_requires_external_url or (
+      v_url is not null and btrim(v_url) <> ''
+      and v_url ~* '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$'
+      and (v_url_port is null or v_url_port::integer between 1 and 65535)
+    ));
   for v_checklist_key in
     select distinct requirement from (
       select requirement from jsonb_array_elements_text(v_requirement_list) requirement
@@ -287,6 +293,8 @@ declare
   v_requires_caption boolean;
   v_requires_external_url boolean;
   v_ready boolean;
+  v_url text;
+  v_url_port text;
 begin
   if auth.uid() is null or coalesce(length(btrim(p_command_id)), 0) = 0 or length(p_command_id) > 128
     or coalesce(length(btrim(p_request_hash)), 0) = 0 then raise exception 'command_required' using errcode = '22023'; end if;
@@ -344,8 +352,14 @@ begin
   v_requires_external_url := coalesce((v_item.requirements->>'external_url')::boolean, false)
     or coalesce((v_item.requirements->>'externalUrl')::boolean, false)
     or exists (select 1 from jsonb_array_elements_text(v_requirement_list) requirement where lower(regexp_replace(requirement, '[[:space:]_-]+', '', 'g')) = 'externalurl');
+  v_url := v_draft.external_url;
+  v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
   v_ready := (not v_requires_caption or coalesce(btrim(v_draft.caption), '') <> '')
-    and (not v_requires_external_url or v_draft.external_url is not null);
+    and (not v_requires_external_url or (
+      v_url is not null and btrim(v_url) <> ''
+      and v_url ~* '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$'
+      and (v_url_port is null or v_url_port::integer between 1 and 65535)
+    ));
   for v_checklist_key in
     select distinct requirement from (
       select requirement from jsonb_array_elements_text(v_requirement_list) requirement
@@ -447,10 +461,10 @@ begin
   if v_requires_external_url then
     v_url := v_draft.external_url;
     if v_url is null or btrim(v_url) = ''
-      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
+      or v_url !~* '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$' then
       raise exception 'invalid_transition' using errcode = '55000';
     end if;
-    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
+    v_url_port := (regexp_match(v_url, '^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\[[0-9a-f:.]+\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$', 'i'))[1];
     if v_url_port is not null and v_url_port::integer not between 1 and 65535 then
       raise exception 'invalid_transition' using errcode = '55000';
     end if;

@@ -26,6 +26,7 @@ import type {
   WorkItemState,
   WorkingDraft,
 } from "./types.js";
+import { isStrictHttpUrl } from "./types.js";
 import { hashCommand } from "./command.js";
 
 type Row = Record<string, unknown>;
@@ -139,7 +140,7 @@ function requiredRow(value: unknown, label: string): Row {
 function validationFor(item: Pick<WorkItem, "requirements" | "requiresAsset" | "draft" | "assets">) {
   return {
     caption: !item.requirements.caption || Boolean(item.draft?.caption?.trim()),
-    externalUrl: !item.requirements.externalUrl || Boolean(item.draft?.externalUrl),
+    externalUrl: !item.requirements.externalUrl || isStrictHttpUrl(item.draft?.externalUrl ?? ""),
     checklist: item.requirements.checklist.every((key) => item.draft?.checklist[key] === true),
     assets: !item.requiresAsset || item.assets.some((asset) => asset.state === "finalized"),
   };
@@ -148,6 +149,9 @@ function validationFor(item: Pick<WorkItem, "requirements" | "requiresAsset" | "
 function nextActionFor(workItems: WorkItem[]): NextAction | null {
   const workItem = workItems.find((item) => item.state !== "approved");
   if (!workItem) return null;
+  const state = workItem.state === "ready_to_submit" && !Object.values(workItem.validation).every(Boolean)
+    ? "drafting"
+    : workItem.state;
   const label = {
     not_started: `Start ${workItem.title}`,
     drafting: `Continue ${workItem.title}`,
@@ -157,7 +161,7 @@ function nextActionFor(workItems: WorkItem[]): NextAction | null {
     resubmitted: `Await review for ${workItem.title}`,
     approved: `Approved ${workItem.title}`,
   } satisfies Record<WorkItemState, string>;
-  return { workItemId: workItem.id, state: workItem.state, label: label[workItem.state] };
+  return { workItemId: workItem.id, state, label: label[state] };
 }
 
 export class SupabaseCreatorStudioRepository implements CreatorStudioRepository {

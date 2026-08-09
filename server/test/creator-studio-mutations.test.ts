@@ -64,7 +64,52 @@ const completeWorkItem = async (app: Hono<Env>, prefix: string) => {
   expect(finalized.status).toBe(200);
 };
 
+const persistedWorkspaceClient = (externalUrl: string): SupabaseClient => {
+  const rows: Record<string, unknown> = {
+    mission_submissions: {
+      id: "submission-1", creator_id: "creator-1", workspace_id: "workspace-1", mission_id: "mission-1", status: "joined",
+      missions: { id: "mission-1", title: "Launch", deliverables: ["Proof"], requirements: [], platforms: ["instagram"] },
+    },
+    mission_workflows: { id: "workflow-1", state: "ready_to_submit", revision: 1 },
+    mission_work_items: [{
+      id: "work-item-1", position: 1, title: "Proof", instructions: "Post proof",
+      requirements: { externalUrl: true }, requires_asset: false, state: "ready_to_submit",
+    }],
+    mission_working_drafts: [{
+      mission_work_item_id: "work-item-1", caption: null, external_url: externalUrl, checklist: {}, version: 1,
+      updated_at: "2026-08-09T00:00:00.000Z",
+    }],
+    mission_draft_assets: [],
+    mission_review_items: [],
+  };
+  return {
+    from: (table: string) => {
+      const result = { data: rows[table] ?? null, error: null };
+      const query = {
+        select: () => query,
+        eq: () => query,
+        in: () => query,
+        order: () => query,
+        maybeSingle: async () => result,
+        then: <T>(resolve: (value: typeof result) => T | PromiseLike<T>) => Promise.resolve(result).then(resolve),
+      };
+      return query;
+    },
+  } as unknown as SupabaseClient;
+};
+
 describe("Creator Studio mutation routes", () => {
+  it("marks a malformed persisted URL incomplete and directs the creator to continue editing", async () => {
+    const repository = new SupabaseCreatorStudioRepository(persistedWorkspaceClient("https://example..com/legacy-post"));
+
+    await expect(repository.getWorkspace({
+      actorId: "creator-1", workspaceId: "workspace-1", submissionId: "submission-1",
+    })).resolves.toMatchObject({
+      workItems: [{ validation: { externalUrl: false } }],
+      nextAction: { workItemId: "work-item-1", state: "drafting", label: "Continue Proof" },
+    });
+  });
+
   it("saves a draft, returns a replay snapshot, and rejects a stale version without overwriting", async () => {
     const repository = new InMemoryCreatorStudioRepository({ workspace: workspace() });
     const app = appFor(repository);
@@ -298,9 +343,11 @@ describe("Creator Studio mutation routes", () => {
       sql.indexOf("create or replace function public.creator_studio_finalize_asset"),
     );
 
-    const strictHttpUrl = "^https?://(?:[[:alnum:]](?:[[:alnum:].-]*[[:alnum:]])?|\\[[0-9a-f:.]+\\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
+    const strictHttpUrl = "^https?://(?:[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?(?:\\.[[:alnum:]](?:[[:alnum:]-]{0,61}[[:alnum:]])?)*|\\[[0-9a-f:.]+\\])(?::([0-9]{1,5}))?(?:[/?#][^[:space:]]*)?$";
     expect(draft).toContain(strictHttpUrl);
     expect(submit).toContain(strictHttpUrl);
+    expect(draft).not.toContain("[[:alnum:].-]*[[:alnum:]]");
+    expect(submit).not.toContain("[[:alnum:].-]*[[:alnum:]]");
     expect(draft).toContain("not between 1 and 65535");
     expect(submit).toContain("not between 1 and 65535");
     expect(finalize).toContain("from storage.objects object");
