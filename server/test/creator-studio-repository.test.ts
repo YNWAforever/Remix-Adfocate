@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { InMemoryCreatorStudioRepository } from "../lib/creatorStudio/inMemoryRepository.js";
+import { InMemoryCreatorStudioRepository, type PublicationProofMetadataResolver } from "../lib/creatorStudio/inMemoryRepository.js";
 import type { CreatorStudioContext, SaveDraftInput, SubmissionWorkspace } from "../lib/creatorStudio/types.js";
 
 const creatorContext = (): CreatorStudioContext => ({
@@ -15,12 +15,16 @@ const makeWorkspace = (creatorId = "creator-1"): SubmissionWorkspace => ({
   workItems: [
     {
       id: "work-item-1", position: 1, title: "Story", instructions: "Create a story", requirements: { caption: true, externalUrl: true, checklist: ["disclosure", "brandTag"] }, requiresAsset: false,
-      state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: true }, draft: null, assets: [],
+      proofRequirement: null,
+      state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: true, publicationProof: true }, draft: null, assets: [],
+      publicationProof: { required: false, currentAttempt: null, history: [] },
       reviewFeedback: { status: "available", value: [] },
     },
     {
       id: "work-item-2", position: 2, title: "Reel", instructions: "Create a reel", requirements: { caption: true, externalUrl: false, checklist: [] }, requiresAsset: true,
-      state: "changes_requested", validation: { caption: false, externalUrl: true, checklist: true, assets: false }, draft: null, assets: [],
+      proofRequirement: null,
+      state: "changes_requested", validation: { caption: false, externalUrl: true, checklist: true, assets: false, publicationProof: true }, draft: null, assets: [],
+      publicationProof: { required: false, currentAttempt: null, history: [] },
       reviewFeedback: { status: "available", value: [{ id: "review-item-1", state: "changes_requested", message: "Add a clearer disclosure" }] },
     },
   ],
@@ -30,6 +34,19 @@ const makeWorkspace = (creatorId = "creator-1"): SubmissionWorkspace => ({
 const makeRepository = (options: { creatorId?: string } = {}) => new InMemoryCreatorStudioRepository({
   workspace: makeWorkspace(options.creatorId),
 });
+
+const makeProofRepository = (options: { metadataResolver?: PublicationProofMetadataResolver } = {}) => {
+  const workspace = makeWorkspace();
+  const workItem = workspace.workItems[0];
+  workItem.proofRequirement = {
+    kind: "publication_url",
+    allowedPlatforms: ["youtube", "instagram"],
+    evidence: "optional",
+  };
+  workItem.publicationProof = { required: true, currentAttempt: null, history: [] };
+  workItem.validation.publicationProof = false;
+  return new InMemoryCreatorStudioRepository({ workspace, ...options });
+};
 
 describe("InMemoryCreatorStudioRepository", () => {
   it("creates a draft, advances the item to ready_to_submit, and replays the same command", async () => {
@@ -365,5 +382,204 @@ describe("InMemoryCreatorStudioRepository", () => {
         patch: { caption: "Valid after rejection" },
       })).resolves.toMatchObject({ replayed: false, value: { draft: { version: 1 } } });
     }
+  });
+
+  it("creates and submits an optional-evidence publication proof", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-create-1",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    const submitted = await repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: "proof-submit-1",
+    });
+
+    expect(draft.value).toMatchObject({
+      sequence: 1,
+      parentAttemptId: null,
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+      state: "draft",
+      metadataState: "pending",
+      evidence: [],
+    });
+    expect(submitted.value).toMatchObject({ id: draft.value.id, state: "submitted" });
+    expect(submitted.value.submittedAt).toEqual(expect.any(String));
+    await expect(repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: "proof-submit-2",
+    })).rejects.toMatchObject({ code: "proof_attempt_immutable" });
+  });
+
+  it("replays a publication proof command and rejects a same-id payload conflict", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+    const input = {
+      commandId: "proof-replay-1",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    };
+
+    const first = await repository.createPublicationProofAttempt(context, "work-item-1", input);
+    const replay = await repository.createPublicationProofAttempt(context, "work-item-1", input);
+
+    expect(replay).toEqual({ value: first.value, replayed: true });
+    await expect(repository.createPublicationProofAttempt(context, "work-item-1", {
+      ...input,
+      publishedUrl: "https://www.youtube.com/watch?v=changed",
+    })).rejects.toMatchObject({ code: "command_conflict" });
+  });
+
+  it("rejects invalid proof URLs and disallowed platforms without creating an attempt", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+
+    await expect(repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-invalid-url",
+      publishedUrl: "javascript:alert(1)",
+      platform: "youtube",
+    })).rejects.toMatchObject({ code: "proof_url_invalid" });
+    await expect(repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-invalid-platform",
+      publishedUrl: "https://example.com/post",
+      platform: "tiktok",
+    })).rejects.toMatchObject({ code: "proof_platform_invalid" });
+    await expect(repository.getWorkspace(context)).resolves.toMatchObject({
+      workItems: [{ publicationProof: { currentAttempt: null, history: [] } }],
+    });
+  });
+
+  it("creates a linked correction attempt after a changes-requested proof", async () => {
+    const workspace = makeWorkspace();
+    const workItem = workspace.workItems[0];
+    const previous = {
+      id: "proof-attempt-1",
+      workItemId: workItem.id,
+      parentAttemptId: null,
+      sequence: 1,
+      publishedUrl: "https://www.youtube.com/watch?v=old",
+      platform: "youtube",
+      state: "changes_requested" as const,
+      metadataState: "unavailable" as const,
+      metadata: null,
+      operatorMessage: "Use the final published URL",
+      submittedAt: "2026-08-09T00:00:00.000Z",
+      decidedAt: "2026-08-09T01:00:00.000Z",
+      evidence: [],
+    };
+    workItem.proofRequirement = { kind: "publication_url", allowedPlatforms: ["youtube"], evidence: "optional" };
+    workItem.publicationProof = { required: true, currentAttempt: previous, history: [] };
+    workItem.validation.publicationProof = false;
+    const repository = new InMemoryCreatorStudioRepository({ workspace });
+
+    const correction = await repository.createPublicationProofAttempt(creatorContext(), workItem.id, {
+      commandId: "proof-correction-1",
+      publishedUrl: "https://www.youtube.com/watch?v=new",
+      platform: "youtube",
+    });
+
+    expect(correction.value).toMatchObject({
+      sequence: 2,
+      parentAttemptId: previous.id,
+      state: "draft",
+    });
+    await expect(repository.getWorkspace(creatorContext())).resolves.toMatchObject({
+      workItems: [{ publicationProof: { currentAttempt: { id: correction.value.id, state: "draft" }, history: [previous] } }],
+    });
+  });
+
+  it("creates and finalizes proof evidence under the proof-specific storage path", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "proof-evidence-create",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    const grant = await repository.createProofEvidenceGrant(context, "work-item-1", draft.value.id, {
+      commandId: "proof-evidence-grant",
+      fileName: "screen shot.PNG",
+      mimeType: "image/png",
+      byteSize: 1024,
+    });
+    const finalized = await repository.finalizeProofEvidence(context, "work-item-1", draft.value.id, grant.value.assetId, {
+      commandId: "proof-evidence-finalize",
+      byteSize: 1024,
+      mimeType: "image/png",
+      checksumSha256: null,
+    });
+
+    expect(grant.value).toMatchObject({
+      bucket: "mission-publication-proof-assets",
+      assetId: "proof-evidence-1",
+      path: "creator-1/workflow-1/work-item-1/proof-evidence/proof-evidence-1.png",
+    });
+    expect(finalized.value).toMatchObject({ id: grant.value.assetId, attemptId: draft.value.id, status: "finalized" });
+    await expect(repository.getWorkspace(context)).resolves.toMatchObject({
+      workItems: [{ publicationProof: { currentAttempt: { evidence: [{ id: grant.value.assetId, status: "finalized" }] } } }],
+    });
+  });
+
+  it("does not submit a proof while an evidence reservation is pending", async () => {
+    const repository = makeProofRepository();
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: "pending-proof-create",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    await repository.createProofEvidenceGrant(context, "work-item-1", draft.value.id, {
+      commandId: "pending-proof-grant",
+      fileName: "screen.png",
+      mimeType: "image/png",
+      byteSize: 1024,
+    });
+
+    await expect(repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: "pending-proof-submit",
+    })).rejects.toMatchObject({ code: "proof_evidence_invalid" });
+    await expect(repository.getWorkspace(context)).resolves.toMatchObject({
+      workItems: [{ publicationProof: { currentAttempt: { state: "draft" } } }],
+    });
+  });
+
+  it.each([
+    ["available", async () => ({ title: "Video title", author: "Creator", publishedAt: "2026-08-09T00:00:00.000Z" })],
+    ["unavailable", async () => null],
+    ["failed", async () => { throw new Error("resolver offline"); }],
+  ] as const)("preserves manual review when metadata is %s", async (expectedState, resolver) => {
+    const repository = makeProofRepository({ metadataResolver: resolver });
+    const context = creatorContext();
+    const draft = await repository.createPublicationProofAttempt(context, "work-item-1", {
+      commandId: `metadata-create-${expectedState}`,
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    });
+    await repository.submitPublicationProof(context, "work-item-1", draft.value.id, {
+      commandId: `metadata-submit-${expectedState}`,
+    });
+    const refreshed = await repository.refreshProofMetadata(context, "work-item-1", draft.value.id, {
+      commandId: `metadata-refresh-${expectedState}`,
+    });
+
+    expect(refreshed.value).toMatchObject({ state: "submitted", metadataState: expectedState });
+    expect(refreshed.value.state).not.toBe("verified");
+  });
+
+  it("does not expose or mutate proof state across creator ownership boundaries", async () => {
+    const repository = makeProofRepository();
+    const foreignContext = { ...creatorContext(), actorId: "creator-2" };
+
+    await expect(repository.getWorkspace(foreignContext)).resolves.toBeNull();
+    await expect(repository.createPublicationProofAttempt(foreignContext, "work-item-1", {
+      commandId: "foreign-proof",
+      publishedUrl: "https://www.youtube.com/watch?v=abc",
+      platform: "youtube",
+    })).rejects.toMatchObject({ code: "submission_not_found" });
+    await expect(repository.getWorkspace(creatorContext())).resolves.toMatchObject({
+      workItems: [{ publicationProof: { currentAttempt: null, history: [] } }],
+    });
   });
 });

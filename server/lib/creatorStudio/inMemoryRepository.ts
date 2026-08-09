@@ -2,6 +2,15 @@ import { hashCommand } from "./command.js";
 import { CreatorStudioError } from "./errors.js";
 import type { CreatorStudioRepository } from "./repository.js";
 import {
+  validatePublicationProofPlatform,
+  validatePublicationProofUrl,
+} from "./publicationProof.js";
+import type {
+  PublicationProofAttempt,
+  PublicationProofEvidence,
+  PublicationProofMetadata,
+} from "./publicationProof.js";
+import {
   CREATOR_STUDIO_MAX_COMMAND_ID_LENGTH,
   CREATOR_STUDIO_MAX_UPLOAD_BYTES,
   CREATOR_STUDIO_UPLOAD_MIME_TYPES,
@@ -9,6 +18,8 @@ import {
 } from "./types.js";
 import type {
   CommandResult,
+  CreatePublicationProofAttemptInput,
+  CreateProofEvidenceGrantInput,
   CreateUploadGrantInput,
   CreatorStudioContext,
   CreatorStudioEvent,
@@ -16,9 +27,12 @@ import type {
   DraftCommandResult,
   FinalizeAssetInput,
   FinalizedAsset,
+  FinalizeProofEvidenceInput,
+  RefreshProofMetadataInput,
   SaveDraftInput,
   SubmissionWorkspace,
   SubmittedWorkItem,
+  SubmitPublicationProofInput,
   SubmitWorkItemInput,
   UploadGrant,
   WorkItem,
@@ -33,13 +47,26 @@ type CompletedCommand = {
 
 export type InMemoryCreatorStudioRepositoryOptions = {
   workspace: SubmissionWorkspace;
+  metadataResolver?: PublicationProofMetadataResolver;
 };
+
+export type PublicationProofMetadataResolver = (input: {
+  publishedUrl: string;
+  platform: string;
+}) => Promise<PublicationProofMetadata | null>;
 
 const ALLOWED_UPLOAD_EXTENSIONS = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
   ["image/webp", "webp"],
   ["video/mp4", "mp4"],
+  ["application/pdf", "pdf"],
+]);
+
+const ALLOWED_PROOF_EXTENSIONS = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
   ["application/pdf", "pdf"],
 ]);
 
@@ -52,10 +79,14 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   private readonly assets = new Map<string, DraftAsset>();
   private readonly draftVersions = new Map<string, WorkingDraft[]>();
   private readonly workspace: SubmissionWorkspace;
+  private readonly metadataResolver?: PublicationProofMetadataResolver;
   private sequence = 0;
+  private proofAttemptSequence = 0;
+  private proofEvidenceSequence = 0;
 
   constructor(options: InMemoryCreatorStudioRepositoryOptions) {
     this.workspace = clone(options.workspace);
+    this.metadataResolver = options.metadataResolver;
     for (const workItem of this.workspace.workItems) {
       if (workItem.draft) {
         this.drafts.set(workItem.id, clone(workItem.draft));
@@ -219,6 +250,202 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     return this.commit(context, input.commandId, requestHash, result);
   }
 
+  async createPublicationProofAttempt(
+    context: CreatorStudioContext,
+    workItemId: string,
+    input: CreatePublicationProofAttemptInput,
+  ): Promise<CommandResult<PublicationProofAttempt>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "create_publication_proof_attempt", context, workItemId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<PublicationProofAttempt>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const requirement = this.requireProofRequirement(workItem);
+    const publishedUrl = this.validateProofUrl(input.publishedUrl);
+    const platform = this.normalizeProofPlatform(input.platform, requirement.allowedPlatforms);
+    const current = workItem.publicationProof.currentAttempt;
+
+    if (current?.state === "draft") {
+      current.publishedUrl = publishedUrl;
+      current.platform = platform;
+      current.metadataState = "pending";
+      current.metadata = null;
+      this.refreshProofDerivedState(workItem);
+      const result = clone(current);
+      this.recordEvent("proof.attempt_created", workItem.id, { attemptId: current.id, sequence: current.sequence });
+      return this.commit(context, input.commandId, requestHash, result);
+    }
+
+    const parent = current ?? workItem.publicationProof.history.at(-1) ?? null;
+    const attempt: PublicationProofAttempt = {
+      id: `proof-attempt-${++this.proofAttemptSequence}`,
+      workItemId: workItem.id,
+      parentAttemptId: parent?.id ?? null,
+      sequence: (parent?.sequence ?? 0) + 1,
+      publishedUrl,
+      platform,
+      state: "draft",
+      metadataState: "pending",
+      metadata: null,
+      operatorMessage: null,
+      submittedAt: null,
+      decidedAt: null,
+      evidence: [],
+    };
+    workItem.publicationProof = {
+      required: true,
+      currentAttempt: attempt,
+      history: current
+        ? [...workItem.publicationProof.history, clone(current)]
+        : [...workItem.publicationProof.history],
+    };
+    this.refreshProofDerivedState(workItem);
+    this.recordEvent("proof.attempt_created", workItem.id, { attemptId: attempt.id, sequence: attempt.sequence });
+    return this.commit(context, input.commandId, requestHash, clone(attempt));
+  }
+
+  async createProofEvidenceGrant(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    input: CreateProofEvidenceGrantInput,
+  ): Promise<CommandResult<UploadGrant>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "create_proof_evidence_grant", context, workItemId, attemptId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<UploadGrant>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const attempt = this.requireEditableProofAttempt(workItem, attemptId);
+    this.validateProofFile(input.fileName, input.mimeType, input.byteSize);
+    const evidenceId = `proof-evidence-${++this.proofEvidenceSequence}`;
+    const extension = this.proofExtensionForMime(input.mimeType);
+    const evidence: PublicationProofEvidence = {
+      id: evidenceId,
+      attemptId: attempt.id,
+      storagePath: `${context.actorId}/${this.workspace.workflow.id}/${workItem.id}/proof-evidence/${evidenceId}.${extension}`,
+      mimeType: input.mimeType as PublicationProofEvidence["mimeType"],
+      byteSize: input.byteSize,
+      checksumSha256: null,
+      status: "pending",
+    };
+    attempt.evidence.push(evidence);
+    this.refreshProofDerivedState(workItem);
+    const result: UploadGrant = {
+      bucket: "mission-publication-proof-assets",
+      path: evidence.storagePath,
+      token: `memory-proof-upload-token-${evidence.id}`,
+      assetId: evidence.id,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    };
+    this.recordEvent("proof.evidence_reserved", workItem.id, { attemptId: attempt.id, evidenceId: evidence.id });
+    return this.commit(context, input.commandId, requestHash, result);
+  }
+
+  async finalizeProofEvidence(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    evidenceId: string,
+    input: FinalizeProofEvidenceInput,
+  ): Promise<CommandResult<PublicationProofEvidence>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "finalize_proof_evidence", context, workItemId, attemptId, evidenceId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<PublicationProofEvidence>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const attempt = this.requireEditableProofAttempt(workItem, attemptId);
+    const evidence = attempt.evidence.find((candidate) => candidate.id === evidenceId);
+    if (!evidence) throw new CreatorStudioError("proof_evidence_invalid", "Evidence was not found");
+    if (evidence.status !== "pending") throw new CreatorStudioError("proof_evidence_invalid", "Evidence is already finalized");
+    this.validateProofFile(evidence.id, input.mimeType, input.byteSize);
+    if (evidence.byteSize !== input.byteSize || evidence.mimeType !== input.mimeType) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Uploaded evidence metadata did not match the reservation");
+    }
+    if (input.checksumSha256 !== null && (typeof input.checksumSha256 !== "string" || !/^[a-f0-9]{64}$/i.test(input.checksumSha256))) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Evidence checksum is invalid");
+    }
+
+    evidence.status = "finalized";
+    evidence.checksumSha256 = input.checksumSha256;
+    this.refreshProofDerivedState(workItem);
+    this.recordEvent("proof.evidence_finalized", workItem.id, { attemptId: attempt.id, evidenceId: evidence.id });
+    return this.commit(context, input.commandId, requestHash, clone(evidence));
+  }
+
+  async submitPublicationProof(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    input: SubmitPublicationProofInput,
+  ): Promise<CommandResult<PublicationProofAttempt>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "submit_publication_proof", context, workItemId, attemptId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<PublicationProofAttempt>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const attempt = this.requireEditableProofAttempt(workItem, attemptId);
+    if (attempt.evidence.some((evidence) => evidence.status !== "finalized")) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Finalize or remove pending evidence before submitting");
+    }
+    attempt.state = "submitted";
+    attempt.submittedAt = new Date().toISOString();
+    this.refreshProofDerivedState(workItem);
+    this.recordEvent("proof.submitted", workItem.id, { attemptId: attempt.id, state: attempt.state });
+    return this.commit(context, input.commandId, requestHash, clone(attempt));
+  }
+
+  async refreshProofMetadata(
+    context: CreatorStudioContext,
+    workItemId: string,
+    attemptId: string,
+    input: RefreshProofMetadataInput,
+  ): Promise<CommandResult<PublicationProofAttempt>> {
+    this.requireCommand(input.commandId);
+    const workItem = this.requireWorkItem(context, workItemId);
+    const payload = { type: "refresh_proof_metadata", context, workItemId, attemptId, input };
+    const requestHash = hashCommand(payload);
+    const replay = this.replay<PublicationProofAttempt>(context, input.commandId, requestHash);
+    if (replay) return replay;
+
+    const attempt = this.findProofAttempt(workItem, attemptId);
+    if (!attempt || workItem.publicationProof.currentAttempt?.id !== attempt.id) {
+      throw new CreatorStudioError("proof_attempt_immutable", "Only the current proof attempt can be refreshed");
+    }
+    if (attempt.state !== "submitted") {
+      throw new CreatorStudioError("proof_attempt_immutable", "Only a submitted proof attempt can be refreshed");
+    }
+
+    let metadataState: PublicationProofAttempt["metadataState"];
+    let metadata: PublicationProofMetadata | null = null;
+    if (!this.metadataResolver) {
+      metadataState = "unavailable";
+    } else {
+      try {
+        const resolved = await this.metadataResolver({
+          publishedUrl: attempt.publishedUrl,
+          platform: attempt.platform ?? "",
+        });
+        metadataState = resolved ? "available" : "unavailable";
+        metadata = resolved;
+      } catch {
+        metadataState = "failed";
+      }
+    }
+    attempt.metadataState = metadataState;
+    attempt.metadata = metadata;
+    this.refreshProofDerivedState(workItem);
+    this.recordEvent("proof.metadata_refreshed", workItem.id, { attemptId: attempt.id, metadataState });
+    return this.commit(context, input.commandId, requestHash, clone(attempt));
+  }
+
   events(): CreatorStudioEvent[] {
     return clone(this.eventLog);
   }
@@ -316,6 +543,65 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     }
   }
 
+  private requireProofRequirement(workItem: WorkItem): NonNullable<WorkItem["proofRequirement"]> {
+    if (!workItem.proofRequirement || workItem.proofRequirement.kind !== "publication_url") {
+      throw new CreatorStudioError("proof_attempt_transition_invalid", "Publication proof is not required for this work item");
+    }
+    return workItem.proofRequirement;
+  }
+
+  private validateProofUrl(publishedUrl: string): string {
+    if (typeof publishedUrl !== "string" || !validatePublicationProofUrl(publishedUrl)) {
+      throw new CreatorStudioError("proof_url_invalid", "Publication URL must be a valid HTTPS URL");
+    }
+    return publishedUrl.trim();
+  }
+
+  private normalizeProofPlatform(platform: string, allowedPlatforms: string[]): string {
+    if (typeof platform !== "string" || !validatePublicationProofPlatform(platform, allowedPlatforms)) {
+      throw new CreatorStudioError("proof_platform_invalid", "Publication platform is not allowed");
+    }
+    const normalizedPlatform = platform.trim().toLowerCase();
+    return allowedPlatforms.find((allowed) => allowed.trim().toLowerCase() === normalizedPlatform)?.trim() ?? normalizedPlatform;
+  }
+
+  private findProofAttempt(workItem: WorkItem, attemptId: string): PublicationProofAttempt | null {
+    if (workItem.publicationProof.currentAttempt?.id === attemptId) return workItem.publicationProof.currentAttempt;
+    return workItem.publicationProof.history.find((attempt) => attempt.id === attemptId) ?? null;
+  }
+
+  private requireEditableProofAttempt(workItem: WorkItem, attemptId: string): PublicationProofAttempt {
+    const attempt = this.findProofAttempt(workItem, attemptId);
+    if (!attempt || workItem.publicationProof.currentAttempt?.id !== attempt.id || attempt.state !== "draft") {
+      throw new CreatorStudioError("proof_attempt_immutable", "Only the current draft proof attempt can be edited");
+    }
+    return attempt;
+  }
+
+  private validateProofFile(fileName: string, mimeType: string, byteSize: number): void {
+    if (typeof fileName !== "string" || !fileName.trim() || fileName.length > 255) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Evidence file name is invalid");
+    }
+    if (!ALLOWED_PROOF_EXTENSIONS.has(mimeType)) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Evidence file type is not allowed");
+    }
+    if (!Number.isInteger(byteSize) || byteSize < 1 || byteSize > CREATOR_STUDIO_MAX_UPLOAD_BYTES) {
+      throw new CreatorStudioError("proof_evidence_invalid", "Evidence file size is invalid");
+    }
+  }
+
+  private proofExtensionForMime(mimeType: string): string {
+    const extension = ALLOWED_PROOF_EXTENSIONS.get(mimeType);
+    if (!extension) throw new CreatorStudioError("proof_evidence_invalid", "Evidence file type is not allowed");
+    return extension;
+  }
+
+  private refreshProofDerivedState(workItem: WorkItem): void {
+    this.refreshWorkItemValidation(workItem);
+    this.refreshEditableWorkItemState(workItem);
+    this.refreshWorkflow();
+  }
+
   private refreshWorkItemValidation(workItem: WorkItem): void {
     const draft = this.drafts.get(workItem.id) ?? null;
     workItem.draft = draft ? clone(draft) : null;
@@ -329,6 +615,9 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
       externalUrl: !workItem.requirements.externalUrl || isStrictHttpUrl(draft?.externalUrl ?? ""),
       checklist: workItem.requirements.checklist.every((key) => draft?.checklist[key] === true),
       assets: !workItem.requiresAsset || workItem.assets.some((asset) => asset.state === "finalized"),
+      publicationProof: workItem.proofRequirement?.kind !== "publication_url"
+        || workItem.publicationProof.currentAttempt?.state === "submitted"
+        || workItem.publicationProof.currentAttempt?.state === "verified",
     };
   }
 
@@ -349,6 +638,8 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
   }
 
   private refreshEditableWorkItemState(workItem: WorkItem): void {
+    if (workItem.state !== "not_started" && workItem.state !== "drafting"
+      && workItem.state !== "ready_to_submit" && workItem.state !== "changes_requested") return;
     if (workItem.state === "changes_requested") return;
     workItem.state = this.isReady(workItem) ? "ready_to_submit" : "drafting";
   }
@@ -373,6 +664,22 @@ export class InMemoryCreatorStudioRepository implements CreatorStudioRepository 
     if (!workItem) {
       this.workspace.nextAction = null;
       return;
+    }
+
+    const proofAttempt = workItem.publicationProof.currentAttempt;
+    if (workItem.publicationProof.required) {
+      if (!proofAttempt || proofAttempt.state === "draft") {
+        this.workspace.nextAction = { workItemId: workItem.id, state: workItem.state, label: `Submit proof for ${workItem.title}` };
+        return;
+      }
+      if (proofAttempt.state === "submitted") {
+        this.workspace.nextAction = { workItemId: workItem.id, state: workItem.state, label: `Awaiting operator verification for ${workItem.title}` };
+        return;
+      }
+      if (proofAttempt.state === "changes_requested") {
+        this.workspace.nextAction = { workItemId: workItem.id, state: workItem.state, label: `Create corrected proof attempt for ${workItem.title}` };
+        return;
+      }
     }
 
     const label = {

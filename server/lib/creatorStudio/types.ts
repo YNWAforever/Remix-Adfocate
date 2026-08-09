@@ -245,7 +245,16 @@ export type SubmittedWorkItem = {
 
 export type CreatorStudioEvent = {
   id: string;
-  type: "draft.saved" | "asset.reserved" | "asset.finalized" | "work_item.submitted";
+  type:
+    | "draft.saved"
+    | "asset.reserved"
+    | "asset.finalized"
+    | "work_item.submitted"
+    | "proof.attempt_created"
+    | "proof.evidence_reserved"
+    | "proof.evidence_finalized"
+    | "proof.submitted"
+    | "proof.metadata_refreshed";
   workItemId: string;
   workflowId: string;
   metadata: Record<string, string | number | boolean | null>;

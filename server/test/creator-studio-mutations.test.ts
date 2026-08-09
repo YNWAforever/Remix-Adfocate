@@ -23,8 +23,9 @@ const workspace = (): SubmissionWorkspace => ({
   workItems: [{
     id: "work-item-1", position: 1, title: "Proof", instructions: "Post proof",
     requirements: { caption: true, externalUrl: true, checklist: ["disclosure"] }, requiresAsset: true,
-    state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: false },
-    draft: null, assets: [], reviewFeedback: { status: "available", value: [] },
+    proofRequirement: null,
+    state: "not_started", validation: { caption: false, externalUrl: false, checklist: false, assets: false, publicationProof: true },
+    draft: null, assets: [], publicationProof: { required: false, currentAttempt: null, history: [] }, reviewFeedback: { status: "available", value: [] },
   }],
   nextAction: { workItemId: "work-item-1", state: "not_started", label: "Start Proof" },
 });
