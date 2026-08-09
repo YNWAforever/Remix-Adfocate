@@ -1,0 +1,8 @@
+import type { SubmissionWorkspace } from "@/lib/queries/creatorStudio";
+
+export type WorkspaceSaveStatus = "idle" | "saving" | "saved" | "failed";
+
+export function WorkspaceHeader({ workspace, saveStatus }: { workspace: SubmissionWorkspace; saveStatus: WorkspaceSaveStatus }) {
+  const statusText = saveStatus === "saving" ? "Saving draft…" : saveStatus === "saved" ? "Draft saved" : saveStatus === "failed" ? "Draft save failed" : "Draft changes are saved when you choose Save draft.";
+  return <header className="space-y-2"><div className="flex flex-wrap items-baseline justify-between gap-2"><h1 className="font-display text-2xl font-bold">{workspace.brief.title}</h1><span className="rounded-full border border-[var(--color-ink)] bg-white px-2 py-1 text-xs font-semibold capitalize">{workspace.workflow.state.replaceAll("_", " ")}</span></div><p className="text-sm text-[var(--color-soft-ink)]">Mission status: {workspace.submission.status.replaceAll("_", " ")}</p>{workspace.brief.requirements.length > 0 ? <p className="text-sm text-[var(--color-soft-ink)]">{workspace.brief.requirements.join(" · ")}</p> : null}<p aria-live="polite" className={saveStatus === "failed" ? "text-sm text-[var(--color-magenta)]" : "text-sm text-[var(--color-soft-ink)]"}>{statusText}</p></header>;
+}

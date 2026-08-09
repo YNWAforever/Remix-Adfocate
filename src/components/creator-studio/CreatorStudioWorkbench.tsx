@@ -1,0 +1,23 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { type SubmissionWorkspace, type WorkingDraft, useSubmitWorkItem } from "@/lib/queries/creatorStudio";
+import { AssetUploadPanel } from "./AssetUploadPanel";
+import { DeliverableNavigator } from "./DeliverableNavigator";
+import { DraftEditor, draftFormValue, type DraftFormValue } from "./DraftEditor";
+import { NextActionPanel } from "./NextActionPanel";
+import { ReviewFeedback } from "./ReviewFeedback";
+import { WorkspaceHeader, type WorkspaceSaveStatus } from "./WorkspaceHeader";
+
+const commandId = (prefix: string) => `${prefix}-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+export type CreatorStudioWorkbenchProps = { submissionId: string; workspace: SubmissionWorkspace };
+
+export function CreatorStudioWorkbench({ submissionId, workspace }: CreatorStudioWorkbenchProps) {
+  const workItems = useMemo(() => [...workspace.workItems].sort((left, right) => left.position - right.position), [workspace.workItems]);
+  const [activeWorkItemId, setActiveWorkItemId] = useState<string | null>(() => workspace.nextAction?.workItemId ?? workItems[0]?.id ?? null);
+  const [drafts, setDrafts] = useState<Record<string, DraftFormValue>>({}); const [saveStatus, setSaveStatus] = useState<WorkspaceSaveStatus>("idle"); const previousSubmissionId = useRef(submissionId); const submitCommand = useRef({ submissionId, workItemId: null as string | null, id: null as string | null });
+  useEffect(() => { const contextChanged = previousSubmissionId.current !== submissionId; previousSubmissionId.current = submissionId; setActiveWorkItemId((current) => workItems.some((item) => item.id === current) ? current : (workspace.nextAction?.workItemId ?? workItems[0]?.id ?? null)); setDrafts((current) => { const next = contextChanged ? {} : { ...current }; workItems.forEach((item) => { next[item.id] ??= draftFormValue(item); }); return next; }); if (contextChanged) { submitCommand.current = { submissionId, workItemId: null, id: null }; setSaveStatus("idle"); } }, [submissionId, workItems, workspace.nextAction?.workItemId]);
+  const activeWorkItem = workItems.find((item) => item.id === activeWorkItemId) ?? workItems[0]; const activeDraft = activeWorkItem ? drafts[activeWorkItem.id] ?? draftFormValue(activeWorkItem) : undefined; const submitWorkItem = useSubmitWorkItem(submissionId, activeWorkItem?.id ?? "");
+  const updateDraft = (value: DraftFormValue) => { if (activeWorkItem) setDrafts((current) => ({ ...current, [activeWorkItem.id]: value })); };
+  const applySavedDraft = (draft: WorkingDraft) => { if (activeWorkItem) setDrafts((current) => ({ ...current, [activeWorkItem.id]: { caption: draft.caption ?? "", externalUrl: draft.externalUrl ?? "", checklist: { ...draft.checklist }, version: draft.version } })); };
+  const submit = async () => { if (!activeWorkItem || !activeDraft) return; if (submitCommand.current.submissionId !== submissionId || submitCommand.current.workItemId !== activeWorkItem.id) submitCommand.current = { submissionId, workItemId: activeWorkItem.id, id: null }; const id = submitCommand.current.id ?? commandId("creator-submit"); submitCommand.current.id = id; try { await submitWorkItem.mutateAsync({ commandId: id, expectedVersion: activeDraft.version }); submitCommand.current.id = null; } catch { /* Keep the local draft for retry; server projection remains authoritative. */ } };
+  return <main className="mx-auto w-full max-w-7xl space-y-4 p-4"><WorkspaceHeader workspace={workspace} saveStatus={saveStatus} />{activeWorkItem && activeDraft ? <div className="grid gap-4 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(0,2fr)_minmax(14rem,0.9fr)]"><DeliverableNavigator workItems={workItems} activeWorkItemId={activeWorkItem.id} onSelect={(id) => { setActiveWorkItemId(id); setSaveStatus("idle"); }} /><div className="space-y-4"><DraftEditor key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} value={activeDraft} onChange={updateDraft} onSaved={applySavedDraft} onSaveStatus={setSaveStatus} /><AssetUploadPanel key={activeWorkItem.id} submissionId={submissionId} workItem={activeWorkItem} /></div><aside className="space-y-4"><NextActionPanel nextAction={workspace.nextAction} workItems={workItems} activeWorkItem={activeWorkItem} submitting={submitWorkItem.isPending} onNavigate={(id) => setActiveWorkItemId(id)} onSubmit={() => void submit()} /><ReviewFeedback workItem={activeWorkItem} /></aside></div> : <section className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"><h2 className="font-heading font-bold">No deliverables are available.</h2></section>}</main>;
+}

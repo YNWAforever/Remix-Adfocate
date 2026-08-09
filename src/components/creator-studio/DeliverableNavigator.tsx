@@ -1,0 +1,5 @@
+import type { WorkItem } from "@/lib/queries/creatorStudio";
+
+export function DeliverableNavigator({ workItems, activeWorkItemId, onSelect }: { workItems: WorkItem[]; activeWorkItemId: string | null; onSelect: (workItemId: string) => void }) {
+  return <nav aria-label="Deliverables" className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"><h2 className="font-heading font-bold">Deliverables</h2><ol className="mt-3 space-y-2">{[...workItems].sort((left, right) => left.position - right.position).map((item) => { const active = item.id === activeWorkItemId; return <li key={item.id}><button type="button" aria-current={active ? "step" : undefined} onClick={() => onSelect(item.id)} className={`w-full rounded-lg border p-2 text-left text-sm ${active ? "border-[var(--color-ink)] bg-[var(--color-lavender,#EEE7FF)] font-semibold" : "border-transparent hover:border-[var(--color-ink)]"}`}><span className="block">{item.position}. {item.title}</span><span className="mt-1 inline-block rounded-full bg-[var(--color-muted,#E4E4E4)] px-2 py-0.5 text-xs capitalize">{item.state.replaceAll("_", " ")}</span></button></li>; })}</ol></nav>;
+}

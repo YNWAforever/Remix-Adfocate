@@ -3,17 +3,27 @@ import { render, screen } from "@testing-library/react";
 import { ApiError } from "@/lib/api";
 
 const hoisted = vi.hoisted(() => ({
+  params: { submissionId: "submission-1" },
   query: { data: undefined as unknown, isLoading: false, isError: false, error: null as Error | null, refetch: vi.fn() },
-  draft: { isError: false, error: null as Error | null },
+  save: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  grant: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  finalize: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  submit: { mutateAsync: vi.fn(), isPending: false, error: null as Error | null },
+  upload: vi.fn(),
 }));
 
 vi.mock("@/lib/queries/creatorStudio", () => ({
   useSubmissionWorkspace: () => hoisted.query,
-  useSaveCreatorDraft: () => hoisted.draft,
+  useSaveCreatorDraft: () => hoisted.save,
+  useCreateDraftAssetGrant: () => hoisted.grant,
+  useFinalizeDraftAsset: () => hoisted.finalize,
+  useSubmitWorkItem: () => hoisted.submit,
+  uploadDraftAsset: hoisted.upload,
+  creatorStudioKeys: { workspace: (submissionId: string) => ["creator-studio", "workspace", submissionId] },
 }));
 
 import { Route } from "./_app.my.$submissionId";
-vi.spyOn(Route, "useParams").mockReturnValue({ submissionId: "submission-1" } as never);
+vi.spyOn(Route, "useParams").mockImplementation(() => hoisted.params as never);
 
 function makeWorkspace() {
   return {
@@ -35,30 +45,54 @@ function renderRoute() {
 
 beforeEach(() => {
   hoisted.query.data = makeWorkspace();
+  hoisted.params = { submissionId: "submission-1" };
   hoisted.query.isLoading = false;
   hoisted.query.isError = false;
   hoisted.query.error = null;
   hoisted.query.refetch.mockReset();
-  hoisted.draft.isError = false;
-  hoisted.draft.error = null;
+  hoisted.save.mutateAsync.mockReset();
+  hoisted.save.isPending = false;
+  hoisted.save.error = null;
+  hoisted.grant.mutateAsync.mockReset();
+  hoisted.grant.isPending = false;
+  hoisted.grant.error = null;
+  hoisted.finalize.mutateAsync.mockReset();
+  hoisted.finalize.isPending = false;
+  hoisted.finalize.error = null;
+  hoisted.submit.mutateAsync.mockReset();
+  hoisted.submit.isPending = false;
+  hoisted.submit.error = null;
+  hoisted.upload.mockReset();
 });
 
 afterEach(() => {
   hoisted.query.data = undefined;
+  hoisted.params = { submissionId: "submission-1" };
   hoisted.query.isLoading = false;
   hoisted.query.isError = false;
   hoisted.query.error = null;
   hoisted.query.refetch.mockReset();
-  hoisted.draft.isError = false;
-  hoisted.draft.error = null;
+  hoisted.save.mutateAsync.mockReset();
+  hoisted.save.isPending = false;
+  hoisted.save.error = null;
+  hoisted.grant.mutateAsync.mockReset();
+  hoisted.grant.isPending = false;
+  hoisted.grant.error = null;
+  hoisted.finalize.mutateAsync.mockReset();
+  hoisted.finalize.isPending = false;
+  hoisted.finalize.error = null;
+  hoisted.submit.mutateAsync.mockReset();
+  hoisted.submit.isPending = false;
+  hoisted.submit.error = null;
+  hoisted.upload.mockReset();
 });
 
 describe("Creator Studio submission route", () => {
   it("renders the mission, active ordered work item, and next action", () => {
     renderRoute();
     expect(screen.getByRole("heading", { name: "Launch mission" })).toBeInTheDocument();
-    expect(screen.getByText("Story")).toBeInTheDocument();
-    expect(screen.getByText("Finish Story")).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Deliverables" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Finish draft" })).toBeInTheDocument();
   });
 
   it("renders a loading skeleton while the workspace is loading", () => {
@@ -88,14 +122,25 @@ describe("Creator Studio submission route", () => {
     workspace.workItems[0].reviewFeedback = { status: "unavailable", reason: "temporarily_unavailable" };
     renderRoute();
     expect(screen.getByText("Launch mission")).toBeInTheDocument();
-    expect(screen.getByLabelText("Creator Studio draft editor")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Caption" })).toBeInTheDocument();
     expect(screen.getByText("Review feedback is temporarily unavailable.")).toBeInTheDocument();
   });
 
   it("shows a draft validation error beside the active work item", () => {
-    hoisted.draft.isError = true;
-    hoisted.draft.error = new ApiError(422, "draft_invalid", "Draft is incomplete");
+    hoisted.save.error = new ApiError(422, "draft_invalid", "Draft is incomplete");
     renderRoute();
     expect(screen.getByText("Draft is incomplete")).toBeInTheDocument();
+  });
+
+  it("clears previous submission draft context when the route submission changes", () => {
+    const view = renderRoute();
+    const nextWorkspace = makeWorkspace();
+    nextWorkspace.submission.id = "submission-2";
+    nextWorkspace.workItems[0].draft = { caption: "Second submission draft", externalUrl: null, checklist: {}, version: 1, updatedAt: "2026-08-09T02:00:00.000Z" };
+    hoisted.params = { submissionId: "submission-2" };
+    hoisted.query.data = nextWorkspace;
+    const Component = Route.options.component as React.ComponentType;
+    view.rerender(<Component />);
+    expect(screen.getByRole("textbox", { name: "Caption" })).toHaveValue("Second submission draft");
   });
 });
