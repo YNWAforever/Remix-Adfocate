@@ -64,10 +64,11 @@ export const canEditProofAttempt = (state: ProofAttemptState): boolean => state 
 export const canCreateCorrection = (state: ProofAttemptState): boolean => state === "changes_requested";
 
 export const validatePublicationProofUrl = (value: string): boolean => {
-  if (!value || value !== value.trim() || /\s/.test(value)) return false;
+  const trimmedValue = value.trim();
+  if (!trimmedValue || /\s/.test(trimmedValue)) return false;
 
   try {
-    const url = new URL(value);
+    const url = new URL(trimmedValue);
     return url.protocol === "https:"
       && Boolean(url.hostname)
       && !url.username

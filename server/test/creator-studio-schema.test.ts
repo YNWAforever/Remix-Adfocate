@@ -237,7 +237,7 @@ describe("creator studio publication proof contract", () => {
     expect(validatePublicationProofUrl("https://www.youtube.com/watch?v=abc")).toBe(true);
     expect(validatePublicationProofUrl("javascript:alert(1)")).toBe(false);
     expect(validatePublicationProofUrl("data:text/html,<script>alert(1)</script>")).toBe(false);
-    expect(validatePublicationProofUrl(" https://example.com/post ")).toBe(false);
+    expect(validatePublicationProofUrl(" https://example.com/post ")).toBe(true);
     expect(validatePublicationProofPlatform(" YouTube ", ["instagram", "youtube"])).toBe(true);
     expect(validatePublicationProofPlatform("tiktok", ["instagram", "youtube"])).toBe(false);
     expect(validatePublicationProofPlatform("", ["youtube"])).toBe(false);
