@@ -214,6 +214,7 @@ export function validateDeliverableSpecs(input: unknown): string[] {
     if (!Object.prototype.hasOwnProperty.call(value, "proofRequirement") || value.proofRequirement == null) return;
     const proof = isRecord(value.proofRequirement) ? value.proofRequirement : {};
     if (proof.kind !== "publication_url") errors.push(`${prefix}.proof_requirement.kind_invalid`);
+    if (proof.evidence !== "optional") errors.push(`${prefix}.proof_requirement.evidence_invalid`);
     if (!Array.isArray(proof.allowedPlatforms) || proof.allowedPlatforms.length === 0 || proof.allowedPlatforms.every((platform) => !trimString(platform))) {
       errors.push(`${prefix}.proof_requirement.allowed_platforms_required`);
     } else if (proof.allowedPlatforms.some((platform) => trimString(platform).length > MAX_DELIVERABLE_PLATFORM_LEN)) {

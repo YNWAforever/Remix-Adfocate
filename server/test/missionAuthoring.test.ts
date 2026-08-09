@@ -61,6 +61,16 @@ describe("structured deliverable specs", () => {
       proofRequirement: { kind: "publication_url", allowedPlatforms: [], evidence: "optional" },
     }])).toContain("deliverable_specs.0.proof_requirement.allowed_platforms_required");
   });
+
+  it("rejects unsupported publication proof evidence with a stable code", () => {
+    expect(validateDeliverableSpecs([{
+      title: "Publish one review",
+      instructions: "",
+      requirements: { caption: false, externalUrl: false, checklist: [] },
+      requiresAsset: false,
+      proofRequirement: { kind: "publication_url", allowedPlatforms: ["instagram"], evidence: "required" },
+    }])).toContain("deliverable_specs.0.proof_requirement.evidence_invalid");
+  });
 });
 
 function koreq(path: string, jwt: string, init: RequestInit = {}) {
