@@ -54,7 +54,7 @@ const workItem = (currentAttempt: PublicationProofAttempt | null = null, history
   draft: { caption: "Draft caption", externalUrl: null, checklist: {}, version: 1, updatedAt: "2026-08-10T00:00:00.000Z" },
   assets: [],
   publicationProof: { required: true, currentAttempt, history },
-  reviewFeedback: { status: "unavailable", reason: "not_requested" },
+  reviewFeedback: { status: "unavailable", reason: "not_configured" },
 });
 
 function resetMutation(mutation: { mutateAsync: ReturnType<typeof vi.fn>; isPending: boolean; error: Error | null }) {
