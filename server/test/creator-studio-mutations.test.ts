@@ -376,6 +376,11 @@ describe("Creator Studio mutation routes", () => {
     expect(finalize).toContain("from storage.objects object");
     expect(finalize).toContain("object.bucket_id = 'creator-studio-assets'");
     expect(finalize).toContain("object.name = v_asset.storage_object_path");
+    expect(draft).toContain("checklist = case when p_patch ? 'checklist' then coalesce(checklist, '{}'::jsonb) || p_patch->'checklist' else checklist end");
+    expect(finalize).toContain("v_object.metadata is null");
+    expect(finalize).toContain("v_object.metadata->>'size' !~ '^[0-9]+$'");
+    expect(finalize).toContain("(case when v_object.metadata->>'size' ~ '^[0-9]+$' then (v_object.metadata->>'size')::bigint end) <> v_asset.byte_size");
+    expect(finalize).toContain("v_object.metadata->>'mimetype' <> v_asset.mime_type");
     expect(finalize.indexOf("from storage.objects object")).toBeLessThan(finalize.indexOf("set upload_state = 'finalized'"));
   });
 

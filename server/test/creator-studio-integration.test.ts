@@ -197,16 +197,51 @@ suite("Creator Studio Supabase acceptance", () => {
       commandId: "conflicting-draft", expectedVersion: 0, patch: { caption: "changed content" },
     })).rejects.toMatchObject({ code: "command_conflict" });
 
-    const { error: directRpcError } = await userForJwt(journey.owner.jwt).rpc("creator_studio_save_draft", {
+    const directRpcWorkItem = journey.workspace.workItems[1]!;
+    const forgedRequestHash = "caller-controlled-hash-must-not-authorize-replay";
+    const { data: directRpcResult, error: directRpcCreateError } = await userForJwt(journey.owner.jwt).rpc("creator_studio_save_draft", {
       p_submission_id: journey.context.submissionId,
       p_workspace_id: journey.context.workspaceId,
-      p_work_item_id: item.id,
-      p_command_id: "conflicting-draft",
-      p_request_hash: "caller-controlled-hash-must-not-authorize-replay",
+      p_work_item_id: directRpcWorkItem.id,
+      p_command_id: "direct-rpc-conflicting-draft",
+      p_request_hash: forgedRequestHash,
       p_expected_version: 0,
-      p_patch: { caption: "a different direct RPC payload" },
+      p_patch: { caption: "direct RPC original payload" },
     });
-    expect(directRpcError?.message).toContain("command_conflict");
+    expect(directRpcCreateError).toBeNull();
+    expect(directRpcResult).toMatchObject({ replayed: false });
+
+    const { error: directRpcConflictError } = await userForJwt(journey.owner.jwt).rpc("creator_studio_save_draft", {
+      p_submission_id: journey.context.submissionId,
+      p_workspace_id: journey.context.workspaceId,
+      p_work_item_id: directRpcWorkItem.id,
+      p_command_id: "direct-rpc-conflicting-draft",
+      p_request_hash: forgedRequestHash,
+      p_expected_version: 0,
+      p_patch: { caption: "direct RPC changed payload" },
+    });
+    expect(directRpcConflictError?.message).toContain("command_conflict");
+  });
+
+  it("rejects finalization when stored object metadata size differs from the reservation", async () => {
+    const journey = await createJourney();
+    const item = journey.workspace.workItems[0]!;
+    const grant = await journey.repository.createUploadGrant(journey.context, item.id, {
+      commandId: "metadata-mismatch-grant", fileName: "metadata-mismatch.png", mimeType: "image/png", byteSize: 2,
+    });
+    ownedStoragePaths.add(grant.value.path);
+    const { error: uploadError } = await userForJwt(journey.owner.jwt)
+      .storage.from(grant.value.bucket).upload(grant.value.path, new Uint8Array([1]), { contentType: "image/png", upsert: false });
+    if (uploadError) throw uploadError;
+
+    await expect(journey.repository.finalizeAsset(journey.context, item.id, grant.value.assetId, {
+      commandId: "metadata-mismatch-finalize", byteSize: 2, mimeType: "image/png", checksumSha256: null,
+    })).rejects.toMatchObject({ code: "asset_not_uploaded" });
+
+    const { data: asset, error: assetError } = await serviceForTests().from("mission_draft_assets")
+      .select("upload_state").eq("id", grant.value.assetId).single();
+    if (assetError) throw assetError;
+    expect(asset.upload_state).toBe("pending");
   });
 
   it("submits a complete finalized deliverable and rejects missing prerequisites", async () => {

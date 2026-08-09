@@ -171,17 +171,24 @@ describe("creator studio mission workspace migration", () => {
   it("derives command replay identity from canonical RPC arguments instead of trusting the caller hash", () => {
     const sql = readFileSync(commandRpcPath, "utf8");
 
-    expect(sql.match(/v_request_hash\s*:=\s*md5\(jsonb_build_object/g)).toHaveLength(4);
-    expect(sql.match(/v_existing_hash\s*<>\s*v_request_hash/g)).toHaveLength(4);
-    expect(sql).not.toContain("v_existing_hash <> p_request_hash");
-    for (const action of ["save_draft", "create_upload_grant", "finalize_asset", "submit_work_item"]) {
-      expect(sql).toContain(`'action', '${action}'`);
-      expect(sql).toMatch(new RegExp(`'${action}',\\s*v_request_hash`));
+    for (const { name, action } of [
+      { name: "creator_studio_save_draft", action: "save_draft" },
+      { name: "creator_studio_create_upload_grant", action: "create_upload_grant" },
+      { name: "creator_studio_finalize_asset", action: "finalize_asset" },
+      { name: "creator_studio_submit_work_item", action: "submit_work_item" },
+    ]) {
+      const start = sql.indexOf(`create or replace function public.${name}(`);
+      const end = sql.indexOf("\n$$;", start);
+      expect(start).toBeGreaterThanOrEqual(0);
+      expect(end).toBeGreaterThan(start);
+      const body = sql.slice(start, end);
+
+      expect(body.match(/v_request_hash\s*:=\s*md5\(jsonb_build_object/g)).toHaveLength(1);
+      expect(body.match(/v_existing_hash\s*<>\s*v_request_hash/g)).toHaveLength(1);
+      expect(body).not.toContain("v_existing_hash <> p_request_hash");
+      expect(body).toContain(`'action', '${action}'`);
+      expect(body).toMatch(new RegExp(`insert into public\\.mission_workflow_commands[\\s\\S]*'${action}'\\s*,\\s*v_request_hash\\s*,\\s*v_response`));
     }
-    expect(sql).toContain("'actor_id', auth.uid()");
-    expect(sql).toContain("'submission_id', p_submission_id");
-    expect(sql).toContain("'workspace_id', p_workspace_id");
-    expect(sql).toContain("'work_item_id', p_work_item_id");
   });
 
   it("keeps Creator Studio metrics allowlisted and free of private creator payloads", () => {

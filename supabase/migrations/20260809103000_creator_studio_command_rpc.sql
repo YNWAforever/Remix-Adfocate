@@ -107,7 +107,7 @@ begin
     update public.mission_working_drafts
     set caption = case when p_patch ? 'caption' then coalesce(p_patch->>'caption', '') else caption end,
         external_url = case when p_patch ? 'external_url' then p_patch->>'external_url' else external_url end,
-        checklist = case when p_patch ? 'checklist' then p_patch->'checklist' else checklist end,
+        checklist = case when p_patch ? 'checklist' then coalesce(checklist, '{}'::jsonb) || p_patch->'checklist' else checklist end,
         version = version + 1,
         updated_at = now()
     where id = v_draft.id
@@ -217,7 +217,7 @@ begin
   v_request_hash := md5(jsonb_build_object(
     'action', 'create_upload_grant', 'actor_id', auth.uid(), 'workspace_id', p_workspace_id,
     'submission_id', p_submission_id, 'work_item_id', p_work_item_id, 'command_id', p_command_id,
-    'file_name', p_file_name, 'mime_type', p_mime_type, 'byte_size', p_byte_size
+    'file_name', btrim(p_file_name), 'mime_type', p_mime_type, 'byte_size', p_byte_size
   )::text);
   select workflow.* into v_workflow from public.mission_workflows workflow
   where workflow.mission_submission_id = p_submission_id and workflow.creator_id = auth.uid() and workflow.workspace_id = p_workspace_id
@@ -297,6 +297,7 @@ declare
   v_existing_hash text;
   v_existing_response jsonb;
   v_request_hash text;
+  v_object storage.objects;
   v_response jsonb;
   v_assets jsonb;
   v_draft public.mission_working_drafts;
@@ -349,11 +350,19 @@ begin
     or v_asset.byte_size <> p_byte_size or v_asset.mime_type <> p_mime_type then
     raise exception 'asset_not_uploaded' using errcode = '55000';
   end if;
-  if not exists (
-    select 1 from storage.objects object
-    where object.bucket_id = 'creator-studio-assets'
-      and object.name = v_asset.storage_object_path
-  ) then
+  select * into v_object
+  from storage.objects object
+  where object.bucket_id = 'creator-studio-assets'
+    and object.name = v_asset.storage_object_path;
+  if v_object.id is null then
+    raise exception 'asset_not_uploaded' using errcode = '55000';
+  end if;
+  if v_object.metadata is null
+    or v_object.metadata->>'size' is null
+    or v_object.metadata->>'size' !~ '^[0-9]+$'
+    or (case when v_object.metadata->>'size' ~ '^[0-9]+$' then (v_object.metadata->>'size')::bigint end) <> v_asset.byte_size
+    or v_object.metadata->>'mimetype' is null
+    or v_object.metadata->>'mimetype' <> v_asset.mime_type then
     raise exception 'asset_not_uploaded' using errcode = '55000';
   end if;
   update public.mission_draft_assets
