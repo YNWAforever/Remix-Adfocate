@@ -1,7 +1,17 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { AdminRequestError } from "@/lib/adminTransport";
 import type { CreatorCasePublicationProof, CreatorCasePublicationProofAttempt } from "@/lib/creatorCase";
 import { PublicationProofReviewPanel } from "./PublicationProofReviewPanel";
+
+const mocks = vi.hoisted(() => ({
+  postCreatorPublicationProofReview: vi.fn(),
+}));
+
+vi.mock("@/lib/creatorCase", () => ({
+  postCreatorPublicationProofReview: mocks.postCreatorPublicationProofReview,
+}));
 
 const attempt = (overrides: Partial<CreatorCasePublicationProofAttempt> = {}): CreatorCasePublicationProofAttempt => ({
   id: "attempt-1",
@@ -34,22 +44,40 @@ const proof = (
   history,
 });
 
+function renderPanel(
+  publicationProofs: CreatorCasePublicationProof[],
+  options: { onSuccess?: () => void } = {},
+) {
+  const queryClient = new QueryClient();
+  return {
+    queryClient,
+    ...render(
+      <QueryClientProvider client={queryClient}>
+        <PublicationProofReviewPanel
+          workspaceId="workspace-1"
+          creatorId="creator-1"
+          publicationProofs={publicationProofs}
+          onSuccess={options.onSuccess}
+        />
+      </QueryClientProvider>,
+    ),
+  };
+}
+
 describe("PublicationProofReviewPanel", () => {
+  afterEach(() => {
+    mocks.postCreatorPublicationProofReview.mockReset();
+  });
+
   it("renders an empty state when the case has no proofs", () => {
-    render(<PublicationProofReviewPanel workspaceId="workspace-1" creatorId="creator-1" publicationProofs={[]} />);
+    renderPanel([]);
 
     expect(screen.getByRole("heading", { name: "Publication proof review" })).toBeInTheDocument();
     expect(screen.getByText("No publication proofs linked to this creator case.")).toBeInTheDocument();
   });
 
   it("renders a draft proof without a verification action", () => {
-    render(
-      <PublicationProofReviewPanel
-        workspaceId="workspace-1"
-        creatorId="creator-1"
-        publicationProofs={[proof(attempt({ state: "draft" }))]}
-      />,
-    );
+    renderPanel([proof(attempt({ state: "draft" }))]);
 
     expect(screen.getByText("draft")).toBeInTheDocument();
     expect(screen.getByText("instagram attempt 1")).toBeInTheDocument();
@@ -57,7 +85,7 @@ describe("PublicationProofReviewPanel", () => {
   });
 
   it("renders a submitted proof without changing its state", () => {
-    render(<PublicationProofReviewPanel workspaceId="workspace-1" creatorId="creator-1" publicationProofs={[proof()]} />);
+    renderPanel([proof()]);
 
     expect(screen.getByText("https://example.com/published-post")).toBeInTheDocument();
     expect(screen.getByText("submitted")).toBeInTheDocument();
@@ -66,34 +94,84 @@ describe("PublicationProofReviewPanel", () => {
   });
 
   it("renders a verified proof without a verification action", () => {
-    render(
-      <PublicationProofReviewPanel
-        workspaceId="workspace-1"
-        creatorId="creator-1"
-        publicationProofs={[proof(attempt({ state: "verified" }))]}
-      />,
-    );
+    renderPanel([proof(attempt({ state: "verified" }))]);
 
     expect(screen.getByText("verified")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Verify publication proof" })).not.toBeInTheDocument();
   });
 
   it("renders a proof attempt history when present", () => {
-    render(
-      <PublicationProofReviewPanel
-        workspaceId="workspace-1"
-        creatorId="creator-1"
-        publicationProofs={[
-          proof(attempt({ id: "attempt-2", sequence: 2 }), [
-            attempt({ id: "attempt-1", state: "changes_requested", operatorMessage: "Please include the campaign tag." }),
-          ]),
-        ]}
-      />,
-    );
+    renderPanel([
+      proof(attempt({ id: "attempt-2", sequence: 2 }), [
+        attempt({ id: "attempt-1", state: "changes_requested", operatorMessage: "Please include the campaign tag." }),
+      ]),
+    ]);
 
     fireEvent.click(screen.getByText("Attempt history"));
 
     expect(screen.getByText("Attempt 1: changes_requested")).toBeInTheDocument();
     expect(screen.getByText("Please include the campaign tag.")).toBeInTheDocument();
+  });
+
+  it("verifies the current submitted attempt and calls the success callback", async () => {
+    const onSuccess = vi.fn();
+    mocks.postCreatorPublicationProofReview.mockResolvedValue({
+      publicationProof: proof(attempt({ state: "verified", decidedAt: "2026-08-11T01:00:00.000Z" })),
+    });
+
+    renderPanel([proof()], { onSuccess });
+    fireEvent.click(screen.getByRole("button", { name: "Verify publication proof" }));
+
+    await waitFor(() => expect(mocks.postCreatorPublicationProofReview).toHaveBeenCalledWith(
+      "workspace-1",
+      "creator-1",
+      {
+        submissionId: "submission-1",
+        workItemId: "work-item-1",
+        attemptId: "attempt-1",
+        decision: "verified",
+        message: null,
+      },
+      expect.any(String),
+    ));
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
+  });
+
+  it("requires feedback before requesting changes", () => {
+    renderPanel([proof()]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Request changes" }));
+
+    expect(screen.getByRole("textbox", { name: "Proof review feedback" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Send change request" })).toBeDisabled();
+  });
+
+  it("reuses the command id when a proof decision is retried", async () => {
+    mocks.postCreatorPublicationProofReview
+      .mockRejectedValueOnce(new Error("temporary failure"))
+      .mockResolvedValueOnce({ publicationProof: proof(attempt({ state: "verified" })) });
+    renderPanel([proof()]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Verify publication proof" }));
+    await waitFor(() => expect(mocks.postCreatorPublicationProofReview).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Retry proof review" }));
+    await waitFor(() => expect(mocks.postCreatorPublicationProofReview).toHaveBeenCalledTimes(2));
+
+    expect(mocks.postCreatorPublicationProofReview.mock.calls[0][3])
+      .toBe(mocks.postCreatorPublicationProofReview.mock.calls[1][3]);
+  });
+
+  it("renders a safe message for a stale submitted attempt", async () => {
+    mocks.postCreatorPublicationProofReview.mockRejectedValue(
+      new AdminRequestError("raw database detail", "proof_attempt_not_submitted"),
+    );
+    renderPanel([proof()]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Verify publication proof" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "This attempt is no longer actionable. Reload the case.",
+    );
+    expect(screen.queryByText("raw database detail")).not.toBeInTheDocument();
   });
 });
