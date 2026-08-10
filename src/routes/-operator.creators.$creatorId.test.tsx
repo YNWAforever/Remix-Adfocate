@@ -6,6 +6,7 @@ import type { CreatorCaseDetail } from "@/lib/creatorCase";
 const hoisted = vi.hoisted(() => ({
   fetchCreatorDetail: vi.fn(),
   postCreatorNote: vi.fn(),
+  postCreatorPublicationProofReview: vi.fn(),
   postCreatorReview: vi.fn(),
   workspace: "workspace-1",
 }));
@@ -18,6 +19,7 @@ vi.mock("@tanstack/react-router", async () => {
 vi.mock("@/lib/creatorCase", () => ({
   fetchCreatorDetail: hoisted.fetchCreatorDetail,
   postCreatorNote: hoisted.postCreatorNote,
+  postCreatorPublicationProofReview: hoisted.postCreatorPublicationProofReview,
   postCreatorReview: hoisted.postCreatorReview,
 }));
 vi.mock("@/lib/adminTransport", () => ({ AdminAuthError: class AdminAuthError extends Error {} }));
@@ -59,12 +61,36 @@ function response(): CreatorCaseDetail {
     missionHistory: { status: "available" as const, value: [{ id: "sub-1", status: "approved", missions: { title: "Creator launch" } }] },
     shortlists: [],
     audit: [{ id: "audit-1", eventType: "creator_review.updated", createdAt: "2026-06-18T03:00:00.000Z", metadata: {} }],
+    publicationProofs: [{
+      submissionId: "submission-1",
+      workflowId: "workflow-1",
+      workItemId: "work-item-1",
+      creatorId: "creator-1",
+      workspaceId: "workspace-1",
+      currentAttempt: {
+        id: "attempt-1",
+        submissionId: "submission-1",
+        workflowId: "workflow-1",
+        workItemId: "work-item-1",
+        creatorId: "creator-1",
+        workspaceId: "workspace-1",
+        parentAttemptId: null,
+        sequence: 1,
+        publishedUrl: "https://example.com/published-post",
+        platform: "instagram",
+        state: "submitted",
+        operatorMessage: null,
+        submittedAt: "2026-08-11T00:00:00.000Z",
+        decidedAt: null,
+      },
+      history: [],
+    }],
   };
 }
 
-function renderRoute() {
+function renderRoute(queryClient = new QueryClient()) {
   const Component = Route.options.component as React.ComponentType;
-  return render(<QueryClientProvider client={new QueryClient()}><Component /></QueryClientProvider>);
+  return { queryClient, ...render(<QueryClientProvider client={queryClient}><Component /></QueryClientProvider>) };
 }
 
 describe("operator creator detail", () => {
@@ -81,6 +107,32 @@ describe("operator creator detail", () => {
     expect(hoisted.fetchCreatorDetail).toHaveBeenCalledWith("workspace-1", "creator-1");
     expect(screen.getByRole("img", { name: "Selected profile avatar" })).toHaveAttribute("src", "https://cdn.example.com/reviewed-avatar.jpg");
     expect(screen.getByText("Creator launch")).toBeInTheDocument();
+  });
+
+  it("renders proof review in the case rail and sends the selected lineage", async () => {
+    hoisted.postCreatorPublicationProofReview.mockResolvedValue({ publicationProof: response().publicationProofs?.[0] ?? null });
+    const queryClient = new QueryClient();
+    const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries").mockResolvedValue(undefined);
+    renderRoute(queryClient);
+
+    expect(await screen.findByRole("heading", { name: "Publication proof review" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Verify publication proof" }));
+
+    await waitFor(() => expect(hoisted.postCreatorPublicationProofReview).toHaveBeenCalledWith(
+      "workspace-1",
+      "creator-1",
+      {
+        submissionId: "submission-1",
+        workItemId: "work-item-1",
+        attemptId: "attempt-1",
+        decision: "verified",
+        message: null,
+      },
+      expect.any(String),
+    ));
+    await waitFor(() => expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["admin-creator-detail", "creator-1", "workspace-1"],
+    }));
   });
 
   it("adds an internal note with the selected workspace", async () => {

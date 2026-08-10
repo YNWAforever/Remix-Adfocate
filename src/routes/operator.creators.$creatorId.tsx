@@ -10,6 +10,7 @@ import {
   ShortlistBadge,
   SocialSyncBadge,
 } from "@/components/operator/OperatorBadges";
+import { PublicationProofReviewPanel } from "@/components/operator/PublicationProofReviewPanel";
 import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
 import { AdminAuthError } from "@/lib/adminTransport";
 import {
@@ -404,6 +405,15 @@ function OperatorCreatorDetailRoute() {
                     }}
                     workspaceId={workspace}
                     variant="full"
+                    onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] })}
+                  />
+                </section>
+
+                <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+                  <PublicationProofReviewPanel
+                    workspaceId={workspace}
+                    creatorId={creator.id}
+                    publicationProofs={detailData.publicationProofs}
                     onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] })}
                   />
                 </section>
