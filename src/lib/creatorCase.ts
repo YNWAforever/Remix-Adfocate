@@ -68,6 +68,49 @@ export type CreatorReviewCommandInput = {
 
 export type CreatorNoteInput = { category: CreatorNoteCategory; body: string };
 
+export type CreatorCasePublicationProofAttemptState =
+  | "draft"
+  | "submitted"
+  | "verified"
+  | "changes_requested";
+
+export type CreatorCasePublicationProofDecision = "verified" | "changes_requested";
+
+export type CreatorCasePublicationProofAttempt = {
+  id: string;
+  submissionId: string;
+  workflowId: string;
+  workItemId: string;
+  creatorId: string;
+  workspaceId: string;
+  parentAttemptId: string | null;
+  sequence: number;
+  publishedUrl: string;
+  platform: string | null;
+  state: CreatorCasePublicationProofAttemptState;
+  operatorMessage: string | null;
+  submittedAt: string | null;
+  decidedAt: string | null;
+};
+
+export type CreatorCasePublicationProof = {
+  submissionId: string;
+  workflowId: string;
+  workItemId: string;
+  creatorId: string;
+  workspaceId: string;
+  currentAttempt: CreatorCasePublicationProofAttempt | null;
+  history: CreatorCasePublicationProofAttempt[];
+};
+
+export type CreatorCasePublicationProofReviewInput = {
+  submissionId: string;
+  workItemId: string;
+  attemptId: string;
+  decision: CreatorCasePublicationProofDecision;
+  message?: string | null;
+};
+
 type CreatorCaseDetailResponse = {
   creator: {
     id: string;
@@ -95,6 +138,7 @@ type CreatorCaseDetailResponse = {
     notes: string | null;
     updated_at: string;
   }>;
+  publicationProofs?: CreatorCasePublicationProof[];
 };
 
 export type CreatorSocialAccount = {
@@ -176,6 +220,28 @@ export function postCreatorReview(
       note: body.note,
     }),
   });
+}
+
+export function postCreatorPublicationProofReview(
+  workspaceId: string,
+  creatorId: string,
+  body: CreatorCasePublicationProofReviewInput,
+  commandId?: string,
+) {
+  return adminFetch<{ publicationProof: CreatorCasePublicationProof | null }>(
+    creatorPath(workspaceId, "/admin/creators/" + creatorId + "/publication-proof/review"),
+    {
+      method: "POST",
+      body: JSON.stringify({
+        command_id: commandIdOrNew(commandId),
+        submission_id: body.submissionId,
+        work_item_id: body.workItemId,
+        attempt_id: body.attemptId,
+        decision: body.decision,
+        message: body.message ?? null,
+      }),
+    },
+  );
 }
 
 export function postCreatorNote(

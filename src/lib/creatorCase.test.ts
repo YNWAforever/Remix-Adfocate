@@ -12,6 +12,7 @@ import {
   fetchCreatorDetail,
   fetchCreatorReviewQueue,
   postCreatorNote,
+  postCreatorPublicationProofReview,
   postCreatorReview,
 } from "./creatorCase";
 
@@ -43,6 +44,43 @@ describe("creator case client", () => {
           risk_level: "low",
           summary: "Approved",
           note: "Reviewed",
+        }),
+      }),
+    );
+  });
+
+  it("sends the complete workspace-scoped publication-proof review command", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ publicationProof: null }),
+    });
+
+    const result = await postCreatorPublicationProofReview(
+      "workspace-1",
+      "creator-1",
+      {
+        submissionId: "submission-1",
+        workItemId: "work-item-1",
+        attemptId: "attempt-1",
+        decision: "changes_requested",
+        message: "Use the public campaign post URL.",
+      },
+      "proof-command-1",
+    );
+
+    expect(result).toEqual({ publicationProof: null });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/admin/creators/creator-1/publication-proof/review?workspace=workspace-1",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          command_id: "proof-command-1",
+          submission_id: "submission-1",
+          work_item_id: "work-item-1",
+          attempt_id: "attempt-1",
+          decision: "changes_requested",
+          message: "Use the public campaign post URL.",
         }),
       }),
     );
