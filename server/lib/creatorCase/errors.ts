@@ -11,6 +11,11 @@ export type CreatorCaseErrorCode =
   | "bad_note_category"
   | "bad_note_body"
   | "flagged_review_note_required"
+  | "proof_decision_invalid"
+  | "proof_message_required"
+  | "proof_attempt_not_found"
+  | "proof_lineage_mismatch"
+  | "proof_attempt_not_submitted"
   | "command_conflict"
   | "db_error"
   | "enrichment_unavailable";

@@ -109,6 +109,60 @@ export type AppendCreatorNoteCommand = {
   body: string;
 };
 
+export const CREATOR_CASE_PUBLICATION_PROOF_ATTEMPT_STATES = [
+  "draft",
+  "submitted",
+  "verified",
+  "changes_requested",
+] as const;
+
+export type CreatorCasePublicationProofAttemptState =
+  (typeof CREATOR_CASE_PUBLICATION_PROOF_ATTEMPT_STATES)[number];
+
+export const CREATOR_CASE_PUBLICATION_PROOF_DECISIONS = [
+  "verified",
+  "changes_requested",
+] as const;
+
+export type CreatorCasePublicationProofDecision =
+  (typeof CREATOR_CASE_PUBLICATION_PROOF_DECISIONS)[number];
+
+export type CreatorCasePublicationProofAttempt = {
+  id: string;
+  submissionId: string;
+  workflowId: string;
+  workItemId: string;
+  creatorId: string;
+  workspaceId: string;
+  parentAttemptId: string | null;
+  sequence: number;
+  publishedUrl: string;
+  platform: string | null;
+  state: CreatorCasePublicationProofAttemptState;
+  operatorMessage: string | null;
+  submittedAt: string | null;
+  decidedAt: string | null;
+};
+
+export type CreatorCasePublicationProof = {
+  submissionId: string;
+  workflowId: string;
+  workItemId: string;
+  creatorId: string;
+  workspaceId: string;
+  currentAttempt: CreatorCasePublicationProofAttempt | null;
+  history: CreatorCasePublicationProofAttempt[];
+};
+
+export type ReviewPublicationProofCommand = {
+  creatorId: string;
+  submissionId: string;
+  workItemId: string;
+  attemptId: string;
+  decision: CreatorCasePublicationProofDecision;
+  message: string | null;
+};
+
 export type CreatorCaseReadModel = {
   creator: CreatorIdentity;
   review: ReviewProjection;
@@ -117,5 +171,6 @@ export type CreatorCaseReadModel = {
   social: CreatorCaseEnrichment<SocialProjection>;
   profile: CreatorCaseEnrichment<ProfileProjection>;
   missionHistory: CreatorCaseEnrichment<MissionHistoryProjection>;
+  publicationProofs?: CreatorCasePublicationProof[];
   insertedNote?: CreatorReviewNote;
 };

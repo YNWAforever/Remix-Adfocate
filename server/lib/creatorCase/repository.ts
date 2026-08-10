@@ -6,6 +6,7 @@ import type {
   CreatorCaseReadModel,
   CreatorReviewQueue,
   CreatorReviewQueueFilters,
+  ReviewPublicationProofCommand,
 } from "./types.js";
 
 export interface CreatorCaseRepository {
@@ -27,5 +28,10 @@ export interface CreatorCaseRepository {
   appendNote(
     context: CreatorCaseCommandContext,
     command: AppendCreatorNoteCommand,
+  ): Promise<CreatorCaseReadModel>;
+
+  reviewPublicationProof(
+    context: CreatorCaseCommandContext,
+    command: ReviewPublicationProofCommand,
   ): Promise<CreatorCaseReadModel>;
 }

@@ -129,6 +129,7 @@ describe("Creator case admin routes", () => {
       getCase: async () => makeCase(),
       applyReview: async () => makeCase(),
       appendNote: async () => ({ ...makeCase(), notes: [insertedNote, trailingNote], insertedNote }),
+      reviewPublicationProof: async () => makeCase(),
     };
 
     const response = await routeFor(repository).request("/creators/creator-1/notes?workspace=workspace-1", {
@@ -274,6 +275,7 @@ describe("Creator case admin routes", () => {
       getCase: async () => { throw new CreatorCaseError("db_error", "private database details", "correlation-1"); },
       applyReview: async () => { throw new CreatorCaseError("db_error", "private database details", "correlation-1"); },
       appendNote: async () => { throw new CreatorCaseError("db_error", "private database details", "correlation-1"); },
+      reviewPublicationProof: async () => { throw new CreatorCaseError("db_error", "private database details", "correlation-1"); },
     };
 
     const response = await routeFor(repository).request(

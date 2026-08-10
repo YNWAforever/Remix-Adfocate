@@ -81,7 +81,13 @@ function creatorCaseError(c: { json: (body: unknown, status?: number) => Respons
   if (error.code === "creator_not_found" || error.code === "workspace_mismatch") {
     return c.json({ error: "Creator not found", code: "creator_not_found" }, 404);
   }
+  if (error.code === "proof_attempt_not_found" || error.code === "proof_lineage_mismatch") {
+    return c.json({ error: "Publication proof not found", code: error.code }, 404);
+  }
   if (error.code === "command_conflict") {
+    return c.json({ error: error.publicMessage, code: error.code }, 409);
+  }
+  if (error.code === "proof_attempt_not_submitted") {
     return c.json({ error: error.publicMessage, code: error.code }, 409);
   }
   if (
@@ -90,7 +96,9 @@ function creatorCaseError(c: { json: (body: unknown, status?: number) => Respons
     error.code === "bad_risk_level" ||
     error.code === "bad_note_category" ||
     error.code === "bad_note_body" ||
-    error.code === "flagged_review_note_required"
+    error.code === "flagged_review_note_required" ||
+    error.code === "proof_decision_invalid" ||
+    error.code === "proof_message_required"
   ) {
     return c.json({ error: error.publicMessage, code: error.code }, 422);
   }
@@ -176,6 +184,60 @@ export function createAdminOperatorCrmRoutes(
       note: note ? { category: "other", body: note } : null,
     });
     return c.json({ review: creatorCase.review });
+  } catch (error) {
+    return creatorCaseError(c, error);
+  }
+  });
+
+  routes.post("/creators/:id/publication-proof/review", async (c) => {
+  const body = await c.req
+    .json<{
+      command_id?: unknown;
+      submission_id?: unknown;
+      work_item_id?: unknown;
+      attempt_id?: unknown;
+      decision?: unknown;
+      message?: unknown;
+    }>()
+    .catch(() => ({}) as {
+      command_id?: unknown;
+      submission_id?: unknown;
+      work_item_id?: unknown;
+      attempt_id?: unknown;
+      decision?: unknown;
+      message?: unknown;
+    });
+  const decision = body.decision === "verified" || body.decision === "changes_requested"
+    ? body.decision
+    : null;
+  const submissionId = nonEmptyText(body.submission_id);
+  const workItemId = nonEmptyText(body.work_item_id);
+  const attemptId = nonEmptyText(body.attempt_id);
+  const message = body.message === null ? null : nonEmptyText(body.message);
+
+  if (!decision) return creatorCaseError(c, new CreatorCaseError("proof_decision_invalid", "Invalid publication proof decision"));
+  if (!submissionId || !workItemId || !attemptId) {
+    return creatorCaseError(c, new CreatorCaseError("proof_lineage_mismatch", "Publication proof lineage is required"));
+  }
+  if (decision === "changes_requested" && !message) {
+    return creatorCaseError(c, new CreatorCaseError("proof_message_required", "A message is required when requesting proof changes"));
+  }
+
+  try {
+    const creatorCase = await creatorCaseRepository().reviewPublicationProof(
+      creatorCaseCommandContext(c, body.command_id),
+      {
+        creatorId: c.req.param("id"),
+        submissionId,
+        workItemId,
+        attemptId,
+        decision,
+        message,
+      },
+    );
+    const publicationProof = creatorCase.publicationProofs?.find((proof) =>
+      proof.submissionId === submissionId && proof.workItemId === workItemId) ?? null;
+    return c.json({ publicationProof });
   } catch (error) {
     return creatorCaseError(c, error);
   }

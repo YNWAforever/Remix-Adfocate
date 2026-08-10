@@ -10,6 +10,8 @@ import type {
   ApplyCreatorReviewCommand,
   CreatorAuditEvent,
   CreatorCaseCommandContext,
+  CreatorCasePublicationProof,
+  CreatorCasePublicationProofAttempt,
   CreatorCaseReadContext,
   CreatorCaseReadModel,
   CreatorReviewNote,
@@ -18,6 +20,7 @@ import type {
   CreatorReviewQueueRow,
   MissionHistoryProjection,
   ProfileProjection,
+  ReviewPublicationProofCommand,
   SocialProjection,
 } from "./types.js";
 
@@ -102,6 +105,7 @@ const AUDIT_PROJECTION = "id, workspace_id, operator_id, actor_label, event_type
 const SOCIAL_PROJECTION = "creator_id, platform, handle, sync_status, follower_count, engagement_rate, api_synced_at, external_avatar_url, bio, post_count, following_count, avg_likes, avg_comments, posting_frequency, freshness_score, content_themes";
 const SHORTLIST_PROJECTION = "creator_id, status, source, notes, updated_at";
 const MISSION_HISTORY_PROJECTION = "id, mission_id, status, content_urls, reviewer_notes, submitted_at, reviewed_at, created_at, missions(id, slug, title)";
+const PUBLICATION_PROOF_ATTEMPT_PROJECTION = "id, mission_submission_id, mission_workflow_id, mission_work_item_id, creator_id, workspace_id, parent_attempt_id, sequence, published_url, platform, state, operator_message, submitted_at, decided_at";
 const DEFAULT_PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
 
@@ -118,6 +122,11 @@ const KNOWN_ERROR_CODES: CreatorCaseErrorCode[] = [
   "bad_note_category",
   "bad_note_body",
   "flagged_review_note_required",
+  "proof_decision_invalid",
+  "proof_message_required",
+  "proof_attempt_not_found",
+  "proof_lineage_mismatch",
+  "proof_attempt_not_submitted",
   "command_conflict",
   "enrichment_unavailable",
 ];
@@ -166,8 +175,99 @@ function snapshotFromRpc(value: unknown): CreatorCaseReadModel {
     social: { status: "unavailable", reason: "not_configured" },
     profile: { status: "unavailable", reason: "not_configured" },
     missionHistory: { status: "unavailable", reason: "not_configured" },
+    ...(Array.isArray(snapshot.publicationProofs)
+      ? { publicationProofs: snapshot.publicationProofs.map(mapPublicationProofValue) }
+      : {}),
     ...(snapshot.insertedNote ? { insertedNote: { ...snapshot.insertedNote } } : {}),
   };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function requiredText(value: unknown, label: string): string {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new CreatorCaseError("db_error", `Creator case proof returned an invalid ${label}`);
+  }
+  return value;
+}
+
+function nullableText(value: unknown, label: string): string | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string") throw new CreatorCaseError("db_error", `Creator case proof returned an invalid ${label}`);
+  return value;
+}
+
+function mapPublicationProofAttemptValue(value: unknown): CreatorCasePublicationProofAttempt {
+  if (!isRecord(value)) throw new CreatorCaseError("db_error", "Creator case proof returned an invalid attempt");
+  const state = requiredText(value.state, "attempt state");
+  if (!(state === "draft" || state === "submitted" || state === "verified" || state === "changes_requested")) {
+    throw new CreatorCaseError("db_error", "Creator case proof returned an invalid attempt state");
+  }
+  const sequence = Number(value.sequence);
+  if (!Number.isSafeInteger(sequence) || sequence < 1) {
+    throw new CreatorCaseError("db_error", "Creator case proof returned an invalid sequence");
+  }
+  return {
+    id: requiredText(value.id, "attempt id"),
+    submissionId: requiredText(value.submissionId ?? value.mission_submission_id, "submission id"),
+    workflowId: requiredText(value.workflowId ?? value.mission_workflow_id, "workflow id"),
+    workItemId: requiredText(value.workItemId ?? value.mission_work_item_id, "work item id"),
+    creatorId: requiredText(value.creatorId ?? value.creator_id, "creator id"),
+    workspaceId: requiredText(value.workspaceId ?? value.workspace_id, "workspace id"),
+    parentAttemptId: nullableText(value.parentAttemptId ?? value.parent_attempt_id, "parent attempt id"),
+    sequence,
+    publishedUrl: requiredText(value.publishedUrl ?? value.published_url, "published URL"),
+    platform: nullableText(value.platform, "platform"),
+    state,
+    operatorMessage: nullableText(value.operatorMessage ?? value.operator_message, "operator message"),
+    submittedAt: nullableText(value.submittedAt ?? value.submitted_at, "submitted timestamp"),
+    decidedAt: nullableText(value.decidedAt ?? value.decided_at, "decided timestamp"),
+  };
+}
+
+function mapPublicationProofValue(value: unknown): CreatorCasePublicationProof {
+  if (!isRecord(value)) throw new CreatorCaseError("db_error", "Creator case proof returned an invalid proof projection");
+  const currentValue = value.currentAttempt ?? value.current_attempt;
+  const historyValue = value.history;
+  if (historyValue !== undefined && !Array.isArray(historyValue)) {
+    throw new CreatorCaseError("db_error", "Creator case proof returned an invalid proof history");
+  }
+  const currentAttempt = currentValue == null ? null : mapPublicationProofAttemptValue(currentValue);
+  const history = (historyValue ?? []).map(mapPublicationProofAttemptValue);
+  return {
+    submissionId: requiredText(value.submissionId ?? value.mission_submission_id, "submission id"),
+    workflowId: requiredText(value.workflowId ?? value.mission_workflow_id, "workflow id"),
+    workItemId: requiredText(value.workItemId ?? value.mission_work_item_id, "work item id"),
+    creatorId: requiredText(value.creatorId ?? value.creator_id, "creator id"),
+    workspaceId: requiredText(value.workspaceId ?? value.workspace_id, "workspace id"),
+    currentAttempt,
+    history,
+  };
+}
+
+function mapPublicationProofRows(rows: unknown[]): CreatorCasePublicationProof[] {
+  const groups = new Map<string, CreatorCasePublicationProofAttempt[]>();
+  for (const value of rows) {
+    const attempt = mapPublicationProofAttemptValue(value);
+    const key = `${attempt.submissionId}:${attempt.workflowId}:${attempt.workItemId}`;
+    groups.set(key, [...(groups.get(key) ?? []), attempt]);
+  }
+  return [...groups.values()].map((attempts) => {
+    const ordered = [...attempts].sort((left, right) => right.sequence - left.sequence || right.id.localeCompare(left.id));
+    const currentAttempt = ordered[0] ?? null;
+    if (!currentAttempt) throw new CreatorCaseError("db_error", "Creator case proof returned an empty group");
+    return {
+      submissionId: currentAttempt.submissionId,
+      workflowId: currentAttempt.workflowId,
+      workItemId: currentAttempt.workItemId,
+      creatorId: currentAttempt.creatorId,
+      workspaceId: currentAttempt.workspaceId,
+      currentAttempt,
+      history: ordered.slice(1),
+    };
+  });
 }
 
 function toNote(row: NoteRow): CreatorReviewNote {
@@ -362,7 +462,7 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
     if (creatorRes.error) failDb(creatorRes.error);
     if (!creatorRes.data) throw new CreatorCaseError("creator_not_found", "Creator was not found");
 
-    const [reviewRes, notesRes, auditRes] = await Promise.all([
+    const [reviewRes, notesRes, auditRes, proofRes] = await Promise.all([
       this.supabase
         .from("creator_review_statuses")
         .select(REVIEW_PROJECTION)
@@ -381,10 +481,17 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
         .eq("creator_id", creatorId)
         .eq("workspace_id", context.workspaceId)
         .order("created_at", { ascending: true }),
+      this.supabase
+        .from("mission_publication_proof_attempts")
+        .select(PUBLICATION_PROOF_ATTEMPT_PROJECTION)
+        .eq("creator_id", creatorId)
+        .eq("workspace_id", context.workspaceId)
+        .order("sequence", { ascending: false }),
     ]);
     if (reviewRes.error) failDb(reviewRes.error);
     if (notesRes.error) failDb(notesRes.error);
     if (auditRes.error) failDb(auditRes.error);
+    if (proofRes.error) failDb(proofRes.error);
 
     const creator = creatorRes.data as CreatorRow;
     const [social, profile, missionHistory] = await Promise.all([
@@ -410,6 +517,7 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
       social,
       profile,
       missionHistory,
+      publicationProofs: mapPublicationProofRows((proofRes.data ?? []) as unknown[]),
     };
   }
 
@@ -526,6 +634,27 @@ export class SupabaseCreatorCaseRepository implements CreatorCaseRepository {
       p_actor_label: context.actorLabel,
       p_note_category: command.category,
       p_note_body: command.body,
+    });
+    if (error) failDb(error);
+    return snapshotFromRpc(data);
+  }
+
+  async reviewPublicationProof(
+    context: CreatorCaseCommandContext,
+    command: ReviewPublicationProofCommand,
+  ): Promise<CreatorCaseReadModel> {
+    validateCommandContext(context);
+    const { data, error } = await this.supabase.rpc("creator_case_review_publication_proof", {
+      p_command_id: context.commandId,
+      p_workspace_id: context.workspaceId,
+      p_creator_id: command.creatorId,
+      p_operator_id: context.actorId,
+      p_actor_label: context.actorLabel,
+      p_submission_id: command.submissionId,
+      p_work_item_id: command.workItemId,
+      p_attempt_id: command.attemptId,
+      p_decision: command.decision,
+      p_message: command.message?.trim() || null,
     });
     if (error) failDb(error);
     return snapshotFromRpc(data);

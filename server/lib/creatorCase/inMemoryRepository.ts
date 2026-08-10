@@ -15,9 +15,12 @@ import type {
   ApplyCreatorReviewCommand,
   CreatorAuditEvent,
   CreatorCaseCommandContext,
+  CreatorCasePublicationProof,
+  CreatorCasePublicationProofAttempt,
   CreatorCaseReadContext,
   CreatorCaseReadModel,
   CreatorReviewNote,
+  ReviewPublicationProofCommand,
 } from "./types.js";
 
 export type InMemoryFailurePoint = "before_get_case" | "after_review" | "after_note" | "after_audit";
@@ -211,6 +214,82 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working, insertedNote);
   }
 
+  async reviewPublicationProof(
+    context: CreatorCaseCommandContext,
+    command: ReviewPublicationProofCommand,
+  ): Promise<CreatorCaseReadModel> {
+    this.validateCommandContext(context);
+    const payload = { context, command };
+    const replay = this.replay(context.commandId, payload);
+    if (replay) return replay;
+
+    const current = this.findCase(context, command.creatorId);
+    const proof = this.findPublicationProof(current, command);
+    const attempt = this.findPublicationProofAttempt(proof, command.attemptId);
+    if (!attempt) throw new CreatorCaseError("proof_attempt_not_found", "Publication proof attempt was not found");
+    if (attempt.creatorId !== command.creatorId
+      || attempt.workspaceId !== context.workspaceId
+      || attempt.submissionId !== command.submissionId
+      || attempt.workItemId !== command.workItemId
+      || attempt.workflowId !== proof.workflowId) {
+      throw new CreatorCaseError("proof_lineage_mismatch", "Publication proof does not belong to this creator case");
+    }
+    if (proof.currentAttempt?.id !== attempt.id || attempt.state !== "submitted") {
+      throw new CreatorCaseError("proof_attempt_not_submitted", "Only the current submitted proof attempt can be reviewed");
+    }
+    this.validatePublicationProofDecision(command);
+
+    const working = clone(current);
+    const proofs = clone(working.publicationProofs ?? []);
+    const workingProof = this.findPublicationProof(proofs, command);
+    const workingAttempt = workingProof.currentAttempt;
+    if (!workingAttempt) throw new CreatorCaseError("proof_attempt_not_found", "Publication proof attempt was not found");
+    const timestamp = new Date().toISOString();
+    const message = command.message?.trim() || null;
+    const decidedAttempt: CreatorCasePublicationProofAttempt = {
+      ...workingAttempt,
+      state: command.decision,
+      operatorMessage: message,
+      decidedAt: timestamp,
+    };
+
+    if (command.decision === "verified") {
+      workingProof.currentAttempt = decidedAttempt;
+    } else {
+      const correctionAttempt: CreatorCasePublicationProofAttempt = {
+        ...decidedAttempt,
+        id: `${workingAttempt.id}:correction:${context.commandId}`,
+        parentAttemptId: workingAttempt.id,
+        sequence: workingAttempt.sequence + 1,
+        state: "draft",
+        operatorMessage: null,
+        submittedAt: null,
+        decidedAt: null,
+      };
+      workingProof.history = [...workingProof.history, decidedAttempt];
+      workingProof.currentAttempt = correctionAttempt;
+    }
+    working.publicationProofs = proofs;
+    working.audit.push(this.makeAudit(
+      context,
+      command.creatorId,
+      `creator_publication_proof.${command.decision}`,
+      `${context.commandId}:proof`,
+      timestamp,
+      {
+        submissionId: command.submissionId,
+        workItemId: command.workItemId,
+        attemptId: command.attemptId,
+        decision: command.decision,
+        message,
+      },
+      "publication_proof_attempt",
+      command.attemptId,
+    ));
+
+    return this.commit(context.commandId, payload, context.workspaceId, command.creatorId, working);
+  }
+
   private caseKey(workspaceId: string, creatorId: string): string {
     return `${workspaceId}:${creatorId}`;
   }
@@ -334,6 +413,34 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     if (!body.trim()) throw new CreatorCaseError("bad_note_body", "Note body is required");
   }
 
+  private findPublicationProof(
+    creatorCase: CreatorCaseReadModel | CreatorCasePublicationProof[],
+    command: ReviewPublicationProofCommand,
+  ): CreatorCasePublicationProof {
+    const proofs = Array.isArray(creatorCase) ? creatorCase : creatorCase.publicationProofs ?? [];
+    const proof = proofs.find((candidate) =>
+      candidate.submissionId === command.submissionId && candidate.workItemId === command.workItemId);
+    if (!proof) throw new CreatorCaseError("proof_lineage_mismatch", "Publication proof does not belong to this creator case");
+    return proof;
+  }
+
+  private findPublicationProofAttempt(
+    proof: CreatorCasePublicationProof,
+    attemptId: string,
+  ): CreatorCasePublicationProofAttempt | null {
+    if (proof.currentAttempt?.id === attemptId) return proof.currentAttempt;
+    return proof.history.find((attempt) => attempt.id === attemptId) ?? null;
+  }
+
+  private validatePublicationProofDecision(command: ReviewPublicationProofCommand): void {
+    if (!("verified" === command.decision || "changes_requested" === command.decision)) {
+      throw new CreatorCaseError("proof_decision_invalid", "Invalid publication proof decision");
+    }
+    if (command.decision === "changes_requested" && !command.message?.trim()) {
+      throw new CreatorCaseError("proof_message_required", "A message is required when requesting proof changes");
+    }
+  }
+
   private makeNote(
     context: CreatorCaseCommandContext,
     creatorId: string,
@@ -351,8 +458,10 @@ export class InMemoryCreatorCaseRepository implements CreatorCaseRepository {
     id: string,
     createdAt: string,
     metadata: Record<string, unknown>,
+    targetType = "creator",
+    targetId = creatorId,
   ): CreatorAuditEvent {
-    return { id, workspaceId: context.workspaceId, operatorId: context.actorId, actorLabel: context.actorLabel, eventType, targetType: "creator", targetId: creatorId, creatorId, missionId: null, metadata, createdAt };
+    return { id, workspaceId: context.workspaceId, operatorId: context.actorId, actorLabel: context.actorLabel, eventType, targetType, targetId, creatorId, missionId: null, metadata, createdAt };
   }
 
   private failIf(point: InMemoryFailurePoint): void {
