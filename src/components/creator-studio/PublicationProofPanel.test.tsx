@@ -98,6 +98,41 @@ describe("PublicationProofPanel", () => {
     expect(await screen.findByText("Proof details saved.")).toBeInTheDocument();
   });
 
+  it("reuses the save command ID for an unchanged retry", async () => {
+    mocks.attempt.mutateAsync
+      .mockRejectedValueOnce(new Error("temporary failure"))
+      .mockResolvedValueOnce({});
+    render(<PublicationProofPanel submissionId="submission-1" workItem={workItem()} />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Published URL" }), { target: { value: "https://example.com/new-post" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create proof attempt" }));
+    await waitFor(() => expect(mocks.attempt.mutateAsync).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: "Create proof attempt" }));
+    await waitFor(() => expect(mocks.attempt.mutateAsync).toHaveBeenCalledTimes(2));
+
+    expect(mocks.attempt.mutateAsync.mock.calls[1][0].commandId)
+      .toBe(mocks.attempt.mutateAsync.mock.calls[0][0].commandId);
+  });
+
+  it("uses a fresh save command ID after the proof URL changes", async () => {
+    mocks.attempt.mutateAsync
+      .mockRejectedValueOnce(new Error("temporary failure"))
+      .mockResolvedValueOnce({});
+    render(<PublicationProofPanel submissionId="submission-1" workItem={workItem()} />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Published URL" }), { target: { value: "https://example.com/first-post" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create proof attempt" }));
+    await waitFor(() => expect(mocks.attempt.mutateAsync).toHaveBeenCalledTimes(1));
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Published URL" }), { target: { value: "https://example.com/corrected-post" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create proof attempt" }));
+    await waitFor(() => expect(mocks.attempt.mutateAsync).toHaveBeenCalledTimes(2));
+
+    expect(mocks.attempt.mutateAsync.mock.calls[1][0]).toMatchObject({ publishedUrl: "https://example.com/corrected-post" });
+    expect(mocks.attempt.mutateAsync.mock.calls[1][0].commandId)
+      .not.toBe(mocks.attempt.mutateAsync.mock.calls[0][0].commandId);
+  });
+
   it("shows failed metadata as a manual-review fallback and renders immutable history", () => {
     const previous = draftAttempt({ id: "attempt-0", sequence: 1, state: "changes_requested", publishedUrl: "https://example.com/old", operatorMessage: "Use the public post URL." });
     const current = draftAttempt({ sequence: 2, metadataState: "failed" });

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { AdminRequestError } from "@/lib/adminTransport";
+import { AdminAuthError, AdminRequestError } from "@/lib/adminTransport";
 import {
   postCreatorPublicationProofReview,
   type CreatorCasePublicationProof,
@@ -11,6 +11,7 @@ export type PublicationProofReviewPanelProps = {
   workspaceId: string;
   creatorId: string;
   publicationProofs?: CreatorCasePublicationProof[];
+  onAuthError?: (error: unknown) => void;
   onSuccess?: () => void;
 };
 
@@ -21,6 +22,11 @@ type ProofDecisionMutation = {
   commandKey: string;
   decision: CreatorCasePublicationProofDecision;
   message: string | null;
+};
+
+type PendingProofReviewCommand = {
+  commandId: string;
+  signature: string;
 };
 
 function proofReviewErrorMessage(error: unknown): string {
@@ -44,9 +50,10 @@ export function PublicationProofReviewPanel({
   workspaceId,
   creatorId,
   publicationProofs = [],
+  onAuthError,
   onSuccess,
 }: PublicationProofReviewPanelProps) {
-  const pendingCommandIds = useRef<Record<string, string>>({});
+  const pendingCommandIds = useRef<Record<string, PendingProofReviewCommand>>({});
   const proofIdentity = publicationProofs
     .map((proof) => `${proof.submissionId}:${proof.workItemId}:${proof.currentAttempt?.id ?? "none"}`)
     .sort()
@@ -64,13 +71,13 @@ export function PublicationProofReviewPanel({
   }, [proofIdentity]);
 
   const mutation = useMutation({
-    mutationFn: ({ proof, decision, message, commandId }: ProofDecisionMutation) => postCreatorPublicationProofReview(
+    mutationFn: ({ proof, attemptId, decision, message, commandId }: ProofDecisionMutation) => postCreatorPublicationProofReview(
       workspaceId,
       creatorId,
       {
         submissionId: proof.submissionId,
         workItemId: proof.workItemId,
-        attemptId: proof.currentAttempt!.id,
+        attemptId,
         decision,
         message,
       },
@@ -83,7 +90,15 @@ export function PublicationProofReviewPanel({
       setErrorMessage(null);
       onSuccess?.();
     },
-    onError: (error) => {
+    onError: (error, variables) => {
+      if (error instanceof AdminAuthError) {
+        onAuthError?.(error);
+        setErrorMessage("Your session has expired. Please sign in again.");
+        return;
+      }
+      if (error instanceof AdminRequestError && error.code === "command_conflict") {
+        delete pendingCommandIds.current[variables.commandKey];
+      }
       setErrorMessage(proofReviewErrorMessage(error));
     },
   });
@@ -99,8 +114,16 @@ export function PublicationProofReviewPanel({
     }
 
     const commandKey = `${proof.submissionId}:${currentAttempt.id}:${decision}`;
-    const commandId = pendingCommandIds.current[commandKey] ?? crypto.randomUUID();
-    pendingCommandIds.current[commandKey] = commandId;
+    const signature = JSON.stringify({
+      submissionId: proof.submissionId,
+      workItemId: proof.workItemId,
+      attemptId: currentAttempt.id,
+      decision,
+      message,
+    });
+    const pendingCommand = pendingCommandIds.current[commandKey];
+    const commandId = pendingCommand?.signature === signature ? pendingCommand.commandId : crypto.randomUUID();
+    pendingCommandIds.current[commandKey] = { commandId, signature };
     mutation.mutate({ proof, attemptId: currentAttempt.id, decision, message, commandId, commandKey });
   };
 

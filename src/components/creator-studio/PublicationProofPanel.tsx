@@ -218,10 +218,10 @@ export function PublicationProofPanel({ submissionId, workItem }: { submissionId
       {canEdit ? (
         <div className="space-y-3">
           <label className="block text-sm font-medium">Published URL
-            <input aria-label="Published URL" type="url" value={publishedUrl} onChange={(event) => { setPublishedUrl(event.target.value); setSaveStatus("idle"); }} className="mt-1 w-full rounded-lg border border-[var(--color-ink)] p-2" placeholder="https://example.com/published-post" />
+            <input aria-label="Published URL" type="url" value={publishedUrl} onChange={(event) => { commandIds.current.save = undefined; setPublishedUrl(event.target.value); setSaveStatus("idle"); }} className="mt-1 w-full rounded-lg border border-[var(--color-ink)] p-2" placeholder="https://example.com/published-post" />
           </label>
           <label className="block text-sm font-medium">Platform
-            <select aria-label="Publication platform" value={platform} onChange={(event) => { setPlatform(event.target.value); setSaveStatus("idle"); }} className="mt-1 w-full rounded-lg border border-[var(--color-ink)] bg-white p-2">
+            <select aria-label="Publication platform" value={platform} onChange={(event) => { commandIds.current.save = undefined; setPlatform(event.target.value); setSaveStatus("idle"); }} className="mt-1 w-full rounded-lg border border-[var(--color-ink)] bg-white p-2">
               {requirement.allowedPlatforms.map((allowedPlatform) => <option key={allowedPlatform} value={allowedPlatform}>{allowedPlatform}</option>)}
             </select>
           </label>

@@ -414,6 +414,7 @@ function OperatorCreatorDetailRoute() {
                     workspaceId={workspace}
                     creatorId={creator.id}
                     publicationProofs={detailData.publicationProofs}
+                    onAuthError={reportAuthError}
                     onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId, workspace] })}
                   />
                 </section>
