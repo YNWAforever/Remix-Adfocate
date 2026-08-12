@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
   fetchCreatorDetail: vi.fn(),
+  fetchCreatorPublicationProofs: vi.fn(),
   postCreatorNote: vi.fn(),
   postCreatorReview: vi.fn(),
 }));
@@ -19,6 +20,7 @@ vi.mock("@tanstack/react-router", async () => {
 vi.mock("@/lib/admin", async () => ({
   ...(await vi.importActual<object>("@/lib/admin")),
   fetchCreatorDetail: hoisted.fetchCreatorDetail,
+  fetchCreatorPublicationProofs: hoisted.fetchCreatorPublicationProofs,
   postCreatorNote: hoisted.postCreatorNote,
   postCreatorReview: hoisted.postCreatorReview,
   AdminAuthError: class AdminAuthError extends Error {},
@@ -40,6 +42,7 @@ describe("operator creator detail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-1" } as never);
+    hoisted.fetchCreatorPublicationProofs.mockResolvedValue({ proofs: { status: "available", value: [] } });
     hoisted.fetchCreatorDetail.mockResolvedValue({
       creator: {
         id: "creator-1",
