@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { enablePilot, inspectPilotCandidate } from "./pilot";
 
 type Row = Record<string, unknown>;
@@ -62,6 +62,15 @@ const mission = {
   cash_reward: null,
 };
 
+const HOUR = 60 * 60 * 1000;
+
+/**
+ * Frozen inspection clock. Every evidence timestamp below is derived from it, and it is
+ * injected into both `inspectPilotCandidate` and `enablePilot`, so wall-clock time never
+ * reaches the expiry guard and these fixtures cannot rot.
+ */
+const NOW = new Date("2026-08-01T00:00:00.000Z");
+
 function gates(digest = "a".repeat(64)) {
   return {
     approvedEvidenceDigest: digest,
@@ -70,13 +79,26 @@ function gates(digest = "a".repeat(64)) {
     approvedCommit: "c".repeat(40),
     deployment: { status: "passed" as const, deploymentReadyState: "READY" as const, commit: "c".repeat(40) },
     compatibilityEvidence: true,
-    evidenceExpiresAt: "2026-08-10T00:00:00.000Z",
-    evidenceCreatedAt: "2026-08-01T00:00:00.000Z",
-    now: new Date("2026-08-01T00:00:00Z"),
+    evidenceCreatedAt: new Date(NOW.getTime() - 24 * HOUR).toISOString(),
+    evidenceExpiresAt: new Date(NOW.getTime() + 24 * HOUR).toISOString(),
+    now: NOW,
   };
 }
 
 describe("pilot candidate guard", () => {
+  // These tests previously passed only because the real clock happened to sit inside the
+  // evidence window; they began failing the day it elapsed. Pinning the system clock far
+  // past every fixture means any code path that reads wall-clock time instead of the
+  // injected `now` fails here immediately, rather than years later.
+  // Only Date is faked — faking timers would stall the promise-based fake client.
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2099-01-01T00:00:00.000Z"));
+  });
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it("accepts one new legacy mission and exposes a frozen neutral join contract", async () => {
     const client = fakeSupabase({ mission });
     const report = await inspectPilotCandidate(client, {
@@ -91,7 +113,7 @@ describe("pilot candidate guard", () => {
       currency: "HKD",
       xp_amount: 0,
     });
-    await enablePilot(client, { ...report, apply: false, evidenceDigest: "a".repeat(64), approval: "" });
+    await enablePilot(client, { ...report, now: NOW, apply: false, evidenceDigest: "a".repeat(64), approval: "" });
     expect(client.update).not.toHaveBeenCalled();
   });
 
@@ -117,10 +139,11 @@ describe("pilot candidate guard", () => {
     const client = fakeSupabase({ mission });
     const digest = "b".repeat(64);
     const report = await inspectPilotCandidate(client, { workspaceId: "workspace-1", missionId: "mission-1", ...gates(digest) });
-    await expect(enablePilot(client, { ...report, apply: true, evidenceDigest: digest, approval: "ENABLE PILOT wrong" }))
+    await expect(enablePilot(client, { ...report, now: NOW, apply: true, evidenceDigest: digest, approval: "ENABLE PILOT wrong" }))
       .rejects.toThrow("exact approval");
     const enabled = await enablePilot(client, {
       ...report,
+      now: NOW,
       apply: true,
       evidenceDigest: digest,
       approval: `ENABLE PILOT workspace-1 mission-1 ${digest}`,
@@ -138,10 +161,41 @@ describe("pilot candidate guard", () => {
     const report = await inspectPilotCandidate(client, { workspaceId: "workspace-1", missionId: "mission-1", ...gates(raceDigest) });
     await expect(enablePilot(client, {
       ...report,
+      now: NOW,
       apply: true,
       evidenceDigest: raceDigest,
       approval: `ENABLE PILOT workspace-1 mission-1 ${raceDigest}`,
     })).rejects.toThrow("submission race");
     expect(mission.status).toBe("draft");
+  });
+
+  it("still rejects evidence that expired before the inspection clock", async () => {
+    const report = await inspectPilotCandidate(fakeSupabase({ mission }), {
+      workspaceId: "workspace-1",
+      missionId: "mission-1",
+      ...gates(),
+      evidenceExpiresAt: new Date(NOW.getTime() - HOUR).toISOString(),
+    });
+
+    expect(report.eligible).toBe(false);
+    expect(report.reasons).toContain("approved evidence has expired");
+  });
+
+  it("refuses to enable when the re-inspection clock is past the evidence expiry", async () => {
+    const client = fakeSupabase({ mission });
+    const digest = "d".repeat(64);
+    const report = await inspectPilotCandidate(client, { workspaceId: "workspace-1", missionId: "mission-1", ...gates(digest) });
+    expect(report.eligible).toBe(true);
+
+    // Evidence valid at inspection, expired by the time enablement re-inspects.
+    await expect(enablePilot(client, {
+      ...report,
+      now: new Date(NOW.getTime() + 48 * HOUR),
+      apply: true,
+      evidenceDigest: digest,
+      approval: `ENABLE PILOT workspace-1 mission-1 ${digest}`,
+    })).rejects.toThrow("approved evidence has expired");
+    expect(client.enablePilotAtomically).not.toHaveBeenCalled();
+    expect(client.mission?.creator_workflow_mode).toBe("legacy");
   });
 });
