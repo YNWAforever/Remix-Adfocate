@@ -5,11 +5,16 @@ import { render, screen } from "@testing-library/react";
 // Mock the router Link so we can assert hrefs without a RouterProvider.
 vi.mock("@tanstack/react-router", async (importActual) => {
   const actual = await importActual<typeof import("@tanstack/react-router")>();
+  const state = { location: { pathname: "/creators" } };
   return {
     ...actual,
     Link: ({ to, children, ...p }: { to: string; children: React.ReactNode; [k: string]: unknown }) => (
       <a href={to} {...p}>{children}</a>
     ),
+    // Non-home path keeps the standing marketing nav rendered (matches these assertions).
+    useRouterState: (opts?: { select?: (s: typeof state) => unknown }) =>
+      opts?.select ? opts.select(state) : state,
+    useNavigate: () => () => {},
   };
 });
 

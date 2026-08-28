@@ -25,6 +25,9 @@ import { legacyActivationServices, localized } from "@/data/legacyAdfocateConten
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { type Audience } from "@/components/marketing/AudienceToggle";
+import { useHomeAudience } from "@/components/marketing/homeAudience";
+import { BrandView, BrandHeroCard } from "@/components/marketing/BrandView";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -62,13 +65,6 @@ const levelPillClass: Record<string, string> = {
   L5: "level-pill-l5",
   L6: "level-pill-l6",
 };
-
-const serviceRouteMap = {
-  Brands: "/brands",
-  Creators: "/creators",
-  Earn: "/earn",
-  Playbooks: "/playbooks",
-} as const;
 
 // Eight income streams (full set preserved from the legacy monetization grid).
 const monetizationItems = [
@@ -122,104 +118,268 @@ function ScoreRing({
   );
 }
 
-/* ───────────────────────── 1. HERO — off-grid editorial ───────────────────────── */
-function HeroSection() {
+/* ───────── Creator hero artifact — passport/level card mock ───────── */
+function CreatorHeroCard() {
   const { lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const passport = mockCreatorPassport;
   const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
 
   return (
+    <div className="relative lg:justify-self-end">
+      <span
+        className="absolute -top-4 -left-3 z-10 tag-mono rotate-[-4deg] bg-[var(--color-acid)]"
+        aria-hidden="true"
+      >
+        Live Passport
+      </span>
+      <div className="pastel-card animate-float w-full max-w-sm p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-lg font-bold text-[var(--color-ink)]">
+            {passport.avatar}
+          </div>
+          <div>
+            <p className="font-heading text-base font-bold text-[var(--color-ink)]">{passport.name}</p>
+            <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
+              {passport.level} {passport.levelLabel}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
+              {tx("XP Progress", "經驗進度")}
+            </span>
+            <span className="font-mono text-[11px] font-bold text-[var(--color-magenta)]">
+              {passport.xp.toLocaleString()} / {passport.xpNext.toLocaleString()}
+            </span>
+          </div>
+          <div className="xp-bar">
+            <div className="xp-bar-fill" style={{ width: `${xpPct}%` }} />
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
+              {tx("Pending earnings", "待結算收入")}
+            </p>
+            <p className="font-display text-xl text-[var(--color-ink)]">HK$8,450</p>
+          </div>
+          <span className="metric-badge metric-up">+18%</span>
+        </div>
+      </div>
+      <p className="mt-3 text-right font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
+        {tx("Demo · not a guarantee", "示範畫面・非保證收入")}
+      </p>
+    </div>
+  );
+}
+
+/* ───────────────────────── 1. HERO — identity decision ───────────────────────── */
+function HeroSection({
+  audience,
+  onChange,
+}: {
+  audience: Audience;
+  onChange: (next: Audience) => void;
+}) {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+  const isBrand = audience === "brand";
+
+  const cardBase =
+    "group flex flex-col justify-between gap-6 rounded-[1.25rem] border-2 border-[var(--color-ink)] p-6 text-left transition-transform hover:-translate-y-0.5 min-h-[168px]";
+
+  return (
     <section className="relative overflow-hidden bg-[var(--color-paper)]">
       <div className="dot-pattern absolute inset-0 opacity-60" aria-hidden="true" />
-      <div className="relative mx-auto max-w-6xl px-4 pt-14 pb-16 sm:pt-20 sm:pb-24">
+      <div className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-          {/* Editorial column — anchored left, off-grid */}
+          {/* Editorial column */}
           <div className="max-w-2xl">
             <span className="sticker mb-6 inline-flex items-center gap-2">
               <Sparkles className="h-3 w-3" /> KOCMAX × ADFOCATE
             </span>
-            <h1 className="font-display text-[var(--color-ink)] mb-5 leading-[0.95] tracking-tight">
-              {tx("From first review to creator business.", "由第一篇開箱，做到創作者事業。")}
+            <h1 className="font-display text-[var(--color-ink)] mb-5 leading-[0.98] tracking-tight text-[clamp(2.25rem,5.5vw,3.75rem)]">
+              {isBrand ? (
+                tx("Quickly find the right creators.", "快速搵到啱嘅創作者。")
+              ) : lang === "zh" ? (
+                // Force a clean two-line break at the comma; the clamped size keeps
+                // the longer line ("做到創作者事業。") on one row at every width.
+                <>
+                  <span className="block">由第一篇開箱，</span>
+                  <span className="block">做到創作者事業。</span>
+                </>
+              ) : (
+                "From first review to creator business."
+              )}
             </h1>
             <p className="text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
-              {tx(
-                "Grow, get matched to missions, and turn verified performance into real income — on one calmly-gamified platform built for Hong Kong creators and brands.",
-                "成長、配對任務、把經過驗證嘅表現變成真實收入 —— 一個為香港創作者同品牌而設、輕度遊戲化嘅平台。",
-              )}
+              {isBrand
+                ? tx(
+                    "Pick a ready-made campaign plan; Adfocate matches the right creators to your budget and goals, then helps run and settle it — no hunting around.",
+                    "揀一個現成活動方案，Adfocate 依你嘅預算同目標配對啱嘅創作者，仲會全程幫你執行同結算 —— 唔使自己四圍搵人。",
+                  )
+                : tx(
+                    "Grow, get matched to missions, and turn verified performance into real income — on one calmly-gamified platform built for Hong Kong creators and brands.",
+                    "成長、配對任務、把經過驗證嘅表現變成真實收入 —— 一個為香港創作者同品牌而設、輕度遊戲化嘅平台。",
+                  )}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/creators" className="btn-primary">
-                <Sparkles className="h-4 w-4" /> {tx("Join as Creator", "成為創作者")}
-              </Link>
-              <Link to="/brands" className="btn-ink">
-                <Rocket className="h-4 w-4" /> {tx("For Brands", "品牌方案")}
-              </Link>
+              {isBrand ? (
+                <>
+                  <Link to="/contact" className="btn-primary">
+                    <MessageCircle className="h-4 w-4" /> {tx("Contact Us", "聯絡我們")}
+                  </Link>
+                  <a href="#services" className="btn-ink">
+                    <Rocket className="h-4 w-4" /> {tx("Browse plans", "瀏覽方案")}
+                  </a>
+                </>
+              ) : (
+                <>
+                  <Link to="/creators" className="btn-primary">
+                    <Sparkles className="h-4 w-4" /> {tx("Join as Creator", "成為創作者")}
+                  </Link>
+                  <Link to="/brands" className="btn-ink">
+                    <Rocket className="h-4 w-4" /> {tx("For Brands", "品牌方案")}
+                  </Link>
+                </>
+              )}
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-2.5">
-              <span className="platform-tag">
-                <InstagramIcon className="h-3.5 w-3.5" /> Instagram
-              </span>
-              <span className="platform-tag">
-                <YoutubeIcon className="h-3.5 w-3.5" /> TikTok
-              </span>
-              <span className="platform-tag">
-                <MessageCircle className="h-3.5 w-3.5" /> Xiaohongshu
-              </span>
-              <span className="platform-tag">
-                <Monitor className="h-3.5 w-3.5" /> Facebook
-              </span>
-            </div>
+            {!isBrand && (
+              <div className="mt-7 flex flex-wrap gap-2.5">
+                <span className="platform-tag">
+                  <InstagramIcon className="h-3.5 w-3.5" /> Instagram
+                </span>
+                <span className="platform-tag">
+                  <YoutubeIcon className="h-3.5 w-3.5" /> TikTok
+                </span>
+                <span className="platform-tag">
+                  <MessageCircle className="h-3.5 w-3.5" /> Xiaohongshu
+                </span>
+                <span className="platform-tag">
+                  <Monitor className="h-3.5 w-3.5" /> Facebook
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Artifact — passport/level card mock, the concept anchor */}
-          <div className="relative lg:justify-self-end">
-            <span
-              className="absolute -top-4 -left-3 z-10 tag-mono rotate-[-4deg] bg-[var(--color-acid)]"
-              aria-hidden="true"
-            >
-              Live Passport
-            </span>
-            <div className="pastel-card animate-float w-full max-w-sm p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-lg font-bold text-[var(--color-ink)]">
-                  {passport.avatar}
-                </div>
-                <div>
-                  <p className="font-heading text-base font-bold text-[var(--color-ink)]">{passport.name}</p>
-                  <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
-                    {passport.level} {passport.levelLabel}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <div className="mb-1.5 flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
-                    {tx("XP Progress", "經驗進度")}
-                  </span>
-                  <span className="font-mono text-[11px] font-bold text-[var(--color-magenta)]">
-                    {passport.xp.toLocaleString()} / {passport.xpNext.toLocaleString()}
-                  </span>
-                </div>
-                <div className="xp-bar">
-                  <div className="xp-bar-fill" style={{ width: `${xpPct}%` }} />
-                </div>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
-                    {tx("Pending earnings", "待結算收入")}
-                  </p>
-                  <p className="font-display text-xl text-[var(--color-ink)]">HK$8,450</p>
-                </div>
-                <span className="metric-badge metric-up">+18%</span>
-              </div>
-            </div>
-          </div>
+          {/* Audience-specific artifact card */}
+          {isBrand ? <BrandHeroCard /> : <CreatorHeroCard />}
         </div>
+
+        {/* Identity selector cards — also switch the whole page */}
+        <div className="mt-12 grid gap-4 sm:mt-14 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => onChange("creator")}
+            className={cn(
+              cardBase,
+              !isBrand
+                ? "bg-[var(--color-acid)] text-[var(--color-ink)] shadow-[8px_8px_0_0_var(--color-ink)]"
+                : "bg-[var(--color-paper)] text-[var(--color-ink)]",
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] opacity-70">
+                For Creators
+              </span>
+              <ArrowRight className="h-5 w-5 -rotate-45" />
+            </div>
+            <div>
+              <p className="font-display text-2xl font-bold sm:text-3xl">{tx("I'm a Creator", "我是創作者")}</p>
+              <p className="mt-2 text-sm leading-relaxed opacity-85">
+                {tx(
+                  "Take brand missions, build your portfolio, and turn creating into steady income.",
+                  "接品牌任務、累積作品履歷，把創作變成穩定收入。",
+                )}
+              </p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange("brand")}
+            className={cn(
+              cardBase,
+              isBrand
+                ? "bg-[var(--color-violet)] text-[var(--color-paper)] shadow-[8px_8px_0_0_var(--color-ink)]"
+                : "bg-[var(--color-paper)] text-[var(--color-ink)]",
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] opacity-70">
+                For Brands
+              </span>
+              <ArrowRight className="h-5 w-5 -rotate-45" />
+            </div>
+            <div>
+              <p className="font-display text-2xl font-bold sm:text-3xl">{tx("I'm a Brand", "我是品牌")}</p>
+              <p className="mt-2 text-sm leading-relaxed opacity-85">
+                {tx(
+                  "Use ready-made campaign plans to quickly match the right creators.",
+                  "用現成的活動方案，快速媒合對的創作者做行銷。",
+                )}
+              </p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── 1b. HOW IT WORKS (creator) — three-step flow ─────────
+ * Anchor target for the "運作方式" sub-nav item. */
+function HowItWorksSection() {
+  const { lang } = useI18n();
+  const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+  const steps = [
+    {
+      n: "01",
+      t: tx("Match a mission", "配對任務"),
+      d: tx(
+        "Auto-matched to brand missions that fit your style and audience.",
+        "依你的風格與粉絲輪廓，自動媒合適合的品牌任務。",
+      ),
+    },
+    {
+      n: "02",
+      t: tx("Create & deliver", "完成創作"),
+      d: tx(
+        "Produce to the brief and deliver online — no back-and-forth chasing.",
+        "照任務簡報產出內容，線上交付與溝通，不用來回追人。",
+      ),
+    },
+    {
+      n: "03",
+      t: tx("Get paid", "領取收入"),
+      d: tx("Auto-settled once approved, paid straight to your account.", "任務通過後自動結算，收入直接進入你的帳戶。"),
+    },
+  ];
+
+  return (
+    <section id="how" className="mx-auto max-w-6xl scroll-mt-32 px-4 py-16 md:py-20">
+      <div className="mb-10 max-w-xl">
+        <span className="tag-mono">{tx("How it works", "運作方式")}</span>
+        <h2 className="mt-4 font-display text-[var(--color-ink)]">{tx("Three steps to start earning.", "三步，就開始賺。")}</h2>
+        <p className="mt-3 text-[var(--color-soft-ink)]">
+          {tx("No jargon — the flow really is this simple.", "不用術語，實際流程就是這樣簡單。")}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {steps.map((st, i) => (
+          <div key={st.n} className={cn("pastel-card p-6", `stagger-${i + 1} animate-slide-up`)}>
+            <div className="text-outline-mint font-display text-5xl leading-none text-[var(--color-acid)]">
+              {st.n}
+            </div>
+            <h3 className="mt-5 font-heading text-xl font-bold text-[var(--color-ink)]">{st.t}</h3>
+            <p className="mt-2.5 text-sm leading-relaxed text-[var(--color-soft-ink)]">{st.d}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -231,12 +391,12 @@ function SocialProofStrip() {
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const stats = [
     { value: "5,200+", label: tx("Creators", "創作者") },
-    { value: "120+", label: tx("Brand campaigns", "品牌活動") },
-    { value: "8", label: tx("Income streams", "收入來源") },
-    { value: "98%", label: tx("Brand-safe rating", "品牌安全評分") },
+    { value: "120+", label: tx("Brand partners", "合作品牌") },
+    { value: "8", label: tx("Mission types", "任務類型") },
+    { value: "98%", label: tx("Satisfaction", "合作滿意度") },
   ];
   return (
-    <section className="mx-auto max-w-6xl px-4 -mt-6 mb-4">
+    <section className="mx-auto max-w-6xl px-4 pt-2 pb-4 sm:pt-4">
       <div className="rounded-3xl border-2 border-[var(--color-ink)] bg-[var(--color-card)] px-6 py-8 shadow-[6px_6px_0_0_var(--color-ink)] sm:px-10">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-4">
           {stats.map((s) => (
@@ -298,7 +458,7 @@ function PillarsSection() {
   ];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
+    <section id="value" className="mx-auto max-w-6xl scroll-mt-32 px-4 py-16 md:py-20">
       <div className="mb-10 max-w-xl">
         <span className="tag-mono">{tx("The Platform", "平台基石")}</span>
         <h2 className="mt-4 font-display text-[var(--color-ink)]">{tx("One loop. Four pillars.", "一個循環，四大基石。")}</h2>
@@ -350,7 +510,7 @@ function GrowthLadderSection() {
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
   return (
-    <section className="bg-[var(--color-card)] py-16 md:py-20">
+    <section id="levels" className="scroll-mt-32 bg-[var(--color-card)] py-16 md:py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-12 max-w-2xl">
           <span className="sticker">{tx("Level up to unlock", "升級解鎖更多")}</span>
@@ -421,7 +581,7 @@ function CreatorPassportSection() {
   ] as const;
 
   return (
-    <section className="relative overflow-hidden bg-[var(--color-ink)] py-16 text-[var(--color-paper)] md:py-24">
+    <section id="passport" className="relative scroll-mt-32 overflow-hidden bg-[var(--color-ink)] py-16 text-[var(--color-paper)] md:py-24">
       {/* Second-read moment: one oversized stroked numeral */}
       <span
         className="text-outline-mint pointer-events-none absolute -right-6 top-2 select-none font-display text-[180px] leading-none opacity-40 sm:text-[260px] md:text-[320px]"
@@ -627,61 +787,63 @@ function MonetizationStackSection() {
   );
 }
 
-/* ─────────────── 6. TWO-SIDED DIPTYCH — color-blocked split ─────────────── */
-function TwoSidedDiptychSection() {
-  const { t, lang } = useI18n();
+/* ─────────────── 6. BRAND CLOSER — single violet CTA card ───────────────
+ * Merges the old brand card and the "想跑一檔看看?" final CTA into one
+ * brand-styled (violet) closing block for the brand view. */
+function BrandCloserSection() {
+  const { lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const servicePreview = legacyActivationServices.slice(0, 4);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-      <div className="overflow-hidden rounded-[1.5rem] border-2 border-[var(--color-ink)] shadow-[6px_6px_0_0_var(--color-ink)]">
-        <div className="grid md:grid-cols-2">
-          {/* Creators — acid field */}
-          <div className="flex flex-col gap-5 bg-[var(--color-acid)] p-8 sm:p-10">
-            <span className="tag-mono w-fit">{tx("For Creators", "創作者")}</span>
-            <h2 className="font-display text-[var(--color-ink)]">{tx("創作者", "創作者")}</h2>
-            <p className="max-w-sm text-[var(--color-ink)]/80">
-              {tx(
-                "Start with simple product missions, build verified proof, and grow into paid campaigns, affiliate offers and live commerce.",
-                "由簡單嘅產品任務開始，累積驗證證明，成長至付費活動、聯盟優惠同直播帶貨。",
-              )}
-            </p>
-            <Link
-              to="/creators"
-              className="mt-2 inline-flex w-fit items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2.5 text-sm font-bold text-[var(--color-acid)] transition-transform hover:-translate-y-0.5"
-            >
-              {tx("Join as Creator", "成為創作者")} <ArrowRight className="h-4 w-4" />
-            </Link>
+      <div className="relative overflow-hidden rounded-[1.5rem] border-2 border-[var(--color-ink)] bg-[var(--color-violet)] p-8 text-[var(--color-paper)] shadow-[6px_6px_0_0_var(--color-ink)] sm:p-12 md:p-16">
+        <div className="dot-pattern absolute inset-0 opacity-20" aria-hidden="true" />
+        <div className="relative">
+          <span className="tag-mono">{tx("Run a campaign", "開始活動")}</span>
+          <h2 className="mt-5 font-display text-[var(--color-paper)]">
+            {tx("Want to run one?", "想跑一檔看看？")}
+          </h2>
+          <p className="mt-4 max-w-xl text-[var(--color-paper)]/85">
+            {tx(
+              "Tell us your product and goals; we'll send back an actionable plan and quote.",
+              "告訴我們你的產品與目標，我們給你一份可執行的方案與報價。",
+            )}
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-1.5">
+            {servicePreview.map((service) => (
+              <span
+                key={service.id}
+                className="rounded-full border border-[var(--color-paper)]/30 bg-[var(--color-paper)]/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-paper)]"
+              >
+                {localized(service.title, lang)}
+              </span>
+            ))}
           </div>
 
-          {/* Brands — violet field */}
-          <div className="flex flex-col gap-5 bg-[var(--color-violet)] p-8 text-[var(--color-paper)] sm:p-10">
-            <span className="tag-mono w-fit">{tx("For Brands", "品牌方")}</span>
-            <h2 className="font-display text-[var(--color-paper)]">{tx("品牌", "品牌")}</h2>
-            <p className="max-w-sm text-[var(--color-paper)]/85">{t("home.brands.sub")}</p>
-            <div className="flex flex-wrap gap-1.5">
-              {servicePreview.map((service) => (
-                <Link
-                  key={service.id}
-                  to={serviceRouteMap[service.modernHome]}
-                  className="rounded-full border border-[var(--color-paper)]/30 bg-[var(--color-paper)]/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-paper)] transition-colors hover:bg-[var(--color-paper)]/20"
-                >
-                  {localized(service.title, lang)}
-                </Link>
-              ))}
-            </div>
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              to="/brands"
-              className="mt-2 inline-flex w-fit items-center gap-2 rounded-full border-2 border-[var(--color-paper)] bg-[var(--color-paper)] px-5 py-2.5 text-sm font-bold text-[var(--color-ink)] transition-transform hover:-translate-y-0.5"
+              to="/contact"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--color-paper)] bg-[var(--color-paper)] px-6 py-3 text-sm font-bold text-[var(--color-ink)] transition-transform hover:-translate-y-0.5"
             >
-              {tx("Explore brand activations", "查看品牌活動方案")} <ArrowRight className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4" /> {tx("Contact Us", "聯絡我們")}
             </Link>
+            <a
+              href="#services"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--color-paper)] bg-transparent px-6 py-3 text-sm font-bold text-[var(--color-paper)] transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)]"
+            >
+              {tx("Browse plans", "瀏覽方案")} <ArrowRight className="h-4 w-4" />
+            </a>
           </div>
+
+          <p className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-paper)]/70">
+            <Check className="h-3.5 w-3.5" /> {tx("Free intro call · Hong Kong", "免費初步傾 · 香港")}
+          </p>
         </div>
       </div>
 
-      {/* Folded-in legacy proof: verified metrics brands see */}
+      {/* Verified metrics brands see */}
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {[
           { label: tx("92% Audience Fit", "92% 受眾匹配") },
@@ -700,36 +862,62 @@ function TwoSidedDiptychSection() {
 }
 
 /* ───────────────────────── 7. FINAL CTA — banner-style acid block ───────────────────────── */
-function FinalCTASection() {
+function FinalCTASection({ audience }: { audience: Audience }) {
   const { t, lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+  const isBrand = audience === "brand";
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 md:py-20">
       <div className="relative overflow-hidden rounded-[1.5rem] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-8 text-center shadow-[6px_6px_0_0_var(--color-ink)] sm:p-12 lg:p-16">
         <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
         <div className="relative mx-auto max-w-2xl">
-          <span className="tag-mono">{tx("Get Started", "立即開始")}</span>
-          <h2 className="mt-5 font-display text-[var(--color-ink)]">{t("home.final.heading")}</h2>
+          <span className="tag-mono">{isBrand ? tx("Run a campaign", "開始活動") : tx("Get Started", "立即開始")}</span>
+          <h2 className="mt-5 font-display text-[var(--color-ink)]">
+            {isBrand ? tx("Want to run one?", "想跑一檔看看？") : t("home.final.heading")}
+          </h2>
           <p className="mx-auto mt-4 max-w-md text-[var(--color-ink)]/80">
-            {tx(
-              "Join thousands of Hong Kong creators turning KOC missions into real creator businesses — or work with verified creators on your next campaign.",
-              "加入數以千計嘅香港創作者，把 KOC 任務變成真正嘅創作者事業 —— 或者同經驗證嘅創作者合作你下一個活動。",
-            )}
+            {isBrand
+              ? tx(
+                  "Tell us your product and goals; we'll send back an actionable plan and quote.",
+                  "告訴我們你的產品與目標，我們給你一份可執行的方案與報價。",
+                )
+              : tx(
+                  "Join thousands of Hong Kong creators turning KOC missions into real creator businesses — or work with verified creators on your next campaign.",
+                  "加入數以千計嘅香港創作者，把 KOC 任務變成真正嘅創作者事業 —— 或者同經驗證嘅創作者合作你下一個活動。",
+                )}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/creators" className="btn-ink">
-              <Sparkles className="h-4 w-4" /> {t("home.final.start")}
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-transparent px-[22px] py-3 text-sm font-bold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-ink)] hover:text-[var(--color-acid)]"
-            >
-              {t("home.final.talk")}
-            </Link>
+            {isBrand ? (
+              <Link to="/contact" className="btn-ink">
+                <MessageCircle className="h-4 w-4" /> {tx("Contact Us", "聯絡我們")}
+              </Link>
+            ) : (
+              <Link to="/creators" className="btn-ink">
+                <Sparkles className="h-4 w-4" /> {t("home.final.start")}
+              </Link>
+            )}
+            {isBrand ? (
+              <a
+                href="#services"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-transparent px-[22px] py-3 text-sm font-bold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-ink)] hover:text-[var(--color-acid)]"
+              >
+                {tx("Browse plans", "瀏覽方案")}
+              </a>
+            ) : (
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-transparent px-[22px] py-3 text-sm font-bold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-ink)] hover:text-[var(--color-acid)]"
+              >
+                {t("home.final.talk")}
+              </Link>
+            )}
           </div>
           <p className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
-            <Check className="h-3.5 w-3.5" /> {tx("Free to join · No contract · Hong Kong", "免費加入 · 無合約 · 香港")}
+            <Check className="h-3.5 w-3.5" />{" "}
+            {isBrand
+              ? tx("Free intro call · Hong Kong", "免費初步傾 · 香港")
+              : tx("Free to join · No contract · Hong Kong", "免費加入 · 無合約 · 香港")}
           </p>
         </div>
       </div>
@@ -738,16 +926,29 @@ function FinalCTASection() {
 }
 
 function Home() {
+  const { audience, setAudience } = useHomeAudience();
+
   return (
     <div>
-      <HeroSection />
+      <HeroSection audience={audience} onChange={setAudience} />
       <SocialProofStrip />
-      <PillarsSection />
-      <GrowthLadderSection />
-      <CreatorPassportSection />
-      <MonetizationStackSection />
-      <TwoSidedDiptychSection />
-      <FinalCTASection />
+      {audience === "creator" ? (
+        <>
+          <PillarsSection />
+          <HowItWorksSection />
+          <CreatorPassportSection />
+          <GrowthLadderSection />
+          <MonetizationStackSection />
+          <FinalCTASection audience="creator" />
+        </>
+      ) : (
+        <>
+          <BrandView />
+          {/* One brand-styled closer: the brand card + the "想跑一檔看看?" CTA are
+              merged into a single violet block (no separate acid CTA banner). */}
+          <BrandCloserSection />
+        </>
+      )}
     </div>
   );
 }
