@@ -238,8 +238,8 @@ function ServicesSection() {
         ))}
       </div>
 
-      <Link to="/contact" className="btn-ink mt-10">
-        {tx("Talk about your campaign", "傾你嘅活動")} <ArrowRight className="h-4 w-4" />
+      <Link to="/packages" className="btn-ink mt-10">
+        {tx("See all plans", "睇晒所有方案")} <ArrowRight className="h-4 w-4" />
       </Link>
     </section>
   );
