@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, makeMission, setXp, cleanup, hasSupabaseEnv } from "./helpers";
@@ -10,7 +12,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -21,7 +23,7 @@ suite("leveling engine", () => {
   let c: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    c = await makeCreator("leveling@test.local", 0);
+    c = await makeCreator(fixtureName("leveling@test.local"), 0);
   });
   afterAll(cleanup);
 
@@ -41,8 +43,8 @@ suite("leveling engine", () => {
     // Uses an L1 mission so this exercises the pure XP gate (L0/L1 = XP-only).
     // The L2 gate additionally requires a verified handle (Slice 1) — that
     // XP-AND-verification path is covered in verificationGate.test.ts.
-    const g = await makeCreator("leveling-gate@test.local", 0);
-    const m = await makeMission({ slug: "test-l1-gate", required_level: "L1" });
+    const g = await makeCreator(fixtureName("leveling-gate@test.local"), 0);
+    const m = await makeMission({ slug: fixtureName("test-l1-gate"), required_level: "L1" });
 
     const locked = await req(`/missions/${m.slug}/join`, g.jwt, { method: "POST" });
     expect(locked.status).toBe(409); // level_locked → RPC_409
@@ -53,7 +55,7 @@ suite("leveling engine", () => {
   });
 
   it("tracks level_seen and clears the pending celebration on acknowledge", async () => {
-    const d = await makeCreator("leveling-seen@test.local", 0);
+    const d = await makeCreator(fixtureName("leveling-seen@test.local"), 0);
 
     // Fresh creator: level L0, level_seen L0 → nothing pending.
     let me = await (await req("/me", d.jwt)).json();

@@ -79,7 +79,7 @@ export function useCreatorActivation(): UseCreatorActivationResult {
   return {
     snapshot,
     me: section(meQuery),
-    activeMissions: section(missionsQuery, snapshot.activeMissions),
+    activeMissions: section(missionsQuery),
     recommendations: section(recommendationsQuery, snapshot.suitableMissions),
     earnings: section(earningsQuery),
     readiness: {

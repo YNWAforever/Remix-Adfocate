@@ -39,7 +39,7 @@ const hoisted = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => ({ data: hoisted.meData, isLoading: false, error: null }),
-  useOnboardingStatus: () => ({ data: hoisted.statusLoading ? undefined : { onboarding_step: hoisted.onboardingStep, onboarding_completed: false, completion_pct: 25 }, isLoading: hoisted.statusLoading, error: hoisted.statusError, refetch: vi.fn() }),
+  useOnboardingStatus: () => ({ data: hoisted.statusLoading ? undefined : { onboarding_step: hoisted.onboardingStep, onboarding_completed: hoisted.meData.onboarding_completed, completion_pct: 25 }, isLoading: hoisted.statusLoading, error: hoisted.statusError, refetch: vi.fn() }),
   useRecommendedMissions: () => ({ data: hoisted.recommendedData, isLoading: hoisted.recommendedLoading, error: hoisted.recommendedError, refetch: hoisted.recommendedRefetch }),
   useSaveProfile: () => ({ mutateAsync: hoisted.saveProfile, isPending: false }),
   useConnectSocial: () => ({ mutateAsync: hoisted.connectSocial, isPending: false }),
@@ -66,6 +66,7 @@ function renderWizard() {
 describe("Onboarding wizard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState({}, "", "/onboarding");
     hoisted.onboardingStep = 2;
     hoisted.statusLoading = false;
     hoisted.statusError = null;
@@ -81,6 +82,21 @@ describe("Onboarding wizard", () => {
   it("starts at the categories step (step 2)", () => {
     renderWizard();
     expect(screen.getByText("你的範疇")).toBeInTheDocument();
+  });
+
+  it("locks editable categories while a step is being saved", () => {
+    hoisted.saveProfile.mockReturnValueOnce(new Promise(() => {}));
+    renderWizard(); fireEvent.click(screen.getByText("下一步"));
+    expect(screen.getByRole("button", { name: "美容" })).toBeDisabled();
+  });
+
+  it("does not offer the welcome reward again after a completed reload", () => {
+    hoisted.onboardingStep = 5; hoisted.meData.onboarding_completed = true;
+    window.history.replaceState({}, "", "/onboarding?next=" + encodeURIComponent("/profile"));
+    renderWizard();
+    expect(screen.queryByRole("button", { name: dict.zh["app.onboarding.claimCta"] })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "繼續原先操作" })).toHaveAttribute("href", "/profile");
+    expect(hoisted.complete).not.toHaveBeenCalled();
   });
 
   it("first-run primer (step 1): persists step 2 before advancing to categories", async () => {

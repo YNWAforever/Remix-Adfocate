@@ -457,6 +457,7 @@ export function CreatorMissionWorkspace() {
               <DraftEditor
                 key={activeItem.id}
                 item={activeItem}
+                assistContext={{ missionId: workspace.mission.id, workflowId: workspace.workflow.id, workItemId: activeItem.id, versionId: activeItem.currentSubmittedVersionId ?? undefined, mode: "explain_brief" }}
                 requiredChanges={activeItem.requiredChanges ?? []}
                 revisionDeadline={activeItem.revisionDeadline ?? null}
                 existingAssetCount={(activeItem.draftAssets ?? []).length}

@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "kind": "offline-mock-only",
+  "ids": {
+    "workspace": "10000000-0000-4000-8000-000000000001",
+    "otherWorkspace": "10000000-0000-4000-8000-000000000002",
+    "creator": "20000000-0000-4000-8000-000000000001",
+    "otherCreator": "20000000-0000-4000-8000-000000000002",
+    "mission": "30000000-0000-4000-8000-000000000001",
+    "submission": "40000000-0000-4000-8000-000000000001",
+    "workflow": "50000000-0000-4000-8000-000000000001",
+    "item": "60000000-0000-4000-8000-000000000001",
+    "v1": "70000000-0000-4000-8000-000000000001",
+    "v2": "70000000-0000-4000-8000-000000000002",
+    "request": "80000000-0000-4000-8000-000000000001"
+  },
+  "cases": [
+    {
+      "id": "N04-01",
+      "group": "rules",
+      "scenario": "brief",
+      "expected": "cited_brief"
+    },
+    {
+      "id": "N04-02",
+      "group": "rules",
+      "scenario": "snapshot",
+      "expected": "frozen_checklist"
+    },
+    {
+      "id": "N04-03",
+      "group": "rules",
+      "scenario": "reward",
+      "expected": "no_payment_promise"
+    },
+    {
+      "id": "N04-04",
+      "group": "rules",
+      "scenario": "locale",
+      "expected": "zh_HK_sources"
+    },
+    {
+      "id": "N05-01",
+      "group": "diffs",
+      "scenario": "caption",
+      "expected": "v1_to_v2"
+    },
+    {
+      "id": "N05-02",
+      "group": "diffs",
+      "scenario": "checklist",
+      "expected": "changed_checklist"
+    },
+    {
+      "id": "N05-03",
+      "group": "diffs",
+      "scenario": "url",
+      "expected": "url_presence_only"
+    },
+    {
+      "id": "N05-04",
+      "group": "diffs",
+      "scenario": "human",
+      "expected": "human_review_only"
+    },
+    {
+      "id": "N06-01",
+      "group": "unknowns",
+      "scenario": "empty",
+      "expected": "unknown_no_generation"
+    },
+    {
+      "id": "N06-02",
+      "group": "unknowns",
+      "scenario": "stale",
+      "expected": "stale_basis"
+    },
+    {
+      "id": "N06-03",
+      "group": "unknowns",
+      "scenario": "payment",
+      "expected": "unknown_no_date"
+    },
+    {
+      "id": "N06-04",
+      "group": "unknowns",
+      "scenario": "draft",
+      "expected": "not_found"
+    },
+    {
+      "id": "N07-01",
+      "group": "scope",
+      "scenario": "creator",
+      "expected": "not_found"
+    },
+    {
+      "id": "N07-02",
+      "group": "scope",
+      "scenario": "workspace",
+      "expected": "not_found"
+    },
+    {
+      "id": "N07-03",
+      "group": "scope",
+      "scenario": "note",
+      "expected": "bad_request"
+    },
+    {
+      "id": "N07-04",
+      "group": "scope",
+      "scenario": "asset",
+      "expected": "bad_request"
+    },
+    {
+      "id": "N08-01",
+      "group": "injection",
+      "scenario": "brief",
+      "expected": "tool_denied"
+    },
+    {
+      "id": "N08-02",
+      "group": "injection",
+      "scenario": "kb",
+      "expected": "tool_denied"
+    },
+    {
+      "id": "N08-03",
+      "group": "injection",
+      "scenario": "metadata",
+      "expected": "tool_denied"
+    },
+    {
+      "id": "N08-04",
+      "group": "injection",
+      "scenario": "notes",
+      "expected": "tool_denied"
+    },
+    {
+      "id": "N09-01",
+      "group": "failures",
+      "scenario": "timeout",
+      "expected": "outcome_unknown"
+    },
+    {
+      "id": "N09-02",
+      "group": "failures",
+      "scenario": "rate",
+      "expected": "outcome_unknown"
+    },
+    {
+      "id": "N09-03",
+      "group": "failures",
+      "scenario": "database",
+      "expected": "context_unavailable"
+    },
+    {
+      "id": "N09-04",
+      "group": "failures",
+      "scenario": "malformed",
+      "expected": "invalid_provider_result"
+    }
+  ]
+}

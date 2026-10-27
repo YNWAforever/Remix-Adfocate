@@ -9,10 +9,17 @@ export const Route = createFileRoute("/_site")({
 });
 
 function SiteLayout() {
+  const { lang } = useI18n();
   return (
     <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
       <MarketingHeader />
       <main id="main">
+        <p role="note" aria-label={lang === "en" ? "Product preview" : "產品預覽"}
+          className="border-b-2 border-[var(--color-ink)] bg-[var(--color-cream)] px-4 py-3 text-center text-sm">
+          {lang === "en"
+            ? "Product preview. Profiles, statistics and earning examples are illustrative. Pending reward is not payment. Withdrawals, financing and automatic affiliate payouts are unavailable. Contact forms do not send or save information."
+            : "產品預覽：履歷、統計及收入例子僅供示範。待處理獎勵不等於付款；提現、融資及自動佣金尚未開通。聯絡表格不會發送或儲存資料。"}
+        </p>
         <Outlet />
       </main>
       <Footer />

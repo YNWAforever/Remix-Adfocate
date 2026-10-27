@@ -1,4 +1,12 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createOwnedFixtureFetch, fixtureOwnership, ownsFixtureId, captureFixtureRows } from "./ownedFixtureTransport.js";
+import { randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
+// @ts-expect-error Executable ESM identity verifier has no declaration file.
+import { verifyIntegrationIdentity } from "../../scripts/run-integration-tests.mjs";
+
+const fixtureIds = { users: new Set<string>(), missions: new Set<string>(), gifts: new Set<string>(), workspaces: new Set<string>() };
+let checkedIdentity: {runId:string} | null = null;
 
 const url = process.env.SUPABASE_URL ?? "";
 const serviceKey = process.env.SUPABASE_SERVICE_KEY ?? "";
@@ -41,6 +49,7 @@ let _service: SupabaseClient | null = null;
 let clientSequence = 0;
 
 function nextClientOptions(jwt?: string) {
+  checkedIdentity ??= verifyIntegrationIdentity(process.env);
   clientSequence += 1;
   return {
     auth: {
@@ -54,7 +63,12 @@ function nextClientOptions(jwt?: string) {
 }
 
 function service(): SupabaseClient {
-  if (!_service) _service = createClient(url, serviceKey, nextClientOptions());
+  if (!_service) {
+    const options=nextClientOptions();
+    const authorizePristine=process.env.INTEGRATION_PRISTINE_TARGET_JSON
+      ?(campaignIds:string[])=>{verifyIntegrationIdentity(process.env,undefined,campaignIds);}:undefined;
+    _service=createClient(url,serviceKey,process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"?{...options,global:{...options.global,fetch:createOwnedFixtureFetch(globalThis.fetch,authorizePristine)}}:options);
+  }
   return _service;
 }
 
@@ -66,7 +80,35 @@ export function userForJwt(jwt: string): SupabaseClient {
   return createClient(url, anonKey, nextClientOptions(jwt));
 }
 
-export const DEMO_WS = "00000000-0000-0000-0000-0000000000aa";
+function resolveFixtureWorkspace(): {id:string;slug:string;name:string} {
+  const raw=process.env.INTEGRATION_FRESH_WORKSPACE_JSON;
+  if(!raw)return {id:"00000000-0000-0000-0000-0000000000aa",slug:"demo",name:"Demo Brand"};
+  try {
+    const fresh=JSON.parse(raw),scope=JSON.parse(process.env.INTEGRATION_FIXTURE_SCOPE_JSON??"{}"),identity=JSON.parse(process.env.INTEGRATION_TARGET_IDENTITY_JSON??"{}");
+    const uuid=/^[a-f0-9-]{36}$/i;
+    if(process.env.INTEGRATION_MUTATION_OWNERSHIP!=="1"||fresh?.createdThisRun!==true
+      ||!uuid.test(fresh.workspaceId)||!uuid.test(fresh.namespace)||!uuid.test(identity.runId)
+      ||fresh.namespace!==process.env.INTEGRATION_FIXTURE_NAMESPACE
+      ||fresh.slug!==`d19-support-${fresh.namespace}`||scope.runId!==identity.runId
+      ||!Array.isArray(scope.workspaceIds)||!scope.workspaceIds.includes(fresh.workspaceId))throw new Error("scope mismatch");
+    return {id:fresh.workspaceId,slug:fresh.slug,name:"Owned fresh support fixture"};
+  } catch {throw new Error("Invalid fresh integration fixture scope");}
+}
+const fixtureWorkspace=resolveFixtureWorkspace();
+export const DEMO_WS = fixtureWorkspace.id;
+export const FIXTURE_WORKSPACE_SLUG = fixtureWorkspace.slug;
+export const FIXTURE_WORKSPACE_NAME = fixtureWorkspace.name;
+
+/** Fresh names let repeated disposable runs preserve immutable historical fixtures. */
+export function fixtureName(value: string): string {
+  const namespace = process.env.INTEGRATION_FIXTURE_NAMESPACE;
+  if (!namespace) return value;
+  if (!/^[0-9a-f-]{36}$/.test(namespace)) throw new Error("invalid integration fixture namespace");
+  if(process.env.INTEGRATION_FRESH_WORKSPACE_JSON&&['koc-trial-serum','ugc-cafe','clip-skincare','ugc-pet','koc-trial-mask','ugc-travel'].includes(value))return `${value}-${namespace}`;
+  if(process.env.INTEGRATION_FRESH_WORKSPACE_JSON&&/\bc1-(pub|draft|brand-leak|related-creator)\b/.test(value))return value.replace(/\bc1-(pub|draft|brand-leak|related-creator)\b/g,slug=>`${slug}-${namespace}`);
+  if (value.endsWith("@test.local")) return value.replace("@test.local", `-${namespace}@test.local`);
+  return value.replace(/\btest-[a-z0-9-]+/g, (slug) => `${slug}-${namespace}`);
+}
 
 /** Create a confirmed user + creator (in DEMO_WS) + balance. Returns a signed-in JWT. */
 export async function makeCreator(email: string, balance = 0) {
@@ -75,6 +117,7 @@ export async function makeCreator(email: string, balance = 0) {
   });
   if (error) throw error;
   const userId = created.user.id;
+  fixtureIds.users.add(userId);
 
   await service().from("creators").insert({ id: userId, workspace_id: DEMO_WS, display_name: email });
   await service().from("point_balances").insert({ creator_id: userId, workspace_id: DEMO_WS, balance });
@@ -88,9 +131,9 @@ export async function makeCreator(email: string, balance = 0) {
   return { userId, jwt: session.session!.access_token };
 }
 
-/** Create a confirmed auth user + an active staff_users row. Returns a signed-in JWT.
- *  Email MUST end in @test.local so cleanup() removes it. */
-export async function makeStaff(email: string) {
+/** Create a confirmed staff actor; attach a workspace only when the test explicitly asks.
+ *  Cleanup uses the exact newly-created ID, never an email suffix search. */
+export async function makeStaff(email: string, workspaceId?: string) {
   if (!email.endsWith("@test.local")) {
     throw new Error('staff test emails must end in "@test.local" so cleanup() can remove them');
   }
@@ -99,14 +142,37 @@ export async function makeStaff(email: string) {
   });
   if (error) throw error;
   const userId = created.user.id;
+  fixtureIds.users.add(userId);
   await service().from("staff_users").insert({ user_id: userId, email });
+  if (workspaceId) {
+    const membership = await service().from("brand_users").insert({ user_id: userId,
+      workspace_id: workspaceId, email, active: true, role: "member" });
+    if (membership.error) throw membership.error;
+  }
 
   const anon = createClient(url, anonKey, nextClientOptions());
   const { data: session, error: signErr } = await anon.auth.signInWithPassword({
     email, password: "test-pw-123456",
   });
   if (signErr) throw signErr;
-  return { userId, jwt: session.session!.access_token };
+  return { userId, email, jwt: session.session!.access_token };
+}
+
+/** Explicit D19 fixture grants only. Never applies to arbitrary staff or real memberships. */
+export async function grantStaffFixture(userId:string,workspaceId:string|null,role:"workspace_admin"|"operator"|"reviewer"|"finance_viewer"|"content_editor") {
+  if(process.env.INTEGRATION_CAPABILITY_FIXTURES!=="1")return;
+  if(!ownsFixtureId("staff_users",userId))throw new Error("Staff subject is not an exact owned fixture ID");
+  const identity=JSON.parse(process.env.INTEGRATION_TARGET_IDENTITY_JSON??"{}");
+  const kind=identity.projectId==="adfocate-r1-shaped-20261023"?"shaped":identity.projectId==="adfocate-r1-empty-20261023"?"empty":null;
+  if(!kind)throw new Error("Unapproved fixture project");
+  // @ts-expect-error Native ESM identity helper.
+  const target=(await import("../../scripts/audit/local-targets.mjs")).verifiedTarget(kind);
+  if(!isDeepStrictEqual(identity,target.identity))throw new Error("Fixture grant target drift");
+  if(!/^[a-f0-9-]{36}$/i.test(userId)||workspaceId&&!/^[a-f0-9-]{36}$/i.test(workspaceId)||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("Invalid exact fixture grant");
+  const existing=target.sql(workspaceId?`select role from public.staff_workspace_roles where user_id='${userId}' and workspace_id='${workspaceId}' and active;`:`select role from public.staff_platform_roles where user_id='${userId}' and role='content_editor' and active;`);
+  if(existing){if(existing!==role)throw new Error("Existing fixture grant differs; no implicit promotion");return;}
+  target.sql(`select private.bootstrap_staff_access('${userId}',${workspaceId?`'${workspaceId}'`:'null'},'${userId}','${role}',true,0,'${randomUUID()}','Explicit D19 business integration actor','D19 owned disposable test attestation');`);
+  captureFixtureRows(workspaceId?"staff_workspace_roles":"staff_platform_roles",{user_id:userId});
 }
 
 let brandWsSeq = 0;
@@ -126,6 +192,7 @@ export async function makeBrand(email: string, workspaceId?: string, role: "owne
       .from("workspaces").insert({ slug, name: `Test Brand WS ${brandWsSeq}` }).select("id").single();
     if (wErr) throw wErr;
     wsId = ws.id as string;
+    fixtureIds.workspaces.add(wsId);
   }
 
   const { data: created, error } = await service().auth.admin.createUser({
@@ -133,6 +200,7 @@ export async function makeBrand(email: string, workspaceId?: string, role: "owne
   });
   if (error) throw error;
   const userId = created.user.id;
+  fixtureIds.users.add(userId);
   await service().from("brand_users").insert({ user_id: userId, workspace_id: wsId, email, role, active: true });
 
   const anon = createClient(url, anonKey, nextClientOptions());
@@ -175,6 +243,7 @@ export async function seedMission(workspaceId: string, opts: {
     deadline: null,
   }).select("id, slug").single();
   if (error) throw error;
+  fixtureIds.missions.add(data.id as string);
   return data as { id: string; slug: string };
 }
 
@@ -190,17 +259,19 @@ export async function makeUser(opts: { email?: string; phone?: string }) {
     if (error) throw error;
     const { data: session, error: signErr } = await anon.auth.signInWithPassword({ email: opts.email, password });
     if (signErr) throw signErr;
+    fixtureIds.users.add(created.user.id);
     return { userId: created.user.id, jwt: session.session!.access_token };
   }
-  // Phone-primary: sign in via the test OTP (config.toml [auth.sms.test_otp]) — no SMS
-  // provider needed. Creates the user if absent, or signs into an existing one, so a
-  // leftover auth user from a prior failed run never collides.
+  // Bootstrap tests need a real phone-primary Auth identity, not an SMS delivery test.
+  // Create a confirmed actor and use password transport: no provider or external SMS.
   const phone = opts.phone!;
-  const { error: otpErr } = await anon.auth.signInWithOtp({ phone });
-  if (otpErr) throw otpErr;
-  const { data: session, error: vErr } = await anon.auth.verifyOtp({ phone, token: "654321", type: "sms" });
-  if (vErr) throw vErr;
-  return { userId: session.user!.id, jwt: session.session!.access_token };
+  const password = "test-pw-123456";
+  const { data: created, error } = await service().auth.admin.createUser({ phone, password, phone_confirm: true });
+  if (error) throw error;
+  fixtureIds.users.add(created.user.id);
+  const { data: session, error: signErr } = await anon.auth.signInWithPassword({ phone, password });
+  if (signErr) throw signErr;
+  return { userId: created.user.id, jwt: session.session!.access_token };
 }
 
 /** Seed a mission in DEMO_WS. Use slug prefix "test-" so cleanup() removes it
@@ -243,6 +314,7 @@ export async function makeMission(opts: {
     .select("id, slug")
     .single();
   if (error) throw error;
+  fixtureIds.missions.add(data.id as string);
   return data as { id: string; slug: string };
 }
 
@@ -271,6 +343,7 @@ export async function makeGift(opts: {
     .select("id, name")
     .single();
   if (error) throw error;
+  fixtureIds.gifts.add(data.id as string);
   return data as { id: string; name: string };
 }
 
@@ -306,6 +379,7 @@ export async function setCreatorProfile(userId: string, patch: { categories?: st
 export async function seedSubmission(creatorId: string, status: string, slug: string, qualityRating?: number) {
   const m = await makeMission({ slug });
   const row: Record<string, unknown> = { mission_id: m.id, creator_id: creatorId, workspace_id: DEMO_WS, status };
+  if (["submitted", "under_review", "approved"].includes(status)) row.content_urls = ["https://example.test/synthetic-evidence"];
   if (qualityRating != null) row.quality_rating = qualityRating;
   const { error } = await service().from("mission_submissions").insert(row);
   if (error) throw error;
@@ -327,111 +401,63 @@ export async function getCreatorScores(userId: string) {
 
 
 export async function cleanup() {
-  const releaseCreatorEmail = "publication-proof-release-creator@test.local";
-  const releaseOperatorEmail = "publication-proof-release-operator@test.local";
-  const releaseMissionSlug = "test-publication-proof-release";
-  // Campaigns G1: delete test campaigns (slug "test-%") — cascades campaign_missions +
-  // campaign_participants — then the throwaway workspaces ("test-camp-%") created by the
-  // cross-workspace settlement tests (cascades their campaigns + budget rows). Done first so
-  // the per-(workspace_id, slug) unique on campaigns never trips a re-run.
-  await service().from("campaigns").delete().like("slug", "test-%");
-  await service().from("workspaces").delete().like("slug", "test-camp-%");
-  // A campaign settlement test may have left the shared DEMO_WS budget enforced; 0024's
-  // budget-aware approve_submission would then 400 every unrelated cash-mission approval
-  // (wallet/insights/etc.). Reset DEMO_WS to unenforced (RPC — workspace_budgets has no
-  // service_role table grant). Harmless when no budget row / already unenforced.
-  await service().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
-
-  // Test creators (delete cascades their mission_submissions).
-  const byEmail = await service().from("creators").select("id")
-    .like("display_name", "%@test.local")
-    .neq("display_name", releaseCreatorEmail);
-  const byPhone = await service().from("creators").select("id")
-    .like("phone", "+1555%")
-    .neq("display_name", releaseCreatorEmail);
-  const ids = [...new Set([...(byEmail.data ?? []), ...(byPhone.data ?? [])].map((r) => r.id))];
-  if (ids.length) {
-    await service().from("operator_audit_events").delete().in("creator_id", ids);
-    await service().from("creator_review_notes").delete().in("creator_id", ids);
-    await service().from("creator_review_statuses").delete().in("creator_id", ids);
-    await service().from("mission_shortlists").delete().in("creator_id", ids);
-    await service().from("creator_public_passports").delete().in("creator_id", ids);
-    await service().from("creator_public_profile_snapshots").delete().in("creator_id", ids);
-    await service().from("creator_portfolio_links").delete().in("creator_id", ids);
-    await service().from("creator_social_accounts").delete().in("creator_id", ids);
-    for (const id of ids) {
-      const { data: objects } = await service().storage.from("creator-avatars").list(id, { limit: 100 });
-      if (objects?.length) {
-        await service()
-          .storage
-          .from("creator-avatars")
-          .remove(objects.map((object) => `${id}/${object.name}`));
-      }
+  if(process.env.INTEGRATION_RETAIN_FIXTURES==="1")return {retainedIds:fixtureOwnership()};
+  // Never discover ownership from an email/phone/slug prefix. Only IDs captured on creation.
+  if (!fixtureIds.users.size && !fixtureIds.missions.size && !fixtureIds.gifts.size && !fixtureIds.workspaces.size) return;
+  const svc = service();
+  const retained: string[] = [];
+  const missionIds = [...fixtureIds.missions];
+  const anchors = missionIds.length ? await svc.from("mission_submissions")
+    .select("mission_id, creator_id, mission_workflows(id)").in("mission_id", missionIds) : {data:[],error:null};
+  if (anchors.error) throw anchors.error;
+  const protectedMissions = new Set((anchors.data ?? []).filter((row) => {
+    const workflows=row.mission_workflows;
+    return Array.isArray(workflows) ? workflows.length>0 : Boolean(workflows);
+  }).map((row)=>row.mission_id as string));
+  const remove = async (table:string, key:string, ids:string[]) => {
+    if (!ids.length) return true;
+    const result=await svc.from(table).delete().in(key,ids);
+    if(result.error){retained.push(...ids);return false;}return true;
+  };
+  const removableMissions=missionIds.filter((id)=>!protectedMissions.has(id));
+  for(const table of ["operator_audit_events","mission_shortlists","mission_submissions"]) await remove(table,"mission_id",removableMissions);
+  if(await remove("missions","id",removableMissions)) for(const id of removableMissions)fixtureIds.missions.delete(id);
+  // Active histories are append-only. Keep their actors/data for inspection instead of disabling guards.
+  const owned=fixtureOwnership();
+  const grantedStaff=new Set([...(owned.staff_workspace_roles?.ids??[]),...(owned.staff_platform_roles?.ids??[])]);
+  // Access audits keep their exact new actors and memberships; never remove audit/FK guards.
+  const users=protectedMissions.size ? [] : [...fixtureIds.users].filter(id=>!grantedStaff.has(id));
+  for(const table of ["operator_audit_events","creator_review_notes","creator_review_statuses","mission_shortlists",
+    "creator_public_passports","creator_public_profile_snapshots","creator_portfolio_links","creator_social_accounts",
+    "redemptions","earnings_transactions","earnings_balances","point_transactions","point_balances"]){
+    await remove(table,"creator_id",users);
+  }
+  if(users.length){
+    await svc.from("creators").update({referred_by:null}).in("id",users);
+    for(const id of users){
+      const objects=await svc.storage.from("creator-avatars").list(id,{limit:100});
+      if(objects.error)throw objects.error;
+      if(objects.data?.length)await svc.storage.from("creator-avatars").remove(objects.data.map((object)=>id+"/"+object.name));
     }
   }
-  // Null any inbound referral inside the test set so deleting a referred creator never
-  // trips the referred_by FK (creators.referred_by → creators.id, no ON DELETE clause).
-  if (ids.length) await service().from("creators").update({ referred_by: null }).in("id", ids);
-  for (const id of ids) {
-    await service().from("redemptions").delete().eq("creator_id", id);
-    await service().from("earnings_transactions").delete().eq("creator_id", id);
-    await service().from("earnings_balances").delete().eq("creator_id", id);
-    await service().from("point_transactions").delete().eq("creator_id", id);
-    await service().from("point_balances").delete().eq("creator_id", id);
-    await service().from("creators").delete().eq("id", id);
-    await service().auth.admin.deleteUser(id);
+  await remove("creators","id",users);
+  await remove("operator_audit_events","operator_id",users);
+  await remove("brand_users","user_id",users);
+  await remove("staff_users","user_id",users);
+  for(const id of users){const result=await svc.auth.admin.deleteUser(id);if(result.error)retained.push(id);else fixtureIds.users.delete(id);}
+  const gifts=[...fixtureIds.gifts];
+  await remove("redemptions","gift_id",gifts);await remove("redemption_codes","gift_id",gifts);
+  if(await remove("redemption_gifts","id",gifts))fixtureIds.gifts.clear();
+  const workspaces=[...fixtureIds.workspaces];
+  if(await remove("workspaces","id",workspaces))fixtureIds.workspaces.clear();
+  let scope:{runId?:string;workspaceIds?:string[]}={};
+  try{scope=JSON.parse(process.env.INTEGRATION_FIXTURE_SCOPE_JSON ?? "{}");}catch{throw new Error("invalid exact fixture scope");}
+  if(scope.runId===checkedIdentity?.runId && scope.workspaceIds?.includes(DEMO_WS)){
+    // This baseline ID was explicitly created by the guarded launcher for this run.
+    const reset=await svc.rpc("set_workspace_budget_enforcement",{p_workspace:DEMO_WS,p_enforced:false});
+    if(reset.error)throw reset.error;
   }
-  // Test missions (slug "test-%") and any leftover submissions on them.
-  const testMissions = await service().from("missions").select("id")
-    .like("slug", "test-%")
-    .neq("slug", releaseMissionSlug);
-  for (const m of testMissions.data ?? []) {
-    await service().from("operator_audit_events").delete().eq("mission_id", m.id);
-    await service().from("mission_shortlists").delete().eq("mission_id", m.id);
-    await service().from("mission_submissions").delete().eq("mission_id", m.id);
-    await service().from("missions").delete().eq("id", m.id);
-  }
-  // Test gifts (name "test-%") with their codes + redemptions.
-  const testGifts = await service().from("redemption_gifts").select("id").like("name", "test-%");
-  for (const g of testGifts.data ?? []) {
-    await service().from("redemptions").delete().eq("gift_id", g.id);
-    await service().from("redemption_codes").delete().eq("gift_id", g.id);
-    await service().from("redemption_gifts").delete().eq("id", g.id);
-  }
-  // Test staff users (email "%@test.local") + their auth users.
-  const staffRows = await service().from("staff_users").select("user_id")
-    .like("email", "%@test.local")
-    .neq("email", releaseOperatorEmail);
-  for (const s of staffRows.data ?? []) {
-    await service().from("operator_audit_events").delete().eq("operator_id", s.user_id);
-    await service().from("staff_users").delete().eq("user_id", s.user_id);
-    await service().auth.admin.deleteUser(s.user_id);
-  }
-
-  // Brand test data: memberships/invites for %@test.local, the throwaway workspaces makeBrand
-  // created (slug "test-brand-ws-%"), any missions still in them, and the brand auth users.
-  const brandUsers = await service().from("brand_users").select("user_id")
-    .like("email", "%@test.local")
-    .neq("email", releaseOperatorEmail);
-  const brandUserIds = (brandUsers.data ?? []).map((r) => r.user_id as string);
-  await service().from("brand_invites").delete()
-    .like("email", "%@test.local")
-    .neq("email", releaseOperatorEmail);
-  await service().from("brand_users").delete()
-    .like("email", "%@test.local")
-    .neq("email", releaseOperatorEmail);
-  for (const id of brandUserIds) await service().auth.admin.deleteUser(id);
-
-  const brandWs = await service().from("workspaces").select("id").like("slug", "test-brand-ws-%");
-  const brandWsIds = (brandWs.data ?? []).map((r) => r.id as string);
-  if (brandWsIds.length) {
-    const leftover = await service().from("missions").select("id").in("workspace_id", brandWsIds);
-    for (const m of leftover.data ?? []) {
-      await service().from("mission_submissions").delete().eq("mission_id", m.id);
-      await service().from("missions").delete().eq("id", m.id);
-    }
-    await service().from("workspaces").delete().in("id", brandWsIds);
-  }
+  return {retainedIds:[...new Set([...retained,...grantedStaff,...protectedMissions,...(protectedMissions.size?fixtureIds.users:[])])]};
 }
 
 
@@ -482,6 +508,7 @@ export async function seedActiveMission(opts: {
     .select("id, slug")
     .single();
   if (createMissionError) throw createMissionError;
+  fixtureIds.missions.add(mission.id as string);
 
   const { data: configuredMission, error: missionError } = await service()
     .from("missions")

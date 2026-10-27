@@ -14,6 +14,7 @@ const navigate = vi.fn();
 describe("finishAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.history.replaceState({}, "", "/");
     vi.mocked(supabase.auth.refreshSession).mockResolvedValue({ data: {}, error: null } as never);
   });
 
@@ -33,6 +34,27 @@ describe("finishAuth", () => {
     const result = await finishAuth(navigate as never);
     expect(navigate).toHaveBeenCalledWith({ to: "/home" });
     expect(result).toEqual({ created: false, onboardingCompleted: true, destination: "/home" });
+  });
+
+  it("returns an onboarded creator to the requested local work page", async () => {
+    window.history.replaceState({}, "", "/login?next=" + encodeURIComponent("/mission/sample?from=profile#requirements"));
+    apiFetch.mockResolvedValueOnce({ created: false }).mockResolvedValueOnce({ onboarding_completed: true });
+    await finishAuth(navigate as never);
+    expect(navigate).toHaveBeenCalledWith({ to: "/mission/sample?from=profile#requirements" });
+  });
+
+  it("carries the safe return through incomplete onboarding", async () => {
+    window.history.replaceState({}, "", "/login?next=" + encodeURIComponent("/profile"));
+    apiFetch.mockResolvedValueOnce({ created: true }).mockResolvedValueOnce({ onboarding_completed: false });
+    await finishAuth(navigate as never);
+    expect(navigate).toHaveBeenCalledWith({ to: "/onboarding", search: { next: "/profile" } });
+  });
+
+  it.each(["https://outside.example/", "//outside.example/", "/\\outside.example/", "/admin", "/auth/callback?code=bad", "/mission/../login", "/%2f%2foutside.example", "/mission/%0d%0aheader"]) ("rejects unsafe return %s", async (next) => {
+    window.history.replaceState({}, "", "/login?next=" + encodeURIComponent(next));
+    apiFetch.mockResolvedValueOnce({ created: false }).mockResolvedValueOnce({ onboarding_completed: true });
+    await finishAuth(navigate as never);
+    expect(navigate).toHaveBeenCalledWith({ to: "/home" });
   });
 
   it("throws (and does not navigate) when the session refresh fails", async () => {

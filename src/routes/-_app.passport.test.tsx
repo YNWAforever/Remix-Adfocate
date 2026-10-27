@@ -1,10 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
   createShare: vi.fn().mockResolvedValue({ token: "token", publicUrl: "/passport/token" }),
   revokeShare: vi.fn().mockResolvedValue({ revoked: true }),
+  refetch: vi.fn(),
   me: { data: { id: "u1", display_name: "阿明", avatar_url: null } },
   passport: {
     data: {
@@ -37,7 +38,7 @@ const hoisted = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => hoisted.me,
-  useMyPassport: () => hoisted.passport,
+  useMyPassport: () => ({ ...hoisted.passport, refetch: hoisted.refetch }),
   useCreatePassportShare: () => ({ mutateAsync: hoisted.createShare }),
   useRevokePassportShare: () => ({ mutateAsync: hoisted.revokeShare }),
 }));
@@ -50,6 +51,27 @@ function renderPassport() {
 }
 
 describe("Passport page", () => {
+  beforeEach(() => { vi.clearAllMocks(); hoisted.passport.isError = false; });
+  it("keeps saved scores and offers retry when a refetch fails", () => {
+    hoisted.passport.isError = true; renderPassport();
+    expect(screen.getByText("50")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重試" }));
+    expect(hoisted.refetch).toHaveBeenCalledTimes(1);
+  });
+  it("shows a recoverable create-link failure", async () => {
+    hoisted.createShare.mockRejectedValueOnce(new Error("private storage error")); renderPassport();
+    fireEvent.click(screen.getByRole("button", { name: "建立連結" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("儲存失敗，請重試");
+    expect(screen.queryByText("private storage error")).not.toBeInTheDocument();
+  });
+  it("keeps the existing link visible if revoke fails", async () => {
+    hoisted.revokeShare.mockRejectedValueOnce(new Error("outage")); renderPassport();
+    fireEvent.click(screen.getByRole("button", { name: "建立連結" }));
+    await screen.findByText("/passport/token");
+    fireEvent.click(screen.getByRole("button", { name: "撤銷連結" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("儲存失敗，請重試");
+    expect(screen.getByText("/passport/token")).toBeInTheDocument();
+  });
   it("renders the trust summary with synced private metrics", () => {
     renderPassport();
     expect(screen.getByText("Social trust")).toBeInTheDocument();
@@ -73,7 +95,7 @@ describe("Passport page", () => {
   it("shows the provisional notes on influence ownership and proxy scores", () => {
     renderPassport();
     expect(screen.getByText("品牌安全為暫定代理指標")).toBeInTheDocument();
-    expect(screen.getByText("影響力包含自填或 API 同步數據，帳號擁有權未驗證")).toBeInTheDocument();
+    expect(screen.getByText("影響力包含自填或 API 同步數據，擁有權狀態請參閱各帳戶")).toBeInTheDocument();
   });
 
   it("renders earned badge labels", () => {

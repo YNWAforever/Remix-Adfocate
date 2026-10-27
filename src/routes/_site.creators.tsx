@@ -21,7 +21,7 @@ import {
   academyTracks,
   resources,
 } from "@/data/mockData";
-import { LEVELS } from "@/lib/levels";
+import { LEVELS, progressToNext } from "@/lib/levels";
 import { legacyAffiliateSteps, localized } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -367,8 +367,8 @@ function HowItWorksSection() {
             <p className="mt-3 text-sm leading-relaxed text-[var(--color-soft-ink)]">
               {localized(
                 {
-                  en: "The original Adfocate affiliate flow now connects to creator levels, mission validation, Adfoplace offers, and verified earning history.",
-                  zh: "Adfocate 原有 Affiliate 流程現已連接創作者等級、任務驗證、Adfoplace Offer 及已驗證收益紀錄。",
+                  en: "An illustrative affiliate journey. Automatic commissions and payouts are not available in this pilot.",
+                  zh: "聯盟行銷流程示範；此試行版尚未提供自動佣金及付款。",
                 },
                 lang,
               )}
@@ -419,8 +419,8 @@ function CreatorLevelsSection() {
             </h2>
             <p className="mt-3 text-[var(--color-soft-ink)]">
               {tx(
-                "From product sampler to creator entrepreneur — each level unlocks new earning opportunities.",
-                "由產品試用者到創作者企業家 — 每升一級，解鎖全新賺錢機會。",
+                "XP thresholds follow the current level rules. Opportunity and income examples below are illustrative; availability and rewards depend on each mission.",
+                "XP 門檻依照現行等級規則。以下機會及收入僅供示範，實際資格及獎勵以各任務為準。",
               )}
             </p>
           </div>
@@ -510,7 +510,8 @@ function CreatorPassportFullSection() {
   const { t, lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const passport = mockCreatorPassport;
-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
+  const progress = progressToNext(passport.xp);
+  const xpPct = progress.pct;
 
   const scoreRings = [
     { key: "influence", label: "Influence", color: "#FF3D7F" },
@@ -531,12 +532,13 @@ function CreatorPassportFullSection() {
           </h2>
           <p className="mt-2 max-w-lg text-[var(--color-paper)]/70">
             {tx(
-              "Your profile grows with every mission. Prove your value to brands with verified data.",
-              "你的履歷會隨每個任務成長。用已驗證數據，向品牌證明你的價值。",
+              "Your profile brings together mission history and account data. Ownership verification is shown separately for each social account.",
+              "履歷整合任務歷史及帳號資料，各社交帳號會分別顯示擁有權驗證狀態。",
             )}
           </p>
         </div>
 
+        <p className="mb-3 text-sm text-[var(--color-acid)]">{tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}</p>
         <div className="rounded-[var(--radius)] border-2 border-[var(--color-acid)] bg-[var(--color-ink)] p-6 shadow-[6px_6px_0_var(--color-acid)] sm:p-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
             <div className="space-y-6">
@@ -552,7 +554,7 @@ function CreatorPassportFullSection() {
                     <span
                       className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}
                     >
-                      {passport.level} {passport.levelLabel}
+                      {progress.current.id} {t(progress.current.labelKey)}
                     </span>
                     <span className="font-mono text-[11px] text-[var(--color-paper)]/60">
                       {passport.completedMissions}{" "}
@@ -579,7 +581,7 @@ function CreatorPassportFullSection() {
                   <div className="xp-bar-fill h-3" style={{ width: `${xpPct}%` }} />
                 </div>
                 <p className="mt-1.5 font-mono text-[10px] text-[var(--color-paper)]/55">
-                  {xpPct}% to L4 Micro-Influencer ·{" "}
+                  {xpPct}% · {progress.next?.id} {progress.next && t(progress.next.labelKey)} ·{" "}
                   {tx("Complete", "尚餘")}{" "}
                   {(passport.xpNext - passport.xp).toLocaleString()}{" "}
                   {tx("more XP", "XP")}
@@ -731,8 +733,8 @@ function GrowResourcesSection() {
       title: tx("Academy Courses", "創作者學院課程"),
       icon: GraduationCap,
       desc: tx(
-        "Structured learning tracks from KOC Starter to live commerce and creator finance.",
-        "由 KOC 入門到直播帶貨同創作者財務的系統化學習路線。",
+        "Course topics preview · content in preparation",
+        "課程主題預覽 · 內容準備中",
       ),
       items: academyTracks.slice(0, 4),
       variant: "game-card-mint",
@@ -787,8 +789,8 @@ function GrowResourcesSection() {
         </h2>
         <p className="mt-3 text-[var(--color-soft-ink)]">
           {tx(
-            "Access Academy, Copilot, templates, and studio resources to accelerate your creator journey.",
-            "用 Academy、Copilot、範本同工作室資源，加速你的創作者旅程。",
+            "Resource concepts preview. Course units, AI services, mentoring and studio booking are not enabled by this page.",
+            "資源概念預覽。本頁不提供課堂單元、AI 服務、導師預約或工作室預約。",
           )}
         </p>
       </div>

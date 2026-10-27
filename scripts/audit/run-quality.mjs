@@ -1,0 +1,23 @@
+import process from "node:process";
+import {spawnSync} from "node:child_process";
+import {readFileSync,writeFileSync} from "node:fs";
+import {isDeepStrictEqual} from "node:util";
+import {resolve} from "node:path";
+import {pathToFileURL} from "node:url";
+import {verifiedTarget} from "./local-targets.mjs";
+import {neutralitySnapshot} from "./neutrality-snapshot.mjs";
+const target=verifiedTarget("empty"),fx=JSON.parse(readFileSync(".codex-tmp/D17-fixture.private.json","utf8"));
+if(!isDeepStrictEqual(fx.target,target.identity))throw new Error("D17 fixture identity drift");
+const before=[fx.creator,fx.other].map(c=>neutralitySnapshot(target,c.id,fx.workspaceId));
+const phase=process.argv[2]??"final";
+if(!["red","final"].includes(phase))throw new Error("unknown quality scope");
+const env={...process.env,...target.env,D17_OFFLINE_BUILD:"0",NODE_ENV:"production",ADFOCATE_BROWSER_SCOPE:"D17",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`};
+const build=spawnSync(process.execPath,["node_modules/vite-node/vite-node.mjs","scripts/audit/build-quality.ts",phase==="red"?"before-runtime":"after"],{env,stdio:"inherit"});
+if(build.status!==0)process.exit(build.status??1);
+const run=spawnSync(process.execPath,["node_modules/@playwright/test/cli.js","test","e2e/accessibility.spec.ts","--config=playwright.quality.config.ts"],{env,stdio:"inherit"});
+const checked=verifiedTarget("empty"),after=[fx.creator,fx.other].map(c=>neutralitySnapshot(checked,c.id,fx.workspaceId));
+writeFileSync(`docs/verification/D17-neutrality-${phase}.json`,JSON.stringify({runId:fx.runId,before,after,allEqual:isDeepStrictEqual(before,after),fixtureSetup:"Historical ledger fixtures were seeded before this raw baseline; no measured action issues rewards or payments."},null,2)+"\n");
+const raw=JSON.parse(readFileSync(".codex-tmp/D17-browser-results.private.json","utf8")),tests=[];
+function visit(suites){for(const s of suites??[]){for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});visit(s.suites);}}
+visit(raw.suites);writeFileSync(`docs/verification/D17-browser-${phase}.json`,JSON.stringify({target:target.identity,runId:fx.runId,tests,stats:raw.stats,browser:"Installed Edge; local production assets plus real local Auth/API/RLS/database. Explicit 503 error-path mocks; no paid AI or external messages.",limitations:["Viewport/device-scale reflow simulation, not physical mobile or native browser zoom.","No hosted or production measurements."]},null,2)+"\n");
+process.exit(run.status===0&&isDeepStrictEqual(before,after)?0:run.status||1);

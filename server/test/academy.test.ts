@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
@@ -6,14 +8,14 @@ const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 
 function koreq(path: string, jwt: string) {
-  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
+  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG } });
 }
 
 suite("GET /api/academy (creator reads)", () => {
   let jwt: string;
   beforeAll(async () => {
     await cleanup();
-    ({ jwt } = await makeCreator("academy-reader@test.local"));
+    ({ jwt } = await makeCreator(fixtureName("academy-reader@test.local")));
   });
   afterAll(async () => {
     await cleanup();

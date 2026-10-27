@@ -22,6 +22,10 @@ function creator(over: Partial<MatchCreator> = {}): MatchCreator {
 }
 
 describe("categoryTerm", () => {
+  it("matches historical and canonical category values consistently with discovery", () => {
+    expect(categoryTerm(creator({categories:["pets"]}),mission({category:"寵物"}))).toBe(1);
+    expect(categoryTerm(creator({categories:["美容"]}),mission({category:"美妝"}))).toBe(1);
+  });
   it("is 1 on a niche match, 0 on a miss", () => {
     expect(categoryTerm(creator({ categories: ["美妝"] }), mission({ category: "美妝" }))).toBe(1);
     expect(categoryTerm(creator({ categories: ["美妝"] }), mission({ category: "科技" }))).toBe(0);
@@ -70,6 +74,13 @@ describe("levelFitTerm", () => {
 });
 
 describe("scoreMissions", () => {
+  it("does not label an unverified high-XP creator unlocked for an L2 mission", () => {
+    const unverified={...creator({level:"L3"}),isTrusted:false};
+    const [scored]=scoreMissions(unverified,[mission({required_level:"L2"})],NOW);
+    expect(scored.locked).toBe(true);
+    expect(scored.rationale).toContain("驗證社交帳號");
+    expect(scored.rationale).not.toContain("升級至");
+  });
   it("composes a 0-100 fit_score and flags locked", () => {
     const [a] = scoreMissions(creator({ level: "L1", categories: ["美妝"], reliability: 100, brandSafety: 100, content: 100 }),
       [mission({ category: "美妝", points_reward: 100, deadline: "2026-06-18", required_level: "L1" })], NOW);

@@ -27,4 +27,24 @@ describe("AssistantPanel", () => {
     render(<AssistantPanel onClose={() => {}} />);
     expect(screen.getByText(/完成任務獲分/)).toBeInTheDocument();
   });
+  it("retains input and request identity after a failed response", () => {
+    mutate.mockImplementation((_body, callbacks) => callbacks.onError(new Error("unavailable")));
+    render(<AssistantPanel onClose={() => {}} />);
+    const input = screen.getByPlaceholderText(/輸入/);
+    fireEvent.change(input, { target: { value: "保留這份輸入" } });
+    fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送/ }));
+    expect(input).toHaveValue("保留這份輸入");
+    fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送/ }));
+    expect(mutate).toHaveBeenCalledTimes(2);
+    expect(mutate.mock.calls[0][0].client_request_id).toBeTruthy();
+    expect(mutate.mock.calls[1][0].client_request_id).toBe(mutate.mock.calls[0][0].client_request_id);
+  });
+  it("shows generated but unsaved text as an actionable persistence error", () => {
+    mutate.mockImplementation((_body, callbacks) => callbacks.onSuccess({ answer: "未保存答案", citations: [], persistence: "failed", request_id: "fixture" }));
+    render(<AssistantPanel onClose={() => {}} />);
+    fireEvent.change(screen.getByPlaceholderText(/輸入/), { target: { value: "保存測試" } });
+    fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送/ }));
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/輸入/)).toHaveValue("保存測試");
+  });
 });

@@ -1,3 +1,6 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
+import { randomUUID } from "node:crypto";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
 import { assistantRoutes } from "../routes/assistant";
@@ -31,7 +34,7 @@ function req(app: ReturnType<typeof testApp>, path: string, jwt: string, init: R
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -48,8 +51,8 @@ suite("assistant chat route", () => {
 
   beforeAll(async () => {
     await cleanup();
-    a = await makeCreator("assist-a@test.local");
-    b = await makeCreator("assist-b@test.local");
+    a = await makeCreator(fixtureName("assist-a@test.local"));
+    b = await makeCreator(fixtureName("assist-b@test.local"));
   });
   afterAll(cleanup);
 
@@ -57,12 +60,13 @@ suite("assistant chat route", () => {
     const app = testApp();
     const res = await req(app, "/assistant/chat", a.jwt, {
       method: "POST",
-      body: JSON.stringify({ message: "點樣賺積分？" }),
+      body: JSON.stringify({ client_request_id: randomUUID(), message: "點樣賺積分？" }),
     });
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.answer).toContain("積分");
     expect(json.conversation_id).toBeTruthy();
+    expect(json.persistence).toBe("saved");
   });
 
   it("does not leak another creator's conversations", async () => {
@@ -70,7 +74,7 @@ suite("assistant chat route", () => {
     const made = await (
       await req(app, "/assistant/chat", a.jwt, {
         method: "POST",
-        body: JSON.stringify({ message: "hi" }),
+        body: JSON.stringify({ client_request_id: randomUUID(), message: "hi" }),
       })
     ).json();
     const listB = await (await req(app, "/assistant/conversations", b.jwt)).json();

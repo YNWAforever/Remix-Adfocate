@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useMissionMatch } from "@/lib/queries/kocmax";
-import { MissionCard } from "@/components/MissionCard";
+import { useMe, useMissionMatch } from "@/lib/queries/kocmax";
+import { MissionCard, missionCardDecisionProps } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 
 export const Route = createFileRoute("/_app/match")({ component: Match });
@@ -10,6 +10,7 @@ export const Route = createFileRoute("/_app/match")({ component: Match });
 function Match() {
   const { t } = useI18n();
   const match = useMissionMatch();
+  const me = useMe();
   const empty = !match.isLoading && !match.isError && (match.data?.length ?? 0) === 0;
 
   return (
@@ -44,15 +45,12 @@ function Match() {
             className={mission.locked ? "block opacity-60" : "block"}
           >
             <MissionCard
+              {...missionCardDecisionProps(mission, me.data)}
               title={mission.title}
               category={mission.category ?? undefined}
               points={mission.points_reward}
               cashReward={mission.cash_reward}
               deadline={mission.deadline}
-              missionType={mission.mission_type}
-              quota={mission.quota}
-              filled={mission.filled}
-              requiredLevel={mission.required_level}
               matchRationale={mission.rationale}
               matchScore={mission.fit_score}
               status={t(

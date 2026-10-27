@@ -130,6 +130,17 @@ describe("Mission detail writes", () => {
     hoisted.my.data = [{ id: "s1", status: "declined", content_urls: [], points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
     renderDetail();
     expect(screen.getByText("未獲接受")).toBeInTheDocument();
+    expect(screen.getByText(/未提供原因/)).toBeInTheDocument();
+  });
+
+  it("UC-C25 reads the saved decline reason again on a fresh mount", () => {
+    hoisted.mission.data.access_type = "application";
+    hoisted.my.data = [{ id: "s1", status: "declined", content_urls: [], review_notes: "Please improve the portfolio", points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
+    const first = renderDetail();
+    expect(screen.getByText(/Please improve the portfolio/)).toBeInTheDocument();
+    first.unmount(); renderDetail();
+    expect(screen.getByText(/Please improve the portfolio/)).toBeInTheDocument();
+    expect(screen.queryByText("申請任務")).not.toBeInTheDocument();
   });
 
   it("reveals the hook generator panel when the CTA is clicked", () => {

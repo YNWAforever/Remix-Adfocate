@@ -1,0 +1,14 @@
+import { apiFetch } from "@/lib/api";
+import { adminFetch } from "@/lib/admin";
+export type Lesson = { id: string; trackId: string; title: string; body: string; position: number; contentVersion: number; status: "published"; completed: boolean; completedAt: string | null };
+export type Completion = { lessonId: string; contentVersion: number; completedAt: string };
+export type Learning = { lessons: Lesson[]; progress: { completed: number; total: number }; history: Completion[] };
+export type LessonDraft = { title_zh: string; title_en: string; body_zh: string; body_en: string; position: number };
+export type AdminLesson = LessonDraft & { id: string; track_id: string; content_version: number; revision: number; status: "draft" | "published" | "archived"; approval_ref: string | null };
+export const learningKey = (creatorId: string, slug: string, lang: string) => ["academy-learning", creatorId, slug, lang] as const;
+export const getLearning = (slug: string, lang: string) => apiFetch<Learning>(`/academy/track/${encodeURIComponent(slug)}/lessons?lang=${lang}`);
+export const completeLesson = (slug: string, lesson: Pick<Lesson, "id" | "contentVersion">) => apiFetch<Completion>(`/academy/track/${encodeURIComponent(slug)}/lessons/${lesson.id}/complete`, { method: "POST", body: JSON.stringify({ contentVersion: lesson.contentVersion }) });
+export const adminLessonKey = (trackId: string) => ["admin", "academy-lessons", trackId] as const;
+export const getAdminLessons = (trackId: string) => adminFetch<{ items: AdminLesson[] }>(`/admin/academy/${trackId}/lessons`);
+export const saveLesson = (trackId: string, draft: LessonDraft, existing: AdminLesson | null) => adminFetch<{ item: AdminLesson }>(`/admin/academy/${trackId}/lessons${existing ? `/${existing.id}` : ""}`, { method: existing ? "PATCH" : "POST", body: JSON.stringify({ ...draft, ...(existing ? { contentVersion: existing.content_version, revision: existing.revision } : {}) }) });
+export const lessonAction = (trackId: string, item: AdminLesson, action: "publish" | "archive", approvalRef = "") => adminFetch<{ item: AdminLesson }>(`/admin/academy/${trackId}/lessons/${item.id}/${action}`, { method: "POST", body: JSON.stringify({ contentVersion: item.content_version, revision: item.revision, ...(action === "publish" ? { approvalRef } : {}) }) });

@@ -1,4 +1,7 @@
 import { Hono } from "hono";
+import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence.js";
+import { ALL_CATEGORY, missionCategoryValues } from "../../src/lib/missionCategories.js";
+import { MISSION_LIST_SELECT, serializeMission } from "../lib/missionDecision.js";
 import type { Context } from "hono";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
@@ -6,9 +9,9 @@ import type { PostgrestError } from "@supabase/supabase-js";
 
 export const missionRoutes = new Hono<Env>();
 export const MY_MISSIONS_SELECT =
-  "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
 export const LEGACY_MY_MISSIONS_SELECT =
-  "id, status, content_urls, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)";
+  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)";
 
 function isMissingWorkflowMode(error: Pick<PostgrestError, "code" | "message"> | null) {
   return Boolean(
@@ -73,8 +76,9 @@ const RPC_409 = new Set([
   "level_locked", "wrong_state", "empty_urls", "not_authenticated",
   "not_application", "already_applied", "verification_required",
 ]);
-function rpcError(c: Context<Env>, error: PostgrestError) {
+function rpcError(c: Context<Env>, error: Pick<PostgrestError, "message">) {
   const msg = error.message ?? "";
+  if (msg === "invalid_evidence") return c.json({ error: "Use complete HTTP(S) work URLs without credentials", code: "invalid_evidence" }, 400);
   if (msg === "not_found") return c.json({ error: msg, code: msg }, 404);
   if (RPC_409.has(msg)) return c.json({ error: msg, code: msg }, 409);
   return c.json({ error: msg || "rpc error", code: "db_error" }, 500);
@@ -85,21 +89,23 @@ missionRoutes.get("/", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   let q = supabase
     .from("missions")
-    .select("id, slug, title, description, category, mission_type, access_type, points_reward, deadline, quota, filled, status")
+    .select(MISSION_LIST_SELECT)
     .eq("workspace_id", c.get("workspaceId"))
     .eq("status", "active")            // B1: never surface draft/closed to creators
     .order("created_at", { ascending: false });
-  if (category && category !== "全部") q = q.eq("category", category);
+  if (category && category !== ALL_CATEGORY) q = q.in("category", missionCategoryValues(category));
   const { data, error } = await q;
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
 
   // Annotate each mission with the caller's submission status (or null).
-  const { data: subs } = await supabase
+  const { data: subs, error: statusError } = await supabase
     .from("mission_submissions")
     .select("mission_id, status")
-    .eq("creator_id", c.get("userId"));
+    .eq("creator_id", c.get("userId"))
+    .eq("workspace_id", c.get("workspaceId"));
+  if (statusError) return c.json({ error: statusError.message, code: "db_error" }, 500);
   const byId = new Map((subs ?? []).map((s) => [s.mission_id, s.status]));
-  const missions = (data ?? []).map((m) => ({ ...m, my_status: byId.get(m.id) ?? null }));
+  const missions = (data ?? []).map((m) => ({ ...serializeMission(m), my_status: byId.get(m.id) ?? null }));
   return c.json({ missions });
 });
 
@@ -141,8 +147,7 @@ missionRoutes.get("/:slug", async (c) => {
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   if (!data) return c.json({ error: "Not found", code: "not_found" }, 404);
   // Flatten the joined brand name to a top-level `brand`; drop the nested object.
-  const { workspaces, ...rest } = data as Record<string, unknown> & { workspaces?: { name?: string } | null };
-  return c.json({ ...rest, brand: workspaces?.name ?? null });
+  return c.json(serializeMission(data));
 });
 
 /** Join an open mission. */
@@ -269,9 +274,12 @@ export async function submitMissionForMode(
   if (mission.creator_workflow_mode === "active_workspace") {
     return { mismatch: true, data: null, error: null };
   }
+  const evidence = validateSubmissionEvidence(body.content_urls);
+  if (!evidence.ok) return { mismatch: false, data: null,
+    error: Object.assign(new Error("invalid_evidence"), { code: "22023", details: "", hint: "" }) };
   const result = await supabase.rpc("submit_mission", {
     p_mission: mission.id,
-    p_urls: body.content_urls ?? [],
+    p_urls: evidence.urls,
     p_data: body.submission_data ?? {},
   });
   return { mismatch: false, data: result.data, error: result.error };

@@ -5,17 +5,19 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { AdminAuthError, adminMissionKeys, createMission, fetchWorkspaces, type MissionDraftInput } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { MissionEditor } from "@/components/admin/MissionEditor";
+import { useMissionEditorNavigation } from "@/components/admin/useMissionEditorNavigation";
 
 export const Route = createFileRoute("/admin/missions/new")({ component: NewMission });
 
 function NewMission() {
   const { authed, reportAuthError } = useAdminAuth();
   const navigate = useNavigate();
+  const editorNavigation = useMissionEditorNavigation();
   const ws = useQuery({ queryKey: adminMissionKeys.workspaces, queryFn: fetchWorkspaces, enabled: authed, retry: false });
   useEffect(() => { if (ws.error instanceof AdminAuthError) reportAuthError(ws.error); }, [ws.error, reportAuthError]);
   const create = useMutation({
     mutationFn: (body: MissionDraftInput) => createMission(body),
-    onSuccess: () => navigate({ to: "/admin/missions" }),
+    onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
   });
   return (
     <div className="space-y-4">
@@ -23,7 +25,7 @@ function NewMission() {
       {/* Mount the editor only once workspaces are fetched — its initial workspace_id is
           captured at mount, so rendering before the query resolves leaves it empty. */}
       {ws.data ? (
-        <MissionEditor mode="create" workspaces={ws.data.workspaces ?? []} saving={create.isPending}
+        <MissionEditor mode="create" workspaces={ws.data.workspaces ?? []} saving={create.isPending} onDirtyChange={editorNavigation.changed}
           onSave={(body) => create.mutateAsync(body)} />
       ) : (
         <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>

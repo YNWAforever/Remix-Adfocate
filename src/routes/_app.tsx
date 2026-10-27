@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_app")({
     // Onboarding requires a session too — only the login/callback routes are
     // reachable unauthenticated (else a typed /onboarding URL bypasses auth).
     if (!data.session && !isAuthRoute) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: "/login", search: { next: location.href } });
     }
 
     // Onboarding gate (defence in depth). Cached read → no per-navigation round-trip.
@@ -40,12 +40,12 @@ export const Route = createFileRoute("/_app")({
         if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
           await supabase.auth.signOut({ scope: "local" });
           context.queryClient.removeQueries({ queryKey: ["me"] });
-          throw redirect({ to: "/login" });
+          throw redirect({ to: "/login", search: { next: location.href } });
         }
         throw err;
       }
       if (me && me.onboarding_completed === false) {
-        throw redirect({ to: "/onboarding" });
+        throw redirect({ to: "/onboarding", search: { next: location.href } });
       }
     }
   },

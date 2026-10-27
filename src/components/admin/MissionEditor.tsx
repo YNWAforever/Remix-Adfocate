@@ -1,5 +1,5 @@
 // src/components/admin/MissionEditor.tsx
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MISSION_CATEGORIES } from "@/lib/missionCategories";
 import { AdminRequestError, type AdminMission, type MissionDeliverableTemplateInput, type MissionDraftInput } from "@/lib/admin";
 import { ArrayInput } from "./ArrayInput";
@@ -8,6 +8,9 @@ import { MissionBrief } from "@/components/MissionBrief";
 import { MissionFacts } from "@/components/MissionFacts";
 import type { Mission } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
+import { validateMissionWorkflowAuthoring } from "@/lib/missionWorkflowAuthoring";
+import { ProofPolicyFields, parseProofPolicy as parsedEvidencePolicy } from "./ProofPolicyFields";
+import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
 
 const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
 const REQUIREMENT_CATEGORIES = ["format", "key_message", "compliance", "quality", "other"] as const;
@@ -22,6 +25,7 @@ type Props = {
   engaged?: boolean;
   onSave: (body: MissionDraftInput) => Promise<unknown>;
   saving?: boolean;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
@@ -54,15 +58,6 @@ function toEditableTemplates(templates: MissionDeliverableTemplateInput[]): Edit
   }));
 }
 
-function parsedEvidencePolicy(value: string): Record<string, unknown> | null {
-  try {
-    const parsed: unknown = JSON.parse(value);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
-  } catch {
-    return null;
-  }
-}
-
 function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
   return templates.map(({ editorKey: templateKey, proofEvidencePolicyText, requirements, ...template }) => {
     void templateKey;
@@ -79,7 +74,7 @@ function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTem
   });
 }
 
-export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
+export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving, onDirtyChange }: Props) {
   const { t } = useI18n();
   const published = mode === "edit" && initial?.status !== "draft";
   const [f, setF] = useState({
@@ -115,15 +110,37 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
   });
   const [preview, setPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saveError, setSaveError] = useState<Error | null>(null);
+  const [savedForm, setSavedForm] = useState(() => JSON.stringify(f));
+  const [savePending, setSavePending] = useState(false);
+  const inFlight = useRef(false);
+  const editorRef = useRef<HTMLFieldSetElement>(null);
+  const errorSummaryRef = useRef<HTMLDivElement>(null);
+  const dirty = JSON.stringify(f) !== savedForm;
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
+  const focusError = (key: string) => {
+    const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
+    if (index !== undefined) (document.getElementById(`deliverable-${f.deliverable_templates[Number(index)]?.editorKey}`) ?? errorSummaryRef.current)?.focus();
+    else editorRef.current?.focus();
+  };
+  useEffect(() => {
+    const key = Object.keys(errors)[0];
+    if (saveError) { errorSummaryRef.current?.focus(); return; }
+    if (!key) return;
+    const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
+    if (index !== undefined) (document.getElementById(`deliverable-${f.deliverable_templates[Number(index)]?.editorKey}`) ?? errorSummaryRef.current)?.focus();
+    else editorRef.current?.focus();
+  }, [errors, saveError, f.deliverable_templates]);
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
   const isCpm = f.mission_type === "performance_cpm";
 
   const submit = async () => {
+    if (saving || inFlight.current) return;
     setErrors({});
-    const invalidEvidencePolicyIndex = f.creator_workflow_mode === "active_workspace"
-      ? f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null)
-      : -1;
+    setSaveError(null);
+    const invalidEvidencePolicyIndex = f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null);
     if (invalidEvidencePolicyIndex >= 0) {
       setErrors({
         [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: "PROOF_EVIDENCE_POLICY_INVALID",
@@ -151,21 +168,41 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
       target_audience: f.target_audience.trim() || null,
       dos: f.dos, donts: f.donts, key_messages: f.key_messages, reference_links: f.reference_links,
     };
+    const validation = validateMissionWorkflowAuthoring(body);
+    if (!validation.ok) { setErrors(validation.errors); return; }
+    inFlight.current = true;
+    setSavePending(true);
     try {
       await onSave(body);
+      setSavedForm(JSON.stringify(f));
+      onDirtyChange?.(false);
     } catch (e) {
       if (e instanceof AdminRequestError && e.fields) setErrors(e.fields);
-      else window.alert(e instanceof Error ? e.message : "儲存失敗");
+      else setSaveError(e instanceof Error ? e : new Error("save_failed"));
+    } finally {
+      inFlight.current = false;
+      setSavePending(false);
     }
   };
 
+  const messageFor = (raw: string) => {
+    const key = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw] ?? ({
+      "Title is required": "app.admin.missionEditor.deliverableTitleRequired",
+      "Requirement text is required": "app.admin.missionEditor.requirementTextRequired",
+      "Must be a positive integer": "app.admin.missionEditor.positiveInteger",
+      "Must be a non-negative integer": "app.admin.missionEditor.nonNegativeInteger",
+      "Add at least one required deliverable": "app.admin.missionEditor.requiredDeliverableMissing",
+      "Invalid requirement category": "app.admin.missionEditor.invalidRequirementCategory",
+      "Platform must be null or a non-empty string": "app.admin.missionEditor.invalidPlatform",
+    } as Record<string, string>)[raw];
+    return key ? t(key) : raw;
+  };
   const Err = ({ k, nested = false }: { k: string; nested?: boolean }) => {
     const raw = errors[k] ?? (nested
       ? Object.entries(errors).find(([field]) => field.startsWith(`${k}.`))?.[1]
       : undefined);
     if (!raw) return null;
-    const messageKey = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw];
-    return <p className="text-xs font-bold text-red-600">{messageKey ? t(messageKey) : raw}</p>;
+    return <p className="text-xs font-bold text-red-600">{messageFor(raw)}</p>;
   };
   const input = "h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50";
   const area = "w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm";
@@ -179,8 +216,8 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
     category: f.category || undefined,
     mission_type: f.mission_type,
     access_type: f.access_type,
-    points_reward: Number(f.points_reward || 0),
-    cash_reward: numOrNull(f.cash_reward),
+    points_reward: isCpm ? 0 : Number(f.points_reward || 0),
+    cash_reward: isCpm ? null : numOrNull(f.cash_reward),
     required_level: f.required_level,
     deliverables: f.deliverables,
     requirements: f.requirements,
@@ -198,7 +235,18 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
   };
 
   return (
-    <div className="space-y-5">
+    <fieldset ref={editorRef} tabIndex={-1} disabled={saving || savePending} className="min-w-0 space-y-5">
+      {saveError || Object.keys(errors).length ? <div ref={errorSummaryRef} role="alert" tabIndex={-1} className="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm">
+        <p className="font-bold">{t(saveError ? "app.admin.missionEditor.saveFailed" : "app.admin.missionEditor.fixFields")}</p>
+        {saveError instanceof AdminRequestError && saveError.status === 403 ? <p>{t("app.admin.missionEditor.permissionHelp")}</p> : null}
+        {saveError instanceof AdminRequestError && saveError.status === 409 ? <p>{t("app.admin.missionEditor.conflictHelp")}</p> : null}
+        <ul>{Object.entries(errors).map(([key, value]) => {
+          const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
+          return <li key={key}><button type="button" className="py-1 text-left underline" onClick={() => focusError(key)}>
+            {index !== undefined ? t("app.admin.missionEditor.deliverable", { position: Number(index) + 1 }) : t("app.admin.missionEditor.rootFields")} · {messageFor(value)}
+          </button></li>;
+        })}</ul>
+      </div> : null}
       <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
         <h2 className="font-heading font-bold">基本</h2>
         <label className="block text-sm">品牌
@@ -209,13 +257,13 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         <label className="block text-sm">標題 (zh-HK)
           <input aria-label="標題" className={input} value={f.title} onChange={set("title")} /><Err k="title" />
         </label>
-        <label className="block text-sm">Slug (english){published ? lockNote("已發佈：不可更改") : null}
-          <input aria-label="Slug" className={input} value={f.slug} disabled={published} onChange={set("slug")} /><Err k="slug" />
+        <label className="block text-sm">任務網址代號（英數字及連字號）{published ? lockNote("已發佈：不可更改") : null}
+          <input aria-label="任務網址代號" className={input} value={f.slug} disabled={published} onChange={set("slug")} /><Err k="slug" />
         </label>
         <label className="block text-sm">分類
           <select aria-label="分類" className={input} value={f.category} onChange={set("category")}>
             <option value="">— 選擇 —</option>
-            {MISSION_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+            {[...new Set<string>([...MISSION_CATEGORIES, ...(f.category ? [f.category] : [])])].map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select><Err k="category" />
         </label>
         <label className="block text-sm">任務類型{published ? lockNote("已發佈：不可更改") : null}
@@ -225,8 +273,8 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         </label>
         <label className="block text-sm">參與方式{engaged ? lockNote("已鎖定") : null}
           <select aria-label="參與方式" className={input} value={f.access_type} disabled={engaged} onChange={set("access_type")}>
-            <option value="open">公開 (open)</option>
-            <option value="application">申請制 (application)</option>
+            <option value="open">公開</option>
+            <option value="application">申請制</option>
           </select><Err k="access_type" />
         </label>
         <label className="block text-sm">等級要求{engaged ? lockNote("已鎖定") : null}
@@ -274,10 +322,10 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
         <label className="block text-sm">任務簡介
           <textarea aria-label="任務簡介" rows={4} className={area} value={f.description} onChange={set("description")} /><Err k="description" />
         </label>
-        <label className="block text-sm">Creator workflow
-          <select aria-label="Creator workflow" className={input} value={f.creator_workflow_mode} onChange={set("creator_workflow_mode")}>
-            <option value="legacy">Legacy submission</option>
-            <option value="active_workspace">Active mission workspace</option>
+        <label className="block text-sm">{t("app.admin.missionEditor.workflow")}
+          <select aria-label={t("app.admin.missionEditor.workflow")} className={input} value={f.creator_workflow_mode} onChange={set("creator_workflow_mode")}>
+            <option value="legacy">{t("app.admin.missionEditor.legacyWorkflow")}</option>
+            <option value="active_workspace">{t("app.admin.missionEditor.activeWorkflow")}</option>
           </select><Err k="creator_workflow_mode" />
         </label>
 
@@ -285,22 +333,23 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
           <div className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
             <label className="flex items-center gap-2 text-sm">
               <input
-                aria-label="Fulfillment required"
+                aria-label={t("app.admin.missionEditor.fulfillment")}
                 type="checkbox"
                 checked={f.fulfillment_required}
                 onChange={(event) => setF((previous) => ({ ...previous, fulfillment_required: event.target.checked }))}
               />
-              Fulfillment required
+              {t("app.admin.missionEditor.fulfillment")}
             </label>
-            <label className="block text-sm">Revision limit
-              <input aria-label="Revision limit" className={input} type="number" min={0} value={f.revision_limit} onChange={set("revision_limit")} />
+            <label className="block text-sm">{t("app.admin.missionEditor.revisionLimit")}
+              <input aria-label={t("app.admin.missionEditor.revisionLimit")} className={input} type="number" min={0} value={f.revision_limit} onChange={set("revision_limit")} /><Err k="revision_limit" />
             </label>
-            <label className="block text-sm">Review SLA hours
-              <input aria-label="Review SLA hours" className={input} type="number" min={1} value={f.review_sla_hours} onChange={set("review_sla_hours")} />
+            <label className="block text-sm">{t("app.admin.missionEditor.reviewHours")}
+              <input aria-label={t("app.admin.missionEditor.reviewHours")} className={input} type="number" min={1} value={f.review_sla_hours} onChange={set("review_sla_hours")} /><Err k="review_sla_hours" />
             </label>
-            <label className="block text-sm">Revision response hours
-              <input aria-label="Revision response hours" className={input} type="number" min={1} value={f.revision_response_hours} onChange={set("revision_response_hours")} />
+            <label className="block text-sm">{t("app.admin.missionEditor.revisionHours")}
+              <input aria-label={t("app.admin.missionEditor.revisionHours")} className={input} type="number" min={1} value={f.revision_response_hours} onChange={set("revision_response_hours")} /><Err k="revision_response_hours" />
             </label>
+            <p className="text-xs text-[var(--color-soft-ink)]">{t("app.admin.missionEditor.deadlineHelp")}</p>
             <button
               type="button"
               onClick={() => setF((previous) => ({
@@ -323,14 +372,14 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
               }))}
               className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
             >
-              Add deliverable
+              {t("app.admin.missionEditor.addDeliverable")}
             </button>
             {f.deliverable_templates.map((template, templateIndex) => (
-              <fieldset key={template.editorKey} className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
-                <legend className="px-1 text-sm font-bold">Deliverable {templateIndex + 1}</legend>
-                <label className="block text-sm">Title
+              <fieldset id={`deliverable-${template.editorKey}`} tabIndex={-1} key={template.editorKey} className="min-w-0 space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+                <legend className="px-1 text-sm font-bold">{t("app.admin.missionEditor.deliverable", { position: templateIndex + 1 })}</legend>
+                <label className="block text-sm">{t("app.admin.missionEditor.deliverableTitle")}
                   <input
-                    aria-label={`Deliverable title ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.deliverableTitleAria", { position: templateIndex + 1 })}
                     className={input}
                     value={template.title}
                     onChange={(event) => setF((previous) => ({
@@ -341,9 +390,10 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
-                <label className="block text-sm">Platform (optional)
+                <Err k={`deliverable_templates.${templateIndex}.title`} />
+                <label className="block text-sm">{t("app.admin.missionEditor.deliverablePlatform")}
                   <input
-                    aria-label={`Deliverable platform ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.deliverablePlatformAria", { position: templateIndex + 1 })}
                     className={input}
                     value={template.platform ?? ""}
                     onChange={(event) => setF((previous) => ({
@@ -354,9 +404,10 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                <Err k={`deliverable_templates.${templateIndex}.platform`} />
                 <label className="flex items-center gap-2 text-sm">
                   <input
-                    aria-label={`Deliverable required ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.requiredDeliverableAria", { position: templateIndex + 1 })}
                     type="checkbox"
                     checked={template.required}
                     onChange={(event) => setF((previous) => ({
@@ -366,11 +417,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                       )),
                     }))}
                   />
-                  Required deliverable
+                  {t("app.admin.missionEditor.requiredDeliverable")}
                 </label>
-                <label className="block text-sm">Draft due offset (hours)
+                <Err k={`deliverable_templates.${templateIndex}.required`} />
+                <label className="block text-sm">{t("app.admin.missionEditor.draftHours")}
                   <input
-                    aria-label={`Draft due offset ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.draftHoursAria", { position: templateIndex + 1 })}
                     className={input}
                     type="number"
                     min={0}
@@ -383,6 +435,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                     }))}
                   />
                 </label>
+                <Err k={`deliverable_templates.${templateIndex}.draft_due_offset_hours`} />
                 <label className="block text-sm">{t("app.admin.missionEditor.publicationInstructions")}
                   <textarea
                     aria-label={t("app.admin.missionEditor.publicationInstructionsAria", { position: templateIndex + 1 })}
@@ -446,24 +499,15 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                   />
                 </label>
                   <Err k={`deliverable_templates.${templateIndex}.expected_account`} />
-                <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
-                  <textarea
-                    aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position: templateIndex + 1 })}
-                    rows={2}
-                    className={area}
-                    value={template.proofEvidencePolicyText}
-                    onChange={(event) => setF((previous) => ({
-                      ...previous,
-                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
-                        index === templateIndex ? { ...item, proofEvidencePolicyText: event.target.value } : item
-                      )),
-                    }))}
-                  />
-                  <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
-                </label>
+                <ProofPolicyFields position={templateIndex + 1} policy={template.proof_evidence_policy} rawValue={template.proofEvidencePolicyText}
+                  onChange={(policy) => setF((previous) => ({ ...previous, deliverable_templates: previous.deliverable_templates.map((item, index) =>
+                    index === templateIndex ? { ...item, proof_evidence_policy: policy, proofEvidencePolicyText: JSON.stringify(policy) } : item) }))}
+                  onRawChange={(value) => setF((previous) => ({ ...previous, deliverable_templates: previous.deliverable_templates.map((item, index) =>
+                    index === templateIndex ? { ...item, proofEvidencePolicyText: value } : item) }))} />
+                <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
                 <button
                   type="button"
-                  aria-label={`Remove deliverable ${templateIndex + 1}`}
+                  aria-label={t("app.admin.missionEditor.removeDeliverableAria", { position: templateIndex + 1 })}
                   className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
                   onClick={() => setF((previous) => ({
                     ...previous,
@@ -472,17 +516,17 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                       .map((item, position) => ({ ...item, position })),
                   }))}
                 >
-                  Remove deliverable
+                  {t("app.admin.missionEditor.removeDeliverable")}
                 </button>
 
                 <div className="space-y-3 border-l-2 border-[var(--color-ink)] pl-3">
-                  <p className="text-sm font-bold">Checklist</p>
+                  <p className="text-sm font-bold">{t("app.admin.missionEditor.checklist")}</p>
                   {template.requirements.map((requirement, requirementIndex) => (
                     <fieldset key={requirement.editorKey} className="space-y-2">
-                      <legend className="text-xs font-bold">Checklist item {requirementIndex + 1}</legend>
-                      <label className="block text-sm">Category
+                      <legend className="text-xs font-bold">{t("app.admin.missionEditor.checklistItem", { position: requirementIndex + 1 })}</legend>
+                      <label className="block text-sm">{t("app.admin.missionEditor.checklistCategory")}
                         <select
-                          aria-label={`Checklist category ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          aria-label={t("app.admin.missionEditor.checklistCategoryAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
                           className={input}
                           value={requirement.category}
                           onChange={(event) => setF((previous) => ({
@@ -494,12 +538,13 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                               : item),
                           }))}
                         >
-                          {REQUIREMENT_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+                          {REQUIREMENT_CATEGORIES.map((category) => <option key={category} value={category}>{t(`app.admin.missionEditor.category.${category}`)}</option>)}
                         </select>
                       </label>
-                      <label className="block text-sm">Requirement
+                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.category`} />
+                      <label className="block text-sm">{t("app.admin.missionEditor.checklistText")}
                         <input
-                          aria-label={`Checklist text ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          aria-label={t("app.admin.missionEditor.checklistTextAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
                           className={input}
                           value={requirement.text}
                           onChange={(event) => setF((previous) => ({
@@ -512,9 +557,10 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                           }))}
                         />
                       </label>
+                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.text`} />
                       <label className="flex items-center gap-2 text-sm">
                         <input
-                          aria-label={`Checklist required ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
+                          aria-label={t("app.admin.missionEditor.checklistRequiredAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
                           type="checkbox"
                           checked={requirement.required}
                           onChange={(event) => setF((previous) => ({
@@ -526,11 +572,12 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                               : item),
                           }))}
                         />
-                        Required checklist item
+                        {t("app.admin.missionEditor.requiredChecklist")}
                       </label>
+                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.required`} />
                       <button
                         type="button"
-                        aria-label={`Remove checklist item ${requirementIndex + 1} from deliverable ${templateIndex + 1}`}
+                        aria-label={t("app.admin.missionEditor.removeChecklistAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
                         className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
                         onClick={() => setF((previous) => ({
                           ...previous,
@@ -541,13 +588,13 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                             : item),
                         }))}
                       >
-                        Remove checklist item
+                        {t("app.admin.missionEditor.removeChecklist")}
                       </button>
                     </fieldset>
                   ))}
                   <button
                     type="button"
-                    aria-label={`Add checklist item to deliverable ${templateIndex + 1}`}
+                    aria-label={t("app.admin.missionEditor.addChecklistAria", { position: templateIndex + 1 })}
                     className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"
                     onClick={() => setF((previous) => ({
                       ...previous,
@@ -558,7 +605,7 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
                         : item),
                     }))}
                   >
-                    Add checklist item
+                    {t("app.admin.missionEditor.addChecklist")}
                   </button>
                 </div>
               </fieldset>
@@ -616,16 +663,26 @@ export function MissionEditor({ mode, initial, workspaces = [], engaged = false,
           {preview ? "隱藏預覽" : "預覽"}
         </button>
         {preview && (
-          <div className="space-y-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
+          <section aria-label={t("app.admin.missionEditor.creatorPreview")} className="space-y-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
             <MissionFacts mission={previewMission} />
             <MissionBrief mission={previewMission} />
-          </div>
+            {f.creator_workflow_mode === "active_workspace" ? f.deliverable_templates.map((template, index) => <article key={template.editorKey} className="space-y-3">
+              <h3 className="font-heading font-bold">{template.title || t("app.admin.missionEditor.deliverable", { position: index + 1 })}</h3>
+              <p>{t(template.required ? "app.admin.missionEditor.requiredDeliverable" : "app.admin.missionEditor.optionalDeliverable")} · {t("app.admin.missionEditor.draftAfterHours", { hours: template.draft_due_offset_hours })}</p>
+              <ul className="list-inside list-disc text-sm">{template.requirements.map((requirement) => <li key={requirement.editorKey}>{requirement.text} {requirement.required ? `(${t("app.admin.missionEditor.requiredChecklist")})` : ""}</li>)}</ul>
+              {parsedEvidencePolicy(template.proofEvidencePolicyText) ? <PublicationInstructions preview publicationWindowHours={template.publication_window_hours}
+                publication={{ platform: template.platform ?? "", instructions: { publicationInstructions: template.publication_instructions,
+                  requiredDisclosures: template.required_disclosures, expectedAccount: template.expected_account,
+                  proofEvidencePolicy: parsedEvidencePolicy(template.proofEvidencePolicyText)! } }} />
+                : <p role="alert">{t("app.admin.missionEditor.proofEvidencePolicyInvalid")}</p>}
+            </article>) : null}
+          </section>
         )}
       </div>
 
-      <button onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
+      <button onClick={submit} disabled={saving || savePending} aria-busy={saving || savePending} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
         {mode === "create" ? "儲存草稿" : "儲存變更"}
       </button>
-    </div>
+    </fieldset>
   );
 }

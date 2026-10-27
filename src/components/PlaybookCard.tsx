@@ -11,10 +11,10 @@ export function PlaybookCard({ item }: Props) {
   if (isPlaybook(item)) {
     const levels = item.meta.levels ?? [];
     return (
-      <div className="pastel-card flex flex-col gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+      <div className="pastel-card flex min-w-0 flex-col gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 [overflow-wrap:anywhere]">
         <div className="flex items-center gap-2">
           <span className="text-2xl" aria-hidden>{item.emoji}</span>
-          <h3 className="font-heading font-semibold">{item.title}</h3>
+          <h3 className="min-w-0 font-heading font-semibold">{item.title}</h3>
         </div>
         {item.meta.creatorAngle && (
           <p className="text-sm text-[var(--color-soft-ink)]">{item.meta.creatorAngle}</p>
@@ -30,7 +30,7 @@ export function PlaybookCard({ item }: Props) {
     );
   }
   return (
-    <div className="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+    <div className="flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 [overflow-wrap:anywhere]">
       <span className="text-2xl" aria-hidden>{item.emoji}</span>
       <div className="min-w-0 flex-1">
         <h3 className="font-heading font-semibold leading-snug">{item.title}</h3>

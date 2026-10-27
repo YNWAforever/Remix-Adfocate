@@ -10,11 +10,10 @@ import type {
   MissionShortlistSource,
   MissionShortlistStatus,
   OperatorContext,
-  ReviewProjection,
 } from "./types.js";
 
 const CREATOR_PROJECTION = "id, workspace_id, display_name, avatar_url, level, categories, scores, social_handles, created_at";
-const REVIEW_PROJECTION = "creator_id, workspace_id, status, risk_level, summary, reviewed_by, last_reviewed_at, updated_at";
+const REVIEW_PROJECTION = "revision, creator_id, workspace_id, status, risk_level, summary, reviewed_by, last_reviewed_at, updated_at";
 const SOCIAL_PROJECTION =
   "creator_id, platform, handle, sync_status, follower_count, engagement_rate, api_synced_at, external_avatar_url, bio, post_count, following_count, avg_likes, avg_comments, posting_frequency, freshness_score, content_themes";
 const SHORTLIST_PROJECTION =
@@ -35,7 +34,8 @@ export class OperatorCrmError extends Error {
       | "workspace_mismatch"
       | "flagged_note_required"
       | "flagged_invite_blocked"
-      | "db_error",
+      | "db_error"
+      | "CRM_STALE" | "IDEMPOTENCY_CONFLICT" | "FORBIDDEN" | "invalid_command",
     message: string = code,
   ) {
     super(message);
@@ -307,38 +307,10 @@ export async function enrichAdminMissionRows<
   });
 }
 
-function levelRank(level: string | null | undefined) {
-  const raw = typeof level === "string" ? level : "";
-  const numeric = Number(raw.replace(/^L/i, ""));
-  return Number.isFinite(numeric) ? numeric : -1;
-}
 
-function trustScore(scores: Record<string, number | null> | null | undefined) {
-  if (!scores) return -1;
-  const values = Object.values(scores).filter((value): value is number => typeof value === "number");
-  if (values.length === 0) return -1;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
 
-function compareNullableDesc(left: string | number | null, right: string | number | null) {
-  if (left == null && right == null) return 0;
-  if (left == null) return 1;
-  if (right == null) return -1;
-  if (left > right) return -1;
-  if (left < right) return 1;
-  return 0;
-}
 
-function compareMissionQueuePriority(left: CreatorReviewRow, right: CreatorReviewRow) {
-  const rank = (status: CreatorReviewStatus) => (status === "approved" ? 0 : 1);
-  return rank(left.review.status) - rank(right.review.status);
-}
 
-function reviewMatchesFilter(review: ReviewProjection, filters: CreatorQueueFilters) {
-  if (filters.status && review.status !== filters.status) return false;
-  if (filters.riskLevel && review.riskLevel !== filters.riskLevel) return false;
-  return true;
-}
 
 function assertMatchingWorkspace(mission: MissionRow, creator: CreatorRow) {
   if (mission.workspace_id !== creator.workspace_id) {
@@ -394,15 +366,21 @@ export async function listCreatorReviewQueue(
   supabase: SupabaseClient,
   filters: CreatorQueueFilters,
 ): Promise<{ creators: CreatorReviewRow[]; page: number; pageSize: number; total: number }> {
-  if (filters.missionId) await mustGetMission(supabase, filters.missionId);
-
-  let creatorQuery = supabase.from("creators").select(CREATOR_PROJECTION);
-  if (filters.workspace) creatorQuery = creatorQuery.eq("workspace_id", filters.workspace);
-  if (filters.q) creatorQuery = creatorQuery.ilike("display_name", `%${filters.q}%`);
-  const { data: creatorsData, error: creatorsError } = await creatorQuery;
+  if (!filters.workspace || !filters.operatorId) throw new OperatorCrmError("FORBIDDEN");
+  const pageResult = await supabase.rpc("list_creator_review_queue_page", {
+    p_workspace: filters.workspace, p_operator: filters.operatorId, p_mission: filters.missionId ?? null,
+    p_query: filters.q ?? "", p_status: filters.status ?? null, p_risk: filters.riskLevel ?? null,
+    p_sort: filters.sort, p_page: filters.page,
+  });
+  if (pageResult.error) commandError(pageResult.error);
+  const pageData = pageResult.data as { creatorIds: string[]; total: number; page: number; pageSize: number };
+  if (!pageData || !Array.isArray(pageData.creatorIds) || pageData.creatorIds.length > 25) throw new OperatorCrmError("db_error");
+  if (pageData.creatorIds.length === 0) return { creators: [], total: pageData.total, page: pageData.page, pageSize: 25 };
+  const { data: creatorsData, error: creatorsError } = await supabase.from("creators").select(CREATOR_PROJECTION)
+    .eq("workspace_id", filters.workspace).in("id", pageData.creatorIds);
   if (creatorsError) failDb(creatorsError);
-
-  const creators = (creatorsData ?? []) as CreatorRow[];
+  const positions = new Map(pageData.creatorIds.map((id, index) => [id, index]));
+  const creators = ((creatorsData ?? []) as CreatorRow[]).sort((a, b) => positions.get(a.id)! - positions.get(b.id)!);
   const creatorIds = creators.map((creator) => creator.id);
   const [reviews, socials, shortlists, profileMedia] = await Promise.all([
     getReviewMap(supabase, creatorIds),
@@ -451,39 +429,8 @@ export async function listCreatorReviewQueue(
         lastActivityAt: activityAt,
       } satisfies CreatorReviewRow;
     })
-    .filter((row) => reviewMatchesFilter(row.review, filters))
-    .filter((row) => !(filters.missionId && !filters.status && row.review.status === "flagged"));
-
-  rows.sort((left, right) => {
-    if (filters.missionId) {
-      const priority = compareMissionQueuePriority(left, right);
-      if (priority !== 0) return priority;
-    }
-
-    switch (filters.sort) {
-      case "trust_score":
-        return compareNullableDesc(trustScore(left.scores), trustScore(right.scores));
-      case "level":
-        return compareNullableDesc(levelRank(left.level), levelRank(right.level));
-      case "social_freshness":
-        return compareNullableDesc(left.social.apiSyncedAt, right.social.apiSyncedAt);
-      case "last_activity":
-      default:
-        return compareNullableDesc(left.lastActivityAt, right.lastActivityAt);
-    }
-  });
-
-  const total = rows.length;
-  const page = Math.max(filters.page || 1, 1);
-  const pageSize = Math.min(Math.max(filters.pageSize || DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE);
-  const start = (page - 1) * pageSize;
-
-  return {
-    creators: rows.slice(start, start + pageSize),
-    page,
-    pageSize,
-    total,
-  };
+;
+  return { creators: rows, total: pageData.total, page: pageData.page, pageSize: 25 };
 }
 
 export async function getCreatorOperatorDetail(supabase: SupabaseClient, creatorId: string) {
@@ -534,107 +481,39 @@ export async function getCreatorOperatorDetail(supabase: SupabaseClient, creator
   };
 }
 
-export async function updateCreatorReview(
-  supabase: SupabaseClient,
-  input: {
-    creatorId: string;
-    status: CreatorReviewStatus;
-    riskLevel: CreatorRiskLevel;
-    summary: string | null;
-    note: string | null;
-    context: OperatorContext;
-  },
-) {
-  const creator = await mustGetCreator(supabase, input.creatorId);
-  const now = new Date().toISOString();
-  const { data, error } = await supabase
-    .from("creator_review_statuses")
-    .upsert(
-      {
-        creator_id: input.creatorId,
-        workspace_id: creator.workspace_id,
-        status: input.status,
-        risk_level: input.riskLevel,
-        summary: input.summary,
-        reviewed_by: input.context.operatorId,
-        last_reviewed_at: now,
-      },
-      { onConflict: "workspace_id,creator_id" },
-    )
-    .select(REVIEW_PROJECTION)
-    .single();
-  if (error) failDb(error);
-
-  await insertAuditEvent(supabase, {
-    workspaceId: creator.workspace_id,
-    context: input.context,
-    eventType: "creator_review.updated",
-    targetType: "creator",
-    targetId: input.creatorId,
-    creatorId: input.creatorId,
-    metadata: { status: input.status, risk_level: input.riskLevel, summary: input.summary },
-  });
-
-  if (input.note) {
-    const { error: noteError } = await supabase.from("creator_review_notes").insert({
-      creator_id: input.creatorId,
-      workspace_id: creator.workspace_id,
-      operator_id: input.context.operatorId,
-      category: "other",
-      body: input.note,
-    });
-    if (noteError) failDb(noteError);
-
-    await insertAuditEvent(supabase, {
-      workspaceId: creator.workspace_id,
-      context: input.context,
-      eventType: "creator_note.created",
-      targetType: "creator",
-      targetId: input.creatorId,
-      creatorId: input.creatorId,
-      metadata: { category: "other" },
-    });
+type CommandIdentity = { requestId?: string; expectedRevision?: number; context: OperatorContext; creatorId: string };
+function commandArgs(input: CommandIdentity) {
+  if (!input.requestId || !Number.isSafeInteger(input.expectedRevision) || input.expectedRevision! < 0 || !input.context.workspaceId) {
+    throw new OperatorCrmError("invalid_command");
   }
-
-  return projectReviewStatus(data as ReviewRow);
+  return { p_workspace: input.context.workspaceId, p_operator: input.context.operatorId,
+    p_request: input.requestId, p_expected_revision: input.expectedRevision, p_creator: input.creatorId };
 }
-
-export async function addCreatorReviewNote(
-  supabase: SupabaseClient,
-  input: {
-    creatorId: string;
-    category: CreatorReviewNoteCategory;
-    body: string;
-    context: OperatorContext;
-  },
-) {
-  const creator = await mustGetCreator(supabase, input.creatorId);
-  const { data, error } = await supabase
-    .from("creator_review_notes")
-    .insert({
-      creator_id: input.creatorId,
-      workspace_id: creator.workspace_id,
-      operator_id: input.context.operatorId,
-      category: input.category,
-      body: input.body,
-    })
-    .select(NOTE_PROJECTION)
-    .single();
-  if (error) failDb(error);
-
-  await insertAuditEvent(supabase, {
-    workspaceId: creator.workspace_id,
-    context: input.context,
-    eventType: "creator_note.created",
-    targetType: "creator",
-    targetId: input.creatorId,
-    creatorId: input.creatorId,
-    metadata: { category: input.category },
-  });
-
-  return data as NoteRow;
+function commandError(error: { message: string; code?: string }) {
+  if (["CRM_STALE", "IDEMPOTENCY_CONFLICT", "FORBIDDEN", "invalid_command", "creator_not_found"].includes(error.message)) {
+    throw new OperatorCrmError(error.message as "CRM_STALE" | "IDEMPOTENCY_CONFLICT" | "FORBIDDEN" | "invalid_command" | "creator_not_found");
+  }
+  if (error.code === "23505") throw new OperatorCrmError("IDEMPOTENCY_CONFLICT");
+  failDb(error);
 }
-
+export async function updateCreatorReview(supabase: SupabaseClient, input: CommandIdentity & {
+  status: CreatorReviewStatus; riskLevel: CreatorRiskLevel; summary: string | null; note: string | null;
+}) {
+  const { data, error } = await supabase.rpc("apply_creator_review_command", { ...commandArgs(input),
+    p_status: input.status, p_risk_level: input.riskLevel, p_summary: input.summary, p_note: input.note });
+  if (error) commandError(error);
+  if (!data?.review || !Number.isSafeInteger(data.revision)) throw new OperatorCrmError("db_error");
+  return { ...projectReviewStatus(data.review as ReviewRow), revision: data.revision as number, receiptId: data.receipt_id as string };
+}
+export async function addCreatorReviewNote(supabase: SupabaseClient, input: CommandIdentity & {
+  category: CreatorReviewNoteCategory; body: string;
+}) {
+  const { data, error } = await supabase.rpc("add_creator_review_note_command", { ...commandArgs(input),
+    p_category: input.category, p_body: input.body });
+  if (error) commandError(error);
+  if (!data?.note || !Number.isSafeInteger(data.revision)) throw new OperatorCrmError("db_error");
+  return { ...(data.note as NoteRow), revision: data.revision as number, receiptId: data.receipt_id as string };
+}
 export async function listMissionShortlist(supabase: SupabaseClient, missionId: string) {
   const mission = await mustGetMission(supabase, missionId);
   const { data, error } = await supabase

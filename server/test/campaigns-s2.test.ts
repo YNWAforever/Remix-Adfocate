@@ -1,3 +1,4 @@
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, hasSupabaseEnv, setCreatorProfile } from "./helpers.js";
 import { notifyCampaignStarted } from "../lib/notifyCampaignStarted.js";
@@ -40,7 +41,7 @@ async function seedApprovedSub(opts: {
   const ws = opts.workspace ?? DEMO_WS;
   const { data: ins, error: e1 } = await svc().from("mission_submissions")
     .insert({ creator_id: opts.creator, workspace_id: ws, mission_id: opts.mission,
-              status: "submitted", submitted_at: opts.submitted_at }).select("id").single();
+              status: "submitted", content_urls: ["https://example.test/campaign-evidence"], submitted_at: opts.submitted_at }).select("id").single();
   if (e1) throw e1;
   const id = (ins as { id: string }).id;
   const { error: e2 } = await svc().from("mission_submissions")
@@ -60,9 +61,9 @@ suite("close_due_campaigns", () => {
   it("closes past-deadline active only, idempotent", async () => {
     // Arrange: past+active, future+active, past+draft
     // starts_at must be < ends_at (DB check constraint), so past campaigns need old starts_at too.
-    const past = await makeCampaign({ slug: "test-s2-close-past", status: "active", starts_at: "1999-01-01T00:00:00Z", ends_at: "2000-01-01T00:00:00Z" });
-    const future = await makeCampaign({ slug: "test-s2-close-future", status: "active", ends_at: "2999-01-01T00:00:00Z" });
-    const draft = await makeCampaign({ slug: "test-s2-close-draft", status: "draft", starts_at: "1999-01-01T00:00:00Z", ends_at: "2000-01-01T00:00:00Z" });
+    const past = await makeCampaign({ slug: fixtureName("test-s2-close-past"), status: "active", starts_at: "1999-01-01T00:00:00Z", ends_at: "2000-01-01T00:00:00Z" });
+    const future = await makeCampaign({ slug: fixtureName("test-s2-close-future"), status: "active", ends_at: "2999-01-01T00:00:00Z" });
+    const draft = await makeCampaign({ slug: fixtureName("test-s2-close-draft"), status: "draft", starts_at: "1999-01-01T00:00:00Z", ends_at: "2000-01-01T00:00:00Z" });
 
     // Act: first call
     const { data: n1, error: err1 } = await svc().rpc("close_due_campaigns");
@@ -100,10 +101,10 @@ suite("snapshot_campaign_leaderboards", () => {
   afterAll(cleanup);
 
   it("captures active-campaign ranks", async () => {
-    const creator = await makeCreator("s2-snap@test.local", 0);
-    const mission = await makeMission({ slug: "test-s2-snap-m" });
+    const creator = await makeCreator(fixtureName("s2-snap@test.local"), 0);
+    const mission = await makeMission({ slug: fixtureName("test-s2-snap-m") });
     const camp = await makeCampaign({
-      slug: "test-s2-snap",
+      slug: fixtureName("test-s2-snap"),
       status: "active",
       starts_at: "2026-01-01T00:00:00Z",
       ends_at: "2999-01-01T00:00:00Z",
@@ -156,8 +157,8 @@ suite("broadcast_campaign_started", () => {
   afterAll(cleanup);
 
   it("inserts once, idempotent", async () => {
-    const creator = await makeCreator("s2-bcast@test.local", 0);
-    const camp = await makeCampaign({ slug: "test-s2-bcast", status: "active" });
+    const creator = await makeCreator(fixtureName("s2-bcast@test.local"), 0);
+    const camp = await makeCampaign({ slug: fixtureName("test-s2-bcast"), status: "active" });
 
     // First call → should insert 1 notification
     const { data: n1, error: e1 } = await svc().rpc("broadcast_campaign_started", {
@@ -196,13 +197,13 @@ suite("notifyCampaignStarted policy", () => {
   afterAll(cleanup);
 
   it("notifies a matched creator but not an unmatched one", async () => {
-    const camp = await makeCampaign({ slug: "test-s2-notify", status: "active" });
-    const mission = await makeMission({ slug: "test-s2-notify-m", category: "beauty", required_level: "L1" });
+    const camp = await makeCampaign({ slug: fixtureName("test-s2-notify"), status: "active" });
+    const mission = await makeMission({ slug: fixtureName("test-s2-notify-m"), category: "beauty", required_level: "L1" });
     await attach(camp.id, mission.id);
 
-    const match = await makeCreator("s2-match@test.local", 0);
+    const match = await makeCreator(fixtureName("s2-match@test.local"), 0);
     await setCreatorProfile(match.userId, { categories: ["beauty"], level: "L2" });
-    const noMatch = await makeCreator("s2-nomatch@test.local", 0);
+    const noMatch = await makeCreator(fixtureName("s2-nomatch@test.local"), 0);
     await setCreatorProfile(noMatch.userId, { categories: ["food"], level: "L2" });
 
     await notifyCampaignStarted(camp.id);
@@ -217,16 +218,16 @@ suite("notifyCampaignStarted policy", () => {
 
   it("does NOT notify a matching creator in a DIFFERENT workspace (isolation)", async () => {
     // Campaign + beauty/L1 mission live in DEMO_WS.
-    const camp = await makeCampaign({ slug: "test-s2-notify-iso", status: "active" });
-    const mission = await makeMission({ slug: "test-s2-notify-iso-m", category: "beauty", required_level: "L1" });
+    const camp = await makeCampaign({ slug: fixtureName("test-s2-notify-iso"), status: "active" });
+    const mission = await makeMission({ slug: fixtureName("test-s2-notify-iso-m"), category: "beauty", required_level: "L1" });
     await attach(camp.id, mission.id);
 
     // A creator who WOULD match on niche+level, but lives in a different workspace.
     const { data: fwsRow, error: fwsErr } = await svc().from("workspaces")
-      .insert({ slug: "test-camp-s2-foreign", name: "s2 foreign" }).select("id").single();
+      .insert({ slug: fixtureName("test-camp-s2-foreign"), name: "s2 foreign" }).select("id").single();
     if (fwsErr) throw fwsErr;
     const foreignWs = (fwsRow as { id: string }).id;
-    const foreign = await makeCreator("s2-foreign@test.local", 0);
+    const foreign = await makeCreator(fixtureName("s2-foreign@test.local"), 0);
     await svc().from("creators")
       .update({ workspace_id: foreignWs, categories: ["beauty"], level: "L2", status: "active" })
       .eq("id", foreign.userId);

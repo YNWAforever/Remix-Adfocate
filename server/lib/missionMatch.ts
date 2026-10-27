@@ -2,9 +2,12 @@
  *  rows; this module owns the fit-score formula and rationale rules (unit-testable in isolation),
  *  mirroring lib/passport.ts. */
 import { levelOrdinal } from "./passport.js";
+import { canonicalMissionCategory } from "../../src/lib/missionCategories.js";
+import { missionEligibility } from "../../src/lib/missionMeta.js";
 
 export type MatchCreator = {
   level: string;              // "L0".."L6"
+  isTrusted?: boolean;
   categories: string[];       // creator niches; may be empty
   reliability: number | null; // 0..100 (passport)
   brandSafety: number | null; // 0..100
@@ -18,6 +21,8 @@ export type MatchMission = {
   points_reward: number; cash_reward: number | null;
   deadline: string | null;    // "yyyy-mm-dd"
   quota: number; filled: number;
+  access_type?: string; platforms?: string[]; deliverables?: string[]; effort?: string | null;
+  workspaces?: { name?: string } | null;
 };
 
 export type ScoredMission = MatchMission & {
@@ -33,7 +38,7 @@ const DAY_MS = 86_400_000;
 /** 1 on a niche match, 0 on a miss; 0.5 neutral when the creator has set no niches yet. */
 export function categoryTerm(creator: MatchCreator, mission: MatchMission): number {
   if (creator.categories.length === 0) return 0.5;
-  return mission.category != null && creator.categories.includes(mission.category) ? 1 : 0;
+  return mission.category != null && creator.categories.some((value) => canonicalMissionCategory(value) === canonicalMissionCategory(mission.category!)) ? 1 : 0;
 }
 
 /** Proportional to the strongest reward in the candidate set; unit-agnostic across points/cash. */
@@ -76,9 +81,10 @@ export function rationaleFor(
   mission: MatchMission,
   terms: { category: number; reward: number; urgency: number },
   locked: boolean,
+  lockedLabel?: string,
 ): { reasons: string[]; rationale: string } {
   const reasons: string[] = [];
-  if (locked) reasons.push(`🔒 升級至 ${mission.required_level} 解鎖`);
+  if (locked) reasons.push(lockedLabel ?? `🔒 升級至 ${mission.required_level} 解鎖`);
   if (terms.category === 1 && mission.category) reasons.push(`啱你嘅${mission.category}範疇`);
   if (terms.reward >= 0.8) reasons.push((mission.cash_reward ?? 0) > 0 ? "高回報・有現金獎" : "高積分回報");
   if (terms.urgency >= 0.7) reasons.push("即將截止");
@@ -97,12 +103,16 @@ export function scoreMissions(creator: MatchCreator, missions: MatchMission[], n
     const reward = rewardTerm(m, maxPoints, maxCash);
     const urgency = urgencyTerm(m, now);
     const levelFit = levelFitTerm(creator, m);
-    const locked = levelFit === 0;
+    const decision = missionEligibility(m.required_level, creator.level, creator.isTrusted);
+    const locked = !decision.qualified;
     const raw =
       W.category * category + W.reward * reward + W.urgency * urgency +
       W.readiness * readiness + W.levelFit * levelFit;
     const fit_score = Math.max(0, Math.min(100, Math.round(raw)));
-    const { reasons, rationale } = rationaleFor(m, { category, reward, urgency }, locked);
+    const lockedLabel = decision.labelKey === "app.eligibility.verifyToUnlock"
+      ? `🔒 驗證社交帳號以解鎖 ${m.required_level} 任務`
+      : decision.labelKey === "app.eligibility.unknown" ? "🔒 參加資格資料未齊" : undefined;
+    const { reasons, rationale } = rationaleFor(m, { category, reward, urgency }, locked, lockedLabel);
     return { ...m, fit_score, reasons, rationale, locked };
   });
 }

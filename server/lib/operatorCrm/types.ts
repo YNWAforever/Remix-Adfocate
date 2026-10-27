@@ -15,9 +15,11 @@ export type SocialSyncStatus = (typeof SOCIAL_SYNC_STATUSES)[number];
 export type OperatorContext = {
   operatorId: string;
   actorLabel: string;
+  workspaceId?: string;
 };
 
 export type ReviewProjection = {
+  revision?: number;
   status: CreatorReviewStatus;
   riskLevel: CreatorRiskLevel;
   summary: string | null;
@@ -44,6 +46,7 @@ export type OperatorProfileMediaSummary = {
 };
 
 export type CreatorQueueFilters = {
+  operatorId?: string;
   status?: CreatorReviewStatus;
   riskLevel?: CreatorRiskLevel;
   missionId?: string;

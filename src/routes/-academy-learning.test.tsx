@@ -1,0 +1,80 @@
+import type { ComponentType } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const h = vi.hoisted(() => ({ api: vi.fn(), completed: false, conflict: false, version: 1, actor: "creator-a" }));
+vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()),
+  useParams: () => ({ trackId: "owned-course" }), Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
+vi.mock("@/lib/queries/kocmax", () => ({ useMe: () => ({ data: { id: h.actor, level: "L0", is_trusted: false } }) }));
+vi.mock("@/lib/academy", async original => ({ ...(await original<object>()), fetchAcademyTrack: async () => ({ item: {
+  id: "track", slug: "owned-course", title: "Owned course", kind: "track", requiredLevel: "L0", body: "Course introduction", excerpt: "Overview", meta: { duration: "4 lessons" }, learningEnabled: true,
+} }) }));
+vi.mock("@/lib/api", async original => ({ ...(await original<object>()), apiFetch: h.api }));
+import { ApiError } from "@/lib/api";
+import { Route } from "./_app.guide.track.$trackId";
+
+function bundle() {
+  const completed = h.completed && h.actor === "creator-a" && h.version === 1;
+  return { lessons: [
+    { id: "first", trackId: "track", title: "First actual unit", body: `## Unit one v${h.version}\n\nActual lesson reading.`, position: 0, contentVersion: h.version, status: "published", completed, completedAt: completed ? "2026-10-23T09:00:00Z" : null },
+    { id: "second", trackId: "track", title: "Second actual unit", body: "Second lesson reading.", position: 1, contentVersion: 1, status: "published", completed: false, completedAt: null },
+  ], progress: { completed: completed ? 1 : 0, total: 2 }, history: h.completed ? [{ lessonId: "first", contentVersion: 1, completedAt: "2026-10-23T09:00:00Z" }] : [] };
+}
+function show() {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const C = Route.options.component as ComponentType;
+  return { client, ...render(<QueryClientProvider client={client}><C /></QueryClientProvider>) };
+}
+beforeEach(() => {
+  vi.clearAllMocks(); h.completed = false; h.conflict = false; h.version = 1; h.actor = "creator-a";
+  h.api.mockImplementation(async (_path: string, options?: { method?: string }) => {
+    if (options?.method === "POST") {
+      if (h.conflict) throw new ApiError(409, "version_changed", "version_changed");
+      h.completed = true; return { completedAt: "2026-10-23T09:00:00Z" };
+    }
+    return bundle();
+  });
+});
+describe("D15 learning UI", () => {
+  it("renders actual units, completes one, and reads the same 1/2 on a fresh mount", async () => {
+    const first = show();
+    expect(await screen.findByText("0 / 2 已完成")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+    expect(screen.queryByText(/4 lessons/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+    expect(await screen.findByText("1 / 2 已完成")).toBeInTheDocument();
+    first.unmount(); show(); expect(await screen.findByText("1 / 2 已完成")).toBeInTheDocument();
+  });
+  it("409 preserves the reading and refreshes the new version without completing it", async () => {
+    h.conflict = true; show(); await screen.findByText("0 / 2 已完成");
+    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+    expect(await screen.findByRole("alert")).toHaveTextContent(/版本/);
+    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+    h.version = 2; h.completed = true;
+    fireEvent.click(screen.getByRole("button", { name: "重新載入單元" }));
+    expect(await screen.findByRole("heading", { name: "Unit one v2" })).toBeInTheDocument();
+    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
+    expect(screen.getByRole("listitem")).toHaveTextContent("v1");
+  });
+  it("does not carry another Creator's cached progress into the new identity", async () => {
+    h.completed = true; const first = show(); await screen.findByText("1 / 2 已完成");
+    expect(first.client.getQueryCache().getAll().some(q => q.queryKey.includes("creator-a"))).toBe(true);
+    first.unmount(); h.actor = "creator-b"; show();
+    await waitFor(() => expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument());
+  });
+  it("an unavailable read can retry and an unavailable write never advances completion", async () => {
+    h.api.mockRejectedValueOnce(new ApiError(503, "learning_unavailable", "Storage unavailable"));
+    show(); expect(await screen.findByRole("alert")).toHaveTextContent("無法載入單元");
+    fireEvent.click(screen.getByRole("button", { name: "重試載入單元" }));
+    await screen.findByText("0 / 2 已完成");
+    h.api.mockRejectedValueOnce(new ApiError(503, "learning_unavailable", "Storage unavailable"));
+    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+    expect(await screen.findByRole("alert")).toHaveTextContent("尚未確認完成");
+    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重新載入單元" }));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
+  });
+});

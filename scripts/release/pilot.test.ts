@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { enablePilot, inspectPilotCandidate } from "./pilot";
 
 type Row = Record<string, unknown>;
@@ -91,11 +91,11 @@ describe("pilot candidate guard", () => {
   // past every fixture means any code path that reads wall-clock time instead of the
   // injected `now` fails here immediately, rather than years later.
   // Only Date is faked — faking timers would stall the promise-based fake client.
-  beforeAll(() => {
+  beforeEach(() => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2099-01-01T00:00:00.000Z"));
   });
-  afterAll(() => {
+  afterEach(() => {
     vi.useRealTimers();
   });
 

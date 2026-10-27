@@ -1,3 +1,5 @@
+import { RequestFeedback } from "@/components/RequestFeedback";
+import { validateSubmissionEvidence } from "@/lib/submissionEvidence";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Lightbulb } from "lucide-react";
@@ -93,7 +95,7 @@ function MissionDetail() {
 
       <div className="p-4 lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-6">
         <div className="lg:col-start-2 lg:row-start-1">
-          <MissionFacts mission={m.data} creatorLevel={me.data?.level} isTrusted={me.data?.is_trusted ?? true} />
+          <MissionFacts mission={m.data} creatorLevel={me.data?.level} isTrusted={me.data?.is_trusted} />
         </div>
 
         <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
@@ -106,7 +108,7 @@ function MissionDetail() {
         </div>
 
         <div className="mt-4 space-y-4 lg:mt-0 lg:col-start-2 lg:row-start-2">
-          {!sub ? (
+          {mine.isError ? <RequestFeedback error={mine.error} stale={Boolean(mine.data)} retry={() => void mine.refetch()} /> : mine.isLoading ? <p role="status">{t("common.loading")}</p> : !sub ? (
             <>
               <MissionCommitmentSummary mission={m.data} locale={lang} />
               {isApplication ? (
@@ -119,12 +121,13 @@ function MissionDetail() {
             usesActiveWorkspace(sub) ? (
               <Link to="/my/$submissionId" params={{ submissionId: sub.id }} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{t("app.activeMission.route.continueMission")}</Link>
             ) : (
-              <LegacySubmissionForm missionSlug={missionSlug} />
+              <><p className="text-sm">{sub.review_notes}</p><LegacySubmissionForm missionSlug={missionSlug} initialUrls={sub.content_urls} /></>
             )
           ) : (
-            <section className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+            <section className="pastel-card flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
               <span className="font-heading font-bold">{t("app.mission.statusLabel")}</span>
               <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · ${t("app.mission.pointsAwarded", { n: sub.points_awarded ?? 0 })}` : ""}</span>
+              {sub.status === "declined" && <p className="w-full break-words text-sm">原因 / Reason：{sub.review_notes?.trim() || "未提供原因 / No reason provided"}</p>}
             </section>
           )}
 
@@ -169,21 +172,26 @@ function MissionDetail() {
   );
 }
 
-function LegacySubmissionForm({ missionSlug }: { missionSlug: string }) {
+function LegacySubmissionForm({ missionSlug, initialUrls = [] }: { missionSlug: string; initialUrls?: string[] }) {
   const submit = useSubmitMission(missionSlug);
   const { t } = useI18n();
-  const [urls, setUrls] = useState("");
+  const [urls, setUrls] = useState(initialUrls.join("\n"));
+  const [validationError, setValidationError] = useState("");
 
   async function submitUrls() {
     const list = urls.split("\n").map((url) => url.trim()).filter(Boolean);
-    if (list.length === 0) return;
-    await submit.mutateAsync({ content_urls: list });
-    setUrls("");
+    const evidence = validateSubmissionEvidence(list);
+    if (!evidence.ok) { setValidationError("請填寫完整的 HTTP(S) 作品網址。 / Enter complete HTTP(S) work URLs without credentials."); return; }
+    setValidationError("");
+    try { await submit.mutateAsync({ content_urls: evidence.urls }); setUrls(""); }
+    catch { /* Mutation error is rendered below; retain the input. */ }
   }
 
   return (
     <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
       <h3 className="font-heading font-bold">{t("app.mission.submitContent")}</h3>
+      {validationError && <p role="alert">{validationError}</p>}
+      <RequestFeedback error={submit.error} />
       <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
       <button onClick={submitUrls} disabled={submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
     </section>

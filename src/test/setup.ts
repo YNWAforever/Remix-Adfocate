@@ -33,7 +33,7 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, "localStorage", {
+if (typeof window !== "undefined") Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
   writable: true,
 });

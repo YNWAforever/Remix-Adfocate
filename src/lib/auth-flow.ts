@@ -3,14 +3,27 @@ import type { QueryClient } from "@tanstack/react-query";
 import { supabase } from "./supabase";
 import { apiFetch, setWorkspaceSlug } from "./api";
 import { resolveWorkspace } from "./workspace";
+import { safeCreatorReturn } from "./authFeedback";
 
 type Navigate = ReturnType<typeof useNavigate>;
 
 export type FinishAuthResult = {
   created: boolean;
   onboardingCompleted: boolean;
-  destination: "/onboarding" | "/home";
+  destination: string;
 };
+
+export { safeCreatorReturn } from "./authFeedback";
+
+export function authRedirectUrl(path: "/auth/callback" | "/auth/reset-password") {
+  const url = new URL(path, window.location.origin);
+  const params = new URLSearchParams(window.location.search);
+  const next = safeCreatorReturn(params.get("next"));
+  if (next) url.searchParams.set("next", next);
+  const ref = params.get("ref");
+  if (ref) url.searchParams.set("ref", ref);
+  return url.href;
+}
 
 /**
  * Shared post-auth branch, invoked from BOTH the inline WhatsApp verify handler
@@ -31,8 +44,10 @@ export async function finishAuth(navigate: Navigate): Promise<FinishAuthResult> 
   if (error) throw error;
 
   const status = await apiFetch<{ onboarding_completed: boolean }>("/onboarding/status");
-  const destination = status.onboarding_completed ? "/home" : "/onboarding";
-  navigate({ to: destination });
+  const next = safeCreatorReturn(new URLSearchParams(window.location.search).get("next"));
+  const destination = status.onboarding_completed ? next ?? "/home" : "/onboarding";
+  if (!status.onboarding_completed && next) navigate({ to: "/onboarding", search: { next } });
+  else navigate({ to: destination });
   return {
     created: bootstrap.created,
     onboardingCompleted: status.onboarding_completed,

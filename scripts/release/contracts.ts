@@ -1,7 +1,13 @@
 export type ReleasePhase =
   | "active_mission"
   | "publication_proof"
-  | "reward_handoff";
+  | "reward_handoff"
+  | "legacy_evidence"
+  | "operator_crm"
+  | "assistant_requests"
+  | "academy_learning"
+  | "staff_access"
+  | "redemption";
 
 export interface ReleaseMigration {
   readonly version: string;

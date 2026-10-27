@@ -35,6 +35,7 @@ export function NextBestActionCard({
         <Sparkles className="h-4 w-4" aria-hidden="true" />
         {translate(locale, "app.activation.next.heading")}
       </p>
+      {action.missionTitle ? <p className="mt-3 break-words text-sm font-semibold">{action.missionTitle}</p> : null}
       <h2 id={headingId} className="mt-2 font-heading text-xl font-bold">
         {translate(locale, action.titleKey)}
       </h2>

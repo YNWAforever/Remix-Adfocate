@@ -11,9 +11,9 @@ function isPlatform(value: unknown): value is SocialPlatform {
   return value === "instagram" || value === "threads";
 }
 
-function trustLabels(account: { api_synced_at: string | null }) {
+function trustLabels(account: { api_synced_at: string | null; owner_verified: boolean }) {
   if (!account.api_synced_at) return [];
-  return ["API-synced", "Ownership not verified"];
+  return ["API-synced", account.owner_verified ? "Ownership verified" : "Ownership not verified"];
 }
 
 socialRoutes.get("/accounts", async (c) => {

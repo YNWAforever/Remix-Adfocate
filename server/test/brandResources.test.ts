@@ -1,3 +1,4 @@
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeBrand, makeCreator, serviceForTests, cleanup, hasSupabaseEnv } from "./helpers";
@@ -14,7 +15,7 @@ suite("brand resources (audience isolation)", () => {
 
   beforeAll(async () => {
     await cleanup();
-    brand = await makeBrand("resources-brand@test.local");
+    brand = await makeBrand(fixtureName("resources-brand@test.local"));
     const svc = serviceForTests();
     await svc.from("content_items").insert([
       { kind: "article", slug: "res-brand-pub", status: "published", title_zh: "品牌指南", body_zh: "內容", audience: "brand", published_at: new Date().toISOString() },
@@ -54,7 +55,7 @@ suite("brand resources (audience isolation)", () => {
   });
 
   it("a non-brand caller (creator) gets 403", async () => {
-    const koc = await makeCreator("resources-koc@test.local", 0);
+    const koc = await makeCreator(fixtureName("resources-koc@test.local"), 0);
     expect((await breq("/brand/resources", koc.jwt)).status).toBe(403);
   });
 });

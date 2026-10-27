@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AcademyTrack } from "@/lib/academy";
+import { ApiError } from "@/lib/api";
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
@@ -124,7 +125,7 @@ describe("Track detail page — gating", () => {
   it("shows a fallback for an unknown trackId (fetch error)", async () => {
     hoisted.me = { data: { id: "u1", level: "L3", is_trusted: true } };
     hoisted.trackId = "nonexistent";
-    hoisted.fetchAcademyTrack.mockRejectedValue(new Error("not found"));
+    hoisted.fetchAcademyTrack.mockRejectedValue(new ApiError(404, "not_found", "not found"));
     renderTrack();
 
     await waitFor(() => expect(screen.getByText("找不到課程。")).toBeInTheDocument());

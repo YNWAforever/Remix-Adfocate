@@ -54,6 +54,18 @@ const REVIEWED_FILES = [
   "20260731140000_reward_handoff_release_hardening.sql",
   "20260731150000_enable_pilot_if_empty.sql",
   "20260805120000_review_hardening.sql",
+  "20261022170454_audit_legacy_evidence.sql",
+  "20261022170751_audit_crm_commands.sql",
+  "20261022171111_audit_creator_queue.sql",
+  "20261022171843_audit_assistant_requests.sql",
+  "20261022182544_audit_legacy_review_notes.sql",
+  "20261023091050_academy_learning.sql",
+  "20261023093445_academy_learning_conflicts.sql",
+  "20261023095521_academy_approval_index.sql",
+  "20261023124149_staff_access_capabilities.sql",
+  "20261023192141_pilot_legacy_access_hardening.sql",
+  "20261025120934_application_decisions.sql",
+  "20261025194402_redemption_intents.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -124,6 +136,28 @@ async function fixture(
 }
 
 describe("release migration manifest", () => {
+  it("classifies the redemption receipt contract without dropping ACL or uniqueness checks", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const migration = manifest.migrations.find((item) => item.version === "20261025194402");
+    expect(migration).toMatchObject({
+      name: "redemption_intents",
+      phase: "redemption",
+      dependsOn: [], // Existing redemption tables/RPC are in the checksum-pinned baseline.
+      transactionExpectation: "transactional",
+      replayExpectation: "migration_history_noop",
+    });
+    expect(migration?.capabilities).toEqual(expect.arrayContaining([
+      "column:public.redemptions.client_request_id",
+      "index:public.redemptions.redemptions_creator_request_uniq",
+      "function:public.redeem_gift_with_request",
+      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
+      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
+    ]));
+    expect(await validateManifest(manifest, resolve("."))).toEqual([]);
+  });
+
   it("orders, classifies, hashes, and digests the complete reviewed range", async () => {
     const root = await fixture();
     const manifest = await buildManifest(root);
@@ -134,6 +168,9 @@ describe("release migration manifest", () => {
     expect(manifest.migrations[0].phase).toBe("active_mission");
     expect(manifest.migrations[13].phase).toBe("publication_proof");
     expect(manifest.migrations[25].phase).toBe("reward_handoff");
+    expect(manifest.migrations.find((migration) => migration.version === "20261023192141")?.phase).toBe("staff_access");
+    expect(manifest.migrations.find((migration) => migration.version === "20261025120934")?.phase).toBe("operator_crm");
+    expect(manifest.migrations.at(-1)?.phase).toBe("redemption");
     expect(manifest.migrations[0].dependsOn).toEqual([]);
     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
     expect(
@@ -462,7 +499,7 @@ describe("release migration manifest", () => {
     ).toEqual(
       expect.arrayContaining([
         "checksum drift: 20260715163350",
-        "missing migration file: 20260805120000",
+        `missing migration file: ${REVIEWED_FILES.at(-1)!.slice(0, 14)}`,
         "duplicate migration version",
         "unknown dependency: 19990101000000",
       ]),

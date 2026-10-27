@@ -20,7 +20,7 @@ import {
   Check,
 } from "lucide-react";
 import { mockCreatorPassport } from "@/data/mockData";
-import { LEVELS } from "@/lib/levels";
+import { LEVELS, progressToNext } from "@/lib/levels";
 import { legacyActivationServices, localized } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -124,10 +124,11 @@ function ScoreRing({
 
 /* ───────────────────────── 1. HERO — off-grid editorial ───────────────────────── */
 function HeroSection() {
-  const { lang } = useI18n();
+  const { t, lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const passport = mockCreatorPassport;
-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
+  const progress = progressToNext(passport.xp);
+  const xpPct = progress.pct;
 
   return (
     <section className="relative overflow-hidden bg-[var(--color-paper)]">
@@ -144,8 +145,8 @@ function HeroSection() {
             </h1>
             <p className="text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
               {tx(
-                "Grow, get matched to missions, and turn verified performance into real income — on one calmly-gamified platform built for Hong Kong creators and brands.",
-                "成長、配對任務、把經過驗證嘅表現變成真實收入 —— 一個為香港創作者同品牌而設、輕度遊戲化嘅平台。",
+                "Explore the mission workflow: join, deliver, revise and submit proof. Reviewed completion creates a pending reward; payment is separate and unavailable in this pilot.",
+                "了解任務流程：加入、交付、修稿及提交證明。完成審核後會有待處理獎勵；付款是另一流程，尚未開通。",
               )}
             </p>
             <div className="flex flex-wrap gap-3">
@@ -177,9 +178,8 @@ function HeroSection() {
           <div className="relative lg:justify-self-end">
             <span
               className="absolute -top-4 -left-3 z-10 tag-mono rotate-[-4deg] bg-[var(--color-acid)]"
-              aria-hidden="true"
             >
-              Live Passport
+              {tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}
             </span>
             <div className="pastel-card animate-float w-full max-w-sm p-6">
               <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ function HeroSection() {
                 <div>
                   <p className="font-heading text-base font-bold text-[var(--color-ink)]">{passport.name}</p>
                   <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
-                    {passport.level} {passport.levelLabel}
+                    {progress.current.id} {t(progress.current.labelKey)}
                   </span>
                 </div>
               </div>
@@ -211,7 +211,7 @@ function HeroSection() {
               <div className="mt-5 flex items-center justify-between">
                 <div>
                   <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
-                    {tx("Pending earnings", "待結算收入")}
+                    {tx("Illustrative pending reward · not payment", "示範待處理獎勵 · 並非付款")}
                   </p>
                   <p className="font-display text-xl text-[var(--color-ink)]">HK$8,450</p>
                 </div>
@@ -230,10 +230,10 @@ function SocialProofStrip() {
   const { lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   const stats = [
-    { value: "5,200+", label: tx("Creators", "創作者") },
-    { value: "120+", label: tx("Brand campaigns", "品牌活動") },
-    { value: "8", label: tx("Income streams", "收入來源") },
-    { value: "98%", label: tx("Brand-safe rating", "品牌安全評分") },
+    { value: tx("Preview", "預覽"), label: tx("Illustrative profiles", "示範履歷") },
+    { value: tx("Pending", "待處理"), label: tx("Reward handoff", "獎勵交接") },
+    { value: tx("Separate", "獨立核實"), label: tx("Account ownership", "帳號擁有權") },
+    { value: tx("Unavailable", "未開通"), label: tx("Payments and withdrawals", "付款及提現") },
   ];
   return (
     <section className="mx-auto max-w-6xl px-4 -mt-6 mb-4">
@@ -268,7 +268,7 @@ function PillarsSection() {
       icon: Target,
       tag: "01 · Earn Loop",
       title: tx("The Earn Loop", "賺取循環"),
-      desc: tx("Daily missions turn into points, rewards and real payouts.", "每日任務變成積分、獎勵同真實收入。"),
+      desc: tx("Approved mission completion can create a pending reward, not a payment.", "任務完成審核後可建立待處理獎勵，並不等於付款。"),
       variant: "game-card-mint",
     },
     {
@@ -276,7 +276,7 @@ function PillarsSection() {
       icon: TrendingUp,
       tag: "02 · Leveling",
       title: tx("Leveling Engine", "升級引擎"),
-      desc: tx("Every post earns XP that levels up your creator profile.", "每篇貼文賺取 XP，升級你嘅創作者檔案。"),
+      desc: tx("XP follows the applicable mission approval rules.", "XP 按各任務適用的審核規則計算。"),
       variant: "game-card-yellow",
     },
     {
@@ -284,7 +284,7 @@ function PillarsSection() {
       icon: Gem,
       tag: "03 · Passport",
       title: tx("Creator Passport", "創作者履歷"),
-      desc: tx("Verified scores brands can trust — beyond follower counts.", "品牌可信嘅驗證評分 —— 唔止係粉絲數。"),
+      desc: tx("Scores use mission and account data; ownership status is shown separately.", "評分採用任務及帳號資料，擁有權狀態會獨立顯示。"),
       variant: "game-card-blue",
     },
     {
@@ -411,7 +411,8 @@ function CreatorPassportSection() {
   const nextLevel = LEVELS.find(
     (l) => parseInt(l.id.slice(1)) === parseInt(passport.level.slice(1)) + 1,
   );
-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
+  const progress = progressToNext(passport.xp);
+  const xpPct = progress.pct;
 
   const rings = [
     { key: "reliability", color: "#D4FF00", label: tx("Reliability", "可靠度") },
@@ -458,6 +459,7 @@ function CreatorPassportSection() {
 
           {/* Passport artifact card on dark */}
           <div className="rounded-[1.5rem] border-2 border-[var(--color-acid)]/30 bg-[var(--color-ink)]/60 p-6 backdrop-blur-sm sm:p-8">
+            <p className="mb-3 text-sm text-[var(--color-acid)]">{tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}</p>
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--color-acid)] bg-[var(--color-acid)] font-display text-xl font-bold text-[var(--color-ink)]">
                 {passport.avatar}
@@ -465,7 +467,7 @@ function CreatorPassportSection() {
               <div>
                 <h3 className="font-heading text-lg font-bold text-[var(--color-paper)]">{passport.name}</h3>
                 <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
-                  {passport.level} {passport.levelLabel}
+                  {progress.current.id} {t(progress.current.labelKey)}
                 </span>
               </div>
             </div>
@@ -535,8 +537,8 @@ function MonetizationStackSection() {
           <h2 className="mt-4 font-display text-[var(--color-ink)]">{t("home.monetization.heading")}</h2>
           <p className="mt-3 text-[var(--color-soft-ink)]">
             {tx(
-              "Three layers of income, stacked. Spend points in the store, earn affiliate commission on your links, then withdraw real HK$ from your cash wallet.",
-              "三層收入疊加。喺商店使用積分，靠你嘅連結賺取聯盟佣金，再從現金錢包提取真實港幣。",
+              "Illustrative reward concepts. The pilot records pending rewards after review; pending reward is not payment. Payments, withdrawals and automatic affiliate commissions are unavailable.",
+              "獎勵概念示範。試行版在審核後記錄待處理獎勵，並不等於付款；付款、提現及自動佣金尚未開通。",
             )}
           </p>
         </div>
@@ -586,7 +588,7 @@ function MonetizationStackSection() {
                 </p>
                 <h3 className="mt-1 font-display text-3xl text-[var(--color-paper)]">HK$28,450</h3>
                 <p className="mt-1 font-mono text-xs text-[var(--color-paper)]/60">
-                  {tx("Lifetime withdrawable earnings", "可提取累計收入")}
+                  {tx("Illustrative amount · no withdrawals", "示範金額 · 不可提現")}
                 </p>
               </div>
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border-2 border-[var(--color-acid)] bg-[var(--color-acid)]/15">
@@ -681,7 +683,8 @@ function TwoSidedDiptychSection() {
         </div>
       </div>
 
-      {/* Folded-in legacy proof: verified metrics brands see */}
+      <p className="mt-8 text-center text-sm">{tx("Illustrative metrics · not platform results", "示範數據 · 並非平台實績")}</p>
+      {/* Illustrative metrics; no production performance evidence. */}
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {[
           { label: tx("92% Audience Fit", "92% 受眾匹配") },
@@ -713,7 +716,7 @@ function FinalCTASection() {
           <h2 className="mt-5 font-display text-[var(--color-ink)]">{t("home.final.heading")}</h2>
           <p className="mx-auto mt-4 max-w-md text-[var(--color-ink)]/80">
             {tx(
-              "Join thousands of Hong Kong creators turning KOC missions into real creator businesses — or work with verified creators on your next campaign.",
+              "Explore the creator workflow preview, from joining a mission to a reviewed pending reward.",
               "加入數以千計嘅香港創作者，把 KOC 任務變成真正嘅創作者事業 —— 或者同經驗證嘅創作者合作你下一個活動。",
             )}
           </p>

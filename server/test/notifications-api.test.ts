@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { hasSupabaseEnv, serviceForTests, makeCreator, cleanup, DEMO_WS } from "./helpers";
@@ -8,7 +10,7 @@ const suite = hasSupabaseEnv ? describe : describe.skip;
 function req(path: string, jwt: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
+    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
 
@@ -24,7 +26,7 @@ suite("notifications API", () => {
   let koc: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("notif-api@test.local", 0);
+    koc = await makeCreator(fixtureName("notif-api@test.local"), 0);
     await seedNotif(koc.userId, "level_up");
     await seedNotif(koc.userId, "submission_approved");
     await seedNotif(koc.userId, "submission_rejected", true);
@@ -57,7 +59,7 @@ suite("notifications API", () => {
   });
 
   it("does not leak another creator's notifications", async () => {
-    const other = await makeCreator("notif-api-other@test.local", 0);
+    const other = await makeCreator(fixtureName("notif-api-other@test.local"), 0);
     const body = await (await req("/notifications", other.jwt)).json();
     expect(body.items.length).toBe(0);
   });

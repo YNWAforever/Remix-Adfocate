@@ -1,5 +1,7 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createApp } from "../app";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 import { makeCreator, makeGift, addCodes, cleanup, hasSupabaseEnv } from "./helpers";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
@@ -13,7 +15,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -31,8 +33,8 @@ suite("redemption", () => {
   let gift: { id: string; name: string };
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("redeem@test.local", 500);
-    gift = await makeGift({ name: "test-gift-redeem", points_cost: 200 });
+    koc = await makeCreator(fixtureName("redeem@test.local"), 500);
+    gift = await makeGift({ name: fixtureName("test-gift-redeem"), points_cost: 200 });
     await addCodes(gift.id, ["CODE-A", "CODE-B"]);
   });
   afterAll(cleanup);
@@ -54,7 +56,7 @@ suite("redemption", () => {
     const hist = await req("/redemption/history", koc.jwt);
     const { redemptions } = await hist.json();
     expect(redemptions).toHaveLength(1);
-    expect(redemptions[0].redemption_gifts.name).toBe("test-gift-redeem");
+    expect(redemptions[0].redemption_gifts.name).toBe(fixtureName("test-gift-redeem"));
   });
 
   it("a second redeem claims a DISTINCT code", async () => {
@@ -80,8 +82,8 @@ suite("redemption", () => {
   });
 
   it("rejects redeem with insufficient points", async () => {
-    const poor = await makeCreator("poor@test.local", 50);
-    const g2 = await makeGift({ name: "test-gift-pricey", points_cost: 1000 });
+    const poor = await makeCreator(fixtureName("poor@test.local"), 50);
+    const g2 = await makeGift({ name: fixtureName("test-gift-pricey"), points_cost: 1000 });
     await addCodes(g2.id, ["PRICEY-1"]);
     const res = await req("/redemption/redeem", poor.jwt, {
       method: "POST",
@@ -104,7 +106,7 @@ suite("admin add-codes", () => {
   let gift: { id: string; name: string };
   beforeAll(async () => {
     await cleanup();
-    gift = await makeGift({ name: "test-gift-pool", points_cost: 100 });
+    gift = await makeGift({ name: fixtureName("test-gift-pool"), points_cost: 100 });
   });
   afterAll(cleanup);
 
@@ -116,7 +118,7 @@ suite("admin add-codes", () => {
     expect(res.status).toBe(200);
     expect((await res.json()).added).toBe(3);
 
-    const koc = await makeCreator("pool@test.local", 500);
+    const koc = await makeCreator(fixtureName("pool@test.local"), 500);
     const r = await req("/redemption/redeem", koc.jwt, {
       method: "POST",
       body: JSON.stringify({ gift_id: gift.id }),
@@ -125,7 +127,7 @@ suite("admin add-codes", () => {
   });
 
   it("rejects loading a duplicate code into the same gift pool (409)", async () => {
-    const g = await makeGift({ name: "test-gift-dup", points_cost: 100 });
+    const g = await makeGift({ name: fixtureName("test-gift-dup"), points_cost: 100 });
     const first = await adminreq(`/admin/gifts/${g.id}/codes`, {
       method: "POST",
       body: JSON.stringify({ codes: ["DUP-1"] }),

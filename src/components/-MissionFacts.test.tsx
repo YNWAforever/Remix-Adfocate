@@ -5,15 +5,15 @@ import type { Mission } from "@/lib/queries/kocmax";
 
 const base: Mission = {
   id: "m1", slug: "m1", title: "T", mission_type: "ugc", points_reward: 300,
-  quota: 10, filled: 7, status: "active",
+  quota: 10, filled: 7, status: "active", required_level: "L0",
 };
 
 describe("MissionFacts", () => {
-  it("shows reward, spots left, no-deadline fallback, and eligibility", () => {
+  it("shows reward, spots left, unknown deadline, and explicit L0 eligibility", () => {
     render(<MissionFacts mission={base} creatorLevel="L0" />);
     expect(screen.getByText(/300 積分/)).toBeInTheDocument();
     expect(screen.getByText("尚餘 3 個")).toBeInTheDocument();
-    expect(screen.getByText("無截止日期")).toBeInTheDocument();
+    expect(screen.getByText("未提供")).toBeInTheDocument();
     expect(screen.getByText("所有等級可參加")).toBeInTheDocument();
   });
 
@@ -34,8 +34,8 @@ describe("MissionFacts", () => {
     expect(screen.getByText(/2026.*6.*30/)).toBeInTheDocument();
   });
 
-  it("uses the no-deadline fallback when the API date is invalid", () => {
+  it("does not promise unlimited time when the API date is invalid", () => {
     render(<MissionFacts mission={{ ...base, deadline: "not-a-date" }} creatorLevel="L0" />);
-    expect(screen.getByText("無截止日期")).toBeInTheDocument();
+    expect(screen.getByText("未提供")).toBeInTheDocument();
   });
 });

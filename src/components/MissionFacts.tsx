@@ -1,8 +1,8 @@
 import { Star, Users, Clock, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
-import { formatCreatorDate, formatMissionReward } from "@/lib/creatorFormatting";
+import { formatCreatorDate, formatMissionDecisionReward } from "@/lib/creatorFormatting";
 import type { Mission } from "@/lib/queries/kocmax";
-import { spotsLeft, eligibility } from "@/lib/missionMeta";
+import { spotsLeft, missionEligibility } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
 
 function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; value: string; ok?: boolean }) {
@@ -11,18 +11,18 @@ function Fact({ icon, label, value, ok }: { icon: ReactNode; label: string; valu
       <span className={ok === false ? "text-[var(--color-magenta)]" : "text-[var(--color-ink)]"} aria-hidden>{icon}</span>
       <div className="min-w-0">
         <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]">{label}</p>
-        <p className="line-clamp-2 font-heading font-bold leading-tight">{value}</p>
+        <p className="break-words font-heading font-bold leading-tight">{value}</p>
       </div>
     </div>
   );
 }
 
-export function MissionFacts({ mission, creatorLevel, isTrusted = true }: { mission: Mission; creatorLevel?: string | null; isTrusted?: boolean }) {
+export function MissionFacts({ mission, creatorLevel, isTrusted }: { mission: Mission; creatorLevel?: string | null; isTrusted?: boolean }) {
   const { t, lang } = useI18n();
   const left = spotsLeft(mission.quota, mission.filled);
-  const elig = eligibility(mission.required_level, creatorLevel, isTrusted);
-  const reward = formatMissionReward({ points: mission.points_reward, cash: mission.cash_reward }, lang);
-  const deadline = formatCreatorDate(mission.deadline, lang) ?? t("app.mission.noDeadline");
+  const elig = missionEligibility(mission.required_level, creatorLevel, isTrusted);
+  const reward = formatMissionDecisionReward({ points: mission.points_reward, cash: mission.cash_reward }, lang);
+  const deadline = formatCreatorDate(mission.deadline, lang) ?? t("app.mission.notProvided");
   return (
     <section className="grid grid-cols-2 gap-3">
       <Fact icon={<Star size={18} />} label={t("app.mission.factReward")} value={reward} />

@@ -39,7 +39,7 @@ vi.mock("@/lib/features", () => ({
   },
 }));
 const { mockFinishAuth } = vi.hoisted(() => ({ mockFinishAuth: vi.fn() }));
-vi.mock("@/lib/auth-flow", () => ({ finishAuth: mockFinishAuth }));
+vi.mock("@/lib/auth-flow", async (importOriginal) => ({ ...await importOriginal<typeof import("@/lib/auth-flow")>(), finishAuth: mockFinishAuth }));
 
 import { supabase } from "@/lib/supabase";
 import { Route } from "./_app.login";
@@ -50,6 +50,26 @@ function renderLogin() {
   const LoginComponent = Route.options.component as React.ComponentType;
   return render(<LoginComponent />);
 }
+
+describe("D13 shared email access", () => {
+  beforeEach(() => { vi.clearAllMocks(); flags.whatsapp = false; flags.google = true; });
+  it("uses the Adfocate brand and one email field across methods", () => {
+    renderLogin();
+    expect(screen.getByRole("heading", { name: "登入 Adfocate" })).toBeInTheDocument();
+    expect(screen.getAllByLabelText("電郵地址")).toHaveLength(1);
+  });
+  it("keeps the email while switching from password to magic link", async () => {
+    vi.mocked(supabase.auth.signInWithOtp).mockResolvedValue({ data: {}, error: null } as never);
+    renderLogin();
+    fireEvent.change(screen.getAllByLabelText("電郵地址")[0], { target: { value: "fixture@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "選擇電郵登入連結" }));
+    expect(screen.getAllByLabelText("電郵地址")).toHaveLength(1);
+    expect(screen.getByLabelText("電郵地址")).toHaveValue("fixture@example.test");
+    fireEvent.submit(screen.getByLabelText("電郵地址").closest("form")!);
+    await waitFor(() => expect(supabase.auth.signInWithOtp).toHaveBeenCalledWith(expect.objectContaining({ email: "fixture@example.test" })));
+    expect(supabase.auth.signInWithPassword).not.toHaveBeenCalled();
+  });
+});
 
 describe("Login (WhatsApp primary)", () => {
   beforeEach(() => {
@@ -136,9 +156,9 @@ describe("Login (WhatsApp primary)", () => {
     fireEvent.click(screen.getByText("其他登入方式"));
     const magic = within(section(MAGIC_SECTION));
     const email = magic.getByLabelText("電郵地址");
-    expect(magic.getByText("電郵地址", { selector: "label" })).toHaveAttribute("for", "login-email");
-    expect(email).toHaveAttribute("aria-describedby", "login-email-help");
-    expect(document.getElementById("login-email-help")).not.toBeEmptyDOMElement();
+    expect(magic.getByText("電郵地址", { selector: "label" })).toHaveAttribute("for", "login-password-email");
+    expect(email).toHaveAttribute("aria-describedby", "login-forgot-help");
+    expect(document.getElementById("login-forgot-help")).not.toBeEmptyDOMElement();
   });
 
   it("announces a busy email request while submission is pending", async () => {
@@ -151,6 +171,7 @@ describe("Login (WhatsApp primary)", () => {
     const email = within(section(MAGIC_SECTION)).getByLabelText("電郵地址");
     fireEvent.change(email, { target: { value: "user@example.com" } });
     fireEvent.submit(email.closest("form")!);
+    expect(email).toBeDisabled();
 
     await waitFor(() => expect(screen.getByRole("button", { name: "傳送中…" })).toBeDisabled());
     expect(email.closest("form")).toHaveAttribute("aria-busy", "true");
@@ -205,7 +226,11 @@ const SIGN_UP_SECTION = "建立你的帳戶";
 const FORGOT_SECTION = "重設密碼";
 const MAGIC_SECTION = "想改用一次性連結？";
 
-const section = (name: string) => screen.getByRole("region", { name });
+const section = (name: string) => {
+  // Both methods stay reachable through the single email step.
+  if (name === MAGIC_SECTION && !screen.queryByRole("region", { name })) fireEvent.click(screen.getByRole("button", { name: "選擇電郵登入連結" }));
+  return screen.getByRole("region", { name });
+};
 const submitSection = (name: string) =>
   fireEvent.submit(within(section(name)).getByLabelText("電郵地址").closest("form")!);
 
@@ -235,7 +260,7 @@ describe("Login (email + password primary)", () => {
     mockFinishAuth.mockResolvedValue(undefined);
   });
 
-  it("shows the password form and the magic link as peers, and no phone field", () => {
+  it("offers password and magic link methods with one email field, and no phone field", () => {
     renderLogin();
     expect(section(PASSWORD_SECTION)).toBeInTheDocument();
     expect(section(MAGIC_SECTION)).toBeInTheDocument();

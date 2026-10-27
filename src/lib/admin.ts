@@ -10,6 +10,7 @@ export type AdminShortlistStatus = "shortlisted" | "invited" | "dismissed" | "ac
 export type AdminShortlistSource = "manual" | "applicant" | "match" | "review_queue";
 
 export type AdminReviewProjection = {
+  revision?: number;
   status: AdminReviewStatus;
   riskLevel: AdminRiskLevel;
   summary: string | null;
@@ -147,7 +148,9 @@ type AdminCreatorDetailResponse = {
   missionHistory: Array<Record<string, unknown>>;
 };
 
-export class AdminAuthError extends Error {}
+export class AdminAuthError extends Error {
+  constructor(message: string, public status = 401) { super(message); this.name = "AdminAuthError"; }
+}
 
 export class AdminRequestError extends Error {
   code?: string;
@@ -177,6 +180,8 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}): Promi
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
+      if (res.status === 403 && ["STAFF_CAPABILITY_REQUIRED", "WORKSPACE_MEMBERSHIP_REQUIRED", "STAFF_ACCESS_FORBIDDEN"].includes(body.code) && typeof window !== "undefined") window.dispatchEvent(new Event("adfocate:staff-access-denied"));
+    if (res.status === 403 && body.code === "not_staff") throw new AdminAuthError("not_staff", 403);
     throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields, res.status);
   }
   return res.json() as Promise<T>;
@@ -703,7 +708,7 @@ export function fetchCreatorPublicationProofs(creatorId: string) {
 
 export function postCreatorReview(
   creatorId: string,
-  body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string },
+  body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string; requestId?: string; expectedRevision?: number },
 ) {
   return adminFetch<{ review: AdminReviewProjection }>(`/admin/creators/${creatorId}/review`, {
     method: "POST",
@@ -712,14 +717,16 @@ export function postCreatorReview(
       risk_level: body.riskLevel,
       summary: body.summary,
       note: body.note,
+      request_id: body.requestId,
+      expected_revision: body.expectedRevision,
     }),
   });
 }
 
-export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string }) {
+export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string; requestId?: string; expectedRevision?: number }) {
   return adminFetch<{ note: { id: string; category: AdminNoteCategory; body: string; created_at: string } }>(
     `/admin/creators/${creatorId}/notes`,
-    { method: "POST", body: JSON.stringify(body) },
+    { method: "POST", body: JSON.stringify({ category: body.category, body: body.body, request_id: body.requestId, expected_revision: body.expectedRevision }) },
   );
 }
 
@@ -788,6 +795,7 @@ export type Application = {
 };
 
 export type Submission = Application & {
+  evidence_revision?: number;
   status: string;
   content_urls: string[];
   submitted_at: string | null;
@@ -835,8 +843,8 @@ export function declineApplication(id: string, notes?: string) {
   });
 }
 
-export function fetchSubmissions(status = "submitted", workspace = "") {
-  const parts = [`status=${encodeURIComponent(status)}`, wsq(workspace)].filter(Boolean);
+export function fetchSubmissions(status = "submitted", workspace = "", submissionId = "") {
+  const parts = [`status=${encodeURIComponent(status)}`, wsq(workspace), submissionId ? `submission_id=${encodeURIComponent(submissionId)}` : ""].filter(Boolean);
   return adminFetch<{ submissions: Submission[] }>(`/admin/submissions?${parts.join("&")}`);
 }
 
@@ -845,6 +853,10 @@ export function approveSubmission(id: string, body: { notes?: string; rating?: n
     method: "POST",
     body: JSON.stringify({ notes: body.notes, quality_rating: body.rating }),
   });
+}
+export function requestLegacyEvidenceCorrection(id: string, body: { note: string; requestId: string; expectedRevision: number }) {
+  return adminFetch(`/admin/submissions/${id}/request-correction`, { method: "POST",
+    body: JSON.stringify({ note: body.note, request_id: body.requestId, expected_revision: body.expectedRevision }) });
 }
 
 export function rejectSubmission(id: string, notes?: string) {
@@ -1030,7 +1042,9 @@ export function duplicateMission(id: string, body?: { workspace_id?: string }) {
 export type InsightsMetric = { value: number; prev: number; deltaPct: number | null };
 
 export type Insights = {
-  window: { days: 7 | 30 | 90; from: string; to: string };
+  window: { days: 7 | 30 | 90; from: string; to: string; timezone?: string };
+  denominators?: import("../../server/lib/insights.js").Insights["denominators"];
+  outcomes?: import("../../server/lib/insights.js").Insights["outcomes"];
   kpis: {
     activeCreators: InsightsMetric;
     submitToApprove: InsightsMetric;
@@ -1160,4 +1174,9 @@ export function settleCampaign(id: string) {
 }
 export function fetchCampaignLeaderboard(id: string) {
   return adminFetch<{ leaderboard: unknown[] }>(`/admin/campaigns/${id}/leaderboard`);
+}
+
+export type { StaffAccessSnapshot, StaffCapability, StaffWorkspaceRole } from "../../server/lib/staffCapabilities";
+export function fetchStaffAccess(workspace="") {
+  return adminFetch<{access:import("../../server/lib/staffCapabilities").StaffAccessSnapshot}>(`/admin/access${workspace?`?workspace=${encodeURIComponent(workspace)}`:""}`);
 }

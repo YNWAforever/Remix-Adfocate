@@ -6,6 +6,7 @@ import { AdminAuthError, adminMissionKeys, fetchAdminMission, updateMission, typ
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { MissionManage } from "@/components/admin/MissionManage";
+import { useMissionEditorNavigation } from "@/components/admin/useMissionEditorNavigation";
 
 export const Route = createFileRoute("/admin/missions/$missionId")({ component: EditMission });
 
@@ -13,6 +14,7 @@ function EditMission() {
   const { missionId } = useParams({ from: "/admin/missions/$missionId" });
   const { authed, reportAuthError } = useAdminAuth();
   const navigate = useNavigate();
+  const editorNavigation = useMissionEditorNavigation();
   const q = useQuery({
     queryKey: adminMissionKeys.detail(missionId),
     queryFn: () => fetchAdminMission(missionId),
@@ -21,12 +23,13 @@ function EditMission() {
   useEffect(() => { if (q.error instanceof AdminAuthError) reportAuthError(q.error); }, [q.error, reportAuthError]);
   const update = useMutation({
     mutationFn: (body: MissionDraftInput) => updateMission(missionId, body),
-    onSuccess: () => navigate({ to: "/admin/missions" }),
+    onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
   });
   const [tab, setTab] = useState<"edit" | "manage">(
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "manage" ? "manage" : "edit",
   );
   const selectTab = (next: "edit" | "manage") => {
+    if (next === tab || !editorNavigation.confirmDiscard()) return;
     setTab(next);
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
@@ -48,7 +51,7 @@ function EditMission() {
         <button type="button" className={`${tabBtn} ${tab === "manage" ? "bg-[var(--color-acid)]" : "bg-white"}`} onClick={() => selectTab("manage")}>管理</button>
       </div>
       {tab === "edit" ? (
-        <MissionEditor mode="edit" initial={m} engaged={engaged} saving={update.isPending}
+        <MissionEditor key={m.id} mode="edit" initial={m} engaged={engaged} saving={update.isPending} onDirtyChange={editorNavigation.changed}
           onSave={(body) => update.mutateAsync(body)} />
       ) : (
         <MissionManage missionId={missionId} />

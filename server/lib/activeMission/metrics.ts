@@ -48,6 +48,36 @@ export type PublicationProofMetricRow = {
 
 export type RateMetric = { numerator: number; denominator: number; rate: number };
 
+export type PilotOutcomeRow = {
+  id: string; joinedAt: string; firstSubmittedAt: string | null;
+  firstReviewDecision: string | null; revisionCount: number;
+  required: boolean; deadline: string | null; approvedAt: string | null; cancelled: boolean;
+  reviewDurationsMs?: readonly number[];
+};
+
+/** Saved versions and decisions supply these observations; missing data is not a zero. */
+export function calculatePilotOutcomeMetrics(rows: readonly PilotOutcomeRow[], now: Date) {
+  const active = rows.filter(row => !row.cancelled);
+  const submissionTimes = active.flatMap(row => {
+    const joined = validTimestamp(row.joinedAt), submitted = validTimestamp(row.firstSubmittedAt);
+    return joined !== null && submitted !== null && submitted >= joined ? [submitted - joined] : [];
+  });
+  const reviewed = active.filter(row => ["approved", "approved_to_publish", "revision_requested"].includes(row.firstReviewDecision ?? ""));
+  const due = active.filter(row => row.required && validTimestamp(row.deadline) !== null && validTimestamp(row.deadline)! < now.getTime());
+  const reviewTimes = active.flatMap(row => row.reviewDurationsMs ?? []).filter(ms => Number.isFinite(ms) && ms >= 0);
+  const submitted = active.filter(row => validTimestamp(row.firstSubmittedAt) !== null);
+  const revisions = submitted.reduce((sum, row) => sum + (Number.isInteger(row.revisionCount) && row.revisionCount >= 0 ? row.revisionCount : 0), 0);
+  return {
+    timeToFirstSubmissionMs: { samples: submissionTimes.length, median: median(submissionTimes) },
+    firstReviewAcceptance: rateMetric(reviewed.filter(row => ["approved", "approved_to_publish"].includes(row.firstReviewDecision!)).length, reviewed.length),
+    revisionRounds: { samples: submitted.length, total: revisions, mean: submitted.length ? revisions / submitted.length : null },
+    overdue: rateMetric(due.filter(row => validTimestamp(row.approvedAt) === null || validTimestamp(row.approvedAt)! > validTimestamp(row.deadline)!).length, due.length),
+    operatorHandlingMs: reviewTimes.length ? { samples: reviewTimes.length, median: median(reviewTimes) } : null,
+    unclearStateHelpCount: null,
+    limitations: ["Help selections have no durable support-request source; count is unavailable.", "Review duration requires both saved start and decision timestamps."],
+  };
+}
+
 export type PublicationProofOperationalMetrics = {
   submissionConversion: RateMetric;
   onTimePublication: RateMetric;

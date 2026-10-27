@@ -3,26 +3,19 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarCheck, Gift, Receipt, Sparkles, Target } from "lucide-react";
 import { ActivationProgressCard } from "@/components/ActivationProgressCard";
-import { ActiveMissionSummary } from "@/components/ActiveMissionSummary";
+import { CreatorWorkHome } from "@/components/CreatorWorkHome";
 import { EarningsSummaryCard } from "@/components/EarningsSummaryCard";
 import { LangToggle } from "@/components/LangToggle";
-import { MissionCard } from "@/components/MissionCard";
+import { MissionCard, missionCardDecisionProps } from "@/components/MissionCard";
 import { NewsCard } from "@/components/news/NewsCard";
-import { NextBestActionCard } from "@/components/NextBestActionCard";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { contentKeys, fetchNews } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { LEVELS, levelIndex } from "@/lib/levels";
-import { useBalance, type MyMission } from "@/lib/queries/kocmax";
+import { useBalance } from "@/lib/queries/kocmax";
 import { useCreatorActivation } from "@/lib/useCreatorActivation";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
-
-function activeMissionHref(mission: MyMission): string {
-  const active = mission.creator_workflow_mode === "active_workspace"
-    || mission.missions.creator_workflow_mode === "active_workspace";
-  return active ? `/my/${mission.id}` : `/mission/${mission.missions.slug}`;
-}
 
 export const Route = createFileRoute("/_app/home")({ component: Home });
 
@@ -46,7 +39,6 @@ function Home() {
   );
   const effectiveLevel = me?.effective_level ?? me?.level;
   const dashboardViewed = useRef(false);
-  const actionViews = useRef(new Set<string>());
   const recommendationViews = useRef(new Set<string>());
 
   useEffect(() => {
@@ -57,17 +49,6 @@ function Home() {
       ...(effectiveLevel ? { creatorLevel: effectiveLevel } : {}),
     });
   }, [activation.me.loading, effectiveLevel, lang]);
-
-  useEffect(() => {
-    const action = activation.snapshot.nextAction;
-    const key = `${action.kind}:${action.missionId ?? ""}`;
-    if (actionViews.current.has(key)) return;
-    actionViews.current.add(key);
-    trackActivationEvent("activation_action_viewed", {
-      locale: lang,
-      actionKind: action.kind,
-    });
-  }, [activation.snapshot.nextAction, lang]);
 
   useEffect(() => {
     if (activation.recommendations.loading || activation.recommendations.error) return;
@@ -134,9 +115,11 @@ function Home() {
         </div>
       </header>
 
-      <NextBestActionCard
-        action={activation.snapshot.nextAction}
-        locale={lang}
+      <div className="min-h-72 space-y-6">
+      <CreatorWorkHome
+        missions={activation.activeMissions}
+        fallbackAction={activation.snapshot.nextAction}
+        onView={(action) => trackActivationEvent("activation_action_viewed", { locale: lang, actionKind: action.kind })}
         onAction={(action) =>
           trackActivationEvent("activation_action_clicked", {
             locale: lang,
@@ -144,16 +127,9 @@ function Home() {
           })
         }
       />
+      </div>
 
-      <ActiveMissionSummary
-        missions={activation.activeMissions.data ?? []}
-        isLoading={activation.activeMissions.loading}
-        isError={Boolean(activation.activeMissions.error)}
-        getMissionHref={activeMissionHref}
-        onRetry={() => void activation.activeMissions.refetch()}
-      />
-
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid min-h-64 gap-6 lg:grid-cols-2">
         <EarningsSummaryCard
           earnings={activation.earnings.data}
           locale={lang}
@@ -204,12 +180,12 @@ function Home() {
                 className="block rounded-[var(--radius)] no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <MissionCard
+                  {...missionCardDecisionProps(mission, me)}
                   title={mission.title}
                   category={mission.category ?? undefined}
                   points={mission.points_reward}
                   cashReward={mission.cash_reward}
                   deadline={mission.deadline}
-                  missionType={mission.mission_type}
                   matchRationale={mission.rationale}
                   matchScore={mission.fit_score}
                   status={t("app.home.recommendationUnlocked")}

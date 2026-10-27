@@ -8,6 +8,7 @@ import {
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/missions/")({ component: MissionsList });
 
@@ -27,6 +28,7 @@ function MissionsList() {
     enabled: authed,
     retry: false,
   });
+  const visibleMissions = canShowPreviousData(list.error) ? list.data : undefined;
   useEffect(() => {
     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);
@@ -58,10 +60,12 @@ function MissionsList() {
       </div>
 
       {list.isLoading ? <p className="text-sm">載入中…</p> : null}
-      {list.data?.missions.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有任務。</p> : null}
+      <RequestFeedback error={list.error} stale={Boolean(visibleMissions)} retry={() => void list.refetch()} />
+      <RequestFeedback error={publish.error ?? close.error ?? remove.error ?? duplicate.error} />
+      {!list.isError && visibleMissions?.missions.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有任務。</p> : null}
 
       <div className="space-y-3">
-        {list.data?.missions.map((m: AdminMissionRow) => (
+        {visibleMissions?.missions.map((m: AdminMissionRow) => (
           <div key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">

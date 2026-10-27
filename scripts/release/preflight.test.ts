@@ -4,6 +4,32 @@ import { describe, expect, it, vi } from "vitest";
 import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
 
 describe("release preflight", () => {
+  it("does not claim a removed grant is safe from dump text alone", async () => {
+    async function check(schema: string) {
+      return runPreflight({ databaseUrl: "postgresql://synthetic", projectRef: "disposable", manifestDigest: "a".repeat(64),
+        expectedCapabilities: ["grant-removed:service_role.public.old_rpc(uuid)"], now: new Date("2026-10-23") }, {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }), readFile: vi.fn().mockResolvedValue(schema),
+        rm: vi.fn(), tempFile: () => "synthetic.sql",
+      });
+    }
+    expect((await check("GRANT EXECUTE ON FUNCTION public.old_rpc(uuid) TO service_role;")).capabilities[0].status).toBe("divergent");
+    expect((await check("")).capabilities[0].status).toBe("unverifiable");
+  });
+  it("retires obsolete constraint and RPC grant requirements in the CLI's final capability set", async () => {
+    const manifest = readFileSync("supabase/release-manifest.json", "utf8");
+    const report = await runPreflightCli(["--output", "docs/verification/preflight.json"], process.cwd(),
+      { PREFLIGHT_DATABASE_URL: "postgresql://synthetic", RELEASE_PROJECT_REF: "disposable" }, {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn(async (path) => path.endsWith("release-manifest.json") ? manifest : ""),
+        rm: vi.fn(), tempFile: () => "synthetic.sql", writeFile: vi.fn(),
+      });
+    const names = report.capabilities.map((capability) => capability.name);
+    expect(names).not.toContain("constraint:public.mission_submissions.mission_submissions_creator_workspace_fk");
+    expect(names).toContain("constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk");
+    expect(names).not.toContain("grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)");
+    expect(names).toContain("grant-removed:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)");
+    expect(names).toContain("grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer,text,integer,text)");
+  });
   it("has a validator for every capability declared by the committed release manifest", () => {
     const manifest = JSON.parse(
       readFileSync("supabase/release-manifest.json", "utf8"),
@@ -12,7 +38,24 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    expect(capabilities).toHaveLength(433);
+    // Retain all587 earlier capabilities, four application and seven redemption contracts.
+    expect(capabilities).toHaveLength(598);
+    const applicationCapabilities = ["function:public.decide_mission_application",
+      "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"];
+    expect(capabilities).toEqual(expect.arrayContaining(applicationCapabilities));
+    const redemptionCapabilities = [
+      "column:public.redemptions.client_request_id",
+      "index:public.redemptions.redemptions_creator_request_uniq",
+      "function:public.redeem_gift_with_request",
+      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
+      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(redemptionCapabilities));
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 
@@ -369,4 +412,12 @@ describe("release preflight", () => {
       ),
     ).rejects.toThrow("preflight output must not be inside supabase/migrations");
   });
+});
+
+it.each(['INSERT','UPDATE','DELETE','TRUNCATE'])('D19 detects stale %s table grants without treating them as RPCs', async privilege => {
+ const capability=`grant-removed:authenticated.public.example(${privilege.toLowerCase()})`;
+ const check=async (schema:string)=>runPreflight({databaseUrl:'postgresql://synthetic',projectRef:'disposable',manifestDigest:'a'.repeat(64),expectedCapabilities:[capability],now:new Date('2026-10-24')},{run:vi.fn().mockResolvedValue({code:0,stdout:'',stderr:''}),readFile:vi.fn().mockResolvedValue(schema),rm:vi.fn(),tempFile:()=> 'synthetic.sql'});
+ expect((await check(`GRANT ${privilege} ON TABLE public.example TO authenticated;`)).capabilities[0].status).toBe('divergent');
+ expect((await check('GRANT ALL ON TABLE public.example TO authenticated;')).capabilities[0].status).toBe('divergent');
+ expect((await check('')).capabilities[0].status).toBe('unverifiable');
 });

@@ -117,7 +117,7 @@ const items: ActiveMissionQueueItem[] = [
     state: "submitted",
     creatorDeadline: "2026-07-20T18:00:00.000Z",
     submittedAt: "2026-07-19T02:00:00.000Z",
-    reviewDueAt: "2026-07-19T18:00:00.000Z",
+    reviewDueAt: "2026-07-19T12:00:00.000Z",
     reviewerId: null,
     riskBucket: "due_soon",
     proofAttemptId: "attempt-today",

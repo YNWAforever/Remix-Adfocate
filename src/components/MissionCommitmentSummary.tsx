@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { formatCreatorDate, formatMissionReward } from "@/lib/creatorFormatting";
+import { formatCreatorDate, formatMissionDecisionReward } from "@/lib/creatorFormatting";
 import { useI18n } from "@/lib/i18n";
 import { effortLabelKey, platformLabelKey } from "@/lib/missionMeta";
 import type { Mission } from "@/lib/queries/kocmax";
@@ -52,7 +52,7 @@ export function MissionCommitmentSummary({
           <CommitmentFact label={t("app.mission.commitment.deadline")}>{deadline}</CommitmentFact>
         ) : null}
         <CommitmentFact label={t("app.mission.commitment.reward")}>
-          {formatMissionReward({ points: mission.points_reward, cash: mission.cash_reward }, locale)}
+          {formatMissionDecisionReward({ points: mission.points_reward, cash: mission.cash_reward }, locale)}
         </CommitmentFact>
         {effortKey ? (
           <CommitmentFact label={t("app.mission.commitment.effort")}>{t(effortKey)}</CommitmentFact>

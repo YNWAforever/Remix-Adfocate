@@ -106,6 +106,13 @@ describe("Reset password (recovery landing)", () => {
     expect(screen.queryByLabelText(dict.zh["app.resetPassword.newLabel"])).not.toBeInTheDocument();
   });
 
+  it("classifies an expired recovery error fragment without exchanging a code", async () => {
+    window.history.replaceState({}, "", "/auth/reset-password#error=access_denied&error_code=otp_expired");
+    renderResetPassword();
+    expect(await screen.findByRole("alert")).toHaveTextContent(dict.zh["app.auth.feedback.expired.title"]);
+    expect(supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+  });
+
   it("rejects mismatched passwords without calling updateUser", async () => {
     await renderForm();
     fill("longenough1", "longenough2");

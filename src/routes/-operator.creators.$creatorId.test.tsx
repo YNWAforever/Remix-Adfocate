@@ -1,3 +1,4 @@
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "workspace-1", workspaceSlug: "a", setWorkspace: vi.fn() }) }));
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -41,6 +42,7 @@ function renderRoute() {
 describe("operator creator detail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(Route, "useSearch").mockReturnValue({ returnTo: "/admin/creators?ws=workspace-1" } as never);
     vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-1" } as never);
     hoisted.fetchCreatorPublicationProofs.mockResolvedValue({ proofs: { status: "available", value: [] } });
     hoisted.fetchCreatorDetail.mockResolvedValue({
@@ -188,6 +190,8 @@ describe("operator creator detail", () => {
       expect(hoisted.postCreatorNote).toHaveBeenCalledWith("creator-1", {
         category: "other",
         body: "Great for launch.",
+        requestId: expect.any(String),
+        expectedRevision: 0,
       }),
     );
   });

@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, NotebookPen, ShieldCheck, UserRound } from "lucide-react";
@@ -19,9 +21,12 @@ import {
   type AdminNoteCategory,
 } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
+import { creatorQueueUrl, parseCreatorQueueSearch, safeCreatorQueueReturn } from "@/lib/creatorQueueSearch";
+import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 
 export const Route = createFileRoute("/operator/creators/$creatorId")({
   component: OperatorCreatorDetailRoute,
+  validateSearch: (search: Record<string, unknown>): { returnTo?: string } => ({ returnTo: safeCreatorQueueReturn(search.returnTo) }),
 });
 
 const numberFormatter = new Intl.NumberFormat("en-US");
@@ -68,12 +73,17 @@ function maybeRecord(value: unknown) {
 function OperatorCreatorDetailRoute() {
   const { t } = useI18n();
   const { creatorId } = Route.useParams();
+  const { workspace } = useAdminWorkspace();
+  const returnTo = safeCreatorQueueReturn(Route.useSearch().returnTo);
+  const queueSearch = parseCreatorQueueSearch(Object.fromEntries(new URL(returnTo, window.location.origin).searchParams));
+  queueSearch.ws = workspace;
   const queryClient = useQueryClient();
   const { authed, reportAuthError } = useAdminAuth();
   const [noteBody, setNoteBody] = useState("");
+  const noteRequest = useRef<{ id: string; revision: number } | null>(null);
 
   const detail = useQuery({
-    queryKey: ["admin-creator-detail", creatorId],
+    queryKey: ["admin-creator-detail", creatorId, workspace],
     enabled: authed,
     retry: false,
     queryFn: () => fetchCreatorDetail(creatorId),
@@ -88,18 +98,22 @@ function OperatorCreatorDetailRoute() {
     queryFn: () => fetchCreatorPublicationProofs(creatorId),
   });
 
+  const visibleDetail = canShowPreviousData(detail.error) ? detail.data : undefined;
   const noteMutation = useMutation({
-    mutationFn: (body: { category: AdminNoteCategory; body: string }) => postCreatorNote(creatorId, body),
+    mutationFn: (body: { category: AdminNoteCategory; body: string }) => {
+      noteRequest.current ??= { id: crypto.randomUUID(), revision: visibleDetail?.review.revision ?? 0 };
+      return postCreatorNote(creatorId, { ...body, requestId: noteRequest.current.id, expectedRevision: noteRequest.current.revision });
+    },
     onSuccess: async () => {
-      setNoteBody("");
+      setNoteBody(""); noteRequest.current = null;
       await queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId] });
     },
   });
 
-  const creator = detail.data?.creator;
-  const detailData = detail.data;
-  const review = detail.data?.review;
-  const selectedSocial = detail.data?.socialAccounts[0] ?? null;
+  const creator = visibleDetail?.creator;
+  const detailData = visibleDetail;
+  const review = visibleDetail?.review;
+  const selectedSocial = visibleDetail?.socialAccounts[0] ?? null;
   const selectedAvatar = detailData?.profileMedia.avatarUrl ?? null;
   const unselectedSocialAvatar = selectedSocial?.external_avatar_url ?? null;
 
@@ -125,6 +139,7 @@ function OperatorCreatorDetailRoute() {
   return (
     <>
       <div className="mx-auto max-w-6xl space-y-4 p-4">
+        <RequestFeedback error={noteMutation.error} />
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -136,6 +151,7 @@ function OperatorCreatorDetailRoute() {
           </div>
           <Link
             to="/admin/creators"
+            search={parseCreatorQueueSearch(Object.fromEntries(new URL(creatorQueueUrl(queueSearch), window.location.origin).searchParams))}
             className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold"
           >
             <ArrowLeft className="h-4 w-4" />

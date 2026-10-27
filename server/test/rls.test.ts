@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
@@ -5,7 +7,7 @@ import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
 const { app } = createApp();
 
 function call(path: string, jwt: string) {
-  return app.request(path, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
+  return app.request(path, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG } });
 }
 
 // Integration test — requires a live Supabase (local `supabase start` stack or cloud)
@@ -18,8 +20,8 @@ suite("RLS isolation", () => {
 
   beforeAll(async () => {
     await cleanup();
-    alice = await makeCreator("alice@test.local", 1250);
-    bob = await makeCreator("bob@test.local", 99);
+    alice = await makeCreator(fixtureName("alice@test.local"), 1250);
+    bob = await makeCreator(fixtureName("bob@test.local"), 99);
   });
   afterAll(cleanup);
 
@@ -45,7 +47,7 @@ suite("RLS isolation", () => {
       "ugc-pet",
       "koc-trial-mask",
       "ugc-travel",
-    ]));
+    ].map(fixtureName)));
   });
 
   it("points history returns an array scoped to the creator", async () => {

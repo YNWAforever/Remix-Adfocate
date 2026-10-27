@@ -83,6 +83,7 @@ function AtRiskList({ queue }: { queue: Radar["atRisk"] }) {
 
 function SlaList({ queue }: { queue: Radar["slaBreaching"] }) {
   const { t } = useI18n();
+  const { workspace } = useAdminWorkspace();
   return (
     <QueueCard titleKey="app.radar.slaTitle" emptyKey="app.radar.slaEmpty" total={queue.total}>
       <ul className="divide-y divide-[var(--color-soft-ink)] divide-opacity-20 space-y-0">
@@ -90,7 +91,7 @@ function SlaList({ queue }: { queue: Radar["slaBreaching"] }) {
           <li key={row.submission_id} className="flex items-center justify-between py-2">
             <div>
               <p className="text-sm font-semibold">{row.display_name ?? row.creator_id}</p>
-              <p className="text-xs text-[var(--color-soft-ink)]">{row.mission_title}</p>
+              <a href={`/admin/submissions?submission_id=${encodeURIComponent(row.submission_id)}&ws=${encodeURIComponent(workspace)}`} className="text-xs font-bold underline">{row.mission_title} · 處理 / Review</a>
             </div>
             <span
               className={`font-mono text-xs ${

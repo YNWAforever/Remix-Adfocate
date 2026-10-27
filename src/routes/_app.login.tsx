@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
-import { finishAuth } from "@/lib/auth-flow";
+import { authRedirectUrl, finishAuth } from "@/lib/auth-flow";
 import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
 import { useI18n } from "@/lib/i18n";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
@@ -9,7 +9,9 @@ import { classifyAuthError, type AuthFeedbackState } from "@/lib/authFeedback";
 import { AuthFeedback } from "@/components/AuthFeedback";
 import { BoldValue } from "@/components/RichText";
 
-export const Route = createFileRoute("/_app/login")({ component: Login });
+export const Route = createFileRoute("/_app/login")({ component: Login,
+  validateSearch: (search: Record<string, unknown>): { next?: string; ref?: string } => ({ next: typeof search.next === "string" ? search.next : undefined, ref: typeof search.ref === "string" ? search.ref : undefined }),
+});
 
 /** Fast local guard only; Supabase enforces its own minimum server-side. */
 const MIN_PASSWORD_LENGTH = 8;
@@ -136,15 +138,6 @@ function Login() {
           {t("app.login.title")}
         </h1>
         <PasswordAuth />
-        {/* Decorative: the section headings carry the structure for assistive tech. */}
-        <div aria-hidden className="mt-5 flex items-center gap-3">
-          <span className="h-0.5 flex-1 bg-[var(--color-ink)]/20" />
-          <span className="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]">
-            {t("app.login.orSeparator")}
-          </span>
-          <span className="h-0.5 flex-1 bg-[var(--color-ink)]/20" />
-        </div>
-        <EmailAndGoogle />
       </AuthShell>
     );
   }
@@ -172,6 +165,7 @@ function Login() {
             <span className="rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 font-mono text-sm">+852</span>
             <input
               id="login-phone"
+              disabled={busy}
               type="tel"
               required
               autoComplete="tel"
@@ -213,6 +207,7 @@ function Login() {
           )}
           <input
             id="login-code"
+            disabled={busy}
             type="text"
             required
             autoComplete="one-time-code"
@@ -236,6 +231,7 @@ function Login() {
           <button
             type="button"
             onClick={() => { setStage("phone"); setCode(""); setFeedback(null); }}
+            disabled={busy}
             className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
           >
             {t("app.login.changePhone")}
@@ -254,7 +250,6 @@ function Login() {
         {showSecondary && (
           <>
             <PasswordAuth />
-            <EmailAndGoogle />
           </>
         )}
       </div>
@@ -262,7 +257,7 @@ function Login() {
   );
 }
 
-type PasswordMode = "signIn" | "signUp" | "forgot";
+type PasswordMode = "signIn" | "signUp" | "forgot" | "magicLink";
 
 /**
  * Email + password, plus the reset request. Sign-up signs the creator straight in
@@ -294,7 +289,7 @@ function PasswordAuth() {
     setFeedback(nextFeedback);
     trackActivationEvent("auth_link_failed", {
       locale: lang,
-      method: "email_password",
+      method: mode === "magicLink" ? "email_magic_link" : "email_password",
       errorCategory: nextFeedback.category,
     });
   }
@@ -305,7 +300,7 @@ function PasswordAuth() {
     setNotice(null);
     trackActivationEvent("auth_link_requested", {
       locale: lang,
-      method: "email_password",
+      method: mode === "magicLink" ? "email_magic_link" : "email_password",
     });
   }
 
@@ -358,7 +353,7 @@ function PasswordAuth() {
     begin();
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: authRedirectUrl("/auth/reset-password"),
       });
       if (error) {
         fail(error);
@@ -372,8 +367,64 @@ function PasswordAuth() {
     }
   }
 
+  async function requestLink() {
+    if (busy) return;
+    setBusy(true);
+    setFeedback(null);
+    setNotice(null);
+    trackActivationEvent("auth_link_requested", {
+      locale: lang,
+      method: "email_magic_link",
+    });
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { emailRedirectTo: authRedirectUrl("/auth/callback") },
+      });
+      if (error) {
+        const nextFeedback = feedbackForError(error);
+        setFeedback(nextFeedback);
+        trackActivationEvent("auth_link_failed", {
+          locale: lang,
+          method: "email_magic_link",
+          errorCategory: nextFeedback.category,
+        });
+        return;
+      }
+      setNotice(t("app.login.magicLinkSent"));
+    } catch (error) {
+      const nextFeedback = feedbackForError(error);
+      setFeedback(nextFeedback);
+      trackActivationEvent("auth_link_failed", {
+        locale: lang,
+        method: "email_magic_link",
+        errorCategory: nextFeedback.category,
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+
+  async function google() {
+    if (busy) return;
+    setBusy(true);
+    setFeedback(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: authRedirectUrl("/auth/callback") },
+      });
+      if (error) setFeedback(feedbackForError(error));
+    } catch (error) {
+      setFeedback(feedbackForError(error));
+    } finally { setBusy(false); }
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    if (mode === "magicLink") { void requestLink(); return; }
     if (mode === "forgot") {
       void requestReset();
       return;
@@ -386,19 +437,19 @@ function PasswordAuth() {
   }
 
   const heading =
-    mode === "forgot"
+    mode === "magicLink" ? t("app.login.magicLinkHeading") : mode === "forgot"
       ? t("app.login.forgotTitle")
       : mode === "signUp"
         ? t("app.login.signUpHeading")
         : t("app.login.passwordHeading");
   const cta =
-    mode === "forgot"
+    mode === "magicLink" ? t(notice ? "app.login.resendLink" : "app.login.emailCta") : mode === "forgot"
       ? t("app.login.forgotCta")
       : mode === "signUp"
         ? t("app.login.signUpCta")
         : t("app.login.passwordCta");
   const busyLabel =
-    mode === "forgot"
+    mode === "forgot" || mode === "magicLink"
       ? t("app.login.sending")
       : mode === "signUp"
         ? t("app.login.signingUp")
@@ -423,7 +474,7 @@ function PasswordAuth() {
       </h2>
       {feedback && (
         <div id="login-password-error">
-          <AuthFeedback feedback={feedback} onRetry={() => setFeedback(null)} />
+          <AuthFeedback feedback={feedback} onRetry={() => mode === "magicLink" ? void requestLink() : setFeedback(null)} />
         </div>
       )}
       {notice && (
@@ -438,13 +489,14 @@ function PasswordAuth() {
         >
           {t("app.login.emailLabel")}
         </label>
-        {mode === "forgot" && (
+        {(mode === "forgot" || mode === "magicLink") && (
           <p id="login-forgot-help" className="text-sm text-[var(--color-soft-ink)]">
-            {t("app.login.forgotHelp")}
+            {t(mode === "magicLink" ? "app.login.emailHelp" : "app.login.forgotHelp")}
           </p>
         )}
         <input
           id="login-password-email"
+          disabled={busy}
           type="email"
           required
           autoComplete="email"
@@ -452,11 +504,11 @@ function PasswordAuth() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
-          aria-describedby={mode === "forgot" ? "login-forgot-help" : undefined}
+          aria-describedby={mode === "forgot" || mode === "magicLink" ? "login-forgot-help" : undefined}
           aria-errormessage={emailInvalid ? "login-password-error" : undefined}
           aria-invalid={emailInvalid}
         />
-        {mode !== "forgot" && (
+        {(mode === "signIn" || mode === "signUp") && (
           <>
             <label
               htmlFor="login-password"
@@ -470,6 +522,7 @@ function PasswordAuth() {
             <div className="flex items-center gap-2">
               <input
                 id="login-password"
+                disabled={busy}
                 type={revealed ? "text" : "password"}
                 required
                 autoComplete={mode === "signUp" ? "new-password" : "current-password"}
@@ -483,6 +536,7 @@ function PasswordAuth() {
               <button
                 type="button"
                 onClick={() => setRevealed((r) => !r)}
+                disabled={busy}
                 aria-pressed={revealed}
                 className="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
               >
@@ -505,6 +559,10 @@ function PasswordAuth() {
         )}
       </form>
       <div className="space-y-2">
+        <button type="button" disabled={busy} onClick={() => switchMode(mode === "magicLink" ? "signIn" : "magicLink")}
+          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-sm font-bold disabled:opacity-50">
+          {t(mode === "magicLink" ? "app.login.choosePassword" : "app.login.chooseMagicLink")}
+        </button>
         {mode === "signIn" && (
           <button
             type="button"
@@ -528,130 +586,10 @@ function PasswordAuth() {
               : t("app.login.backToSignIn")}
         </button>
       </div>
+      {GOOGLE_LOGIN ? <button type="button" onClick={google} disabled={busy}
+        className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold disabled:opacity-50">{t("app.login.googleCta")}</button> : null}
     </section>
   );
 }
 
 /** Email magic-link (always available) + Google (only when GOOGLE_LOGIN is on). */
-function EmailAndGoogle() {
-  const { t, lang } = useI18n();
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [feedback, setFeedback] = useState<AuthFeedbackState | null>(null);
-
-  async function requestLink() {
-    setBusy(true);
-    setFeedback(null);
-    trackActivationEvent("auth_link_requested", {
-      locale: lang,
-      method: "email_magic_link",
-    });
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-      });
-      if (error) {
-        const nextFeedback = feedbackForError(error);
-        setFeedback(nextFeedback);
-        trackActivationEvent("auth_link_failed", {
-          locale: lang,
-          method: "email_magic_link",
-          errorCategory: nextFeedback.category,
-        });
-        return;
-      }
-      setSent(true);
-    } catch (error) {
-      const nextFeedback = feedbackForError(error);
-      setFeedback(nextFeedback);
-      trackActivationEvent("auth_link_failed", {
-        locale: lang,
-        method: "email_magic_link",
-        errorCategory: nextFeedback.category,
-      });
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function sendLink(e: React.FormEvent) {
-    e.preventDefault();
-    void requestLink();
-  }
-
-  async function google() {
-    setFeedback(null);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
-      });
-      if (error) setFeedback(feedbackForError(error));
-    } catch (error) {
-      setFeedback(feedbackForError(error));
-    }
-  }
-
-  return (
-    <div className="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4">
-      {/* Google sits outside the labelled region: it is a peer method, not a link. */}
-      <section aria-labelledby="login-magic-heading" className="space-y-3">
-        <h2
-          id="login-magic-heading"
-          className="font-heading text-base font-bold text-[var(--color-ink)]"
-        >
-          {t("app.login.magicLinkHeading")}
-        </h2>
-        {feedback && (
-          <div id="login-email-error">
-            <AuthFeedback feedback={feedback} onRetry={() => void requestLink()} />
-          </div>
-        )}
-        {sent ? (
-          <p role="status" aria-live="polite" className="text-sm text-[var(--color-soft-ink)]">
-            <BoldValue template={t("app.login.magicLinkSent")} value={email.trim()} />
-          </p>
-        ) : (
-          <form onSubmit={sendLink} className="space-y-2" aria-busy={busy}>
-            <label htmlFor="login-email" className="block font-heading text-sm font-bold text-[var(--color-ink)]">
-              {t("app.login.emailLabel")}
-            </label>
-            <p id="login-email-help" className="text-sm text-[var(--color-soft-ink)]">{t("app.login.emailHelp")}</p>
-            <input
-              id="login-email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
-              aria-describedby="login-email-help"
-              aria-errormessage={feedback ? "login-email-error" : undefined}
-              aria-invalid={Boolean(feedback)}
-            />
-            <button
-              type="submit"
-              disabled={busy}
-              className="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
-            >
-              {busy ? t("app.login.sending") : t("app.login.emailCta")}
-            </button>
-            {busy && <p role="status" aria-live="polite" className="sr-only">{t("app.login.sendingStatus")}</p>}
-          </form>
-        )}
-      </section>
-      {GOOGLE_LOGIN && (
-        <button
-          type="button"
-          onClick={google}
-          className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
-        >
-          {t("app.login.googleCta")}
-        </button>
-      )}
-    </div>
-  );
-}

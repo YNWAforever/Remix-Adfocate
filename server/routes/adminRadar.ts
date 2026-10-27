@@ -57,10 +57,11 @@ adminRadarRoutes.get("/radar", async (c) => {
   if (ws) risingQ = risingQ.eq("workspace_id", ws);
 
   // Queue D: creators registered in last `days` days.
-  // Creators table has no workspace_id — creators are global; see spec §7 "Queue D workspace scope".
+  // Creator ownership uses the same authorized workspace as every other queue.
   const newCreatorsQ = svc
     .from("creators")
     .select("id, display_name, phone, created_at")
+    .eq("workspace_id", ws)
     .gte("created_at", cutoffIso)
     .order("created_at", { ascending: false });
 

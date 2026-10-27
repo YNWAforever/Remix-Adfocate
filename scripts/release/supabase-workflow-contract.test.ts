@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const workflow = readFileSync(".github/workflows/supabase.yml", "utf8");
+const workflow = readFileSync(".github/workflows/supabase.yml", "utf8").replace(/\r\n/g, "\n");
 
 type WorkflowStep = {
   uses?: string;
@@ -220,6 +220,7 @@ describe("Supabase production workflow", () => {
   });
 
   it.each(unsafeMutations)("rejects %s", (_name, mutatedWorkflow) => {
+    expect(mutatedWorkflow).not.toBe(workflow);
     expect(() => expectProductionWorkflowContract(mutatedWorkflow)).toThrow();
   });
 });

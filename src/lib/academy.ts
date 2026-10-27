@@ -14,6 +14,9 @@ export type AcademyTrack = {
   id: string; kind: AcademyKind; slug: string; title: string; excerpt: string | null; body?: string;
   requiredLevel: string | null; emoji: string | null; color: string | null; sort: number;
   meta: { duration?: string; levelLabel?: string; teaser_zh?: string; teaser_en?: string };
+  /** Body availability only; does not imply lessons or completion tracking. */
+  contentStatus?: "available" | "preparing";
+  learningEnabled?: boolean;
 };
 export type AcademyPlaybook = {
   id: string; kind: AcademyKind; slug: string; title: string; emoji: string | null; color: string | null; sort: number;

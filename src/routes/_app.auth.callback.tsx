@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { finishAuth } from "@/lib/auth-flow";
 import { useI18n } from "@/lib/i18n";
 import { getDeviceCategory, trackActivationEvent } from "@/lib/activationAnalytics";
-import { classifyAuthError, type AuthFeedbackState } from "@/lib/authFeedback";
+import { classifyAuthError, hasUnsafeAuthPathChars, type AuthFeedbackState } from "@/lib/authFeedback";
 
 export const Route = createFileRoute("/_app/auth/callback")({ component: Callback });
 
@@ -44,11 +44,12 @@ function Callback() {
   const runCallback = useCallback(async () => {
     setFeedback(null);
     const params = new URLSearchParams(window.location.search);
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
     const code = params.get("code");
     if (!code) {
       setFeedback(classifyAuthError({
-        code: params.get("error_code") ?? params.get("error") ?? "malformed_callback",
-        message: params.get("error_description"),
+        code: params.get("error_code") ?? fragment.get("error_code") ?? params.get("error") ?? fragment.get("error") ?? "malformed_callback",
+        message: params.get("error_description") ?? fragment.get("error_description"),
       }));
       return;
     }
@@ -63,12 +64,13 @@ function Callback() {
           return;
         }
         const next = params.get("next");
+        const staffNext = next && /^\/admin(\/|$)/.test(next) && !hasUnsafeAuthPathChars(next) ? new URL(next, window.location.origin) : null;
         // Only an exact /admin or /admin/* path skips creator bootstrap (the staff Google
         // sign-in flow). A strict match avoids /adminfoo and keeps a genuine creator flow
         // from accidentally skipping bootstrap on a crafted next param.
-        if (next && /^\/admin(\/|$)/.test(next)) {
+        if (staffNext?.origin === window.location.origin && /^\/admin(\/|$)/.test(staffNext.pathname)) {
           // Staff Google login: do not run creator bootstrap (which would create a creator row).
-          navigate({ to: next });
+          navigate({ to: staffNext.pathname + staffNext.search + staffNext.hash });
           return;
         }
         method = authMethod(data.session?.user.app_metadata.provider);

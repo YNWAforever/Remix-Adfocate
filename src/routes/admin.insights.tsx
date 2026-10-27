@@ -7,6 +7,7 @@ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { TrendChart } from "@/components/admin/TrendChart";
 import { useI18n } from "@/lib/i18n";
+import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/insights")({ component: InsightsPage });
 
@@ -19,7 +20,7 @@ function fmtPct(n: number): string {
   return `${n}%`;
 }
 function fmtCash(n: number): string {
-  return `HK$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `HKD ${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function DeltaBadge({ metric }: { metric: InsightsMetric }) {
@@ -150,7 +151,7 @@ function InsightsSkeleton() {
 }
 
 function InsightsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
   const [win, setWin] = useState<Win>(30);
@@ -166,7 +167,7 @@ function InsightsPage() {
     if (q.error instanceof AdminAuthError) reportAuthError(q.error);
   }, [q.error, reportAuthError]);
 
-  const data = q.data?.insights;
+  const data = canShowPreviousData(q.error) ? q.data?.insights : undefined;
 
   return (
     <div className="space-y-4">
@@ -175,14 +176,17 @@ function InsightsPage() {
         <WindowSelector value={win} onChange={setWin} />
       </div>
 
+      <RequestFeedback error={q.error} retry={() => void q.refetch()} stale={Boolean(data)} />
       {!data ? (
         q.isError && !(q.error instanceof AdminAuthError) ? (
-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.insights.loadError")}</p>
+          null
         ) : (
           <InsightsSkeleton />
         )
       ) : (
         <>
+          {data.window.timezone && <p className="text-sm [overflow-wrap:anywhere]">Asia/Hong_Kong · {new Intl.DateTimeFormat(lang === "en" ? "en-HK" : "zh-HK", {timeZone:"Asia/Hong_Kong",dateStyle:"medium"}).format(new Date(data.window.from))} ≤ day &lt; {new Intl.DateTimeFormat(lang === "en" ? "en-HK" : "zh-HK", {timeZone:"Asia/Hong_Kong",dateStyle:"medium"}).format(new Date(data.window.to))} · Complete calendar days / 完整香港曆日</p>}
+          <p className="text-sm">Net posted ledger credits, including corrections. Pending reward is not credited cash or a payout. / 淨入帳含沖銷；待發獎勵不等於現金入帳或付款。</p>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             <KpiCard label={t("app.insights.kpiActiveCreators")} metric={data.kpis.activeCreators} format={fmtNumber} primary />
             <KpiCard label={t("app.insights.kpiCompletions")} metric={data.kpis.completions} format={fmtNumber} />
@@ -206,6 +210,18 @@ function InsightsPage() {
             <FunnelView funnel={data.funnel} />
             <LevelBars levels={data.levels} />
           </div>
+          {data.denominators && <p className="text-sm">Submitted-cohort approvals: {data.denominators.submitToApprove.numerator} / {data.denominators.submitToApprove.denominator}; joined-cohort submissions: {data.denominators.joinToSubmit.numerator} / {data.denominators.joinToSubmit.denominator}. Cancelled work is excluded. / 分母按同一批次，排除取消記錄。</p>}
+          {data.outcomes && <section aria-label="Pilot outcomes" className="pastel-card space-y-3 p-5">
+            <h2 className="font-heading text-lg font-bold">Pilot outcomes / 試行結果</h2>
+            <dl className="grid gap-3 sm:grid-cols-2">
+              <div><dt>Join → first valid submission / 首次有效交稿</dt><dd>{data.outcomes.timeToFirstSubmissionMs.median === null ? "Not measured" : `${data.outcomes.timeToFirstSubmissionMs.median / 60000} min`} · n={data.outcomes.timeToFirstSubmissionMs.samples}</dd></div>
+              <div><dt>First review accepted / 首次審稿接受</dt><dd>{data.outcomes.firstReviewAcceptance.numerator} / {data.outcomes.firstReviewAcceptance.denominator}</dd></div>
+              <div><dt>Revision rounds / 修稿輪數</dt><dd>{data.outcomes.revisionRounds.mean ?? "Not measured"} · n={data.outcomes.revisionRounds.samples}</dd></div>
+              <div><dt>Overdue required work / 必要交付逾期</dt><dd>{data.outcomes.overdue.numerator} / {data.outcomes.overdue.denominator}</dd></div>
+              <div><dt>Operator handling / 營運處理時間</dt><dd>{data.outcomes.operatorHandlingMs === null ? "Not measured" : `${data.outcomes.operatorHandlingMs.median! / 60000} min · n=${data.outcomes.operatorHandlingMs.samples}`}</dd></div>
+              <div><dt>Help due to unclear state / 狀態不明求助</dt><dd>Not measured: no saved support-request source / 尚無已保存的求助來源</dd></div>
+            </dl>
+          </section>}
         </>
       )}
     </div>

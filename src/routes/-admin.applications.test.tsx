@@ -45,4 +45,38 @@ describe("admin applications tab", () => {
     fireEvent.click(screen.getByLabelText("接受"));
     await waitFor(() => expect(h.acceptApplication).toHaveBeenCalledWith("a1"));
   });
+
+  it("UC-C25 retains the decline reason and row after a failure and retries explicitly", async () => {
+    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
+    h.declineApplication.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({});
+    r(); await screen.findByText("Amy");
+    const reason = screen.getByLabelText(/拒絕原因/);
+    expect(screen.getByLabelText("拒絕")).toBeDisabled();
+    fireEvent.change(reason, { target: { value: "Please improve the portfolio" } });
+    fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
+    expect(reason).toHaveValue("Please improve the portfolio"); expect(screen.getByText("Amy")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
+    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
+    expect(h.declineApplication.mock.calls).toEqual([["a1", "Please improve the portfolio"], ["a1", "Please improve the portfolio"]]);
+  });
+
+  it("UC-A10 shows who already processed the application and keeps local input on409", async () => {
+    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
+    h.declineApplication.mockRejectedValue(Object.assign(new Error("Already processed by Test operator at 2026-10-25 18:00 HKT"), { status: 409, code: "APPLICATION_DECIDED" }));
+    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
+    fireEvent.change(reason, { target: { value: "My retained reason" } }); fireEvent.click(screen.getByLabelText("拒絕"));
+    await screen.findByText(/Already processed by Test operator/); expect(reason).toHaveValue("My retained reason");
+    expect(screen.getByText("Amy")).toBeInTheDocument(); expect(h.declineApplication).toHaveBeenCalledTimes(1);
+  });
+
+  it("UC-A06 retries the currently visible reason after an operator edits a failed request", async () => {
+    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
+    h.declineApplication.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({});
+    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
+    fireEvent.change(reason, { target: { value: "First reason" } }); fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
+    fireEvent.change(reason, { target: { value: "Updated reason" } }); fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
+    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
+    expect(h.declineApplication.mock.calls).toEqual([["a1", "First reason"], ["a1", "Updated reason"]]);
+    expect(reason).toHaveValue("Updated reason");
+  });
 });

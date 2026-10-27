@@ -151,3 +151,17 @@ export function classifyAuthError(input: {
 
   return feedback("unknown");
 }
+
+/** Return destinations stay within Creator routes; auth and staff routes are separate flows. */
+export function hasUnsafeAuthPathChars(value: string): boolean {
+  return Array.from(value).some((character) => character === "\\" || character.charCodeAt(0) <= 32) || /%2f|%5c|%0[ad]/i.test(value);
+}
+
+export function safeCreatorReturn(raw: string | null | undefined): string | null {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//") || hasUnsafeAuthPathChars(raw)) return null;
+  try {
+    const url = new URL(raw, "https://creator.invalid");
+    if (url.origin !== "https://creator.invalid" || !/^\/(home|mission|my|profile|passport|wallet|academy|match|more|redemption)(\/|$)/.test(url.pathname)) return null;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch { return null; }
+}

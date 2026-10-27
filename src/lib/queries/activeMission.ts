@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, apiFetch } from "@/lib/api";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import {
   AdminAuthError,
   AdminRequestError,
@@ -212,12 +213,15 @@ function invalidateMissionCollections(queryClient: ReturnType<typeof useQueryCli
   void queryClient.invalidateQueries({ queryKey: ["missions"] });
 }
 
-export function useActiveMissionWorkspace(submissionId: string) {
-  return useQuery({
+export function activeMissionWorkspaceQueryOptions(submissionId: string) {
+  return {
     queryKey: activeMissionQueryKey(submissionId),
     queryFn: () => apiFetch<ActiveMissionWorkspace>(`/my-missions/${submissionId}/workspace`),
     enabled: Boolean(submissionId),
-  });
+  };
+}
+export function useActiveMissionWorkspace(submissionId: string) {
+  return useQuery(activeMissionWorkspaceQueryOptions(submissionId));
 }
 export function useMissionPublication(submissionId: string, workItemId: string) {
   return useQuery({
@@ -426,7 +430,14 @@ export function useSubmitMissionWorkItem(submissionId: string) {
         headers: { "Idempotency-Key": idempotencyKey },
         body: JSON.stringify(body),
       }),
-    onSuccess: () => invalidateMissionCollections(queryClient, submissionId),
+    onSuccess: (data, input) => {
+      const version = data.version as { mission_work_item_id?: string; version_number?: number } | null;
+      const item = data.workItem as { id?: string } | null;
+      if (version?.mission_work_item_id === input.workItemId && item?.id === input.workItemId && Number.isSafeInteger(version.version_number) && version.version_number! > 0) {
+        trackActivationEvent("product_action_result", { entityId: input.workItemId, action: "draft_submit", revision: version.version_number!, result: "saved", persisted: true });
+      }
+      return invalidateMissionCollections(queryClient, submissionId);
+    },
   });
 }
 export function useProofEvidenceUpload(submissionId: string) {

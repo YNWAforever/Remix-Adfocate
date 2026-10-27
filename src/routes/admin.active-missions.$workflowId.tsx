@@ -393,6 +393,7 @@ export function AdminActiveMissionReviewView({
     <div className="min-w-0 space-y-6">
      <ActiveMissionReview
       workflow={detail.data}
+      assistWorkspace={workspaceSlug}
       selectedWorkItemId={workItemId}
       onStartReview={async (input) => {
         const result = await startActiveMissionReview(workflowId, input.workItemId, { workspace: workspaceSlug, expectedState: input.expectedState });

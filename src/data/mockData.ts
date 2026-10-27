@@ -1,3 +1,5 @@
+import { progressToNext } from "@/lib/levels";
+
 import type { ReactNode } from "react";
 
 // ─── MISSIONS ───
@@ -102,7 +104,6 @@ export const missionCards: Mission[] = [
 export type CreatorPassport = {
   name: string;
   level: string;
-  levelLabel: string;
   xp: number;
   xpNext: number;
   avatar: string;
@@ -128,12 +129,14 @@ export type CreatorScores = {
   financeReadiness: number;
 };
 
+const passportXP = 3840;
+const passportProgress = progressToNext(passportXP);
+
 export const mockCreatorPassport: CreatorPassport = {
   name: "Chloe Chan",
-  level: "L3",
-  levelLabel: "Nano Creator",
-  xp: 3840,
-  xpNext: 5000,
+  level: passportProgress.current.id,
+  xp: passportXP,
+  xpNext: passportProgress.next!.xpRequired,
   avatar: "CC",
   categories: ["Beauty", "Lifestyle", "Food"],
   bio: "Beauty and lifestyle content creator based in Hong Kong. Love sharing honest reviews and daily finds.",

@@ -116,6 +116,14 @@ describe("Auth callback (PKCE landing)", () => {
     );
   });
 
+  it("shows the same expired-link recovery when Auth returns an error fragment", async () => {
+    window.history.replaceState({}, "", "/auth/callback#error=access_denied&error_code=otp_expired");
+    renderCallback();
+    expect(await screen.findByRole("alert")).toHaveTextContent(dict.zh["app.auth.feedback.expired.title"]);
+    expect(supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(mockFinishAuth).not.toHaveBeenCalled();
+  });
+
   it("shows the recovery state when the exchange fails", async () => {
     vi.mocked(supabase.auth.exchangeCodeForSession).mockResolvedValue({ data: {}, error: { message: "bad code" } } as never);
     renderCallback();

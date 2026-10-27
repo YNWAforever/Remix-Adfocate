@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Flag, UserRound } from "lucide-react";
+import { useStaffAccess } from "@/components/admin/StaffAccessContext";
 import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
 import {
   RiskBadge,
@@ -54,6 +55,7 @@ function formatLastActivity(lastActivityAt: string | null) {
 }
 
 export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: CreatorReviewRowProps) {
+  const access=useStaffAccess(),canReview=!access||access.can("creator.review");
   const queryClient = useQueryClient();
   const [showShortlistNote, setShowShortlistNote] = useState(false);
   const [shortlistNote, setShortlistNote] = useState("");
@@ -100,7 +102,7 @@ export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: Cre
         </div>
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Link to="/operator/creators/$creatorId" params={{ creatorId: creator.id }} className="truncate font-heading font-bold underline">
+            <Link data-creator-id={creator.id} to="/operator/creators/$creatorId" params={{ creatorId: creator.id }} search={{ returnTo: window.location.pathname + window.location.search }} onClick={() => { sessionStorage.setItem("adfocate-queue-focus", creator.id); sessionStorage.setItem("adfocate-queue-scroll", String(window.scrollY)); }} className="truncate font-heading font-bold underline">
               {creator.displayName}
             </Link>
             <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
@@ -135,7 +137,7 @@ export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: Cre
 
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {missionId ? (
+          {missionId && canReview ? (
             <button
               type="button"
               aria-label={`Shortlist ${creator.displayName}`}
@@ -157,7 +159,7 @@ export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: Cre
           <ReviewActionPanel creator={creator} />
         </div>
 
-        {missionId && showShortlistNote ? (
+        {missionId && showShortlistNote && canReview ? (
           <div className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] p-2">
             <label className="block space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
               <span>Shortlist note</span>

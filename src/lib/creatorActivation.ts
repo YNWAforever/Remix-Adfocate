@@ -1,4 +1,6 @@
 import type { Me, MissionMatch, MyMission, OnboardingStatus, SocialAccount } from "./queries/kocmax";
+import { deriveNextAction, type ActiveMissionNextAction, type ActiveMissionWorkspace } from "./activeMission";
+import { creatorRewardExperience } from "./rewardHandoff";
 
 export type ActivationMilestoneId =
   | "account_created"
@@ -21,6 +23,9 @@ export type ActivationMilestone = {
 };
 
 export type NextBestActionKind =
+  | ActiveMissionNextAction["kind"]
+  | "reward_pending"
+  | "reward_reassessment"
   | "urgent_mission"
   | "review_feedback"
   | "publish_content"
@@ -41,7 +46,40 @@ export type NextBestAction = {
   rewardContext?: string;
   missionId?: string;
   missionType?: string;
+  missionTitle?: string;
 };
+
+// Presentation only: the workspace and detail page share deriveNextAction.
+const WORK_ACTION_LABELS: Record<ActiveMissionNextAction["kind"], string> = {
+  wait_for_setup: "waitForSetup", wait_for_shipment: "waitForShipment", confirm_receipt: "confirmReceipt",
+  draft: "draft", revise: "revise", await_review: "awaitReview", await_publication: "awaitPublication",
+  publish_and_submit_proof: "awaitPublication", await_proof_review: "awaitReview",
+  revise_publication_proof: "revise", proof_verified: "awaitPublication", contact_support: "contactSupport",
+};
+
+export function activeMissionNextBestAction(workspace: ActiveMissionWorkspace): NextBestAction {
+  const reward = creatorRewardExperience(workspace.workflow.state, workspace.pendingReward)
+    ?? (workspace.workflow.state === "reward_pending" ? "reward_pending" : null);
+  const base = {
+    missionId: workspace.mission.id, missionTitle: workspace.mission.title, missionType: workspace.mission.missionType,
+    to: `/my/${encodeURIComponent(workspace.workflow.submissionId)}`,
+  };
+  if (reward) {
+    return { ...base, kind: reward,
+      titleKey: reward === "reward_reassessment" ? "app.activeMission.rewardPending.cancelledTitle" : "app.activeMission.workspace.state.rewardPending",
+      bodyKey: "app.home.work.rewardNeutrality",
+      ctaKey: `app.activeMission.workspace.action.${reward === "reward_reassessment" ? "rewardReassessment" : "rewardPending"}` };
+  }
+  const action = deriveNextAction(workspace);
+  const label = WORK_ACTION_LABELS[action.kind];
+  const verified = action.kind === "proof_verified";
+  return { ...base, kind: action.kind,
+    to: action.workItemId ? `${base.to}?item=${encodeURIComponent(action.workItemId)}` : base.to,
+    titleKey: verified ? "app.home.work.proofVerifiedAction" : `app.activeMission.workspace.action.${label}`,
+    bodyKey: verified ? "app.home.work.proofVerifiedBody" : `app.activeMission.workspace.responsible.${label}`,
+    ctaKey: verified ? "app.home.work.proofVerifiedAction" : `app.activeMission.workspace.action.${label}`,
+    deadline: action.deadline ?? undefined };
+}
 
 export type CreatorActivationInput = {
   me?: Me | null;

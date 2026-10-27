@@ -7,6 +7,11 @@ export interface RetrievedChunk extends ContextChunk {
 }
 interface Deps { embed?: (texts: string[]) => Promise<number[][]>; k?: number; minSimilarity?: number; }
 
+/** Embedded assistance uses an already authorized, bounded projection; never global KB/embeddings. */
+export function retrieveAssistContext(context: import("./contextPolicy.js").AuthorizedAssistContext): RetrievedChunk[] {
+  return context.chunks;
+}
+
 export async function retrieveContext(
   client: Pick<SupabaseClient, "rpc">,
   input: { query: string; locale: string; workspace: string | null },

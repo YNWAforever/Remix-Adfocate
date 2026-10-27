@@ -1,7 +1,10 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { grantStaffFixture } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { serviceForTests, makeCreator, makeMission, cleanup, DEMO_WS, userForJwt } from "./helpers.js";
+import { serviceForTests, makeCreator, makeMission, makeStaff, cleanup, DEMO_WS, userForJwt } from "./helpers.js";
 import { campaignBonusRef, campaignPrizeRef } from "../lib/campaignAuthoring.js";
-import { createApp } from "../app.js";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 
 const hasEnv = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_KEY;
 const suite = hasEnv ? describe : describe.skip;
@@ -11,10 +14,13 @@ process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
 const { app } = createApp();
 const SECRET = process.env.ADMIN_SECRET;
 function adminreq(path: string, init: RequestInit = {}) {
-  return app.request(`/api${path}`, { ...init, headers: { "x-admin-secret": SECRET, "Content-Type": "application/json", ...(init.headers ?? {}) } });
+  const headers = new Headers(init.headers);
+  headers.set("Content-Type", "application/json");
+  if (!headers.has("Authorization")) headers.set("x-admin-secret", SECRET);
+  return app.request(`/api${path}`, { ...init, headers });
 }
 function creatorReq(path: string, jwt: string, init: RequestInit = {}) {
-  return app.request(`/api${path}`, { ...init, headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) } });
+  return app.request(`/api${path}`, { ...init, headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) } });
 }
 const svc = () => serviceForTests();
 
@@ -52,7 +58,7 @@ async function seedApprovedSub(opts: {
   const ws = opts.workspace ?? DEMO_WS;
   const { data: ins, error: e1 } = await svc().from("mission_submissions")
     .insert({ creator_id: opts.creator, workspace_id: ws, mission_id: opts.mission,
-              status: "submitted", submitted_at: opts.submitted_at }).select("id").single();
+              status: "submitted", content_urls: ["https://example.test/campaign-evidence"], submitted_at: opts.submitted_at }).select("id").single();
   if (e1) throw e1;
   const id = (ins as { id: string }).id;
   const { error: e2 } = await svc().from("mission_submissions")
@@ -74,13 +80,13 @@ async function pointTxns(ref: string) {
 
 suite("campaigns — completion bonus", () => {
   let koc: { userId: string };
-  beforeAll(async () => { await cleanup(); koc = await makeCreator("camp-bonus@test.local", 0); });
+  beforeAll(async () => { await cleanup(); koc = await makeCreator(fixtureName("camp-bonus@test.local"), 0); });
   afterAll(cleanup);
 
   it("auto-enrolls, counts, and pays the bonus exactly once on goal crossing", async () => {
-    const m1 = await makeMission({ slug: "test-camp-m1" });
-    const m2 = await makeMission({ slug: "test-camp-m2" });
-    const camp = await makeCampaign({ slug: "test-camp-bonus", goal_target: 2, bonus_points: 100, bonus_xp: 20 });
+    const m1 = await makeMission({ slug: fixtureName("test-camp-m1") });
+    const m2 = await makeMission({ slug: fixtureName("test-camp-m2") });
+    const camp = await makeCampaign({ slug: fixtureName("test-camp-bonus"), goal_target: 2, bonus_points: 100, bonus_xp: 20 });
     await attach(camp.id, m1.id);
     await attach(camp.id, m2.id);
 
@@ -100,8 +106,8 @@ suite("campaigns — completion bonus", () => {
   });
 
   it("counts a submission delivered in-window but reviewed during the grace window", async () => {
-    const m = await makeMission({ slug: "test-camp-grace-m" });
-    const camp = await makeCampaign({ slug: "test-camp-grace", goal_target: 1, ends_at: "2026-06-30T00:00:00Z" });
+    const m = await makeMission({ slug: fixtureName("test-camp-grace-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-camp-grace"), goal_target: 1, ends_at: "2026-06-30T00:00:00Z" });
     await attach(camp.id, m.id);
     // delivered before ends_at, reviewed AFTER ends_at (grace). Campaign still 'active' (not settled).
     await seedApprovedSub({ creator: koc.userId, mission: m.id,
@@ -112,8 +118,8 @@ suite("campaigns — completion bonus", () => {
   });
 
   it("does NOT count a submission delivered after ends_at", async () => {
-    const m = await makeMission({ slug: "test-camp-late-m" });
-    const camp = await makeCampaign({ slug: "test-camp-late", goal_target: 1, ends_at: "2026-06-30T00:00:00Z" });
+    const m = await makeMission({ slug: fixtureName("test-camp-late-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-camp-late"), goal_target: 1, ends_at: "2026-06-30T00:00:00Z" });
     await attach(camp.id, m.id);
     await seedApprovedSub({ creator: koc.userId, mission: m.id, submitted_at: "2026-07-05T00:00:00Z" });
     const p = await participant(camp.id, koc.userId);
@@ -143,20 +149,20 @@ suite("campaigns — settlement", () => {
   let a: { userId: string }, b: { userId: string };
   beforeAll(async () => {
     await cleanup();
-    a = await makeCreator("camp-a@test.local", 0);   // both home = DEMO_WS
-    b = await makeCreator("camp-b@test.local", 0);
+    a = await makeCreator(fixtureName("camp-a@test.local"), 0);   // both home = DEMO_WS
+    b = await makeCreator(fixtureName("camp-b@test.local"), 0);
   });
   afterAll(cleanup);
 
   it("ranks, pays the top tier in cash, and is idempotent on re-settle", async () => {
     // Use a dedicated campaign workspace (throwaway, slug "test-camp-ws1") so the budget
     // balance starts at 0 and is unaffected by other runs against DEMO_WS.
-    const ws1 = await makeWorkspace("test-camp-ws1");
-    const m = await makeMission({ slug: "test-settle-m" });
+    const ws1 = await makeWorkspace(fixtureName("test-camp-ws1"));
+    const m = await makeMission({ slug: fixtureName("test-settle-m") });
     // Move mission into ws1 so the campaign (in ws1) can attach it.
     await svc().from("missions").update({ workspace_id: ws1 }).eq("id", m.id);
     const camp = await makeCampaign({
-      slug: "test-settle", workspace_id: ws1, goal_target: 1, bonus_points: 0, bonus_xp: 0,
+      slug: fixtureName("test-settle"), workspace_id: ws1, goal_target: 1, bonus_points: 0, bonus_xp: 0,
       prize_tiers: [{ rank_from: 1, rank_to: 1, cash: 500, points: 0, xp: 0 }],
     });
     await attach(camp.id, m.id, ws1);
@@ -164,7 +170,7 @@ suite("campaigns — settlement", () => {
     // reviewed_at must be >= campaign_missions.added_at (which is now()) for rank_campaign join.
     await seedApprovedSub({ creator: a.userId, mission: m.id, workspace: ws1, submitted_at: "2026-06-05T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
     // second approved for A needs a 2nd mission (one approved sub per (creator,mission) submission row).
-    const m2 = await makeMission({ slug: "test-settle-m2" });
+    const m2 = await makeMission({ slug: fixtureName("test-settle-m2") });
     await svc().from("missions").update({ workspace_id: ws1 }).eq("id", m2.id);
     await attach(camp.id, m2.id, ws1);
     await seedApprovedSub({ creator: a.userId, mission: m2.id, workspace: ws1, submitted_at: "2026-06-06T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
@@ -202,12 +208,12 @@ suite("campaigns — settlement", () => {
   });
 
   it("debits the CAMPAIGN workspace budget but credits the creator's HOME workspace earnings", async () => {
-    const ws2 = await makeWorkspace("test-camp-ws2");
-    const m = await makeMission({ slug: "test-xws-m" });
+    const ws2 = await makeWorkspace(fixtureName("test-camp-ws2"));
+    const m = await makeMission({ slug: fixtureName("test-xws-m") });
     // Move this mission into ws2 so the campaign (in ws2) counts its submissions.
     await svc().from("missions").update({ workspace_id: ws2 }).eq("id", m.id);
     const camp = await makeCampaign({
-      slug: "test-xws", workspace_id: ws2, goal_target: 1, bonus_points: 0, bonus_xp: 0,
+      slug: fixtureName("test-xws"), workspace_id: ws2, goal_target: 1, bonus_points: 0, bonus_xp: 0,
       prize_tiers: [{ rank_from: 1, rank_to: 1, cash: 300, points: 0, xp: 0 }],
     });
     await attach(camp.id, m.id, ws2);
@@ -241,16 +247,16 @@ suite("campaigns — insufficient budget", () => {
       await svc().rpc("credit_workspace_budget", { p_workspace: DEMO_WS, p_delta: -curBal, p_type: "adjust" });
     }
     await svc().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
-    a = await makeCreator("camp-ins-a@test.local", 0);
-    b = await makeCreator("camp-ins-b@test.local", 0);
+    a = await makeCreator(fixtureName("camp-ins-a@test.local"), 0);
+    b = await makeCreator(fixtureName("camp-ins-b@test.local"), 0);
   });
   afterAll(cleanup);
 
   it("rolls back the entire settlement; top-up + re-settle pays only unpaid winners", async () => {
-    const m1 = await makeMission({ slug: "test-ins-m1" });
-    const m2 = await makeMission({ slug: "test-ins-m2" });
+    const m1 = await makeMission({ slug: fixtureName("test-ins-m1") });
+    const m2 = await makeMission({ slug: fixtureName("test-ins-m2") });
     const camp = await makeCampaign({
-      slug: "test-ins", goal_target: 1, bonus_points: 0, bonus_xp: 0,
+      slug: fixtureName("test-ins"), goal_target: 1, bonus_points: 0, bonus_xp: 0,
       prize_tiers: [{ rank_from: 1, rank_to: 2, cash: 400, points: 0, xp: 0 }],  // both A and B win 400
     });
     await attach(camp.id, m1.id);
@@ -295,15 +301,15 @@ suite("campaigns — constraints & RLS", () => {
   let other: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("camp-rls-a@test.local", 0);
-    other = await makeCreator("camp-rls-b@test.local", 0);
+    koc = await makeCreator(fixtureName("camp-rls-a@test.local"), 0);
+    other = await makeCreator(fixtureName("camp-rls-b@test.local"), 0);
   });
   afterAll(cleanup);
 
   it("rejects attaching a mission already active in another campaign (one-active index)", async () => {
-    const m = await makeMission({ slug: "test-excl-m" });
-    const c1 = await makeCampaign({ slug: "test-excl-1" });
-    const c2 = await makeCampaign({ slug: "test-excl-2" });
+    const m = await makeMission({ slug: fixtureName("test-excl-m") });
+    const c1 = await makeCampaign({ slug: fixtureName("test-excl-1") });
+    const c2 = await makeCampaign({ slug: fixtureName("test-excl-2") });
     await attach(c1.id, m.id);
     const { error } = await svc().from("campaign_missions")
       .insert({ campaign_id: c2.id, mission_id: m.id, workspace_id: DEMO_WS });
@@ -311,8 +317,8 @@ suite("campaigns — constraints & RLS", () => {
   });
 
   it("mission removed mid-campaign keeps approvals earned while attached (as-of-approval)", async () => {
-    const m = await makeMission({ slug: "test-rm-m" });
-    const camp = await makeCampaign({ slug: "test-rm", goal_target: 5 });
+    const m = await makeMission({ slug: fixtureName("test-rm-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-rm"), goal_target: 5 });
     await attach(camp.id, m.id);
     await seedApprovedSub({ creator: koc.userId, mission: m.id,
       submitted_at: "2026-06-05T00:00:00Z", reviewed_at: "2027-01-01T00:00:00Z" });
@@ -325,8 +331,8 @@ suite("campaigns — constraints & RLS", () => {
   });
 
   it("reject_submission on an approved row raises wrong_state (monotonic invariant)", async () => {
-    const m = await makeMission({ slug: "test-term-m" });
-    const camp = await makeCampaign({ slug: "test-term", goal_target: 1 });
+    const m = await makeMission({ slug: fixtureName("test-term-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-term"), goal_target: 1 });
     await attach(camp.id, m.id);
     const id = await seedApprovedSub({ creator: koc.userId, mission: m.id, submitted_at: "2026-06-05T00:00:00Z" });
     const { error } = await svc().rpc("reject_submission", { p_submission: id, p_notes: "x" });
@@ -334,8 +340,8 @@ suite("campaigns — constraints & RLS", () => {
   });
 
   it("creator may read only their own participant row; not another creator's", async () => {
-    const m = await makeMission({ slug: "test-self-m" });
-    const camp = await makeCampaign({ slug: "test-self", goal_target: 1 });
+    const m = await makeMission({ slug: fixtureName("test-self-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-self"), goal_target: 1 });
     await attach(camp.id, m.id);
     await seedApprovedSub({ creator: koc.userId, mission: m.id, submitted_at: "2026-06-05T00:00:00Z" });
 
@@ -354,7 +360,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
   let koc: { userId: string };
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("camp-route@test.local", 0);
+    koc = await makeCreator(fixtureName("camp-route@test.local"), 0);
   });
   afterAll(cleanup);
 
@@ -363,22 +369,22 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     const res = await adminreq("/admin/campaigns", {
       method: "POST",
       body: JSON.stringify({
-        workspace_id: DEMO_WS, slug: "test-r-1", title: "x",
+        workspace_id: DEMO_WS, slug: fixtureName("test-r-1"), title: "x",
         starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
         goal_target: 1,
       }),
     });
     expect(res.status).toBe(201);
     const body = await res.json() as { campaign: { slug: string; status: string } };
-    expect(body.campaign.slug).toBe("test-r-1");
+    expect(body.campaign.slug).toBe(fixtureName("test-r-1"));
     expect(body.campaign.status).toBe("draft");
   });
 
   it("attach mission already active in another campaign → 409", async () => {
-    const m = await makeMission({ slug: "test-r-excl-m" });
+    const m = await makeMission({ slug: fixtureName("test-r-excl-m") });
     // Campaign 1: create + attach mission (direct DB insert since status is active).
     const { data: c1, error: ce1 } = await serviceForTests().from("campaigns").insert({
-      workspace_id: DEMO_WS, slug: "test-r-excl-1", title: "excl1", status: "active",
+      workspace_id: DEMO_WS, slug: fixtureName("test-r-excl-1"), title: "excl1", status: "active",
       starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
       goal_target: 1, completion_bonus_points: 10, completion_bonus_xp: 5,
       prize_tiers: [], published_at: "2026-06-01T00:00:00Z",
@@ -392,7 +398,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     const c2res = await adminreq("/admin/campaigns", {
       method: "POST",
       body: JSON.stringify({
-        workspace_id: DEMO_WS, slug: "test-r-excl-2", title: "excl2",
+        workspace_id: DEMO_WS, slug: fixtureName("test-r-excl-2"), title: "excl2",
         starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
         goal_target: 1,
       }),
@@ -414,7 +420,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     const createRes = await adminreq("/admin/campaigns", {
       method: "POST",
       body: JSON.stringify({
-        workspace_id: DEMO_WS, slug: "test-r-nowin", title: "no reward",
+        workspace_id: DEMO_WS, slug: fixtureName("test-r-nowin"), title: "no reward",
         starts_at: "2027-01-01T00:00:00Z", ends_at: "2027-01-31T00:00:00Z",
         goal_target: 1,
         completion_bonus_points: 0, completion_bonus_xp: 0, prize_tiers: [],
@@ -435,13 +441,18 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
   it("settle on an enforced-but-unfunded campaign with a cash prize winner → 402", async () => {
     // Set up a throwaway workspace with 0 balance + enforcement.
     const { data: ws, error: wsErr } = await serviceForTests().from("workspaces")
-      .insert({ slug: "test-camp-route-ws", name: "route-ws" }).select("id").single();
+      .insert({ slug: fixtureName("test-camp-route-ws"), name: "route-ws" }).select("id").single();
     if (wsErr) throw wsErr;
     const wsId = (ws as { id: string }).id;
 
+    // This operator belongs only to the campaign's workspace (single-workspace PK).
+    const operator = await makeStaff(fixtureName("campaign-route-operator@test.local"), wsId);
+    await grantStaffFixture(operator.userId,wsId,"workspace_admin");
+    const operatorHeaders = { Authorization: `Bearer ${operator.jwt}`, "X-Workspace-Slug": fixtureName("test-camp-route-ws") };
+
     // Mission in that workspace.
     const { data: msn, error: msnErr } = await serviceForTests().from("missions").insert({
-      workspace_id: wsId, slug: "test-r-settle-m", title: "settle-m",
+      workspace_id: wsId, slug: fixtureName("test-r-settle-m"), title: "settle-m",
       mission_type: "ugc", access_type: "open", points_reward: 50, cash_reward: null,
       quota: 10, filled: 0, status: "active", required_level: "L0", deadline: null, category: "美容",
     }).select("id").single();
@@ -450,7 +461,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
 
     // Campaign with cash prize tier (1 winner → 500 HKD).
     const { data: camp, error: campErr } = await serviceForTests().from("campaigns").insert({
-      workspace_id: wsId, slug: "test-r-settle", title: "settle",
+      workspace_id: wsId, slug: fixtureName("test-r-settle"), title: "settle",
       status: "active", starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
       goal_target: 1, completion_bonus_points: 0, completion_bonus_xp: 0,
       prize_tiers: [{ rank_from: 1, rank_to: 1, cash: 500, points: 0, xp: 0 }],
@@ -466,7 +477,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     // reviewed_at must be >= campaign_missions.added_at (now()) for rank_campaign join.
     const { data: sub, error: subErr } = await serviceForTests().from("mission_submissions").insert({
       creator_id: koc.userId, workspace_id: wsId, mission_id: missionId,
-      status: "submitted", submitted_at: "2026-06-05T00:00:00Z",
+      status: "submitted", content_urls: ["https://example.test/campaign-evidence"], submitted_at: "2026-06-05T00:00:00Z",
     }).select("id").single();
     if (subErr) throw subErr;
     await serviceForTests().from("mission_submissions").update({
@@ -477,11 +488,11 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
     await serviceForTests().rpc("set_workspace_budget_enforcement", { p_workspace: wsId, p_enforced: true });
 
     // Close via route.
-    const closeRes = await adminreq(`/admin/campaigns/${campaignId}/close`, { method: "POST" });
+    const closeRes = await adminreq(`/admin/campaigns/${campaignId}/close`, { method: "POST", headers: operatorHeaders });
     expect(closeRes.status).toBe(200);
 
     // Settle via route → 402 (insufficient_budget).
-    const settleRes = await adminreq(`/admin/campaigns/${campaignId}/settle`, { method: "POST" });
+    const settleRes = await adminreq(`/admin/campaigns/${campaignId}/settle`, { method: "POST", headers: operatorHeaders });
     expect(settleRes.status).toBe(402);
     const sb = await settleRes.json() as { code: string };
     expect(sb.code).toBe("insufficient_budget");
@@ -495,7 +506,7 @@ suite("campaigns — operator routes (adminCampaignRoutes)", () => {
   it("close an active campaign twice → second close returns 409", async () => {
     // Create + publish a minimal campaign directly.
     const { data: camp, error: campErr } = await serviceForTests().from("campaigns").insert({
-      workspace_id: DEMO_WS, slug: "test-r-close2x", title: "close2x",
+      workspace_id: DEMO_WS, slug: fixtureName("test-r-close2x"), title: "close2x",
       status: "active", starts_at: "2026-06-01T00:00:00Z", ends_at: "2026-06-30T00:00:00Z",
       goal_target: 1, completion_bonus_points: 50, completion_bonus_xp: 10,
       prize_tiers: [], published_at: "2026-06-01T00:00:00Z",
@@ -522,24 +533,24 @@ suite("campaigns — creator read routes", () => {
   let creator: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    creator = await makeCreator("camp-cr-read@test.local", 0);
+    creator = await makeCreator(fixtureName("camp-cr-read@test.local"), 0);
   });
   afterAll(cleanup);
 
   it("GET /campaigns → 200, active campaign in creator's workspace appears in list", async () => {
-    await makeCampaign({ slug: "test-cr-active" });
+    await makeCampaign({ slug: fixtureName("test-cr-active") });
     const res = await creatorReq("/campaigns", creator.jwt);
     expect(res.status).toBe(200);
     const body = await res.json() as { campaigns: Array<{ slug: string; status: string }> };
     expect(Array.isArray(body.campaigns)).toBe(true);
-    const found = body.campaigns.find((c) => c.slug === "test-cr-active");
+    const found = body.campaigns.find((c) => c.slug === fixtureName("test-cr-active"));
     expect(found).toBeTruthy();
     expect(found?.status).toBe("active");
   });
 
   it("GET /campaigns/:slug → 200 with my_progress object after seeding approved sub", async () => {
-    const m = await makeMission({ slug: "test-cr-detail-m" });
-    const camp = await makeCampaign({ slug: "test-cr-detail", goal_target: 2 });
+    const m = await makeMission({ slug: fixtureName("test-cr-detail-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-cr-detail"), goal_target: 2 });
     await attach(camp.id, m.id);
     // Seed an approved submission so the trigger enrolls the creator and increments approved_count.
     // submitted_at is in-window; reviewed_at in-window (trigger uses submitted_at for enrollment).
@@ -554,7 +565,7 @@ suite("campaigns — creator read routes", () => {
       missions: unknown[];
       my_progress: { approved: number; goal_reached: boolean; bonus_granted: boolean; prize_rank: unknown; rank: unknown };
     };
-    expect(body.campaign.slug).toBe("test-cr-detail");
+    expect(body.campaign.slug).toBe(fixtureName("test-cr-detail"));
     expect(Array.isArray(body.missions)).toBe(true);
     expect(body.my_progress).toBeDefined();
     expect(typeof body.my_progress.approved).toBe("number");
@@ -562,8 +573,8 @@ suite("campaigns — creator read routes", () => {
   });
 
   it("GET /campaigns/:slug/leaderboard → 200 with leaderboard array", async () => {
-    const m = await makeMission({ slug: "test-cr-lb-m" });
-    const camp = await makeCampaign({ slug: "test-cr-lb", goal_target: 1 });
+    const m = await makeMission({ slug: fixtureName("test-cr-lb-m") });
+    const camp = await makeCampaign({ slug: fixtureName("test-cr-lb"), goal_target: 1 });
     await attach(camp.id, m.id);
     await seedApprovedSub({
       creator: creator.userId, mission: m.id,
@@ -580,8 +591,8 @@ suite("campaigns — creator read routes", () => {
   });
 
   it("GET /campaigns/:slug for a draft campaign → 404", async () => {
-    await makeCampaign({ slug: "test-cr-draft", status: "draft" });
-    const res = await creatorReq("/campaigns/test-cr-draft", creator.jwt);
+    await makeCampaign({ slug: fixtureName("test-cr-draft"), status: "draft" });
+    const res = await creatorReq(fixtureName("/campaigns/test-cr-draft"), creator.jwt);
     expect(res.status).toBe(404);
     const body = await res.json() as { code: string };
     expect(body.code).toBe("not_found");
@@ -593,24 +604,24 @@ suite("campaigns — cross-workspace isolation (creator route)", () => {
   let foreignWs: string;
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("camp-iso@test.local", 0);          // home = DEMO_WS ("demo")
-    foreignWs = await makeWorkspace("test-camp-isob");          // a different workspace
+    koc = await makeCreator(fixtureName("camp-iso@test.local"), 0);          // home = DEMO_WS ("demo")
+    foreignWs = await makeWorkspace(fixtureName("test-camp-isob"));          // a different workspace
   });
   afterAll(cleanup);
 
   it("a creator cannot see / read a campaign in another workspace", async () => {
     // Active campaign in the FOREIGN workspace.
-    const foreign = await makeCampaign({ slug: "test-iso-foreign", status: "active", workspace_id: foreignWs });
+    const foreign = await makeCampaign({ slug: fixtureName("test-iso-foreign"), status: "active", workspace_id: foreignWs });
     // Also an active campaign in the creator's OWN workspace (happy-path guard against false-pass).
-    const mine = await makeCampaign({ slug: "test-iso-mine", status: "active" });
+    const mine = await makeCampaign({ slug: fixtureName("test-iso-mine"), status: "active" });
 
     // List: only the creator's own workspace campaign appears; the foreign one does not.
     const listRes = await creatorReq("/campaigns", koc.jwt);
     expect(listRes.status).toBe(200);
     const listBody = await listRes.json() as { campaigns: { slug: string }[] };
     const slugs = listBody.campaigns.map((c) => c.slug);
-    expect(slugs).toContain("test-iso-mine");
-    expect(slugs).not.toContain("test-iso-foreign");
+    expect(slugs).toContain(fixtureName("test-iso-mine"));
+    expect(slugs).not.toContain(fixtureName("test-iso-foreign"));
 
     // Detail of the foreign campaign → 404 (no data leak).
     const detailRes = await creatorReq(`/campaigns/${foreign.slug}`, koc.jwt);

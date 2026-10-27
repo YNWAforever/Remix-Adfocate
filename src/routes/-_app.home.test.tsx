@@ -6,6 +6,8 @@ import { dict } from "@/lib/i18n.dict";
 import { deriveCreatorActivation } from "@/lib/creatorActivation";
 import type { MissionMatch, MyMission } from "@/lib/queries/kocmax";
 import type { UseCreatorActivationResult } from "@/lib/useCreatorActivation";
+import type { ActiveMissionWorkspace } from "@/lib/activeMission";
+import { creatorWorkWorkspace } from "@/test/creatorWorkWorkspace";
 
 const mocks = vi.hoisted<{
   track: ReturnType<typeof vi.fn>;
@@ -99,10 +101,12 @@ vi.mock("@/lib/content", () => ({
 import { Route } from "./_app.home";
 vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo" } as never);
 
-function renderHome() {
+function renderHome(workspace?: ActiveMissionWorkspace) {
   const C = Route.options.component as React.ComponentType;
+  const client = new QueryClient({ defaultOptions: { queries: { staleTime: Infinity } } });
+  if (workspace) client.setQueryData(["active-mission", workspace.workflow.submissionId], workspace);
   return render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={client}>
       <I18nProvider>
         <C />
       </I18nProvider>
@@ -221,10 +225,10 @@ describe("Home", () => {
     mocks.activation.snapshot = snapshot;
     mocks.activation.activeMissions = { data: [active], loading: false, error: null, refetch: vi.fn() };
 
-    renderHome();
+    renderHome(creatorWorkWorkspace("sub-active", "drafting", "drafting"));
 
-    expect(screen.getByRole("link", { name: dict.zh["app.activation.next.submitProof.cta"] }))
-      .toHaveAttribute("href", "/my/sub-active");
+    expect(screen.getByRole("link", { name: dict.zh["app.activeMission.workspace.action.draft"] }))
+      .toHaveAttribute("href", "/my/sub-active?item=item-sub-active");
   });
 
   it("routes active work to its workspace while legacy work keeps the mission detail link", () => {
@@ -240,9 +244,9 @@ describe("Home", () => {
     };
     mocks.activation.snapshot.activeMissions = [active, legacy];
     mocks.activation.activeMissions = { data: [active, legacy], loading: false, error: null, refetch: vi.fn() };
-    renderHome();
+    renderHome(creatorWorkWorkspace("sub-active", "drafting", "drafting"));
 
-    expect(screen.getByRole("link", { name: /Active mission/ })).toHaveAttribute("href", "/my/sub-active");
+    expect(screen.getByRole("link", { name: /Active mission/ })).toHaveAttribute("href", "/my/sub-active?item=item-sub-active");
     expect(screen.getByRole("link", { name: /Legacy mission/ })).toHaveAttribute("href", "/mission/legacy-mission");
   });
 
