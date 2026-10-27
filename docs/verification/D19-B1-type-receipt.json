@@ -1,0 +1,20 @@
+{
+  "gate": "type",
+  "command": "npm run type-check",
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "sourceRecords": 354,
+  "sourceUnchangedAfter": true,
+  "startedAt": "2026-10-24T15:45:18.429Z",
+  "finishedAt": "2026-10-24T15:45:42.384Z",
+  "exit": 0,
+  "error": null,
+  "logSha256": "f9cd4162a52e3b46a12213ada4e322e4ea5f89cfbd6e52e2936b18bc31bba657",
+  "freeGiBAfter": 7.484012603759766,
+  "offline": true,
+  "integrationEnabled": false,
+  "providerKeysSupplied": false,
+  "publicLog": "logs/D19-B1-type.log",
+  "publicLogSha256": "36e46816478ad5cbc5fe39a2409f1d7955ed58d17c388c37ad28782e72b8822e",
+  "logSha256Basis": "Raw private stdout/stderr; public log normalizes workspace paths and labels mock output",
+  "executionContext": "Workspace sandbox"
+}

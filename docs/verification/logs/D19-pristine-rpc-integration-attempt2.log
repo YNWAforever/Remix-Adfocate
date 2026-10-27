@@ -1,0 +1,25 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/campaigns-s2.test.ts (5 tests | 2 failed | 3 skipped) 988ms
+   × close_due_campaigns > closes past-deadline active only, idempotent 774ms
+     → No suitable key or wrong key type
+   × snapshot_campaign_leaderboards > captures active-campaign ranks 212ms
+     → No suitable key or wrong key type
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-integration.private.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/campaigns-s2.test.ts > close_due_campaigns > closes past-deadline active only, idempotent
+Unknown Error: No suitable key or wrong key type
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/campaigns-s2.test.ts > snapshot_campaign_leaderboards > captures active-campaign ranks
+Unknown Error: No suitable key or wrong key type
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 skipped (5)
+   Start at  17:25:26
+   Duration  3.49s (transform 149ms, setup 245ms, collect 279ms, tests 988ms, environment 953ms, prepare 94ms)
+

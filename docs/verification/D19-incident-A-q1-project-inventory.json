@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-24T14:17:24.114735+00:00",
+  "projectId": "adfocate-r1-shaped-20261023",
+  "projectNameFilteredVolumes": [
+    {
+      "name": "supabase_db_adfocate-r1-shaped-20261023",
+      "driver": "local",
+      "created": "2026-10-22T18:04:12Z",
+      "project": "adfocate-r1-shaped-20261023",
+      "scope": "local",
+      "lineageClassification": "EXACT_PROJECT_LABEL"
+    },
+    {
+      "name": "supabase_storage_adfocate-r1-shaped-20261023",
+      "driver": "local",
+      "created": "2026-10-22T18:04:32Z",
+      "project": "adfocate-r1-shaped-20261023",
+      "scope": "local",
+      "lineageClassification": "EXACT_PROJECT_LABEL"
+    }
+  ],
+  "hostProjectRoot": ".codex-tmp\\r1-targets\\shaped\\supabase",
+  "configProjectAndPortsMatched": true,
+  "fileMetadataEntriesExamined": 2,
+  "possibleBackupNamedFiles": [],
+  "secretSubtreesExcluded": [
+    ".temp/start-secrets"
+  ],
+  "serverDataVolumeFilesystemInspected": false,
+  "serverFilePermissionDenialHonoured": true,
+  "backupConclusion": "No trusted before-image identified by accessible project inventory; server PGDATA/WAL content and external/unlabelled snapshots remain UNKNOWN. Live volumes are not point-in-time backups.",
+  "notQueried": [
+    "Unrelated volumes/projects/disks",
+    "External snapshot/PITR service without target-bound reference",
+    "Server PGDATA/WAL through any OS bypass"
+  ]
+}

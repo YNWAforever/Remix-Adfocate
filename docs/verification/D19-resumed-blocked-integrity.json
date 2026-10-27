@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-26T02:58:45.832698+00:00",
+  "codeFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "actualGoalStatusReturned": "blocked",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "8afae9bec496bf0ad720d6ecd8a84071df448da422090f6c418724c961b681ef",
+      "bytes": 685827
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "3423feaca4c68c35f2111cef1823cfb68d37fd9d9c4b8eaf3c54580e35e26755",
+      "bytes": 684976
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "2eb65e077aa560c43cf6219f7a92a4b23ce98f2daed4da4cd67f3896372a5102",
+      "bytes": 571205
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/before-resumed-block/docs/verification/adfocate-delivery.json",
+      "sha256": "bb453856144876b584085d8c0353a0376aa0055c836fa707167edcf0c32738ef",
+      "bytes": 685513
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/before-resumed-block/docs/verification/evidence-integrity.json",
+      "sha256": "de940b5a0e5bff689f877adfc10624bab074e6d9b80ce5247a60d97ee8a98de5",
+      "bytes": 572439
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/blocked-after-resume.md",
+      "sha256": "7a09ecc79a3d1f3175be365957387f8d6634b930a4359c69be3405bd1faf1afb",
+      "bytes": 1015
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/goal-observation.json",
+      "sha256": "458b6cc9242e953c947ba6120646adf4249d10d158e43bc9a5266720654e19a1",
+      "bytes": 4799
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/goal-transition-after-resume.json",
+      "sha256": "2df2719f201a5bf65c84b5ada7f9d36bfcb0f31b85768c4ce32285c8e29a09dc",
+      "bytes": 5024
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/observation.json",
+      "sha256": "22f80e4a23475ab2516c6dd831718574eeda9d1de38cbcf5cbc5bb1b3a5cb913",
+      "bytes": 3202
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/readme.md",
+      "sha256": "75d2a64c4562fec5576f82e0507bdcb1af3b4675bfbfaeba97c76e2dbe2ffc45",
+      "bytes": 723
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/resumed-blocked-closure.json",
+      "sha256": "3c8854d9749a6214e7594a8a3ecbac7906678c30ee122d4792a588fb4357549d",
+      "bytes": 970
+    },
+    {
+      "path": "docs/verification/D19-resumed-audit-20261026/turn-3-blocked-audit.json",
+      "sha256": "3e84941edcec0a9d350dfec0d9c5b110e8733ddac7e5429cb0db4e57a43d182a",
+      "bytes": 2508
+    }
+  ]
+}

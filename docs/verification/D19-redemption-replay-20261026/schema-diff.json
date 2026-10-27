@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-25T20:23:58.645839+00:00",
+  "sourceFingerprint": "151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06",
+  "physicalSqlCallsThisTask": 0,
+  "schemaSourceChanges": [
+    {
+      "object": "public.redemptions.client_request_id",
+      "change": "New nullable uuid; old rows remain null, no backfill/ledger table."
+    },
+    {
+      "object": "redemptions_creator_request_uniq",
+      "change": "Unique partial index on creator_id/client_request_id when nonnull."
+    },
+    {
+      "object": "public.redeem_gift_with_request(uuid,uuid)",
+      "change": "Unique RPC name, security definer with empty search_path, explicit auth.uid/creator/workspace checks; per-owner/request transaction advisory lock; returns existing redemption or calls original redeem_gift once and binds the receipt in the same transaction.",
+      "grants": "PUBLIC/anon revoked; authenticated/service_role execute only."
+    }
+  ],
+  "existingRedeemFunctionChanged": false,
+  "existing73MigrationsChanged": false,
+  "membershipPrimaryKeyOrCardinalityChanged": false,
+  "newLedgerOrPaymentFunctionality": false,
+  "sourceObjectAclTests": "Memory PostgreSQL only; no actual Supabase/PostgREST or independent-session concurrency acceptance.",
+  "new74Approval": "NO_TARGET_APPLY_AUTHORIZATION",
+  "c2Scope": "Current applications-only proposal will still apply only forward73. Forward74 and real redemption fixtures/financial acceptance need separate bounded authorization."
+}

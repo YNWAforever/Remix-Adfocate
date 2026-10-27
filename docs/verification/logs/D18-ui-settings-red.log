@@ -1,0 +1,41 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/admin/StaffAccessShell.test.tsx (4 tests | 1 failed) 243ms
+   × D18 finance handoff view does not offer a processing-window mutation 52ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <button
+  class="h-10 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 font-heading text-sm font-bold hover:brightness-95 disabled:opacity-60"
+  type="button"
+>
+  app.admin.rewardHandoff.sla.save
+</button> instead
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/admin/StaffAccessShell.test.tsx > D18 finance handoff view does not offer a processing-window mutation
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <button
+  class="h-10 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 font-heading text-sm font-bold hover:brightness-95 disabled:opacity-60"
+  type="button"
+>
+  app.admin.rewardHandoff.sla.save
+</button> instead
+ ❯ src/components/admin/StaffAccessShell.test.tsx:32:128
+     30| it("D18 finance handoff view does not offer a processing-window mutati…
+     31|  show(<RewardHandoffQueue workspaceKey="owned" items={[]} filters={{st…
+     32|  await screen.findByLabelText("Staff role");expect(screen.queryByRole(…
+       |                                                                                                                                ^
+     33| });
+     34| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  20:59:31
+   Duration  1.91s (transform 126ms, setup 198ms, collect 389ms, tests 243ms, environment 800ms, prepare 98ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-ui-settings-red.json

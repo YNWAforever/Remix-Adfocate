@@ -1,0 +1,86 @@
+{
+  "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+  "coverage": [
+    {
+      "lang": "en",
+      "viewport": "390x844",
+      "path": "/",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "en",
+      "viewport": "390x844",
+      "path": "/creators",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "en",
+      "viewport": "1280x900",
+      "path": "/",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "en",
+      "viewport": "1280x900",
+      "path": "/creators",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "zh",
+      "viewport": "390x844",
+      "path": "/",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "zh",
+      "viewport": "390x844",
+      "path": "/creators",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "zh",
+      "viewport": "1280x900",
+      "path": "/",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    },
+    {
+      "lang": "zh",
+      "viewport": "1280x900",
+      "path": "/creators",
+      "level": "L2",
+      "next": "L3",
+      "xp": 3840,
+      "nextXP": 6000,
+      "progressPercent": 46
+    }
+  ],
+  "data": "fictional samples; no production performance claim"
+}

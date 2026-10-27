@@ -1,0 +1,19 @@
+{
+  "priorSourceFingerprint": "aee0d8891982cf1b2b5613008b585aabfe1f816abb0edd982dfb0679d8a53436",
+  "currentSourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "changedSourceFiles": [
+    "scripts/audit/observe-pristine-campaign-jobs.mjs",
+    "scripts/audit/run-pristine-campaign-jobs.mjs",
+    "scripts/run-integration-tests.mjs",
+    "server/test/helpers.ts",
+    "server/test/ownedFixtureTransport.ts",
+    "server/test/run-integration-tests.test.ts",
+    "server/test/support-rpc-ownership.test.ts"
+  ],
+  "applicationApiUiSqlE2eBytesUnchanged": true,
+  "unchangedFilesChecked": 586,
+  "originalGlobalTestsBytesUnchanged": true,
+  "priorCoreRoleAndBrowser": "D19-current-delivery.json historical source-bound; not rerun this turn",
+  "freshRuntime": "Only2 original global-job cases and3 real calls on the new pristine target",
+  "originalIncidentEvidenceBytesUnchanged": true
+}

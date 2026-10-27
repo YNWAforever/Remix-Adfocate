@@ -1,0 +1,269 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/lib/insights-quality.test.ts (3 tests | 3 failed) 14ms
+   × D17 closes the window at Hong Kong midnight and counts posted credits, reversals and boundaries rather than promised rewards 9ms
+     → expected { days: 7, …(2) } to match object { …(3) }
+(1 matching property omitted from actual)
+   × D17 approval throughput cannot inflate a submitted-cohort conversion rate and cancelled work does not enter its denominator 2ms
+     → expected 3 to be 2 // Object.is equality
+   × D17 reports durable work outcomes with explicit missing measurements rather than fabricated zero operator/help data 3ms
+     → expected { window: { days: 7, …(2) }, …(4) } to match object { outcomes: { …(6) } }
+(19 matching properties omitted from actual)
+ ❯ src/lib/productOutcomeAnalytics.test.ts (2 tests | 2 failed) 10ms
+   × D17 outcome events retain only opaque work identity, action, revision and persisted result 8ms
+     → expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+   × D17 a render or unconfirmed success never becomes a successful business outcome 1ms
+     → expected true to be false // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/lib/insights-quality.test.ts > D17 closes the window at Hong Kong midnight and counts posted credits, reversals and boundaries rather than promised rewards
+AssertionError: expected { days: 7, …(2) } to match object { …(3) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "from": "2026-10-15T16:00:00.000Z",
+-   "timezone": "Asia/Hong_Kong",
+-   "to": "2026-10-22T16:00:00.000Z",
++   "from": "2026-10-16T10:00:00.000Z",
++   "to": "2026-10-23T10:00:00.000Z",
+  }
+
+ ❯ server/lib/insights-quality.test.ts:20:20
+     18|   };
+     19|   const r = shapeInsights(input);
+     20|   expect(r.window).toMatchObject({ from: "2026-10-15T16:00:00.000Z", t…
+       |                    ^
+     21|   expect(r.kpis.pointsIssued).toMatchObject({ value: 17, prev: 5 });
+     22|   expect(r.kpis.cashPaid.value).toBe(112.5);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  server/lib/insights-quality.test.ts > D17 approval throughput cannot inflate a submitted-cohort conversion rate and cancelled work does not enter its denominator
+AssertionError: expected 3 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 3
+
+ ❯ server/lib/insights-quality.test.ts:30:30
+     28|   const r = shapeInsights({ ...base, submissions: [row("a", "approved"…
+     29|   expect(r.funnel.approved).toBe(2);
+     30|   expect(r.funnel.submitted).toBe(2);
+       |                              ^
+     31|   expect(r.kpis.submitToApprove.value).toBe(50);
+     32|   expect(r).toMatchObject({ denominators: { submitToApprove: { numerat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  server/lib/insights-quality.test.ts > D17 reports durable work outcomes with explicit missing measurements rather than fabricated zero operator/help data
+AssertionError: expected { window: { days: 7, …(2) }, …(4) } to match object { outcomes: { …(6) } }
+(19 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "outcomes": Object {
+-     "firstReviewAcceptance": Object {
+-       "denominator": 2,
+-       "numerator": 1,
+-       "rate": 0.5,
++   "funnel": Object {
++     "approved": 0,
++     "joinToSubmit": 0,
++     "joined": 0,
++     "submitToApprove": 0,
++     "submitted": 0,
++   },
++   "kpis": Object {
++     "activeCreators": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++     "cashPaid": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++     "completions": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++     "missionFillRate": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++     "pointsIssued": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++     "submitToApprove": Object {
++       "deltaPct": null,
++       "prev": 0,
++       "value": 0,
++     },
++   },
++   "levels": Array [
++     Object {
++       "count": 0,
++       "level": "L0",
++     },
++     Object {
++       "count": 0,
++       "level": "L1",
++     },
++     Object {
++       "count": 0,
++       "level": "L2",
++     },
++     Object {
++       "count": 0,
++       "level": "L3",
++     },
++     Object {
++       "count": 0,
++       "level": "L4",
++     },
++     Object {
++       "count": 0,
++       "level": "L5",
++     },
++     Object {
++       "count": 0,
++       "level": "L6",
++     },
++   ],
++   "trend": Array [
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-16",
++       "joined": 0,
++       "submitted": 0,
++     },
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-17",
++       "joined": 0,
++       "submitted": 0,
++     },
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-18",
++       "joined": 0,
++       "submitted": 0,
++     },
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-19",
++       "joined": 0,
++       "submitted": 0,
+      },
+-     "operatorHandlingMs": null,
+-     "overdue": Object {
+-       "denominator": 2,
+-       "numerator": 1,
+-       "rate": 0.5,
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-20",
++       "joined": 0,
++       "submitted": 0,
+      },
+-     "revisionRounds": Object {
+-       "mean": 1,
+-       "samples": 2,
+-       "total": 2,
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-21",
++       "joined": 0,
++       "submitted": 0,
+      },
+-     "timeToFirstSubmissionMs": Object {
+-       "median": 1200000,
+-       "samples": 2,
++     Object {
++       "approved": 0,
++       "bucket": "2026-10-22",
++       "joined": 0,
++       "submitted": 0,
+      },
+-     "unclearStateHelpCount": null,
++   ],
++   "window": Object {
++     "days": 7,
++     "from": "2026-10-16T10:00:00.000Z",
++     "to": "2026-10-23T10:00:00.000Z",
+    },
+  }
+
+ ❯ server/lib/insights-quality.test.ts:41:13
+     39|     { id: "cancelled", joinedAt: at, firstSubmittedAt: null, firstRevi…
+     40|   ] });
+     41|   expect(r).toMatchObject({ outcomes: {
+       |             ^
+     42|     timeToFirstSubmissionMs: { samples: 2, median: 1200000 }, firstRev…
+     43|     revisionRounds: { samples: 2, total: 2, mean: 1 }, overdue: { nume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/lib/productOutcomeAnalytics.test.ts > D17 outcome events retain only opaque work identity, action, revision and persisted result
+AssertionError: expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+
+- Expected
++ Received
+
+  Array [
+    Object {
+      "name": "product_action_result",
+-     "properties": Object {
+-       "action": "draft_submit",
+-       "entityId": "123e4567-e89b-42d3-a456-426614174000",
+-       "result": "saved",
+-       "revision": 3,
+-     },
++     "properties": Object {},
+    },
+  ]
+
+ ❯ src/lib/productOutcomeAnalytics.test.ts:10:18
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/productOutcomeAnalytics.test.ts > D17 a render or unconfirmed success never becomes a successful business outcome
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ src/lib/productOutcomeAnalytics.test.ts:19:62
+     17|     { entityId: id, action: "render", revision: 1, result: "saved", pe…
+     18|     { entityId: id, action: "draft_submit", revision: -1, result: "sav…
+     19|   ]) expect(trackActivationEvent(name, properties as never)).toBe(fals…
+       |                                                              ^
+     20|   expect(events).toEqual([]);
+     21| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+ Test Files  2 failed (2)
+      Tests  5 failed (5)
+   Start at  19:00:57
+   Duration  2.45s (transform 59ms, setup 380ms, collect 85ms, tests 24ms, environment 1.45s, prepare 169ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D17-metrics-red.json

@@ -1,0 +1,229 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/run-integration-tests.test.ts (6 tests | 2 failed) 20ms
+   × integration test launcher > keeps the complete ordered integration file list unique 8ms
+     → expected [ 'server/test/rls.test.ts', …(38) ] to deeply equal [ 'server/test/rls.test.ts', …(39) ]
+   × integration test launcher > spawns local Vitest with the exact environment and preserves numeric exit codes 7ms
+     → expected "spy" to be called with arguments: [ 'C:/node/node.exe', …(2) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    "C:/node/node.exe",
+    Array [
+-     StringMatching /node_modules[\\/]vitest[\\/]vitest\.mjs$/,
++     "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\node_modules\\vitest\\vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "server/test/rls.test.ts",
+      "server/test/bootstrap.test.ts",
+      "server/test/onboarding.test.ts",
+      "server/test/missions.test.ts",
+      "server/test/admin.test.ts",
+      "server/test/admin-staff.test.ts",
+      "server/test/redemption.test.ts",
+      "server/test/wallet.test.ts",
+      "server/test/me.test.ts",
+      "server/test/leveling.test.ts",
+      "server/test/passport.test.ts",
+      "server/test/match.test.ts",
+      "server/test/copilot.test.ts",
+      "server/test/applications.test.ts",
+      "server/test/social-schema.test.ts",
+      "server/test/social.test.ts",
+      "server/test/verificationGate.test.ts",
+      "server/test/public-passport.test.ts",
+      "server/test/cron-social-refresh.test.ts",
+      "server/test/operator-crm-schema.test.ts",
+      "server/test/operator-crm.test.ts",
+      "server/test/assistant.test.ts",
+      "server/test/adminContent.test.ts",
+      "server/test/content.test.ts",
+      "server/test/active-mission-schema.test.ts",
+      "server/test/active-missions.test.ts",
+      "server/test/reward-contracts.test.ts",
+      "server/test/reward-handoffs.test.ts",
+      "server/test/notifications-triggers.test.ts",
+      "server/test/notifications-api.test.ts",
+      "server/test/insights.test.ts",
+      "server/test/radar.test.ts",
+      "server/test/brand.test.ts",
+      "server/test/campaigns.test.ts",
+      "server/test/campaigns-s2.test.ts",
+      "server/test/brandResources.test.ts",
+      "server/test/academy.test.ts",
+      "server/test/adminAcademy.test.ts",
+      "server/test/academy-seed.test.ts",
+-     "server/test/publication-proof-review-live.test.ts",
+    ],
+    Object {
+      "cwd": "C:/repo",
+      "env": Object {
+        "INTEGRATION_RUNNER": "1",
+        "INTEGRATION_TARGET_IDENTITY_JSON": "{\"disposable\":true,\"ownerAuthorization\":\"synthetic-owner-approval\",\"projectId\":\"synthetic-project\",\"runId\":\"synthetic-run\",\"proxy\":\"none\",\"apiContainerId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"databaseContainerId\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"networkId\":\"synthetic-network\",\"apiImageId\":\"sha256:synthetic-api\",\"databaseImageId\":\"sha256:synthetic-db\",\"apiPort\":54321}",
+        "PRESERVE_ME": "yes",
+        "RUN_INTEGRATION": "1",
+        "SUPABASE_ANON_KEY": "anon-key",
+        "SUPABASE_SERVICE_KEY": "service-key",
+        "SUPABASE_URL": "http://127.0.0.1:54321",
+      },
+      "stdio": "inherit",
+    },
+  ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > integration test launcher > keeps the complete ordered integration file list unique
+AssertionError: expected [ 'server/test/rls.test.ts', …(38) ] to deeply equal [ 'server/test/rls.test.ts', …(39) ]
+
+- Expected
++ Received
+
+  Array [
+    "server/test/rls.test.ts",
+    "server/test/bootstrap.test.ts",
+    "server/test/onboarding.test.ts",
+    "server/test/missions.test.ts",
+    "server/test/admin.test.ts",
+    "server/test/admin-staff.test.ts",
+    "server/test/redemption.test.ts",
+    "server/test/wallet.test.ts",
+    "server/test/me.test.ts",
+    "server/test/leveling.test.ts",
+    "server/test/passport.test.ts",
+    "server/test/match.test.ts",
+    "server/test/copilot.test.ts",
+    "server/test/applications.test.ts",
+    "server/test/social-schema.test.ts",
+    "server/test/social.test.ts",
+    "server/test/verificationGate.test.ts",
+    "server/test/public-passport.test.ts",
+    "server/test/cron-social-refresh.test.ts",
+    "server/test/operator-crm-schema.test.ts",
+    "server/test/operator-crm.test.ts",
+    "server/test/assistant.test.ts",
+    "server/test/adminContent.test.ts",
+    "server/test/content.test.ts",
+    "server/test/active-mission-schema.test.ts",
+    "server/test/active-missions.test.ts",
+    "server/test/reward-contracts.test.ts",
+    "server/test/reward-handoffs.test.ts",
+    "server/test/notifications-triggers.test.ts",
+    "server/test/notifications-api.test.ts",
+    "server/test/insights.test.ts",
+    "server/test/radar.test.ts",
+    "server/test/brand.test.ts",
+    "server/test/campaigns.test.ts",
+    "server/test/campaigns-s2.test.ts",
+    "server/test/brandResources.test.ts",
+    "server/test/academy.test.ts",
+    "server/test/adminAcademy.test.ts",
+    "server/test/academy-seed.test.ts",
+-   "server/test/publication-proof-review-live.test.ts",
+  ]
+
+ ❯ server/test/run-integration-tests.test.ts:122:37
+    120|   it("keeps the complete ordered integration file list unique", () => {
+    121|     expect(runner.publicationProofPreflightFile).toBe("server/test/pub…
+    122|     expect(runner.integrationFiles).toEqual(expectedIntegrationFiles);
+       |                                     ^
+    123|     expect(new Set(runner.integrationFiles).size).toBe(expectedIntegra…
+    124|     const activeMissionsIndex = runner.integrationFiles.indexOf("serve…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > integration test launcher > spawns local Vitest with the exact environment and preserves numeric exit codes
+AssertionError: expected "spy" to be called with arguments: [ 'C:/node/node.exe', …(2) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    "C:/node/node.exe",
+    Array [
+-     StringMatching /node_modules[\\/]vitest[\\/]vitest\.mjs$/,
++     "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\node_modules\\vitest\\vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "server/test/rls.test.ts",
+      "server/test/bootstrap.test.ts",
+      "server/test/onboarding.test.ts",
+      "server/test/missions.test.ts",
+      "server/test/admin.test.ts",
+      "server/test/admin-staff.test.ts",
+      "server/test/redemption.test.ts",
+      "server/test/wallet.test.ts",
+      "server/test/me.test.ts",
+      "server/test/leveling.test.ts",
+      "server/test/passport.test.ts",
+      "server/test/match.test.ts",
+      "server/test/copilot.test.ts",
+      "server/test/applications.test.ts",
+      "server/test/social-schema.test.ts",
+      "server/test/social.test.ts",
+      "server/test/verificationGate.test.ts",
+      "server/test/public-passport.test.ts",
+      "server/test/cron-social-refresh.test.ts",
+      "server/test/operator-crm-schema.test.ts",
+      "server/test/operator-crm.test.ts",
+      "server/test/assistant.test.ts",
+      "server/test/adminContent.test.ts",
+      "server/test/content.test.ts",
+      "server/test/active-mission-schema.test.ts",
+      "server/test/active-missions.test.ts",
+      "server/test/reward-contracts.test.ts",
+      "server/test/reward-handoffs.test.ts",
+      "server/test/notifications-triggers.test.ts",
+      "server/test/notifications-api.test.ts",
+      "server/test/insights.test.ts",
+      "server/test/radar.test.ts",
+      "server/test/brand.test.ts",
+      "server/test/campaigns.test.ts",
+      "server/test/campaigns-s2.test.ts",
+      "server/test/brandResources.test.ts",
+      "server/test/academy.test.ts",
+      "server/test/adminAcademy.test.ts",
+      "server/test/academy-seed.test.ts",
+-     "server/test/publication-proof-review-live.test.ts",
+    ],
+    Object {
+      "cwd": "C:/repo",
+      "env": Object {
+        "INTEGRATION_RUNNER": "1",
+        "INTEGRATION_TARGET_IDENTITY_JSON": "{\"disposable\":true,\"ownerAuthorization\":\"synthetic-owner-approval\",\"projectId\":\"synthetic-project\",\"runId\":\"synthetic-run\",\"proxy\":\"none\",\"apiContainerId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"databaseContainerId\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"networkId\":\"synthetic-network\",\"apiImageId\":\"sha256:synthetic-api\",\"databaseImageId\":\"sha256:synthetic-db\",\"apiPort\":54321}",
+        "PRESERVE_ME": "yes",
+        "RUN_INTEGRATION": "1",
+        "SUPABASE_ANON_KEY": "anon-key",
+        "SUPABASE_SERVICE_KEY": "service-key",
+        "SUPABASE_URL": "http://127.0.0.1:54321",
+      },
+      "stdio": "inherit",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ server/test/run-integration-tests.test.ts:154:25
+    152|       },
+    153|     );
+    154|     expect(h.spawnImpl).toHaveBeenCalledWith(
+       |                         ^
+    155|       "C:/node/node.exe",
+    156|       [expect.stringMatching(/node_modules[\\/]vitest[\\/]vitest\.mjs$…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 passed (6)
+   Start at  03:28:51
+   Duration  2.21s (transform 79ms, setup 410ms, collect 57ms, tests 20ms, environment 1.03s, prepare 223ms)
+

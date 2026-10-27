@@ -1,0 +1,96 @@
+{
+  "priorSourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "priorRecords": 1500,
+  "priorByteUnchanged": 1486,
+  "changedPriorPaths": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/D19-C1-case-coverage.json",
+    "docs/verification/D19-C1-changed-files.json",
+    "docs/verification/D19-C1-delivery.json",
+    "docs/verification/D19-C1-delivery.md",
+    "docs/verification/D19-C1-gates.json",
+    "docs/verification/D19-C1-integrity.json",
+    "docs/verification/D19-C1-remaining-acceptance.json",
+    "docs/verification/D19-C1-rollback.json",
+    "docs/verification/D19-C1-schema-diff.json",
+    "docs/verification/implementation_backlog.csv"
+  ],
+  "beforeCopies": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/adfocate-delivery.json",
+      "beforeSha256": "4ebedf2d2407e3da9bce2eb2e23a2f2517bf8b3120a97d98ded228045957173c"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/adfocate-task-ledger.md",
+      "beforeSha256": "9c1570ce122a46ed32a6160f2f1b6411eca985631930cf2405759532bb92e824"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/audit_case_coverage.csv",
+      "beforeSha256": "a44cdceb99341129fffffaa2589a9e0419a67ee78ea540bce242f6bf3202e2d9"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/code-fingerprint.json",
+      "beforeSha256": "c5a5ecc30f2e96c3b0a3627b6f7432fc8a1baea771779e4308ff9dd2fc691ed8"
+    },
+    {
+      "path": "docs/verification/D19-C1-case-coverage.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-case-coverage.json",
+      "beforeSha256": "2db623e08ed0b4307092fcad79dddcbbfafebd97884059f676b59b3233e5c997"
+    },
+    {
+      "path": "docs/verification/D19-C1-changed-files.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-changed-files.json",
+      "beforeSha256": "09c82094abc8e9a6d762351467e6c463314a0cecf0c2453d43bec11e0b2ab279"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/D19-C1-delivery.json",
+      "beforeSha256": "d96a47e47251a3b284132423607db7c9fdd583b2dc5b733b910a94ba2429579c"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-delivery.md",
+      "beforeSha256": "16a7f0844a2f416126023c0ffd6402f68c1184c6a744761bc3cc1dccfbab11f0"
+    },
+    {
+      "path": "docs/verification/D19-C1-gates.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-gates.json",
+      "beforeSha256": "dc71ed79846f2d936f5d478722b59d5305fa0a557d03684a903e1a0a06fd852f"
+    },
+    {
+      "path": "docs/verification/D19-C1-integrity.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/D19-C1-integrity.json",
+      "beforeSha256": "652692cf34b08fff5bdda9fcba8dd20fd109e517f6ab9eed4a62a9783f7c2728"
+    },
+    {
+      "path": "docs/verification/D19-C1-remaining-acceptance.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-remaining-acceptance.json",
+      "beforeSha256": "e6c165d6eaee3e33e1d02eb2034c66ec122e654b1e283f8b4d3e4cfe6078e98a"
+    },
+    {
+      "path": "docs/verification/D19-C1-rollback.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-rollback.json",
+      "beforeSha256": "b1afc7e0c847c6c86f3fee26dbfc885d424f55538f6586b8f0cc35d9bd581869"
+    },
+    {
+      "path": "docs/verification/D19-C1-schema-diff.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-schema-diff.json",
+      "beforeSha256": "cfbebd891d971270d2c07610fbcd91e81f2fe4e027c6df1f84d3d013c9ed9c44"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before/implementation_backlog.csv",
+      "beforeSha256": "0555248ee98f97f4a8b31cd3d1ff3175f0f9f971e594ecfb044d826f35a37e1a"
+    }
+  ],
+  "noPriorEvidenceFileMissing": true,
+  "originalRuntimeFailureAndOriginManifestNotOverwritten": true
+}

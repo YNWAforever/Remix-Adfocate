@@ -1,0 +1,389 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runs": [
+    {
+      "runId": "30060b6c-6d8d-4c01-bdd8-02302171c4fc",
+      "workspaceIds": [
+        "2e443f31-abf9-48fb-b7d5-bab86bf5e01c",
+        "79a3e745-2f37-4eb4-9ed0-bdfc3bd1ed92"
+      ],
+      "authIds": [
+        "e22f424e-90e3-42ca-a963-97701d073753",
+        "1341fce1-5d97-4d3a-9052-2c81ccdab8a7",
+        "1ebd2925-b913-4128-be88-16a68982dcf9",
+        "49ad4f87-fcc9-4892-8cb3-6aa64631169f"
+      ],
+      "missionIds": [],
+      "socialIds": [],
+      "mediaIds": [],
+      "storageObjects": [],
+      "completedChecks": []
+    },
+    {
+      "runId": "925b704f-9a4e-4660-b527-e0e82f3868ab",
+      "workspaceIds": [
+        "5ae8e368-a88a-43f5-a9ad-e9241e7213c9",
+        "4281854e-5cfa-4413-aa6c-8ab3005da307"
+      ],
+      "authIds": [
+        "d4780f65-0ae1-4e91-b8d6-630129ce092c",
+        "f3a5fd44-bfb5-4c28-9682-8ef078cbdf88",
+        "40f2046a-2eab-4bc6-ad0a-da35c032a81d",
+        "4ecebad3-43e8-433d-8a64-ba1c4d3bd18c",
+        "780c00a5-a7f9-4a83-a6a2-8c48f1837ac4"
+      ],
+      "missionIds": [
+        "4b6a1639-c500-4a27-803e-f37224855834"
+      ],
+      "socialIds": [
+        "a3454a3d-8897-4c40-a807-0e2a120483a5",
+        "a251776f-2cc2-4928-8fbe-292dd2300fe2",
+        "a136ee2b-b9c0-463f-a778-42d27dc3ae13"
+      ],
+      "mediaIds": [
+        "98f66429-1a88-4127-b1db-3d01149c54f7",
+        "a9b02385-139a-418c-878d-df0468250d7e"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "d4780f65-0ae1-4e91-b8d6-630129ce092c/eb97851a-f394-4c81-86b1-b8e75650414f.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated"
+      ]
+    },
+    {
+      "runId": "481c3085-8e84-4d60-8f47-54dbad3f1de5",
+      "workspaceIds": [
+        "72923d25-9143-45b9-a756-91ca86b59055",
+        "27cce1a0-2ff4-4a86-b73a-b0371fd88ae5"
+      ],
+      "authIds": [
+        "2dc7839c-61ea-44ba-90ab-b67662277555",
+        "c2b64925-7baa-4d4a-8a48-b81b1005a2f0",
+        "bfd10fa6-4594-4161-a29b-2443d0967aee",
+        "56e87ecd-5bcd-47cb-b50b-c0e61c01dcbd"
+      ],
+      "missionIds": [],
+      "socialIds": [],
+      "mediaIds": [],
+      "storageObjects": [],
+      "completedChecks": []
+    },
+    {
+      "runId": "07015649-7c1d-4879-96cc-93498de760e9",
+      "workspaceIds": [
+        "aa5dfac3-bab6-428c-958b-99481168394d",
+        "3d650676-324b-4eff-b6b6-a9593c53f688"
+      ],
+      "authIds": [
+        "63e7daee-386b-4416-b683-c5a3a2cfe175",
+        "05726265-0732-4e50-85dc-38b7476339d7",
+        "25ef3ea9-888b-4659-a3dc-a6abe06cf132",
+        "5e8af4a3-b70f-4465-b777-276206e9be4f",
+        "2eec86b9-ae27-4b3a-9c62-2b69401b208f"
+      ],
+      "missionIds": [
+        "564520e4-17a2-4081-83ed-9320272f89d4"
+      ],
+      "socialIds": [
+        "4ac4510c-0d99-4ea8-bd7d-e06289858383",
+        "52ef5dbd-0695-4d6e-95d5-56f2c327fa5e",
+        "fb0f5852-d19f-4ad3-b669-1f643085f39f"
+      ],
+      "mediaIds": [
+        "f96edea9-913b-4bfe-874c-22528c5bd0e5",
+        "c0201253-e95c-48f9-a77e-4bfc0d9eba07"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "63e7daee-386b-4416-b683-c5a3a2cfe175/e5f9ede8-a5d0-4532-a864-901102bc74ed.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "b0957530-f063-4484-a2db-380ba3f3f7d2",
+      "workspaceIds": [
+        "be4117b6-bb87-4024-8418-0c64fb6913e1",
+        "ac4580ce-c2e5-43a5-a9a0-c8f443961bf4"
+      ],
+      "authIds": [
+        "edb63445-4da6-49b7-ba6b-fd81d19d28f5",
+        "1bb2511e-d9c7-4ee2-a3c3-859bbec3261f",
+        "519ded3c-ec7f-4646-9900-aa39a3516b4d",
+        "79057152-b505-409d-95c0-41cb1c44b554",
+        "18661e19-196f-4027-b555-10c804d768d7"
+      ],
+      "missionIds": [
+        "d1e1ff4d-62de-4052-aaad-c6c4daca051f"
+      ],
+      "socialIds": [
+        "5e92c76c-8c96-4234-a78f-6f7740ca5d46",
+        "156c9f85-f654-4be3-b686-9b055179eca1",
+        "1eb5f1d5-227b-4059-9725-49e91c7bd765"
+      ],
+      "mediaIds": [
+        "ffe4caa2-00d5-4a32-b267-47f22bdd9a83",
+        "20121fe7-9ab8-47aa-af3a-c8347c8e77a8"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "edb63445-4da6-49b7-ba6b-fd81d19d28f5/151a54e8-7015-4f33-b5d2-2971f40a8fbd.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "aec07ec1-8341-4ef5-ac91-88f30af3f5b0",
+      "workspaceIds": [
+        "e0b71427-492f-4a3b-9583-5100e6ec7b92",
+        "de113b51-aef0-4777-a26f-aa002dd97813"
+      ],
+      "authIds": [
+        "d24c5976-ce40-4f14-a91c-800c2247fedf",
+        "17195b69-b2f7-4452-af0d-3e21f7ba46b9",
+        "135157cc-0b8b-4e97-a83e-c429b77e2c96",
+        "d49abeed-aa6f-4dac-a4a7-692c6bc688bf",
+        "98c674ad-adc9-488f-ae78-5c1ac8561eff"
+      ],
+      "missionIds": [
+        "297cbed3-48e9-4937-a2cc-a85cc70c05b1"
+      ],
+      "socialIds": [
+        "d993f11d-48f3-4997-a437-f5d45194da96",
+        "7cbf1f59-5f0c-4324-a26e-336b11c634a4",
+        "ef73f79e-e483-47ca-a1a8-9a0d2a93e49c"
+      ],
+      "mediaIds": [
+        "39ef636e-b7e5-4866-92a7-30a0f632cf29",
+        "09d6777d-0a99-4017-b1b0-12377bedd7ce"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "d24c5976-ce40-4f14-a91c-800c2247fedf/2296b06d-4a34-4791-aa02-bb0cecc49d52.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "775d3c10-6900-4f17-a0c0-b2662d3fdfff",
+      "workspaceIds": [
+        "1fa2a396-3455-4ce7-97ec-b122da0b409e",
+        "e207b7ec-d43a-40b2-b471-3dcf8fe2e1a4"
+      ],
+      "authIds": [
+        "41c1905d-5998-4837-b3fe-da3580c0c8a6",
+        "3424511a-8269-42b1-8ac0-a4e646c6f335",
+        "e4829e77-a286-44c5-a873-2706b139b264",
+        "c5aef2d5-42a1-4180-ab42-7dca68f4c1be",
+        "a81f8b5e-02b4-42ca-a9e8-d96eaafc6b3f"
+      ],
+      "missionIds": [
+        "3b5dfbf0-9307-431d-87df-47946006de94"
+      ],
+      "socialIds": [
+        "0cdad041-8384-4457-92b9-d3f7b92b075e",
+        "18316f52-ae73-4911-aba0-c65999ba917e",
+        "4b37275c-d4af-43ff-8162-daa6474fc064"
+      ],
+      "mediaIds": [
+        "7be4c9df-9406-4c66-a8d0-ac2d42427f7f",
+        "414226a8-c226-4286-abff-b360c6efdca3"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "41c1905d-5998-4837-b3fe-da3580c0c8a6/df2d488a-9fed-47c0-8694-eea83e15989a.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "bda2c29b-f94c-4284-8a65-dee8fc8aef5c",
+      "workspaceIds": [
+        "953f4cef-87fe-479e-90f6-41cd2517a6dc",
+        "24e1ef28-b693-42b2-9507-4e3dfc54ab4f"
+      ],
+      "authIds": [
+        "94adeda8-312d-412b-abbb-c28d25c7848a",
+        "879f535b-83a2-4928-bb67-cb36f1f4975e",
+        "2d821a7b-431c-463e-af88-14b8c01448bf",
+        "77fd213a-f8cf-45cb-8717-dda3470afc66",
+        "89cdc2ea-a334-4f3f-a170-6c8a7abfc1f4"
+      ],
+      "missionIds": [
+        "7e7c7c58-0470-42c5-9317-7703e5eb839f"
+      ],
+      "socialIds": [
+        "54539a71-193a-47eb-99d4-53e3c5d775f3",
+        "ca344895-6649-4637-b6ff-cef8569c14a3",
+        "2c7ea9ef-475c-40ce-a666-754123992c7a"
+      ],
+      "mediaIds": [
+        "2093bf85-338f-4cc5-a269-6da2175f734f",
+        "bd3fa481-1233-417f-bc49-d3b498fd41af"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "94adeda8-312d-412b-abbb-c28d25c7848a/bc4dad4a-c346-4795-a1ab-7c6d23c6e733.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "5245a469-295c-4b14-8abf-ef325c64e8d9",
+      "workspaceIds": [
+        "8dcc00aa-c31a-4fd7-8226-3d91d8079514",
+        "338112f4-080f-493b-9474-c76404bfbc8a"
+      ],
+      "authIds": [
+        "017f18e1-5b2b-4001-a410-4cdd7b9cb66a",
+        "664ae32f-a17e-48d6-8284-d614a9a1dd35",
+        "69a7a50d-39cf-47a1-b9ae-edbb8bf427fe",
+        "cdbb81ca-5f42-449d-aa82-807d885e6ce5",
+        "5a92cded-1b63-4b8f-ae0f-b0912a228329"
+      ],
+      "missionIds": [
+        "e844569d-4888-4081-a238-9a1ee61827d6"
+      ],
+      "socialIds": [
+        "bd10515a-c518-46d4-85cc-d66ca37ac57d",
+        "fd4e51ae-6587-4a64-89e0-9763dc6c408a",
+        "70ac3781-8e54-49ab-8d5e-3922869cf494"
+      ],
+      "mediaIds": [
+        "bfd63784-27de-4c29-bdcb-a89ada1ac3d4",
+        "febf6503-1edd-4019-96a6-7efd74192415"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "017f18e1-5b2b-4001-a410-4cdd7b9cb66a/63f8541c-71ed-486a-ac2b-507a42be5cca.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    },
+    {
+      "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+      "workspaceIds": [
+        "92b65ea4-af3a-4619-8b4d-ee2de8aa6dd5",
+        "4fbe6ffd-03a1-477e-8f84-bf07388d5ea3"
+      ],
+      "authIds": [
+        "e043d2e5-121c-4099-80b8-0402b9d1a2cf",
+        "5dc7991e-0b71-462d-ac00-3016cfa312a4",
+        "7725e8ba-dd7f-4eb5-a959-25692bb12df1",
+        "8ee6e940-a1a3-4ad7-b973-d73a31b20dd3",
+        "4f57e3da-4312-47ab-afd4-92999eebd858"
+      ],
+      "missionIds": [
+        "131a2916-5d6e-47d2-95d2-5c9b722d5afa"
+      ],
+      "socialIds": [
+        "29754d3f-955e-49d5-8172-9e204997faa9",
+        "cddf2ff1-9aa6-4a9f-96d8-a592bba65888",
+        "9e0f7ecb-0eab-49d2-ac57-d7690a8657ac"
+      ],
+      "mediaIds": [
+        "df2e0739-5794-449b-a096-d24f244506e4",
+        "06fce484-3040-4289-8ac3-ee3975f6ba82"
+      ],
+      "storageObjects": [
+        {
+          "bucket": "creator-avatars",
+          "path": "e043d2e5-121c-4099-80b8-0402b9d1a2cf/ff08a623-52a8-406d-93ec-3bc7a49522d2.png"
+        }
+      ],
+      "completedChecks": [
+        "profile-passport-projection",
+        "profile-unrelated-edit-preserves-canonical-and-legacy",
+        "foreign-account-and-rls-denied",
+        "onboarding-resume-and-unique-welcome",
+        "real-auth-non-enumerating-errors",
+        "real-auth-single-use-and-expiry",
+        "real-recovery-password-updated",
+        "owned-media-public-minimization-and-revoke"
+      ]
+    }
+  ],
+  "cleanup": "not-run; exact IDs retained; no blanket delete, reset or shared seed"
+}

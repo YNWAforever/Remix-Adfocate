@@ -1,0 +1,16 @@
+{
+  "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+  "missionId": "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+  "unknownPolicy": {
+    "screenshots": 1,
+    "legacy_review": {
+      "modes": [
+        "owner",
+        2
+      ],
+      "manual": true
+    }
+  },
+  "savedAndReloaded": true,
+  "noRuleDeleted": true
+}

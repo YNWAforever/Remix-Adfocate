@@ -1,0 +1,399 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T09:37:21.088Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T09:37:21.383Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T09:37:21.697Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T09:37:21.974Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lists actual published lessons and a saved-progress total, never infers four lessons from metadata
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T09:37:23.369Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lists actual published lessons and a saved-progress total, never infers four lessons from metadata
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T09:37:23.467Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lists actual published lessons and a saved-progress total, never infers four lessons from metadata
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T09:37:23.477Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T09:37:23.503Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T09:37:23.568Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T09:37:23.578Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T09:37:23.593Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-23T09:37:23.677Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > lets the existing operator create and reload a lesson draft with real fixture body
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-23T09:37:23.697Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > withholds locked overview bodies and rejects locked lesson reads at the API boundary
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-23T09:37:23.708Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > withholds locked overview bodies and rejects locked lesson reads at the API boundary
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-23T09:37:23.873Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > withholds locked overview bodies and rejects locked lesson reads at the API boundary
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-23T09:37:23.909Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > withholds locked overview bodies and rejects locked lesson reads at the API boundary
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-23T09:37:23.982Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > withholds locked overview bodies and rejects locked lesson reads at the API boundary
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-23T09:37:23.988Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-23T09:37:23.995Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-23T09:37:24.041Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-23T09:37:24.046Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-23T09:37:24.069Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-23T09:37:24.111Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > never shows draft lessons to a Creator, including direct RLS reads and completion
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-23T09:37:24.116Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-23T09:37:24.123Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-23T09:37:24.158Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-23T09:37:24.163Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-23T09:37:24.171Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-23T09:37:24.207Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-23T09:37:24.212Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-23T09:37:24.221Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-23T09:37:24.257Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-23T09:37:24.262Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-23T09:37:24.300Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-23T09:37:24.305Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-23T09:37:24.311Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-23T09:37:24.350Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-23T09:37:24.356Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-23T09:37:24.365Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-23T09:37:24.405Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-23T09:37:24.410Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-23T09:37:24.418Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-23T09:37:24.455Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-23T09:37:24.460Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-23T09:37:24.468Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-23T09:37:24.504Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-23T09:37:24.508Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-23T09:37:24.516Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-23T09:37:24.558Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-23T09:37:24.563Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-23T09:37:24.571Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-23T09:37:24.572Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-23T09:37:24.573Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-23T09:37:24.574Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-23T09:37:24.638Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-23T09:37:24.640Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:57 (2.108.1) 2026-10-23T09:37:24.642Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:58 (2.108.1) 2026-10-23T09:37:24.644Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:59 (2.108.1) 2026-10-23T09:37:24.646Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:60 (2.108.1) 2026-10-23T09:37:24.648Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:61 (2.108.1) 2026-10-23T09:37:24.650Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:62 (2.108.1) 2026-10-23T09:37:24.658Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:63 (2.108.1) 2026-10-23T09:37:24.668Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:64 (2.108.1) 2026-10-23T09:37:24.730Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:65 (2.108.1) 2026-10-23T09:37:24.746Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:66 (2.108.1) 2026-10-23T09:37:24.764Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:67 (2.108.1) 2026-10-23T09:37:24.825Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > four concurrent completion requests and replay create one durable completion; refresh reads 1/2
+GoTrueClient@sb-127-auth-token:68 (2.108.1) 2026-10-23T09:37:24.840Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > the other Creator has 0/2 and cannot read or forge the first Creator's progress
+GoTrueClient@sb-127-auth-token:69 (2.108.1) 2026-10-23T09:37:24.871Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > the other Creator has 0/2 and cannot read or forge the first Creator's progress
+GoTrueClient@sb-127-auth-token:70 (2.108.1) 2026-10-23T09:37:24.944Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > the other Creator has 0/2 and cannot read or forge the first Creator's progress
+GoTrueClient@sb-127-auth-token:71 (2.108.1) 2026-10-23T09:37:24.962Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > the other Creator has 0/2 and cannot read or forge the first Creator's progress
+GoTrueClient@sb-127-auth-token:72 (2.108.1) 2026-10-23T09:37:25.009Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > the other Creator has 0/2 and cannot read or forge the first Creator's progress
+GoTrueClient@sb-127-auth-token:73 (2.108.1) 2026-10-23T09:37:25.071Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:74 (2.108.1) 2026-10-23T09:37:25.133Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:75 (2.108.1) 2026-10-23T09:37:25.178Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:76 (2.108.1) 2026-10-23T09:37:25.195Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:77 (2.108.1) 2026-10-23T09:37:25.214Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:78 (2.108.1) 2026-10-23T09:37:25.257Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:79 (2.108.1) 2026-10-23T09:37:25.262Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:80 (2.108.1) 2026-10-23T09:37:25.275Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:81 (2.108.1) 2026-10-23T09:37:25.335Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:82 (2.108.1) 2026-10-23T09:37:25.351Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:83 (2.108.1) 2026-10-23T09:37:25.402Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:84 (2.108.1) 2026-10-23T09:37:25.460Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS
+GoTrueClient@sb-127-auth-token:85 (2.108.1) 2026-10-23T09:37:25.474Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:86 (2.108.1) 2026-10-23T09:37:25.494Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:87 (2.108.1) 2026-10-23T09:37:25.538Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:88 (2.108.1) 2026-10-23T09:37:25.551Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:89 (2.108.1) 2026-10-23T09:37:25.572Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:90 (2.108.1) 2026-10-23T09:37:25.611Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > new content remains a draft while the published version and its progress stay unchanged
+GoTrueClient@sb-127-auth-token:91 (2.108.1) 2026-10-23T09:37:25.630Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:92 (2.108.1) 2026-10-23T09:37:25.652Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:93 (2.108.1) 2026-10-23T09:37:25.698Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:94 (2.108.1) 2026-10-23T09:37:25.707Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:95 (2.108.1) 2026-10-23T09:37:25.714Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:96 (2.108.1) 2026-10-23T09:37:25.770Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:97 (2.108.1) 2026-10-23T09:37:25.787Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:98 (2.108.1) 2026-10-23T09:37:25.805Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:99 (2.108.1) 2026-10-23T09:37:25.863Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:100 (2.108.1) 2026-10-23T09:37:25.877Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:101 (2.108.1) 2026-10-23T09:37:25.895Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:102 (2.108.1) 2026-10-23T09:37:25.954Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:103 (2.108.1) 2026-10-23T09:37:25.969Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:104 (2.108.1) 2026-10-23T09:37:25.988Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:105 (2.108.1) 2026-10-23T09:37:26.039Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions
+GoTrueClient@sb-127-auth-token:106 (2.108.1) 2026-10-23T09:37:26.046Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:107 (2.108.1) 2026-10-23T09:37:26.065Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:108 (2.108.1) 2026-10-23T09:37:26.114Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:109 (2.108.1) 2026-10-23T09:37:26.119Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:110 (2.108.1) 2026-10-23T09:37:26.154Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:111 (2.108.1) 2026-10-23T09:37:26.172Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:112 (2.108.1) 2026-10-23T09:37:26.188Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:113 (2.108.1) 2026-10-23T09:37:26.239Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:114 (2.108.1) 2026-10-23T09:37:26.251Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:115 (2.108.1) 2026-10-23T09:37:26.315Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > rejects stale author revisions and Creator writes without overwriting content
+GoTrueClient@sb-127-auth-token:116 (2.108.1) 2026-10-23T09:37:26.328Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:117 (2.108.1) 2026-10-23T09:37:26.347Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:118 (2.108.1) 2026-10-23T09:37:26.394Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:119 (2.108.1) 2026-10-23T09:37:26.405Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:120 (2.108.1) 2026-10-23T09:37:26.425Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:121 (2.108.1) 2026-10-23T09:37:26.466Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:122 (2.108.1) 2026-10-23T09:37:26.483Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:123 (2.108.1) 2026-10-23T09:37:26.502Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:124 (2.108.1) 2026-10-23T09:37:26.560Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:125 (2.108.1) 2026-10-23T09:37:26.592Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:126 (2.108.1) 2026-10-23T09:37:26.636Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:127 (2.108.1) 2026-10-23T09:37:26.653Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:128 (2.108.1) 2026-10-23T09:37:26.658Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:129 (2.108.1) 2026-10-23T09:37:26.701Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-academy-progress.test.ts > D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators
+GoTrueClient@sb-127-auth-token:130 (2.108.1) 2026-10-23T09:37:26.715Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-academy-progress.test.ts (12 tests) 6967ms
+   ✓ D15 owned Academy learning > requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay 449ms
+   ✓ D15 owned Academy learning > raw XP without owner verification stays locked through API and direct lesson RLS 361ms
+   ✓ D15 owned Academy learning > publishing v2 preserves the old completion timestamp and counts only current versions 414ms
+   ✓ D15 owned Academy learning > published lesson snapshots under a draft parent stay hidden from Creators 386ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  17:37:19
+   Duration  7.90s (transform 692ms, setup 144ms, collect 27ms, tests 6.97s, environment 487ms, prepare 92ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D15-api-current.json

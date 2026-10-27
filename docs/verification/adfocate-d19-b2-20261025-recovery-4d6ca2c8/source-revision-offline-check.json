@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-25T06:48:00.368308+00:00",
+  "manifest": "D19-C1-source-revision-runtime-manifest.json",
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "runtimeApproved": false,
+  "originalC1AllocationApproved": true,
+  "originalManifestPreserved": true,
+  "profileDigestUnchanged": true,
+  "migrationsUnchanged": 72,
+  "fixtureUuidNamespaceAndCapsUnchanged": true,
+  "additionalResources": 0,
+  "approvalTemplateApproved": false,
+  "checks": "offline only; no Docker/SQL/client/fixtures; real read-only evidence stored separately",
+  "changedSourceFiles": 3
+}

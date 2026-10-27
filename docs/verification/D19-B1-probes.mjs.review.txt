@@ -1,0 +1,27 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import process from 'node:process';
+const identity=JSON.parse(readFileSync('docs/verification/D19-incident-A-identity.json','utf8')).expectedIdentity;
+const env={...process.env,SUPABASE_URL:'http://127.0.0.1:56521',SUPABASE_SERVICE_KEY:'synthetic-policy-probe',SUPABASE_ANON_KEY:'synthetic-policy-probe',INTEGRATION_TARGET_IDENTITY_JSON:JSON.stringify(identity)};
+for(const name of Object.keys(env))if(/OPENAI|OPENROUTER|ANTHROPIC|GEMINI|RESEND|TWILIO|WHATSAPP|SMTP|SENDGRID|NODE_OPTIONS|PRISTINE|MUTATION_OWNERSHIP/.test(name))env[name]='';
+const cases=[
+ ['generic-launcher',['scripts/run-integration-tests.mjs']],
+ ['support-launcher',['scripts/audit/run-pilot-support.mjs']],
+ ['support-fresh-mode',['scripts/audit/run-pilot-support.mjs','--fresh']],
+ ['fresh-setup-entry',['scripts/audit/fresh-support.mjs']],
+ ['shared-target-helper',['--input-type=module','-e',"import {verifiedTarget} from './scripts/audit/local-targets.mjs';verifiedTarget('shaped');"]],
+];
+const results=[];
+for(const[label,args]of cases){
+ const receipt=`.codex-tmp/D19-B1-probe-${label}.json`;
+ const command=['--import','./.codex-tmp/D19-B1-probe-preload.mjs',...args];
+ const result=spawnSync(process.execPath,command,{env:{...env,D19_B1_PROBE_RECEIPT:receipt},encoding:'utf8',timeout:15000});
+ const text=(result.stdout??'')+(result.stderr??'');
+ writeFileSync(`.codex-tmp/D19-B1-probe-${label}.log`,text);
+ const observed=JSON.parse(readFileSync(receipt,'utf8'));
+ const passed=result.status===1&&/B1: retired target is forensics-only/.test(text)&&observed.attempts.length===0&&observed.subprocessesOrFetchExecuted===0;
+ results.push({label,command:['node',...command],exit:result.status,expectedRefusal:true,passed,...observed});
+ if(!passed)throw Error('Negative CLI probe failed: '+label);
+}
+writeFileSync('.codex-tmp/D19-B1-cli-probes.json',JSON.stringify({type:'OFFLINE_NEGATIVE_ENTRYPOINT_PROBES_NOT_INTEGRATION',actualDockerApiSqlCalls:0,clientOrFixtureSetupReached:false,results},null,2)+'\n');
+console.log(JSON.stringify({negativeEntryPoints:results.length,passed:results.filter(r=>r.passed).length,actualDockerApiSqlCalls:0,newFixtures:0}));

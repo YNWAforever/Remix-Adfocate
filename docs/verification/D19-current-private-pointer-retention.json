@@ -1,0 +1,13 @@
+{
+  "priorPrivatePointersVerified": 6,
+  "restoredNames": [
+    "D19-fixture.private.json",
+    "D19-role-fixture.private.json",
+    "D19-core-fixture.private.json",
+    "D19-browser-fixture.private.json",
+    "D19-browser-journey-results.private.json",
+    "D19-browser-roles-results.private.json"
+  ],
+  "currentPrivateFixtures": "D19-current-{role,core,browser}-fixture.private.json; private values never exported",
+  "originalPrivateValuesPrinted": false
+}

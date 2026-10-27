@@ -1,0 +1,13 @@
+{
+  "classifiedTestFixtureFalsePositives": [
+    {
+      "path": "docs/verification/logs/diff-check.log",
+      "line": 163222,
+      "matchSha256": "5f7a91dd0f99f3c4b66a17671de4de9947b107918dffe1b3a3e45940101523a7",
+      "classification": "known static API-key redaction test fixture; not a credential",
+      "source": "scripts/release/evidence.test.ts",
+      "originalLogPreserved": true
+    }
+  ],
+  "rawCredentialsInNewEvidence": false
+}

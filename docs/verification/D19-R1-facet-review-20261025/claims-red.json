@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "docs/verification/D19-R1-facet-review-20261025/verify-facets.py",
+    "--claims"
+  ],
+  "exit": 1,
+  "stdout": {
+    "status": "FAIL_OVERBROAD_CASE_LABELS",
+    "cases": [
+      "UC-A11",
+      "UC-A14",
+      "UC-C29",
+      "UC-S01"
+    ],
+    "missingExplicitPartialLabel": [
+      "UC-C29",
+      "UC-A11",
+      "UC-A14",
+      "UC-S01"
+    ],
+    "actualTargetCalls": 0
+  },
+  "stderr": "",
+  "classification": "Expected documentation regression: four current full-case labels lack explicit partial/unverified qualifier."
+}

@@ -1,0 +1,104 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-legacy-evidence.test.ts (7 tests | 7 failed) 11ms
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: %j 7ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "wwww" 1ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "/relative" 0ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "javascript:alert(1)" 0ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "https://name:secret@example.test/a" 0ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "https://example.test/a" 0ms
+     → expected null to match object { message: 'invalid_evidence' }
+   × legacy evidence format at the server boundary (offline) > submits a trimmed, deduplicated valid set without losing all-or-nothing validation 2ms
+     → expected "spy" to be called with arguments: [ 'submit_mission', …(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    "submit_mission",
+    Object {
++     "p_data": Object {},
+      "p_mission": "mission",
+      "p_urls": Array [
++       " https://example.test/work ",
+        "https://example.test/work",
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: %j
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "wwww"
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "/relative"
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "javascript:alert(1)"
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "https://name:secret@example.test/a"
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > rejects invalid or mixed evidence before the RPC: "https://example.test/a"
+AssertionError: expected null to match object { message: 'invalid_evidence' }
+
+- Expected: 
+Object {
+  "message": "invalid_evidence",
+}
+
++ Received: 
+null
+
+ ❯ server/test/audit-legacy-evidence.test.ts:12:28
+     10|       const result = await submitMissionForMode({ rpc } as unknown as …
+     11|         { id: "mission", creator_workflow_mode: "legacy" }, { content_…
+     12|       expect(result.error).toMatchObject({ message: "invalid_evidence"…
+       |                            ^
+     13|       expect(rpc).not.toHaveBeenCalled();
+     14|     },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  server/test/audit-legacy-evidence.test.ts > legacy evidence format at the server boundary (offline) > submits a trimmed, deduplicated valid set without losing all-or-nothing validation
+AssertionError: expected "spy" to be called with arguments: [ 'submit_mission', …(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    "submit_mission",
+    Object {
++     "p_data": Object {},
+      "p_mission": "mission",
+      "p_urls": Array [
++       " https://example.test/work ",
+        "https://example.test/work",
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ server/test/audit-legacy-evidence.test.ts:20:17
+     18|     await submitMissionForMode({ rpc } as unknown as SupabaseClient,
+     19|       { id: "mission", creator_workflow_mode: "legacy" }, { content_ur…
+     20|     expect(rpc).toHaveBeenCalledWith("submit_mission", { p_mission: "m…
+       |                 ^
+     21|   });
+     22| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  01:03:03
+   Duration  1.40s (transform 52ms, setup 212ms, collect 106ms, tests 11ms, environment 765ms, prepare 117ms)
+

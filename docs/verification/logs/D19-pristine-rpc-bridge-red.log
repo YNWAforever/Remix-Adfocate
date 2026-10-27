@@ -1,0 +1,29 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/run-integration-tests.test.ts (18 tests | 1 failed) 25ms
+   × new pristine global campaign job identity > accepts a dedicated loopback bridge with masquerading disabled when Docker cannot publish an internal-network port 8ms
+     → pristine target volume, owner or exclusive internal network drift
+ ✓ server/test/support-rpc-ownership.test.ts (7 tests) 41ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-bridge-red.private.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > accepts a dedicated loopback bridge with masquerading disabled when Docker cannot publish an internal-network port
+Error: pristine target volume, owner or exclusive internal network drift
+ ❯ Module.verifyIntegrationIdentity scripts/run-integration-tests.mjs:146:72
+    144|       || volume.labels?.["adfocate.run"] !== identity.runId || volume.…
+    145|       || writable.length !== 1 || writable[0].Type !== "volume" || wri…
+    146|       || writable[0].Destination !== "/var/lib/postgresql/data") throw…
+       |                                                                        ^
+    147|     if (ownedCampaignIds !== null) {
+    148|       if (!Array.isArray(ownedCampaignIds) || ownedCampaignIds.some(id…
+ ❯ server/test/run-integration-tests.test.ts:241:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 24 passed (25)
+   Start at  17:10:15
+   Duration  3.44s (transform 117ms, setup 707ms, collect 122ms, tests 66ms, environment 1.86s, prepare 277ms)
+

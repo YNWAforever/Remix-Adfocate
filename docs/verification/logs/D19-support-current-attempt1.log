@@ -1,0 +1,165 @@
+ ✓ server/test/publication-proof-asset-grant-live.test.ts (3 tests) 3368ms
+   ✓ publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path 2406ms
+   ✓ publication proof asset grant live path > uploads and finalizes GIF evidence 510ms
+   ✓ publication proof asset grant live path > uploads and finalizes MP4 evidence 451ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-support-current-c1133f56-3d5c-4417-8aa9-133f1dcaab03-proof.private.json
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  15:10:09
+   Duration  18.99s (transform 1.80s, setup 216ms, collect 3.68s, tests 3.37s, environment 11.39s, prepare 112ms)
+ ✓ server/test/active-mission-schema.test.ts (54 tests) 7715ms
+   ✓ active mission migration contract > preserves cross-workspace campaign creators without weakening mission tenant integrity 706ms
+   ✓ active mission workflow schema > creates one idempotent active workflow without changing the reward anchor 797ms
+   ✓ active mission workflow schema > starts fulfilment-required work blocked and keeps the private bucket private 400ms
+   ✓ active mission workflow schema > allows creator self-read only and protects append-only records 785ms
+   ✓ active mission workflow schema > preserves terminal state and rejects cross-owner create 530ms
+   ✓ active mission workflow schema > rejects linking a draft version to another work item 558ms
+   ✓ active mission workflow schema > rejects cross-workspace relationships, access, and asset scopes 760ms
+   ✓ active mission workflow schema > enforces publication proof tenant ownership, immutability, privacy, and relationships 1147ms
+   ✓ active mission workflow schema > creates a new attempt when a correction resubmits an unchanged checksum 345ms
+   ✓ active mission workflow schema > sets up one existing approved item with exact replay, private audit, and neutral rewards 1464ms
+ ✓ server/test/active-missions.test.ts (93 tests) 6962ms
+   ✓ active mission API live integration > supports owned workspace read and revision-safe autosave 1369ms
+   ✓ active mission API live integration > enforces submit content/checklist, preserves idempotency, and separates operator review claim 711ms
+   ✓ active mission API live integration > rejects overlong revision deadlines and persists defaulted or stricter effective deadlines 1011ms
+   ✓ active mission API live integration > receives shipped fulfilment atomically without rewards or legacy status changes 371ms
+   ✓ active mission API live integration > rejects non-joined, content-bearing, reviewed, rewarded, and previously migrated submissions 2466ms
+   ✓ active mission API live integration > preserves legacy final approval and its existing points and XP rewards 306ms
+ ✓ server/test/notifications-triggers.test.ts (31 tests) 4532ms
+   ✓ active-mission notification live integration > delivers fulfillment transitions to the owning creator with the bounded payload 489ms
+   ✓ active-mission notification live integration > rejects creator JWT emission and suppresses a repeated deadline notification 417ms
+   ✓ active-mission notification live integration > commits a transition after notification failure and does not poison its dedupe claim 774ms
+   ✓ active-mission notification live integration > does not notify a same-workspace creator through a mismatched reward chain 747ms
+ ✓ server/test/campaigns.test.ts (20 tests) 10789ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > create draft → 201 2967ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409 410ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422 345ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402 1756ms
+ ✓ server/test/reward-handoffs.test.ts (16 tests) 10083ms
+   ✓ reward handoff transitions > approves only when every required item is proof_verified and ignores optional items 1006ms
+   ✓ reward handoff transitions > rejects incomplete required items and stale revisions before append-only writes 1176ms
+   ✓ reward handoff transitions > rejects a manually pointed verified attempt without an immutable verified review 553ms
+   ✓ reward handoff transitions > returns the original result for an identical retry and rejects changed payload reuse 525ms
+   ✓ reward handoff transitions > treats idempotency keys as workspace-wide before stale workflow checks 1125ms
+   ✓ reward handoff transitions > rejects replay when individually valid rows no longer form the canonical chain 842ms
+   ✓ reward handoff transitions > does not reveal whether a workflow exists in another workspace 881ms
+   ✓ reward handoff transitions > serializes concurrent approvals to one decision and one pending reward 687ms
+   ✓ reward handoff transitions > cancels append-only, retries exactly, and returns to proof_verified 597ms
+   ✓ reward handoff transitions > replays immutable approval and cancellation cycle snapshots after later cycles 536ms
+   ✓ reward handoff transitions > rolls a new decision back when pending insertion conflicts 494ms
+   ✓ reward handoff transitions > returns a bounded creator projection without operator or proof secrets 677ms
+   ✓ reward handoff transitions > ignores a newer handoff row whose tenant chain is internally mismatched 951ms
+ ✓ server/test/admin.test.ts (27 tests) 9988ms
+   ✓ admin submission review > lists pending submissions 2866ms
+   ✓ admin submission review > lists pending applications with creator review and shortlist metadata 383ms
+   ✓ admin submission review > approves once: awards 250 points + 100 XP, and is idempotent 415ms
+   ✓ admin submission review > rejects a submitted submission (no award) 525ms
+   ✓ admin submission review > approves with a 5★ rating: stores the rating, awards +50 bonus XP, snapshots scores 523ms
+   ✓ admin submission review > rejects an out-of-range rating with 400 bad_rating 498ms
+   ✓ admin submission review > rejection snapshots scores (brand safety reflects the rejection) 441ms
+   ✓ admin engaged roster > lists creators with active participations and excludes fully-completed ones 890ms
+   ✓ B2: workspace-scoped review > filters applications by ?workspace= (demo returns the row, inaccessible returns 404) 487ms
+   ✓ B2: mission activity drill-in > returns the mission + bucketed activity 582ms
+ ✓ server/test/operator-crm.test.ts (15 tests) 17153ms
+   ✓ operator CRM admin API > lists creators with default needs_review status when no review row exists 3492ms
+   ✓ operator CRM admin API > updates review status, creates an optional note, and writes audit events 387ms
+   ✓ operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline 576ms
+   ✓ operator CRM admin API > requires a note when flagging a creator review 301ms
+   ✓ operator CRM admin API > requires a note when shortlisting a flagged creator 430ms
+   ✓ operator CRM admin API > blocks invited status for a flagged creator 564ms
+   ✓ operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row 6290ms
+   ✓ operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert 471ms
+   ✓ operator CRM admin API > creates creator notes through the admin note endpoint 354ms
+   ✓ operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint 548ms
+   ✓ operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status 490ms
+   ✓ operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces 335ms
+   ✓ operator CRM admin API > hides flagged creators by default in a mission-scoped queue 987ms
+   ✓ operator CRM admin API > does not use social-source avatars as queue avatars 315ms
+   ✓ operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort 699ms
+ ❯ server/test/missions.test.ts (26 tests | 1 failed) 3613ms
+   ✓ mission join > creates one workflow for an active-workspace direct join 437ms
+   ✓ mission submit > rejects legacy submit for active-workspace missions without mutating rewards 448ms
+ ✓ server/test/reward-contracts.test.ts (8 tests) 2454ms
+   ✓ reward contract capture > denies anonymous and authenticated callers access to service-only wrappers 610ms
+   ✓ reward contract capture > captures one immutable reward contract when an active workflow is created 390ms
+   ✓ reward contract capture > requires audited staff provenance for an existing-workflow backfill 557ms
+   ✓ reward contract capture > does not reveal a workflow that belongs to another workspace 645ms
+ ✓ server/test/publication-proof-review-live.test.ts (2 tests) 2532ms
+   ✓ publication proof operator review live integration > enforces tenant, concurrent claim, ownership, correction deadline, retry, and reward neutrality 1775ms
+   ✓ publication proof operator review live integration > verifies only the exact claimed attempt and completes the required aggregate without rewards 745ms
+ ✓ server/test/campaigns-s2.test.ts (5 tests) 2312ms
+   ✓ close_due_campaigns > closes past-deadline active only, idempotent 414ms
+   ✓ notifyCampaignStarted policy > notifies a matched creator but not an unmatched one 546ms
+ ✓ server/test/applications.test.ts (8 tests) 5685ms
+   ✓ application-gated missions > operator accept → joined (+10 xp, filled++), then the creator can submit 3255ms
+   ✓ application-gated missions > creates one workflow when an active-workspace application is accepted repeatedly 849ms
+ ✓ server/test/public-passport.test.ts (3 tests) 1985ms
+   ✓ public passport privacy > creates, resolves, and revokes a public passport without raw social leaks 603ms
+   ✓ public passport privacy > shows selected avatar and highlights publicly only after explicit profile media publish 434ms
+   ✓ public passport privacy > does not derive public social badges or influence from self-reported handles alone 357ms
+ ✓ server/test/passport.test.ts (11 tests) 5461ms
+   ✓ creator passport > a fresh creator gets all-null scores and no badges 674ms
+   ✓ creator passport > computes reliability from concluded submissions (in-flight ignored) 340ms
+   ✓ creator passport > reliability is null when only in-flight submissions exist 311ms
+   ✓ creator passport > computes influence from social-handle followers and earns social_linked 452ms
+   ✓ creator passport > computes content from quality ratings (unrated approvals excluded) 387ms
+   ✓ creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator 477ms
+   ✓ creator passport > prefers API-synced follower counts over self-reported followers 769ms
+   ✓ creator passport > returns db_error when synced social accounts cannot be loaded 321ms
+ ✓ server/test/operator-crm-schema.test.ts (4 tests) 1734ms
+   ✓ operator CRM schema and RLS > lets the service role write review, note, shortlist, and audit rows 633ms
+ ✓ server/test/social-schema.test.ts (4 tests) 2850ms
+   ✓ social trust schema and RLS > lets a creator read only their own social trust account 807ms
+   ✓ social trust schema and RLS > keeps public passport token hashes private to the owning creator 543ms
+   ✓ social trust schema and RLS > blocks creators from inserting or updating scan-derived social metrics 386ms
+   ✓ social trust schema and RLS > blocks creators from inserting or updating passport token hashes directly 395ms
+ ✓ server/test/me.test.ts (7 tests) 2100ms
+ ✓ server/test/social.test.ts (6 tests) 1529ms
+ ✓ server/test/verificationGate.test.ts (6 tests) 5192ms
+   ✓ verification + L2 gate > untrusted high-XP creator is blocked from an L2 mission with verification_required 301ms
+   ✓ verification + L2 gate > low-XP creator gets level_locked (not verification_required) 391ms
+   ✓ verification + L2 gate > operator manual-verify flips a handle without the provider 3085ms
+ ✓ server/test/redemption.test.ts (8 tests) 5279ms
+   ✓ admin add-codes > loads a code pool and bumps stock so a KOC can redeem 3144ms
+   ✓ admin add-codes > rejects loading a duplicate code into the same gift pool (409) 350ms
+ ✓ server/test/admin-staff.test.ts (7 tests) 3570ms
+   ✓ requireStaff gate + GET /admin/me > 200 for a valid staff JWT 675ms
+   ✓ requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers 1698ms
+ ✓ server/test/content.test.ts (5 tests) 1497ms
+ ✓ server/test/match.test.ts (3 tests) 1019ms
+ ✓ server/test/wallet.test.ts (4 tests) 4896ms
+   ✓ earnings wallet > moves cash to available on approval + records an earnings transaction 2939ms
+   ✓ earnings wallet > a non-cash mission credits no earnings 811ms
+ ✓ server/test/onboarding.test.ts (6 tests) 1298ms
+ ✓ server/test/brand.test.ts (7 tests) 2146ms
+ ✓ server/test/adminContent.test.ts (6 tests) 4358ms
+   ✓ adminContent lifecycle > create → draft with generated slug 3309ms
+   ✓ adminContent lifecycle > publish fails without a body, succeeds after editing one in 537ms
+ ✓ server/test/assistant.test.ts (2 tests) 1192ms
+ ✓ server/test/leveling.test.ts (3 tests) 1972ms
+   ✓ leveling engine > recomputes level from xp at the thresholds 396ms
+   ✓ leveling engine > activates the mission level-gate once xp crosses the threshold 337ms
+   ✓ leveling engine > tracks level_seen and clears the pending celebration on acknowledge 425ms
+ ✓ server/test/adminAcademy.test.ts (5 tests) 3927ms
+   ✓ admin academy CRUD > lists the seeded rows 2861ms
+   ✓ admin academy CRUD > creates → publishes → archives a draft 426ms
+ ✓ server/test/brandResources.test.ts (5 tests) 1289ms
+ ✓ server/test/insights.test.ts (4 tests) 2675ms
+ ✓ server/test/notifications-api.test.ts (5 tests) 1375ms
+ ✓ server/test/cron-social-refresh.test.ts (4 tests) 18ms
+ ✓ server/test/copilot.test.ts (4 tests) 2235ms
+ ✓ server/test/radar.test.ts (4 tests) 2591ms
+ ✓ server/test/academy.test.ts (4 tests) 1396ms
+ ❯ server/test/rls.test.ts (4 tests | 1 failed) 1309ms
+ ✓ server/test/bootstrap.test.ts (2 tests) 1233ms
+   ✓ bootstrap (first login) > creates an email creator and returns created:true, then false on repeat 758ms
+ ✓ server/test/academy-seed.test.ts (3 tests) 413ms
+   ✓ academy_content seed integrity > has the expected published row counts 392ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-support-current-c1133f56-3d5c-4417-8aa9-133f1dcaab03-support.private.json
+ ❯ server/test/missions.test.ts:488:24
+ ❯ server/test/rls.test.ts:43:19
+ Test Files  2 failed | 38 passed (40)
+      Tests  2 failed | 439 passed (441)
+   Start at  15:10:29
+   Duration  220.15s (transform 1.30s, setup 9.00s, collect 11.64s, tests 150.36s, environment 37.69s, prepare 4.46s)
+Full raw log retained privately; public log contains only test summary/progress, not authored payloads.

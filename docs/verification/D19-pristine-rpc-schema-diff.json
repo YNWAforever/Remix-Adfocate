@@ -1,0 +1,607 @@
+{
+  "against": "D19-support-current-schema-before.json targets.empty.observed (captured local candidate catalog; no old target SQL this turn)",
+  "normalizedDifferentSections": {
+    "columns": {
+      "priorCount": 753,
+      "newCount": 753
+    },
+    "functions": {
+      "priorCount": 263,
+      "newCount": 263
+    }
+  },
+  "normalization": "Array ordering ignored for catalog sets only; source bytes and function hashes untouched",
+  "twoGlobalRpcDefinitionsAclSecurityIdentical": [
+    {
+      "name": "close_due_campaigns",
+      "functionDefinitionHash": "56ee1f3c4d8ed1631d521faf86f2b441",
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "definer": true,
+      "unchangedFromCapturedCandidateCatalog": true
+    },
+    {
+      "name": "snapshot_campaign_leaderboards",
+      "functionDefinitionHash": "def2a4436c94943c4aa9f42e39920cd2",
+      "acl": [
+        "postgres=X/postgres",
+        "service_role=X/postgres"
+      ],
+      "definer": true,
+      "unchangedFromCapturedCandidateCatalog": true
+    }
+  ],
+  "beforeAfterTestsSchemaEqual": true,
+  "migrationCount": 72,
+  "manifestCount": 42,
+  "oldMigrationSourceChecksumChanged": false,
+  "providerProfileAlignment": "D19-pristine-rpc-provider-profile-alignment.json",
+  "detailedDifferences": {
+    "columns": [
+      {
+        "key": [
+          "creators",
+          "avatar_url"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "categories"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "display_name"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "level_seen"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "onboarding_step"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "phone"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "creators",
+          "social_handles"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      },
+      {
+        "key": [
+          "notifications",
+          "read_at"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "authenticated=w/postgres"
+            ],
+            "current": null
+          }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "key": [
+          "private",
+          "apply_staff_access",
+          "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text, p_owner_bootstrap boolean"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "1d6c3e9e7482a28ec4e7cef88a6c3909",
+            "current": "c4929d2a655feb0317f1c040f28dbf84"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "bootstrap_staff_access",
+          "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "e102478844e35d59ad5933207b4ee7d4",
+            "current": "29af17302b9ab1ddcd01af8e68d21a8c"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "can_read_academy_track",
+          "p_track uuid"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "49f8c27a8bea7a50e5b779074e75c9f4",
+            "current": "5ab94ef7c94beea13d717741aea714eb"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "execute_creator_crm_command",
+          "p_workspace uuid, p_operator uuid, p_request uuid, p_expected_revision bigint, p_creator uuid, p_kind text, p_payload jsonb"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "41d661342f0e167b8783c885ffa39f67",
+            "current": "55f918a1b09d32f156d08963fc9be4ff"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "guard_academy_lesson_history",
+          ""
+        ],
+        "differences": {
+          "hash": {
+            "prior": "6c4430a7ef6f300494dbeae926630f54",
+            "current": "bdc27627c37383bb02af7d0800584fec"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "guard_legacy_submission_evidence",
+          ""
+        ],
+        "differences": {
+          "hash": {
+            "prior": "484923e111b1790074cfac69eb0089e3",
+            "current": "30de13cfd5e9639e888105d9ee72bca8"
+          }
+        }
+      },
+      {
+        "key": [
+          "private",
+          "valid_legacy_evidence",
+          "p_urls text[]"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "913fe1844af7ff2cbf2b9e92312e6060",
+            "current": "2e6c31bd7a1de0066e5c28f8abd47019"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "add_creator_review_note_command",
+          "p_workspace uuid, p_operator uuid, p_request uuid, p_expected_revision bigint, p_creator uuid, p_category text, p_body text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "44e902b3a9f310345c393c09099e7cba",
+            "current": "e028a18f56220d5dfa27c94985961a69"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "apply_creator_review_command",
+          "p_workspace uuid, p_operator uuid, p_request uuid, p_expected_revision bigint, p_creator uuid, p_status text, p_risk_level text, p_summary text, p_note text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "af031d98e8e86683c5cf53977fbfecc3",
+            "current": "57d3f8ac107bc0a33ef6953c79666789"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "author_academy_lesson",
+          "p_staff uuid, p_track uuid, p_lesson uuid, p_version integer, p_revision integer, p_input jsonb, p_action text, p_approval_ref text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "e9fd0c048d79dbd2c26ca166073c5bc0",
+            "current": "aacaf3fb18ecf806d789aebc9caea45a"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "campaign_progress_on_approval",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "claim_assistant_request",
+          "p_workspace uuid, p_creator uuid, p_request uuid"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "2f7aaeffe300ebeab8ebb8ab9f386cf1",
+            "current": "134640d1a32c789308ef97482872134b"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "complete_academy_lesson",
+          "p_track uuid, p_lesson uuid, p_version integer"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "c81436f7d61afad0db28f5479a01994b",
+            "current": "8ee42372992ae684b5dea9d179e4834f"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "content_touch_updated_at",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "get_academy_learning",
+          "p_track uuid, p_lang text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "60a393bf35e358c579e78f829724301e",
+            "current": "6f9a23be93951fe80e456f4f9638ff8b"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "get_assistant_request",
+          "p_workspace uuid, p_request uuid"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "postgres=X/postgres",
+              "authenticated=X/postgres"
+            ],
+            "current": [
+              "postgres=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          },
+          "hash": {
+            "prior": "48172f3a8fac0a3cde43829821854cff",
+            "current": "6403ab6805af6867d8b1234a4877019f"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "level_for_xp",
+          "p_xp integer"
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "level_ordinal",
+          "p_level text"
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "list_creator_review_queue_page",
+          "p_workspace uuid, p_operator uuid, p_mission uuid, p_query text, p_status text, p_risk text, p_sort text, p_page integer"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "3ce6d06c3b80d0c1d530f9c4cd25878e",
+            "current": "7ab136bd83210ac5de214dfdf5162bf3"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "mark_assistant_request_unknown",
+          "p_workspace uuid, p_creator uuid, p_request uuid"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "dd58404a211d21be2ce15e4b95dfd554",
+            "current": "d9105160b8a8b044779e51b62b838249"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "match_kb_chunks",
+          "query_embedding vector, match_count integer, filter_locale text, filter_workspace text"
+        ],
+        "differences": {
+          "acl": {
+            "prior": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ],
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "notify_on_level_up",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "notify_on_redemption",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "notify_on_submission_change",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "request_legacy_evidence_correction",
+          "p_workspace uuid, p_operator uuid, p_submission uuid, p_request uuid, p_expected_revision bigint, p_note text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "01f43e90fe58314a7cedeaec77ee4114",
+            "current": "25c21276b7e3fb5b3f046013005bb5e2"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "reserve_assistant_request",
+          "p_workspace uuid, p_creator uuid, p_request uuid, p_message text, p_locale text, p_conversation uuid, p_context_version text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "a0b6d75a26f9cd9ba98d5fe555330dd4",
+            "current": "2a8d40f2b8aa5d2457600c62c0596d1d"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "save_assistant_turn",
+          "p_workspace uuid, p_creator uuid, p_request uuid, p_answer text, p_citations jsonb"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "4523da527b39cfcbde0617eb11ec7157",
+            "current": "3d7e3c2d8700124cafa593c36b1b35b9"
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "set_level_from_xp",
+          ""
+        ],
+        "differences": {
+          "acl": {
+            "prior": null,
+            "current": [
+              "=X/postgres",
+              "postgres=X/postgres",
+              "anon=X/postgres",
+              "authenticated=X/postgres",
+              "service_role=X/postgres"
+            ]
+          }
+        }
+      },
+      {
+        "key": [
+          "public",
+          "set_staff_workspace_role",
+          "p_workspace uuid, p_actor uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text"
+        ],
+        "differences": {
+          "hash": {
+            "prior": "55f54a105a17be5d443f1fa9fbf70953",
+            "current": "8a6d9bccdaa3b92c73db3327c26c246a"
+          }
+        }
+      }
+    ]
+  },
+  "fullCapturedCatalogParity": false
+}

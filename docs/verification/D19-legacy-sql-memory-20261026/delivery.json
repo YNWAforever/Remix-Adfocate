@@ -1,0 +1,94 @@
+{
+  "at": "2026-10-25T16:27:45.132838+00:00",
+  "status": "PASS_STANDALONE_LEGACY_MEMORY_SQL_CORE_NOT_R1_VERIFIED",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFilesUnchanged": 788,
+  "applicationSourceChanges": 0,
+  "verificationArtifactFingerprint": "a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526",
+  "code": "Existing legacy SQL unchanged. Added isolated, explicitly invoked memory-only verification artifacts; no new reward engine or financial capability.",
+  "test": {
+    "standaloneMemory": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "standaloneLintExit": 0,
+    "retainedNativeFull": {
+      "passed": 2129,
+      "failed": 0,
+      "skipped": 363,
+      "files": 292
+    },
+    "nativeFullRerunThisTurn": false,
+    "countsMustNotBeCombinedAsFullSuite": true
+  },
+  "gates": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/gates.json",
+    "sha256": "36000fb93ae3808bb33c1144a3ff50e12f99f03dff72ddf062d643124b76c345"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/readback-summary.json",
+    "sha256": "9e810cd25fd82d9a0a71cea0890f944c7498e052b386ccfd320e2b81241aff62"
+  },
+  "schema": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/schema-scope.json",
+    "sha256": "be3a89deb30953c69f975c85c1bd8189f3d9323c82dac5e14c589e35f7be79f8"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/case-coverage.json",
+    "sha256": "abe51a98ec342e0fc478de953f06d7c16d9db22ff92f9957cf7445ef96d2ceec"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/remaining-acceptance.json",
+    "sha256": "e179c929a7c6e1aa63d6e6c7c55e0d0cc3294d903d29e17fa7796e9dbe90f288"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/rollback.json",
+    "sha256": "88db8e025adea4f3e19e8569cd47064aaff7971e8f96ef9cdcfdd51cf2308530"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "c2ApprovalPending": true,
+  "c2SourceManifestOrApprovalChanged": false,
+  "actualTargetCalls": 0,
+  "externalClients": 0,
+  "realAuthSubjectsOrDomainFixtures": 0,
+  "formalMembershipOrRoleWrites": 0,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "pristineGlobalRpcRerun": false,
+  "legacyIssuanceOutsideMemory": false,
+  "pendingRewardNeutralityMeasuredThisTurn": false,
+  "originalIncident": "OPEN_UNRESTORED",
+  "oldShapedTarget": "FORENSIC_ONLY_NOT_QUERIED",
+  "releaseHold": true,
+  "providerEnabled": false,
+  "deployment": "NOT_DEPLOYED",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "wholeR1Verified": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: keep the existing exact C2 application-runtime approval pending; execute only after that explicit approval. Independently review local assistant/migration/gate facets. Legacy core memory evidence is now explicit, but actual same-submission Auth/RLS/concurrent/API-score/browser acceptance needs a separate bounded scope; no extra runtime is authorized by these tests.",
+  "priorCurrentDelivery": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/delivery.json",
+    "sha256": "ec36480cc7cf8e35cfe827eef5ec1255843ba7549dab9bbfbfc926e9255c5765"
+  },
+  "priorSnapshotCheckpoint": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/checkpoint.json",
+    "sha256": "ce1d02da347445fca51afa6870f985350a7f330d36d8466a2aad19a29bc85fe7"
+  },
+  "modelInterfaceObservation": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/model-ui-observation.json",
+    "sha256": "1be4f89e70855e1b63d9c0d9a27788e497be70b3ff25f50bc55710849acce29f"
+  }
+}

@@ -1,0 +1,24 @@
+from pathlib import Path
+import os,sys,json,subprocess,datetime,ctypes
+R=Path(__file__).resolve().parents[1];os.chdir(R);V=R/'docs/verification';project='adfocate-d19-b2-20261025-recovery-4d6ca2c8';C=V/project;P=R/'.codex-tmp'/project
+m=json.loads((V/'D19-C1-browser-continuation-runtime-manifest.json').read_text(encoding='utf-8'));phase=sys.argv[1];assert phase in ['adopt','browser']
+name='browser-continuation-'+phase;intent=P/(name+'-intent.private.json');assert not intent.exists(),'No automatic second execution'
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_')or any(x in k for x in ['SUPABASE','ADFOCATE','INTEGRATION','OPENAI','OPENROUTER','ANTHROPIC','GEMINI','SMTP','SENDGRID','RESEND','TWILIO']):env.pop(k)
+env.update(m['execution']['environment']);env.update(DOCKER_CONTEXT='desktop-linux',ADFOCATE_B2_PHASE='role'if phase=='adopt'else'browser',NODE_OPTIONS='')
+class Memory(ctypes.Structure):
+ _fields_=[('length',ctypes.c_ulong),('load',ctypes.c_ulong),('total',ctypes.c_ulonglong),('available',ctypes.c_ulonglong),('totalPage',ctypes.c_ulonglong),('availablePage',ctypes.c_ulonglong),('totalVirtual',ctypes.c_ulonglong),('availableVirtual',ctypes.c_ulonglong),('availableExtended',ctypes.c_ulonglong)]
+mem=Memory();mem.length=ctypes.sizeof(Memory);assert ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(mem))
+resource={'observedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'physicalFreeGiB':mem.available/2**30,'commitHeadroomGiB':mem.availablePage/2**30,'requiredGiB':3}
+resource['gatePassed']=min(resource['physicalFreeGiB'],resource['commitHeadroomGiB'])>=3
+attempt=1
+while(C/(name+'-preflight-'+str(attempt)+'.json')).exists():attempt+=1
+(C/(name+'-preflight-'+str(attempt)+'.json')).write_text(json.dumps({'phase':phase,'runtimeChildStarted':False,'sourceFingerprint':m['candidate']['fingerprint'],'resource':resource},indent=2)+'\n',encoding='utf-8')
+if not resource['gatePassed']:print(json.dumps({'status':'NOT_STARTED_RESOURCE_GATE','phase':phase,'resource':resource}));sys.exit(3)
+args=next(x['argv']for x in m['execution']['commands']if x['phase']==phase)
+start=datetime.datetime.now(datetime.timezone.utc).isoformat();intent.write_text(json.dumps({'at':start,'phase':phase,'state':'intent','sourceFingerprint':m['candidate']['fingerprint'],'argv':args,'resource':resource},indent=2)+'\n',encoding='utf-8')
+log=P/(name+'.private.log')
+with log.open('w',encoding='utf-8',newline='\n')as out:result=subprocess.run(args,env=env,stdout=out,stderr=subprocess.STDOUT)
+record={'startedAt':start,'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'phase':phase,'command':args,'exit':result.returncode,'sourceFingerprint':m['candidate']['fingerprint'],'resource':resource,'privateLog':log.relative_to(R).as_posix(),'scope':'Approved696e existing C1 continuation only; no setup/bootstrap/new resources/subjects/legacy replay','paidProviderEnabled':False,'productionTargetUsed':False}
+(C/(name+'-command.json')).write_text(json.dumps(record,indent=2)+'\n',encoding='utf-8');print(json.dumps(record));sys.exit(result.returncode)

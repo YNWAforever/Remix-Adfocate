@@ -1,0 +1,15 @@
+{
+  "sourceFingerprint": "aee0d8891982cf1b2b5613008b585aabfe1f816abb0edd982dfb0679d8a53436",
+  "gate": "build",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+    "run",
+    "build"
+  ],
+  "startedAt": "2026-10-24T07:44:32.628522+00:00",
+  "finishedAt": "2026-10-24T07:45:10.969311+00:00",
+  "exit": 0,
+  "environment": "Node22 cached offline; RUN_INTEGRATION=0/RUN_AUDIT_INTEGRATION=0, DB/provider env blank; no external provider accepted",
+  "log": "logs/D19-support-current-build.log"
+}

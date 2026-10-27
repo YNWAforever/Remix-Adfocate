@@ -1,0 +1,4720 @@
+{
+  "checkedAt": "2026-10-24T05:11:28.533Z",
+  "method": "read-only catalog and ACL predicates; no CLI history repair",
+  "results": [
+    {
+      "kind": "empty",
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "checks": [
+        {
+          "name": "column:public.assistant_messages.request_id",
+          "present": true
+        },
+        {
+          "name": "column:public.assistant_messages.turn_order",
+          "present": true
+        },
+        {
+          "name": "column:public.creator_review_statuses.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.expected_account",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.proof_evidence_policy",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.publication_instructions",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.publication_window_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.required_disclosures",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.file_extension",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.mission_workflow_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.upload_grant_expires_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_versions.submission_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.frozen_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.idempotency_keys",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.overridden_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.overridden_by",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.override_reason",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.publication_due_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.source_template_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.content_checksum",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.creator_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.finalize_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.finalized_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_publication_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_submission_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_work_item_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_workflow_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_grant_expires_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_state",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.checklist",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.claim_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.claimed_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.creator_response_deadline",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.decision_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.review_due_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_reward_contracts.backfill_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_reward_contracts.backfill_request_hash",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_submissions.evidence_revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_submissions.reviewer_notes",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.current_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.verified_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_workflows.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.creator_workflow_mode",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.fulfillment_required",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.review_sla_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.revision_limit",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.revision_response_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.staff_platform_roles.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.staff_workspace_roles.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.workspaces.reward_processing_window_days",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_submissions.mission_submissions_mission_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_workflows.mission_workflows_mission_submission_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.academy_lessons.academy_lesson_published_content",
+          "present": true
+        },
+        {
+          "name": "constraint:public.academy_lessons.academy_lessons_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.brand_users.brand_users_user_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creators.creators_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_completion_decisions.mission_completion_decisions_pending_reward_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_requirements.mission_requirements_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_templates.mission_templates_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_templates.mission_templates_mission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_canonical_path_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_extension_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_item_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_mime_extension_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_version_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_versions.mission_draft_versions_id_item_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_versions.mission_draft_versions_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_fulfillments.mission_fulfillments_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_overridden_by_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_source_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_attempt_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_mime_type_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_pending_attempt_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_submission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_upload_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_submitter_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_category_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_review_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_attempt_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_reviewer_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_items.mission_review_items_round_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_version_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_revision_grants.mission_revision_grants_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_reward_contracts.mission_reward_contracts_backfill_replay_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_reward_contracts.mission_reward_contracts_workspace_backfill_key_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_submissions.mission_submissions_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_submissions.mission_submissions_mission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_approved_version_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_current_proof_attempt_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_current_version_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_id_workflow_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_verified_proof_attempt_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflow_events.mission_events_item_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflow_events.mission_events_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_submission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_working_drafts.mission_working_drafts_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.missions.missions_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.notifications.notifications_type_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.notifications.notifications_workflow_payload_size_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_access_audit.staff_access_audit_request_id_key",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_access_commands.staff_access_commands_request_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_platform_roles.staff_platform_roles_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_workspace_roles.staff_workspace_roles_pkey",
+          "present": true
+        },
+        {
+          "name": "function:private.abandon_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.abandon_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.apply_staff_access",
+          "present": true
+        },
+        {
+          "name": "function:private.approve_mission_completion",
+          "present": true
+        },
+        {
+          "name": "function:private.approve_mission_version",
+          "present": true
+        },
+        {
+          "name": "function:private.assert_active_mission_operator",
+          "present": true
+        },
+        {
+          "name": "function:private.author_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.backfill_mission_reward_contract",
+          "present": true
+        },
+        {
+          "name": "function:private.bootstrap_staff_access",
+          "present": true
+        },
+        {
+          "name": "function:private.can_read_academy_track",
+          "present": true
+        },
+        {
+          "name": "function:private.cancel_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:private.clear_social_account_verification",
+          "present": true
+        },
+        {
+          "name": "function:private.create_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.create_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.create_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.execute_creator_crm_command",
+          "present": true
+        },
+        {
+          "name": "function:private.finalize_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.finalize_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.grant_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_academy_lesson_history",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_completed_review_round",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_completion_decision_immutable",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_finalized_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_legacy_submission_evidence",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_mission_draft_asset_owner",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_mission_work_item_source_template",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_pending_reward_update",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_instruction_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_asset_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_attempt",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_review_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_reward_contract_immutable",
+          "present": true
+        },
+        {
+          "name": "function:private.join_mission",
+          "present": true
+        },
+        {
+          "name": "function:private.mark_mission_fulfillment_shipped",
+          "present": true
+        },
+        {
+          "name": "function:private.mission_brand_update_allowed",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_fulfillment_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_work_item_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_workflow_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_publication_proof_event",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_publication_proof_outcome",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_reward_handoff_event",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_reward_handoff_outcome",
+          "present": true
+        },
+        {
+          "name": "function:private.raise_immutable_record",
+          "present": true
+        },
+        {
+          "name": "function:private.receive_mission_fulfillment",
+          "present": true
+        },
+        {
+          "name": "function:private.refresh_mission_workflow_state",
+          "present": true
+        },
+        {
+          "name": "function:private.request_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:private.request_publication_proof_correction",
+          "present": true
+        },
+        {
+          "name": "function:private.request_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:private.save_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:private.set_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.set_reward_processing_window",
+          "present": true
+        },
+        {
+          "name": "function:private.setup_existing_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.snapshot_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.start_mission_review",
+          "present": true
+        },
+        {
+          "name": "function:private.start_publication_proof_review",
+          "present": true
+        },
+        {
+          "name": "function:private.submit_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:private.v_item_round_limit",
+          "present": true
+        },
+        {
+          "name": "function:private.valid_legacy_evidence",
+          "present": true
+        },
+        {
+          "name": "function:private.verify_publication_proof",
+          "present": true
+        },
+        {
+          "name": "function:public.abandon_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.abandon_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.add_creator_review_note_command",
+          "present": true
+        },
+        {
+          "name": "function:public.apply_creator_review_command",
+          "present": true
+        },
+        {
+          "name": "function:public.approve_mission_completion",
+          "present": true
+        },
+        {
+          "name": "function:public.approve_mission_version",
+          "present": true
+        },
+        {
+          "name": "function:public.author_academy_lesson",
+          "present": true
+        },
+        {
+          "name": "function:public.author_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:public.backfill_mission_reward_contract",
+          "present": true
+        },
+        {
+          "name": "function:public.can_read_academy_track",
+          "present": true
+        },
+        {
+          "name": "function:public.cancel_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:public.claim_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.complete_academy_lesson",
+          "present": true
+        },
+        {
+          "name": "function:public.complete_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:public.create_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.create_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:public.create_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.emit_active_mission_deadline_notifications",
+          "present": true
+        },
+        {
+          "name": "function:public.enable_pilot_if_empty",
+          "present": true
+        },
+        {
+          "name": "function:public.finalize_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.finalize_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.get_academy_learning",
+          "present": true
+        },
+        {
+          "name": "function:public.get_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.get_my_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:public.grant_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:public.join_active_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.join_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.list_creator_review_queue_page",
+          "present": true
+        },
+        {
+          "name": "function:public.mark_assistant_request_unknown",
+          "present": true
+        },
+        {
+          "name": "function:public.mark_mission_fulfillment_shipped",
+          "present": true
+        },
+        {
+          "name": "function:public.migrate_pristine_joined_active_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.receive_mission_fulfillment",
+          "present": true
+        },
+        {
+          "name": "function:public.refresh_mission_workflow_state",
+          "present": true
+        },
+        {
+          "name": "function:public.request_legacy_evidence_correction",
+          "present": true
+        },
+        {
+          "name": "function:public.request_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:public.request_publication_proof_correction",
+          "present": true
+        },
+        {
+          "name": "function:public.request_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:public.reserve_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.retry_reward_handoff_notification",
+          "present": true
+        },
+        {
+          "name": "function:public.save_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:public.save_assistant_turn",
+          "present": true
+        },
+        {
+          "name": "function:public.set_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:public.set_reward_processing_window",
+          "present": true
+        },
+        {
+          "name": "function:public.set_staff_workspace_role",
+          "present": true
+        },
+        {
+          "name": "function:public.settle_campaign",
+          "present": true
+        },
+        {
+          "name": "function:public.setup_existing_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:public.start_mission_review",
+          "present": true
+        },
+        {
+          "name": "function:public.start_publication_proof_review",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_mission_publication_proof",
+          "present": true
+        },
+        {
+          "name": "function:public.verify_publication_proof",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:service_role.public.finalize_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.private.mission_brand_update_allowed(uuid,text,integer,numeric,numeric,numeric)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.academy_lessons(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.can_read_academy_track(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.create_mission_workflow(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.creator_lesson_progress(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_academy_learning(uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_assistant_request(uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_my_mission_reward_handoff(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.join_active_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.join_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_deliverable_requirements(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_deliverable_templates(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_draft_assets(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_draft_versions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_fulfillments(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_instructions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_assets(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_attempts(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_review_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_reviews(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_review_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_review_rounds(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_revision_grants(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_work_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_workflow_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_workflows(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_working_drafts(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.refresh_mission_workflow_state(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.abandon_active_mission_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.abandon_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.academy_lessons(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.add_creator_review_note_command(uuid,uuid,uuid,bigint,uuid,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.apply_creator_review_command(uuid,uuid,uuid,bigint,uuid,text,text,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.approve_mission_completion(uuid,uuid,uuid,text,integer,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.approve_mission_version(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.author_mission_workflow(uuid,jsonb,jsonb,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.backfill_mission_reward_contract(uuid,uuid,uuid,integer,numeric,text,integer,timestamptz,text,text,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.cancel_mission_reward_handoff(uuid,uuid,uuid,text,integer,uuid,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.complete_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,text,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_active_mission_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_mission_workflow(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer,text,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.creator_lesson_progress(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.emit_active_mission_deadline_notifications(timestamptz)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.enable_pilot_if_empty(uuid,uuid,text,text,text,boolean)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.finalize_active_mission_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.finalize_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text,text,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.grant_mission_revision(uuid,uuid,uuid,uuid,text,smallint)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.join_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.list_creator_review_queue_page(uuid,uuid,uuid,text,text,text,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mark_assistant_request_unknown(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mark_mission_fulfillment_shipped(uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.migrate_pristine_joined_active_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_completion_decisions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_deliverable_requirements(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_deliverable_templates(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_draft_assets(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_draft_versions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_fulfillments(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_pending_rewards(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_instructions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_assets(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_attempts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_review_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_reviews(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_review_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_review_rounds(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_revision_grants(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_reward_contracts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_work_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_workflow_events(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_workflows(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_working_drafts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.receive_mission_fulfillment(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.refresh_mission_workflow_state(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_mission_revision(uuid,uuid,uuid,uuid,uuid,text,timestamptz,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_publication_proof_correction(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.reserve_assistant_request(uuid,uuid,uuid,text,text,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.retry_reward_handoff_notification(uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.save_active_mission_draft(uuid,uuid,uuid,uuid,integer,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.save_assistant_turn(uuid,uuid,uuid,text,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_reward_processing_window(uuid,uuid,smallint)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.settle_campaign(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.setup_existing_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_access_audit(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_access_commands(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_platform_roles(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_workspace_roles(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.start_mission_review(uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.start_publication_proof_review(uuid,uuid,uuid,uuid,text,integer,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_active_mission_draft(uuid,uuid,uuid,uuid,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_mission_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb,uuid[])",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.verify_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.workspace_budget_transactions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.workspace_budgets(select)",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lesson_one_draft",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lesson_one_published",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lessons_approved_by",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lessons_track_order",
+          "present": true
+        },
+        {
+          "name": "index:public.assistant_messages.assistant_messages_request_role_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
+          "present": true
+        },
+        {
+          "name": "index:public.creators.creators_workspace_id_page_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_contract_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_pending_reward_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_requirements.mission_requirements_template_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_requirements.mission_requirements_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_templates.mission_templates_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_templates.mission_templates_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_creator_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_workflow_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_submission_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_versions_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_versions_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_fulfillments.mission_fulfillments_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_one_pending_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_creator_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_submission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_instructions.mission_publication_instructions_due_at_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_assets.mission_publication_proof_assets_owner_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_assets.mission_publication_proof_assets_upload_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_attempts.mission_publication_proof_attempts_late_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_attempts.mission_publication_proof_attempts_metadata_status_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_claim_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_decision_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_one_terminal_decision_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_reviewer_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_items.mission_review_items_round_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_items.mission_review_items_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_review_rounds_one_decision_per_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_revision_grants.mission_revision_grants_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_revision_grants.mission_revision_grants_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_submission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_current_proof_attempt_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_queue_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_timeline_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflows.mission_workflows_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_working_drafts.mission_working_drafts_one_active_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_working_drafts.mission_working_drafts_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_actor",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_user",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_workspace",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_platform_roles.staff_platform_roles_granted_by",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_workspace_roles.staff_workspace_roles_granted_by",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_workspace_roles.staff_workspace_roles_workspace",
+          "present": true
+        },
+        {
+          "name": "policy:public.academy_lessons.academy_lessons_published_eligible",
+          "present": true
+        },
+        {
+          "name": "policy:public.assistant_requests.assistant_requests_self",
+          "present": true
+        },
+        {
+          "name": "policy:public.creator_lesson_progress.creator_lesson_progress_self",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_deliverable_requirements.mission_requirements_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_deliverable_templates.mission_templates_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_draft_assets.mission_assets_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_draft_versions.mission_versions_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_fulfillments.mission_fulfillments_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_instructions.mission_publication_instructions_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_assets.mission_publication_proof_assets_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_attempts.mission_publication_proof_attempts_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_review_items.mission_publication_proof_review_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_reviews.mission_publication_proof_reviews_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_review_items.mission_review_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_review_rounds.mission_reviews_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_revision_grants.mission_revision_grants_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_work_items.mission_work_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_workflow_events.mission_events_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_workflows.mission_workflows_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_working_drafts.mission_working_drafts_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.missions.missions_brand_update",
+          "present": true
+        },
+        {
+          "name": "policy:public.missions.missions_workspace",
+          "present": true
+        },
+        {
+          "name": "rls:public.academy_lessons",
+          "present": true
+        },
+        {
+          "name": "rls:public.assistant_requests",
+          "present": true
+        },
+        {
+          "name": "rls:public.creator_lesson_progress",
+          "present": true
+        },
+        {
+          "name": "rls:public.legacy_evidence_corrections",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_completion_decisions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_deliverable_requirements",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_deliverable_templates",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_draft_assets",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_draft_versions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_fulfillments",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_pending_rewards",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_assets",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_attempts",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_review_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_reviews",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_review_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_review_rounds",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_revision_grants",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_reward_contracts",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_work_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_workflow_events",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_workflows",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_working_drafts",
+          "present": true
+        },
+        {
+          "name": "rls:public.operator_crm_command_receipts",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_access_audit",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_access_commands",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_platform_roles",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_workspace_roles",
+          "present": true
+        },
+        {
+          "name": "storage-bucket:storage.buckets.mission-draft-assets",
+          "present": true
+        },
+        {
+          "name": "storage-bucket:storage.buckets.mission-publication-proof-assets",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_delete",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_insert",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_read",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_update",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_publication_proof_assets_storage_insert",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_publication_proof_assets_storage_read",
+          "present": true
+        },
+        {
+          "name": "table:private.mission_draft_submission_idempotency",
+          "present": true
+        },
+        {
+          "name": "table:private.mission_workflow_notification_dedupe",
+          "present": true
+        },
+        {
+          "name": "table:public.academy_lessons",
+          "present": true
+        },
+        {
+          "name": "table:public.assistant_requests",
+          "present": true
+        },
+        {
+          "name": "table:public.creator_lesson_progress",
+          "present": true
+        },
+        {
+          "name": "table:public.legacy_evidence_corrections",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_completion_decisions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_deliverable_requirements",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_deliverable_templates",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_draft_assets",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_draft_versions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_fulfillments",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_pending_rewards",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_assets",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_attempts",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_review_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_reviews",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_review_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_review_rounds",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_revision_grants",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_reward_contracts",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_work_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_workflow_events",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_workflows",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_working_drafts",
+          "present": true
+        },
+        {
+          "name": "table:public.operator_crm_command_receipts",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_access_audit",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_access_commands",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_platform_roles",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_workspace_roles",
+          "present": true
+        },
+        {
+          "name": "trigger:public.academy_lesson_history_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.creator_social_accounts_clear_verification",
+          "present": true
+        },
+        {
+          "name": "trigger:public.legacy_submission_evidence_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_completed_reviews_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_completion_decisions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_draft_versions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_finalized_assets_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_fulfillment_workflow_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_pending_rewards_guarded_update",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_instructions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_assets_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_attempts_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_review_items_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_reviews_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_revision_grants_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_reward_contracts_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_item_workflow_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_items_snapshot_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_items_source_template_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_workflow_events_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_workflow_state_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.publication_proof_workflow_event_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.reward_handoff_workflow_event_notifications",
+          "present": true
+        }
+      ],
+      "passed": 584,
+      "total": 584,
+      "missing": []
+    },
+    {
+      "kind": "shaped",
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "checks": [
+        {
+          "name": "column:public.assistant_messages.request_id",
+          "present": true
+        },
+        {
+          "name": "column:public.assistant_messages.turn_order",
+          "present": true
+        },
+        {
+          "name": "column:public.creator_review_statuses.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.expected_account",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.proof_evidence_policy",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.publication_instructions",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.publication_window_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_deliverable_templates.required_disclosures",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.file_extension",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.mission_workflow_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_assets.upload_grant_expires_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_draft_versions.submission_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.frozen_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.idempotency_keys",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.overridden_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.overridden_by",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.override_reason",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.publication_due_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_instructions.source_template_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.content_checksum",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.creator_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.finalize_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.finalized_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_publication_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_submission_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_work_item_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.mission_workflow_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_grant_expires_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_assets.upload_state",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.checklist",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.claim_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.claimed_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.creator_response_deadline",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.decision_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_publication_proof_reviews.review_due_at",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_reward_contracts.backfill_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_reward_contracts.backfill_request_hash",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_submissions.evidence_revision",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_submissions.reviewer_notes",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.current_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.platform",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_work_items.verified_proof_attempt_id",
+          "present": true
+        },
+        {
+          "name": "column:public.mission_workflows.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.creator_workflow_mode",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.fulfillment_required",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.review_sla_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.revision_limit",
+          "present": true
+        },
+        {
+          "name": "column:public.missions.revision_response_hours",
+          "present": true
+        },
+        {
+          "name": "column:public.staff_platform_roles.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.staff_workspace_roles.revision",
+          "present": true
+        },
+        {
+          "name": "column:public.workspaces.reward_processing_window_days",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_submissions.mission_submissions_mission_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint-removed:public.mission_workflows.mission_workflows_mission_submission_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.academy_lessons.academy_lesson_published_content",
+          "present": true
+        },
+        {
+          "name": "constraint:public.academy_lessons.academy_lessons_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.brand_users.brand_users_user_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.creators.creators_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_completion_decisions.mission_completion_decisions_pending_reward_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_requirements.mission_requirements_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_templates.mission_templates_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_deliverable_templates.mission_templates_mission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_canonical_path_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_extension_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_item_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_mime_extension_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_version_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_assets.mission_draft_assets_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_versions.mission_draft_versions_id_item_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_draft_versions.mission_draft_versions_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_fulfillments.mission_fulfillments_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_overridden_by_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_source_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_instructions.mission_publication_instructions_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_attempt_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_creator_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_mime_type_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_pending_attempt_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_submission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_upload_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_submitter_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_work_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_attempts.mission_publication_proof_attempts_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_category_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_review_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_review_items.mission_publication_proof_review_items_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_attempt_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_reviewer_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_publication_proof_reviews.mission_publication_proof_reviews_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_items.mission_review_items_round_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_review_rounds.mission_review_rounds_version_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_revision_grants.mission_revision_grants_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_reward_contracts.mission_reward_contracts_backfill_replay_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_reward_contracts.mission_reward_contracts_workspace_backfill_key_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_submissions.mission_submissions_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_submissions.mission_submissions_mission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_approved_version_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_current_proof_attempt_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_current_version_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_id_workflow_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_template_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_verified_proof_attempt_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_work_items.mission_work_items_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflow_events.mission_events_item_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflow_events.mission_events_workflow_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_state_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_workflows.mission_workflows_submission_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.mission_working_drafts.mission_working_drafts_item_workspace_fk",
+          "present": true
+        },
+        {
+          "name": "constraint:public.missions.missions_id_workspace_unique",
+          "present": true
+        },
+        {
+          "name": "constraint:public.notifications.notifications_type_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.notifications.notifications_workflow_payload_size_check",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_access_audit.staff_access_audit_request_id_key",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_access_commands.staff_access_commands_request_id_fkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_platform_roles.staff_platform_roles_pkey",
+          "present": true
+        },
+        {
+          "name": "constraint:public.staff_workspace_roles.staff_workspace_roles_pkey",
+          "present": true
+        },
+        {
+          "name": "function:private.abandon_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.abandon_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.apply_staff_access",
+          "present": true
+        },
+        {
+          "name": "function:private.approve_mission_completion",
+          "present": true
+        },
+        {
+          "name": "function:private.approve_mission_version",
+          "present": true
+        },
+        {
+          "name": "function:private.assert_active_mission_operator",
+          "present": true
+        },
+        {
+          "name": "function:private.author_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.backfill_mission_reward_contract",
+          "present": true
+        },
+        {
+          "name": "function:private.bootstrap_staff_access",
+          "present": true
+        },
+        {
+          "name": "function:private.can_read_academy_track",
+          "present": true
+        },
+        {
+          "name": "function:private.cancel_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:private.clear_social_account_verification",
+          "present": true
+        },
+        {
+          "name": "function:private.create_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.create_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.create_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.execute_creator_crm_command",
+          "present": true
+        },
+        {
+          "name": "function:private.finalize_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.finalize_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.grant_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_academy_lesson_history",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_completed_review_round",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_completion_decision_immutable",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_finalized_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_legacy_submission_evidence",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_mission_draft_asset_owner",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_mission_work_item_source_template",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_pending_reward_update",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_instruction_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_asset_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_attempt",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_publication_proof_review_mutation",
+          "present": true
+        },
+        {
+          "name": "function:private.guard_reward_contract_immutable",
+          "present": true
+        },
+        {
+          "name": "function:private.join_mission",
+          "present": true
+        },
+        {
+          "name": "function:private.mark_mission_fulfillment_shipped",
+          "present": true
+        },
+        {
+          "name": "function:private.mission_brand_update_allowed",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_fulfillment_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_work_item_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_mission_workflow_transition",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_publication_proof_event",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_publication_proof_outcome",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_reward_handoff_event",
+          "present": true
+        },
+        {
+          "name": "function:private.notify_reward_handoff_outcome",
+          "present": true
+        },
+        {
+          "name": "function:private.raise_immutable_record",
+          "present": true
+        },
+        {
+          "name": "function:private.receive_mission_fulfillment",
+          "present": true
+        },
+        {
+          "name": "function:private.refresh_mission_workflow_state",
+          "present": true
+        },
+        {
+          "name": "function:private.request_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:private.request_publication_proof_correction",
+          "present": true
+        },
+        {
+          "name": "function:private.request_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:private.save_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:private.set_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.set_reward_processing_window",
+          "present": true
+        },
+        {
+          "name": "function:private.setup_existing_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.snapshot_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:private.start_mission_review",
+          "present": true
+        },
+        {
+          "name": "function:private.start_publication_proof_review",
+          "present": true
+        },
+        {
+          "name": "function:private.submit_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:private.v_item_round_limit",
+          "present": true
+        },
+        {
+          "name": "function:private.valid_legacy_evidence",
+          "present": true
+        },
+        {
+          "name": "function:private.verify_publication_proof",
+          "present": true
+        },
+        {
+          "name": "function:public.abandon_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.abandon_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.add_creator_review_note_command",
+          "present": true
+        },
+        {
+          "name": "function:public.apply_creator_review_command",
+          "present": true
+        },
+        {
+          "name": "function:public.approve_mission_completion",
+          "present": true
+        },
+        {
+          "name": "function:public.approve_mission_version",
+          "present": true
+        },
+        {
+          "name": "function:public.author_academy_lesson",
+          "present": true
+        },
+        {
+          "name": "function:public.author_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:public.backfill_mission_reward_contract",
+          "present": true
+        },
+        {
+          "name": "function:public.can_read_academy_track",
+          "present": true
+        },
+        {
+          "name": "function:public.cancel_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:public.claim_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.complete_academy_lesson",
+          "present": true
+        },
+        {
+          "name": "function:public.complete_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:public.create_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.create_mission_workflow",
+          "present": true
+        },
+        {
+          "name": "function:public.create_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.emit_active_mission_deadline_notifications",
+          "present": true
+        },
+        {
+          "name": "function:public.enable_pilot_if_empty",
+          "present": true
+        },
+        {
+          "name": "function:public.finalize_active_mission_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.finalize_publication_proof_asset",
+          "present": true
+        },
+        {
+          "name": "function:public.get_academy_learning",
+          "present": true
+        },
+        {
+          "name": "function:public.get_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.get_my_mission_reward_handoff",
+          "present": true
+        },
+        {
+          "name": "function:public.grant_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:public.join_active_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.join_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.list_creator_review_queue_page",
+          "present": true
+        },
+        {
+          "name": "function:public.mark_assistant_request_unknown",
+          "present": true
+        },
+        {
+          "name": "function:public.mark_mission_fulfillment_shipped",
+          "present": true
+        },
+        {
+          "name": "function:public.migrate_pristine_joined_active_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.receive_mission_fulfillment",
+          "present": true
+        },
+        {
+          "name": "function:public.refresh_mission_workflow_state",
+          "present": true
+        },
+        {
+          "name": "function:public.request_legacy_evidence_correction",
+          "present": true
+        },
+        {
+          "name": "function:public.request_mission_revision",
+          "present": true
+        },
+        {
+          "name": "function:public.request_publication_proof_correction",
+          "present": true
+        },
+        {
+          "name": "function:public.request_publication_proof_metadata_refresh",
+          "present": true
+        },
+        {
+          "name": "function:public.reserve_assistant_request",
+          "present": true
+        },
+        {
+          "name": "function:public.retry_reward_handoff_notification",
+          "present": true
+        },
+        {
+          "name": "function:public.save_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:public.save_assistant_turn",
+          "present": true
+        },
+        {
+          "name": "function:public.set_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:public.set_reward_processing_window",
+          "present": true
+        },
+        {
+          "name": "function:public.set_staff_workspace_role",
+          "present": true
+        },
+        {
+          "name": "function:public.settle_campaign",
+          "present": true
+        },
+        {
+          "name": "function:public.setup_existing_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "function:public.start_mission_review",
+          "present": true
+        },
+        {
+          "name": "function:public.start_publication_proof_review",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_active_mission_draft",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_mission",
+          "present": true
+        },
+        {
+          "name": "function:public.submit_mission_publication_proof",
+          "present": true
+        },
+        {
+          "name": "function:public.verify_publication_proof",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_public_passports(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_notes(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_review_statuses(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_accounts(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.creator_social_scan_snapshots(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.mission_shortlists(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:anon.public.operator_audit_events(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_public_passports(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_notes(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_review_statuses(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_accounts(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.creator_social_scan_snapshots(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.mission_shortlists(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(delete)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(insert)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(truncate)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:authenticated.public.operator_audit_events(update)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant-removed:service_role.public.finalize_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.private.mission_brand_update_allowed(uuid,text,integer,numeric,numeric,numeric)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.academy_lessons(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.can_read_academy_track(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.create_mission_workflow(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.creator_lesson_progress(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_academy_learning(uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_assistant_request(uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.get_my_mission_reward_handoff(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.join_active_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.join_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_deliverable_requirements(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_deliverable_templates(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_draft_assets(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_draft_versions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_fulfillments(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_instructions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_assets(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_attempts(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_review_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_publication_proof_reviews(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_review_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_review_rounds(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_revision_grants(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_work_items(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_workflow_events(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_workflows(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.mission_working_drafts(select)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.refresh_mission_workflow_state(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.abandon_active_mission_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.abandon_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.academy_lessons(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.add_creator_review_note_command(uuid,uuid,uuid,bigint,uuid,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.apply_creator_review_command(uuid,uuid,uuid,bigint,uuid,text,text,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.approve_mission_completion(uuid,uuid,uuid,text,integer,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.approve_mission_version(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.author_mission_workflow(uuid,jsonb,jsonb,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.backfill_mission_reward_contract(uuid,uuid,uuid,integer,numeric,text,integer,timestamptz,text,text,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.cancel_mission_reward_handoff(uuid,uuid,uuid,text,integer,uuid,text,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.complete_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,text,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_active_mission_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_mission_workflow(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer,text,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.creator_lesson_progress(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.emit_active_mission_deadline_notifications(timestamptz)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.enable_pilot_if_empty(uuid,uuid,text,text,text,boolean)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.finalize_active_mission_asset(uuid,uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.finalize_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text,text,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.grant_mission_revision(uuid,uuid,uuid,uuid,text,smallint)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.join_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.list_creator_review_queue_page(uuid,uuid,uuid,text,text,text,text,integer)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mark_assistant_request_unknown(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mark_mission_fulfillment_shipped(uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.migrate_pristine_joined_active_mission(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_completion_decisions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_deliverable_requirements(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_deliverable_templates(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_draft_assets(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_draft_versions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_fulfillments(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_pending_rewards(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_instructions(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_assets(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_attempts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_review_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_publication_proof_reviews(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_review_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_review_rounds(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_revision_grants(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_reward_contracts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_work_items(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_workflow_events(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_workflows(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.mission_working_drafts(all)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.receive_mission_fulfillment(uuid,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.refresh_mission_workflow_state(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_mission_revision(uuid,uuid,uuid,uuid,uuid,text,timestamptz,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_publication_proof_correction(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.request_publication_proof_metadata_refresh(uuid,uuid,uuid,uuid,text,integer,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.reserve_assistant_request(uuid,uuid,uuid,text,text,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.retry_reward_handoff_notification(uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.save_active_mission_draft(uuid,uuid,uuid,uuid,integer,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.save_assistant_turn(uuid,uuid,uuid,text,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_reward_processing_window(uuid,uuid,smallint)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.settle_campaign(uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.setup_existing_publication_instructions(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_access_audit(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_access_commands(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_platform_roles(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.staff_workspace_roles(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.start_mission_review(uuid,uuid,uuid,uuid,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.start_publication_proof_review(uuid,uuid,uuid,uuid,text,integer,uuid,uuid)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_active_mission_draft(uuid,uuid,uuid,uuid,integer,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_mission_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb,uuid[])",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.verify_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,uuid,jsonb,text)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.workspace_budget_transactions(select)",
+          "present": true
+        },
+        {
+          "name": "grant:service_role.public.workspace_budgets(select)",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lesson_one_draft",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lesson_one_published",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lessons_approved_by",
+          "present": true
+        },
+        {
+          "name": "index:public.academy_lessons.academy_lessons_track_order",
+          "present": true
+        },
+        {
+          "name": "index:public.assistant_messages.assistant_messages_request_role_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
+          "present": true
+        },
+        {
+          "name": "index:public.creators.creators_workspace_id_page_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_contract_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_pending_reward_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_completion_decisions.mission_completion_decisions_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_requirements.mission_requirements_template_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_requirements.mission_requirements_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_templates.mission_templates_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_deliverable_templates.mission_templates_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_creator_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_workflow_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_assets.mission_assets_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_submission_idempotency_key",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_versions_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_draft_versions.mission_versions_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_fulfillments.mission_fulfillments_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_one_pending_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_creator_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_submission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_pending_rewards.mission_pending_rewards_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_instructions.mission_publication_instructions_due_at_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_assets.mission_publication_proof_assets_owner_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_assets.mission_publication_proof_assets_upload_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_attempts.mission_publication_proof_attempts_late_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_attempts.mission_publication_proof_attempts_metadata_status_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_claim_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_decision_idempotency_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_one_terminal_decision_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_publication_proof_reviews.mission_publication_proof_reviews_reviewer_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_items.mission_review_items_round_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_items.mission_review_items_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_review_rounds_one_decision_per_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_version_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_review_rounds.mission_reviews_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_revision_grants.mission_revision_grants_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_revision_grants.mission_revision_grants_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_mission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_submission_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_reward_contracts.mission_reward_contracts_workspace_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_current_proof_attempt_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_queue_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_workflow_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_work_items.mission_work_items_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_timeline_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_work_item_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflow_events.mission_workflow_events_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_workflows.mission_workflows_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_working_drafts.mission_working_drafts_one_active_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.mission_working_drafts.mission_working_drafts_workspace_idx",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_actor",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_user",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_access_audit.staff_access_audit_workspace",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_platform_roles.staff_platform_roles_granted_by",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_workspace_roles.staff_workspace_roles_granted_by",
+          "present": true
+        },
+        {
+          "name": "index:public.staff_workspace_roles.staff_workspace_roles_workspace",
+          "present": true
+        },
+        {
+          "name": "policy:public.academy_lessons.academy_lessons_published_eligible",
+          "present": true
+        },
+        {
+          "name": "policy:public.assistant_requests.assistant_requests_self",
+          "present": true
+        },
+        {
+          "name": "policy:public.creator_lesson_progress.creator_lesson_progress_self",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_deliverable_requirements.mission_requirements_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_deliverable_templates.mission_templates_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_draft_assets.mission_assets_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_draft_versions.mission_versions_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_fulfillments.mission_fulfillments_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_instructions.mission_publication_instructions_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_assets.mission_publication_proof_assets_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_attempts.mission_publication_proof_attempts_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_review_items.mission_publication_proof_review_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_publication_proof_reviews.mission_publication_proof_reviews_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_review_items.mission_review_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_review_rounds.mission_reviews_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_revision_grants.mission_revision_grants_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_work_items.mission_work_items_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_workflow_events.mission_events_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_workflows.mission_workflows_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.mission_working_drafts.mission_working_drafts_creator_read",
+          "present": true
+        },
+        {
+          "name": "policy:public.missions.missions_brand_update",
+          "present": true
+        },
+        {
+          "name": "policy:public.missions.missions_workspace",
+          "present": true
+        },
+        {
+          "name": "rls:public.academy_lessons",
+          "present": true
+        },
+        {
+          "name": "rls:public.assistant_requests",
+          "present": true
+        },
+        {
+          "name": "rls:public.creator_lesson_progress",
+          "present": true
+        },
+        {
+          "name": "rls:public.legacy_evidence_corrections",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_completion_decisions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_deliverable_requirements",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_deliverable_templates",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_draft_assets",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_draft_versions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_fulfillments",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_pending_rewards",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_assets",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_attempts",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_review_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_publication_proof_reviews",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_review_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_review_rounds",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_revision_grants",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_reward_contracts",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_work_items",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_workflow_events",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_workflows",
+          "present": true
+        },
+        {
+          "name": "rls:public.mission_working_drafts",
+          "present": true
+        },
+        {
+          "name": "rls:public.operator_crm_command_receipts",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_access_audit",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_access_commands",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_platform_roles",
+          "present": true
+        },
+        {
+          "name": "rls:public.staff_workspace_roles",
+          "present": true
+        },
+        {
+          "name": "storage-bucket:storage.buckets.mission-draft-assets",
+          "present": true
+        },
+        {
+          "name": "storage-bucket:storage.buckets.mission-publication-proof-assets",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_delete",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_insert",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_read",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_draft_assets_storage_update",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_publication_proof_assets_storage_insert",
+          "present": true
+        },
+        {
+          "name": "storage-policy:storage.objects.mission_publication_proof_assets_storage_read",
+          "present": true
+        },
+        {
+          "name": "table:private.mission_draft_submission_idempotency",
+          "present": true
+        },
+        {
+          "name": "table:private.mission_workflow_notification_dedupe",
+          "present": true
+        },
+        {
+          "name": "table:public.academy_lessons",
+          "present": true
+        },
+        {
+          "name": "table:public.assistant_requests",
+          "present": true
+        },
+        {
+          "name": "table:public.creator_lesson_progress",
+          "present": true
+        },
+        {
+          "name": "table:public.legacy_evidence_corrections",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_completion_decisions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_deliverable_requirements",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_deliverable_templates",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_draft_assets",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_draft_versions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_fulfillments",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_pending_rewards",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_assets",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_attempts",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_review_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_publication_proof_reviews",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_review_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_review_rounds",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_revision_grants",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_reward_contracts",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_work_items",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_workflow_events",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_workflows",
+          "present": true
+        },
+        {
+          "name": "table:public.mission_working_drafts",
+          "present": true
+        },
+        {
+          "name": "table:public.operator_crm_command_receipts",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_access_audit",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_access_commands",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_platform_roles",
+          "present": true
+        },
+        {
+          "name": "table:public.staff_workspace_roles",
+          "present": true
+        },
+        {
+          "name": "trigger:public.academy_lesson_history_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.creator_social_accounts_clear_verification",
+          "present": true
+        },
+        {
+          "name": "trigger:public.legacy_submission_evidence_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_completed_reviews_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_completion_decisions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_draft_versions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_finalized_assets_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_fulfillment_workflow_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_pending_rewards_guarded_update",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_instructions_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_assets_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_attempts_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_review_items_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_publication_proof_reviews_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_revision_grants_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_reward_contracts_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_item_workflow_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_items_snapshot_publication_instructions",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_work_items_source_template_guard",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_workflow_events_immutable",
+          "present": true
+        },
+        {
+          "name": "trigger:public.mission_workflow_state_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.publication_proof_workflow_event_notifications",
+          "present": true
+        },
+        {
+          "name": "trigger:public.reward_handoff_workflow_event_notifications",
+          "present": true
+        }
+      ],
+      "passed": 584,
+      "total": 584,
+      "missing": []
+    }
+  ]
+}

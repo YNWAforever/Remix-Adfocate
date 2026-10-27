@@ -1,0 +1,60 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/manifest.test.ts (16 tests) 5026ms
+   ✓ release migration manifest > orders, classifies, hashes, and digests the complete reviewed range 358ms
+   ✓ release migration manifest > rejects unreviewed migrations before, inside, or after the reviewed range 339ms
+   ✓ release migration manifest > rejects empty, truncated, and interior-incomplete reviewed ranges 433ms
+   ✓ release migration manifest > runs write as a direct vite-node CLI and prints its digest 626ms
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 549ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 497ms
+   ✓ release migration manifest > detects an edited, deleted, or newly added baseline migration 525ms
+   ✓ release migration manifest > rejects migrations the timestamp filter used to drop 524ms
+ ✓ scripts/release/preflight.test.ts (12 tests) 150ms
+ ✓ scripts/release/observer.test.ts (8 tests) 10ms
+ ✓ scripts/release/pilot.test.ts (6 tests) 27ms
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}
+ ✓ scripts/release/cli.test.ts (7 tests) 9096ms
+   ✓ release npm entrypoints > fails closed when release:execute runs without database configuration 2619ms
+   ✓ release npm entrypoints > fails closed when release:evidence runs without an input file 2290ms
+   ✓ guarded pilot/observer commands > executes the npm/vite-node evaluate boundary even when VITEST is inherited 1827ms
+   ✓ guarded pilot/observer commands > executes the real npm entrypoint and fails closed with JSON 2343ms
+ ✓ scripts/release/supabase-workflow-contract.test.ts (9 tests) 14ms
+ ✓ scripts/release/deployment.test.ts (8 tests) 18ms
+ ✓ scripts/release/rehearsal.test.ts (9 tests) 24ms
+ ✓ scripts/release/executor.test.ts (5 tests) 12ms
+ ✓ server/lib/insights.test.ts (8 tests) 7ms
+ ✓ scripts/release/evidence.test.ts (7 tests) 19ms
+ ✓ scripts/release/target-guard.test.ts (9 tests) 20ms
+ ✓ scripts/release/release-acceptance.test.ts (4 tests) 1852ms
+   ✓ production release foundation acceptance > fails closed at the package rehearsal entrypoint without disposable targets 1849ms
+ ✓ src/audit-tests/operator-continuation.audit.test.tsx (5 tests) 199ms
+ ✓ server/lib/insights-quality.test.ts (4 tests) 8ms
+ ✓ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests) 126ms
+ ✓ src/components/assistant/AssistantPanel.test.tsx (4 tests) 142ms
+ ✓ src/audit-tests/crm-atomicity.audit.test.ts (2 tests) 4ms
+ ✓ src/lib/queries/productOutcome.test.tsx (3 tests) 85ms
+ ✓ src/audit-tests/admin-creators.audit.test.tsx (2 tests) 172ms
+ ✓ src/audit-tests/admin-decisions.audit.test.tsx (1 test) 115ms
+ ✓ server/test/insights-window-contract.test.ts (2 tests) 12ms
+ ✓ src/lib/productOutcomeAnalytics.test.ts (2 tests) 3ms
+ ✓ src/audit-tests/my-missions.audit.test.tsx (3 tests) 63ms
+ ✓ scripts/release/process.test.ts (1 test) 5ms
+ ✓ src/audit-tests/staff-unavailable.audit.test.tsx (1 test) 70ms
+ ✓ scripts/release/ci-workflow-contract.test.ts (1 test) 2ms
+
+ Test Files  27 passed (27)
+      Tests  141 passed (141)
+   Start at  20:04:41
+   Duration  57.71s (transform 720ms, setup 5.78s, collect 3.04s, tests 17.28s, environment 24.61s, prepare 2.72s)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D17-targeted-final.json

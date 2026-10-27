@@ -1,0 +1,30 @@
+{
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "scope": {
+    "namespace": "8b55f4f3-1200-40af-91b5-2bdc35790e57",
+    "workspaceId": "dde7faa2-9541-4e9a-a55c-2333f60cc801",
+    "slug": "d19-support-8b55f4f3-1200-40af-91b5-2bdc35790e57",
+    "createdThisRun": true
+  },
+  "baseline": {
+    "authUsers": 0,
+    "campaigns": 0,
+    "submissions": 0,
+    "cronLaunchActiveJobs": "off"
+  },
+  "source": "New workspace created only after live identity and zero-data checks",
+  "cleanup": "No deletes: exact new fixture IDs retained for inspection",
+  "originalIncident": "OPEN, untouched"
+}

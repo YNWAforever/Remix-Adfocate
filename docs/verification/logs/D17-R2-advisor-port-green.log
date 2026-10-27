@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+{"target":"empty","notices":0,"schemaMatchesD19":true}
+{"target":"shaped","notices":0,"schemaMatchesD19":true}
+ ✓ scripts/audit/inspect-d17-r2-advisors.test.ts (4 tests) 38ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D17-R2-advisor-port-green.json
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  11:11:59
+   Duration  1.67s (transform 51ms, setup 205ms, collect 29ms, tests 38ms, environment 1.01s, prepare 148ms)
+

@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-25T16:45:30.726470+00:00",
+  "status": "PASS_LOCAL_MIGRATION_SCOPE_RECONCILIATION_NOT_RUNTIME_ACCEPTANCE",
+  "tasks": [
+    "D02",
+    "D19"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "code": "Application788/SQL73, protected manifest and pending C2 unchanged; local verification artifacts and metadata only.",
+  "test": "File hashes/source assertions and retained native evidence inspected; no new application or memory suite. Retained current Node22 full2129/0/363 and separate legacy memory7/0/0 remain at their original bindings.",
+  "runtime": "No target/client/engine/Auth/session/fixture/migration/provider operation. C2 runtime remains unapproved/not run; planned current nonempty73 comparison is now mapped accurately.",
+  "review": {
+    "path": "docs/verification/D19-migration-preservation-20261026/review.json",
+    "sha256": "aa3b980e3d7b94449a9d99b9073894dc565e856ab8adb57ac9bd2ea1147f89bb"
+  },
+  "facts": {
+    "path": "docs/verification/D19-migration-preservation-20261026/migration-provenance.json",
+    "sha256": "74e7b20f576ad4632497ba469a5037fc1eb1ccaf98ff2b50c5fc74d0ab0cd5fc"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-migration-preservation-20261026/remaining-acceptance.json",
+    "sha256": "a2270f2c64fecfc4cbef6350728179396421e91df5c4361bd6fa17653a26d6ba"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-migration-preservation-20261026/case-coverage.json",
+    "sha256": "fb07a09669c8c0a3164771d494431765b861820e35aed419b4fd5a969e3510fe"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-migration-preservation-20261026/rollback.json",
+    "sha256": "ed4ee7fc95b86a8b2e65308f024bf688b340272c7a15b0ea51317dc36c7d0312"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "priorDelivery": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/delivery.json",
+    "sha256": "d886599f476a23510a85fe45bcef795e30fa06e6848842a89c092ef09f46ead2"
+  },
+  "c2SourceManifestApprovalUnchanged": true,
+  "c2ApprovalPending": true,
+  "newTargetsRequestedOrApproved": 0,
+  "actualTargetCalls": 0,
+  "databaseEnginesCreated": 0,
+  "newTestRuns": 0,
+  "formalMembershipOrRoleWrites": 0,
+  "productionWrites": 0,
+  "providerCalls": 0,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "deployment": "NOT_DEPLOYED",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: retain the existing exact C2 application-runtime question and await explicit approval; do not request another target for the same nonempty73 preservation assertion. After approval, fresh identity/provenance must precede forward73 and complete old-row/financial comparisons before SDK/setup. No C2 runtime action is authorized by this review. Other original R1 asset/Creator-isolation/legacy/UI facets and existing blockers remain open.",
+  "changedThisTurn": [
+    "docs/verification/D19-migration-preservation-20261026/",
+    "docs/verification/D19-migration-preservation-integrity.json",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json"
+  ]
+}

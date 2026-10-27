@@ -1,0 +1,20 @@
+{
+  "classification": "Readonly probe assumption failure before its first SQL: original catalog query is a plain SELECT, not an explicit transaction. No product/target failure inferred.",
+  "files": [
+    {
+      "source": ".codex-tmp/D19-C2-readonly-provenance.mjs",
+      "copy": "docs/verification/D19-C2-runtime-20261026/readonly-initial-source/D19-C2-readonly-provenance.mjs",
+      "sha256": "344fc481a07f4765ad2a7ebc732bee127f5b81bec843a2c3c01b19e1c15d62e8"
+    },
+    {
+      "source": ".codex-tmp/D19-C2-readonly-run.py",
+      "copy": "docs/verification/D19-C2-runtime-20261026/readonly-initial-source/D19-C2-readonly-run.py",
+      "sha256": "f4d1aa9afb16407dc97b8b24e4614f8c9d193ab7363dc456cad92f9e95c588ab"
+    },
+    {
+      "source": "docs/verification/D19-C2-runtime-20261026/read-only-provenance.json",
+      "copy": "docs/verification/D19-C2-runtime-20261026/readonly-initial-source/read-only-provenance.json",
+      "sha256": "f3d8860e900c03063f468c53dddceac2d4fb6c60cd2573c7ba4542e645c93e08"
+    }
+  ]
+}

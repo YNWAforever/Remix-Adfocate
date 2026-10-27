@@ -1,0 +1,14 @@
+{
+  "atUtc": "2026-10-25T04:52:43.231628+00:00",
+  "reason": "Docker default pools exhausted; initial network operation returned exit1",
+  "projectId": "adfocate-d19-b2-20261025-b0db3134",
+  "newProjectResourcesAbsent": true,
+  "dockerIpv4SubnetCount": 34,
+  "dockerSubnetsDigest": "0681d1367790303d12d36583c601224c927f5c429905816041439ae6dc17874c",
+  "hostIpv4NonDefaultRouteCount": 22,
+  "selectedSubnet": "10.251.219.0/28",
+  "selectedGateway": "10.251.219.1",
+  "overlaps": 0,
+  "existingNetworksOrDaemonChanged": false,
+  "manifestResourceCapsUnchanged": true
+}

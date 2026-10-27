@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-25T19:06:40.982675+00:00",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceFiles": 789,
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "69ede65e6fa6ce4da06254ed7633634330f76788d48b13b75c1a1b73796b5e51",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/adfocate-delivery.json"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "a84f8217f7b9a09a4c5545c84864e421d8a139c630ee8c34867f80ad9df0cf15",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/audit_case_coverage.csv"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "0a8bf4d516ffddbe5dd729a50d32b46783b0814ec8efbe449bf2b94562202d3d",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/implementation_backlog.csv"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "b9401963af001aa2b867f0e0d5e8288f0329755fb5605b7e4cc5798b9f2eab73",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/adfocate-task-ledger.md"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "sha256": "a4e43133b0eb82733ddcb6c60d1157834ac32a1d5d5e61434a33f4800cfb322e",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/evidence-integrity.json"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "912b68ac3a53bf2593b48a04f5fcad28dc9918658d8bd787a73228230dea4b9a",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/code-fingerprint.json"
+    },
+    {
+      "path": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+      "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-C2-transport-continuation-runtime-manifest.json"
+    },
+    {
+      "path": "docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json",
+      "sha256": "8b95af97e36481ce22bf5f06e0293a1be0430bd5855e069b20c36cd574bd3b0d",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894",
+      "before": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+    }
+  ],
+  "previousGoalTurn": "PROGRESS: bounded transport repair, full2133/0/363 and source-bound C2 continuation packet completed",
+  "scope": "Independent local UI/API verification only, scripted Auth/DB, no SDK/client/SQL/Docker/provider/browser runtime. Keep current source/SQL/C2 manifest/auth bytes fixed. No original role/core/browser/pristine acceptance rerun."
+}

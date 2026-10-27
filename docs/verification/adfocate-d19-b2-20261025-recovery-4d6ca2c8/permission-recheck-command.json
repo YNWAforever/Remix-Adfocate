@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-10-25T06:47:24.396655+00:00",
+  "finishedAt": "2026-10-25T06:47:31.935010+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/devApi.test.ts",
+    "server/devApi.transport.test.ts",
+    "scripts/release/manifest.test.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "--no-file-parallelism",
+    "--reporter=json",
+    "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\permission-recheck.json"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "log": "permission-recheck.log",
+  "report": "permission-recheck.json",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

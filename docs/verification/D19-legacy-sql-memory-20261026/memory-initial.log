@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: same saved legacy submission credits points,XP,cash and budget exactly once across retries
+ok 1 - same saved legacy submission credits points,XP,cash and budget exactly once across retries
+  ---
+  duration_ms: 1373.6611
+  type: 'test'
+  ...
+# Subtest: insufficient budget changes no rows and a separately declared memory top-up permits one approval
+ok 2 - insufficient budget changes no rows and a separately declared memory top-up permits one approval
+  ---
+  duration_ms: 1014.4327
+  type: 'test'
+  ...
+# Subtest: a late cash-ledger insert fault rolls back the earlier point and budget effects then permits one recovery
+ok 3 - a late cash-ledger insert fault rolls back the earlier point and budget effects then permits one recovery
+  ---
+  duration_ms: 1048.7062
+  type: 'test'
+  ...
+# Subtest: a final Creator XP write fault rolls back saved review,status,revision and every financial row
+ok 4 - a final Creator XP write fault rolls back saved review,status,revision and every financial row
+  ---
+  duration_ms: 1128.5633
+  type: 'test'
+  ...
+# Subtest: the actual evidence guard rejects a synthetic pre-guard invalid URL and rolls back all awards
+ok 5 - the actual evidence guard rejects a synthetic pre-guard invalid URL and rolls back all awards
+  ---
+  duration_ms: 1099.4064
+  type: 'test'
+  ...
+# Subtest: a non-cash legacy mission preserves cash and budget while its points and ordinary XP accrue once
+ok 6 - a non-cash legacy mission preserves cash and budget while its points and ordinary XP accrue once
+  ---
+  duration_ms: 1074.5922
+  type: 'test'
+  ...
+# Subtest: the original ACL denies anon/authenticated and permits service role execution
+ok 7 - the original ACL denies anon/authenticated and permits service role execution
+  ---
+  duration_ms: 1090.0717
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8080.5344

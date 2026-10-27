@@ -1,0 +1,15 @@
+{
+  "passed": 0,
+  "failed": 2,
+  "skipped": 11,
+  "failures": [
+    {
+      "test": "previews earning concepts in Chinese without offering real withdrawals",
+      "message": "AssertionError: expected ' KOCMAX × ADFOCATE由第一篇開箱，做到創作者事業。成長、配…' not to contain '提取真實港幣'"
+    },
+    {
+      "test": "previews earning resources with a clear preparation label",
+      "message": "Error: Unable to find an element with the text: Course topics preview · content in preparation. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more"
+    }
+  ]
+}

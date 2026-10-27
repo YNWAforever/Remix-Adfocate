@@ -1,0 +1,1681 @@
+{
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full-verified.json",
+  "passed": 1993,
+  "failed": 0,
+  "skipped": 363,
+  "testFiles": 278,
+  "originalAudit16": 16,
+  "protected194": 194,
+  "integrationSkipIsNotPass": true,
+  "files": [
+    {
+      "path": "server/devApi.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/devApi.transport.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/academyAuthoring.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/brandAuth.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/campaignAuthoring.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/campaignLeaderboard.test.ts",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/contentAuthoring.test.ts",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/engagedRoster.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/hookGen.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/insights-quality.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/insights.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/llm.assistant.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/llm.test.ts",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/missionActivity.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/missionAuthoring.test.ts",
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/missionMatch.test.ts",
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/passport.test.ts",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/radar.test.ts",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/staffCapabilities.test.ts",
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/trust.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/academy-availability.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/academy-seed.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "path": "server/test/academy.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/acceptance-target-retirement.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "passed": 45,
+      "failed": 0,
+      "skipped": 9
+    },
+    {
+      "path": "server/test/active-missions-publication-operator.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "passed": 85,
+      "failed": 0,
+      "skipped": 8
+    },
+    {
+      "path": "server/test/admin-reward-handoffs.test.ts",
+      "passed": 53,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/admin-staff.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "path": "server/test/admin.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 16
+    },
+    {
+      "path": "server/test/adminAcademy.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/adminContent.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/app.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/applications.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "path": "server/test/assistant.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/audit-academy-progress.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 12
+    },
+    {
+      "path": "server/test/audit-admin-scope.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-assistant-persistence.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-forward-migrations.embedded.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-identity-contract.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8
+    },
+    {
+      "path": "server/test/audit-legacy-evidence.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-mission-authoring-contract.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/audit-mission-authoring.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-mission-list-contract.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/audit-mission-list-projection.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-public-claims-contract.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/audit-quality.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/audit-schema-compatibility.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/audit-staff-capabilities.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8
+    },
+    {
+      "path": "server/test/audit-workflow-roundtrip.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8
+    },
+    {
+      "path": "server/test/bootstrap.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/brand.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "path": "server/test/brandResources.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/campaigns-s2.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/campaigns.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 20
+    },
+    {
+      "path": "server/test/content.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/copilot.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/cron-daily.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/cron-social-refresh.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/fixture-ownership.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/fixture-staff-grants.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/insights-window-contract.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/insights.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/leveling.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "path": "server/test/match.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "path": "server/test/me.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/mission-assist.test.ts",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/mission-authoring-schema.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/missionAuthoring.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 23
+    },
+    {
+      "path": "server/test/missions.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 17
+    },
+    {
+      "path": "server/test/notifications-api.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/notifications-triggers.test.ts",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 11
+    },
+    {
+      "path": "server/test/onboarding.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/operator-crm-schema.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/operator-crm.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 15
+    },
+    {
+      "path": "server/test/passport.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 11
+    },
+    {
+      "path": "server/test/pilot-fixture-ownership.test.ts",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/profile-media-schema.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 9
+    },
+    {
+      "path": "server/test/profile-media.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "path": "server/test/public-passport.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "path": "server/test/publication-proof-asset-grant-live.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "path": "server/test/publication-proof-operator-read-live.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/publication-proof-review-live.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/radar.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/redemption.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 8
+    },
+    {
+      "path": "server/test/responseDiagnostics.test.ts",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/review-hardening-schema.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/reward-contracts.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "path": "server/test/reward-handoffs.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 13
+    },
+    {
+      "path": "server/test/run-integration-tests.test.ts",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/social-schema.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/social.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/staff-access-schema.embedded.test.ts",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/staff-capability-boundary.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/staffAuth.test.ts",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/support-fresh-scope.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/support-rpc-ownership.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/verificationGate.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 6
+    },
+    {
+      "path": "server/test/wallet.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 4
+    },
+    {
+      "path": "server/test/workspace.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/chat.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/chunk.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/collect.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/contextPolicy.test.ts",
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/prompt.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/requestPolicy.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/retrieve.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/assistant/tools.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/operatorCrm/serializers.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/activeMission/metrics.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/activeMission/proofUrl.test.ts",
+      "passed": 67,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/activeMission/state.test.ts",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/profileMedia/service.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/social/passportSocial.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/social/rapidApi.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/social/repo.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/lib/social/service.test.ts",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "server/test/fixtures/publicationProofRelease.onboarding.test.ts",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "server/test/fixtures/publicationProofRelease.test.ts",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 2
+    },
+    {
+      "path": "src/main.analytics.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/admin-creators.audit.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/admin-decisions.audit.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/admin-live-followup.audit.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/crm-atomicity.audit.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/my-missions.audit.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/operator-continuation.audit.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/audit-tests/staff-unavailable.audit.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/-MissionBrief.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/-MissionFacts.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/AcademyTrackCard.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/AuthFeedback.return.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/AuthFeedback.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/BottomNav.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/components.test.tsx",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/creator-activation.test.tsx",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/CreatorProfileMediaPanel.test.tsx",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/CreatorWorkHome.test.tsx",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/HookPanel.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/IdentityHeader.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/LangToggle.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/LevelChip.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/LevelProgress.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/LevelUpModal.test.tsx",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/Markdown.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/MissionCard.contract.test.tsx",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/MissionCommitmentSummary.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/NotificationBadge.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/PassportTrustSummary.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/RedeemGiftCard.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/ScoreRing.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/SideNav.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/SocialTrustPanel.test.tsx",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/-missionMeta.test.ts",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/activationAnalytics.test.ts",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/activeMission.mixed.test.ts",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/activeMission.test.ts",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/admin.test.ts",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/adminRewardHandoff.test.ts",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/auth-flow.test.ts",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/authFeedback.test.ts",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/brand.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/creatorActivation.statuses.test.ts",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/creatorActivation.test.ts",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/creatorFormatting.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/creatorQueueSearch.test.ts",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/guideProgress.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/i18n.test.tsx",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/levels.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/missionCategories.test.ts",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/notifications.test.ts",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/passport.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/productOutcomeAnalytics.test.ts",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/socialAccountPresentation.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/useCreatorActivation.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/useRealtimeBalance.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/workspace.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/workspaceCalendar.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-academy-learning.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.applications.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.campaigns.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.creators-access.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.creators.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.engaged.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.insights.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.missions.editor.test.tsx",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.missions.index.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.missions.manage.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.radar.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.reward-handoffs.test.tsx",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.submissions-evidence.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.submissions.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-admin.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-app.auth.callback.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-brand.resources.$slug.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-brand.resources.index.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-brand.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-operator.creators.$creatorId.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-operator.missions.$missionId.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-passport.$token.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-public-claims.test.tsx",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-r2-support-ui.test.tsx",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.auth.callback.test.tsx",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.auth.reset-password.test.tsx",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.campaigns.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.gate.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.guide.index.test.tsx",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.guide.track.$trackId.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.home.test.tsx",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.login.test.tsx",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.match.test.tsx",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.mission.$missionSlug.test.tsx",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.mission.index.test.tsx",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.my.$submissionId.test.tsx",
+      "passed": 25,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.my.layout.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.my.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.news.index.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.notifications.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.onboarding.test.tsx",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.passport.test.tsx",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.profile.test.tsx",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.redemption.history.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/-_app.wallet.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/routes/_site.smoke.test.tsx",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/active-mission.i18n.test.tsx",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/active-mission.review.test.tsx",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/active-mission.test.tsx",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/ProofAttemptHistory.copy.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/ProofAttemptHistory.review.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/ProofAttemptHistory.reward-locales.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/RewardPendingCard.review.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/active-mission/RewardPendingCard.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/AcademyEditor.test.tsx",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/AcademyLessons.authoring.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/AcademyMetadataForm.test.tsx",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/ActiveMissionReview.test.tsx",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/AdminSideNav.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/ArrayInput.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/ContentEditor.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/MissionCompletionReview.test.tsx",
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/MissionEditor.permissions.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/PlatformPicker.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/ProofPolicyFields.test.tsx",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/RewardHandoffQueue.test.tsx",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/StaffAccessShell.test.tsx",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/StaffAuthGate.scope.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/StaffAuthGate.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/TrendChart.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/admin/WorkspaceSwitcher.test.tsx",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/brand/BrandNav.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/assistant/AssistantPanel.test.tsx",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/assistant/MissionAssistPanel.test.tsx",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/marketing/MarketingHeader.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/components/onboarding/OnboardingShell.test.tsx",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/activeMission.race.test.tsx",
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/activeMission.test.tsx",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/assistant.test.tsx",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/kocmax.test.tsx",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/productOutcome.test.tsx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "src/lib/queries/redemption-earnings.test.tsx",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/seed-reward-handoff-acceptance.test.ts",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/audit/inspect-d17-r2-advisors.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/ci-workflow-contract.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/cli.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/deployment.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/evidence.test.ts",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/executor.test.ts",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/manifest.test.ts",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/observer.test.ts",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/pilot.test.ts",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/preflight.test.ts",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/process.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/rehearsal.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/release-acceptance.test.ts",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/staff-access.test.ts",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/supabase-workflow-contract.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "path": "scripts/release/target-guard.test.ts",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    }
+  ]
+}

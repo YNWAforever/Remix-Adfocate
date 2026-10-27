@@ -1,0 +1,237 @@
+{
+  "at": "2026-10-24T14:31:47.486927+00:00",
+  "task": "D19 optionA only, Q1-Q3",
+  "status": "A_READS_PERFORMED_WITH_FILE_ACCESS_LIMITS_RESTORE_STILL_UNSUPPORTED",
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "sourceRecords": 353,
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "authorization": {
+    "source": "Current user explicitly approved A/Q1-Q3",
+    "approved": "Identity first; read-only before-image, current-state and dependency investigation on the original isolated target",
+    "notApproved": [
+      "Restoration",
+      "Deletion",
+      "New target or business data",
+      "Service/daemon lifecycle change",
+      "Role/grant/privilege change",
+      "Pristine acceptance rerun",
+      "Incident closure or HOLD release",
+      "Commit/push/merge/deploy"
+    ]
+  },
+  "newResult": {
+    "code": "Evidence/documents and ignored read-only helper only; application/test/config/migration source unchanged",
+    "test": "No application/full/integration/browser/pristine RPC test rerun. Document/source/hash/authorization checks only.",
+    "deployment": "not-deployed; no commit/push/merge/deploy; canDeploy/canEnablePilot=false",
+    "runtime": "Authorized A reads on the exact original shaped target: 13 successful READ ONLY SQL sessions and 2 aborted read sessions, plus bounded log/catalog metadata reads. Three current closed rows and identified dependencies confirmed; no trustworthy keyed before image found. Server-file permission denial respected. Incident OPEN and unrestored."
+  },
+  "Q1Q2Q3": {
+    "Q1": {
+      "status": "PARTIAL_IDENTITY_AND_ACCESSIBLE_CATALOG_VERIFIED_SERVER_FILES_BLOCKED",
+      "verified": [
+        "Exact local Docker endpoint/API/DB IDs/images/project/network/ports and original data-volume identity; same at postflight",
+        "2 project-name/label volumes are current live resources, not a before-image backup",
+        "Known local CLI project tree metadata:2 non-secret files,0 backup-named files",
+        "Current archive_mode off, archive_command absent, log_statement ddl, logging_collector off, track_commit_timestamp off; no current logical slots"
+      ],
+      "blocked": "pg_stat_file explicitly denied; statement returned no usable server-file metadata. No further pg_ls/pg_stat/pg_read/WAL-content/OS-path/role-switch workaround attempted.",
+      "unknown": [
+        "PGDATA backup markers and stored WAL files/content",
+        "Whether before-incident settings differed",
+        "External/rotated/unlabelled snapshots, base-backup/WAL chains or inaccessible backup sources"
+      ],
+      "evidence": [
+        "D19-incident-A-identity.json",
+        "D19-incident-A-q1-catalog.json",
+        "D19-incident-A-q1-recovery-catalog.json",
+        "D19-incident-A-q1-project-inventory.json",
+        "D19-incident-A-server-file-denial.json"
+      ]
+    },
+    "Q2": {
+      "status": "NO_CREDIBLE_READABLE_BEFORE_IMAGE_FOUND_IN_APPROVED_ACCESSIBLE_SOURCES",
+      "verified": [
+        "3 exact-ID app audit channel scans each returned0 references; SELECT visibility not hidden by RLS",
+        "Current retained Docker log window scanned6012 unique source lines:DB420/API5592;API3 exact-ID hits are HTTP access records without a complete keyed row body",
+        "API structural recheck matched the exact same stream SHA256; no raw URI, headers, body, actor or Auth data exported"
+      ],
+      "unknown": [
+        "Original closed_at/updated_at and direct before status",
+        "ID-to-original-missing-MD5 assignment",
+        "Readable full before image in inaccessible server files or unprovided external source"
+      ],
+      "evidence": [
+        "D19-incident-A-q2-audit-operator.json",
+        "D19-incident-A-q2-audit-workflow.json",
+        "D19-incident-A-q2-audit-staff.json",
+        "D19-incident-A-q2-database-log-scan.json",
+        "D19-incident-A-q2-api-log-structure.json"
+      ]
+    },
+    "Q3": {
+      "status": "VERIFIED_SCOPED_CURRENT_ROWS_CATALOG_AND_IDENTIFIED_DEPENDENCIES",
+      "verified": [
+        "3 rows stillclosed at original incident timestamp; initial/final current full-row hashes equal",
+        "3 current AFTER hashes present in both saved post-incident vectors, none equals a missing original BEFORE hash",
+        "No current campaign user triggers;3 inbound FK families and notification entity references each0 for every ID",
+        "Effective SELECT exists and row_security_active isfalse onall8 queried public relations"
+      ],
+      "unknown": [
+        "Transient/intervening history between stored points",
+        "Unstructured/encoded/external references beyond identified FK/notification/audit predicates",
+        "Future current-state drift; any later write requires another fresh compare-and-swap snapshot"
+      ],
+      "evidence": [
+        "D19-incident-A-q3-current-rows.json",
+        "D19-incident-A-q3-final-rows.json",
+        "D19-incident-A-q3-campaign-schema.json",
+        "D19-incident-A-q3-query-visibility.json",
+        "D19-incident-A-q3-after-hash-corroboration.json"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "campaignId": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "5c7ac86b9595bcb533e1655d1a67e0e5",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    },
+    {
+      "campaignId": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "06f22d67db0ec6a8c5e85efdfb663812",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    },
+    {
+      "campaignId": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "ef813976a7295c6a2d22e3aaf7fed5cb",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    }
+  ],
+  "outcome": {
+    "trustworthyKeyedBeforeImageFound": false,
+    "exactRestoreSupportedNow": false,
+    "noBackupAnywhereClaimed": false,
+    "originalBeforeTimestampValues": "UNKNOWN",
+    "current3RowsDirectlyConfirmed": true,
+    "currentDependencyCountsKnownWithinScope": true,
+    "serverFileAccess": "PERMISSION_DENIED_NOT_BYPASSED",
+    "businessDataMutated": false,
+    "readOnlySqlSucceeded": 13,
+    "readOnlySqlAborted": 2,
+    "preSqlGuardRefusal": 1,
+    "businessRpcOrAcceptanceTestsRun": 0,
+    "servicesStartedStoppedRecreated": 0
+  },
+  "originalIncidentStatus": "OPEN",
+  "restored": false,
+  "releaseHold": true,
+  "wholeCurrentR1Verified": false,
+  "canDeploy": false,
+  "canEnablePilot": false,
+  "providerEnabled": false,
+  "D15ContentBlocked": true,
+  "advisorOwnerDeviceHostedAndFormalStaffBlocked": true,
+  "caseFindings": "D19-incident-A-case-findings.json",
+  "nextDecisions": "D19-incident-A-next-decisions.json",
+  "evidenceSources": "D19-incident-A-evidence-sources.json",
+  "report": "D19-incident-A-report.md",
+  "integrity": "D19-incident-A-integrity.json",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false
+}

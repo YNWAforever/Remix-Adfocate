@@ -1,0 +1,64 @@
+{
+  "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "missionIds": [
+    "7fc59bfa-a605-4f84-b2af-5a3d736e5380",
+    "9f838fcd-c294-4143-b7dd-66088d4ca70d",
+    "7c15763b-c2c6-4704-93c1-015940c43304",
+    "9c95550c-151e-4339-9134-edeb2e16d335"
+  ],
+  "foreignMissionId": "10c90641-5178-41b8-a104-25ec50ed7714",
+  "decisionFields": [
+    "cash_reward",
+    "required_level",
+    "platforms",
+    "deliverables",
+    "effort",
+    "brand",
+    "deadline",
+    "quota",
+    "filled",
+    "points_reward",
+    "access_type",
+    "mission_type"
+  ],
+  "neutrality": {
+    "before": {
+      "xp": 10,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 10,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true
+  },
+  "externalProviders": "LLM enhancement mocked; external HTTP blocked; no notifications sent",
+  "cleanup": "retained exact IDs; no reset or delete"
+}

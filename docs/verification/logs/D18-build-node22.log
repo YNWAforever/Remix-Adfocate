@@ -1,0 +1,15 @@
+
+> build
+> npm run check:esm && tsr generate && tsc --noEmit && vite build
+
+
+> check:esm
+> node scripts/check-esm-extensions.mjs
+
+
+✖ ESM extension check failed: 2 relative import(s) without a runtime extension.
+  Node's production ESM loader requires explicit extensions — add `.js` (TypeScript compiles to .js):
+
+  server\test\staffCapabilityFixture.ts:4  →  "./auditWorkflowFixture"   (should be "./auditWorkflowFixture.js")
+  server\test\staffCapabilityFixture.ts:9  →  "./auditWorkflowFixture"   (should be "./auditWorkflowFixture.js")
+

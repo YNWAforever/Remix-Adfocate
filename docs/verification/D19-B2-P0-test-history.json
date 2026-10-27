@@ -1,0 +1,298 @@
+{
+  "history": [
+    {
+      "privateFile": "B2-P0-bootstrap-entry-red.json",
+      "rawSha256": "50e15e91c2e6b1359a3f72c8c15a1462d1fce329d77a19122db37e6abc85df44",
+      "passed": 9,
+      "failed": 1,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "TypeError: verifiedB2BootstrapTarget is not a function"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-bootstrap-green.json",
+      "rawSha256": "481a196d1561f848ff98eb8a0c6137dcc698a11f3cb138bbd6b943d20ed82453",
+      "passed": 4,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-bootstrap-red.json",
+      "rawSha256": "6cb93f1587bc0c1c406cd87dd78e18c3da11856efd52c9924afddedb3d141dfa",
+      "passed": 0,
+      "failed": 0,
+      "pending": 0,
+      "success": false,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-browser-journal-green.json",
+      "rawSha256": "1473508f418da2ca5612f3fccdaf051a0961144c12a4d4b38474cb4f64087239",
+      "passed": 8,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-browser-journal-red.json",
+      "rawSha256": "7b7c426e1cb4c1fd8af6bf6a2afdc696b233eefe918225a6a7961f16a094606b",
+      "passed": 7,
+      "failed": 1,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "TypeError: __vite_ssr_import_4__.bindBrowserJournal is not a function"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-full-attempt1.json",
+      "rawSha256": "3f701b4a4fcb5445754cc8c308975e23dc4d49eaf8bbb5c9dd21cff24fe8d3ec",
+      "passed": 2027,
+      "failed": 0,
+      "pending": 363,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-full-attempt2.json",
+      "rawSha256": "40d1777c47ae5f3b825420333b182fb8d8db6eb4aef46963d7aaa85621505a15",
+      "passed": 2027,
+      "failed": 0,
+      "pending": 363,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-inventory-green.json",
+      "rawSha256": "b66a3d7a9439f58034540d716d0329cbca9ffb65a10a527baed7bdf3fc80dc11",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-inventory-red.json",
+      "rawSha256": "99428feb3987a6778ac4e2c70f1730512db1d9fb2436e319e605e7efa2469288",
+      "passed": 0,
+      "failed": 0,
+      "pending": 0,
+      "success": false,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-journal-green.json",
+      "rawSha256": "3dc52111a66796d4ef1deb43da5baeacb965fa660d2a3372d5a9a43cf74b631f",
+      "passed": 5,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-journal-red.json",
+      "rawSha256": "bf3479ca56415eb2dfc1dc8d8f836fb9052656ec4e88207de6415109869f424f",
+      "passed": 0,
+      "failed": 0,
+      "pending": 0,
+      "success": false,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-manifest-green.json",
+      "rawSha256": "5fee51e4452c12a5fe790d25a0292a968d2bd837ca20cb97325d505ace370867",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-manifest-red.json",
+      "rawSha256": "1b5129c28c2ce2a3bbb8630a9cbffb912f16251a6ba978dc3bf142cb04fb03aa",
+      "passed": 0,
+      "failed": 3,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "Error: ENOENT: no such file or directory, open 'C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-B2-runtime-manifest.json'",
+        "Error: ENOENT: no such file or directory, open 'C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-B2-runtime-manifest.json'",
+        "Error: ENOENT: no such file or directory, open 'C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-B2-runtime-manifest.json'"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-mount-red.json",
+      "rawSha256": "39d4246f71a1539a3d37caa4a0fd965b79a3ea174ad08f926c468d8621708316",
+      "passed": 10,
+      "failed": 1,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "AssertionError: expected [Function] to throw an error"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-origin-green.json",
+      "rawSha256": "c18c2da9248d590e3a591ea8eb094136ba5669e3882664ee160b0f5f386f20d4",
+      "passed": 1,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-origin-red.json",
+      "rawSha256": "e2ad198a0911554c2d2db77b46187ffe5a9421bfae8c86537973a668e031b3dc",
+      "passed": 0,
+      "failed": 1,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "Error: External HTTP disabled for synthetic acceptance"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-target-green.json",
+      "rawSha256": "60e424c1eeffc31d12c69b21c1069431b3424bda424a9855fca5fd46b81a0417",
+      "passed": 37,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-target-red.json",
+      "rawSha256": "0d361498f8195dcdec8c869ded5212bf1c8f16adf7a4dfce8118a733e826ecf2",
+      "passed": 0,
+      "failed": 8,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "AssertionError: expected [Function] to throw error matching /B2.*runtime.*author/i but got 'unknown disposable target'",
+        "AssertionError: expected [Function] to throw error matching /B2.*explicit/i but got 'integration container/project/network…'",
+        "Error: unknown disposable target",
+        "AssertionError: expected [Function] to throw error matching /B2/i but got 'unknown disposable target'",
+        "AssertionError: expected [Function] to throw error matching /B2/i but got 'unknown disposable target'",
+        "AssertionError: expected [Function] to throw error matching /B2/i but got 'unknown disposable target'",
+        "AssertionError: expected [Function] to throw error matching /B2.*mount|B2.*volume/i but got 'unknown disposable target'",
+        "AssertionError: expected [Function] to throw error matching /B2.*network/i but got 'unknown disposable target'"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-targeted-candidate1.json",
+      "rawSha256": "7141c772784253e9d1af2f8f3ebe2a1591b5668ef8e83102183aa0aa83b90026",
+      "passed": 29,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-targeted-candidate2.json",
+      "rawSha256": "a07ed150fe73900e1cd32d05f15d82def84dd47531af8dcc28e5c5ab17dfef51",
+      "passed": 46,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-targeted-final-attempt1.json",
+      "rawSha256": "358db2a679b2f8d6b24b96aa46bce904a67e36ee726c7702fa60c131adf485e5",
+      "passed": 78,
+      "failed": 1,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "AssertionError: expected '6c20a21240bba938ba7c871e3166ff0a634f2…' to be '271d1c4376cb8bd0ee487a4fb8ec5a5ae73ee…' // Object.is equality"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-transport-green.json",
+      "rawSha256": "965efcd278c3af5178dff4148aeb19bd4851165d921dcb80d1aa25de97e4af9c",
+      "passed": 7,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-transport-red.json",
+      "rawSha256": "29b61fdc8bfc6f35b438018426efc4a5e914d4f48ddef63350f001698efbd2ba",
+      "passed": 5,
+      "failed": 2,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "TypeError: __vite_ssr_import_4__.journalTransportFetch is not a function",
+        "Error: B2 UNKNOWN/unresolved operation; no automatic create/reseed"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-ui-green.json",
+      "rawSha256": "f696814244292937f03e3f88903c1c8c8c4e718c206360ce6bba56c6dec55d99",
+      "passed": 18,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-ui-red.json",
+      "rawSha256": "178995344a901b56ee4402807dc18f6c746e4771464cb0c916d8cceba2875ab5",
+      "passed": 0,
+      "failed": 2,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "TestingLibraryElementError: Unable to find an element with the text: Concurrent server input. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.",
+        "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"Retry save\""
+      ]
+    },
+    {
+      "privateFile": "B2-P0-wiring-green.json",
+      "rawSha256": "f131810be4d12e2979544621176ca849d311a727fc6fe022ac977cda219d50bd",
+      "passed": 0,
+      "failed": 2,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "TypeError: Cannot read properties of undefined (reading 'historicalLegacy')",
+        "AssertionError: expected [Function] to throw error including 'lost Auth response' but got 'Cannot read properties of undefined (…'"
+      ]
+    },
+    {
+      "privateFile": "B2-P0-wiring-green2.json",
+      "rawSha256": "a3b088a23a3b8cda105e19ed8812904968c53cc6a57faf29b002b37b2473e896",
+      "passed": 2,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "failureReasons": []
+    },
+    {
+      "privateFile": "B2-P0-wiring-red.json",
+      "rawSha256": "f8897342a1322e86c3699f800c5496d8c76d8cde343c685f584311e4f5790d93",
+      "passed": 0,
+      "failed": 2,
+      "pending": 0,
+      "success": false,
+      "failureReasons": [
+        "AssertionError: intent must be durable before any setup write: expected false to be true // Object.is equality",
+        "AssertionError: expected [Function] to throw error including 'lost Auth response' but got 'intent must be durable before any set…'"
+      ]
+    }
+  ],
+  "notes": [
+    "RED reports and intermediate failures retained. Missing new exports/modules are setup RED, not a real target failure.",
+    "Wiring intermediate failure was an incomplete bootstrap shape in its mock; corrected the harness without weakening behavior assertions.",
+    "First combined79 run had78 pass/1 manifest raw-byte digest mismatch caused by Windows newline serialization. Corrected template SHA from actual bytes.",
+    "First full2027/0/363 at c04a1c45; then added only the owned denial-workspace browser obligation and resealed final source. Full2027/0/363 at final fingerprint; no skipped integration is counted as PASS.",
+    "Pre-fingerprint RED/early GREEN runs are ordered by tool trace/raw receipts, not falsely assigned a captured source fingerprint."
+  ]
+}

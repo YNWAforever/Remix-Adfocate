@@ -1,0 +1,79 @@
+{
+  "node": "v22.23.4",
+  "static": [
+    {
+      "name": "typecheck",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "type-check"
+      ],
+      "exit": 0,
+      "durationMs": 23033
+    },
+    {
+      "name": "harness-typecheck",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        ".codex-tmp/tsconfig.D20.json"
+      ],
+      "exit": 0,
+      "durationMs": 18931
+    },
+    {
+      "name": "lint",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "lint"
+      ],
+      "exit": 0,
+      "durationMs": 35953
+    },
+    {
+      "name": "manifest",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "release:manifest:check"
+      ],
+      "exit": 0,
+      "durationMs": 2760
+    },
+    {
+      "name": "build",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "durationMs": 32053
+    }
+  ],
+  "fullSuite": {
+    "exit": 0,
+    "passed": 1931,
+    "skipped": 363
+  },
+  "targeted": {
+    "passed": 88,
+    "failed": 0
+  },
+  "browser": {
+    "passed": 6,
+    "failed": 0
+  },
+  "commands": {
+    "targeted": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run server/lib/assistant src/components/assistant server/test/mission-assist.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D20-targeted.json",
+    "full": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --no-file-parallelism --reporter=dot --reporter=json --outputFile=.codex-tmp/D20-full-suite.json",
+    "browser": "npm exec --offline --yes --package=node@22 -- node node_modules/@playwright/test/cli.js test -c playwright.assistant.config.ts"
+  }
+}

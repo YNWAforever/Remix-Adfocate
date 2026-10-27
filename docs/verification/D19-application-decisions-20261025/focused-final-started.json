@@ -1,0 +1,28 @@
+{
+  "startedAt": "2026-10-25T12:21:37.010959+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-application-decisions.test.ts",
+    "server/test/audit-application-decisions.embedded.test.ts",
+    "server/test/applications.test.ts",
+    "src/routes/-admin.applications.test.tsx",
+    "src/audit-tests",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\focused-final.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.533615112304688,
+    "freeCommitGiB": 11.348976135253906,
+    "minimumGiB": 3
+  },
+  "pid": 15068
+}

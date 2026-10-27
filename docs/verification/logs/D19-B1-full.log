@@ -1,0 +1,18 @@
+OFFLINE UNIT TEST OUTPUT; target/advisor summaries below are injected test doubles, not new target queries.
+
+> test
+> vitest run --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full-verified.json
+
+{"target":"empty","notices":0,"schemaMatchesD19":true}
+{"target":"shaped","notices":0,"schemaMatchesD19":true}
+JSON report written to <worktree>/.codex-tmp/D19-B1-full-verified.json
+Warning: Route file "<worktree>/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "<worktree>\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}

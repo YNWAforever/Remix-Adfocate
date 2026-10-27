@@ -1,0 +1,450 @@
+{
+  "runId": "38b14b89-fde7-4000-89f0-456799feb7a3",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-shaped-20261023",
+    "proxy": "none",
+    "apiPort": 56521,
+    "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+    "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+  },
+  "workspaceIds": [
+    "00000000-0000-0000-0000-0000000000aa"
+  ],
+  "seedSha256": "c853e8e8e7840d836ca25b8e0e21b099c8a7174cfa9a0ba4c42197a1f2a3cbff",
+  "academyDmlSha256": "23bec46e43f20b80d303d6a60d9de7d98d5bb2dea0dab9bdeac6b77c9fea5e2f",
+  "tables": {
+    "academy_content": {
+      "key": "id",
+      "ids": [
+        "d267f5c1-cb7d-4cae-b8bb-2765723a2b35",
+        "6322c032-c1c8-4319-bf48-fb729865be6c",
+        "1a0e433a-5334-43f2-a9d5-37c1ff2ac4fc",
+        "a2382e3b-5a24-4372-82ad-2ce0a848f0cb",
+        "8ebe1662-0164-4e45-bdd4-e1c5a14a919a",
+        "81592514-d55f-4c47-81d8-52ed8ea128f8",
+        "1a0e2c51-965e-4f3e-a4d3-7f081d07cca1",
+        "89da6e59-acce-4615-827f-3df85ca833ef",
+        "b2082c4e-a4a5-4687-8e2d-ead2cd0d3cc0",
+        "803cb58b-a1c0-4b88-8d2b-14e12547e9b7",
+        "42d7167a-9420-49a0-8715-0651363b2673",
+        "7e8d8123-d1f3-486b-afdb-fc69a2241209",
+        "27b4b5cf-fd4a-42f7-8017-43da76011576",
+        "5d482e4a-353c-4df7-9c27-b4a9f843c3ab",
+        "85a9f6c6-a497-418e-9e05-fd73f0f6db8e",
+        "ab96d757-23dd-4169-a47d-b59e8a9983b7",
+        "d74d7dfa-4f3a-40f9-ba54-740fa27a9195",
+        "17c84884-22c2-4956-b86f-c7dd38b23b16",
+        "6233f806-d89a-4d8d-b4be-b7a719678194",
+        "32cabc5d-fc34-430c-b02d-b922df3550fe",
+        "c760b01a-a44b-4ef9-9135-64c977b2380a",
+        "ef2b74f6-c652-43c3-8158-19fb6ca9cb96",
+        "5fa305f4-8a1d-4e36-b8e6-f77a07ae9da2",
+        "7a7b5c0b-d068-445b-a794-3f8fe20eeacf",
+        "ddda7d38-baea-4163-80d2-67363d4cda52",
+        "1aec5451-738c-4d78-a203-f140b74aed23",
+        "670a4b2e-976b-44b4-85f1-f460a932cd02",
+        "5b2172b2-cfd4-4052-a0dc-1e25864a2b36",
+        "bb8e98bb-5681-40fd-b6bd-188068512621",
+        "0846f3c4-ce6c-44f2-8ba6-9c590cb31d93",
+        "e56dc983-4fc1-4c63-981f-bc341815240f"
+      ]
+    },
+    "missions": {
+      "key": "id",
+      "ids": [
+        "2224dc35-d7ea-4720-978b-6b483a979ef0",
+        "e5b452ff-2d45-4dbe-9620-9e7c79cf51e8",
+        "761441e7-ce66-45f4-b5e4-b6cc37f14b9c",
+        "9e6c1d8a-6f18-4624-bfe9-05025729bbe5",
+        "2416b15f-52bd-4c77-95fb-89b057ed296d",
+        "d2ec1789-fb56-411a-813f-9c3c2703209f"
+      ]
+    },
+    "redemption_codes": {
+      "key": "id",
+      "ids": [
+        "0695f047-eddb-4718-9098-ae4f0d8d85b2",
+        "978ac3ad-0343-4363-a03a-db47bd89e2d0",
+        "9759dd98-1776-4d07-8a2a-a1faf5f43cd6"
+      ]
+    },
+    "redemption_gifts": {
+      "key": "id",
+      "ids": [
+        "2c0ea575-0d6a-44e7-9614-5be9c5ad2059",
+        "3daab7f0-4864-490d-a21f-30c0dbf492ba",
+        "89e47d6a-ef3c-4460-9d83-23a6b0e4efae",
+        "b02867c4-b1a5-43f8-ba45-80b6949f8206",
+        "465b8958-e441-4c6b-bb4f-a8e740af3d24",
+        "c03c61ba-633c-4cc3-8c52-a12887374ac2",
+        "2442f099-eb4e-4b05-8e41-1e73346fc53e",
+        "3d4153c3-6eba-4aef-ab43-8896a20c80ee"
+      ]
+    },
+    "workspaces": {
+      "key": "id",
+      "ids": [
+        "00000000-0000-0000-0000-0000000000aa"
+      ]
+    }
+  },
+  "originalTables": [
+    {
+      "name": "creators",
+      "rows": 1,
+      "hashes": [
+        "1ad2da70e238fd19ec867eeeea6d59aaba4bafba2b9763d6d61122d157f21c37"
+      ]
+    },
+    {
+      "name": "missions",
+      "rows": 1,
+      "hashes": [
+        "8aecd92aac66fb6076acd1d0791beefbc5784578a166e44436e9ce83c9c6d1de"
+      ]
+    },
+    {
+      "name": "campaigns",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "kb_chunks",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "workspaces",
+      "rows": 1,
+      "hashes": [
+        "9cd982c49fb2d865e84ec3f6d3a040756b3d94210401f54e09bd7549af4d18d8"
+      ]
+    },
+    {
+      "name": "brand_users",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "redemptions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "staff_users",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "content_tags",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "kb_documents",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "brand_invites",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "content_items",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "notifications",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "point_balances",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "academy_content",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "academy_lessons",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "redemption_codes",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "redemption_gifts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "campaign_missions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "content_item_tags",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "earnings_balances",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_workflows",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "workspace_budgets",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "assistant_messages",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "assistant_requests",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "content_categories",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_shortlists",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_work_items",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "point_transactions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "staff_access_audit",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_submissions",
+      "rows": 1,
+      "hashes": [
+        "2777e944039c7ee24fae09fe2af2d1b581892acb73d430e9cc9f2ea7f3abe656"
+      ]
+    },
+    {
+      "name": "creator_review_notes",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_draft_assets",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_fulfillments",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_review_items",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "staff_platform_roles",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "campaign_participants",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "earnings_transactions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_review_rounds",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "operator_audit_events",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "staff_access_commands",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "staff_workspace_roles",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_draft_versions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_working_drafts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "assistant_conversations",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "campaign_rank_snapshots",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_lesson_progress",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_portfolio_links",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_review_statuses",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_social_accounts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_pending_rewards",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_revision_grants",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_workflow_events",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_public_passports",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_reward_contracts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "legacy_evidence_corrections",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_completion_decisions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_social_scan_snapshots",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_deliverable_templates",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "operator_crm_command_receipts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "workspace_budget_transactions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "creator_public_profile_snapshots",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_deliverable_requirements",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_publication_instructions",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_publication_proof_assets",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_publication_proof_reviews",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_publication_proof_attempts",
+      "rows": 0,
+      "hashes": []
+    },
+    {
+      "name": "mission_publication_proof_review_items",
+      "rows": 0,
+      "hashes": []
+    }
+  ],
+  "content": "Historical seed DML copied as disposable integration fixtures only. No DDL/history replay, no new lessons, no approved-curriculum acceptance; D15 blocker unchanged.",
+  "cleanup": "Only exact successful creation IDs, with parent ownership, may be changed; access/active-history actors retained.",
+  "hashMethod": "SHA256 UTF-8 JSON of each complete pre-existing row, including every nested JSONB value; live preservation verified with full JSONB equality."
+}

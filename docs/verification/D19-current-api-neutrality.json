@@ -1,0 +1,342 @@
+{
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "role": {
+    "runId": "872c97c2-0729-4411-8e89-b9518e463086",
+    "initialBefore": [
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "joinBaseline": {
+      "before": [
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 9000,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": [
+            {
+              "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 9000,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": [
+            {
+              "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "xp": 10,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 9000,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": [
+            {
+              "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 9000,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": [
+            {
+              "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "creatorId": "53ed600c-398a-4513-ba10-a6a4de33b70f",
+      "existingJoinXpDelta": 10,
+      "contract": "D18-existing-join-contract.json"
+    },
+    "before": [
+      {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "9cf5b70f-e29b-4481-92f9-dbacc4ecf9dd",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "allEqual": true
+  },
+  "core": {
+    "runId": "8023dadc-cdbd-48df-9370-506c6a476a7d",
+    "activePendingCancellation": {
+      "before": {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      "pending": {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      "afterCancellation": {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    },
+    "reapproval": {
+      "before": [
+        {
+          "xp": 145,
+          "points": 550,
+          "withdrawable": 125,
+          "budget": 8875,
+          "pointLedger": 1,
+          "cashLedger": 1,
+          "redemptions": 0,
+          "budgetLedger": 1,
+          "rewardInventory": [
+            {
+              "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 8875,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 1,
+          "rewardInventory": [
+            {
+              "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "xp": 145,
+          "points": 550,
+          "withdrawable": 125,
+          "budget": 8875,
+          "pointLedger": 1,
+          "cashLedger": 1,
+          "redemptions": 0,
+          "budgetLedger": 1,
+          "rewardInventory": [
+            {
+              "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 8875,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 1,
+          "rewardInventory": [
+            {
+              "id": "fff7c89d-9ad7-4c3a-9a49-4fd92ce3fd06",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "legacyBefore": [
+        {
+          "id": "b0f3b850-43e8-4462-8ec9-e1a475f3067b",
+          "status": "approved",
+          "xpAwarded": 135,
+          "pointsAwarded": 500
+        }
+      ],
+      "legacyAfter": [
+        {
+          "id": "b0f3b850-43e8-4462-8ec9-e1a475f3067b",
+          "status": "approved",
+          "xpAwarded": 135,
+          "pointsAwarded": 500
+        }
+      ],
+      "pendingRewardId": "9198cc98-20f6-4c4a-823a-f34a68f1a8a3",
+      "historyRetained": true
+    }
+  },
+  "allEqual": true,
+  "scope": "Raw before/after per exact-owned run; existing join XP and legacy issuance precede each relevant pending measurement; no normalization"
+}

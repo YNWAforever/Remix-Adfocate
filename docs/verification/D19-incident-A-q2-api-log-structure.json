@@ -1,0 +1,70 @@
+{
+  "reason": "Validate3 exact-ID hits are request access references, not a full pre-incident row representation",
+  "identityReverifiedBeforeRead": true,
+  "source": "D19-incident-A-q2-api-log-scan.json",
+  "sameRawStreamSha256": "4a66e39ae8e1b51b3009a318db71b4c0b07eeedcb2bc0ac157b8b0a11f553f32",
+  "records": [
+    {
+      "lineSha256": "f70e421144319184ff9b384bf8b03bc3167cf31a8ffab0f101a2fe7bde5b52aa",
+      "timestamp": "2026-10-23T19:31:12.270849719Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "isHttpAccessRecord": true,
+      "method": "GET",
+      "httpStatus": 200,
+      "campaignRowJsonFieldNamesPresent": {
+        "id": false,
+        "status": false,
+        "closed_at": false,
+        "updated_at": false,
+        "workspace_id": false,
+        "created_at": false
+      },
+      "containsCompleteKeyedCampaignRow": false,
+      "bodyOrAuthDataExported": false
+    },
+    {
+      "lineSha256": "54264389faf2564a98c9d2319253d7d66b3d7207fb9bac1ff6d9c69626890eec",
+      "timestamp": "2026-10-23T19:31:12.275448133Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "isHttpAccessRecord": true,
+      "method": "GET",
+      "httpStatus": 200,
+      "campaignRowJsonFieldNamesPresent": {
+        "id": false,
+        "status": false,
+        "closed_at": false,
+        "updated_at": false,
+        "workspace_id": false,
+        "created_at": false
+      },
+      "containsCompleteKeyedCampaignRow": false,
+      "bodyOrAuthDataExported": false
+    },
+    {
+      "lineSha256": "8ae538c76894e849265759a65c23aece94d948975d932f6e14fe937273167d8d",
+      "timestamp": "2026-10-23T19:31:12.287044099Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "isHttpAccessRecord": true,
+      "method": "GET",
+      "httpStatus": 200,
+      "campaignRowJsonFieldNamesPresent": {
+        "id": false,
+        "status": false,
+        "closed_at": false,
+        "updated_at": false,
+        "workspace_id": false,
+        "created_at": false
+      },
+      "containsCompleteKeyedCampaignRow": false,
+      "bodyOrAuthDataExported": false
+    }
+  ],
+  "completeKeyedBeforeRowObserved": false,
+  "rawLogOrUriDisplayed": false
+}

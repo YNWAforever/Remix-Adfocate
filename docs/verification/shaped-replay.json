@@ -1,0 +1,268 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-shaped-20261023",
+    "proxy": "none",
+    "apiPort": 56521,
+    "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+    "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+  },
+  "oldHistoryPreserved": [
+    {
+      "name": "init",
+      "version": "20260613123947"
+    },
+    {
+      "name": "harden_rls",
+      "version": "20260613124252"
+    },
+    {
+      "name": "slice9_applications",
+      "version": "20260616122212"
+    },
+    {
+      "name": "mission_brief",
+      "version": "20260616171712"
+    },
+    {
+      "name": "0012_trust_profile_bundle",
+      "version": "20260618181926"
+    },
+    {
+      "name": "0013_operator_creator_selection_crm",
+      "version": "20260618181954"
+    },
+    {
+      "name": "0014_operator_crm_workspace_guard",
+      "version": "20260618182014"
+    },
+    {
+      "name": "0015_creator_profile_media",
+      "version": "20260618182057"
+    },
+    {
+      "name": "20260618135028_profile_media_private_grants",
+      "version": "20260618182116"
+    },
+    {
+      "name": "20260619013000_profile_media_url_validation",
+      "version": "20260618182132"
+    },
+    {
+      "name": "0016_assistant",
+      "version": "20260619123106"
+    },
+    {
+      "name": "0017_social_verification",
+      "version": "20260621175440"
+    },
+    {
+      "name": "0021_content_hub",
+      "version": "20260623152437"
+    },
+    {
+      "name": "0022_notifications",
+      "version": "20260623155639"
+    }
+  ],
+  "migrationHistoryRepair": "none; no old local migration marked applied; only actually executed reviewed manifest rows added",
+  "fixture": {
+    "workspaceId": "cead054c-3185-4020-b46a-c6f6c4bdf0e9",
+    "creatorId": "e68448fb-7ed4-48b2-ac45-c63aa7cbb573",
+    "missionId": "4c878c6c-2dbf-436c-9f25-2b3834bd8a7a",
+    "submissionId": "4cbbbd4b-7f1b-4023-94d0-37b10f191029"
+  },
+  "legacyRowPreserved": true,
+  "newColumns": [
+    "evidence_revision"
+  ],
+  "migrations": [
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "00b6a2fb39a9f5f05d5822dcc0ad906857b960130ff9ffe22774b2e3cad8ecd5",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+      "sha256": "e00bed624f8f7d13cee3d422d921e28d79d64ae70fd1b03717ac2da2b24a32e4",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+      "sha256": "16b757e808eaa97e2d9df160a4416b167f006d7e66c5dd5f71e95fcb9d31bf96",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "sha256": "a6fc1fd8ab7b56a483ab08b4bf3bbca2151e4ea553221cf7b08f52bc48c717eb",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+      "sha256": "6adc69efe2ee6c4e3ec1eb5c667c8044ba208298775886ffcff9fae4e44435bb",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "sha256": "f8cf31e74e9be0ea92e16b3ba060b68e37992117fa204384a58bb5b9b0c2ef8d",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+      "sha256": "6f59d84a299fb09c31b8d5c1e073f47b7e75bd6200c75f57d5c1b3ad06ec25f2",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+      "sha256": "6cbb7ed6b21a5eab470f1cc31e418af7cf4859ffbda0a5ab562cbd5a41b445b0",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+      "sha256": "f0b46aa8f23fca4ab327a12d4e22ba4ab667c7882b1558613c64c6ee828d50b1",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+      "sha256": "9bc00424e195d9daaaa218434a737c4608aade5f07d5533e46e433e13dfaeef2",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+      "sha256": "5055cf4e22c43a968426d48b3d50c5d908786ea0428632d610ea2bf04860de3e",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+      "sha256": "d7e9f431f9effb2f3473ea1f2514c58c8cf6e2c2c7110ac44db9a7626d68955f",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+      "sha256": "47db6932bbfe05aff34d6f91e2f8717ae3dd14c3ccf0041d5678ee29a8e16436",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+      "sha256": "64fa33b5f47eccdd17f4a0a8c638a055aea0472c36bb1f388d63eb208cc0f5b5",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+      "sha256": "5b69abffda80aac3cbf007515cc1ef0956a1edc8f2f2b4dc833ad7f44dbd97bf",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+      "sha256": "3dd13606c2e9d70824805fc6656a2d29dd86faf5567262d0a1f41d777f6e3766",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+      "sha256": "61469f3004f292fc4678a1cb77f1e0eed16b27561eb479002fcfae3b9d49aa53",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+      "sha256": "2ec12b4e672552b018fcfdd7e5737044ade0ed790f421796e02f342a95c301b0",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+      "sha256": "e461544af2a2bfae2964a42777d6421e758c8f60298dff5297ecbd6e40c95d92",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+      "sha256": "4c7a752a7b1dd41461249307a1ff0ae9153065db5ef3e81570611071c97f05ec",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "sha256": "8e7f1e4893f081d1196f7fe66268e308dbbb2d27796373d54f37ef3b34dbb7f3",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+      "sha256": "bd56dda15ee21b640ee99ee8e7b3d8bd3ce34eab95a44bb97906cb2bddb0a9af",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+      "sha256": "cbb412dc35c2d3f0ab33926229c4009ace7459c4ffaf80045b47d8cac0cbc248",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "sha256": "a4a909bb7711ffcfb50a8f4b4b8947c7695bccbea319d266854b0a5733dd15b4",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "sha256": "9d667de55f18307d5152201b07450e00d158a000456c538c60194030cd846d19",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+      "sha256": "b4966d226b2dc72759a1a5d768b90cb67cc8b84b996a0f1cf60541c2af548674",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+      "sha256": "90e97bc465c59ce71bba076eb5aa4dd769436ac41435623fbe9583e7bbe4c973",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+      "sha256": "a12096f7fc26e514dbbebb28462de365fa9d2b9a07fead61c48ccd10cd505632",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+      "sha256": "2f0d71622ff3b906ceb8f07d918869c7b3ac18f9a1f46e786f779a1298a4c1a8",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+      "sha256": "17ed4ee4542bb4f658137accfab9325976cf5a48d00ef587d7bd1d111c8c1d5b",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+      "sha256": "bd3ddfbb8fb0c5b5bf4f8544d7bffa6156630aa19775f0fd9536ce958011b95e",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20260805120000_review_hardening.sql",
+      "sha256": "faf4018d589db8d4702327c55e6ccc3461ea05fb0e9a8229901638e706f3d65c",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20261022170751_audit_crm_commands.sql",
+      "sha256": "ac13fbd583edf7cedc26defb23fa6a864f9ac986e0b0e631335ef6640149bd71",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20261022171111_audit_creator_queue.sql",
+      "sha256": "aad787138b073d53638a24e82d14f21abf6f257c2141028577ce3c80ff79de20",
+      "result": "applied-transactionally"
+    },
+    {
+      "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql",
+      "sha256": "c86547d7929441ec3dd3c138d8c148cf2c923f35c7234d6e6148668faa25d9c7",
+      "result": "applied-transactionally"
+    }
+  ],
+  "pendingOnSecondPass": [],
+  "limitation": "Provider schemas supplied by local Supabase; catalog-shaped rehearsal is not a provider database clone."
+}

@@ -1,0 +1,60 @@
+{
+  "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "ownedMissionIds": [
+    "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+    "8e1ba7f5-2a00-4aa9-8906-aec3f30cfb84",
+    "d6f6a4fd-a826-445b-ae82-09b42335af15",
+    "d06f4518-6339-4c9b-9e4f-130e8f54ce88"
+  ],
+  "navMissionId": "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+  "unknownPolicy": {
+    "screenshots": 1,
+    "legacy_review": {
+      "manual": true,
+      "modes": [
+        "owner",
+        2
+      ]
+    }
+  },
+  "neutrality": {
+    "before": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true
+  },
+  "cleanup": "retained exact IDs; no reset or delete",
+  "providers": "external HTTP blocked; no paid provider or real publication"
+}

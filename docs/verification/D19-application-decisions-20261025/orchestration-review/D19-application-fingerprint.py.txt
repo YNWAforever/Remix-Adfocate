@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,hashlib,datetime,sys
+R=Path(__file__).resolve().parents[1];V=R/'docs/verification/D19-application-decisions-20261025'
+old=json.loads((V/'before/docs/verification/code-fingerprint.json').read_text(encoding='utf-8'))
+added=['server/test/audit-application-decisions.test.ts','server/test/audit-application-decisions.embedded.test.ts','supabase/migrations/20261025120934_application_decisions.sql']
+paths=sorted(set(x['path']for x in old['files'])|set(added));files=[{'path':p,'sha256':hashlib.sha256((R/p).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest()}for p in paths]
+prior={x['path']:x['sha256']for x in old['files']};changed=[x['path']for x in files if x['path']in prior and prior[x['path']]!=x['sha256']]
+fp=hashlib.sha256(json.dumps(files,separators=(',',':')).encode()).hexdigest()
+d={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fingerprint':fp,'sourceRecords':len(files),'originFingerprint':old['fingerprint'],'headSha':old['headSha'],'files':files,'changedPaths':changed,'addedPaths':added,'method':'Original782 application-source scope plus3 added program/test/migration paths; SHA256 LF-normalized UTF8 content, sorted path+sha256 records. Review/orchestration documents are separate evidence.','runtimeExecutedForThisSource':False}
+p=V/'candidate-source.json'
+if p.is_file():
+ before=json.loads(p.read_text(encoding='utf-8'));hist=V/'source-revisions';hist.mkdir(exist_ok=True);q=hist/(before['fingerprint']+'.json')
+ if not q.exists():q.write_bytes(p.read_bytes())
+p.write_text(json.dumps(d,indent=2)+'\n',encoding='utf-8',newline='\n');print(json.dumps({k:d[k]for k in ['fingerprint','sourceRecords','changedPaths','addedPaths']}))
+if '--publish-main'in sys.argv:
+ main=R/'docs/verification/code-fingerprint.json';previous=json.loads(main.read_text(encoding='utf-8'));hist=V/'source-revisions';hist.mkdir(exist_ok=True);q=hist/(previous['fingerprint']+'-code-fingerprint.json')
+ if not q.exists():q.write_bytes(main.read_bytes())
+ snapshot=V/'before/docs/verification/code-fingerprint.json';previous=json.loads(snapshot.read_text(encoding='utf-8'))
+ record={'generatedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'headSha':d['headSha'],'fingerprint':fp,'files':files,'method':d['method'],'runtimeManifestPath':None,'runtimeApprovalStatus':'NOT_GRANTED_FOR_CURRENT_SOURCE','sourceSchemaMigrationFiles':73,'runtimeEvidenceSource':{'path':snapshot.relative_to(R).as_posix(),'sha256':hashlib.sha256(snapshot.read_bytes()).hexdigest(),'fingerprint':previous['fingerprint'],'currentCandidateRuntimeProven':False,'scope':'Completed approved696e runtime remains bound to its immutable previous source; no replay or current application-decision runtime claim.'}}
+ main.write_text(json.dumps(record,indent=2)+'\n',encoding='utf-8',newline='\n')

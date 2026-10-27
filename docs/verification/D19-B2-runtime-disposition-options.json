@@ -1,0 +1,52 @@
+{
+  "recommended": "C1",
+  "currentB2ApprovalAlreadyReceived": true,
+  "noCurrentDispositionExecuted": true,
+  "C1": {
+    "decision": "Approve additional clean recovery target; retain failed B2 unchanged",
+    "approvalReady": true,
+    "manifest": "D19-B2-recovery-runtime-manifest.json",
+    "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "additionalResources": {
+      "projects": 1,
+      "volumes": 1,
+      "networks": 1,
+      "containers": 5
+    },
+    "impact": "Preserves failed bootstrap evidence. Extra local resources. Fresh secrets, fresh phase/fixture intent IDs; source and existing role/core/browser semantics unchanged.",
+    "prerequisites": [
+      "Direct approval for this exact recovery manifest",
+      "Fresh engine/cache/ports/route-overlap identity preflight",
+      "Actual prestart initial-user guard and post-image bootstrap-OID guard",
+      "No new SDK/client until complete identity/schema/history/seed gates pass"
+    ],
+    "writes": "New resources only; same reviewed72 application files and conditional9; same bounded 合成 fixture caps and financial windows.",
+    "deletesOrStops": "NONE; original incident/shaped/pristine and current failed B2 untouched",
+    "verification": "Real identity plus bootstrap role catalog, original role8/core9/browser5, persisted same pending/history and financial neutrality. Correct catalog in local tests remains mock."
+  },
+  "C2": {
+    "decision": "Explicitly replace only failed B2 containers/volume in place",
+    "approvalReady": false,
+    "requires": "Separate exact lifecycle/replacement manifest and explicit owner authority before any stop/remove/recreate",
+    "currentExactContainerIds": {
+      "db": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1",
+      "auth": "1e37f1567bd97224adb8bf75c76011d961269155fbbd15d88ed7a80838ddfea9",
+      "rest": "dea945cade01d729fccc7be446d7cd4f418041f511454a298066c4518e1bd372",
+      "kong": "efbc76a45f3ebae787e31cef913e5eaadd6875a8ed98a7bc022003b95f1d837a",
+      "storage": "79bed9eb713310cf3cc180d77e5a74c432227e80802a7de3de937d6180603309"
+    },
+    "currentExactVolume": "adfocate-d19-b2-20261025-b0db3134-db-data",
+    "currentExactNetworkId": "6a680bf2f30acc8c7e38dc379e612a02786977f3ecb10af878eeb47d04f83b79",
+    "impact": "Would discard this new infrastructure cluster. No business fixtures exist, but raw failed-cluster forensic state would be lost.",
+    "potentialScope": "Stop only the currently running captured DB; remove five captured containers and exact volume; recreate with fresh secrets/correct initial role. No original shaped/pristine resource action.",
+    "verification": "Preserve failure evidence first, reconcile exact absence/new IDs, repeat full identity and acceptance. Not an original campaign restoration."
+  },
+  "C3": {
+    "decision": "Retain current resources and defer runtime",
+    "approvalReady": true,
+    "writesDeletesStartsStops": "NONE",
+    "impact": "R1 remains unverified; no new acceptance. Existing blockers/HOLD/provider-disabled unchanged."
+  },
+  "unreviewedRoleSurgery": "Not executed. Role renaming/default-ACL/extension ownership reconciliation is outside the reviewed bootstrap recipe; do not treat a security-profile exception as parity or restoration."
+}

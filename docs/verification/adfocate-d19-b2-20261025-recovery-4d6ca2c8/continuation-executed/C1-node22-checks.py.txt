@@ -1,0 +1,26 @@
+from pathlib import Path
+import os,sys,json,subprocess,datetime,ctypes
+R=Path(__file__).resolve().parents[1];os.chdir(R);C=Path('docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8')
+probe=json.loads((C/'node22-exact-path-probe.json').read_text(encoding='utf-8'));node=Path(probe['path']);assert node.is_file()and probe['version']=='v22.23.4'
+mode=sys.argv[1];commands={'full':[str(node),'node_modules/vitest/vitest.mjs','run','--no-file-parallelism','--reporter=json','--outputFile='+str(C/'node22-full.json')],'type':[str(node),'node_modules/typescript/bin/tsc','--noEmit'],'build':['npm.cmd','run','build'],'lint':[str(node),'node_modules/eslint/bin/eslint.js','.'],'esm':[str(node),'scripts/check-esm-extensions.mjs'],'manifest':[str(node),'node_modules/vite-node/vite-node.mjs','--script','scripts/release/manifest-cli.ts','check']}
+args=commands[mode];name='node22-'+mode;assert not(C/(name+'-command.json')).exists(),'Preserve completed attempt'
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_')or any(x in k for x in ['SUPABASE','ADFOCATE','INTEGRATION','OPENAI','OPENROUTER','ANTHROPIC','GEMINI','SMTP','SENDGRID','RESEND','TWILIO']):env.pop(k)
+env['PATH']=str(node.parent)+os.pathsep+env['PATH'];env['NODE_OPTIONS']='';env['COREPACK_ENABLE_NETWORK']='0'
+assert subprocess.check_output([str(node),'--version'],env=env,text=True).strip()=='v22.23.4'
+os.environ['PATH']=env['PATH']
+class Memory(ctypes.Structure):
+ _fields_=[('length',ctypes.c_ulong),('load',ctypes.c_ulong),('total',ctypes.c_ulonglong),('available',ctypes.c_ulonglong),('totalPage',ctypes.c_ulonglong),('availablePage',ctypes.c_ulonglong),('totalVirtual',ctypes.c_ulonglong),('availableVirtual',ctypes.c_ulonglong),('availableExtended',ctypes.c_ulonglong)]
+memory=Memory();memory.length=ctypes.sizeof(Memory);assert ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(memory))
+preflight={'observedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'mode':mode,'nodeVersion':'v22.23.4','nodeExecutable':str(node),'physicalFreeGiB':memory.available/2**30,'commitHeadroomGiB':memory.availablePage/2**30,'requiredPhysicalAndCommitGiB':3,'suiteStarted':False}
+attempt=1
+while(C/(name+'-preflight-attempt'+str(attempt)+'.json')).exists():attempt+=1
+preflight['resourceGatePassed']=memory.available>3*2**30 and memory.availablePage>3*2**30
+(C/(name+'-preflight-attempt'+str(attempt)+'.json')).write_text(json.dumps(preflight,indent=2)+'\n',encoding='utf-8')
+if not preflight['resourceGatePassed']:print(json.dumps({'status':'NOT_STARTED_RESOURCE_GATE',**preflight}));sys.exit(3)
+fp=json.loads(Path('docs/verification/code-fingerprint.json').read_text(encoding='utf-8'))['fingerprint']
+start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+with(C/(name+'.log')).open('w',encoding='utf-8',newline='\n')as out:result=subprocess.run(args,env=env,stdout=out,stderr=subprocess.STDOUT)
+receipt={'startedAt':start,'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':args,'exit':result.returncode,'nodeVersion':'v22.23.4','nodeExecutable':str(node),'childPathPrefersSameNode22':True,'sourceFingerprint':fp,'integrationCredentialsAvailable':False,'actualC1TargetUsed':False,'packageDownloadOrInstall':False,'log':name+'.log','layer':'LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT'}
+(C/(name+'-command.json')).write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8');print(json.dumps(receipt));sys.exit(result.returncode)

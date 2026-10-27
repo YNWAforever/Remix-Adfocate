@@ -1,0 +1,10 @@
+{
+  "runId": "9e0691dd-e541-4cdc-ad0e-77898325ddc6",
+  "data": {
+    "scope": "platform",
+    "workspaceMembership": false,
+    "draftReadback": true,
+    "retry503Mock": true,
+    "relogin": false
+  }
+}

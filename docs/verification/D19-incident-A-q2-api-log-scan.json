@@ -1,0 +1,58 @@
+{
+  "channel": "api",
+  "containerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+  "windowUTC": {
+    "from": "2026-10-23T19:31:12.024230Z",
+    "strictUpperBound": "2026-10-24T07:12:04.875188Z"
+  },
+  "command": [
+    "docker",
+    "logs",
+    "--timestamps",
+    "--since",
+    "2026-10-23T19:31:12.024230Z",
+    "--until",
+    "2026-10-24T07:12:04.875188Z",
+    "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9"
+  ],
+  "exit": 0,
+  "streamBytes": 1236047,
+  "lineCount": 5592,
+  "streamSha256": "4a66e39ae8e1b51b3009a318db71b4c0b07eeedcb2bc0ac157b8b0a11f553f32",
+  "firstReturnedLogTime": "2026-10-23T19:31:12.026217835Z",
+  "lastReturnedLogTime": "2026-10-24T07:12:04.869244917Z",
+  "limitTruncated": false,
+  "exactIdMatches": [
+    {
+      "lineSha256": "f70e421144319184ff9b384bf8b03bc3167cf31a8ffab0f101a2fe7bde5b52aa",
+      "timestamp": "2026-10-23T19:31:12.270849719Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "oldTupleMarkerDetected": false,
+      "classification": "REFERENCE_ONLY_NO_COMPLETE_OLD_TUPLE_EXPORTED"
+    },
+    {
+      "lineSha256": "54264389faf2564a98c9d2319253d7d66b3d7207fb9bac1ff6d9c69626890eec",
+      "timestamp": "2026-10-23T19:31:12.275448133Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "oldTupleMarkerDetected": false,
+      "classification": "REFERENCE_ONLY_NO_COMPLETE_OLD_TUPLE_EXPORTED"
+    },
+    {
+      "lineSha256": "8ae538c76894e849265759a65c23aece94d948975d932f6e14fe937273167d8d",
+      "timestamp": "2026-10-23T19:31:12.287044099Z",
+      "exactCampaignIds": [
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3"
+      ],
+      "oldTupleMarkerDetected": false,
+      "classification": "REFERENCE_ONLY_NO_COMPLETE_OLD_TUPLE_EXPORTED"
+    }
+  ],
+  "oldTupleCandidatesDetected": 0,
+  "rawLogBodiesRetainedOrDisplayed": false,
+  "privacy": "Only hashes/timestamps/exact campaign-ID hits retained; no URI, headers, note, actor, user or Auth data exported",
+  "coverage": "Only current retained Docker stdout/stderr logs in requested before-image window. Zero hits is not proof that older/rotated/external audit never existed."
+}

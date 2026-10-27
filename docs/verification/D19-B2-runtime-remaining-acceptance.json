@@ -1,0 +1,90 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "wholeR1Verified": false,
+  "releaseHold": true,
+  "items": [
+    {
+      "id": "B2-IDENTITY-BOOTSTRAP",
+      "status": "BLOCKED_IMAGE_BOOTSTRAP_ROLE_BASELINE",
+      "dependsOn": "Owner disposition; C1 exact recovery authority or separately approved C2 lifecycle/replacement",
+      "doneWhen": "Correct initial-user/OID baseline on a clean target; full live identity before app/client setup;72 forward files, conditional9, objects/RPC/grants/RLS/history and immutable seeds."
+    },
+    {
+      "id": "B2-ROLE-CORE",
+      "status": "NOT_RUN_BLOCKED_BOOTSTRAP",
+      "dependsOn": "Bootstrap receipt and role→core pass dependencies",
+      "doneWhen": "Original8 role and9 core cases pass with exact-ID journals/caps; historical bad legacy ordinary approval is rejected unchanged; transient fault DDL absent afterward."
+    },
+    {
+      "id": "B2-BROWSER",
+      "status": "NOT_RUN_BLOCKED_BOOTSTRAP",
+      "dependsOn": "Core pass; same-lineage role editor/resource; existing Edge available",
+      "doneWhen": "Original5 browser cases with full legacy/active/revision/proof/operator completion/finance/refresh history pass, plus real409/retained input, network mock, scoped empty/reload and permission503 recovery obligations. No extra fixture scope."
+    },
+    {
+      "id": "B2-NEUTRALITY",
+      "status": "NOT_RUN_BLOCKED_BOOTSTRAP",
+      "dependsOn": "Role/core/browser saved state",
+      "doneWhen": "Separate initial/join/legacy deltas from each pending completion/cancel/reapproval window; all financial tables/XP and inventory neutral in pending windows; one current saved row/workflow, cancelled history and legacy anchors unchanged. Final all-phase inventory/journals and immutable seeds match caps."
+    },
+    {
+      "id": "R1-APPLICABILITY-RECONCILIATION",
+      "status": "PENDING_RUNTIME",
+      "dependsOn": "Fresh B2 evidence and current diff",
+      "doneWhen": "Reconcile107 cases, preserve16/194, current applicable full suite and required integration; add a separate exact-ID approved manifest if additional write cases are necessary. Never expand B2 caps or substitute mock/READY/toasts for persistence."
+    },
+    {
+      "id": "ORIGINAL-INCIDENT",
+      "status": "OPEN_UNRESTORED",
+      "dependsOn": "Separate owner disposition; B1 forensic exclusion remains enforced",
+      "doneWhen": "Only a separately approved evidence-supported disposition may change incident state; no reliable before image inferred and no new fixture used as restoration. P0 does not close incident or release HOLD."
+    },
+    {
+      "id": "D15",
+      "status": "BLOCKED_CONTENT",
+      "dependsOn": "Four real approved lesson units and approval reference",
+      "doneWhen": "Preserve UC-C18/UC-A51 original completion/persisted progress acceptance; no invented lessons or content signoff."
+    },
+    {
+      "id": "D17-OWNER-DEVICE-HOSTED",
+      "status": "BLOCKED",
+      "dependsOn": "Named advisor owners, required physical devices/manual AT/hosted candidate evidence",
+      "doneWhen": "Owner-specific decisions and required device/browser/hosted quality evidence recorded; simulated viewport/local syntax is insufficient."
+    },
+    {
+      "id": "FORMAL-STAFF",
+      "status": "BLOCKED_SCOPE",
+      "dependsOn": "Separate formal membership/role owner authorization",
+      "doneWhen": "Approved real staff handoff/membership and Auth/RLS evidence. Existing active membership0 is a scope issue; do not remove checks or ask for another login as a substitute."
+    },
+    {
+      "id": "RELEASE",
+      "status": "HOLD_NOT_DEPLOYED",
+      "dependsOn": "Owner review of unresolved gates and exact candidate/deployment authority",
+      "doneWhen": "Separate applicable push/merge/migration/deploy/pilot/observation authorization and evidence. Provider disabled; no external messages/invites/payments/paid AI."
+    },
+    {
+      "id": "NODE22-TOOLCHAIN",
+      "status": "NOT_REVERIFIED_OFFLINE_CACHE_MISS",
+      "dependsOn": "An existing supported Node22 executable or separately authorized tool provisioning",
+      "doneWhen": "Current final source checked on the intended Node22 toolchain; npm offline probe ENOTCACHED is not evidence Node22 is absent. Node24 results are explicitly separated."
+    },
+    {
+      "id": "REQUESTED-MODEL-INTERFACE",
+      "status": "UNKNOWN_NOT_REVERIFIED_APP_APPROVAL_TIMED_OUT",
+      "dependsOn": "Readable execution-interface model selection",
+      "doneWhen": "Verify the user requested Codex GPT-6.1 Sol selection directly; do not infer model ID from labels/historical records or switch model. No model selection was observed this turn."
+    }
+  ],
+  "pristineGlobalRpcRerun": false,
+  "retainedPristineEvidence": "D19-pristine-rpc-delivery.json; historical source-bound, not rebound as B2 runtime",
+  "runtimeManifest": "D19-B2-runtime-manifest-neutrality-guard.json",
+  "runtimeManifestSha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+  "scopeClarification": "B2 identity/role/core/browser/neutrality and applicability reconciliation are current R1 evidence gaps. D15 content and advisor/device/hosted are retained broader delivery/release blockers; formal staff cutover and release actions require separate authorization.",
+  "currentB2RuntimeApproved": true,
+  "currentB2RuntimeAttempted": true,
+  "currentB2BootstrapVerified": false,
+  "recoveryManifest": "D19-B2-recovery-runtime-manifest.json",
+  "recoveryManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "recoveryRuntimeApproved": false
+}

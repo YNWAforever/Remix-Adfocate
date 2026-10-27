@@ -1,0 +1,23 @@
+{
+  "runId": "d1e64852-4467-4658-816c-47489c3e3de2",
+  "phase": "immediately-before-completion",
+  "snapshot": {
+    "xp": 145,
+    "budget": null,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 125,
+    "rewardInventory": []
+  },
+  "legacyAnchors": [
+    {
+      "id": "75dc2f01-ed51-42a8-a9bf-5aa9e55ef165",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-25T17:17:36.931533+00:00",
+  "status": "PASS_OFFLINE_ASSISTANT_UI_API_BOUNDARY_NOT_FULL_R1_ACCEPTANCE",
+  "tasks": [
+    "D16",
+    "D19"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceRecordsUnchanged": 788,
+  "code": "Application/SQL/C2 unchanged. Added standalone verification artifacts; existing assistant engines exercised.",
+  "test": "Standalone8/0/0 plus lint/type pass. Retained native2129/0/363 and legacy memory7/0/0 remain separate, not rerun. Initial evidence-writer failure retained; no product behavior repair.",
+  "runtime": "Actual React/Query/API/Hono/RAG/tool code in one offline process; scripted memory Auth/storage and mock provider only. No actual target/SDK/SQL/provider request.",
+  "standalonePassed": 8,
+  "gates": {
+    "path": "docs/verification/D19-assistant-offline-20261026/gates.json",
+    "sha256": "c7677fa8bde022a9ef53fd94ca22c3f99130371dec9970a49df3a725942fc605"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-assistant-offline-20261026/readback-summary.json",
+    "sha256": "609f1208d85158579d0240988347e3ab03c2991e0a9dba369e8cf596dda721ec"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-assistant-offline-20261026/case-coverage.json",
+    "sha256": "f0b09ecb3092609609c6534a43fd6144d36829d24ee9df95ca6c89e7683d8ea7"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-assistant-offline-20261026/remaining-acceptance.json",
+    "sha256": "25a738992b666ab8494e93f5ed4764f71667ec824d7f41286b114f5ea890ac4f"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-assistant-offline-20261026/rollback.json",
+    "sha256": "dfc84d297c33916d672f58aae387e2d10b07e28dadc7a95365ce9f8f7703b33b"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "priorDelivery": {
+    "path": "docs/verification/D19-migration-preservation-20261026/delivery.json",
+    "sha256": "82c74151dec3b604f7b33672d8b1714fe89f6c079f73f7f62778e8b7478c5180"
+  },
+  "c2SourceManifestApprovalUnchanged": true,
+  "c2ApprovalPending": true,
+  "actualTargetCalls": 0,
+  "actualSdkClients": 0,
+  "physicalSqlCalls": 0,
+  "productionWrites": 0,
+  "formalMembershipOrRoleWrites": 0,
+  "actualProviderCalls": 0,
+  "pendingNeutralityMeasured": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "deployment": "NOT_DEPLOYED",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: existing exact C2 application runtime still awaits its pending explicit approval; no new source/manifest or extra target is required by these offline tests. Independently complete applicable GATE14 evidence review. Assistant8 strengthens UI/API/mock facets only; actual browser/Auth/RLS/shared-quota/model-quality boundaries and the other asset/Creator-isolation/legacy gaps remain explicit.",
+  "changedThisTurn": [
+    "docs/verification/D19-assistant-offline-20261026/",
+    "docs/verification/D19-assistant-offline-integrity.json",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json"
+  ]
+}

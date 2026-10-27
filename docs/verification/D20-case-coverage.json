@@ -1,0 +1,388 @@
+{
+  "at": "2026-10-23T21:17:15.078705+00:00",
+  "cases": [
+    {
+      "id": "N04-01",
+      "group": "rules",
+      "scenario": "brief",
+      "expected": "cited_brief",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N04-01 rules: cited_brief",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N04-02",
+      "group": "rules",
+      "scenario": "snapshot",
+      "expected": "frozen_checklist",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N04-02 rules: frozen_checklist",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N04-03",
+      "group": "rules",
+      "scenario": "reward",
+      "expected": "no_payment_promise",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N04-03 rules: no_payment_promise",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N04-04",
+      "group": "rules",
+      "scenario": "locale",
+      "expected": "zh_HK_sources",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N04-04 rules: zh_HK_sources",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N05-01",
+      "group": "diffs",
+      "scenario": "caption",
+      "expected": "v1_to_v2",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N05-01 diffs: v1_to_v2",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N05-02",
+      "group": "diffs",
+      "scenario": "checklist",
+      "expected": "changed_checklist",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N05-02 diffs: changed_checklist",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N05-03",
+      "group": "diffs",
+      "scenario": "url",
+      "expected": "url_presence_only",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N05-03 diffs: url_presence_only",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N05-04",
+      "group": "diffs",
+      "scenario": "human",
+      "expected": "human_review_only",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N05-04 diffs: human_review_only",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N06-01",
+      "group": "unknowns",
+      "scenario": "empty",
+      "expected": "unknown_no_generation",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N06-01 unknowns: unknown_no_generation",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N06-02",
+      "group": "unknowns",
+      "scenario": "stale",
+      "expected": "stale_basis",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N06-02 unknowns: stale_basis",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N06-03",
+      "group": "unknowns",
+      "scenario": "payment",
+      "expected": "unknown_no_date",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N06-03 unknowns: unknown_no_date",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N06-04",
+      "group": "unknowns",
+      "scenario": "draft",
+      "expected": "not_found",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N06-04 unknowns: not_found",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N07-01",
+      "group": "scope",
+      "scenario": "creator",
+      "expected": "not_found",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N07-01 scope: not_found",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N07-02",
+      "group": "scope",
+      "scenario": "workspace",
+      "expected": "not_found",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N07-02 scope: not_found",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N07-03",
+      "group": "scope",
+      "scenario": "note",
+      "expected": "bad_request",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N07-03 scope: bad_request",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N07-04",
+      "group": "scope",
+      "scenario": "asset",
+      "expected": "bad_request",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N07-04 scope: bad_request",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N08-01",
+      "group": "injection",
+      "scenario": "brief",
+      "expected": "tool_denied",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N08-01 injection: tool_denied",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N08-02",
+      "group": "injection",
+      "scenario": "kb",
+      "expected": "tool_denied",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N08-02 injection: tool_denied",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N08-03",
+      "group": "injection",
+      "scenario": "metadata",
+      "expected": "tool_denied",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N08-03 injection: tool_denied",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N08-04",
+      "group": "injection",
+      "scenario": "notes",
+      "expected": "tool_denied",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N08-04 injection: tool_denied",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N09-01",
+      "group": "failures",
+      "scenario": "timeout",
+      "expected": "outcome_unknown",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N09-01 failures: outcome_unknown",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N09-02",
+      "group": "failures",
+      "scenario": "rate",
+      "expected": "outcome_unknown",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N09-02 failures: outcome_unknown",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N09-03",
+      "group": "failures",
+      "scenario": "database",
+      "expected": "context_unavailable",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N09-03 failures: context_unavailable",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    },
+    {
+      "id": "N09-04",
+      "group": "failures",
+      "scenario": "malformed",
+      "expected": "invalid_provider_result",
+      "status": "PASS_OFFLINE_MOCK",
+      "test": "D20 offline golden cases: authorized read-only assistance N09-04 failures: invalid_provider_result",
+      "newResult": {
+        "code": "Existing assistant extended with authorized bounded projection and read-only/no-tool output",
+        "test": "passed offline; controlled DB/provider doubles",
+        "deployment": "not-deployed",
+        "runtime": "mock only; no real Auth/RLS/provider/financial evidence"
+      }
+    }
+  ],
+  "count": 24,
+  "groups": {
+    "rules": 4,
+    "diffs": 4,
+    "unknowns": 4,
+    "scope": 4,
+    "injection": 4,
+    "failures": 4
+  },
+  "originalAuditCases": {
+    "count": 107,
+    "records": "Unchanged; D20 does not relabel the 107-case audit or D15 original acceptance."
+  },
+  "evaluation": {
+    "mockAnswerHandlingRubric": {
+      "passed": 8,
+      "total": 8,
+      "percent": 100,
+      "scope": "N04/N05 deterministic transport answers and literal source/diff assertions, not model quality"
+    },
+    "scopeAndToolBoundary": {
+      "passed": 8,
+      "total": 8,
+      "percent": 100,
+      "scope": "N07/N08 application boundary with hostile mock; KB/metadata/internal-note sources are excluded, not model-evaluated"
+    },
+    "unknownStaleUnpublishedHandling": {
+      "passed": 4,
+      "total": 4,
+      "percent": 100
+    },
+    "failureHandling": {
+      "passed": 4,
+      "total": 4
+    },
+    "realProviderAnswerQuality": {
+      "status": "NOT_RUN",
+      "thresholdPercent": 90,
+      "observedPercent": null
+    },
+    "realProviderUsage": {
+      "requests": 0,
+      "tokens": null,
+      "latency": null,
+      "billableCalls": 0
+    }
+  }
+}

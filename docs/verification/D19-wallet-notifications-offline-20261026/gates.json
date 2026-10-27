@@ -1,0 +1,216 @@
+{
+  "at": "2026-10-25T19:20:21.394827+00:00",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecordsUnchanged": 789,
+  "standalone": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "files": 1
+  },
+  "checks": {
+    "boundary-initial": {
+      "exit": 0,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-native.json"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-command.json",
+        "sha256": "b06dd8b01dca8393c653afd6e31080ff92efe042a308b3332c3bd56cffe94b9e"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial.log",
+        "sha256": "dd12756e1353ab876545874c2946f3897a9d045ff64483a5b91c5855865b6d40"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-resource.json",
+        "sha256": "064133071894f5c2658e9f85d284fa1f858f8bf3c0cd9fe5f57ac23bbb166f53"
+      }
+    },
+    "boundary-final": {
+      "exit": 0,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--config",
+        "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-native.json"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-command.json",
+        "sha256": "daa94679eaa913eae1abdb1fb8a9c0409b75fd8b324ab274ce92328b10156946"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final.log",
+        "sha256": "71f14a3c4d16e4710a7647d0d8a3ab7a52b619db4190083fe8a322be5a9b5ac7"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-resource.json",
+        "sha256": "7ac1b237b58dd7c770dd3040716d4b5f7284b21eb3ab926e3974d72b72462659"
+      }
+    },
+    "boundary-lint": {
+      "exit": 1,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/eslint/bin/eslint.js",
+        "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+        "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-command.json",
+        "sha256": "b3430a3cbc6161f357788f9e7b1766770c1f0cc29d1dee790b7ab0e41b7e3efc"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint.log",
+        "sha256": "ee11ac90e208a9d4480bd8ba404d0de697c107a89607f6a4921c7982b347df75"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-resource.json",
+        "sha256": "12ccdff9935c4f741eb3bd6cb45bfb6da808950b39539067f4ee9c94153dfffe"
+      }
+    },
+    "boundary-type": {
+      "exit": 2,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-command.json",
+        "sha256": "855ae8b51edb1a6011a049f049069f500b3caa8c29ab1c6591508ef8187af4e5"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type.log",
+        "sha256": "721d442988e210c5828896fe340a6757e67289b9a38cc6d142c442d6e2b2252d"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-resource.json",
+        "sha256": "60dabbe91c4be361156bf708ee8bd2d4162ff9a0a26c009d69354c2710dc2bae"
+      }
+    },
+    "boundary-type-final": {
+      "exit": 2,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final-command.json",
+        "sha256": "de0a33ddb62242ced09fdc7aa4c86407f119f581f3517988758bb39bab45f8cb"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final.log",
+        "sha256": "4b818adbae2b972c85e0dcc51bc7e1dbf51088d592f505be5e7d60aed542e8f2"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final-resource.json",
+        "sha256": "5f206da4ceaf733680b9cdff0e22252749801d0d2cd66f58220d09bcdd8ff79a"
+      }
+    },
+    "boundary-lint-final": {
+      "exit": 0,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/eslint/bin/eslint.js",
+        "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+        "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final-command.json",
+        "sha256": "a434d34d5b10f125ea0476f448c47e3f764d787d7d62299274cdf09895399b83"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final-resource.json",
+        "sha256": "d9137e7d18499a9ffb056425f0210295c9a0a9edca772822de8852e68a0e7232"
+      }
+    },
+    "boundary-type-complete": {
+      "exit": 0,
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json"
+      ],
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete-command.json",
+        "sha256": "a5a08c319c66df8f2f3040a118e2109a8ffab25d837ceba44dbcd0675b05a774"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete-resource.json",
+        "sha256": "a8e63c46bd79d4fcc552f14a0f7f5dc9d13d10a9d2e65e29951cce1943027301"
+      }
+    }
+  },
+  "native": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-native.json",
+    "sha256": "58c949a2af0c77fbc603eb82c550679f522275670e369de12b07de260290f3cf"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-readback.json",
+    "sha256": "20d3c7ee9b7a0cb3291023df0fe4e0967a7f9c2e98b569169e4e435e2da8df56"
+  },
+  "verificationArtifacts": [
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+      "sha256": "21755b8f74006718ab685e04154e5f957a0f937ba959720da77268cfa955767a"
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+      "sha256": "8daa258b7c3d535049ce6f0efbb0e16b1851a7b455b2df7a0444e3da91d78631"
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json",
+      "sha256": "487cc564ce4202e7230fdf8c919342c47f048c93d47cbc0625f34d75dad8b88b"
+    }
+  ],
+  "retainedNativeFull": {
+    "passed": 2133,
+    "failed": 0,
+    "skipped": 363,
+    "files": 293,
+    "rerun": false,
+    "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+    "evidence": {
+      "path": "docs/verification/D19-C2-runtime-20261026/gates.json",
+      "sha256": "ebcff36961ddcaf6041b4b76a8aa63af9fb4d275a2a57312f89003b5f402dc33"
+    }
+  },
+  "countsMustRemainSeparate": true,
+  "initialDiagnostics": "Initial8 assertions passed. Two verification-only lint errors fixed (unused placeholder parameter/prefer-const). First type config omitted generated file-route IDs; routeTree-only config then omitted the app router Register context. Final strict config retains every original root include plus the standalone test; no ts-ignore, any substitution, compiler relaxation or product change. Added direct-call traces and explicit scripted balance SELECT-fixture updates; identical8 behavior assertions rerun successfully. Final type-config-only include change required only type rerun; Vitest and lint do not read tsconfig.offline.json.",
+  "scope": "Actual UI/query/apiFetch/Hono/workspace middleware with scripted Auth/DB/Realtime only; no physical persistence, Auth/RLS, real browser, payment/provider or D19 pending reward E2E neutrality",
+  "notClaimed": [
+    "Physical Auth/RLS/DB persistence",
+    "Browser/device/hosted/AT",
+    "Actual notification producer delivery or click-through rendering of the target work item",
+    "Realtime socket correctness",
+    "Redemption replay/debit/code uniqueness",
+    "Pending reward financial neutrality or payment"
+  ]
+}

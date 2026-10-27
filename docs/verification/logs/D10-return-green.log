@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/routes/-admin.creators-access.test.tsx (3 tests) 282ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  02:03:40
+   Duration  4.14s (transform 146ms, setup 381ms, collect 550ms, tests 282ms, environment 2.18s, prepare 308ms)
+

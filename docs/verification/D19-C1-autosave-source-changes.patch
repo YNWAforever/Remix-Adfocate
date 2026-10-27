@@ -1,0 +1,549 @@
+--- origin6285/e2e/creator-operator-mission.spec.ts
++++ candidate/e2e/creator-operator-mission.spec.ts
+@@ -2,7 +2,9 @@
+ import {FixtureJournal,bindBrowserJournal} from "../scripts/audit/fixture-journal.mjs";
+ import { expect, test, type Page } from "@playwright/test";
+ import { readFileSync, writeFileSync } from "node:fs";
+-import { randomUUID } from "node:crypto";
++import { createHash, randomUUID } from "node:crypto";
++// @ts-expect-error Pure native validation; it cannot authorize or set up a target.
++import {browserContinuation} from "../scripts/audit/browser-recovery.mjs";
+ import process from "node:process";
+ import type { ActiveMissionWorkspace, MissionPublicationView } from "../src/lib/activeMission";
+ // @ts-expect-error Identity helper is native ESM.
+@@ -12,6 +14,8 @@
+ const selected=verified?.context;
+ const fixture=selected?selected.readPrivate("browser-fixture.private.json"):JSON.parse(readFileSync(pilot?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/browser-fixture.private.json","utf8"));
+ if(pilot)expect(fixture.target).toEqual(verified.identity);
++const continuation=selected?.manifest.execution.recovery
++  ?browserContinuation(selected,fixture,selected.readPrivate("recovery-readback.private.json")):null;
+ const evidencePrefix = pilot?"D19-":process.env.ADFOCATE_BROWSER_SCOPE === "D08" ? "D08-" : "";
+ test("real roles reload one durable pending reward and its revision/proof history",async({browser,request})=>{
+   const creatorContext=await browser.newContext(evidencePrefix ? {viewport:{width:360,height:800}} : {});let operatorContext=await browser.newContext();
+@@ -37,8 +41,8 @@
+     expect(response.status(),`${path}: ${await response.text()}`).toBe(200); return response.json();
+   }
+   await login(creator,fixture.creator);
+-  if(selected){await creator.goto("/my");await expect(creator.getByText("You haven't joined any missions yet.",{exact:true})).toBeVisible();}
+-  if(pilot){
++  if(selected&&!continuation){await creator.goto("/my");await expect(creator.getByText("You haven't joined any missions yet.",{exact:true})).toBeVisible();}
++  if(pilot&&!continuation){
+     await creator.goto(`/mission/${fixture.legacyMission.slug}`);
+     const joined=creator.waitForResponse(r=>new URL(r.url()).pathname.endsWith("/join")&&r.request().method()==="POST");
+     await creator.getByRole("button",{name:"Join Mission",exact:true}).click();const join=await joined;expect(join.status()).toBe(200);const legacy=await join.json();
+@@ -50,13 +54,29 @@
+     fixture.legacy={submissionId:legacy.id,creatorId:fixture.creator.id,missionId:fixture.legacyMission.id};
+     writeFileSync(selected?.publicPath("browser-legacy.json")??"docs/verification/D19-browser-legacy.json",JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,...fixture.legacy,ui:"Creator login/join/invalid-input retention/submit → reviewer approve → Creator reload",result:"passed",financialMeaning:"Existing legacy issuance measured before active pending baseline; no new payment feature"},null,2)+"\n");
+   }
+-  await creator.goto(`/mission/${fixture.mission.slug}`);
+-  const joined=creator.waitForResponse(response=>response.url().endsWith("/join")&&response.request().method()==="POST");
+-  await creator.getByRole("button",{name:"Join Mission",exact:true}).click();
+-  const joinResponse=await joined; expect(joinResponse.status()).toBe(200); const join=await joinResponse.json();
+-  const submissionId=join.submission.id;
++  let submissionId:string;
++  if(continuation){
++    // The original legacy UI issuance and empty collection checks remain immutable origin evidence.
++    // A reviewed continuation revalidates their persisted result and never issues that reward again.
++    await creator.goto(`/mission/${fixture.legacyMission.slug}`);await creator.reload();
++    expect(verified.sql(`begin read only;select status from public.mission_submissions where id='${continuation.legacy.submissionId}' and creator_id='${continuation.legacy.creatorId}' and mission_id='${continuation.legacy.missionId}';commit;`)).toBe("approved");
++    writeFileSync(selected.publicPath("browser-legacy-continuation.json"),JSON.stringify({lineage:selected.lineage,origin:continuation.origin,legacy:continuation.legacy,priorUiActionsReused:true,currentApprovedReadback:true,newLegacyIssuance:false},null,2)+"\n");
++    submissionId=continuation.checkpoint.submissionId;
++  }else{
++    await creator.goto(`/mission/${fixture.mission.slug}`);
++    const joined=creator.waitForResponse(response=>response.url().endsWith("/join")&&response.request().method()==="POST");
++    await creator.getByRole("button",{name:"Join Mission",exact:true}).click();
++    const joinResponse=await joined; expect(joinResponse.status()).toBe(200); const join=await joinResponse.json();
++    submissionId=join.submission.id;
++  }
+   const read=()=>api<ActiveMissionWorkspace>(fixture.creator.jwt,`/my-missions/${submissionId}/workspace`);
+   const workspace=await read(); const workflowId=workspace.workflow.id,itemId=workspace.workItems.find(item=>item.required)!.id;
++  if(continuation){
++    expect(workflowId).toBe(continuation.checkpoint.workflowId);expect(itemId).toBe(continuation.checkpoint.itemId);
++    expect(workspace.workflow.state).toBe("drafting");const draft=workspace.workItems.find(item=>item.id===itemId)!.draft!;
++    expect(draft.revision).toBe(continuation.checkpoint.revision);
++    expect(createHash("sha256").update(draft.caption??"").digest("hex")).toBe(continuation.checkpoint.captionSha256);
++  }
+   const workspaceUrl=`/my/${submissionId}?item=${itemId}`;
+   const homeChecks: Array<{state:string;action:string;clicks:number;revision:number}> = [];
+   async function checkHome(label: string, item = true) {
+@@ -99,7 +119,7 @@
+     await expect(creator.getByRole("textbox",{name:"Caption or copy",exact:true})).toHaveValue("Browser retained after real 409");
+     await creator.getByRole("button",{name:"Save retained draft against latest revision",exact:true}).click();
+     await expect.poll(async()=>(await read()).workItems.find(i=>i.id===itemId)!.draft?.caption).toBe("Browser retained after real 409");
+-    writeFileSync(selected.publicPath("browser-recovery.json"),JSON.stringify({lineage:selected.lineage,submissionId,itemId,emptyBeforeJoin:true,networkFailure:"explicit transport mock",stale409:"real concurrent database revision",inputRetained:true,explicitRetry:true,newSubjectsOrWorkflows:0},null,2)+"\n");
++    writeFileSync(selected.publicPath("browser-recovery.json"),JSON.stringify({lineage:selected.lineage,submissionId,itemId,emptyBeforeJoin:continuation?"Preserved original cold-run evidence":true,...(continuation?{origin:continuation.origin,continuedFromExactDraft:true}:{}),networkFailure:"explicit transport mock",stale409:"real concurrent database revision",inputRetained:true,explicitRetry:true,newSubjectsOrWorkflows:0},null,2)+"\n");
+   }
+   await creator.getByRole("textbox",{name:"Caption or copy",exact:true}).fill("Browser original draft");
+   await creator.getByRole("checkbox").first().check();
+--- origin6285/scripts/audit/adopt-browser-fixture.mjs
++++ candidate/scripts/audit/adopt-browser-fixture.mjs
+@@ -0,0 +1,124 @@
++// Reviewed continuation of exact existing synthetic rows; never a fixture creator or DB reset.
++import {readFileSync,existsSync,readdirSync} from "node:fs";
++import {resolve,relative,isAbsolute} from "node:path";
++import {pathToFileURL} from "node:url";
++import {createHash} from "node:crypto";
++import assert from "node:assert/strict";
++import process from "node:process";
++import {verifiedTarget} from "./local-targets.mjs";
++import {FixtureJournal,durableJson,journalTransportFetch} from "./fixture-journal.mjs";
++import {fixtureInventorySql,assertInventoryCaps} from "./b2-fixture-inventory.mjs";
++import {browserContinuation,assertUnchangedRecoverySources} from "./browser-recovery.mjs";
++
++const root=process.cwd(),manifestPath=process.argv[2],mode=process.argv[3]??"--offline-check";
++if(!manifestPath||!["--offline-check","--adopt"].includes(mode))throw Error("Use adopt-browser-fixture.mjs <reviewed-manifest> --offline-check|--adopt");
++const hash=value=>createHash("sha256").update(value).digest("hex");
++const read=path=>JSON.parse(readFileSync(path,"utf8"));
++function local(path){const absolute=resolve(root,path),part=relative(root,absolute);if(part.startsWith("..")||isAbsolute(part))throw Error("Recovery reference escapes worktree");return absolute;}
++const manifest=read(local(manifestPath)),recovery=manifest.execution?.recovery;
++assert.equal(recovery?.mode,"resume-owned-browser-draft");
++function bound(reference){assert(reference&&/^[a-f0-9]{64}$/.test(reference.sha256));const bytes=readFileSync(local(reference.path));assert.equal(hash(bytes),reference.sha256,reference.path+" changed");return JSON.parse(bytes);}
++const before=bound(recovery.references.fingerprint),current=read(local("docs/verification/code-fingerprint.json"));
++assert.equal(before.fingerprint,recovery.origin.sourceFingerprint);assert.equal(current.fingerprint,manifest.candidate.fingerprint);
++const changed=assertUnchangedRecoverySources(before,current,recovery.allowedSourceChanges);
++for(const file of current.files)assert.equal(hash(readFileSync(local(file.path),"utf8").replace(/\r\n/g,"\n")),file.sha256,"Actual source differs from reviewed fingerprint");
++const originManifest=bound(recovery.references.manifest),originState=bound(recovery.references.state),originSchema=bound(recovery.references.schema),originBaseline=bound(recovery.references.baseline),legacyRecord=bound(recovery.references.legacy);
++assert.equal(recovery.references.manifest.sha256,recovery.origin.manifestSha256);
++assert.equal(originManifest.target.projectId,manifest.target.projectId);assert.equal(recovery.origin.projectId,manifest.target.projectId);
++assert.deepEqual(manifest.fixture,originManifest.fixture,"Existing fixture namespaces/caps/IDs cannot change");
++assert.equal(manifest.bootstrap.profileDigest,originManifest.bootstrap.profileDigest);
++assert.equal(hash(readFileSync(local(recovery.implementation.path),"utf8").replace(/\r\n/g,"\n")),recovery.implementation.sha256);
++const checkpoint={workspaceId:originState.resumeCheckpoint.workspaceId,workflowId:originState.resumeCheckpoint.id,submissionId:originState.resumeCheckpoint.submissionId,itemId:originState.resumeCheckpoint.requiredDraft.itemId,revision:originState.resumeCheckpoint.requiredDraft.revision,captionSha256:originState.resumeCheckpoint.requiredDraft.captionSha256,state:originState.resumeCheckpoint.state,itemState:originState.resumeCheckpoint.requiredDraft.state};
++const legacy={submissionId:legacyRecord.submissionId,creatorId:legacyRecord.creatorId,missionId:legacyRecord.missionId};
++assert.deepEqual(recovery.checkpoint,checkpoint);assert.deepEqual(recovery.legacy,legacy);
++if(mode==="--offline-check"){
++  process.stdout.write(JSON.stringify({status:"PASS_OFFLINE_EXISTING_FIXTURE_RECOVERY_REVIEW",changedSourcePaths:changed,newAuthSubjects:0,newWorkspaces:0,newMissions:0,newWorkflows:0,legacyReplay:false,privateCredentialRecordsRead:false,dockerSqlOrClientCalls:0})+"\n");
++}else{
++  // No private credentials, Docker, SQL or Auth request precedes reviewed source checks above.
++  for(const key of Object.keys(process.env))if(/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
++  for(const key of Object.keys(process.env))if(key.startsWith("DOCKER_"))delete process.env[key];
++  Object.assign(process.env,manifest.execution.environment,{DOCKER_CONTEXT:"desktop-linux",ADFOCATE_B2_MANIFEST_PATH:manifestPath,ADFOCATE_B2_PHASE:"role",NODE_OPTIONS:""});
++  const target=verifiedTarget(),context=target.context,privateRoot=resolve(context.privatePath("owned-journal.jsonl"),"../.."),publicRoot=resolve(context.publicPath("phase-result.json"),"../..");
++  assert(context.lineage.executionNamespace);assert(!existsSync(privateRoot),"Recovery already attempted; no automatic retry or reseed");
++  durableJson(resolve(privateRoot,"adoption-intent.private.json"),{lineage:context.lineage,state:"intent",origin:recovery.origin,changedSourcePaths:changed});
++  const norm=value=>Array.isArray(value)?value.map(norm).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(k=>[k,norm(value[k])])):value;
++  const workspaceIds=manifest.fixture.phases.flatMap(p=>[p.plannedPrimaryWorkspaceId,p.plannedDenialWorkspaceId]);assert(workspaceIds.every(id=>/^[a-f0-9-]{36}$/.test(id)));
++  const originInventories={},owned={};
++  for(const plan of manifest.fixture.phases){
++    const originLineage={...recovery.origin,phase:plan.phase,namespace:plan.plannedNamespace};
++    const reference=recovery.references.phases[plan.phase],directory=local(reference.privateDirectory);
++    for(const item of reference.journals){assert.equal(hash(readFileSync(local(item.path))),item.sha256);}
++    const journal=new FixtureJournal(resolve(directory,"owned-journal.jsonl"),originLineage,manifest.fixture.rowCaps[plan.phase]);journal.assertReady();owned[plan.phase]=journal.owned();
++    for(const name of readdirSync(directory).filter(n=>/^(?:(?:owner-)?transport-\d+|transport-browser-[a-z0-9-]+)\.jsonl$/.test(n)))new FixtureJournal(resolve(directory,name),originLineage,{requests:manifest.fixture.transportWriteCapPerProcess}).assertReady();
++    const expected=bound(reference.inventory);assert.deepEqual(expected.lineage,originLineage);
++    const actual=JSON.parse(target.sql(fixtureInventorySql(manifest.fixture.rowScopes,owned[plan.phase])));assertInventoryCaps(actual,manifest.fixture.rowCaps[plan.phase]);assert.deepEqual(actual,expected.inventory,"Existing scoped rows changed before adoption");originInventories[plan.phase]=actual;
++    const old=bound(reference.result);assert.deepEqual(old.lineage,originLineage);
++    if(plan.phase!=="browser"){
++      assert.equal(old.exitCode,0);
++      const tests=bound(reference.tests),count=plan.phase==="role"?8:9;
++      assert.equal(tests.success,true);assert.equal(tests.numTotalTests,count);assert.equal(tests.numPassedTests,count);
++      assert.equal(tests.numFailedTests,0);assert.equal(tests.numPendingTests,0);assert.equal(tests.testResults.length,1);
++      assert(tests.testResults[0].name.replaceAll("\\","/").endsWith(plan.phase==="role"?"/server/test/audit-staff-capabilities.test.ts":"/server/test/audit-workflow-roundtrip.test.ts"));
++    }else assert.equal(old.exitCode,1,"The original failed browser result must remain a failure");
++  }
++  const catalog=JSON.parse(target.sql("begin read only;"+originSchema.query+"commit;"));assert.deepEqual(norm(catalog),norm(originSchema.observed));
++  for(const seed of originBaseline.seeds){const now=JSON.parse(target.sql(seed.query));for(const id of seed.ids)assert.equal(now.rowHashes[id],seed.rowHashes[id],seed.table+" seed changed");}
++  const serviceHistory=JSON.parse(target.sql(originBaseline.serviceMigrationHistory.query));assert.deepEqual(serviceHistory.authHistory,originBaseline.serviceMigrationHistory.authHistory);assert.deepEqual(serviceHistory.storageHistory,originBaseline.serviceMigrationHistory.storageHistory);
++  const financial=JSON.parse(target.sql(originState.query));assert.deepEqual(financial,originState.financialTotals);
++  const query=`begin read only;select jsonb_agg(jsonb_build_object('workspaceId',w.workspace_id,'workflowId',w.id,'submissionId',w.mission_submission_id,'itemId',i.id,'revision',d.revision,'captionSha256',encode(extensions.digest(coalesce(d.caption_text,''),'sha256'),'hex'),'state',w.state,'itemState',i.state))from public.mission_workflows w join public.mission_work_items i on i.mission_workflow_id=w.id join public.mission_working_drafts d on d.mission_work_item_id=i.id where w.id='${checkpoint.workflowId}'and i.id='${checkpoint.itemId}';commit;`;
++  const liveCheckpoint=JSON.parse(target.sql(query));assert.deepEqual(liveCheckpoint,[checkpoint]);
++  const authQuery="begin read only;select jsonb_agg(id order by id)from auth.users;commit;",authBefore=JSON.parse(target.sql(authQuery));
++  const intended=[...new Set(Object.values(owned).flatMap(ids=>ids.auth_users??[]))].toSorted();assert.deepEqual(authBefore,intended);assert.equal(intended.length,84);
++  const legacyQuery=`begin read only;select jsonb_agg(s.id order by s.id)from public.mission_submissions s join public.missions m on m.id=s.mission_id and m.workspace_id=s.workspace_id where s.workspace_id in(${workspaceIds.map(id=>"'"+id+"'").join(",")})and m.creator_workflow_mode='legacy'and s.status='approved';commit;`;
++  const legacyBefore=JSON.parse(target.sql(legacyQuery));assert.equal(legacyBefore.length,2);assert(legacyBefore.includes(legacy.submissionId));
++  // Only now may the original private credential fixture be read or Auth sessions renewed.
++  const original=bound(recovery.references.browserFixture);assert.equal(original.lineage.sourceFingerprint,recovery.origin.sourceFingerprint);assert.equal(original.lineage.manifestSha256,recovery.origin.manifestSha256);
++  for(const key of ["projectId","runId","apiPort","apiContainerId","databaseContainerId","apiImageId","databaseImageId","networkId","proxy","disposable"])assert.deepEqual(original.target[key],target.identity[key],"Physical C1 target changed");
++  const actors=[original.creator,...["operator","reviewer","finance_viewer","foreign","content_editor"].map(role=>original.roles[role])];assert.equal(new Set(actors.map(a=>a.id)).size,6);
++  for(const actor of actors)assert(intended.includes(actor.id)&&actor.email?.endsWith("@example.test")&&typeof actor.password==="string","Exact existing synthetic credentials missing");
++  assert.equal(recovery.authRenewal.existingSubjects,6);assert.equal(recovery.noNewSubjects,true);assert.equal(recovery.noLegacyReplay,true);
++  for(const plan of manifest.fixture.phases){
++    const additional=recovery.authRenewal.maxSessionAdds[plan.phase];assert.equal(additional,plan.phase==="role"?1:plan.phase==="browser"?6:0);
++    for(const family of ["auth_sessions","auth_refresh_tokens"])
++      assert(originInventories[plan.phase][family].count+additional<=manifest.fixture.rowCaps[plan.phase][family],"Insufficient original Auth session budget; no sign-in allowed");
++  }
++  await import(pathToFileURL(resolve(root,"scripts/audit/deny-external-fetch.mjs")).href);
++  const journal=new FixtureJournal(context.privatePath(`transport-browser-session-renewal-${process.pid}.jsonl`,"browser"),context.lineageFor("browser"),{requests:manifest.fixture.transportWriteCapPerProcess});
++  const fetch=journalTransportFetch(globalThis.fetch,journal,context.origins),sessions=new Map();
++  for(const actor of actors){
++    const response=await fetch(target.env.SUPABASE_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:target.env.SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:actor.email,password:actor.password})});
++    if(response.status!==200)throw Error("Existing synthetic session renewal failed; retain exact receipts and stop");
++    const session=await response.json();assert.equal(session.user?.id,actor.id);assert(session.access_token&&session.refresh_token);session.expires_at??=Math.floor(Date.now()/1000)+session.expires_in;sessions.set(actor.id,session);
++    durableJson(resolve(privateRoot,"session-renewal.private.json"),{lineage:context.lineageFor("browser"),sessions:Object.fromEntries(sessions)});
++  }
++  journal.assertReady();const authAfter=JSON.parse(target.sql(authQuery)),legacyAfter=JSON.parse(target.sql(legacyQuery));assert.deepEqual(authAfter,authBefore);assert.deepEqual(legacyAfter,legacyBefore);
++  assert.deepEqual(JSON.parse(target.sql(originState.query)),financial);
++  const inventories={};
++  for(const plan of manifest.fixture.phases){
++    const now=JSON.parse(target.sql(fixtureInventorySql(manifest.fixture.rowScopes,owned[plan.phase])));assertInventoryCaps(now,manifest.fixture.rowCaps[plan.phase]);
++    for(const[family,scope]of Object.entries(manifest.fixture.rowScopes))if(!scope.relation.startsWith("auth."))assert.deepEqual(now[family],originInventories[plan.phase][family],"Non-Auth rows changed during session renewal");inventories[plan.phase]=now;
++    const lineage=context.lineageFor(plan.phase),observations=new FixtureJournal(context.privatePath("owned-journal.jsonl",plan.phase),lineage,manifest.fixture.rowCaps[plan.phase]);observations.observe(owned[plan.phase]);observations.assertReady();
++    durableJson(context.privatePath("fixture-claim.json",plan.phase),{lineage,state:"adopted-existing-no-reseed",origin:recovery.origin});
++    durableJson(context.publicPath("fixture-inventory.json",plan.phase),{lineage,target:target.identity,inventory:now,adoptedExisting:true,newSubjects:0});
++  }
++  function renew(value){
++    if(Array.isArray(value))return value.map(renew);if(!value||typeof value!=="object")return value;
++    if(value.access_token&&value.user?.id&&sessions.has(value.user.id))return globalThis.structuredClone(sessions.get(value.user.id));
++    const result=Object.fromEntries(Object.entries(value).map(([key,item])=>[key,renew(item)]));
++    if(sessions.has(value.id)&&(typeof value.jwt==="string"||value.email&&value.password)){result.jwt=sessions.get(value.id).access_token;result.session=globalThis.structuredClone(sessions.get(value.id));}return result;
++  }
++  const fixture=renew(original);fixture.lineage=context.lineageFor("browser");fixture.target=target.identity;fixture.legacy=legacy;
++  fixture.recovery={origin:recovery.origin,checkpoint,legacy,setupComplete:true};
++  const proof={lineage:context.lineageFor("browser"),target:target.identity,origin:recovery.origin,checkpoint,legacy,backendSourceUnchanged:true,inventoryWithinCaps:true,journalsResolved:true,immutableSeedsUnchanged:true,physicalTargetMatched:true,legacyRowsUnchanged:true,authSubjectIdsBefore:authBefore,authSubjectIdsAfter:authAfter,legacyIdsBefore:legacyBefore,legacyIdsAfter:legacyAfter};
++  browserContinuation({...context,phase:"browser",lineage:context.lineageFor("browser")},fixture,proof);
++  durableJson(context.privatePath("recovery-readback.private.json","browser"),proof);durableJson(context.privatePath("browser-fixture.private.json","browser"),fixture);
++  const baseline={...originBaseline,at:new Date().toISOString(),identity:target.identity,lineage:context.lineageFor("role"),adoptedFrom:recovery.references.baseline};
++  durableJson(resolve(publicRoot,"immutable-bootstrap-baseline.json"),baseline);
++  const receipt=read(local(process.env.ADFOCATE_B2_TARGET_RECEIPT_PATH));receipt.bootstrap.baselinePath=relative(root,resolve(publicRoot,"immutable-bootstrap-baseline.json")).replaceAll("\\","/");receipt.bootstrap.baselineSha256=hash(readFileSync(local(receipt.bootstrap.baselinePath)));durableJson(local(process.env.ADFOCATE_B2_TARGET_RECEIPT_PATH),receipt);
++  for(const plan of manifest.fixture.phases.filter(p=>p.phase!=="browser")){
++    durableJson(context.publicPath("phase-result.json",plan.phase),{lineage:context.lineageFor(plan.phase),target:target.identity,exitCode:0,signal:null,source:"Fresh read-only source/schema/ownership dependency revalidation; original API tests are carried unchanged, not rerun",reusedApiEvidence:recovery.references.phases[plan.phase].result,originalSourceFingerprint:recovery.origin.sourceFingerprint,originalCaseCount:plan.phase==="role"?8:9,apiCasesRerun:0,at:new Date().toISOString()});
++  }
++  durableJson(resolve(publicRoot,"browser-recovery-preparation.json"),{at:new Date().toISOString(),origin:recovery.origin,currentSourceFingerprint:manifest.candidate.fingerprint,currentManifestSha256:context.manifestSha256,identity:target.identity,checkpoint,legacy,changedSourcePaths:changed,backendAndApiTestSourcesUnchanged:true,originalSchemaAndSeedsUnchanged:true,authSubjectsBefore:authBefore.length,authSubjectsAfter:authAfter.length,existingSubjectSessionsRenewed:6,newAuthSubjects:0,newWorkspaces:0,newMissions:0,newWorkflows:0,newLegacyIssuance:0,legacyIdsUnchanged:true,originalFailureAndAllOriginalFilesPreserved:true,carriedApiCases:{role:8,core:9,rerun:0},remainingUiMode:"Original five cases, journey continued after verified original cold steps; original finance/role assertions retained",wholeR1Verified:false,providerEnabled:false,releaseHold:true});
++  durableJson(resolve(privateRoot,"adoption-complete.private.json"),{lineage:context.lineageFor("browser"),state:"complete",newDomainFixtureRows:0,authenticationRowsMayIncreaseWithinOriginalCaps:true,existingSubjectSessionsRenewed:6});
++  process.stdout.write(JSON.stringify({status:"PASS_EXACT_EXISTING_FIXTURE_ADOPTION_AND_DEPENDENCY_REVALIDATION",authSubjects:84,newSubjects:0,newWorkspaces:0,newMissions:0,newWorkflows:0,existingSubjectSessionsRenewed:6,apiCasesCarriedNotRerun:17,legacyReplay:false,fullBrowserAcceptance:"NOT_RUN"})+"\n");
++}
+--- origin6285/scripts/audit/browser-recovery.mjs
++++ candidate/scripts/audit/browser-recovery.mjs
+@@ -0,0 +1,57 @@
++// Pure validation only. Runtime authorization, Docker identity and actual readback precede use.
++import {isDeepStrictEqual as equal} from "node:util";
++import {createHash} from "node:crypto";
++
++const uuid=value=>typeof value==="string"&&/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value);
++const digest=value=>typeof value==="string"&&/^[a-f0-9]{64}$/.test(value);
++const fail=reason=>{throw new Error(`Browser recovery ${reason}`);};
++function exactIds(value){
++  if(!Array.isArray(value)||!value.length||value.some(id=>!uuid(id))||new Set(value).size!==value.length)fail("exact ID evidence invalid");
++  return value.toSorted();
++}
++export function browserContinuation(context,fixture,proof){
++  const recovery=context?.manifest?.execution?.recovery;
++  if(!recovery)return null;
++  if(recovery.mode!=="resume-owned-browser-draft"||context.phase!=="browser"
++    ||!uuid(context.manifest.execution.artifactNamespace)
++    ||context.lineage?.executionNamespace!==context.manifest.execution.artifactNamespace
++    ||recovery.noNewSubjects!==true||recovery.noLegacyReplay!==true)fail("reviewed continuation scope missing");
++  const origin=recovery.origin,checkpoint=recovery.checkpoint,legacy=recovery.legacy;
++  if(!origin||!digest(origin.sourceFingerprint)||!digest(origin.manifestSha256)
++    ||origin.sourceFingerprint===context.lineage.sourceFingerprint
++    ||origin.projectId!==context.lineage.projectId||origin.ownerRunId!==context.lineage.ownerRunId)fail("origin identity/source mismatch");
++  if(!checkpoint||![checkpoint.workspaceId,checkpoint.workflowId,checkpoint.submissionId,checkpoint.itemId].every(uuid)
++    ||!Number.isInteger(checkpoint.revision)||checkpoint.revision<0||!digest(checkpoint.captionSha256)
++    ||checkpoint.state!=="drafting"||checkpoint.itemState!=="drafting"
++    ||!legacy||![legacy.submissionId,legacy.creatorId,legacy.missionId].every(uuid))fail("draft or legacy checkpoint invalid");
++  if(!fixture?.recovery||fixture.recovery.setupComplete!==true
++    ||!equal(fixture.recovery.origin,origin)||!equal(fixture.recovery.checkpoint,checkpoint)||!equal(fixture.recovery.legacy,legacy))fail("complete existing fixture missing");
++  if(!proof||!equal(proof.lineage,context.lineage)||!equal(proof.target,fixture.target)
++    ||proof.target?.projectId!==origin.projectId||proof.target?.runId!==origin.ownerRunId
++    ||!equal(proof.origin,origin)||!equal(proof.checkpoint,checkpoint)||!equal(proof.legacy,legacy))fail("fresh proof target/lineage/checkpoint mismatch");
++  for(const key of ["backendSourceUnchanged","inventoryWithinCaps","journalsResolved","immutableSeedsUnchanged","physicalTargetMatched","legacyRowsUnchanged"]){
++    if(proof[key]!==true)fail(`fresh ${key} proof missing`);
++  }
++  if(!equal(exactIds(proof.authSubjectIdsBefore),exactIds(proof.authSubjectIdsAfter))
++    ||!equal(exactIds(proof.legacyIdsBefore),exactIds(proof.legacyIdsAfter)))fail("new subjects or legacy issuance detected");
++  return {checkpoint,legacy,origin};
++}
++
++export function assertUnchangedRecoverySources(before,current,allowedChanges){
++  for(const scope of [before,current]){
++    if(!scope||!Array.isArray(scope.files)||!scope.files.length||!digest(scope.fingerprint)
++      ||createHash("sha256").update(JSON.stringify(scope.files)).digest("hex")!==scope.fingerprint
++      ||new Set(scope.files.map(f=>f.path)).size!==scope.files.length
++      ||scope.files.some(f=>typeof f.path!=="string"||!digest(f.sha256)))fail("source fingerprint evidence invalid");
++  }
++  const old=new Map(before.files.map(f=>[f.path,f.sha256])),next=new Map(current.files.map(f=>[f.path,f.sha256]));
++  const changed=[...new Set([...old.keys(),...next.keys()])].filter(path=>old.get(path)!==next.get(path)).toSorted();
++  const retainedCases=new Set(["server/test/audit-staff-capabilities.test.ts","server/test/audit-workflow-roundtrip.test.ts","server/test/auditWorkflowFixture.ts"]);
++  if(changed.some(path=>path.startsWith("api/")||path.startsWith("supabase/")
++    ||path.startsWith("server/")&&!path.startsWith("server/test/")||retainedCases.has(path)))fail("backend/API evidence cannot be reused after a backend source change");
++  if(changed.some(path=>path.startsWith("src/")&&!/\.test\.[tj]sx?$/.test(path)
++    &&path!=="src/components/active-mission/DraftEditor.tsx"))fail("application source outside the reviewed editor changed");
++  if(!Array.isArray(allowedChanges)||new Set(allowedChanges).size!==allowedChanges.length
++    ||!equal(changed,allowedChanges.toSorted()))fail("source changes differ from the exact reviewed list");
++  return changed;
++}
+--- origin6285/scripts/audit/local-targets.mjs
++++ candidate/scripts/audit/local-targets.mjs
+@@ -52,13 +52,17 @@
+     || target.databaseVolumeName !== `${target.projectId}-db-data` || target.networkName !== `${target.projectId}-net`) {
+     throw new Error("B2 explicit phase, target or resource scope invalid");
+   }
++  const artifactNamespace = manifest.execution?.artifactNamespace;
++  if (artifactNamespace !== undefined && (typeof artifactNamespace !== "string"
++    || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(artifactNamespace))) throw new Error("B2 artifact namespace invalid");
+   assertAcceptanceTargetAllowed(target);
+   const lineage = (selectedPhase = phase) => ({ projectId: target.projectId, ownerRunId: target.plannedOwnerRunId,
+     sourceFingerprint: manifest.candidate.fingerprint, manifestSha256, phase: selectedPhase,
+-    namespace: manifest.fixture.phases.find(p => p.phase === selectedPhase)?.plannedNamespace });
++    namespace: manifest.fixture.phases.find(p => p.phase === selectedPhase)?.plannedNamespace,
++    ...(artifactNamespace ? { executionNamespace: artifactNamespace } : {}) });
+   const phasePath = (base, name, selectedPhase) => {
+     if (!/^[a-zA-Z0-9_.-]+$/.test(name) || name.startsWith(".") || !lineage(selectedPhase).namespace) throw new Error("B2 evidence path invalid");
+-    return resolve(root, base, target.projectId, selectedPhase, name);
++    return resolve(root, base, target.projectId, ...(artifactNamespace ? [artifactNamespace] : []), selectedPhase, name);
+   };
+   const assertLineage = (value, selectedPhase = phase) => {
+     if (!isDeepStrictEqual(value?.lineage, lineage(selectedPhase))) throw new Error("B2 fixture/evidence lineage mismatch");
+--- origin6285/server/test/b2-browser-recovery.test.ts
++++ candidate/server/test/b2-browser-recovery.test.ts
+@@ -0,0 +1,52 @@
++import {describe,expect,it} from "vitest";
++import {createHash} from "node:crypto";
++// @ts-expect-error Existing native audit helpers are ESM without declarations.
++import {browserContinuation,assertUnchangedRecoverySources} from "../../scripts/audit/browser-recovery.mjs";
++
++const uuid=(n:string)=>`${n.repeat(8)}-${n.repeat(4)}-4${n.repeat(3)}-8${n.repeat(3)}-${n.repeat(12)}`;
++function scenario(){
++ const identity={projectId:"adfocate-d19-b2-unit",runId:uuid("1"),apiContainerId:"1".repeat(64),databaseContainerId:"2".repeat(64),networkId:"3".repeat(64),ownerAuthorization:"Unit fixture only; no runtime authority"};
++ const origin={projectId:identity.projectId,ownerRunId:identity.runId,sourceFingerprint:"a".repeat(64),manifestSha256:"b".repeat(64)};
++ const checkpoint={workspaceId:uuid("2"),workflowId:uuid("3"),submissionId:uuid("4"),itemId:uuid("5"),revision:0,captionSha256:"e".repeat(64),state:"drafting",itemState:"drafting"};
++ const legacy={submissionId:uuid("6"),creatorId:uuid("7"),missionId:uuid("8")};
++ const lineage={...origin,sourceFingerprint:"c".repeat(64),manifestSha256:"d".repeat(64),phase:"browser",namespace:uuid("9"),executionNamespace:uuid("a")};
++ const recovery={mode:"resume-owned-browser-draft",origin,checkpoint,legacy,noNewSubjects:true,noLegacyReplay:true};
++ const context={phase:"browser",lineage,manifest:{execution:{artifactNamespace:lineage.executionNamespace,recovery}}};
++ const fixture={target:identity,recovery:{origin,checkpoint,legacy,setupComplete:true}};
++ const proof={lineage,target:identity,origin,checkpoint,legacy,backendSourceUnchanged:true,inventoryWithinCaps:true,journalsResolved:true,immutableSeedsUnchanged:true,physicalTargetMatched:true,legacyRowsUnchanged:true,authSubjectIdsBefore:[uuid("7")],authSubjectIdsAfter:[uuid("7")],legacyIdsBefore:[uuid("6")],legacyIdsAfter:[uuid("6")]};
++ return {context,fixture,proof,checkpoint,legacy};
++}
++describe("explicit browser continuation without replaying existing issuance",()=>{
++ it("keeps the original cold journey when no reviewed continuation is selected",()=>{
++  expect(browserContinuation({manifest:{execution:{}}},{},{})).toBeNull();
++ });
++ it("returns only the exact joined draft and issued legacy frame after complete revalidation",()=>{
++  const h=scenario();expect(browserContinuation(h.context,h.fixture,h.proof)).toEqual({checkpoint:h.checkpoint,legacy:h.legacy,origin:h.context.manifest.execution.recovery.origin});
++ });
++ it.each([
++  ["wrong source",(h:ReturnType<typeof scenario>)=>{h.proof.lineage={...h.proof.lineage,sourceFingerprint:"f".repeat(64)};}],
++  ["wrong target",(h:ReturnType<typeof scenario>)=>{h.proof.target={...h.proof.target,projectId:"old-shaped"};}],
++  ["changed draft",(h:ReturnType<typeof scenario>)=>{h.proof.checkpoint={...h.proof.checkpoint,revision:1};}],
++  ["missing fixture",(h:ReturnType<typeof scenario>)=>{h.fixture.recovery.setupComplete=false;}],
++  ["unresolved journal",(h:ReturnType<typeof scenario>)=>{h.proof.journalsResolved=false;}],
++  ["changed seed",(h:ReturnType<typeof scenario>)=>{h.proof.immutableSeedsUnchanged=false;}],
++  ["changed backend",(h:ReturnType<typeof scenario>)=>{h.proof.backendSourceUnchanged=false;}],
++  ["extra Auth subject",(h:ReturnType<typeof scenario>)=>{h.proof.authSubjectIdsAfter.push(uuid("b"));}],
++  ["extra legacy issuance",(h:ReturnType<typeof scenario>)=>{h.proof.legacyIdsAfter.push(uuid("b"));}],
++ ])("refuses %s instead of reseeding or silently narrowing acceptance",(_name,alter)=>{
++  const h=scenario();alter(h);expect(()=>browserContinuation(h.context,h.fixture,h.proof)).toThrow(/recovery/i);
++ });
++});
++const source=(files:Array<{path:string;sha256:string}>)=>({files,fingerprint:createHash("sha256").update(JSON.stringify(files)).digest("hex")});
++describe("unchanged backend evidence reuse",()=>{
++ const old=[{path:"server/routes/missions.ts",sha256:"1".repeat(64)},{path:"src/components/active-mission/DraftEditor.tsx",sha256:"2".repeat(64)}];
++ it("identifies only the explicitly reviewed UI change",()=>{
++  const next=[old[0],{...old[1],sha256:"3".repeat(64)}];expect(assertUnchangedRecoverySources(source(old),source(next),[old[1].path])).toEqual([old[1].path]);
++ });
++ it("rejects a backend change even if a caller includes it in an allow list",()=>{
++  const next=[{...old[0],sha256:"3".repeat(64)},old[1]];expect(()=>assertUnchangedRecoverySources(source(old),source(next),[old[0].path])).toThrow(/backend/i);
++ });
++ it("rejects an unlisted source change",()=>{
++  const next=[old[0],{...old[1],sha256:"3".repeat(64)}];expect(()=>assertUnchangedRecoverySources(source(old),source(next),[])).toThrow(/source/i);
++ });
++});
+--- origin6285/server/test/b2-runtime-manifest.test.ts
++++ candidate/server/test/b2-runtime-manifest.test.ts
+@@ -19,9 +19,9 @@
+   for(const phase of ["role","core","browser"]){expect(caps[phase].academy_lessons).toBe(0);expect(caps[phase].mission_draft_assets).toBe(0);expect(caps[phase].storage_objects).toBe(0);}
+  });
+  it("binds current source and bootstrap profile without reusing pristine/global RPC acceptance",()=>{
+-  const m=read("docs/verification/D19-C1-source-revision-runtime-manifest.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read(`docs/verification/${m.bootstrap.profilePath}`);
++  const fp=read("docs/verification/code-fingerprint.json"),m=read(fp.runtimeManifestPath??"docs/verification/D19-C1-source-revision-runtime-manifest.json"),profile=read(`docs/verification/${m.bootstrap.profilePath}`);
+   expect(m.candidate.fingerprint).toBe(fp.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
+   expect(m.execution.pristineRpcRerun).toBe(false);expect(m.fixture.legacyExistingIssuanceRequiresExplicitRuntimeApproval.approvalXpDelta).toBe(100);
+-  expect(m.execution.commands).toHaveLength(3);
++  expect(m.execution.commands).toHaveLength(m.execution.recovery?2:3);
+  });
+ });
+--- origin6285/server/test/b2-target-context.test.ts
++++ candidate/server/test/b2-target-context.test.ts
+@@ -12,7 +12,7 @@
+   return { ...fs, default: { ...fs, readFileSync: io.read }, readFileSync: io.read };
+ });
+ // @ts-expect-error Existing executable target module is native ESM.
+-const { verifiedTarget, verifiedB2BootstrapTarget } = await import("../../scripts/audit/local-targets.mjs");
++const { verifiedTarget, verifiedB2BootstrapTarget, b2ExecutionContext } = await import("../../scripts/audit/local-targets.mjs");
+ const hash = (value: string) => createHash("sha256").update(value).digest("hex");
+ afterEach(() => vi.unstubAllEnvs());
+ 
+@@ -29,7 +29,7 @@
+       resourceCaps: { projects: 1, persistentDataVolumes: 1, networks: 1, containers: 5 },storageTmpfs:{destination:"/var/lib/storage",sizeBytes:268435456},
+       ports: { host: "127.0.0.1", api: 56821, database: 56822, web: 56800, proxy: "none" } },
+     fixture: { phases: [{ phase: "role", plannedNamespace: "22222222-2222-4222-8222-222222222222" }, { phase: "core", plannedNamespace: "33333333-3333-4333-8333-333333333333" }, { phase: "browser", plannedNamespace: "44444444-4444-4444-8444-444444444444" }] },
+-    bootstrap: { profileDigest: "9".repeat(64) },
++    bootstrap: { profileDigest: "9".repeat(64) }, execution: {} as { artifactNamespace?: unknown },
+   };
+   const raw = JSON.stringify(manifest), digest = hash(raw), privateRoot = resolve(".codex-tmp", projectId);
+   const approval = { kind: "B2_RUNTIME_AUTHORIZATION", approved: true, manifestSha256: digest, sourceFingerprint: fingerprint, ownerReference: "Unit authority only, no real permission" };
+@@ -78,8 +78,30 @@
+   const sync = () => { store.set(resolve(".codex-tmp/b2-unit-approval.json"), JSON.stringify(approval)); store.set(resolve(".codex-tmp/b2-unit-receipt.json"), JSON.stringify(receipt)); };
+   return { store, manifest, approval, receipt, identity, metadata, network, volume, privateRoot, sync };
+ }
++function rebindManifest(h: ReturnType<typeof scenario>) {
++  const raw = JSON.stringify(h.manifest), digest = hash(raw);
++  h.store.set(resolve(".codex-tmp/b2-unit-manifest.json"), raw);
++  h.approval.manifestSha256 = digest; h.receipt.manifestSha256 = digest; h.sync();
++}
+ 
+ describe("B2 explicit execution binding before client setup", () => {
++  it("keeps reviewed continuation evidence separate while retaining the same physical project", () => {
++    const h = scenario(), recovery = "55555555-5555-4555-8555-555555555555";
++    h.manifest.execution.artifactNamespace = recovery; rebindManifest(h);
++    const context = b2ExecutionContext();
++    expect(context.privatePath("fixture.private.json")).toBe(resolve(".codex-tmp", h.identity.projectId, recovery, "role", "fixture.private.json"));
++    expect(context.publicPath("phase-result.json", "core")).toBe(resolve("docs/verification", h.identity.projectId, recovery, "core", "phase-result.json"));
++    expect(context.lineage.executionNamespace).toBe(recovery);
++    expect(context.lineage.projectId).toBe(h.identity.projectId);
++    expect(io.inspect).not.toHaveBeenCalled();
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it.each(["../escape", "C:/outside", "", null, 42])("rejects an invalid artifact namespace %s before Docker or keys", value => {
++    const h = scenario(); h.manifest.execution.artifactNamespace = value; rebindManifest(h);
++    expect(() => b2ExecutionContext()).toThrow(/B2.*artifact/i);
++    expect(io.inspect).not.toHaveBeenCalled();
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
+   it("refuses P0-only authority before any Docker or key-file access", () => {
+     const h = scenario(); h.approval.kind = "B2_P0_AUTHORIZATION"; h.sync();
+     expect(() => verifiedTarget()).toThrow(/B2.*runtime.*author/i);
+--- origin6285/src/components/active-mission/DraftEditor.recovery.test.tsx
++++ candidate/src/components/active-mission/DraftEditor.recovery.test.tsx
+@@ -1,4 +1,5 @@
+ import { act, fireEvent, render, screen } from "@testing-library/react";
++import { useReducer, useState, type ComponentProps } from "react";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { DraftEditor } from "./DraftEditor";
+ import type { MissionWorkItemView } from "@/lib/activeMission";
+@@ -26,4 +27,75 @@
+   await act(async()=>fireEvent.click(screen.getByRole("button",{name:"Retry save"})));
+   expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({revision:3,caption:"Retained local input"}));expect(onSave).toHaveBeenCalledTimes(2);expect(onSubmit).not.toHaveBeenCalled();
+  });
++ it("keeps a readable network failure when the owner recreates its save callback during mutation renders",async()=>{
++  vi.useFakeTimers();
++  const transport=vi.fn().mockRejectedValueOnce(new TypeError("network unavailable")).mockResolvedValue({draft:{...item.draft,revision:4}}),onSubmit=vi.fn();
++  function Owner(){
++   const[,rerender]=useReducer(value=>value+1,0);
++   return <DraftEditor item={item} onSubmit={onSubmit} onSave={async input=>{
++    rerender();try{return await transport(input);}finally{rerender();}
++   }}/>;
++  }
++  render(<Owner/>);await edit();
++  expect(screen.getByRole("button",{name:"Retry save"})).toBeVisible();
++  await act(async()=>vi.advanceTimersByTimeAsync(3200));
++  expect(transport).toHaveBeenCalledTimes(1);
++  expect(screen.getByLabelText("Caption or copy")).toHaveValue("Retained local input");
++  await act(async()=>fireEvent.click(screen.getByRole("button",{name:"Retry save"})));
++  await act(async()=>vi.advanceTimersByTimeAsync(2400));
++  expect(transport).toHaveBeenCalledTimes(2);
++  expect(transport).toHaveBeenLastCalledWith(expect.objectContaining({revision:3,caption:"Retained local input"}));
++  expect(onSubmit).not.toHaveBeenCalled();
++ });
++ it("does not save the same edit again after a successful save rerenders its owner",async()=>{
++  vi.useFakeTimers();const transport=vi.fn().mockResolvedValue({draft:{...item.draft,revision:4}}),onSubmit=vi.fn();
++  function Owner(){
++   const[,rerender]=useReducer(value=>value+1,0);
++   return <DraftEditor item={item} onSubmit={onSubmit} onSave={async input=>{
++    rerender();try{return await transport(input);}finally{rerender();}
++   }}/>;
++  }
++  render(<Owner/>);await edit();
++  await act(async()=>vi.advanceTimersByTimeAsync(3200));
++  expect(transport).toHaveBeenCalledTimes(1);
++  expect(screen.getByRole("status")).toHaveTextContent("Saved");
++  expect(onSubmit).not.toHaveBeenCalled();
++ });
++ it("does not autosave the same edit again when explicit stale recovery clears the owner conflict",async()=>{
++  vi.useFakeTimers();const stale=Object.assign(new Error("stale"),{code:"WORKFLOW_STALE"});
++  const transport=vi.fn().mockRejectedValueOnce(stale).mockResolvedValue({draft:{...item.draft,revision:6}}),onSubmit=vi.fn();
++  function Owner(){
++   const[currentItem,setItem]=useState(item);
++   const[conflict,setConflict]=useState<ComponentProps<typeof DraftEditor>["conflict"]>(null);
++   return <DraftEditor item={currentItem} conflict={conflict} onSubmit={onSubmit} onSave={async input=>{
++    setConflict(null);
++    try{return await transport(input);}catch(error){
++     const currentDraft={...item.draft!,revision:5,caption:"Concurrent server input"};
++     setItem({...item,draft:currentDraft});setConflict({workItemId:item.id,localDraft:input,currentDraft});throw error;
++    }
++   }}/>;
++  }
++  render(<Owner/>);await edit();
++  await act(async()=>fireEvent.click(screen.getByRole("button",{name:"Save retained draft against latest revision"})));
++  await act(async()=>vi.advanceTimersByTimeAsync(2400));
++  expect(transport).toHaveBeenCalledTimes(2);
++  expect(transport).toHaveBeenLastCalledWith(expect.objectContaining({revision:5,caption:"Retained local input"}));
++  expect(screen.getByLabelText("Caption or copy")).toHaveValue("Retained local input");
++  expect(onSubmit).not.toHaveBeenCalled();
++ });
++ it("keeps queued work bound to its original save handler when the work item changes",async()=>{
++  vi.useFakeTimers();let resolveFirst!:(result:{draft:NonNullable<MissionWorkItemView["draft"]>})=>void;
++  const first=new Promise<{draft:NonNullable<MissionWorkItemView["draft"]>}>(resolve=>{resolveFirst=resolve;});
++  const originalSave=vi.fn().mockReturnValueOnce(first).mockResolvedValue({draft:{...item.draft,revision:5}}),nextSave=vi.fn(),onSubmit=vi.fn();
++  const view=render(<DraftEditor item={item} onSave={originalSave} onSubmit={onSubmit}/>);await edit();
++  fireEvent.change(screen.getByLabelText("Caption or copy"),{target:{value:"Queued before navigation"}});
++  await act(async()=>vi.advanceTimersByTimeAsync(850));
++  expect(originalSave).toHaveBeenCalledTimes(1);
++  view.rerender(<DraftEditor item={{...item,id:"next-item",draft:{...item.draft!,id:"next-draft",revision:10,caption:"Other saved input"}}} onSave={nextSave} onSubmit={onSubmit}/>);
++  await act(async()=>resolveFirst({draft:{...item.draft!,revision:4}}));
++  expect(originalSave).toHaveBeenCalledTimes(2);
++  expect(originalSave).toHaveBeenLastCalledWith(expect.objectContaining({workItemId:item.id,caption:"Queued before navigation"}));
++  expect(nextSave).not.toHaveBeenCalled();
++  expect(screen.getByLabelText("Caption or copy")).toHaveValue("Other saved input");
++ });
+ });
+--- origin6285/src/components/active-mission/DraftEditor.tsx
++++ candidate/src/components/active-mission/DraftEditor.tsx
+@@ -118,7 +118,10 @@
+   const [fileError, setFileError] = useState<string | null>(null);
+   const [uploads, setUploads] = useState<UploadEntry[]>([]);
+   const revisionRef = useRef(item.draft?.revision ?? 0);
++  const saveHandlerRef = useRef(onSave);
++  saveHandlerRef.current = onSave;
+   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
++  const attemptedEditRef = useRef({ generation: 0, sequence: 0 });
+   const scopeRef = useRef({ itemId: item.id, generation: 0 });
+   const saveQueueRef = useRef<{ generation: number; promise: Promise<unknown> }>({ generation: 0, promise: Promise.resolve() });
+   const activeSaveRef = useRef<{ generation: number; promise: Promise<DraftSaveResult> } | null>(null);
+@@ -165,12 +168,15 @@
+   }, []);
+ 
+   const queueSave = useCallback((input: SaveMissionDraftInput, generation: number): Promise<DraftSaveResult> => {
++    // Owner mutation renders can replace onSave without creating another authored edit.
++    // Bind the handler now so already queued work retains its original scope.
++    const save = saveHandlerRef.current;
+     const previous = saveQueueRef.current.generation === generation ? saveQueueRef.current.promise : Promise.resolve();
+     const promise = previous.catch(() => undefined).then(async () => {
+       const executionInput = isCurrentScope(generation, input.workItemId)
+         ? { ...input, revision: revisionRef.current }
+         : input;
+-      const result = await onSave(executionInput);
++      const result = await save(executionInput);
+       if (isCurrentScope(generation, input.workItemId)) {
+         const nextRevision = revisionFrom(result, revisionRef.current);
+         revisionRef.current = nextRevision;
+@@ -184,10 +190,11 @@
+     saveQueueRef.current = { generation, promise };
+     activeSaveRef.current = { generation, promise };
+     return promise;
+-  }, [isCurrentScope, onSave]);
++  }, [isCurrentScope]);
+ 
+   useEffect(() => {
+     if (editSequence === 0 || !canEdit || stateItemId !== item.id || conflict) return;
++    if (attemptedEditRef.current.generation === renderGeneration && attemptedEditRef.current.sequence === editSequence) return;
+     setSaveStatus("saving");
+     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+     autosaveTimerRef.current = setTimeout(() => {
+@@ -200,6 +207,7 @@
+       };
+       autosaveTimerRef.current = null;
+       const generation = renderGeneration;
++      attemptedEditRef.current = { generation, sequence: editSequence };
+       void queueSave(input, generation)
+         .then(() => {
+           if (isCurrentScope(generation, input.workItemId)) setSaveStatus("saved");
+@@ -225,6 +233,7 @@
+     // The user has compared the server draft and explicitly chosen to save local input.
+     if (conflict?.currentDraft) revisionRef.current = conflict.currentDraft.revision;
+     const generation = renderGeneration, workItemId = item.id;
++    attemptedEditRef.current = { generation, sequence: editSequence };
+     setIsRecovering(true); setSaveStatus("saving");
+     try {
+       await queueSave({workItemId, revision:revisionRef.current, caption, externalUrl:externalUrl.trim() || null, checklist}, generation);

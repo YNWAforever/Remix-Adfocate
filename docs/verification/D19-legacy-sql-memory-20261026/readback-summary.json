@@ -1,0 +1,342 @@
+{
+  "at": "2026-10-25T16:27:45.132838+00:00",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "verificationArtifactFingerprint": "a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526",
+  "cases": [
+    {
+      "name": "committed-exact-and-changed-payload-retry",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "firstSavedSubmission": {
+          "id": "00000000-0000-4000-8000-000000000104",
+          "status": "approved",
+          "created_at": "2026-10-26T00:17:15.301+08:00",
+          "creator_id": "00000000-0000-4000-8000-000000000102",
+          "mission_id": "00000000-0000-4000-8000-000000000103",
+          "xp_awarded": 185,
+          "reviewed_at": "2026-10-26T00:17:15.315+08:00",
+          "content_urls": [
+            "https://example.test/memory-only-proof"
+          ],
+          "submitted_at": null,
+          "workspace_id": "00000000-0000-4000-8000-000000000101",
+          "points_awarded": 250,
+          "quality_rating": 5,
+          "reviewer_notes": "Synthetic saved legacy operator note",
+          "review_deadline": null,
+          "submission_data": {},
+          "evidence_revision": 1
+        },
+        "concurrentConnectionsTested": false
+      },
+      "stateSha256": {
+        "before": "b7f199f38b01e144e7e110e4c6df04e23006e19399e17be50b104dc281bf7ef4",
+        "afterFirst": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410",
+        "afterRetry": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410",
+        "afterChangedRetry": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFirst": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterChangedRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "insufficient-budget-atomicity-and-recovery",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "fixtureBalanceChangedSeparatelyFrom20To500": true,
+        "productionFundingWorkflowTested": false
+      },
+      "stateSha256": {
+        "before": "fdd009cee23233bdd3e7561d209e51543cf4cf8e3c86cbd69744ba3726c517fa",
+        "afterFailure": "fdd009cee23233bdd3e7561d209e51543cf4cf8e3c86cbd69744ba3726c517fa",
+        "afterRecovery": "930cdd935ab1cc51f7793d1c71731b84dc16365df71299a97fe8edd65272d131",
+        "afterRetry": "930cdd935ab1cc51f7793d1c71731b84dc16365df71299a97fe8edd65272d131"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 20,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 20,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "late-cash-ledger-fault-rollback",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "stateSha256": {
+        "before": "d97ee359317c8ff88a7cb4fd92c77737d33d654c5914e9d04000e2305f508b28",
+        "afterFailure": "d97ee359317c8ff88a7cb4fd92c77737d33d654c5914e9d04000e2305f508b28",
+        "afterRecovery": "85d0e9b5eb02c484387e3badd70ae9eb5f35251b549dba0d694833df5a78e84b",
+        "afterRetry": "85d0e9b5eb02c484387e3badd70ae9eb5f35251b549dba0d694833df5a78e84b"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "final-xp-fault-rollback",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "stateSha256": {
+        "before": "e6d9e5e3dc73fb4ee230341ad6fa1c48f3ceb1178bef7560ce0c34f3645c2274",
+        "afterFailure": "e6d9e5e3dc73fb4ee230341ad6fa1c48f3ceb1178bef7560ce0c34f3645c2274",
+        "afterRecovery": "65d36f78bc5456fd4ac6db06b45be30fa977f1d8291ceb5a7391e0a11104255b",
+        "afterRetry": "65d36f78bc5456fd4ac6db06b45be30fa977f1d8291ceb5a7391e0a11104255b"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "synthetic-pre-guard-invalid-evidence-denied",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "notAnIncidentBeforeImage": true,
+        "originalDataRestored": false
+      },
+      "stateSha256": {
+        "before": "2b3726bec7a826dd3c626ff090bedd158594cff2644d12a71a9fc1f0084532e6",
+        "afterFailure": "2b3726bec7a826dd3c626ff090bedd158594cff2644d12a71a9fc1f0084532e6"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        }
+      }
+    },
+    {
+      "name": "non-cash-mission-committed-retry",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "stateSha256": {
+        "before": "a20b35511bad5f31fed1c2969fada118f586bc1bf4026c192575a317e0040fec",
+        "afterFirst": "1c65c04c9ec96527c90269eb5ba81ba3e1710667190da34941a7530e53961adb",
+        "afterRetry": "1c65c04c9ec96527c90269eb5ba81ba3e1710667190da34941a7530e53961adb"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFirst": {
+          "xp": 135,
+          "points": 250,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRetry": {
+          "xp": 135,
+          "points": 250,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        }
+      }
+    },
+    {
+      "name": "sql-execute-acl",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "deniedRoles": [
+          "anon",
+          "authenticated"
+        ],
+        "permittedRole": "service_role",
+        "realAuthOrMembershipTested": false
+      },
+      "stateSha256": {
+        "before": "866d943180075656b13d9d0fbb1ab6879ee570c58b7399456905df9352af1dc8",
+        "afterServiceCall": "d18fed908c2bdc9e2b663c2c71ba0c775d4441ca3881ee510cf4113877c5e8c1"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterServiceCall": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    }
+  ],
+  "fullSnapshots": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final-engine-result.json",
+    "sha256": "d16f8af4e0d5ad58ac047c7513f2e6adf3d09e7c4b53416e2a19df3421b9d26f"
+  },
+  "tableFamilies": 9,
+  "valuesAreSyntheticMemoryOnly": true,
+  "notIncidentBeforeImagesOrPendingNeutrality": true
+}

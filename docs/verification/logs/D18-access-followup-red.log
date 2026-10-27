@@ -1,0 +1,87 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/staff-access-schema.embedded.test.ts (12 tests | 1 failed) 1542ms
+   × D18 an admin can revoke an existing grant after its target loses staff or membership 40ms
+     → STAFF_TARGET_NOT_ELIGIBLE
+stderr | server/test/staff-capability-boundary.test.ts > D18 access discovery reports independent workspace and platform capabilities
+TypeError: supabase.from is not a function
+    at workspaceAuth (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\middleware\workspace.ts:21:6)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+
+stderr | server/test/staff-capability-boundary.test.ts > D18 a permitted grant endpoint attributes the command to the authenticated actor
+TypeError: supabase.from is not a function
+    at workspaceAuth (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\middleware\workspace.ts:21:6)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\routes\admin.ts:109:5
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\routes\admin.ts:59:3
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/hono-base.js:306:25
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\staff-capability-boundary.test.ts:35:35
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5
+
+ ❯ server/test/staff-capability-boundary.test.ts (7 tests | 2 failed) 55ms
+   × D18 access discovery reports independent workspace and platform capabilities 12ms
+     → expected 500 to be 200 // Object.is equality
+   × D18 a permitted grant endpoint attributes the command to the authenticated actor 11ms
+     → expected 500 to be 200 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 an admin can revoke an existing grant after its target loses staff or membership
+error: STAFF_TARGET_NOT_ELIGIBLE
+ ❯ pe.Oe node_modules/@electric-sql/pg-protocol/src/parser.ts:442:11
+ ❯ pe.tt node_modules/@electric-sql/pg-protocol/src/parser.ts:220:16
+ ❯ pe.parse node_modules/@electric-sql/pg-protocol/src/parser.ts:104:21
+ ❯ D.Ne node_modules/@electric-sql/pglite/src/pglite.ts:763:26
+ ❯ node_modules/@electric-sql/pglite/src/pglite.ts:716:14
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:5951568
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2629075
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2661584
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2662188
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:5597565
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  server/test/staff-capability-boundary.test.ts > D18 access discovery reports independent workspace and platform capabilities
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ server/test/staff-capability-boundary.test.ts:32:52
+     30| });
+     31| it("D18 access discovery reports independent workspace and platform ca…
+     32|  const r=await request("/access");expect(r.status).toBe(200);expect((a…
+       |                                                    ^
+     33| });
+     34| it("D18 a permitted grant endpoint attributes the command to the authe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  server/test/staff-capability-boundary.test.ts > D18 a permitted grant endpoint attributes the command to the authenticated actor
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ server/test/staff-capability-boundary.test.ts:36:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 16 passed (19)
+   Start at  20:49:26
+   Duration  5.52s (transform 589ms, setup 445ms, collect 1.89s, tests 1.60s, environment 1.07s, prepare 185ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-access-followup-red.json

@@ -1,0 +1,15 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "data": {
+    "focusRestored": true,
+    "failureTransportMock": true,
+    "mocked503Responses": 1,
+    "inputPreserved": true,
+    "closeTarget": {
+      "x": 320,
+      "y": 382,
+      "width": 44,
+      "height": 44
+    }
+  }
+}

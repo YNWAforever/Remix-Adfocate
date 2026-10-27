@@ -1,0 +1,36 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/admin/StaffAuthGate.scope.test.tsx (1 test | 1 failed) 111ms
+   × discards a late response body after sign-out and clears identity-owned caches 110ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p>
+  Private 
+  old-staff
+</p> instead
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/admin/StaffAuthGate.scope.test.tsx > discards a late response body after sign-out and clears identity-owned caches
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p>
+  Private 
+  old-staff
+</p> instead
+ ❯ src/components/admin/StaffAuthGate.scope.test.tsx:20:55
+     18|   await act(async()=>{h.callback!();});expect(changed).toHaveBeenCalle…
+     19|   await act(async()=>{resolveBody({staff:{userId:"old-staff",email:"sy…
+     20|   expect(screen.queryByText("Private old-staff")).not.toBeInTheDocumen…
+       |                                                       ^
+     21| });
+     22| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  02:24:05
+   Duration  11.77s (transform 74ms, setup 471ms, collect 277ms, tests 111ms, environment 10.59s, prepare 123ms)
+

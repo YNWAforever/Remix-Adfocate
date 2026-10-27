@@ -1,0 +1,6081 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-mission-authoring.test.ts (4 tests | 2 failed) 32ms
+   × D12 authoring server boundary (unit transport; auth covered separately) > rejects publishing a legacy-stored invalid active template before changing status 25ms
+     → expected 200 to be 422 // Object.is equality
+   × D12 authoring server boundary (unit transport; auth covered separately) > does not publish an active mission that has no required deliverable 1ms
+     → expected 200 to be 422 // Object.is equality
+ ❯ src/components/admin/ProofPolicyFields.test.tsx (10 tests | 9 failed) 4902ms
+   × D12 policy fields through the real authoring form > authors required evidence without opening JSON and submits the actual required deliverable 289ms
+     → Unable to find an accessible element with the role "checkbox" and name "需要佐證檔案 1"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "基本":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "獎勵":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "名額與期限":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "簡介":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "品牌":
+  [36m<select[39m
+    [33maria-label[39m=[32m"品牌"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mdisabled[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "分類":
+  [36m<select[39m
+    [33maria-label[39m=[32m"分類"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "任務類型":
+  [36m<select[39m
+    [33maria-label[39m=[32m"任務類型"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "參與方式":
+  [36m<select[39m
+    [33maria-label[39m=[32m"參與方式"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "等級要求":
+  [36m<select[39m
+    [33maria-label[39m=[32m"等級要求"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Creator workflow":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Creator workflow"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Checklist category 1 for deliverable 1":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Checklist category 1 for deliverable 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "投入程度":
+  [36m<select[39m
+    [33maria-label[39m=[32m"投入程度"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "合成品牌":
+  [36m<option[39m
+    [33mvalue[39m=[32m"workspace"[39m
+  [36m/>[39m
+
+  Name "— 選擇 —":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "社交":
+  [36m<option[39m
+    [33mvalue[39m=[32m"社交"[39m
+  [36m/>[39m
+
+  Name "美容":
+  [36m<option[39m
+    [33mvalue[39m=[32m"美容"[39m
+  [36m/>[39m
+
+  Name "餐飲":
+  [36m<option[39m
+    [33mvalue[39m=[32m"餐飲"[39m
+  [36m/>[39m
+
+  Name "生活":
+  [36m<option[39m
+    [33mvalue[39m=[32m"生活"[39m
+  [36m/>[39m
+
+  Name "寵物":
+  [36m<option[39m
+    [33mvalue[39m=[32m"寵物"[39m
+  [36m/>[39m
+
+  Name "旅遊":
+  [36m<option[39m
+    [33mvalue[39m=[32m"旅遊"[39m
+  [36m/>[39m
+
+  Name "koc_trial":
+  [36m<option[39m
+    [33mvalue[39m=[32m"koc_trial"[39m
+  [36m/>[39m
+
+  Name "ugc":
+  [36m<option[39m
+    [33mvalue[39m=[32m"ugc"[39m
+  [36m/>[39m
+
+  Name "clipping":
+  [36m<option[39m
+    [33mvalue[39m=[32m"clipping"[39m
+  [36m/>[39m
+
+  Name "affiliate":
+  [36m<option[39m
+    [33mvalue[39m=[32m"affiliate"[39m
+  [36m/>[39m
+
+  Name "performance_cpm":
+  [36m<option[39m
+    [33mvalue[39m=[32m"performance_cpm"[39m
+  [36m/>[39m
+
+  Name "live_commerce":
+  [36m<option[39m
+    [33mvalue[39m=[32m"live_commerce"[39m
+  [36m/>[39m
+
+  Name "brand_ambassador":
+  [36m<option[39m
+    [33mvalue[39m=[32m"brand_ambassador"[39m
+  [36m/>[39m
+
+  Name "公開 (open)":
+  [36m<option[39m
+    [33mvalue[39m=[32m"open"[39m
+  [36m/>[39m
+
+  Name "申請制 (application)":
+  [36m<option[39m
+    [33mvalue[39m=[32m"application"[39m
+  [36m/>[39m
+
+  Name "L0":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L0"[39m
+  [36m/>[39m
+
+  Name "L1":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L1"[39m
+  [36m/>[39m
+
+  Name "L2":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L2"[39m
+  [36m/>[39m
+
+  Name "L3":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L3"[39m
+  [36m/>[39m
+
+  Name "L4":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L4"[39m
+  [36m/>[39m
+
+  Name "L5":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L5"[39m
+  [36m/>[39m
+
+  Name "L6":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L6"[39m
+  [36m/>[39m
+
+  Name "Legacy submission":
+  [36m<option[39m
+    [33mvalue[39m=[32m"legacy"[39m
+  [36m/>[39m
+
+  Name "Active mission workspace":
+  [36m<option[39m
+    [33mvalue[39m=[32m"active_workspace"[39m
+  [36m/>[39m
+
+  Name "format":
+  [36m<option[39m
+    [33mvalue[39m=[32m"format"[39m
+  [36m/>[39m
+
+  Name "key_message":
+  [36m<option[39m
+    [33mvalue[39m=[32m"key_message"[39m
+  [36m/>[39m
+
+  Name "compliance":
+  [36m<option[39m
+    [33mvalue[39m=[32m"compliance"[39m
+  [36m/>[39m
+
+  Name "quality":
+  [36m<option[39m
+    [33mvalue[39m=[32m"quality"[39m
+  [36m/>[39m
+
+  Name "other":
+  [36m<option[39m
+    [33mvalue[39m=[32m"other"[39m
+  [36m/>[39m
+
+  Name "— 不指定 —":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "low":
+  [36m<option[39m
+    [33mvalue[39m=[32m"low"[39m
+  [36m/>[39m
+
+  Name "medium":
+  [36m<option[39m
+    [33mvalue[39m=[32m"medium"[39m
+  [36m/>[39m
+
+  Name "high":
+  [36m<option[39m
+    [33mvalue[39m=[32m"high"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "標題":
+  [36m<input[39m
+    [33maria-label[39m=[32m"標題"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"合成作者任務"[39m
+  [36m/>[39m
+
+  Name "Slug":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Slug"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"synthetic-authoring"[39m
+  [36m/>[39m
+
+  Name "任務簡介":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"任務簡介"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"4"[39m
+  [36m/>[39m
+
+  Name "Deliverable title 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable title 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"寵物短片交付"[39m
+  [36m/>[39m
+
+  Name "Deliverable platform 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable platform 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"instagram"[39m
+  [36m/>[39m
+
+  Name "發佈指示 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"發佈指示 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "必須披露字句 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"必須披露字句 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "預期帳戶 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"預期帳戶 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"@synthetic_creator"[39m
+  [36m/>[39m
+
+  Name "發佈證明要求 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"發佈證明要求 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "Checklist text 1 for deliverable 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Checklist text 1 for deliverable 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"短片須清楚披露合作"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"其他平台…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "目標受眾":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"目標受眾"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mid[39m=[32m"m-audience"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"新增建議做法…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"新增避免事項…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"重點訊息…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"https://…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "積分獎勵":
+  [36m<input[39m
+    [33maria-label[39m=[32m"積分獎勵"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"500"[39m
+  [36m/>[39m
+
+  Name "現金獎勵":
+  [36m<input[39m
+    [33maria-label[39m=[32m"現金獎勵"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"125"[39m
+  [36m/>[39m
+
+  Name "名額":
+  [36m<input[39m
+    [33maria-label[39m=[32m"名額"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "Revision limit":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Revision limit"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"0"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "Review SLA hours":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Review SLA hours"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  Name "Revision response hours":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Revision response hours"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  Name "Draft due offset 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Draft due offset 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"0"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"24"[39m
+  [36m/>[39m
+
+  Name "發佈時限小時 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"發佈時限小時 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Fulfillment required":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Fulfillment required"[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Deliverable required 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable required 1"[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Checklist required 1 for deliverable 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Checklist required 1 for deliverable 1"[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Add deliverable":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Remove deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Remove deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Remove checklist item 1 from deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Remove checklist item 1 from deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Add checklist item to deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Add checklist item to deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "xiaohongshu":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "instagram":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-[var(--color-acid)]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "tiktok":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "youtube":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "預覽":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "儲存變更":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Deliverable 1":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "Checklist item 1":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"space-y-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+   × D12 policy fields through the real authoring form > preserves nested unknown policy keys and makes their evidence requirement explicit 23ms
+     → Unable to find an element with the text: /已有進階設定會原樣保留/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+   × D12 policy fields through the real authoring form > previews the actual deliverable, checklist and publication guidance without inventing an approval date 231ms
+     → Unable to find an accessible element with the role "region" and name "Creator 預覽"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "基本":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "獎勵":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "名額與期限":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "簡介":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "關於任務":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mb-2 font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "發佈平台":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mb-2 font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "預計投入":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mb-2 font-heading font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "品牌":
+  [36m<select[39m
+    [33maria-label[39m=[32m"品牌"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mdisabled[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "分類":
+  [36m<select[39m
+    [33maria-label[39m=[32m"分類"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "任務類型":
+  [36m<select[39m
+    [33maria-label[39m=[32m"任務類型"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "參與方式":
+  [36m<select[39m
+    [33maria-label[39m=[32m"參與方式"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "等級要求":
+  [36m<select[39m
+    [33maria-label[39m=[32m"等級要求"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Creator workflow":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Creator workflow"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "Checklist category 1 for deliverable 1":
+  [36m<select[39m
+    [33maria-label[39m=[32m"Checklist category 1 for deliverable 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  Name "投入程度":
+  [36m<select[39m
+    [33maria-label[39m=[32m"投入程度"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "合成品牌":
+  [36m<option[39m
+    [33mvalue[39m=[32m"workspace"[39m
+  [36m/>[39m
+
+  Name "— 選擇 —":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "社交":
+  [36m<option[39m
+    [33mvalue[39m=[32m"社交"[39m
+  [36m/>[39m
+
+  Name "美容":
+  [36m<option[39m
+    [33mvalue[39m=[32m"美容"[39m
+  [36m/>[39m
+
+  Name "餐飲":
+  [36m<option[39m
+    [33mvalue[39m=[32m"餐飲"[39m
+  [36m/>[39m
+
+  Name "生活":
+  [36m<option[39m
+    [33mvalue[39m=[32m"生活"[39m
+  [36m/>[39m
+
+  Name "寵物":
+  [36m<option[39m
+    [33mvalue[39m=[32m"寵物"[39m
+  [36m/>[39m
+
+  Name "旅遊":
+  [36m<option[39m
+    [33mvalue[39m=[32m"旅遊"[39m
+  [36m/>[39m
+
+  Name "koc_trial":
+  [36m<option[39m
+    [33mvalue[39m=[32m"koc_trial"[39m
+  [36m/>[39m
+
+  Name "ugc":
+  [36m<option[39m
+    [33mvalue[39m=[32m"ugc"[39m
+  [36m/>[39m
+
+  Name "clipping":
+  [36m<option[39m
+    [33mvalue[39m=[32m"clipping"[39m
+  [36m/>[39m
+
+  Name "affiliate":
+  [36m<option[39m
+    [33mvalue[39m=[32m"affiliate"[39m
+  [36m/>[39m
+
+  Name "performance_cpm":
+  [36m<option[39m
+    [33mvalue[39m=[32m"performance_cpm"[39m
+  [36m/>[39m
+
+  Name "live_commerce":
+  [36m<option[39m
+    [33mvalue[39m=[32m"live_commerce"[39m
+  [36m/>[39m
+
+  Name "brand_ambassador":
+  [36m<option[39m
+    [33mvalue[39m=[32m"brand_ambassador"[39m
+  [36m/>[39m
+
+  Name "公開 (open)":
+  [36m<option[39m
+    [33mvalue[39m=[32m"open"[39m
+  [36m/>[39m
+
+  Name "申請制 (application)":
+  [36m<option[39m
+    [33mvalue[39m=[32m"application"[39m
+  [36m/>[39m
+
+  Name "L0":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L0"[39m
+  [36m/>[39m
+
+  Name "L1":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L1"[39m
+  [36m/>[39m
+
+  Name "L2":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L2"[39m
+  [36m/>[39m
+
+  Name "L3":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L3"[39m
+  [36m/>[39m
+
+  Name "L4":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L4"[39m
+  [36m/>[39m
+
+  Name "L5":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L5"[39m
+  [36m/>[39m
+
+  Name "L6":
+  [36m<option[39m
+    [33mvalue[39m=[32m"L6"[39m
+  [36m/>[39m
+
+  Name "Legacy submission":
+  [36m<option[39m
+    [33mvalue[39m=[32m"legacy"[39m
+  [36m/>[39m
+
+  Name "Active mission workspace":
+  [36m<option[39m
+    [33mvalue[39m=[32m"active_workspace"[39m
+  [36m/>[39m
+
+  Name "format":
+  [36m<option[39m
+    [33mvalue[39m=[32m"format"[39m
+  [36m/>[39m
+
+  Name "key_message":
+  [36m<option[39m
+    [33mvalue[39m=[32m"key_message"[39m
+  [36m/>[39m
+
+  Name "compliance":
+  [36m<option[39m
+    [33mvalue[39m=[32m"compliance"[39m
+  [36m/>[39m
+
+  Name "quality":
+  [36m<option[39m
+    [33mvalue[39m=[32m"quality"[39m
+  [36m/>[39m
+
+  Name "other":
+  [36m<option[39m
+    [33mvalue[39m=[32m"other"[39m
+  [36m/>[39m
+
+  Name "— 不指定 —":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "low":
+  [36m<option[39m
+    [33mvalue[39m=[32m"low"[39m
+  [36m/>[39m
+
+  Name "medium":
+  [36m<option[39m
+    [33mvalue[39m=[32m"medium"[39m
+  [36m/>[39m
+
+  Name "high":
+  [36m<option[39m
+    [33mvalue[39m=[32m"high"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "標題":
+  [36m<input[39m
+    [33maria-label[39m=[32m"標題"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"合成作者任務"[39m
+  [36m/>[39m
+
+  Name "Slug":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Slug"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"synthetic-authoring"[39m
+  [36m/>[39m
+
+  Name "任務簡介":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"任務簡介"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"4"[39m
+  [36m/>[39m
+
+  Name "Deliverable title 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable title 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"寵物短片交付"[39m
+  [36m/>[39m
+
+  Name "Deliverable platform 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable platform 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"instagram"[39m
+  [36m/>[39m
+
+  Name "發佈指示 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"發佈指示 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "必須披露字句 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"必須披露字句 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "預期帳戶 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"預期帳戶 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"@synthetic_creator"[39m
+  [36m/>[39m
+
+  Name "發佈證明要求 1":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"發佈證明要求 1"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "Checklist text 1 for deliverable 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Checklist text 1 for deliverable 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mvalue[39m=[32m"短片須清楚披露合作"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"其他平台…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "目標受眾":
+  [36m<textarea[39m
+    [33maria-label[39m=[32m"目標受眾"[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mid[39m=[32m"m-audience"[39m
+    [33mrows[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"新增建議做法…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"新增避免事項…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"重點訊息…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<input[39m
+    [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"https://…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "積分獎勵":
+  [36m<input[39m
+    [33maria-label[39m=[32m"積分獎勵"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"500"[39m
+  [36m/>[39m
+
+  Name "現金獎勵":
+  [36m<input[39m
+    [33maria-label[39m=[32m"現金獎勵"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"125"[39m
+  [36m/>[39m
+
+  Name "名額":
+  [36m<input[39m
+    [33maria-label[39m=[32m"名額"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"10"[39m
+  [36m/>[39m
+
+  Name "Revision limit":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Revision limit"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"0"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "Review SLA hours":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Review SLA hours"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  Name "Revision response hours":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Revision response hours"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  Name "Draft due offset 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Draft due offset 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"0"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"24"[39m
+  [36m/>[39m
+
+  Name "發佈時限小時 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"發佈時限小時 1"[39m
+    [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+    [33mmin[39m=[32m"1"[39m
+    [33mtype[39m=[32m"number"[39m
+    [33mvalue[39m=[32m"48"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Fulfillment required":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Fulfillment required"[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Deliverable required 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Deliverable required 1"[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  Name "Checklist required 1 for deliverable 1":
+  [36m<input[39m
+    [33maria-label[39m=[32m"Checklist required 1 for deliverable 1"[39m
+    [33mchecked[39m=[32m""[39m
+    [33mtype[39m=[32m"checkbox"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Add deliverable":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Remove deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Remove deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Remove checklist item 1 from deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Remove checklist item 1 from deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Add checklist item to deliverable 1":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Add checklist item to deliverable 1"[39m
+    [33mclass[39m=[32m"rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "xiaohongshu":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "instagram":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-[var(--color-acid)]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "tiktok":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "youtube":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "隱藏預覽":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "儲存變更":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Deliverable 1":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "Checklist item 1":
+  [36m<fieldset[39m
+    [33mclass[39m=[32m"space-y-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"block text-sm font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"break-words font-heading font-bold leading-tight"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"break-words font-heading font-bold leading-tight"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"break-words font-heading font-bold leading-tight"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"break-words font-heading font-bold leading-tight"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+   × D12 policy fields through the real authoring form > blocks a negative deadline locally and locates the second deliverable without discarding input 1054ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+   × D12 policy fields through the real authoring form > shows a recoverable save failure inline and keeps all entered values 1053ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"失敗後保留的標題"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33m...
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"失敗後保留的標題"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33m...
+   × D12 policy fields through the real authoring form > keeps server validation authoritative and places checklist errors on the matching deliverable 1047ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-5"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mSlug (english)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Slug"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0mCreator workflow[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"Creator workflow"[39m
+            [33mcl...
+   × D12 policy fields through the real authoring form > tracks unsaved changes through a failed save and clears them only after successful persistence 1037ms
+     → expected last "spy" call to have been called with [ true ]
+
+Ignored nodes: comments, script, style, option
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-5"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m基本[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m品牌[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"品牌"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m標題 (zh-HK)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"標題"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"未保存變更"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0mSlug (english)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"Slug"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"synthetic-authoring"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m分類[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"分類"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務類型[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"任務類型"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m參與方式[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"參與方式"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m等級要求[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"等級要求"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m獎勵[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m積分獎勵[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"積分獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"500"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m現金獎勵 (HK$)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"現金獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"125"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m名額與期限[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m名額[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"名額"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mmin[39m=[32m"1"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"10"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m截止日期[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"截止日期"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2030-11-30"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m簡介[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務簡介[0m
+            [36m<textarea[39m
+              [33maria-label[39m=[32m"任務簡介"[39m
+              [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+              [33mrows[39m=[32m"4"...
+   × D12 policy fields through the real authoring form > prevents duplicate saves while persistence is pending 54ms
+     → expected "spy" to be called 1 times, but got 2 times
+   × D12 policy fields through the real authoring form > does not preview stale fixed rewards after switching to CPM 49ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p
+  class="break-words font-heading font-bold leading-tight"
+>
+  500 積分 + HK$125.00
+</p> instead
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-mission-authoring.test.ts > D12 authoring server boundary (unit transport; auth covered separately) > rejects publishing a legacy-stored invalid active template before changing status
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ server/test/audit-mission-authoring.test.ts:35:29
+     33|     state.row.deliverable_templates = [{ ...template, publication_wind…
+     34|     const response = await app.request("/admin/missions/mission/publis…
+     35|     expect(response.status).toBe(422);
+       |                             ^
+     36|     expect(await response.json()).toMatchObject({ fields: { "deliverab…
+     37|     expect(state.writes).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  server/test/audit-mission-authoring.test.ts > D12 authoring server boundary (unit transport; auth covered separately) > does not publish an active mission that has no required deliverable
+AssertionError: expected 200 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 200
+
+ ❯ server/test/audit-mission-authoring.test.ts:43:29
+     41|     state.row.deliverable_templates = [];
+     42|     const response = await app.request("/admin/missions/mission/publis…
+     43|     expect(response.status).toBe(422);
+       |                             ^
+     44|     expect(state.writes).toBe(0);
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > authors required evidence without opening JSON and submits the actual required deliverable
+TestingLibraryElementError: Unable to find an accessible element with the role "checkbox" and name "需要佐證檔案 1"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "基本":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "獎勵":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "名額與期限":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "簡介":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "品牌":
+  <select
+    aria-label="品牌"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    disabled=""
+  />
+
+  Name "分類":
+  <select
+    aria-label="分類"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "任務類型":
+  <select
+    aria-label="任務類型"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "參與方式":
+  <select
+    aria-label="參與方式"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "等級要求":
+  <select
+    aria-label="等級要求"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "Creator workflow":
+  <select
+    aria-label="Creator workflow"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "Checklist category 1 for deliverable 1":
+  <select
+    aria-label="Checklist category 1 for deliverable 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "投入程度":
+  <select
+    aria-label="投入程度"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  --------------------------------------------------
+  option:
+
+  Name "合成品牌":
+  <option
+    value="workspace"
+  />
+
+  Name "— 選擇 —":
+  <option
+    value=""
+  />
+
+  Name "社交":
+  <option
+    value="社交"
+  />
+
+  Name "美容":
+  <option
+    value="美容"
+  />
+
+  Name "餐飲":
+  <option
+    value="餐飲"
+  />
+
+  Name "生活":
+  <option
+    value="生活"
+  />
+
+  Name "寵物":
+  <option
+    value="寵物"
+  />
+
+  Name "旅遊":
+  <option
+    value="旅遊"
+  />
+
+  Name "koc_trial":
+  <option
+    value="koc_trial"
+  />
+
+  Name "ugc":
+  <option
+    value="ugc"
+  />
+
+  Name "clipping":
+  <option
+    value="clipping"
+  />
+
+  Name "affiliate":
+  <option
+    value="affiliate"
+  />
+
+  Name "performance_cpm":
+  <option
+    value="performance_cpm"
+  />
+
+  Name "live_commerce":
+  <option
+    value="live_commerce"
+  />
+
+  Name "brand_ambassador":
+  <option
+    value="brand_ambassador"
+  />
+
+  Name "公開 (open)":
+  <option
+    value="open"
+  />
+
+  Name "申請制 (application)":
+  <option
+    value="application"
+  />
+
+  Name "L0":
+  <option
+    value="L0"
+  />
+
+  Name "L1":
+  <option
+    value="L1"
+  />
+
+  Name "L2":
+  <option
+    value="L2"
+  />
+
+  Name "L3":
+  <option
+    value="L3"
+  />
+
+  Name "L4":
+  <option
+    value="L4"
+  />
+
+  Name "L5":
+  <option
+    value="L5"
+  />
+
+  Name "L6":
+  <option
+    value="L6"
+  />
+
+  Name "Legacy submission":
+  <option
+    value="legacy"
+  />
+
+  Name "Active mission workspace":
+  <option
+    value="active_workspace"
+  />
+
+  Name "format":
+  <option
+    value="format"
+  />
+
+  Name "key_message":
+  <option
+    value="key_message"
+  />
+
+  Name "compliance":
+  <option
+    value="compliance"
+  />
+
+  Name "quality":
+  <option
+    value="quality"
+  />
+
+  Name "other":
+  <option
+    value="other"
+  />
+
+  Name "— 不指定 —":
+  <option
+    value=""
+  />
+
+  Name "low":
+  <option
+    value="low"
+  />
+
+  Name "medium":
+  <option
+    value="medium"
+  />
+
+  Name "high":
+  <option
+    value="high"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "標題":
+  <input
+    aria-label="標題"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="合成作者任務"
+  />
+
+  Name "Slug":
+  <input
+    aria-label="Slug"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="synthetic-authoring"
+  />
+
+  Name "任務簡介":
+  <textarea
+    aria-label="任務簡介"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="4"
+  />
+
+  Name "Deliverable title 1":
+  <input
+    aria-label="Deliverable title 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="寵物短片交付"
+  />
+
+  Name "Deliverable platform 1":
+  <input
+    aria-label="Deliverable platform 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="instagram"
+  />
+
+  Name "發佈指示 1":
+  <textarea
+    aria-label="發佈指示 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="3"
+  />
+
+  Name "必須披露字句 1":
+  <textarea
+    aria-label="必須披露字句 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="3"
+  />
+
+  Name "預期帳戶 1":
+  <input
+    aria-label="預期帳戶 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="@synthetic_creator"
+  />
+
+  Name "發佈證明要求 1":
+  <textarea
+    aria-label="發佈證明要求 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="2"
+  />
+
+  Name "Checklist text 1 for deliverable 1":
+  <input
+    aria-label="Checklist text 1 for deliverable 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="短片須清楚披露合作"
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="其他平台…"
+    value=""
+  />
+
+  Name "目標受眾":
+  <textarea
+    aria-label="目標受眾"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    id="m-audience"
+    rows="2"
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="新增建議做法…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="新增避免事項…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="重點訊息…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="https://…"
+    value=""
+  />
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "積分獎勵":
+  <input
+    aria-label="積分獎勵"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    type="number"
+    value="500"
+  />
+
+  Name "現金獎勵":
+  <input
+    aria-label="現金獎勵"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    type="number"
+    value="125"
+  />
+
+  Name "名額":
+  <input
+    aria-label="名額"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="10"
+  />
+
+  Name "Revision limit":
+  <input
+    aria-label="Revision limit"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="0"
+    type="number"
+    value="2"
+  />
+
+  Name "Review SLA hours":
+  <input
+    aria-label="Review SLA hours"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  Name "Revision response hours":
+  <input
+    aria-label="Revision response hours"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  Name "Draft due offset 1":
+  <input
+    aria-label="Draft due offset 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="0"
+    type="number"
+    value="24"
+  />
+
+  Name "發佈時限小時 1":
+  <input
+    aria-label="發佈時限小時 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Fulfillment required":
+  <input
+    aria-label="Fulfillment required"
+    type="checkbox"
+  />
+
+  Name "Deliverable required 1":
+  <input
+    aria-label="Deliverable required 1"
+    checked=""
+    type="checkbox"
+  />
+
+  Name "Checklist required 1 for deliverable 1":
+  <input
+    aria-label="Checklist required 1 for deliverable 1"
+    checked=""
+    type="checkbox"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "Add deliverable":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "Remove deliverable 1":
+  <button
+    aria-label="Remove deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+    type="button"
+  />
+
+  Name "Remove checklist item 1 from deliverable 1":
+  <button
+    aria-label="Remove checklist item 1 from deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+    type="button"
+  />
+
+  Name "Add checklist item to deliverable 1":
+  <button
+    aria-label="Add checklist item to deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "xiaohongshu":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "instagram":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-[var(--color-acid)]"
+    type="button"
+  />
+
+  Name "tiktok":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "youtube":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "預覽":
+  <button
+    class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "儲存變更":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+  />
+
+  --------------------------------------------------
+  group:
+
+  Name "Deliverable 1":
+  <fieldset
+    class="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"
+  />
+
+  Name "Checklist item 1":
+  <fieldset
+    class="space-y-2"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:31:28
+     29|     const onSave = vi.fn().mockResolvedValue({});
+     30|     render(<MissionEditor {...props} onSave={onSave} />);
+     31|     fireEvent.click(screen.getByRole("checkbox", { name: "需要佐證檔案…
+       |                            ^
+     32|     save();
+     33|     await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > preserves nested unknown policy keys and makes their evidence requirement explicit
+TestingLibraryElementError: Unable to find an element with the text: /已有進階設定會原樣保留/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:45:19
+     43|     const policy = { legacy_review: { owner: "synthetic", modes: ["man…
+     44|     render(<MissionEditor {...props} initial={{ ...mission, deliverabl…
+     45|     expect(screen.getByText(/已有進階設定會原樣保留/)).toBeInTheDocume…
+       |                   ^
+     46|     expect(screen.getByRole("checkbox", { name: "需要佐證檔案 1" })).t…
+     47|     expect(screen.getByRole("checkbox", { name: "需要佐證檔案 1" })).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > previews the actual deliverable, checklist and publication guidance without inventing an approval date
+TestingLibraryElementError: Unable to find an accessible element with the role "region" and name "Creator 預覽"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "基本":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "獎勵":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "名額與期限":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "簡介":
+  <h2
+    class="font-heading font-bold"
+  />
+
+  Name "關於任務":
+  <h3
+    class="mb-2 font-heading font-bold"
+  />
+
+  Name "發佈平台":
+  <h3
+    class="mb-2 font-heading font-bold"
+  />
+
+  Name "預計投入":
+  <h3
+    class="mb-2 font-heading font-bold"
+  />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "品牌":
+  <select
+    aria-label="品牌"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    disabled=""
+  />
+
+  Name "分類":
+  <select
+    aria-label="分類"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "任務類型":
+  <select
+    aria-label="任務類型"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "參與方式":
+  <select
+    aria-label="參與方式"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "等級要求":
+  <select
+    aria-label="等級要求"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "Creator workflow":
+  <select
+    aria-label="Creator workflow"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "Checklist category 1 for deliverable 1":
+  <select
+    aria-label="Checklist category 1 for deliverable 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  Name "投入程度":
+  <select
+    aria-label="投入程度"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+  />
+
+  --------------------------------------------------
+  option:
+
+  Name "合成品牌":
+  <option
+    value="workspace"
+  />
+
+  Name "— 選擇 —":
+  <option
+    value=""
+  />
+
+  Name "社交":
+  <option
+    value="社交"
+  />
+
+  Name "美容":
+  <option
+    value="美容"
+  />
+
+  Name "餐飲":
+  <option
+    value="餐飲"
+  />
+
+  Name "生活":
+  <option
+    value="生活"
+  />
+
+  Name "寵物":
+  <option
+    value="寵物"
+  />
+
+  Name "旅遊":
+  <option
+    value="旅遊"
+  />
+
+  Name "koc_trial":
+  <option
+    value="koc_trial"
+  />
+
+  Name "ugc":
+  <option
+    value="ugc"
+  />
+
+  Name "clipping":
+  <option
+    value="clipping"
+  />
+
+  Name "affiliate":
+  <option
+    value="affiliate"
+  />
+
+  Name "performance_cpm":
+  <option
+    value="performance_cpm"
+  />
+
+  Name "live_commerce":
+  <option
+    value="live_commerce"
+  />
+
+  Name "brand_ambassador":
+  <option
+    value="brand_ambassador"
+  />
+
+  Name "公開 (open)":
+  <option
+    value="open"
+  />
+
+  Name "申請制 (application)":
+  <option
+    value="application"
+  />
+
+  Name "L0":
+  <option
+    value="L0"
+  />
+
+  Name "L1":
+  <option
+    value="L1"
+  />
+
+  Name "L2":
+  <option
+    value="L2"
+  />
+
+  Name "L3":
+  <option
+    value="L3"
+  />
+
+  Name "L4":
+  <option
+    value="L4"
+  />
+
+  Name "L5":
+  <option
+    value="L5"
+  />
+
+  Name "L6":
+  <option
+    value="L6"
+  />
+
+  Name "Legacy submission":
+  <option
+    value="legacy"
+  />
+
+  Name "Active mission workspace":
+  <option
+    value="active_workspace"
+  />
+
+  Name "format":
+  <option
+    value="format"
+  />
+
+  Name "key_message":
+  <option
+    value="key_message"
+  />
+
+  Name "compliance":
+  <option
+    value="compliance"
+  />
+
+  Name "quality":
+  <option
+    value="quality"
+  />
+
+  Name "other":
+  <option
+    value="other"
+  />
+
+  Name "— 不指定 —":
+  <option
+    value=""
+  />
+
+  Name "low":
+  <option
+    value="low"
+  />
+
+  Name "medium":
+  <option
+    value="medium"
+  />
+
+  Name "high":
+  <option
+    value="high"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "標題":
+  <input
+    aria-label="標題"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="合成作者任務"
+  />
+
+  Name "Slug":
+  <input
+    aria-label="Slug"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="synthetic-authoring"
+  />
+
+  Name "任務簡介":
+  <textarea
+    aria-label="任務簡介"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="4"
+  />
+
+  Name "Deliverable title 1":
+  <input
+    aria-label="Deliverable title 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="寵物短片交付"
+  />
+
+  Name "Deliverable platform 1":
+  <input
+    aria-label="Deliverable platform 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="instagram"
+  />
+
+  Name "發佈指示 1":
+  <textarea
+    aria-label="發佈指示 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="3"
+  />
+
+  Name "必須披露字句 1":
+  <textarea
+    aria-label="必須披露字句 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="3"
+  />
+
+  Name "預期帳戶 1":
+  <input
+    aria-label="預期帳戶 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="@synthetic_creator"
+  />
+
+  Name "發佈證明要求 1":
+  <textarea
+    aria-label="發佈證明要求 1"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    rows="2"
+  />
+
+  Name "Checklist text 1 for deliverable 1":
+  <input
+    aria-label="Checklist text 1 for deliverable 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    value="短片須清楚披露合作"
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="其他平台…"
+    value=""
+  />
+
+  Name "目標受眾":
+  <textarea
+    aria-label="目標受眾"
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    id="m-audience"
+    rows="2"
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="新增建議做法…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="新增避免事項…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="重點訊息…"
+    value=""
+  />
+
+  Name "":
+  <input
+    class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+    placeholder="https://…"
+    value=""
+  />
+
+  --------------------------------------------------
+  spinbutton:
+
+  Name "積分獎勵":
+  <input
+    aria-label="積分獎勵"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    type="number"
+    value="500"
+  />
+
+  Name "現金獎勵":
+  <input
+    aria-label="現金獎勵"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    type="number"
+    value="125"
+  />
+
+  Name "名額":
+  <input
+    aria-label="名額"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="10"
+  />
+
+  Name "Revision limit":
+  <input
+    aria-label="Revision limit"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="0"
+    type="number"
+    value="2"
+  />
+
+  Name "Review SLA hours":
+  <input
+    aria-label="Review SLA hours"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  Name "Revision response hours":
+  <input
+    aria-label="Revision response hours"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  Name "Draft due offset 1":
+  <input
+    aria-label="Draft due offset 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="0"
+    type="number"
+    value="24"
+  />
+
+  Name "發佈時限小時 1":
+  <input
+    aria-label="發佈時限小時 1"
+    class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+    min="1"
+    type="number"
+    value="48"
+  />
+
+  --------------------------------------------------
+  checkbox:
+
+  Name "Fulfillment required":
+  <input
+    aria-label="Fulfillment required"
+    type="checkbox"
+  />
+
+  Name "Deliverable required 1":
+  <input
+    aria-label="Deliverable required 1"
+    checked=""
+    type="checkbox"
+  />
+
+  Name "Checklist required 1 for deliverable 1":
+  <input
+    aria-label="Checklist required 1 for deliverable 1"
+    checked=""
+    type="checkbox"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "Add deliverable":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "Remove deliverable 1":
+  <button
+    aria-label="Remove deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+    type="button"
+  />
+
+  Name "Remove checklist item 1 from deliverable 1":
+  <button
+    aria-label="Remove checklist item 1 from deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+    type="button"
+  />
+
+  Name "Add checklist item to deliverable 1":
+  <button
+    aria-label="Add checklist item to deliverable 1"
+    class="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "xiaohongshu":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "instagram":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-[var(--color-acid)]"
+    type="button"
+  />
+
+  Name "tiktok":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "youtube":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] px-3 py-0.5 text-sm bg-white"
+    type="button"
+  />
+
+  Name "隱藏預覽":
+  <button
+    class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+    type="button"
+  />
+
+  Name "儲存變更":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+  />
+
+  --------------------------------------------------
+  group:
+
+  Name "Deliverable 1":
+  <fieldset
+    class="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"
+  />
+
+  Name "Checklist item 1":
+  <fieldset
+    class="space-y-2"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="block text-sm font-bold"
+  />
+
+  Name "":
+  <p
+    class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="break-words font-heading font-bold leading-tight"
+  />
+
+  Name "":
+  <p
+    class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="break-words font-heading font-bold leading-tight"
+  />
+
+  Name "":
+  <p
+    class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="break-words font-heading font-bold leading-tight"
+  />
+
+  Name "":
+  <p
+    class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="break-words font-heading font-bold leading-tight"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:57:28
+     55|     render(<MissionEditor {...props} onSave={vi.fn()} />);
+     56|     fireEvent.click(screen.getByRole("button", { name: "預覽" }));
+     57|     const preview = screen.getByRole("region", { name: "Creator 預覽" …
+       |                            ^
+     58|     expect(preview).toHaveTextContent("寵物短片交付");
+     59|     expect(preview).toHaveTextContent("短片須清楚披露合作");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > blocks a negative deadline locally and locates the second deliverable without discarding input
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:72:32
+     70|     render(<MissionEditor {...props} initial={{ ...mission, deliverabl…
+     71|     save();
+     72|     const alert = await screen.findByRole("alert");
+       |                                ^
+     73|     expect(alert).toHaveTextContent("交付項目 2");
+     74|     expect(alert).toHaveTextContent("發佈時限必須是正整數");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > shows a recoverable save failure inline and keeps all entered values
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="失敗後保留的標題"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            ...
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="失敗後保留的標題"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:99:25
+     97|     fireEvent.change(screen.getByLabelText("標題"), { target: { value:…
+     98|     save();
+     99|     expect(await screen.findByRole("alert")).toHaveTextContent("儲存失…
+       |                         ^
+    100|     expect(screen.getByLabelText("標題")).toHaveValue("失敗後保留的標…
+    101|     expect(screen.getByRole("button", { name: "儲存變更" })).toBeEnabl…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > keeps server validation authoritative and places checklist errors on the matching deliverable
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-5"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Slug (english)
+          <input
+            aria-label="Slug"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          Creator workflow
+          <select
+            aria-label="Creator workflow"
+            cl...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:110:25
+    108|     render(<MissionEditor {...props} initial={{ ...mission, deliverabl…
+    109|     save();
+    110|     expect(await screen.findByRole("alert")).toHaveTextContent("交付項…
+       |                         ^
+    111|     expect(screen.getByRole("group", { name: "交付項目 2" })).toHaveTe…
+    112|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > tracks unsaved changes through a failed save and clears them only after successful persistence
+AssertionError: expected last "spy" call to have been called with [ true ]
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="space-y-5"
+      >
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            基本
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            品牌
+            <select
+              aria-label="品牌"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              disabled=""
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            標題 (zh-HK)
+            <input
+              aria-label="標題"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="未保存變更"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            Slug (english)
+            <input
+              aria-label="Slug"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="synthetic-authoring"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            分類
+            <select
+              aria-label="分類"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            任務類型
+            <select
+              aria-label="任務類型"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            參與方式
+            <select
+              aria-label="參與方式"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            等級要求
+            <select
+              aria-label="等級要求"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            獎勵
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            積分獎勵
+            <input
+              aria-label="積分獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="500"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            現金獎勵 (HK$)
+            <input
+              aria-label="現金獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="125"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            名額與期限
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            名額
+            <input
+              aria-label="名額"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              min="1"
+              type="number"
+              value="10"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            截止日期
+            <input
+              aria-label="截止日期"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="date"
+              value="2030-11-30"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            簡介
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            任務簡介
+            <textarea
+              aria-label="任務簡介"
+              class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+              rows="4"...
+
+- Expected: 
+Array [
+  true,
+]
+
++ Received: 
+undefined
+
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:120:47
+    118|     render(<MissionEditor {...props} onSave={onSave} onDirtyChange={on…
+    119|     fireEvent.change(screen.getByLabelText("標題"), { target: { value:…
+    120|     await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith…
+       |                                               ^
+    121|     save();
+    122|     await screen.findByRole("alert");
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > prevents duplicate saves while persistence is pending
+AssertionError: expected "spy" to be called 1 times, but got 2 times
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:133:20
+    131|     render(<MissionEditor {...props} onSave={onSave} />);
+    132|     save(); save();
+    133|     expect(onSave).toHaveBeenCalledTimes(1);
+       |                    ^
+    134|     expect(screen.getByLabelText("標題")).toBeDisabled();
+    135|     finish();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > does not preview stale fixed rewards after switching to CPM
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p
+  class="break-words font-heading font-bold leading-tight"
+>
+  500 積分 + HK$125.00
+</p> instead
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:142:47
+    140|     render(<MissionEditor {...props} initial={{ ...mission, mission_ty…
+    141|     fireEvent.click(screen.getByRole("button", { name: "預覽" }));
+    142|     expect(screen.queryByText(/HK\$125/)).not.toBeInTheDocument();
+       |                                               ^
+    143|   });
+    144| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+ Test Files  2 failed (2)
+      Tests  11 failed | 3 passed (14)
+   Start at  11:29:38
+   Duration  20.78s (transform 450ms, setup 5.69s, collect 2.26s, tests 4.93s, environment 20.27s, prepare 1.58s)
+

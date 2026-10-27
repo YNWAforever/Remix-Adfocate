@@ -1,0 +1,38 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/campaigns-s2.test.ts > snapshot_campaign_leaderboards > captures active-campaign ranks
+Error: External HTTP disabled for synthetic acceptance
+    at globalThis.fetch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/deny-external-fetch.mjs:7:27)
+    at globalThis.fetch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/observe-pristine-campaign-jobs.mjs:30:41)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\ownedFixtureTransport.ts:69:24
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\@supabase\auth-js\src\lib\helpers.ts:107:25
+    at _handleRequest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\@supabase\auth-js\src\lib\fetch.ts:221:20)
+    at _request (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\@supabase\auth-js\src\lib\fetch.ts:194:22)
+    at GoTrueAdminApi.createUser (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\@supabase\auth-js\src\GoTrueAdminApi.ts:487:28)
+    at Module.makeCreator (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\helpers.ts:115:63)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\campaigns-s2.test.ts:104:27
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:146:14
+
+ ❯ server/test/campaigns-s2.test.ts (5 tests | 2 failed | 3 skipped) 944ms
+   × close_due_campaigns > closes past-deadline active only, idempotent 847ms
+     → Error: External HTTP disabled for synthetic acceptance
+   × snapshot_campaign_leaderboards > captures active-campaign ranks 95ms
+     → External HTTP disabled for synthetic acceptance
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-integration.private.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/campaigns-s2.test.ts > close_due_campaigns > closes past-deadline active only, idempotent
+Unknown Error: Error: External HTTP disabled for synthetic acceptance
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/campaigns-s2.test.ts > snapshot_campaign_leaderboards > captures active-campaign ranks
+AuthRetryableFetchError: External HTTP disabled for synthetic acceptance
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 skipped (5)
+   Start at  17:22:04
+   Duration  15.52s (transform 543ms, setup 2.37s, collect 1.12s, tests 944ms, environment 9.02s, prepare 924ms)
+

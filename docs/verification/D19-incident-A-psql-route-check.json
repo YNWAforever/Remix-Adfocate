@@ -1,0 +1,12 @@
+{
+  "scope": "Non-secret route classification only, no env dump",
+  "checks": {
+    "PGHOST": "UNSET_OR_EMPTY",
+    "PGPORT": "UNSET_OR_EMPTY",
+    "PGSERVICE": "UNSET_OR_EMPTY",
+    "PGSERVICEFILE": "UNSET_OR_EMPTY"
+  },
+  "firstThreePsqlCallsUsedDefaultSocketNoExternalServiceOverride": true,
+  "subsequentPsqlRouteExplicit": "/var/run/postgresql:5432 inside exact verified DB container",
+  "dataWrites": false
+}

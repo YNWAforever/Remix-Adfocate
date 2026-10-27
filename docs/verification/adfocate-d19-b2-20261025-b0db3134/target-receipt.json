@@ -1,0 +1,33 @@
+{
+  "manifestSha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "identity": {
+    "runId": "b0db3134-c0c2-483f-abf6-89cb32953ce0",
+    "ownerAuthorization": "2026-10-25 direct user approval reply call_adfe83a16c4341c9afca1939641ce508; B2 manifest 96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-b0db3134",
+    "proxy": "none",
+    "apiPort": 56821,
+    "apiContainerId": "efbc76a45f3ebae787e31cef913e5eaadd6875a8ed98a7bc022003b95f1d837a",
+    "databaseContainerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "6a680bf2f30acc8c7e38dc379e612a02786977f3ecb10af878eeb47d04f83b79"
+  },
+  "containerIds": {
+    "db": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1",
+    "auth": "1e37f1567bd97224adb8bf75c76011d961269155fbbd15d88ed7a80838ddfea9",
+    "rest": "dea945cade01d729fccc7be446d7cd4f418041f511454a298066c4518e1bd372",
+    "kong": "efbc76a45f3ebae787e31cef913e5eaadd6875a8ed98a7bc022003b95f1d837a",
+    "storage": "79bed9eb713310cf3cc180d77e5a74c432227e80802a7de3de937d6180603309"
+  },
+  "createdThisRun": true,
+  "volumeWasAbsent": true,
+  "networkWasAbsent": true,
+  "volumeName": "adfocate-d19-b2-20261025-b0db3134-db-data",
+  "databaseCreatedAt": "2026-10-25T04:54:37.552060619Z",
+  "volumeCreatedAt": "2026-10-25T04:54:37Z",
+  "bootstrap": {
+    "verified": false
+  }
+}

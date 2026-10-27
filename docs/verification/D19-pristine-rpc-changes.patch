@@ -1,0 +1,317 @@
+diff --git a/scripts/audit/observe-pristine-campaign-jobs.mjs b/scripts/audit/observe-pristine-campaign-jobs.mjs
+--- /dev/null
++++ b/scripts/audit/observe-pristine-campaign-jobs.mjs
+@@ -0,0 +1,43 @@
++// Read-only persistence observer for the two original global-job integration cases.
++import { appendFileSync, readFileSync } from 'node:fs';
++import { createHash } from 'node:crypto';
++import { spawnSync } from 'node:child_process';
++import process from 'node:process';
++import { URL } from 'node:url';
++import { verifyIntegrationIdentity } from '../run-integration-tests.mjs';
++// The shared preload allows only the two older targets. This observer instead
++// permits exactly this live-attested new origin and rejects every other origin.
++
++const env = process.env;
++const identity = verifyIntegrationIdentity(env);
++const definition = JSON.parse(readFileSync(env.INTEGRATION_PRISTINE_OBSERVER_JSON, 'utf8'));
++if (definition.runId !== identity.runId || definition.projectId !== identity.projectId) throw new Error('Pristine observer identity mismatch');
++const origin = new URL(env.SUPABASE_URL).origin;
++const delegate = globalThis.fetch;
++const { Request } = globalThis;
++const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
++function snapshot() {
++  const result = spawnSync('docker', ['exec', '-i', identity.databaseContainerId, 'psql', '-X', '-q', '-A', '-t', '-v', 'ON_ERROR_STOP=1', '-U', definition.databaseRole, '-d', definition.databaseName], {
++    encoding: 'utf8', timeout: 15000, input: `begin read only;${definition.query}commit;`,
++  });
++  if (result.status !== 0 || result.error) throw new Error('Pristine financial persistence snapshot unavailable');
++  return JSON.parse(result.stdout);
++}
++globalThis.fetch = async (input, init) => {
++  const url = new URL(input instanceof Request ? input.url : String(input));
++  if (url.origin !== origin) throw new Error('Pristine verification cannot leave its attested API target');
++  const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
++  const rpc = url.pathname.match(/^\/rest\/v1\/rpc\/(close_due_campaigns|snapshot_campaign_leaderboards)$/)?.[1];
++  if (!rpc || method !== 'POST') return delegate(input, init);
++  const before = snapshot();
++  const response = await delegate(input, init);
++  const after = snapshot();
++  const neutral = digest(before.finance) === digest(after.finance);
++  const value = await response.clone().json().catch(() => null);
++  appendFileSync(env.INTEGRATION_PRISTINE_CALL_JOURNAL, JSON.stringify({
++    at: new Date().toISOString(), runId: identity.runId, rpc, status: response.status,
++    result: typeof value === 'number' ? value : null, before, after, financialNeutrality: neutral,
++  }) + '\n');
++  if (!neutral) throw new Error('Global campaign job changed the financial snapshot');
++  return response;
++};
+diff --git a/scripts/audit/run-pristine-campaign-jobs.mjs b/scripts/audit/run-pristine-campaign-jobs.mjs
+--- /dev/null
++++ b/scripts/audit/run-pristine-campaign-jobs.mjs
+@@ -0,0 +1,51 @@
++// One-time D19 supplement. This never relaxes global-job isolation on retained targets.
++import { readFileSync, writeFileSync } from 'node:fs';
++import { randomUUID } from 'node:crypto';
++import { resolve } from 'node:path';
++import { pathToFileURL } from 'node:url';
++import { spawnSync } from 'node:child_process';
++import process from 'node:process';
++import { verifyIntegrationIdentity } from '../run-integration-tests.mjs';
++
++const prefix = 'D19-pristine-rpc';
++const planPath = `.codex-tmp/${prefix}-plan.private.json`;
++const plan = JSON.parse(readFileSync(planPath, 'utf8'));
++if (plan.stage !== 'SCHEMA_READY_PRISTINE') throw new Error('A one-time unused schema-ready target is required');
++const targetEnv = JSON.parse(readFileSync(resolve(plan.folder, 'integration-env.private.json'), 'utf8'));
++const identity = verifyIntegrationIdentity(targetEnv, undefined, []); // Before SDK/test imports or fixture setup.
++const schema = JSON.parse(readFileSync(`docs/verification/${prefix}-schema-before-tests.json`, 'utf8'));
++if (JSON.stringify(schema.identity) !== JSON.stringify(identity) || schema.counts.campaigns !== 0 || schema.counts.authUsers !== 0) throw new Error('Pristine schema/baseline identity mismatch');
++const observer = JSON.parse(readFileSync(`.codex-tmp/${prefix}-observer.private.json`, 'utf8'));
++function sql(query) {
++  const result = spawnSync('docker', ['exec', '-i', identity.databaseContainerId, 'psql', '-X', '-q', '-A', '-t', '-v', 'ON_ERROR_STOP=1', '-U', observer.databaseRole, '-d', observer.databaseName], { input: query, encoding: 'utf8', timeout: 15000 });
++  if (result.status !== 0 || result.error) throw new Error('Pristine target SQL failed');
++  return result.stdout.trim();
++}
++const baseline = JSON.parse(sql("begin read only;select jsonb_build_object('campaigns',(select count(*)from public.campaigns),'authUsers',(select count(*)from auth.users),'submissions',(select count(*)from public.mission_submissions),'cronLaunchActiveJobs',current_setting('cron.launch_active_jobs',true));commit;"));
++if (baseline.campaigns || baseline.authUsers || baseline.submissions || baseline.cronLaunchActiveJobs !== 'off') throw new Error('Target is no longer pristine or scheduled jobs are enabled');
++const namespace = randomUUID(), workspaceId = randomUUID(), slug = `d19-support-${namespace}`;
++const scope = { namespace, workspaceId, slug, createdThisRun: true };
++writeFileSync(`docs/verification/${prefix}-fixture.json`, JSON.stringify({ identity, scope, baseline, source: 'New workspace created only after live identity and zero-data checks', cleanup: 'No deletes: exact new fixture IDs retained for inspection', originalIncident: 'OPEN, untouched' }, null, 2) + '\n');
++sql(`begin;insert into public.workspaces(id,slug,name)values('${workspaceId}','${slug}','Owned fresh support fixture');commit;`);
++const ownedPath = resolve(`.codex-tmp/${prefix}-owned.private.json`), journal = resolve(`.codex-tmp/${prefix}-owned.private.jsonl`), calls = resolve(`.codex-tmp/${prefix}-calls.private.jsonl`);
++writeFileSync(ownedPath, JSON.stringify({ tables: { workspaces: { key: 'id', ids: [workspaceId] } } }) + '\n');
++writeFileSync(journal, ''); writeFileSync(calls, '');
++const env = { ...process.env };
++for (const key of Object.keys(env)) if (/SUPABASE|OPENAI|OPENROUTER|ANTHROPIC|RAPIDAPI|^RELEASE_|DATABASE_URL|NODE_OPTIONS/.test(key)) env[key] = '';
++Object.assign(env, targetEnv, {
++  RUN_INTEGRATION: '1', RUN_AUDIT_INTEGRATION: '0', INTEGRATION_RUNNER: '1',
++  INTEGRATION_MUTATION_OWNERSHIP: '1', INTEGRATION_RETAIN_FIXTURES: '1',
++  INTEGRATION_FIXTURE_NAMESPACE: namespace, INTEGRATION_FRESH_WORKSPACE_JSON: JSON.stringify(scope),
++  INTEGRATION_FIXTURE_SCOPE_JSON: JSON.stringify({ runId: identity.runId, workspaceIds: [workspaceId] }),
++  INTEGRATION_OWNED_IDS_PATH: ownedPath, INTEGRATION_OWNED_JOURNAL: journal,
++  INTEGRATION_PRISTINE_OBSERVER_JSON: resolve(`.codex-tmp/${prefix}-observer.private.json`),
++  INTEGRATION_PRISTINE_CALL_JOURNAL: calls, OPENAI_API_KEY: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '', RAPIDAPI_KEY: '',
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve('scripts/audit/observe-pristine-campaign-jobs.mjs')).href}`,
++});
++plan.stage = 'TESTING'; writeFileSync(planPath, JSON.stringify(plan, null, 2) + '\n');
++const args = ['node_modules/vitest/vitest.mjs', 'run', '--no-file-parallelism', '--maxWorkers=1', '--minWorkers=1', '--testTimeout=60000', '--hookTimeout=60000', '--reporter=dot', '--reporter=json', `--outputFile=.codex-tmp/${prefix}-integration.private.json`, '--testNamePattern=^(close_due_campaigns|snapshot_campaign_leaderboards) ', 'server/test/campaigns-s2.test.ts'];
++const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });
++verifyIntegrationIdentity(targetEnv); // No further mutation on drift.
++plan.stage = 'TESTS_FINISHED'; writeFileSync(planPath, JSON.stringify(plan, null, 2) + '\n');
++writeFileSync(`docs/verification/${prefix}-run.json`, JSON.stringify({ identity, scope, command: [process.execPath, ...args], exit: result.status ?? 1, providerEnabled: false, productionReadOrWritten: false, cleanup: 'Exact new IDs retained; no delete/reset/restore', testTimeoutReason: 'Container identity and read-only financial observations add synchronous Docker calls; production evidence expiry unchanged' }, null, 2) + '\n');
++process.exitCode = result.status ?? 1;
+diff --git a/scripts/run-integration-tests.mjs b/scripts/run-integration-tests.mjs
+--- a/scripts/run-integration-tests.mjs
++++ b/scripts/run-integration-tests.mjs
+@@ -2,6 +2,7 @@
+ import { resolve } from "node:path";
+ import process from "node:process";
+ import { URL, pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
+ 
+ export const publicationProofPreflightFile = "server/test/publication-proof-asset-grant-live.test.ts";
+ 
+@@ -79,11 +80,29 @@
+ }
+ 
+ // Read only selected Docker metadata. Never import a client or print container env/secrets.
+-export function verifyIntegrationIdentity(env, inspect = spawnSync) {
++export function verifyIntegrationIdentity(env, inspect = spawnSync, ownedCampaignIds = null) {
+   const identity = assertIntegrationEnvironment(env);
++  let pristine;
++  if (env.INTEGRATION_PRISTINE_TARGET_JSON) {
++    try { pristine = JSON.parse(env.INTEGRATION_PRISTINE_TARGET_JSON); }
++    catch { throw new Error("pristine target receipt cannot be decoded"); }
++    if (!isDeepStrictEqual(pristine.identity, identity)
++      || !identity.projectId.startsWith("adfocate-d19-pristine-")
++      || pristine.createdThisRun !== true || pristine.volumeWasAbsent !== true
++      || pristine.networkWasAbsent !== true || !pristine.databaseCreatedAt
++      || !pristine.volumeCreatedAt || pristine.volumeName !== `${identity.projectId}-db-data`
++      || pristine.pristineBaseline?.campaigns !== 0 || pristine.pristineBaseline?.authUsers !== 0
++      || pristine.ownerAuthorization !== identity.ownerAuthorization
++      || !Array.isArray(pristine.containerIds) || new Set(pristine.containerIds).size !== pristine.containerIds.length
++      || pristine.containerIds.length < 2 || pristine.containerIds.length > 5
++      || !pristine.containerIds.includes(identity.apiContainerId)
++      || !pristine.containerIds.includes(identity.databaseContainerId)) {
++      throw new Error("pristine target requires a new authorized project, volume and zero-data baseline");
++    }
++  } else if (ownedCampaignIds !== null) throw new Error("pristine target receipt required for global campaign jobs");
+   const containers = [identity.apiContainerId, identity.databaseContainerId].map((id) => {
+     if (!/^[a-f0-9]{64}$/.test(id)) throw new Error("integration container identity must be exact");
+-    const format = '{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}';
++    const format = '{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}},"mounts":{{json .Mounts}},"created":{{json .Created}}}';
+     const result = inspect("docker", ["inspect", "--format", format, id], { encoding: "utf8", timeout: 10000 });
+     if (result.status !== 0 || result.error) throw new Error("integration container identity cannot be verified");
+     try { return JSON.parse(result.stdout); }
+@@ -102,6 +121,43 @@
+   if (api.id === database.id || !(api.ports?.["8000/tcp"] ?? []).some((binding) =>
+     binding.HostIp === "127.0.0.1" && Number(binding.HostPort) === identity.apiPort)) {
+     throw new Error("integration API host/port/container mapping mismatch");
++  }
++  if (pristine) {
++    const metadata = (args, json = true) => {
++      const result = inspect("docker", args, { encoding: "utf8", timeout: 10000 });
++      if (result.status !== 0 || result.error) throw new Error("pristine target metadata unavailable");
++      try { return json ? JSON.parse(result.stdout) : result.stdout.trim(); }
++      catch { throw new Error("pristine target metadata invalid"); }
++    };
++    if (metadata(["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], false)
++      !== "npipe:////./pipe/dockerDesktopLinuxEngine") throw new Error("pristine target must use the local Docker engine");
++    const network = metadata(["network", "inspect", "--format", '{"id":{{json .Id}},"internal":{{json .Internal}},"labels":{{json .Labels}},"containers":{{json .Containers}},"options":{{json .Options}}}', identity.networkId]);
++    const members = Array.isArray(network.containers) ? network.containers : Object.keys(network.containers ?? {});
++    const volume = metadata(["volume", "inspect", "--format", '{"name":{{json .Name}},"created":{{json .CreatedAt}},"labels":{{json .Labels}}}', pristine.volumeName]);
++    const writable = (database.mounts ?? []).filter(m => m.RW);
++    const isolatedNetwork = pristine.isolationMode === "dedicated-bridge-no-masquerade"
++      ? network.internal === false && network.options?.["com.docker.network.bridge.enable_ip_masquerade"] === "false"
++        && network.options?.["com.docker.network.bridge.host_binding_ipv4"] === "127.0.0.1"
++      : !pristine.isolationMode && network.internal === true;
++    if (network.id !== identity.networkId || !isolatedNetwork
++      || network.labels?.["adfocate.run"] !== identity.runId || network.labels?.["adfocate.pristine"] !== "true"
++      || !isDeepStrictEqual([...members].sort(), [...pristine.containerIds].sort())
++      || containers.some(c => Object.keys(c.networks ?? {}).length !== 1)
++      || database.created !== pristine.databaseCreatedAt
++      || volume.name !== pristine.volumeName || volume.created !== pristine.volumeCreatedAt
++      || volume.labels?.["adfocate.run"] !== identity.runId || volume.labels?.["adfocate.pristine"] !== "true"
++      || writable.length !== 1 || writable[0].Type !== "volume" || writable[0].Name !== pristine.volumeName
++      || writable[0].Destination !== "/var/lib/postgresql/data") throw new Error("pristine target volume, owner or exclusive internal network drift");
++    if (ownedCampaignIds !== null) {
++      if (!Array.isArray(ownedCampaignIds) || ownedCampaignIds.some(id => !/^[a-f0-9-]{36}$/i.test(id))) throw new Error("pristine campaign ownership invalid");
++      const result = inspect("docker", ["exec", "-i", identity.databaseContainerId, "psql", "-X", "-q", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres"], {
++        encoding: "utf8", timeout: 10000,
++        input: "begin read only;select coalesce(jsonb_agg(id order by id),'[]'::jsonb)from public.campaigns;commit;",
++      });
++      let ids;
++      try { ids = result.status === 0 && !result.error ? JSON.parse(result.stdout) : null; } catch { ids = null; }
++      if (!Array.isArray(ids) || ids.some(id => !ownedCampaignIds.includes(id))) throw new Error("pristine campaign inventory contains rows not owned by this run");
++    }
+   }
+   return identity;
+ }
+diff --git a/server/test/helpers.ts b/server/test/helpers.ts
+--- a/server/test/helpers.ts
++++ b/server/test/helpers.ts
+@@ -65,7 +65,9 @@
+ function service(): SupabaseClient {
+   if (!_service) {
+     const options=nextClientOptions();
+-    _service=createClient(url,serviceKey,process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"?{...options,global:{...options.global,fetch:createOwnedFixtureFetch()}}:options);
++    const authorizePristine=process.env.INTEGRATION_PRISTINE_TARGET_JSON
++      ?(campaignIds:string[])=>{verifyIntegrationIdentity(process.env,undefined,campaignIds);}:undefined;
++    _service=createClient(url,serviceKey,process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"?{...options,global:{...options.global,fetch:createOwnedFixtureFetch(globalThis.fetch,authorizePristine)}}:options);
+   }
+   return _service;
+ }
+diff --git a/server/test/ownedFixtureTransport.ts b/server/test/ownedFixtureTransport.ts
+--- a/server/test/ownedFixtureTransport.ts
++++ b/server/test/ownedFixtureTransport.ts
+@@ -25,14 +25,17 @@
+  if(value.startsWith('in.(')&&value.endsWith(')')){const values=value.slice(4,-1).split(',');return values.every(x=>uuid.test(x))?values:null;}return null;
+ }
+ const parents:Record<string,string>={creator_id:'creators',user_id:'auth_users',mission_id:'missions',campaign_id:'campaigns',workspace_id:'workspaces',gift_id:'redemption_gifts',mission_workflow_id:'mission_workflows',mission_work_item_id:'mission_work_items',submission_id:'mission_submissions'};
+-export function createOwnedFixtureFetch(delegate:typeof fetch=globalThis.fetch):typeof fetch{
++export function createOwnedFixtureFetch(delegate:typeof fetch=globalThis.fetch,authorizePristineCampaignJob?:(ownedCampaignIds:string[])=>void):typeof fetch{
+  load();const origin=new URL(process.env.SUPABASE_URL!).origin;
+  return async(input,init)=>{
+   const url=new URL(input instanceof Request?input.url:String(input)),method=(init?.method??(input instanceof Request?input.method:'GET')).toUpperCase();
+   if(url.origin!==origin)return new Response(JSON.stringify({code:'FIXTURE_TARGET_MISMATCH',message:'Fixture transport cannot leave its verified target'}),{status:403});
+   // These zero-argument RPCs mutate every due/active campaign, including older runs.
+   // An owned child/workspace cannot constrain them. Require a separate pristine DB.
+-  if(method==='POST'&&['/rest/v1/rpc/close_due_campaigns','/rest/v1/rpc/snapshot_campaign_leaderboards'].includes(url.pathname))return new Response(JSON.stringify({code:'FIXTURE_UNSCOPED_RPC',message:'Database-wide campaign jobs require a separately isolated pristine target'}),{status:403});
++  if(method==='POST'&&['/rest/v1/rpc/close_due_campaigns','/rest/v1/rpc/snapshot_campaign_leaderboards'].includes(url.pathname)){
++   try{if(!authorizePristineCampaignJob)throw new Error('No pristine target authority');authorizePristineCampaignJob(fixtureOwnership().campaigns?.ids??[]);}
++   catch{return new Response(JSON.stringify({code:'FIXTURE_UNSCOPED_RPC',message:'Database-wide campaign jobs require a verified pristine target containing only current owned campaigns'}),{status:403});}
++  }
+   const headers=new Headers(init?.headers??(input instanceof Request?input.headers:undefined));
+   const match=/^\/rest\/v1\/([^/]+)$/.exec(url.pathname),table=match?.[1];
+   if(table&&['PATCH','DELETE'].includes(method)){
+diff --git a/server/test/run-integration-tests.test.ts b/server/test/run-integration-tests.test.ts
+--- a/server/test/run-integration-tests.test.ts
++++ b/server/test/run-integration-tests.test.ts
+@@ -184,3 +184,66 @@
+     expect(h.processRef.removeListener).toHaveBeenCalledTimes(2);
+   });
+ });
++
++function pristineHarness() {
++ const runId='11111111-1111-4111-8111-111111111111', projectId='adfocate-d19-pristine-20261024-unit';
++ const identity={disposable:true,ownerAuthorization:'explicit new disposable target authorization',projectId,runId,proxy:'none',apiContainerId:'a'.repeat(64),databaseContainerId:'b'.repeat(64),networkId:'c'.repeat(64),apiImageId:'sha256:api',databaseImageId:'sha256:db',apiPort:56631};
++ const created='2026-10-24T09:00:00Z',volume=projectId+'-db-data';
++ const receipt={identity,createdThisRun:true,volumeWasAbsent:true,networkWasAbsent:true,databaseCreatedAt:created,volumeName:volume,volumeCreatedAt:created,containerIds:[identity.apiContainerId,identity.databaseContainerId],pristineBaseline:{campaigns:0,authUsers:0},ownerAuthorization:identity.ownerAuthorization};
++ const env={SUPABASE_URL:'http://127.0.0.1:56631',SUPABASE_ANON_KEY:'synthetic-anon',SUPABASE_SERVICE_KEY:'synthetic-service',INTEGRATION_TARGET_IDENTITY_JSON:JSON.stringify(identity),INTEGRATION_PRISTINE_TARGET_JSON:JSON.stringify(receipt)};
++ const network={id:identity.networkId,internal:true,labels:{'adfocate.run':runId,'adfocate.pristine':'true'},containers:[...receipt.containerIds]};
++ const volumeInfo={name:volume,created,labels:{'adfocate.run':runId,'adfocate.pristine':'true'}};
++ const rows:string[]=[];
++ const inspect=vi.fn((_command:string,args:string[])=>{
++  let value:unknown;
++  if(args[0]==='context')return {status:0,stdout:'npipe:////./pipe/dockerDesktopLinuxEngine'};
++  if(args[0]==='network')value=network;
++  else if(args[0]==='volume')value=volumeInfo;
++  else if(args[0]==='exec')return {status:0,stdout:JSON.stringify(rows)};
++  else {const db=args.at(-1)===identity.databaseContainerId;value={id:db?identity.databaseContainerId:identity.apiContainerId,image:db?identity.databaseImageId:identity.apiImageId,running:true,project:projectId,created,mounts:db?[{Type:'volume',Name:volume,Destination:'/var/lib/postgresql/data',RW:true}]:[],ports:db?{}:{'8000/tcp':[{HostIp:'127.0.0.1',HostPort:'56631'}]},networks:{pristine:{NetworkID:identity.networkId}}};}
++  return {status:0,stdout:JSON.stringify(value)};
++ });
++ return {identity,receipt,env,network,volumeInfo,rows,inspect};
++}
++describe('new pristine global campaign job identity',()=>{
++ it('accepts the exact newly-created volume, exclusive internal network and owned campaign inventory',()=>{
++  const h=pristineHarness(),id='22222222-2222-4222-8222-222222222222';h.rows.push(id);
++  expect(runner.verifyIntegrationIdentity(h.env,h.inspect,[id])).toEqual(h.identity);
++  expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(true);
++ });
++ it.each(['old-project','baseline-data','volume-reused','network-shared','external-network','wrong-volume','wrong-owner'])('rejects %s evidence before any SQL or client setup',kind=>{
++  const h=pristineHarness();
++  if(kind==='old-project'){h.receipt.identity.projectId='adfocate-r1-shaped-20261023';h.env.INTEGRATION_TARGET_IDENTITY_JSON=JSON.stringify(h.receipt.identity);}
++  if(kind==='baseline-data')h.receipt.pristineBaseline.campaigns=1;
++  if(kind==='volume-reused')h.receipt.volumeWasAbsent=false;
++  if(kind==='network-shared')h.network.containers.push('d'.repeat(64));
++  if(kind==='external-network')h.network.internal=false;
++  if(kind==='wrong-volume')h.volumeInfo.name='old-retained-volume';
++  if(kind==='wrong-owner')h.network.labels['adfocate.run']='other-run';
++  h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(h.receipt);
++  expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toThrow(/pristine/i);
++  expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(false);
++ });
++ it('rejects a campaign not captured by this run before the global mutation',()=>{
++  const h=pristineHarness();h.rows.push('33333333-3333-4333-8333-333333333333');
++  expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toThrow(/campaign.*owned/i);
++ });
++ it('refuses nonlocal Docker engine endpoints',()=>{
++  const h=pristineHarness(),inspect=(c:string,a:string[])=>a[0]==='context'?{status:0,stdout:'tcp://elsewhere:2375'}:h.inspect(c,a);
++  expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThrow(/pristine/i);
++ });
++ it('accepts a dedicated loopback bridge with masquerading disabled when Docker cannot publish an internal-network port',()=>{
++  const h=pristineHarness();
++  const receipt={...h.receipt,isolationMode:'dedicated-bridge-no-masquerade'};
++  h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(receipt);
++  const network={...h.network,internal:false,options:{'com.docker.network.bridge.enable_ip_masquerade':'false','com.docker.network.bridge.host_binding_ipv4':'127.0.0.1'}};
++  const inspect=(c:string,a:string[])=>a[0]==='network'?{status:0,stdout:JSON.stringify(network)}:h.inspect(c,a);
++  expect(runner.verifyIntegrationIdentity(h.env,inspect,[])).toEqual(h.identity);
++ });
++ it('rejects a bridge claim whose actual masquerading remains enabled',()=>{
++  const h=pristineHarness();h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify({...h.receipt,isolationMode:'dedicated-bridge-no-masquerade'});
++  const network={...h.network,internal:false,options:{'com.docker.network.bridge.enable_ip_masquerade':'true','com.docker.network.bridge.host_binding_ipv4':'127.0.0.1'}};
++  const inspect=(c:string,a:string[])=>a[0]==='network'?{status:0,stdout:JSON.stringify(network)}:h.inspect(c,a);
++  expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThrow(/pristine/i);
++ });
++});
+diff --git a/server/test/support-rpc-ownership.test.ts b/server/test/support-rpc-ownership.test.ts
+--- a/server/test/support-rpc-ownership.test.ts
++++ b/server/test/support-rpc-ownership.test.ts
+@@ -18,3 +18,17 @@
+  const response=await createOwnedFixtureFetch(delegate)('http://127.0.0.1:56521/rest/v1/rpc/close_campaign',{method:'POST',body:'{}'});
+  expect(response.status).toBe(200);expect(delegate).toHaveBeenCalledOnce();
+ });
++it.each(['close_due_campaigns','snapshot_campaign_leaderboards'])('permits %s only after the pristine target guard accepts the exact current campaign IDs',async name=>{
++ const delegate=vi.fn(async()=>new Response('1',{status:200})),authorize=vi.fn();
++ const {createOwnedFixtureFetch,captureFixtureRows}=await import('./ownedFixtureTransport');
++ const id='11111111-1111-4111-8111-111111111111';captureFixtureRows('campaigns',{id});
++ const response=await createOwnedFixtureFetch(delegate,authorize)(`http://127.0.0.1:56521/rest/v1/rpc/${name}`,{method:'POST',body:'{}'});
++ expect(response.status).toBe(200);expect(authorize).toHaveBeenCalledWith([id]);expect(delegate).toHaveBeenCalledOnce();
++ expect(authorize.mock.invocationCallOrder[0]).toBeLessThan(delegate.mock.invocationCallOrder[0]);
++});
++it('fails closed before delegation when the pristine target or campaign inventory drifts',async()=>{
++ const delegate=vi.fn(async()=>new Response('1',{status:200}));
++ const {createOwnedFixtureFetch}=await import('./ownedFixtureTransport');
++ const response=await createOwnedFixtureFetch(delegate,()=>{throw new Error('pristine target drift');})('http://127.0.0.1:56521/rest/v1/rpc/close_due_campaigns',{method:'POST',body:'{}'});
++ expect(response.status).toBe(403);expect(delegate).not.toHaveBeenCalled();
++});

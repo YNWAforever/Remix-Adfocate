@@ -1,0 +1,37 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "data": {
+    "axeVersion": "4.12.1",
+    "scans": [
+      {
+        "operator": false,
+        "path": "/home",
+        "violations": []
+      },
+      {
+        "operator": false,
+        "path": "/my",
+        "violations": []
+      },
+      {
+        "operator": false,
+        "path": "/wallet",
+        "violations": []
+      },
+      {
+        "operator": true,
+        "path": "/admin/creators",
+        "violations": []
+      },
+      {
+        "operator": true,
+        "path": "/admin/insights",
+        "violations": []
+      }
+    ],
+    "limitations": [
+      "Selected pages and automated rules only; not full accessibility certification.",
+      "Keyboard and ARIA live regions tested separately; no physical screen-reader or Safari session."
+    ]
+  }
+}

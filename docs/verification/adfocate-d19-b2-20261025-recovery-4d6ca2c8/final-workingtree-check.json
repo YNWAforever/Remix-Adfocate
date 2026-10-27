@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-25T09:20:14.305489+00:00",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "diffCheckExit": 0,
+  "diffCheckLines": [],
+  "stagedFiles": [],
+  "dirtyEntries": 1993,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "scope": "Entire pre-existing dirty worktree retained; exact9 source delta listed separately."
+}

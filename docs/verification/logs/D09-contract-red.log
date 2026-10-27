@@ -1,0 +1,2386 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/lib/missionMatch.test.ts (21 tests | 1 failed) 14ms
+   × categoryTerm > matches historical and canonical category values consistently with discovery 9ms
+     → expected +0 to be 1 // Object.is equality
+ ❯ server/test/audit-mission-list-projection.test.ts (7 tests | 5 failed) 34ms
+   × D09 serialized mission-list contract (projection-aware unit transport) > serializes the same backed decision fields as detail, including the joined brand 17ms
+     → cash_reward: expected { id: 'mission-a', …(12) } to have property "cash_reward" with value 125
+   × D09 serialized mission-list contract (projection-aware unit transport) > preserves cash=0 and null metadata without inventing defaults 7ms
+     → expected { id: 'mission-a', …(12) } to match object { cash_reward: +0, …(4) }
+(13 matching properties omitted from actual)
+   × D09 serialized mission-list contract (projection-aware unit transport) > preserves cash=null and null metadata without inventing defaults 2ms
+     → expected { id: 'mission-a', …(12) } to match object { cash_reward: null, …(4) }
+(13 matching properties omitted from actual)
+   × D09 serialized mission-list contract (projection-aware unit transport) > finds canonical and legacy travel values while retaining workspace/status scope 2ms
+     → expected [ 'canonical' ] to deeply equal [ 'alias', 'canonical' ]
+   × D09 serialized mission-list contract (projection-aware unit transport) > does not announce no prior participation when the caller-status read fails 2ms
+     → expected 200 to be 500 // Object.is equality
+ ❯ src/components/MissionCard.contract.test.tsx (9 tests | 5 failed) 418ms
+   × D09 mission decision facts > distinguishes a known zero cash reward from missing cash 134ms
+     → Unable to find an element with the text: Cash reward. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<article[39m
+      [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+        [36m>[39m
+          [0mUnknown[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"flex items-center gap-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-star"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m50 pts[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</article>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × D09 mission decision facts > exposes absent platform, deliverables, effort, level, quota and deadline as unknown 25ms
+     → Unable to find an element with the text: Platform. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<article[39m
+      [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+        [36m>[39m
+          [0mUnknown facts[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"flex items-center gap-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-star"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m50 pts[0m
+          [36m</span>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</article>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × D09 mission decision facts > shares list/detail qualification for future-level with creator=L3 trusted=true 19ms
+     → Unable to find an element with the text: Eligibility not yet known. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<div[39m
+  [33mdata-testid[39m=[32m"list"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+    [36m/>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-w-0 flex-1"[39m
+    [36m>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+      [36m>[39m
+        [0mDecision[0m
+      [36m</h3>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"flex items-center gap-1"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-star"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"14"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"14"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0m50 pts[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<dl[39m
+        [33mclass[39m=[32m"mt-3 grid gap-1 text-xs"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+        [36m>[39m
+          [36m<dt[39m
+            [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0mRequired level[0m
+          [36m</dt>[39m
+          [36m<dd[39m
+            [33mclass[39m=[32m"min-w-0"[39m
+          [36m>[39m
+            [0mfuture-level[0m
+          [36m</dd>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+        [36m>[39m
+          [36m<dt[39m
+            [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0mEligibility[0m
+          [36m</dt>[39m
+          [36m<dd[39m
+            [33mclass[39m=[32m"min-w-0"[39m
+          [36m>[39m
+            [0mAll levels can join[0m
+          [36m</dd>[39m
+        [36m</div>[39m
+      [36m</dl>[39m
+    [36m</div>[39m
+  [36m</article>[39m
+[36m</div>[39m
+   × D09 mission decision facts > does not assume a creator's missing verification status is trusted 7ms
+     → Unable to find an element with the text: Eligibility not yet known. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<article[39m
+      [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+        [36m>[39m
+          [0mVerification not loaded[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"flex items-center gap-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-star"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m50 pts[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<dl[39m
+          [33mclass[39m=[32m"mt-3 grid gap-1 text-xs"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+          [36m>[39m
+            [36m<dt[39m
+              [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [0mRequired level[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33mclass[39m=[32m"min-w-0"[39m
+            [36m>[39m
+              [0mL2[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+          [36m>[39m
+            [36m<dt[39m
+              [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [0mEligibility[0m
+            [36m</dt>[39m
+            [36m<dd[39m
+              [33mclass[39m=[32m"min-w-0"[39m
+            [36m>[39m
+              [0mNeeds L2 · you qualify[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+        [36m</dl>[39m
+      [36m</div>[39m
+    [36m</article>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × D09 mission decision facts > keeps detail and pre-join commitment honest about missing cash and deadline 14ms
+     → Unable to find an element with the text: /Cash reward: Not provided/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+[36m<div[39m
+  [33mdata-testid[39m=[32m"detail"[39m
+[36m>[39m
+  [36m<section[39m
+    [33mclass[39m=[32m"grid grid-cols-2 gap-3"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"text-[var(--color-ink)]"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-star"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"18"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"18"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mReward[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"line-clamp-2 font-heading font-bold leading-tight"[39m
+        [36m>[39m
+          [0m50 points[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"text-[var(--color-ink)]"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-users"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"18"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"18"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M16 3.128a4 4 0 0 1 0 7.744"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+          [36m/>[39m
+          [36m<circle[39m
+            [33mcx[39m=[32m"9"[39m
+            [33mcy[39m=[32m"7"[39m
+            [33mr[39m=[32m"4"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mQuota[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"line-clamp-2 font-heading font-bold leading-tight"[39m
+        [36m>[39m
+          [0m9 spots left[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"text-[var(--color-ink)]"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-clock"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"18"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"18"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<circle[39m
+            [33mcx[39m=[32m"12"[39m
+            [33mcy[39m=[32m"12"[39m
+            [33mr[39m=[32m"10"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M12 6v6l4 2"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mDeadline[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"line-clamp-2 font-heading font-bold leading-tight"[39m
+        [36m>[39m
+          [0mNo deadline[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"text-[var(--color-ink)]"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-shield-check"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"18"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"18"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m9 12 2 2 4-4"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</span>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mEligibility[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"line-clamp-2 font-heading font-bold leading-tight"[39m
+        [36m>[39m
+          [0mAll levels can join[0m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</section>[39m
+[36m</div>[39m
+ ❯ src/routes/-_app.mission.index.test.tsx (7 tests | 1 failed) 714ms
+   × mission discovery > keeps pet, travel aliases and unknown long categories separately filterable 650ms
+     → Unable to find an accessible element with the role "button" and name "寵物"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "限時任務":
+  [36m<h1[39m
+    [33mclass[39m=[32m"font-display text-2xl font-bold"[39m
+  [36m/>[39m
+
+  Name "所有任務":
+  [36m<h2[39m
+    [33mclass[39m=[32m"sr-only"[39m
+  [36m/>[39m
+
+  Name "寵物任務":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+  [36m/>[39m
+
+  Name "歷史旅遊任務":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+  [36m/>[39m
+
+  Name "自訂任務":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 filter-pill-active"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "社交":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "美容":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "餐飲":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "生活":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "寵物 寵物任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  [36m<a[39m
+    [33mhref[39m=[32m"/mission/pet"[39m
+  [36m/>[39m
+
+  Name "travel 歷史旅遊任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  [36m<a[39m
+    [33mhref[39m=[32m"/mission/travel"[39m
+  [36m/>[39m
+
+  Name "原有未知長中文分類 自訂任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  [36m<a[39m
+    [33mhref[39m=[32m"/mission/custom"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"font-display text-2xl font-bold"[39m
+      [36m>[39m
+        [0m限時任務[0m
+      [36m</h1>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"scrollbar-none flex gap-2 overflow-x-auto pb-1"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"true"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 filter-pill-active"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m全部[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m社交[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m美容[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m餐飲[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m生活[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<h2[39m
+        [33mclass[39m=[32m"sr-only"[39m
+      [36m>[39m
+        [0m所有任務[0m
+      [36m</h2>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid gap-2 lg:grid-cols-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mhref[39m=[32m"/mission/pet"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-acid)] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--color-ink)] "[39m
+              [36m>[39m
+                [0m寵物[0m
+              [36m</span>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+              [36m>[39m
+                [0m寵物任務[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"flex items-center gap-1"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-star"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [0m800 積分[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"flex items-center gap-1"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-clock"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<circle[39m
+                      [33mcx[39m=[32m"12"[39m
+                      [33mcy[39m=[32m"12"[39m
+                      [33mr[39m=[32m"10"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M12 6v6l4 2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [0m2026年8月31日[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<dl[39m
+                [33mclass[39m=[32m"mt-3 grid gap-1 text-xs"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m現金獎勵[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0"[39m
+                  [36m>[39m
+                    [0mHK$1,200.00[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+           ...
+ ❯ src/lib/missionCategories.test.ts (5 tests | 4 failed) 13ms
+   × D09 mission category contract > shares pet and travel with authoring and discovery 8ms
+     → expected [ '社交', '美容', '餐飲', '生活' ] to include '寵物'
+   × D09 mission category contract > maps historical pets without overwriting its stored value 3ms
+     → expected 'pets' to be 'app.category.pet' // Object.is equality
+   × D09 mission category contract > maps historical travel without overwriting its stored value 1ms
+     → expected 'travel' to be 'app.category.travel' // Object.is equality
+   × D09 mission category contract > maps historical 美妝 without overwriting its stored value 1ms
+     → expected '美妝' to be 'app.category.beauty' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/lib/missionMatch.test.ts > categoryTerm > matches historical and canonical category values consistently with discovery
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ server/lib/missionMatch.test.ts:26:83
+     24| describe("categoryTerm", () => {
+     25|   it("matches historical and canonical category values consistently wi…
+     26|     expect(categoryTerm(creator({categories:["pets"]}),mission({catego…
+       |                                                                                   ^
+     27|     expect(categoryTerm(creator({categories:["美容"]}),mission({catego…
+     28|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > serializes the same backed decision fields as detail, including the joined brand
+AssertionError: cash_reward: expected { id: 'mission-a', …(12) } to have property "cash_reward" with value 125
+
+- Expected: 
+125
+
++ Received: 
+undefined
+
+ ❯ server/test/audit-mission-list-projection.test.ts:51:64
+     49|     const list = await (await app.request("/missions")).json();
+     50|     const detail = await (await app.request("/missions/decision")).jso…
+     51|     for (const key of decisions) expect(list.missions[0], key).toHaveP…
+       |                                                                ^
+     52|     expect(list.missions[0].brand).toBe("Synthetic brand");
+     53|     expect(list.missions[0]).not.toHaveProperty("workspaces");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > preserves cash=0 and null metadata without inventing defaults
+AssertionError: expected { id: 'mission-a', …(12) } to match object { cash_reward: +0, …(4) }
+(13 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "cash_reward": 0,
+-   "deliverables": null,
+-   "effort": null,
+-   "platforms": null,
+-   "required_level": null,
++   "access_type": "open",
++   "category": "寵物",
++   "deadline": "2026-11-30",
++   "description": "Synthetic decision brief",
++   "filled": 3,
++   "id": "mission-a",
++   "mission_type": "ugc",
++   "my_status": null,
++   "points_reward": 50,
++   "quota": 10,
++   "slug": "decision",
++   "status": "active",
++   "title": "很長的中文任務標題保留完整資訊",
+  }
+
+ ❯ server/test/audit-mission-list-projection.test.ts:58:25
+     56|     Object.assign(state.rows[0], { cash_reward: cash, required_level: …
+     57|     const { missions } = await (await app.request("/missions")).json();
+     58|     expect(missions[0]).toMatchObject({ cash_reward: cash, required_le…
+       |                         ^
+     59|   });
+     60|   it("needs one mission-list read for many rows, with no per-row detai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > preserves cash=null and null metadata without inventing defaults
+AssertionError: expected { id: 'mission-a', …(12) } to match object { cash_reward: null, …(4) }
+(13 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "cash_reward": null,
+-   "deliverables": null,
+-   "effort": null,
+-   "platforms": null,
+-   "required_level": null,
++   "access_type": "open",
++   "category": "寵物",
++   "deadline": "2026-11-30",
++   "description": "Synthetic decision brief",
++   "filled": 3,
++   "id": "mission-a",
++   "mission_type": "ugc",
++   "my_status": null,
++   "points_reward": 50,
++   "quota": 10,
++   "slug": "decision",
++   "status": "active",
++   "title": "很長的中文任務標題保留完整資訊",
+  }
+
+ ❯ server/test/audit-mission-list-projection.test.ts:58:25
+     56|     Object.assign(state.rows[0], { cash_reward: cash, required_level: …
+     57|     const { missions } = await (await app.request("/missions")).json();
+     58|     expect(missions[0]).toMatchObject({ cash_reward: cash, required_le…
+       |                         ^
+     59|   });
+     60|   it("needs one mission-list read for many rows, with no per-row detai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > finds canonical and legacy travel values while retaining workspace/status scope
+AssertionError: expected [ 'canonical' ] to deeply equal [ 'alias', 'canonical' ]
+
+- Expected
++ Received
+
+  Array [
+-   "alias",
+    "canonical",
+  ]
+
+ ❯ server/test/audit-mission-list-projection.test.ts:72:66
+     70|     ];
+     71|     const { missions } = await (await app.request("/missions?category=…
+     72|     expect(missions.map((row: { id: string }) => row.id).sort()).toEqu…
+       |                                                                  ^
+     73|     expect(missions.map((row: { category: string }) => row.category).s…
+     74|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > does not announce no prior participation when the caller-status read fails
+AssertionError: expected 200 to be 500 // Object.is equality
+
+- Expected
++ Received
+
+- 500
++ 200
+
+ ❯ server/test/audit-mission-list-projection.test.ts:84:29
+     82|     state.subscriptionError = true;
+     83|     const response = await app.request("/missions");
+     84|     expect(response.status).toBe(500);
+       |                             ^
+     85|     expect(await response.json()).toMatchObject({ code: "db_error" });
+     86|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  src/components/MissionCard.contract.test.tsx > D09 mission decision facts > distinguishes a known zero cash reward from missing cash
+TestingLibraryElementError: Unable to find an element with the text: Cash reward. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <article
+      class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <div
+        class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+      />
+      <div
+        class="min-w-0 flex-1"
+      >
+        <h3
+          class="mt-1 line-clamp-2 font-heading font-semibold"
+        >
+          Unknown
+        </h3>
+        <div
+          class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+        >
+          <span
+            class="flex items-center gap-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-star"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+              />
+            </svg>
+            50 pts
+          </span>
+        </div>
+      </div>
+    </article>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/MissionCard.contract.test.tsx:15:24
+     13|     expect(screen.getByText("HK$0.00")).toBeInTheDocument();
+     14|     rerender(<I18nProvider><MissionCard title="Unknown" points={50} ca…
+     15|     const row = screen.getByText("Cash reward").parentElement!;
+       |                        ^
+     16|     expect(within(row).getByText("Not provided")).toBeInTheDocument();
+     17|     expect(screen.queryByText("HK$0.00")).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  src/components/MissionCard.contract.test.tsx > D09 mission decision facts > exposes absent platform, deliverables, effort, level, quota and deadline as unknown
+TestingLibraryElementError: Unable to find an element with the text: Platform. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <article
+      class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <div
+        class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+      />
+      <div
+        class="min-w-0 flex-1"
+      >
+        <h3
+          class="mt-1 line-clamp-2 font-heading font-semibold"
+        >
+          Unknown facts
+        </h3>
+        <div
+          class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+        >
+          <span
+            class="flex items-center gap-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-star"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+              />
+            </svg>
+            50 pts
+          </span>
+        </div>
+      </div>
+    </article>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/MissionCard.contract.test.tsx:22:28
+     20|     render(<I18nProvider><MissionCard title="Unknown facts" points={50…
+     21|     for (const label of ["Platform", "Deliverables", "Effort", "Requir…
+     22|       expect(within(screen.getByText(label).parentElement!).getByText(…
+       |                            ^
+     23|     }
+     24|     expect(screen.getByText("Eligibility not yet known")).toBeInTheDoc…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  src/components/MissionCard.contract.test.tsx > D09 mission decision facts > shares list/detail qualification for future-level with creator=L3 trusted=true
+TestingLibraryElementError: Unable to find an element with the text: Eligibility not yet known. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<div
+  data-testid="list"
+>
+  <article
+    class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+  >
+    <div
+      class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+    />
+    <div
+      class="min-w-0 flex-1"
+    >
+      <h3
+        class="mt-1 line-clamp-2 font-heading font-semibold"
+      >
+        Decision
+      </h3>
+      <div
+        class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+      >
+        <span
+          class="flex items-center gap-1"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-star"
+            fill="none"
+            height="14"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+            />
+          </svg>
+          50 pts
+        </span>
+      </div>
+      <dl
+        class="mt-3 grid gap-1 text-xs"
+      >
+        <div
+          class="grid grid-cols-[auto_1fr] gap-2"
+        >
+          <dt
+            class="font-semibold text-[var(--color-soft-ink)]"
+          >
+            Required level
+          </dt>
+          <dd
+            class="min-w-0"
+          >
+            future-level
+          </dd>
+        </div>
+        <div
+          class="grid grid-cols-[auto_1fr] gap-2"
+        >
+          <dt
+            class="font-semibold text-[var(--color-soft-ink)]"
+          >
+            Eligibility
+          </dt>
+          <dd
+            class="min-w-0"
+          >
+            All levels can join
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </article>
+</div>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/MissionCard.contract.test.tsx:37:47
+     35|     render(<I18nProvider><div data-testid="list"><MissionCard title={m…
+     36|       <div data-testid="detail"><MissionFacts mission={mission} creato…
+     37|     expect(within(screen.getByTestId("list")).getByText(label)).toBeIn…
+       |                                               ^
+     38|     expect(within(screen.getByTestId("detail")).getByText(label)).toBe…
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  src/components/MissionCard.contract.test.tsx > D09 mission decision facts > does not assume a creator's missing verification status is trusted
+TestingLibraryElementError: Unable to find an element with the text: Eligibility not yet known. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <article
+      class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <div
+        class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+      />
+      <div
+        class="min-w-0 flex-1"
+      >
+        <h3
+          class="mt-1 line-clamp-2 font-heading font-semibold"
+        >
+          Verification not loaded
+        </h3>
+        <div
+          class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+        >
+          <span
+            class="flex items-center gap-1"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-star"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+              />
+            </svg>
+            50 pts
+          </span>
+        </div>
+        <dl
+          class="mt-3 grid gap-1 text-xs"
+        >
+          <div
+            class="grid grid-cols-[auto_1fr] gap-2"
+          >
+            <dt
+              class="font-semibold text-[var(--color-soft-ink)]"
+            >
+              Required level
+            </dt>
+            <dd
+              class="min-w-0"
+            >
+              L2
+            </dd>
+          </div>
+          <div
+            class="grid grid-cols-[auto_1fr] gap-2"
+          >
+            <dt
+              class="font-semibold text-[var(--color-soft-ink)]"
+            >
+              Eligibility
+            </dt>
+            <dd
+              class="min-w-0"
+            >
+              Needs L2 · you qualify
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/MissionCard.contract.test.tsx:42:19
+     40|   it("does not assume a creator's missing verification status is trust…
+     41|     render(<I18nProvider><MissionCard title="Verification not loaded" …
+     42|     expect(screen.getByText("Eligibility not yet known")).toBeInTheDoc…
+       |                   ^
+     43|   });
+     44|   it("keeps detail and pre-join commitment honest about missing cash a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  src/components/MissionCard.contract.test.tsx > D09 mission decision facts > keeps detail and pre-join commitment honest about missing cash and deadline
+TestingLibraryElementError: Unable to find an element with the text: /Cash reward: Not provided/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<div
+  data-testid="detail"
+>
+  <section
+    class="grid grid-cols-2 gap-3"
+  >
+    <div
+      class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <span
+        aria-hidden="true"
+        class="text-[var(--color-ink)]"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-star"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+          />
+        </svg>
+      </span>
+      <div
+        class="min-w-0"
+      >
+        <p
+          class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+        >
+          Reward
+        </p>
+        <p
+          class="line-clamp-2 font-heading font-bold leading-tight"
+        >
+          50 points
+        </p>
+      </div>
+    </div>
+    <div
+      class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <span
+        aria-hidden="true"
+        class="text-[var(--color-ink)]"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-users"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+          />
+          <path
+            d="M16 3.128a4 4 0 0 1 0 7.744"
+          />
+          <path
+            d="M22 21v-2a4 4 0 0 0-3-3.87"
+          />
+          <circle
+            cx="9"
+            cy="7"
+            r="4"
+          />
+        </svg>
+      </span>
+      <div
+        class="min-w-0"
+      >
+        <p
+          class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+        >
+          Quota
+        </p>
+        <p
+          class="line-clamp-2 font-heading font-bold leading-tight"
+        >
+          9 spots left
+        </p>
+      </div>
+    </div>
+    <div
+      class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <span
+        aria-hidden="true"
+        class="text-[var(--color-ink)]"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-clock"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <path
+            d="M12 6v6l4 2"
+          />
+        </svg>
+      </span>
+      <div
+        class="min-w-0"
+      >
+        <p
+          class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+        >
+          Deadline
+        </p>
+        <p
+          class="line-clamp-2 font-heading font-bold leading-tight"
+        >
+          No deadline
+        </p>
+      </div>
+    </div>
+    <div
+      class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+    >
+      <span
+        aria-hidden="true"
+        class="text-[var(--color-ink)]"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-shield-check"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+          />
+          <path
+            d="m9 12 2 2 4-4"
+          />
+        </svg>
+      </span>
+      <div
+        class="min-w-0"
+      >
+        <p
+          class="font-mono text-[11px] uppercase tracking-wider text-[var(--color-soft-ink)]"
+        >
+          Eligibility
+        </p>
+        <p
+          class="line-clamp-2 font-heading font-bold leading-tight"
+        >
+          All levels can join
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/MissionCard.contract.test.tsx:48:49
+     46|     render(<I18nProvider><div data-testid="detail"><MissionFacts missi…
+     47|       <MissionCommitmentSummary mission={mission} locale="en" /></I18n…
+     48|     expect(within(screen.getByTestId("detail")).getByText(/Cash reward…
+       |                                                 ^
+     49|     expect(within(screen.getByTestId("detail")).queryByText("All level…
+     50|     expect(within(screen.getByRole("heading",{name:"Before you commit"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  src/lib/missionCategories.test.ts > D09 mission category contract > shares pet and travel with authoring and discovery
+AssertionError: expected [ '社交', '美容', '餐飲', '生活' ] to include '寵物'
+ ❯ src/lib/missionCategories.test.ts:7:32
+      5| describe("D09 mission category contract", () => {
+      6|   it("shares pet and travel with authoring and discovery", () => {
+      7|     expect(MISSION_CATEGORIES).toContain("寵物"); expect(MISSION_CATEG…
+       |                                ^
+      8|   });
+      9|   it.each([["pets","app.category.pet"],["travel","app.category.travel"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  src/lib/missionCategories.test.ts > D09 mission category contract > maps historical pets without overwriting its stored value
+AssertionError: expected 'pets' to be 'app.category.pet' // Object.is equality
+
+Expected: "app.category.pet"
+Received: "pets"
+
+ ❯ src/lib/missionCategories.test.ts:10:37
+      8|   });
+      9|   it.each([["pets","app.category.pet"],["travel","app.category.travel"…
+     10|     expect(categoryLabelKey(value)).toBe(key);
+       |                                     ^
+     11|   });
+     12|   it("preserves an unknown category verbatim", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  src/lib/missionCategories.test.ts > D09 mission category contract > maps historical travel without overwriting its stored value
+AssertionError: expected 'travel' to be 'app.category.travel' // Object.is equality
+
+Expected: "app.category.travel"
+Received: "travel"
+
+ ❯ src/lib/missionCategories.test.ts:10:37
+      8|   });
+      9|   it.each([["pets","app.category.pet"],["travel","app.category.travel"…
+     10|     expect(categoryLabelKey(value)).toBe(key);
+       |                                     ^
+     11|   });
+     12|   it("preserves an unknown category verbatim", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  src/lib/missionCategories.test.ts > D09 mission category contract > maps historical 美妝 without overwriting its stored value
+AssertionError: expected '美妝' to be 'app.category.beauty' // Object.is equality
+
+Expected: "app.category.beauty"
+Received: "美妝"
+
+ ❯ src/lib/missionCategories.test.ts:10:37
+      8|   });
+      9|   it.each([["pets","app.category.pet"],["travel","app.category.travel"…
+     10|     expect(categoryLabelKey(value)).toBe(key);
+       |                                     ^
+     11|   });
+     12|   it("preserves an unknown category verbatim", () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  src/routes/-_app.mission.index.test.tsx > mission discovery > keeps pet, travel aliases and unknown long categories separately filterable
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "寵物"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "限時任務":
+  <h1
+    class="font-display text-2xl font-bold"
+  />
+
+  Name "所有任務":
+  <h2
+    class="sr-only"
+  />
+
+  Name "寵物任務":
+  <h3
+    class="mt-1 line-clamp-2 font-heading font-semibold"
+  />
+
+  Name "歷史旅遊任務":
+  <h3
+    class="mt-1 line-clamp-2 font-heading font-semibold"
+  />
+
+  Name "自訂任務":
+  <h3
+    class="mt-1 line-clamp-2 font-heading font-semibold"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  <button
+    aria-pressed="true"
+    class="filter-pill shrink-0 filter-pill-active"
+    type="button"
+  />
+
+  Name "社交":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "美容":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "餐飲":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "生活":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  --------------------------------------------------
+  link:
+
+  Name "寵物 寵物任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  <a
+    href="/mission/pet"
+  />
+
+  Name "travel 歷史旅遊任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  <a
+    href="/mission/travel"
+  />
+
+  Name "原有未知長中文分類 自訂任務 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  <a
+    href="/mission/custom"
+  />
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  <article
+    class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+  />
+
+  Name "":
+  <article
+    class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+  />
+
+  Name "":
+  <article
+    class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl"
+    >
+      <h1
+        class="font-display text-2xl font-bold"
+      >
+        限時任務
+      </h1>
+      <div
+        class="scrollbar-none flex gap-2 overflow-x-auto pb-1"
+      >
+        <button
+          aria-pressed="true"
+          class="filter-pill shrink-0 filter-pill-active"
+          type="button"
+        >
+          全部
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          社交
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          美容
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          餐飲
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          生活
+        </button>
+      </div>
+      <h2
+        class="sr-only"
+      >
+        所有任務
+      </h2>
+      <div
+        class="grid gap-2 lg:grid-cols-2"
+      >
+        <a
+          href="/mission/pet"
+        >
+          <article
+            class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          >
+            <div
+              class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+            />
+            <div
+              class="min-w-0 flex-1"
+            >
+              <span
+                class="inline-block rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-acid)] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--color-ink)] "
+              >
+                寵物
+              </span>
+              <h3
+                class="mt-1 line-clamp-2 font-heading font-semibold"
+              >
+                寵物任務
+              </h3>
+              <div
+                class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+              >
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-star"
+                    fill="none"
+                    height="14"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+                    />
+                  </svg>
+                  800 積分
+                </span>
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-clock"
+                    fill="none"
+                    height="14"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                    <path
+                      d="M12 6v6l4 2"
+                    />
+                  </svg>
+                  2026年8月31日
+                </span>
+              </div>
+              <dl
+                class="mt-3 grid gap-1 text-xs"
+              >
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    現金獎勵
+                  </dt>
+                  <dd
+                    class="min-w-0"
+                  >
+                    HK$1,200.00
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+           ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.mission.index.test.tsx:70:28
+     68|     ],isLoading:false,isError:false };
+     69|     renderMissions();
+     70|     fireEvent.click(screen.getByRole("button",{name:"寵物",exact:true}…
+       |                            ^
+     71|     expect(screen.getByRole("link",{name:/寵物任務/})).toBeInTheDocume…
+     72|     expect(screen.queryByRole("link",{name:/歷史旅遊任務/})).not.toBeI…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+ Test Files  5 failed (5)
+      Tests  16 failed | 33 passed (49)
+   Start at  04:48:17
+   Duration  40.21s (transform 1.01s, setup 11.16s, collect 7.48s, tests 1.19s, environment 50.15s, prepare 2.58s)
+

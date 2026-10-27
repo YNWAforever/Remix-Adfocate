@@ -1,0 +1,103 @@
+--- before/scripts/audit/local-targets.mjs
++++ candidate/scripts/audit/local-targets.mjs
+@@ -95,7 +95,7 @@
+   };
+   if (metadata(["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], false)
+     !== "npipe:////./pipe/dockerDesktopLinuxEngine") throw new Error("B2 local engine mismatch");
+-  const format = '{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}},"mounts":{{json .Mounts}},"tmpfs":{{json .HostConfig.Tmpfs}},"created":{{json .Created}}}';
++  const format = '{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}},"mounts":{{json .Mounts}},"tmpfs":{{json (index .HostConfig "Tmpfs")}},"created":{{json .Created}}}';
+   const containers = Object.fromEntries(services.map(s => [s, metadata(["inspect", "--format", format, ids[s]])]));
+   for (const s of services) {
+     const c = containers[s]; assertAcceptanceTargetAllowed(c);
+@@ -107,7 +107,20 @@
+     const tmpfs = Object.entries(c.tmpfs ?? {}), temporary = (c.mounts ?? []).filter(m => m.Type === "tmpfs");
+     if (s === "storage" ? spec.storageTmpfs?.destination !== "/var/lib/storage" || spec.storageTmpfs.sizeBytes !== 268435456
+       || tmpfs.length !== 1 || tmpfs[0][0] !== spec.storageTmpfs.destination || tmpfs[0][1] !== "rw,size=268435456"
+-      || temporary.length !== 1 || temporary[0].Destination !== spec.storageTmpfs.destination : tmpfs.length !== 0 || temporary.length !== 0) throw new Error("B2 storage tmpfs scope mismatch");
++      || temporary.length > 1 || (temporary.length === 1 && (temporary[0].Destination !== spec.storageTmpfs.destination || temporary[0].RW !== true))
++      : tmpfs.length !== 0 || temporary.length !== 0) throw new Error("B2 storage tmpfs scope mismatch");
++    // Docker may omit HostConfig.Tmpfs mounts from Mounts. Require live kernel evidence in that case.
++    if (s === "storage" && temporary.length === 0) {
++      const entries = metadata(["exec", ids.storage, "cat", "/proc/self/mountinfo"], false).split("\n")
++        .map(line => line.split(" - ")).filter(([mount]) => mount.split(" ")[4] === spec.storageTmpfs.destination);
++      const [mount, superblock] = entries[0] ?? [], details = superblock?.split(" ") ?? [];
++      const mountOptions = mount?.split(" ")[5]?.split(",") ?? [], options = details[2]?.split(",") ?? [];
++      const sizes = options.filter(option => option.startsWith("size="));
++      const size = sizes.length === 1 && /^size=(\d+)([kmg])?$/i.exec(sizes[0]);
++      const bytes = size ? Number(size[1]) * ({ k: 1024, m: 1048576, g: 1073741824 }[size[2]?.toLowerCase()] ?? 1) : 0;
++      if (entries.length !== 1 || details[0] !== "tmpfs" || !mountOptions.includes("rw") || mountOptions.includes("ro")
++        || !options.includes("rw") || options.includes("ro") || bytes !== spec.storageTmpfs.sizeBytes) throw new Error("B2 storage tmpfs kernel evidence mismatch");
++    }
+     const bindings = Object.values(c.ports ?? {}).flat().filter(Boolean);
+     const expectedPort = s === "db" ? spec.ports.database : s === "kong" ? spec.ports.api : null;
+     if (expectedPort ? bindings.length !== 1 || bindings[0].HostIp !== "127.0.0.1" || Number(bindings[0].HostPort) !== expectedPort : bindings.length !== 0) throw new Error("B2 service port scope mismatch");
+--- before/server/test/b2-runtime-manifest.test.ts
++++ candidate/server/test/b2-runtime-manifest.test.ts
+@@ -19,7 +19,7 @@
+   for(const phase of ["role","core","browser"]){expect(caps[phase].academy_lessons).toBe(0);expect(caps[phase].mission_draft_assets).toBe(0);expect(caps[phase].storage_objects).toBe(0);}
+  });
+  it("binds current source and bootstrap profile without reusing pristine/global RPC acceptance",()=>{
+-  const m=read("docs/verification/D19-B2-runtime-manifest-neutrality-guard.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read("docs/verification/D19-B2-bootstrap-profile.json");
++  const m=read("docs/verification/D19-C1-source-revision-runtime-manifest.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read(`docs/verification/${m.bootstrap.profilePath}`);
+   expect(m.candidate.fingerprint).toBe(fp.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
+   expect(m.execution.pristineRpcRerun).toBe(false);expect(m.fixture.legacyExistingIssuanceRequiresExplicitRuntimeApproval.approvalXpDelta).toBe(100);
+   expect(m.execution.commands).toHaveLength(3);
+--- before/server/test/b2-target-context.test.ts
++++ candidate/server/test/b2-target-context.test.ts
+@@ -125,6 +125,56 @@
+     expect(io.exec).not.toHaveBeenCalled();expect(io.read.mock.calls.some(([p])=>String(p).endsWith("keys.private.json"))).toBe(false);
+     expect(()=>verifiedTarget()).toThrow(/bootstrap/i);
+   });
++  it("accepts omitted optional Tmpfs metadata without letting Docker's Go template fail before identity verification", () => {
++    const h = scenario(), inspect = io.inspect.getMockImplementation()!;
++    h.receipt.bootstrap.verified = false; h.sync();
++    io.inspect.mockImplementation((command: string, args: string[]) => {
++      if (args[0] === "inspect" && args.at(-1) !== h.receipt.containerIds.storage
++        && args[2].includes(".HostConfig.Tmpfs")) {
++        return { status: 1, stderr: 'map has no entry for key "Tmpfs"' };
++      }
++      return inspect(command, args);
++    });
++    expect(verifiedB2BootstrapTarget().identity).toEqual(h.identity);
++    expect(io.exec).not.toHaveBeenCalled();
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("verifies the real kernel tmpfs when Docker omits it from Mounts", () => {
++    const h = scenario(), inspect = io.inspect.getMockImplementation()!;
++    h.receipt.bootstrap.verified = false; h.sync();
++    h.metadata[h.receipt.containerIds.storage].mounts = [];
++    io.inspect.mockImplementation((command: string, args: string[]) => {
++      if (args[0] === "exec" && args.join(" ") === `exec ${h.receipt.containerIds.storage} cat /proc/self/mountinfo`) {
++        return { status: 0, stdout: "2191 2179 0:337 / /var/lib/storage rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,size=262144k\n" };
++      }
++      return inspect(command, args);
++    });
++    expect(verifiedB2BootstrapTarget().identity).toEqual(h.identity);
++    expect(io.exec).not.toHaveBeenCalled();
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it.each([
++    ["missing", ""],
++    ["wrong filesystem", "1 0 0:1 / /var/lib/storage rw - ext4 /dev/root rw,size=262144k"],
++    ["read-only mount", "1 0 0:1 / /var/lib/storage ro - tmpfs tmpfs rw,size=262144k"],
++    ["read-only superblock", "1 0 0:1 / /var/lib/storage rw - tmpfs tmpfs ro,size=262144k"],
++    ["oversized", "1 0 0:1 / /var/lib/storage rw - tmpfs tmpfs rw,size=524288k"],
++    ["unbounded", "1 0 0:1 / /var/lib/storage rw - tmpfs tmpfs rw"],
++    ["wrong mountpoint", "1 0 0:1 / /var/lib/storage-other rw - tmpfs tmpfs rw,size=262144k"],
++    ["duplicate", "1 0 0:1 / /var/lib/storage rw - tmpfs tmpfs rw,size=262144k\n2 0 0:2 / /var/lib/storage rw - tmpfs tmpfs rw,size=262144k"],
++  ])("rejects %s kernel mount evidence before reading application keys", (_reason, mountinfo) => {
++    const h = scenario(), inspect = io.inspect.getMockImplementation()!;
++    h.metadata[h.receipt.containerIds.storage].mounts = [];
++    io.inspect.mockImplementation((command: string, args: string[]) => args[0] === "exec"
++      ? { status: 0, stdout: mountinfo } : inspect(command, args));
++    expect(() => verifiedTarget()).toThrow(/B2.*tmpfs/i);
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("does not accept a read-only tmpfs descriptor even if the configured options claim rw", () => {
++    const h = scenario(); h.metadata[h.receipt.containerIds.storage].mounts[0].RW = false;
++    expect(() => verifiedTarget()).toThrow(/B2.*tmpfs/i);
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
+   it("binds borrowed role evidence to the exact global run, target and candidate rather than a fixed D19 filename",()=>{
+     const h=scenario(),context=verifiedTarget().context;
+     expect(()=>context.assertLineage({lineage:{...context.lineage,projectId:"old-empty"}})).toThrow(/lineage/i);

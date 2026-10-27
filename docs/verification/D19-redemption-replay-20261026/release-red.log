@@ -1,0 +1,28 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ scripts/release/manifest.test.ts (17 tests | 1 failed | 16 skipped) 26ms
+   × release migration manifest > classifies the redemption receipt contract without dropping ACL or uniqueness checks 25ms
+     → unclassified migration: 20261025194402_redemption_intents.sql
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > classifies the redemption receipt contract without dropping ACL or uniqueness checks
+Error: unclassified migration: 20261025194402_redemption_intents.sql
+ ❯ Module.buildManifest scripts/release/manifest.ts:1310:39
+    1308| export async function buildManifest(rootDir: string): Promise<ReleaseM…
+    1309|   const inspection = await inspectRepository(rootDir);
+    1310|   if (inspection.errors.length) throw new Error(inspection.errors.join…
+       |                                       ^
+    1311|   return parseReleaseManifest({
+    1312|     schemaVersion: 1,
+ ❯ scripts/release/manifest.test.ts:139:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 skipped (17)
+   Start at  04:32:12
+   Duration  1.41s (transform 111ms, setup 188ms, collect 110ms, tests 26ms, environment 688ms, prepare 180ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/release-red.json

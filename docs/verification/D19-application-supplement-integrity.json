@@ -1,0 +1,572 @@
+{
+  "createdAt": "2026-10-25T14:59:28.457845+00:00",
+  "codeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "method": "Current local C2 prep files and modified metadata, exact raw SHA256; excludes this seal and root seal; old artifacts resolved by checkpoint before images.",
+  "files": [
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "4b128e09c967117063aa4afa59c830ea7a6053d7540b0cbd423c0c2dc0f97f3a",
+      "bytes": 68748
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "416ce0c3931bb10132ef96d604c7aa5625ae2c5fd6e7770b6da37c1518031aff",
+      "bytes": 657237
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "76386221a79859207a43483308a8f0bfb5b1fceb5c73c27fe43417d044a6674b",
+      "bytes": 33420
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "e7e1917eaa3df3be77d9eab118bb3d2c9b676c35a031fdd10afcc502a831259a",
+      "bytes": 172643
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "bytes": 123041
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "aa6856a72da46b2d73ab55a39cb001df44323560c7762906fb3ef0d63f49fece",
+      "bytes": 67350
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/adfocate-delivery.json",
+      "sha256": "cb982231c64042e851ffc8b1cb25b0e1422a575fc8c830c40a5001096f224fa9",
+      "bytes": 644354
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "fa6642b8b4420a2087a61409aa4288c8d307c43545e2d6ba0451b75bec7df74f",
+      "bytes": 32507
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "9f5b3c1e9a5b6adfbd2781670d24aad168dad1548486e7de0446b8c57609939d",
+      "bytes": 171092
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/code-fingerprint.json",
+      "sha256": "70878120339358fdd2e7403d4c34f99a50b13e24225e10af8a8b8d045d97faa8",
+      "bytes": 119224
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/D19-application-decisions-integrity.json",
+      "sha256": "1ba40b2c31d5ab12ecbbd1790c0169c6067e03d8abaa4ffa2cfd27a278f05062",
+      "bytes": 53471
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/evidence-integrity.json",
+      "sha256": "e25a067078390371e8b04f9a0e37fa1b658292fd37e50dfcb52415e6d00f3a73",
+      "bytes": 389268
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/implementation_backlog.csv",
+      "sha256": "d72f4e9eae61278240b0dd11d4ea57cb545924d428e2aa4b67217bb09dbbf5d9",
+      "bytes": 18385
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/candidate-source.json",
+      "sha256": "2f35f0baaf0c040e721a58fa9941c4944e00069d3c50677e9d26f513583b951a",
+      "bytes": 121891
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/case-coverage.json",
+      "sha256": "714b2e52118067c53058a0d7d7c6c7b5f9ce15466e49ef0e50bc3956c8bc4afc",
+      "bytes": 232853
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/checkpoint.json",
+      "sha256": "e8db3b5e6ffba4cbf414ae2f1289c95f8049ca02420f3f48062f6342d2a99a68",
+      "bytes": 3004
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/delivery.json",
+      "sha256": "e3294cb5b927eb8a87b4a2fccc867e7225a4130125ffb5c80c80946c8cea620a",
+      "bytes": 4738
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/delivery.md",
+      "sha256": "74ef4944f3252c5ea32177241c92bb2fb50a0530dfd8b68c2d08823e210ba296",
+      "bytes": 2711
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/failure-reconciliation.json",
+      "sha256": "19542951eb2d7e1062536711c03c30b3186138fc7028fd788484e4584191c3a3",
+      "bytes": 1367
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/gates.json",
+      "sha256": "461662c1cddfa8e6eb1a18d2b912ff321c3a35597edf1149a7f8eda5a83f800c",
+      "bytes": 9431
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/git-final.json",
+      "sha256": "6002cd20b3173011c8d6dd8cdc8c115891c21ff02660a4c3d00bb85a81bd2324",
+      "bytes": 300
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-green-command.json",
+      "sha256": "ea196cf8e0f9a97321a5d1f053ba8746d56894c764869e18a83f2367cefca1c0",
+      "bytes": 1027
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-green-resource.json",
+      "sha256": "272b2b0abc31ad853efbe4699f854cb1cbf5fe05e5875070c61db1d130ceadfe",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-green-started.json",
+      "sha256": "56370536223433fd32d0d5b86d7ccdad54ef0a8a3a7096763a83c397f2398b2a",
+      "bytes": 965
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-green.json",
+      "sha256": "f2a8ec2a3f29c6b4be866f1424cc86f7e728c1ce5f75b125a0a7472c1c6e0f25",
+      "bytes": 10810
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-green.log",
+      "sha256": "230f7ae582b24c3c99262cecf54ae9d724e1fee37ad315f4f4ab78a511bf73c4",
+      "bytes": 182
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-red-command.json",
+      "sha256": "dafc51d6140d21942151a2c7c582285d01df88f94c56a07ac0cd79da5a47e501",
+      "bytes": 1025
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-red-resource.json",
+      "sha256": "833b6a90b67e55b9e6396f82ed18de1a3e4d5570c3d3f14678ab6045b919d403",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-red-started.json",
+      "sha256": "19c98c7f1e715f9c04df6391ef768f1dda0c07c6ef63f94ff3ce48e26c0fb8d1",
+      "bytes": 963
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-red.json",
+      "sha256": "9a4b92a5f8fcdb41535392a4376329521c4869143248764901a9127720761481",
+      "bytes": 12269
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-boundaries-red.log",
+      "sha256": "9eb8d718a6814a4e78d63bf126a2099270cf534f922f1705d74c56eb47181008",
+      "bytes": 180
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/manifest-revisions/ce427893fc332e32dc21cad9dfbaed994a9cc4296d620771e340c9c0f3355ae7.json",
+      "sha256": "ce427893fc332e32dc21cad9dfbaed994a9cc4296d620771e340c9c0f3355ae7",
+      "bytes": 33783
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-green-command.json",
+      "sha256": "cb222a9901c8a3d1b51b772241fac51376cab22de7ededcc2832519877e7c218",
+      "bytes": 1021
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-green-resource.json",
+      "sha256": "bcb47024744174fcdd97aabad144396952dfae4713210fe4a0257fed49559f22",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-green-started.json",
+      "sha256": "352b42aaa1f60bcc0b257b928103402c8ace570897e01393d676c32c9a43bad1",
+      "bytes": 959
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-green.json",
+      "sha256": "2ed6fbeb2cf1091f730829e79eb313f8feb28bb39e2a333f9727b54571dc2abe",
+      "bytes": 8657
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-green.log",
+      "sha256": "36fe620464d4b4a1c46fae27ccbd379ce5762c7793d030501948d2844ea5db3c",
+      "bytes": 176
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-red-command.json",
+      "sha256": "aecf0544788d3eccf5fce0880e9d87cb14f224fe1e4a2539436046af4e4d6704",
+      "bytes": 1019
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-red-resource.json",
+      "sha256": "a1bd827e1185d2aafa25a540525f4134c1b51e60405e5a0ce4b05cc89a554dd4",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-red-started.json",
+      "sha256": "5c74720e83cd10e0a1a3e8d1f2382e5f1300da31a90770e370e9d1ddff4c9648",
+      "bytes": 957
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-red.json",
+      "sha256": "a425208c565373f68dcdc5468ad69696ad5ed3481b055e8cc3d98cde212e2170",
+      "bytes": 964
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-red.log",
+      "sha256": "1f59fb557b789e79bf217f3d26f82db607b46465c8503b1aef829a9a18e57b90",
+      "bytes": 174
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-delivery.py",
+      "sha256": "7fd784a6ab57214ba935cdf96987e0233db7da50fd905a8207a044e07d50daa7",
+      "bytes": 17905
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-gates.py",
+      "sha256": "372aa74f9f6e02a8dd1f2588e2cbbf65f903547128bc2b44867e0407bb4c0cfd",
+      "bytes": 6517
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-manifest.py",
+      "sha256": "21aed1fbfb2ac94865b56bc5cf0ff71aaebd67907b3266986eac417e6fb5d2fa",
+      "bytes": 12031
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-prepare.py",
+      "sha256": "4c7f008922538cb04b732ad723fedca06ec7fe343c81eb1d651e38e3e5642b83",
+      "bytes": 2083
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-seal.py",
+      "sha256": "933c0b44dee28d4d7683c29bd644f73c25c08bd745246678c03b74c3a2af1024",
+      "bytes": 5818
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/manifest.json",
+      "sha256": "9fad55ab6bd6c521de363240c1c6f7f14677da94010c6dde9a15675eef0974f3",
+      "bytes": 1348
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/planned-ids.json",
+      "sha256": "b488e132b241115a6633fd6f382d60c00e91e2e72db79eab0f2ab78129cd4586",
+      "bytes": 974
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/remaining-acceptance.json",
+      "sha256": "42cf6113f79135abaacb398a45a7ed23fd905e15623492f319fe9647bb939e64",
+      "bytes": 12995
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/review.json",
+      "sha256": "66b12e482aa568258e9c9718a796f372c19e70cc1770352e47e3f2ff79bda49e",
+      "bytes": 1565
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/rollback.json",
+      "sha256": "59424f7d48d725b0f475ffe3dc9f7a153f4eac73304bdd314c2e4138e952351c",
+      "bytes": 4702
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "bytes": 386
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/schema-diff.json",
+      "sha256": "5474e50ccdaaa7de02dc1c8f4a3fce9c6f57df49efc6044b1cf917ecd2052a23",
+      "bytes": 1036
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-changes.patch",
+      "sha256": "a4c2e4b2d7704b3a7778c4ba08486e90eeb06f1f34f495097074c2a077d0c90b",
+      "bytes": 48389
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-revisions/3c760c03f8f7cace76c1c05565e2c593d23d19588e7276f82a33d89abfda9c64.json",
+      "sha256": "88108c9d383166ba55f0d738c4b729d88169bca354f215ace1a1f754b008b728",
+      "bytes": 121891
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-revisions/3d908e667dc23e4ecda4674f90ba42b1654091ae414a1c2713231a225a58dfb1.json",
+      "sha256": "7b7dc2d112c4d5872462eed4c960718a37cbd4324a9590c190432ce80e68754b",
+      "bytes": 121725
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-revisions/87a6f6123fcf88904096baacde10680285a3b878a198b8398fd0db153abecc10.json",
+      "sha256": "9e17f35138ed75abaa2aa65d5045f6d3aac8f26eaff878445f8d314f5d62b29d",
+      "bytes": 121725
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-revisions/a571bca926484ec1519c3325b886441792e0d0f9af84722332547ecc8d15c252.json",
+      "sha256": "5c8d364478a5d431d3e3c3347c22e637b002eade02fee04cf54f09c3f23e66d5",
+      "bytes": 121567
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/source-revisions/ae895cc11c98de0c7ef503b0e472a214085499655620299876e2c2c9c214c615.json",
+      "sha256": "5bd7857b9ea8a68beb434d4fa35d44c1a1097a351282ec8778958036cc986360",
+      "bytes": 121725
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied-command.json",
+      "sha256": "4854ecbdb9a3ff175cf1cc25afe96cad39070a65e0382a2f3d859cf82f219a30",
+      "bytes": 825
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied-resource.json",
+      "sha256": "40e5dffee4fa8db025f8c92fc9773da15385165eab73de412b6b745dd912b2cb",
+      "bytes": 100
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied-started.json",
+      "sha256": "3b46a9103c6b78b658ceb0ca76e05725d5f02a93211d7363e1b484df00556e45",
+      "bytes": 763
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied.log",
+      "sha256": "b5d5312ae57a81b4f35f6ecdc9874a22d93686f59fe9d8dedcc90ace7bbb05b8",
+      "bytes": 1306
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final-command.json",
+      "sha256": "c6ce4c385d57032f0027858df1a827004bbf440dfb2d465c83e917ed2f916be4",
+      "bytes": 780
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final-resource.json",
+      "sha256": "a735059d5b945748c9cf71ccf1e1d61f3d628e5b2cf571dd8fcf594c1b1f32bf",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final-started.json",
+      "sha256": "fd9319f97992fddfe3e34e813e083645b61066d7cb2434b5cc72b4602279f0a2",
+      "bytes": 718
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final.log",
+      "sha256": "d1d44d7f85c8b0ccdb58f4e0ce6c98b6806cc051b39c019cf24052304a260706",
+      "bytes": 14333
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final-command.json",
+      "sha256": "c0677d34b3e30ee56dc17ca9e129bf154e994925353e16c95e06071c4d21531b",
+      "bytes": 727
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final-resource.json",
+      "sha256": "3ba56a390dae0f074ba25b951455b23781cf6002776ace2372e4aac1e749fe8f",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final-started.json",
+      "sha256": "89b597ea2c682f6f4ff4b7e7e0073392cf5bdef801bc81a2d6482293a1c1229e",
+      "bytes": 665
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final.log",
+      "sha256": "b654fb9381ed836f5045e91ed2cde87f4f7cede86cd34768fd9f7f53922430de",
+      "bytes": 98
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final-command.json",
+      "sha256": "977cc52fce0f5b6eaf8aa416c21e6ae7da710709429271a27a99f879ff6c3179",
+      "bytes": 1026
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final-resource.json",
+      "sha256": "3c8daa58671af9ed6f2e4ae0b4013f13452ae30adb220a225a323df3b2dc5fd0",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final-started.json",
+      "sha256": "458914ad23ef7f6b2456cf3dbb848bfc59923dd10950235d10f664d4652a06b3",
+      "bytes": 964
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final.json",
+      "sha256": "075a9c6bd60aae9ccd91d735ab74fd01eed01ef713fd79d79285f817b5f3c454",
+      "bytes": 10818
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final.log",
+      "sha256": "a95c5541052fdc5dbf37cc9742098e17b6a922f89f7ecdc5fe3138a3aee50873",
+      "bytes": 181
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final-command.json",
+      "sha256": "71ab68ccdd5bf345bfb42d506020941da73fa7effc3c7fe3792d57b6be9462e4",
+      "bytes": 973
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final-resource.json",
+      "sha256": "6b113ae6b6a43fc48b62a651e8be04827539e8e04be3d09f552f954e4387802a",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final-started.json",
+      "sha256": "a7604614290d1c5728811b7b834c06731ff117daa99c5aeb6333a2ad207fb2e5",
+      "bytes": 911
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.json",
+      "sha256": "21f201bc34e65a56b7d4e59b90ccf14492ef68e4ce2cf02c86378cfe92c96df3",
+      "bytes": 837366
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.log",
+      "sha256": "bf7cfa509fa3ca1b114e67480228dca3d0270f929bc14780bb17f1981c61c319",
+      "bytes": 1018
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final-command.json",
+      "sha256": "83932e41b6d489a50700f547f45eda615fe781da7e699bcfbd8eb1835a627e80",
+      "bytes": 737
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final-resource.json",
+      "sha256": "db4f8b9f1377f58cd4be3d549b6fafcc4b6fed9579e3c973ae3b474cfda47261",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final-started.json",
+      "sha256": "df5b857494c5e38f428571b100c93123c628c396c44ab5942001b3fdae0dc7b0",
+      "bytes": 675
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final.log",
+      "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d",
+      "bytes": 1118
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-initial-command.json",
+      "sha256": "d09f19004feafde7c78c905c29d8d28338cee455924b07068cef81e733cc388f",
+      "bytes": 737
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-initial-resource.json",
+      "sha256": "bc601d7284fe1397db2d02df3e1be77b933c9b11b9202f5a8ce4ef6955354d1c",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-initial-started.json",
+      "sha256": "8f34820a1bc7a031d20322c70fb0ac136053f9000836955f1e5686aa2b248a99",
+      "bytes": 675
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-initial.log",
+      "sha256": "c2db9f57eb2146b36b628d8cc34475266956490a801a1b364e15f76e7018b678",
+      "bytes": 1413
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final-command.json",
+      "sha256": "0d0a0b847b2860bbd15f1b3e2e7b07629a820b8724ca931b8487467223aa119f",
+      "bytes": 832
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final-resource.json",
+      "sha256": "758662ff2e2c5b91ffe423e03e58040234c0116407bd09f1550e37aa99115800",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final-started.json",
+      "sha256": "225d72afea1e1f0f7bff4fdcb1ecc79697dfb0d76cdf14fbd374b7fa61474b6b",
+      "bytes": 770
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final.log",
+      "sha256": "9803a21254f0ae6163a662533894c61011b9e238eb285ff566d57376f07e6b36",
+      "bytes": 196
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final-command.json",
+      "sha256": "c245a79c1e2ef876fdfbef0615fe25b549cd62582270f0cc5a16e800b8c2a642",
+      "bytes": 799
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final-resource.json",
+      "sha256": "7516435a9f20a0738ec825a51865f3288efd99b6471adc00562e5f197e40db6f",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final-started.json",
+      "sha256": "1d23b027da3efbca607da96f1cfa8909b13aa4e77740482c2e2bd45248e37dbf",
+      "bytes": 737
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final.log",
+      "sha256": "0c307f70f5aa6f9cb7ac767ef86b9fe5bca27bb11fbb2d9481d5ce1470fab6b9",
+      "bytes": 650
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final-command.json",
+      "sha256": "5aabe406bb02df54e37cce7fe082bca87824b891bd90986bc21174624ebc3fb3",
+      "bytes": 742
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final-resource.json",
+      "sha256": "c9dbf22ad818e45ea42d757afecc83cd17ea28db7ceb885da6cc466dd950fe44",
+      "bytes": 101
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final-started.json",
+      "sha256": "7cabe143545d51cbf3e5c0fea0a6b947f7a4997b591af59de7a5ef442dfa000f",
+      "bytes": 680
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-initial-command.json",
+      "sha256": "022e526099eb8fd7dc40db778bcc901b3fa6dc08a255056e422e9d815d6dbbd3",
+      "bytes": 742
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-initial-resource.json",
+      "sha256": "7f7da1ec7c6e3add52fac99ad24f2e2f236eac52e03f8756b7773887d931b257",
+      "bytes": 102
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-initial-started.json",
+      "sha256": "5fac0efc9ed8518e204d00ad1deeecaa9d6786a51a9a90716e5309cc63678e03",
+      "bytes": 680
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-initial.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/verification-summary.json",
+      "sha256": "a105d1c0f51850c50fec75efc1bc55d4f4bdd11cb1ee4cf431d363597d7ba7b2",
+      "bytes": 755
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/verify-delivery.py",
+      "sha256": "13beaa83fce4acd60e21a7bdbcd5f3261bdefc2125936b67bdd63c5302b11713",
+      "bytes": 6374
+    },
+    {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "bytes": 34646
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "6653b3890f665129e1ba307a68ed5e1a28a44df496e0d5b48d4dd7f49b5f695a",
+      "bytes": 18694
+    },
+    {
+      "path": "scripts/audit/application-supplement.mjs",
+      "sha256": "68c2c187390a05d1513e600cbb9a1dd7a2add0ba97fd9abb39baeb466105cff4",
+      "bytes": 4417
+    },
+    {
+      "path": "scripts/audit/execute-application-supplement.mjs",
+      "sha256": "0cc6c047a7935009b86badd0c680f6f38342d6c71e0b012090603a4ff5dad89b",
+      "bytes": 36232
+    },
+    {
+      "path": "server/test/application-supplement.test.ts",
+      "sha256": "166b2b8772fb46273d5af7c9d174603d63cd1420d2a595a9c4411e0d8b11e667",
+      "bytes": 6988
+    }
+  ]
+}

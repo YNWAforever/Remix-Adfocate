@@ -1,0 +1,227 @@
+{
+  "verdict": "LOCAL_PREPARATION_REQUIRED_RUNTIME_NOT_APPROVABLE_AS_EXACT_EXECUTION_YET",
+  "findings": [
+    {
+      "id": "B2-F01",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "新 target 接線尚未實作",
+      "finding": "verifiedTarget 只接受 empty/shaped；factory、server 及 browser 仍固定 empty。B2 名稱不能安全取代現有 target。既有一次性 pristine constructor 亦依賴舊 empty 的配置檢視，不是獨立 B2 provisioner。",
+      "requiredLocalPreparation": "延伸現有 target loader／provisioning profile，明確選擇新 manifest；禁止 fallback，先核實 Docker/project/image/network/mount/ports 才讀 keys、建 client 或 setup。保留 B1。只固化經 review 的非秘密 profile，不複用舊 env／volume。",
+      "evidence": [
+        {
+          "path": "scripts/audit/local-targets.mjs",
+          "line": 17,
+          "sha256": "9b369b958fef96e49a51192deea189231ebd7f43d2826b7b1132ae5c609e13e3"
+        },
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 8,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        },
+        {
+          "path": "server/test/staffCapabilityFixture.ts",
+          "line": 9,
+          "sha256": "0c8a7129138f8aaf6edaca43ab4ecb8d223232bb2fa5b59fa8355dfb22bb3d2f"
+        },
+        {
+          "path": "scripts/audit/serve-quality.ts",
+          "line": 6,
+          "sha256": "ad679d8531f25b79ac2305e9637fa1834f1f265edabf58153a43596c5444882f"
+        },
+        {
+          "path": ".codex-tmp/start_d19_pristine.py",
+          "line": 29,
+          "sha256": "2d2b0ca82565bee3e935d3b2618c9cdb574c2a990a32fcc7f3ea417b9ac5cbc4"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F02",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "舊 fixture 及 evidence 路徑會被重用",
+      "finding": "browser preparation 讀固定 D19-role-fixture.private.json 並借用其 content_editor/resource；沒有同一新 target/global-run/source 的完整 lineage gate。多個輸出仍覆寫固定 D19 檔案。",
+      "requiredLocalPreparation": "所有 private/public 產物按本輪 global run／phase 隔離；role→browser 明確依賴已完成的同 target role fixture。舊檔只讀作歷史，不用先覆寫再還原。",
+      "evidence": [
+        {
+          "path": "scripts/audit/prepare-pilot-browser.ts",
+          "line": 5,
+          "sha256": "d07b6a5e7ddb115f45a5d52444a3d2ff5355d6bed3cbc593a030f467c7e4e509"
+        },
+        {
+          "path": "scripts/audit/prepare-pilot-browser.ts",
+          "line": 10,
+          "sha256": "d07b6a5e7ddb115f45a5d52444a3d2ff5355d6bed3cbc593a030f467c7e4e509"
+        },
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 93,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        },
+        {
+          "path": "server/test/staffCapabilityFixture.ts",
+          "line": 21,
+          "sha256": "0c8a7129138f8aaf6edaca43ab4ecb8d223232bb2fa5b59fa8355dfb22bb3d2f"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F03",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "部分建立與 journal 之間有 crash gap",
+      "finding": "base fixture 先插 workspace、建立 Auth，最後才保存完整 private fixture／evidence；queueCreators 在 commit 後才加入 memory IDs。中斷時不能依靠寬泛名稱查找或刪除，也不能自動重建另一批。",
+      "requiredLocalPreparation": "先持久化 exact intent／quota reservation，再記成功 IDs；Auth 回應不明時停止新建，僅按已記錄的 exact private correlation 查證；每次成功 parent/child write 記錄，未知結果不釋放 quota。",
+      "evidence": [
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 22,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        },
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 28,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        },
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 78,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        },
+        {
+          "path": "server/test/auditWorkflowFixture.ts",
+          "line": 96,
+          "sha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F04",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "HTTP allowlist／browser port 仍綁舊環境",
+      "finding": "目前 Node allowlist 只許 56400/56421/56521，browser/config/server 也固定舊 origins；新 B2 ports 會被拒，舊 origins 卻仍在 allowlist。",
+      "requiredLocalPreparation": "以已核實 manifest 派生 exact web/API origins；web server、build env、全部 browser contexts、request fixture、Node preload 一致；禁止泛 localhost 或舊 origins fallback。",
+      "evidence": [
+        {
+          "path": "scripts/audit/deny-external-fetch.mjs",
+          "line": 6,
+          "sha256": "f8d6cb39958932d86e370e8928ace993ccf3d1e732e8acd979c1193077716689"
+        },
+        {
+          "path": "playwright.quality.config.ts",
+          "line": 5,
+          "sha256": "a767ccd8785964365fd368ed4111caec569134f596b3889a2b165bf67d98bd34"
+        },
+        {
+          "path": "scripts/audit/serve-quality.ts",
+          "line": 20,
+          "sha256": "ad679d8531f25b79ac2305e9637fa1834f1f265edabf58153a43596c5444882f"
+        },
+        {
+          "path": "e2e/staff-access.spec.ts",
+          "line": 16,
+          "sha256": "1d1815da9459bbd78251b82e7a64991c74f12b9190d1bf9b45e8bce3e5fa1d7f"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F05",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "Legacy 發放與 pending neutrality 的範圍需明確",
+      "finding": "現有 D19 setup 每 phase 建 9000 budget／stock3 gift。Core 和 browser 各有一次 legacy approval，會走既有發放；不可聲稱整輪 ledger／available／budget 完全不變。",
+      "requiredLocalPreparation": "逐項列出合成 seed 與兩次既有 legacy issuance 的批准範圍。每個 pending transition 用原始 before/after 向量比較，join XP／legacy issuance 分窗；不扣數字偽造 neutrality。",
+      "evidence": [
+        {
+          "path": "server/test/staffCapabilityFixture.ts",
+          "line": 41,
+          "sha256": "0c8a7129138f8aaf6edaca43ab4ecb8d223232bb2fa5b59fa8355dfb22bb3d2f"
+        },
+        {
+          "path": "server/test/audit-workflow-roundtrip.test.ts",
+          "line": 174,
+          "sha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf"
+        },
+        {
+          "path": "e2e/creator-operator-mission.spec.ts",
+          "line": 46,
+          "sha256": "21cb0c57cdbb1e506809fb9944a67a5eb1e78c20737a3ba29186e7c8973e1bf5"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F06",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "Parent caps 未涵蓋完整寫入範圍",
+      "finding": "84 subjects/6 workspaces/6 missions 等舊上限有歷史依據，但沒有列完 funded rows、platform draft、assistant persistence、Auth 子表、migration seed baseline 及 core fault function/trigger 的 create/drop。",
+      "requiredLocalPreparation": "完成每個 family 的操作／row cap、SQL/RPC allowlist 與 baseline diff。只容許新 target 上一組 exact run-scoped fault function+trigger，條件只命中本輪 creator；不得停用安全 triggers/RLS 或改舊 checksum。未解決 row caps 前不可執行。",
+      "evidence": [
+        {
+          "path": "server/test/audit-workflow-roundtrip.test.ts",
+          "line": 140,
+          "sha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf"
+        },
+        {
+          "path": "server/test/audit-workflow-roundtrip.test.ts",
+          "line": 143,
+          "sha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf"
+        },
+        {
+          "path": "server/test/audit-workflow-roundtrip.test.ts",
+          "line": 166,
+          "sha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf"
+        },
+        {
+          "path": "server/test/audit-staff-capabilities.test.ts",
+          "line": 66,
+          "sha256": "1949e659c02d98d2a1cd25a7d494c014e987d6f953dcac45d576aac7b2b1b7cd"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    },
+    {
+      "id": "B2-F07",
+      "priority": "P1",
+      "blocksRuntimeExecution": true,
+      "title": "現有案例未覆蓋全部必要 runtime 驗收",
+      "finding": "五個 browser cases 沒有真實 stale409 的輸入恢復；core legacy case 先拒無效 submit 再批准有效 URL，不等於已存在無效 legacy URL 的普通批准拒絕。",
+      "requiredLocalPreparation": "在既有 journey 完成前補實際 stale409／network recovery，並以現有 denial workspace 驗空白；core 加一筆有界 historical-invalid legacy fixture 驗 ordinary approve 拒絕及零副作用。不得刪掉原 8/9/5 案例或降低 16/194 語義。",
+      "evidence": [
+        {
+          "path": "e2e/creator-operator-mission.spec.ts",
+          "line": 80,
+          "sha256": "21cb0c57cdbb1e506809fb9944a67a5eb1e78c20737a3ba29186e7c8973e1bf5"
+        },
+        {
+          "path": "server/test/audit-workflow-roundtrip.test.ts",
+          "line": 177,
+          "sha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf"
+        },
+        {
+          "path": "e2e/staff-access.spec.ts",
+          "line": 38,
+          "sha256": "1d1815da9459bbd78251b82e7a64991c74f12b9190d1bf9b45e8bce3e5fa1d7f"
+        }
+      ],
+      "status": "OPEN_NOT_IMPLEMENTED_THIS_REVIEW"
+    }
+  ],
+  "notes": [
+    {
+      "id": "B2-N01",
+      "text": "Creator deliberately receives pendingReward.id=null. Preserve privacy; prove one underlying row via workflow/submission/creator binding, operator/finance ID and identical visible projection/history; do not expose a private ID merely to satisfy wording."
+    },
+    {
+      "id": "B2-N02",
+      "text": "Current review source is354/d7cc; P0 changes require a new source fingerprint and gates before runtime manifest approval. Historical role/core/Edge and pristine evidence retain their own bindings."
+    }
+  ]
+}

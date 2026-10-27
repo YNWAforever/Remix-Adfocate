@@ -1,0 +1,75 @@
+{
+  "payload": [
+    {
+      "forceRls": false,
+      "relation": "public.campaign_missions",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.campaign_participants",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.campaign_rank_snapshots",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.campaigns",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.mission_workflow_events",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.notifications",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.operator_audit_events",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    },
+    {
+      "forceRls": false,
+      "relation": "public.staff_access_audit",
+      "rlsEnabled": true,
+      "selectAllowed": true,
+      "queryRoleOwnsRelation": true,
+      "rowSecurityActiveForQueryRole": false
+    }
+  ],
+  "observedAt": "2026-10-24T14:20:43.407491+00:00",
+  "transactionReadOnly": "on",
+  "label": "q3-query-visibility",
+  "query": "select jsonb_agg(jsonb_build_object('relation',n.nspname||'.'||c.relname,'queryRoleOwnsRelation',c.relowner=(select oid from pg_roles where rolname=current_user),'rlsEnabled',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'rowSecurityActiveForQueryRole',row_security_active(c.oid),'selectAllowed',has_table_privilege(current_user,c.oid,'SELECT'))order by c.relname)from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public'and c.relname in('campaigns','campaign_missions','campaign_participants','campaign_rank_snapshots','notifications','operator_audit_events','mission_workflow_events','staff_access_audit')",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

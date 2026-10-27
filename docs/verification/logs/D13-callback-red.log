@@ -1,0 +1,138 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.auth.callback.test.tsx (12 tests | 1 failed | 11 skipped) 56ms
+   × Auth callback (PKCE landing) > shows the same expired-link recovery when Auth returns an error fragment 55ms
+     → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  這個登入連結已過期
+Received:
+  這個登入連結並不完整請返回登入頁並索取新連結。返回登入
+ ❯ src/routes/-app.auth.callback.test.tsx (4 tests | 1 failed | 3 skipped) 1049ms
+   × auth callback > does not let a traversing staff return bypass Creator bootstrap 1048ms
+     → expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <main
+        class="relative flex min-h-screen items-center justify-center px-6"
+      >
+        <div
+          aria-hidden="true"
+          class="dot-pattern absolute inset-0 opacity-30"
+        />
+        <div
+          class="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center"
+        >
+          <span
+            class="sticker"
+          >
+            ADFOCATE
+          </span>
+          <div
+            aria-hidden="true"
+            class="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent motion-reduce:animate-none"
+          />
+          <p
+            aria-live="polite"
+            class="font-display text-lg font-bold text-[var(--color-ink)]"
+            role="status"
+          >
+            common.signingIn
+          </p>
+          <p
+            class="tag-mono text-[var(--color-soft-ink)]"
+          >
+            正在建立連線
+          </p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-app.auth.callback.test.tsx > auth callback > does not let a traversing staff return bypass Creator bootstrap
+AssertionError: expected "spy" to be called at least once
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <main
+        class="relative flex min-h-screen items-center justify-center px-6"
+      >
+        <div
+          aria-hidden="true"
+          class="dot-pattern absolute inset-0 opacity-30"
+        />
+        <div
+          class="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center"
+        >
+          <span
+            class="sticker"
+          >
+            ADFOCATE
+          </span>
+          <div
+            aria-hidden="true"
+            class="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent motion-reduce:animate-none"
+          />
+          <p
+            aria-live="polite"
+            class="font-display text-lg font-bold text-[var(--color-ink)]"
+            role="status"
+          >
+            common.signingIn
+          </p>
+          <p
+            class="tag-mono text-[var(--color-soft-ink)]"
+          >
+            正在建立連線
+          </p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+ ❯ src/routes/-app.auth.callback.test.tsx:72:52
+     70|   it("does not let a traversing staff return bypass Creator bootstrap"…
+     71|     renderCallback("?next=" + encodeURIComponent("/admin/../../mission…
+     72|     await waitFor(() => expect(hoisted.finishAuth).toHaveBeenCalled());
+       |                                                    ^
+     73|     expect(hoisted.navigate).not.toHaveBeenCalled();
+     74|   });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-_app.auth.callback.test.tsx > Auth callback (PKCE landing) > shows the same expired-link recovery when Auth returns an error fragment
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  這個登入連結已過期
+Received:
+  這個登入連結並不完整請返回登入頁並索取新連結。返回登入
+ ❯ src/routes/-_app.auth.callback.test.tsx:122:46
+    120|     window.history.replaceState({}, "", "/auth/callback#error=access_d…
+    121|     renderCallback();
+    122|     expect(await screen.findByRole("alert")).toHaveTextContent(dict.zh…
+       |                                              ^
+    123|     expect(supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled(…
+    124|     expect(mockFinishAuth).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 14 skipped (16)
+   Start at  13:02:16
+   Duration  4.43s (transform 155ms, setup 506ms, collect 610ms, tests 1.10s, environment 1.61s, prepare 238ms)
+

@@ -1,0 +1,120 @@
+{
+  "cases": [
+    {
+      "campaignId": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "5c7ac86b9595bcb533e1655d1a67e0e5",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    },
+    {
+      "campaignId": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "06f22d67db0ec6a8c5e85efdfb663812",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    },
+    {
+      "campaignId": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "environment": "adfocate-r1-shaped-20261023",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+      "directCurrentObservation": {
+        "status": "closed",
+        "closed_at": "2026-10-24T07:12:04.875188+00:00",
+        "updated_at": "2026-10-24T07:12:04.875188+00:00",
+        "fullCurrentRowMd5": "ef813976a7295c6a2d22e3aaf7fed5cb",
+        "observedAt": "2026-10-24T14:02:29.732537+00:00",
+        "sameAtFinalRead": true,
+        "finalObservedAt": "2026-10-24T14:20:44.722688+00:00"
+      },
+      "beforeValues": {
+        "status": "UNKNOWN_DIRECT_VALUE; active is inferred from original RPC predicate only",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "currentAfterHashCorroboratedByPostIncidentAndPostRecoveryVectors": true,
+      "originalMissingBeforeHashForThisId": "UNKNOWN",
+      "originalIdToMissingBeforeHashMapResolved": false,
+      "dependencies": {
+        "campaign_missions": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0
+      },
+      "knownNotificationReferences": 0,
+      "dependencyEvidence": "D19-incident-A-dependency-recovery-summary.json",
+      "confidence": {
+        "currentRow": "DIRECT_NEW_READ",
+        "stateEquivalentToSavedAfterVectors": "DIRECT_DIGEST_MEMBERSHIP, not proof of no transient writes",
+        "attributionToOriginalRpc": "STRONGLY_CORROBORATED_INFERENCE",
+        "originalTimestamps": "UNKNOWN_NO_TRUSTED_BEFORE_IMAGE"
+      },
+      "preciseRestoreSupported": false
+    }
+  ],
+  "missingBeforeMd5SetStillUnmapped": [
+    "2c992a43374bebf71fc3e5237348342e",
+    "32ae750fb714d21fd20f96d7217dbd13",
+    "d04eb0463aebbcf453f566f8af902682"
+  ],
+  "scope": "New keyed AFTER fingerprints are not keyed BEFORE images. Current zero FK counts do not recover original values or prove absence of every unstructured/external reference.",
+  "originalIncident": "OPEN",
+  "restored": false
+}

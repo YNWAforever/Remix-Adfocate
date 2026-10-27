@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-mission-list-projection.test.ts (8 tests | 1 failed) 46ms
+   × D09 serialized mission-list contract (projection-aware unit transport) > keeps unknown category TrAvEl findable verbatim 10ms
+     → Cannot read properties of undefined (reading 'category')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > keeps unknown category TrAvEl findable verbatim
+TypeError: Cannot read properties of undefined (reading 'category')
+ ❯ server/test/audit-mission-list-projection.test.ts:78:24
+     76|     state.rows[0].category = category;
+     77|     const { missions } = await (await app.request(`/missions?category=…
+     78|     expect(missions[0].category).toBe(category);
+       |                        ^
+     79|   });
+     80|   it("does not announce no prior participation when the caller-status …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  05:05:40
+   Duration  2.98s (transform 141ms, setup 461ms, collect 166ms, tests 46ms, environment 1.63s, prepare 245ms)
+

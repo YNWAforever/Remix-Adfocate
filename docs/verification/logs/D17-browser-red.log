@@ -1,0 +1,299 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+vite v7.3.5 building client environment for production...
+transforming...
+✓ 2498 modules transformed.
+rendering chunks...
+D17 entry modules [{"file":"assets/index-9KgsOxMJ.js","bytes":949569,"modules":[{"id":"./node_modules/react-dom/cjs/react-dom-client.production.js","renderedBytes":552879},{"id":"./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js","renderedBytes":247040},{"id":"./src/lib/i18n.dict.ts","renderedBytes":177523},{"id":"./node_modules/@supabase/postgrest-js/dist/index.mjs","renderedBytes":134981},{"id":"./node_modules/@supabase/storage-js/dist/index.mjs","renderedBytes":101673},{"id":"./node_modules/sonner/dist/index.mjs","renderedBytes":64245},{"id":"./node_modules/@supabase/phoenix/priv/static/phoenix.mjs","renderedBytes":54182},{"id":"./node_modules/@tanstack/router-core/dist/esm/router.js","renderedBytes":45851},{"id":"./node_modules/@supabase/auth-js/dist/module/GoTrueAdminApi.js","renderedBytes":36217},{"id":"./node_modules/@supabase/supabase-js/dist/index.mjs","renderedBytes":34626},{"id":"./src/components/admin/PublicationProofReview.tsx","renderedBytes":34326},{"id":"./node_modules/@supabase/auth-js/dist/module/lib/webauthn.js","renderedBytes":33385}]}]
+computing gzip size...
+dist/index.html                                         1.45 kB │ gzip:   0.70 kB
+dist/.vite/manifest.json                               50.47 kB │ gzip:   5.47 kB
+dist/assets/index-BBzso9UT.css                         98.21 kB │ gzip:  16.75 kB
+dist/assets/operator.creators-KHt32vii.js               0.10 kB │ gzip:   0.11 kB
+dist/assets/_app.redemption-CG2lY0Y9.js                 0.10 kB │ gzip:   0.11 kB
+dist/assets/_app.mission-DC3q4Q0-.js                    0.10 kB │ gzip:   0.11 kB
+dist/assets/_app.campaigns-CCGyBx3R.js                  0.10 kB │ gzip:   0.11 kB
+dist/assets/_app.my-Cm-J46Dp.js                         0.10 kB │ gzip:   0.11 kB
+dist/assets/check-Qp0Jtdwa.js                           0.13 kB │ gzip:   0.15 kB
+dist/assets/chevron-down-B2NheMnr.js                    0.14 kB │ gzip:   0.15 kB
+dist/assets/x-SfpD9Mt5.js                               0.17 kB │ gzip:   0.16 kB
+dist/assets/SkeletonCard-CX2Orxds.js                    0.17 kB │ gzip:   0.16 kB
+dist/assets/clock-CAP_ncrT.js                           0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-right-BgUay5eW.js                     0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-left-BlzDs7q5.js                      0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-up-right-UEjGCD1W.js                  0.18 kB │ gzip:   0.17 kB
+dist/assets/trending-up-AIVpN_D2.js                     0.19 kB │ gzip:   0.18 kB
+dist/assets/user-round-DJ6JeNI_.js                      0.19 kB │ gzip:   0.18 kB
+dist/assets/menu-B3_9eqbz.js                            0.20 kB │ gzip:   0.16 kB
+dist/assets/BrandAuthContext-JsT9YiOo.js                0.20 kB │ gzip:   0.18 kB
+dist/assets/user-I_iSkDTN.js                            0.20 kB │ gzip:   0.19 kB
+dist/assets/mail-CmUovn20.js                            0.23 kB │ gzip:   0.21 kB
+dist/assets/target-9A_YTUqM.js                          0.23 kB │ gzip:   0.17 kB
+dist/assets/user-check-Eox2HEvS.js                      0.25 kB │ gzip:   0.21 kB
+dist/assets/message-circle-CX89ZK9w.js                  0.25 kB │ gzip:   0.22 kB
+dist/assets/compass-DjyOpIeN.js                         0.26 kB │ gzip:   0.21 kB
+dist/assets/chart-column-DVs9fKzz.js                    0.26 kB │ gzip:   0.20 kB
+dist/assets/shield-DgL3qeV8.js                          0.28 kB │ gzip:   0.23 kB
+dist/assets/award-BrNZtwHO.js                           0.28 kB │ gzip:   0.23 kB
+dist/assets/book-open-BV8QSimv.js                       0.29 kB │ gzip:   0.22 kB
+dist/assets/lightbulb-DlgG6gcc.js                       0.29 kB │ gzip:   0.23 kB
+dist/assets/wallet-BmQmkLNi.js                          0.30 kB │ gzip:   0.22 kB
+dist/assets/bell-DSZjItNX.js                            0.30 kB │ gzip:   0.25 kB
+dist/assets/send-CsbDKhFV.js                            0.30 kB │ gzip:   0.24 kB
+dist/assets/guideProgress-IEKoFpFD.js                   0.31 kB │ gzip:   0.21 kB
+dist/assets/_site.legal.terms-273hCr47.js               0.32 kB │ gzip:   0.24 kB
+dist/assets/_site.legal.privacy-CK89zud6.js             0.32 kB │ gzip:   0.24 kB
+dist/assets/users-BmIajvsZ.js                           0.32 kB │ gzip:   0.23 kB
+dist/assets/BadgePill-CmVr8qFe.js                       0.32 kB │ gzip:   0.25 kB
+dist/assets/shield-check-BAWhAsFE.js                    0.33 kB │ gzip:   0.26 kB
+dist/assets/graduation-cap-DIen3_o2.js                  0.34 kB │ gzip:   0.25 kB
+dist/assets/megaphone-DoT0EMo6.js                       0.36 kB │ gzip:   0.25 kB
+dist/assets/gift-Bn8EmACs.js                            0.36 kB │ gzip:   0.26 kB
+dist/assets/calendar-clock-D-SCib-s.js                  0.39 kB │ gzip:   0.26 kB
+dist/assets/file-text-CkG7qN6f.js                       0.40 kB │ gzip:   0.26 kB
+dist/assets/useRealtimeBalance-BWrRffIL.js              0.43 kB │ gzip:   0.31 kB
+dist/assets/missionCategories-MHK3H4Ea.js               0.44 kB │ gzip:   0.35 kB
+dist/assets/star-DaNcVN9w.js                            0.48 kB │ gzip:   0.30 kB
+dist/assets/trophy-Rd2DG-xX.js                          0.49 kB │ gzip:   0.28 kB
+dist/assets/_site-8LOG4IMa.js                           0.50 kB │ gzip:   0.32 kB
+dist/assets/sparkles-D6D99zz6.js                        0.51 kB │ gzip:   0.29 kB
+dist/assets/LangToggle-zkeUcy_X.js                      0.54 kB │ gzip:   0.38 kB
+dist/assets/labels-BcklBINW.js                          0.57 kB │ gzip:   0.37 kB
+dist/assets/submissionEvidence-DXfCOMks.js              0.66 kB │ gzip:   0.38 kB
+dist/assets/brand.missions.new-uqALUj56.js              0.68 kB │ gzip:   0.42 kB
+dist/assets/creatorFormatting-oqSY-HKj.js               0.69 kB │ gzip:   0.44 kB
+dist/assets/academy-CLZ0jtvB.js                         0.70 kB │ gzip:   0.34 kB
+dist/assets/FilterPills-CIvY67_N.js                     0.76 kB │ gzip:   0.38 kB
+dist/assets/operator-1CZZD35r.js                        0.77 kB │ gzip:   0.48 kB
+dist/assets/admin-TgRUAjSw.js                           0.78 kB │ gzip:   0.48 kB
+dist/assets/academyProgress-Qb3OUQbq.js                 0.81 kB │ gzip:   0.40 kB
+dist/assets/PointsBalanceCard-DJMKc6U2.js               0.82 kB │ gzip:   0.48 kB
+dist/assets/OperatorBadges-DCAr5EEj.js                  0.96 kB │ gzip:   0.36 kB
+dist/assets/brand.resources._slug-DYzZS_FL.js           1.00 kB │ gzip:   0.56 kB
+dist/assets/brand.missions._missionId-37hMWHfj.js       1.04 kB │ gzip:   0.66 kB
+dist/assets/_app.news._slug-CH9IT7QP.js                 1.06 kB │ gzip:   0.58 kB
+dist/assets/brand.index-CGWFMTpv.js                     1.10 kB │ gzip:   0.50 kB
+dist/assets/admin.missions.new-DCwnxywx.js              1.15 kB │ gzip:   0.74 kB
+dist/assets/_app.more-CFJBdrvD.js                       1.16 kB │ gzip:   0.66 kB
+dist/assets/RequestFeedback-CbOSYJ83.js                 1.18 kB │ gzip:   0.79 kB
+dist/assets/brand-BhjCmzvr.js                           1.19 kB │ gzip:   0.61 kB
+dist/assets/_app.campaigns.index-CfmDS9Ll.js            1.33 kB │ gzip:   0.64 kB
+dist/assets/brand.resources.index-DjqoxHag.js           1.34 kB │ gzip:   0.68 kB
+dist/assets/createLucideIcon-qirI2_70.js                1.38 kB │ gzip:   0.78 kB
+dist/assets/rocket-BFFTgZGf.js                          1.39 kB │ gzip:   0.71 kB
+dist/assets/AuthFeedback-CAthC8Yh.js                    1.46 kB │ gzip:   0.71 kB
+dist/assets/_app.guide.doc._slug-DeVFUxe5.js            1.54 kB │ gzip:   0.79 kB
+dist/assets/_app.redemption.history-DQJSCItx.js         1.60 kB │ gzip:   0.67 kB
+dist/assets/brand_.auth.callback-B5DpQRLT.js            1.65 kB │ gzip:   0.70 kB
+dist/assets/useMissionEditorNavigation-B4UfMHWm.js      1.90 kB │ gzip:   0.82 kB
+dist/assets/ScoreRing-BiBd2qGI.js                       2.02 kB │ gzip:   0.82 kB
+dist/assets/admin.academy.index-CtTkxdJX.js             2.09 kB │ gzip:   0.80 kB
+dist/assets/admin.engaged-DTK1mfIQ.js                   2.22 kB │ gzip:   0.87 kB
+dist/assets/brand_.login-BD0mF3UC.js                    2.25 kB │ gzip:   1.07 kB
+dist/assets/_app.match-DMEaE-j3.js                      2.29 kB │ gzip:   1.05 kB
+dist/assets/_app.mission.index-DUEe_u26.js              2.35 kB │ gzip:   1.12 kB
+dist/assets/admin.content.index-DYj32cmZ.js             2.38 kB │ gzip:   0.89 kB
+dist/assets/admin.applications-taNGS8Sa.js              2.55 kB │ gzip:   1.03 kB
+dist/assets/NotificationBadge-DUqKcBV-.js               2.59 kB │ gzip:   1.17 kB
+dist/assets/_app.my.index-DIRc_mtZ.js                   2.60 kB │ gzip:   1.18 kB
+dist/assets/_app.auth.callback-CuzlgoTn.js              2.93 kB │ gzip:   1.32 kB
+dist/assets/SocialAccountSummary-BYVELcqf.js            2.97 kB │ gzip:   1.27 kB
+dist/assets/_app.explore-5kdnHd8O.js                    3.16 kB │ gzip:   0.92 kB
+dist/assets/_app.campaigns._slug-C-tlBnHz.js            3.26 kB │ gzip:   1.11 kB
+dist/assets/_app.wallet-C6SkpYqh.js                     3.40 kB │ gzip:   1.00 kB
+dist/assets/CampaignPrizeTiers-CJGVLGd3.js              3.55 kB │ gzip:   1.16 kB
+dist/assets/admin.campaigns.index-DQKXq3Dd.js           3.55 kB │ gzip:   1.46 kB
+dist/assets/brand.missions.index-R7ht6aCI.js            3.56 kB │ gzip:   1.39 kB
+dist/assets/brand-BWsOISZ-.js                           3.62 kB │ gzip:   1.30 kB
+dist/assets/passport._token-CNc_7F_2.js                 3.63 kB │ gzip:   1.20 kB
+dist/assets/MissionCard-CLSFtmSX.js                     3.63 kB │ gzip:   1.47 kB
+dist/assets/admin.submissions-C20WkZWw.js               3.96 kB │ gzip:   1.56 kB
+dist/assets/admin.missions.index-Keuru8jq.js            4.18 kB │ gzip:   1.55 kB
+dist/assets/MissionFacts-DWefyDAY.js                    4.19 kB │ gzip:   1.37 kB
+dist/assets/admin.radar-DNss8CaB.js                     4.60 kB │ gzip:   1.35 kB
+dist/assets/admin.content._id-5p7zSKTe.js               4.92 kB │ gzip:   1.60 kB
+dist/assets/_app.auth.reset-password-BsWT7ikR.js        4.92 kB │ gzip:   1.73 kB
+dist/assets/_app.notifications-ByUGES1v.js              5.16 kB │ gzip:   2.02 kB
+dist/assets/admin.missions._missionId-BpaG6mhe.js       5.16 kB │ gzip:   1.78 kB
+dist/assets/CreatorReviewRow-BndwqPKM.js                5.31 kB │ gzip:   1.84 kB
+dist/assets/admin.campaigns.new-u5ULQ0LG.js             5.34 kB │ gzip:   1.74 kB
+dist/assets/ReviewActionPanel-Dwd03wXH.js               5.49 kB │ gzip:   1.94 kB
+dist/assets/_app.guide.index-CL65Oh9l.js                5.77 kB │ gzip:   1.72 kB
+dist/assets/creatorActivation-CbYZcSv3.js               5.78 kB │ gzip:   1.74 kB
+dist/assets/admin.creators-BmOEcdB0.js                  6.14 kB │ gzip:   2.16 kB
+dist/assets/operator.missions._missionId-Dcf8RnjZ.js    6.16 kB │ gzip:   1.87 kB
+dist/assets/_app.redemption.index-C-z4UsOP.js           6.29 kB │ gzip:   2.01 kB
+dist/assets/_app.guide.track._trackId-Bmnr2_sE.js       6.40 kB │ gzip:   2.51 kB
+dist/assets/admin.insights-Czq1U5uG.js                  6.60 kB │ gzip:   2.13 kB
+dist/assets/_site.stories-FszCAHvP.js                   7.59 kB │ gzip:   2.66 kB
+dist/assets/kocmax-C4ll1WCZ.js                          7.79 kB │ gzip:   1.55 kB
+dist/assets/_app.passport-C2uVFtV3.js                   7.93 kB │ gzip:   2.22 kB
+dist/assets/marketingShowcase-CG5pZiSj.js               7.96 kB │ gzip:   3.52 kB
+dist/assets/_app.login-xzMiPIyJ.js                      8.41 kB │ gzip:   2.48 kB
+dist/assets/_site.packages-BJpkbOds.js                  8.59 kB │ gzip:   3.09 kB
+dist/assets/admin.campaigns._id-CWLZ5PEv.js             9.15 kB │ gzip:   2.75 kB
+dist/assets/legalContent-fqm8XZPk.js                    9.22 kB │ gzip:   3.84 kB
+dist/assets/_site-CGni75NN.js                          10.19 kB │ gzip:   3.38 kB
+dist/assets/_app-B75Jl-De.js                           11.33 kB │ gzip:   4.24 kB
+dist/assets/_app.mission._missionSlug-DwbbR3Sp.js      11.52 kB │ gzip:   3.67 kB
+dist/assets/_site.playbooks-D2nzTQCM.js                11.87 kB │ gzip:   3.62 kB
+dist/assets/StaffAuthGate-DNahGBuI.js                  11.90 kB │ gzip:   4.29 kB
+dist/assets/mockData-CBCZ3QQw.js                       12.80 kB │ gzip:   5.21 kB
+dist/assets/admin.academy._id-B53J5a4c.js              13.76 kB │ gzip:   4.20 kB
+dist/assets/_site.earn-DC1aDQsl.js                     15.20 kB │ gzip:   4.64 kB
+dist/assets/operator.creators._creatorId-DDoIkE1y.js   15.21 kB │ gzip:   3.66 kB
+dist/assets/legacyAdfocateContent-B4YouzF_.js          15.72 kB │ gzip:   6.06 kB
+dist/assets/_app.onboarding-BkBqhmVK.js                16.15 kB │ gzip:   4.89 kB
+dist/assets/_site.brands-B4cVP7x8.js                   19.94 kB │ gzip:   5.58 kB
+dist/assets/_site.contact-Dc-ZvE3S.js                  20.32 kB │ gzip:   6.19 kB
+dist/assets/_app.profile-DZvKMR9h.js                   22.96 kB │ gzip:   5.92 kB
+dist/assets/_app.home-nO1nHmlJ.js                      23.78 kB │ gzip:   6.99 kB
+dist/assets/_site.index-DudTX8z-.js                    26.53 kB │ gzip:   7.57 kB
+dist/assets/utils-DaT-yT0k.js                          27.54 kB │ gzip:   8.69 kB
+dist/assets/MissionEditor-BIFo83og.js                  33.35 kB │ gzip:   7.72 kB
+dist/assets/_site.creators-DUuz7bAE.js                 42.74 kB │ gzip:  13.74 kB
+dist/assets/Markdown-C6v0jxRH.js                      162.49 kB │ gzip:  49.47 kB
+dist/assets/index-9KgsOxMJ.js                         955.57 kB │ gzip: 263.70 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 10.23s
+[WebServer] (node:24092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 3 tests using 1 worker
+
+(node:36304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] e2e\accessibility.spec.ts:15:1 › D17 core Creator and operator pages reflow at 360/390/768 and 200 percent desktop reflow
+  1) e2e\accessibility.spec.ts:15:1 › D17 core Creator and operator pages reflow at 360/390/768 and 200 percent desktop reflow 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('main').getByRole('heading').first()
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('main').getByRole('heading').first() with timeout 20000ms
+      - waiting for locator('main').getByRole('heading').first()
+
+
+      11 |  return ctx;
+      12 | }
+    > 13 | async function settled(page:Page){await expect(page.locator("main")).toBeVisible();await expect(page.locator("main").getByRole("heading").first()).toBeVisible();}
+         |                                                                                                                                                    ^
+      14 |
+      15 | test("D17 core Creator and operator pages reflow at 360/390/768 and 200 percent desktop reflow",async({browser})=>{
+      16 |  const cells=[];
+        at settled (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\accessibility.spec.ts:13:148)
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\accessibility.spec.ts:20:26
+
+    Error Context: test-results\accessibility-D17-core-Cre-50ad7--200-percent-desktop-reflow\error-context.md
+
+
+
+(node:40396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/3] e2e\accessibility.spec.ts:34:1 › D17 assistant keyboard dialog restores focus, offers usable targets and retains input on announced failure
+  2) e2e\accessibility.spec.ts:34:1 › D17 assistant keyboard dialog restores focus, offers usable targets and retains input on announced failure 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    18
+
+      36 |  const launch=page.getByRole("button",{name:"Open AI Assistant",exact:true});await launch.focus();await page.keyboard.press("Enter");
+      37 |  const dialog=page.getByRole("dialog");await expect(dialog).toBeVisible();
+    > 38 |  const close=dialog.getByRole("button",{name:/close/i});const box=await close.boundingBox();expect.soft(box!.width).toBeGreaterThanOrEqual(44);expect.soft(box!.height).toBeGreaterThanOrEqual(44);
+         |                                                                                                                     ^
+      39 |  const input=dialog.getByRole("textbox");await expect(input).toBeFocused();
+      40 |  await page.keyboard.press("Shift+Tab");await page.keyboard.press("Tab");await expect(input).toBeFocused();
+      41 |  await page.route("**/api/assistant/chat",route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"Explicit mocked unavailable provider; no real AI request."})}));
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\accessibility.spec.ts:38:117
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    18
+
+      36 |  const launch=page.getByRole("button",{name:"Open AI Assistant",exact:true});await launch.focus();await page.keyboard.press("Enter");
+      37 |  const dialog=page.getByRole("dialog");await expect(dialog).toBeVisible();
+    > 38 |  const close=dialog.getByRole("button",{name:/close/i});const box=await close.boundingBox();expect.soft(box!.width).toBeGreaterThanOrEqual(44);expect.soft(box!.height).toBeGreaterThanOrEqual(44);
+         |                                                                                                                                                                         ^
+      39 |  const input=dialog.getByRole("textbox");await expect(input).toBeFocused();
+      40 |  await page.keyboard.press("Shift+Tab");await page.keyboard.press("Tab");await expect(input).toBeFocused();
+      41 |  await page.route("**/api/assistant/chat",route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"Explicit mocked unavailable provider; no real AI request."})}));
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\accessibility.spec.ts:38:169
+
+    Error Context: test-results\accessibility-D17-assistan-0d5b0--input-on-announced-failure\error-context.md
+
+
+(node:11032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/3] e2e\accessibility.spec.ts:49:1 › D17 Insights announces an unavailable read, retries and labels ledger credits without payout claims
+  3) e2e\accessibility.spec.ts:49:1 › D17 Insights announces an unavailable read, retries and labels ledger credits without payout claims 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('alert').first()
+    Expected: visible
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('alert').first() with timeout 20000ms
+      - waiting for getByRole('alert').first()
+
+
+      50 |  const ctx=await context(browser,true),page=await ctx.newPage(),pattern="**/api/admin/insights?*";
+      51 |  await page.route(pattern,route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({code:"metrics_unavailable",error:"Explicit unavailable-read fixture"})}));
+    > 52 |  await page.goto("/admin/insights");await expect(page.getByRole("alert").first()).toBeVisible();
+         |                                                                                   ^
+      53 |  await page.unroute(pattern);await page.getByRole("button",{name:/Retry/}).last().click();
+      54 |  await expect(page.getByText(/Cash ledger credits/)).toBeVisible();await expect(page.getByText("Cash paid",{exact:true})).toHaveCount(0);
+      55 |  await expect(page.getByText(/Asia\/Hong_Kong/)).toBeVisible();await expect(page.getByText(/112\.50/)).toBeVisible();
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\accessibility.spec.ts:52:83
+
+    Error Context: test-results\accessibility-D17-Insights-2f4d9-edits-without-payout-claims\error-context.md
+
+
+  3 failed
+    e2e\accessibility.spec.ts:15:1 › D17 core Creator and operator pages reflow at 360/390/768 and 200 percent desktop reflow 
+    e2e\accessibility.spec.ts:34:1 › D17 assistant keyboard dialog restores focus, offers usable targets and retains input on announced failure 
+    e2e\accessibility.spec.ts:49:1 › D17 Insights announces an unavailable read, retries and labels ledger credits without payout claims 

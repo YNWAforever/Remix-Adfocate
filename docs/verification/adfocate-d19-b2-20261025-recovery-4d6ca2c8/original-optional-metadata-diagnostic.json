@@ -1,0 +1,21 @@
+{
+  "supportedOlderApiProbe": [
+    {
+      "service": "db",
+      "apiVersion": "1.40",
+      "exit": 1,
+      "error": "template parsing error: template: :1:284: executing \"\" at <.HostConfig.Tmpfs>: map has no entry for key \"Tmpfs\""
+    },
+    {
+      "service": "storage",
+      "apiVersion": "1.40",
+      "exit": 0,
+      "error": ""
+    }
+  ],
+  "storageActualKernelMountLines": [
+    "2191 2179 0:337 / /var/lib/storage rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,size=262144k"
+  ],
+  "sourceCodeUnchanged": true,
+  "applicationClientsCreated": 0
+}

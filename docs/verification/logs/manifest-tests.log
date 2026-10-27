@@ -1,0 +1,121 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ scripts/release/manifest.test.ts (16 tests | 3 failed) 3862ms
+   × release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file 186ms
+     → EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-coR0pp\supabase\release-manifest.json.tmp-51796-a86ab9a4-76c5-4380-81a2-8cda76f26242' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-coR0pp\supabase\release-manifest.json'
+   × release migration manifest > runs write as a direct vite-node CLI and prints its digest 667ms
+     → Command failed: C:\Program Files\nodejs\node.exe C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\vite-node\vite-node.mjs --script C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts write
+node:internal/fs/promises:785
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-iLWefU\supabase\release-manifest.json.tmp-47968-20ed51db-9c1c-4b5c-a466-c44f77887eed' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-iLWefU\supabase\release-manifest.json'
+    at Proxy.rename (node:internal/fs/promises:785:10)
+    at writeManifest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:27:5)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:53:27
+    at ViteNodeRunner.runModule (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:399:5)
+    at ViteNodeRunner.directRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:381:5)
+    at ViteNodeRunner.cachedRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:206:14)
+    at ViteNodeRunner.executeFile (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:169:12)
+    at CAC.run (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/cli.mjs:99:5) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\\AC\\Temp\\adfocate-manifest-iLWefU\\supabase\\release-manifest.json.tmp-47968-20ed51db-9c1c-4b5c-a466-c44f77887eed',
+  dest: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\\AC\\Temp\\adfocate-manifest-iLWefU\\supabase\\release-manifest.json'
+}
+
+Node.js v24.18.0
+
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 573ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 571ms
+   × release migration manifest > detects checksum drift, missing files, duplicates, and bad dependencies 132ms
+     → expected [ …(8) ] to deeply equal ArrayContaining{…}
+   ✓ release migration manifest > detects an edited, deleted, or newly added baseline migration 320ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-coR0pp\supabase\release-manifest.json.tmp-51796-a86ab9a4-76c5-4380-81a2-8cda76f26242' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-coR0pp\supabase\release-manifest.json'
+ ❯ writeManifest scripts/release/manifest-cli.ts:29:5
+     27|       { encoding: "utf8", flag: "wx" },
+     28|     );
+     29|     await rename(temporary, target);
+       |     ^
+     30|   } finally {
+     31|     await unlink(temporary).catch((error: unknown) => {
+ ❯ scripts/release/manifest.test.ts:409:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > runs write as a direct vite-node CLI and prints its digest
+Error: Command failed: C:\Program Files\nodejs\node.exe C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\vite-node\vite-node.mjs --script C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts write
+node:internal/fs/promises:785
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-iLWefU\supabase\release-manifest.json.tmp-47968-20ed51db-9c1c-4b5c-a466-c44f77887eed' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\AC\Temp\adfocate-manifest-iLWefU\supabase\release-manifest.json'
+    at Proxy.rename (node:internal/fs/promises:785:10)
+    at writeManifest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:27:5)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:53:27
+    at ViteNodeRunner.runModule (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:399:5)
+    at ViteNodeRunner.directRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:381:5)
+    at ViteNodeRunner.cachedRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:206:14)
+    at ViteNodeRunner.executeFile (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:169:12)
+    at CAC.run (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/cli.mjs:99:5) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\\AC\\Temp\\adfocate-manifest-iLWefU\\supabase\\release-manifest.json.tmp-47968-20ed51db-9c1c-4b5c-a466-c44f77887eed',
+  dest: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{dd357280-070f-4163-9246-e0f78f5df71f}\\AC\\Temp\\adfocate-manifest-iLWefU\\supabase\\release-manifest.json'
+}
+
+Node.js v24.18.0
+
+ ❯ writeManifest scripts/release/manifest-cli.ts:27:5
+     25|       temporary,
+     26|       `${JSON.stringify(manifest, null, 2)}\n`,
+     27|       { encoding: "utf8", flag: "wx" },
+       |     ^
+     28|     );
+     29|     await rename(temporary, target);
+ ❯ scripts/release/manifest-cli.ts:53:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > detects checksum drift, missing files, duplicates, and bad dependencies
+AssertionError: expected [ …(8) ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   "checksum drift: 20260715163350",
+-   "missing migration file: 20260805120000",
++ Array [
++   "missing reviewed migration: 20261022171843_audit_assistant_requests.sql",
+    "duplicate migration version",
++   "migration order mismatch",
++   "last migration mismatch: 20261022171843",
++   "checksum drift: 20260715163350",
+    "unknown dependency: 19990101000000",
++   "missing migration file: 20261022171843",
++   "manifest content drift",
+  ]
+
+ ❯ scripts/release/manifest.test.ts:466:7
+    464|     expect(
+    465|       await validateManifest(manifest as unknown as ReleaseManifest, r…
+    466|     ).toEqual(
+       |       ^
+    467|       expect.arrayContaining([
+    468|         "checksum drift: 20260715163350",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 13 passed (16)
+   Start at  01:25:16
+   Duration  5.23s (transform 80ms, setup 236ms, collect 76ms, tests 3.86s, environment 723ms, prepare 125ms)
+

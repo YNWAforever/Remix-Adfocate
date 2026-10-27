@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-25T13:57:22.767776+00:00",
+  "phase": "Pure file-only sealing, after all application gates passed",
+  "failedCommand": "python docs/verification/D19-application-decisions-20261025/verify-delivery.py",
+  "observedExitCode": 1,
+  "cause": "After the first seal, the rollback metadata selected evidence-integrity.json and stored its previous after-hash. Resealing then changed that same seal, producing a cryptographic self-reference.",
+  "affectedAfterHashPath": "docs/verification/evidence-integrity.json",
+  "repair": "Exclude dynamic seal after-hashes from rollback metadata, retain exact prior seal bytes, regenerate current task/global seals and re-run the file checker.",
+  "applicationSourceChanged": false,
+  "serverRuntimeActions": 0,
+  "testResultsAltered": false
+}

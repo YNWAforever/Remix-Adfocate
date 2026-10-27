@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-25T20:00:38.420237+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-redemption-replay-20261026/vitest.memory.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/memory-expanded-green-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:00:38.287569+00:00",
+    "freePhysicalGiB": 6.179615020751953,
+    "freeCommitGiB": 5.5475311279296875,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.91262435913086
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "memory-expanded-green",
+  "log": "docs/verification/D19-redemption-replay-20261026/memory-expanded-green.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ef25e7f7125e1383506680fb43bc1f5e667ef332c430fa63fc39de1ccbf877d8",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 30152,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:00:50.891718+00:00",
+  "exit": 0
+}

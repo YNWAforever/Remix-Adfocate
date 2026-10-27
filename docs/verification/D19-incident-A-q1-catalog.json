@@ -1,0 +1,205 @@
+{
+  "payload": {
+    "server": {
+      "database": "postgres",
+      "databaseOid": "5",
+      "isInRecovery": false,
+      "serverVersion": "17.6",
+      "postmasterStartedAt": "2026-10-24T08:08:10.84601+00:00"
+    },
+    "archiver": {
+      "stats_reset": "2026-10-24T08:08:11.234863+00:00",
+      "failed_count": 0,
+      "archived_count": 0,
+      "last_failed_time": null,
+      "last_archived_time": null
+    },
+    "settings": {
+      "wal_level": "logical",
+      "archive_mode": "off",
+      "log_statement": "ddl",
+      "wal_keep_size": "0",
+      "data_checksums": "off",
+      "archive_timeout": "0",
+      "log_destination": "stderr",
+      "logging_collector": "off",
+      "track_commit_timestamp": "off",
+      "log_min_duration_statement": "-1"
+    },
+    "auditRelations": [
+      {
+        "table": "mission_workflow_events",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid"
+          },
+          {
+            "name": "workspace_id",
+            "type": "uuid"
+          },
+          {
+            "name": "mission_workflow_id",
+            "type": "uuid"
+          },
+          {
+            "name": "mission_work_item_id",
+            "type": "uuid"
+          },
+          {
+            "name": "actor_type",
+            "type": "text"
+          },
+          {
+            "name": "actor_id",
+            "type": "uuid"
+          },
+          {
+            "name": "event_type",
+            "type": "text"
+          },
+          {
+            "name": "entity_type",
+            "type": "text"
+          },
+          {
+            "name": "entity_id",
+            "type": "uuid"
+          },
+          {
+            "name": "metadata",
+            "type": "jsonb"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp with time zone"
+          }
+        ]
+      },
+      {
+        "table": "operator_audit_events",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid"
+          },
+          {
+            "name": "workspace_id",
+            "type": "uuid"
+          },
+          {
+            "name": "operator_id",
+            "type": "text"
+          },
+          {
+            "name": "actor_label",
+            "type": "text"
+          },
+          {
+            "name": "event_type",
+            "type": "text"
+          },
+          {
+            "name": "target_type",
+            "type": "text"
+          },
+          {
+            "name": "target_id",
+            "type": "text"
+          },
+          {
+            "name": "creator_id",
+            "type": "uuid"
+          },
+          {
+            "name": "mission_id",
+            "type": "uuid"
+          },
+          {
+            "name": "metadata",
+            "type": "jsonb"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp with time zone"
+          }
+        ]
+      },
+      {
+        "table": "staff_access_audit",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "type": "uuid"
+          },
+          {
+            "name": "request_id",
+            "type": "uuid"
+          },
+          {
+            "name": "workspace_id",
+            "type": "uuid"
+          },
+          {
+            "name": "user_id",
+            "type": "uuid"
+          },
+          {
+            "name": "actor_id",
+            "type": "uuid"
+          },
+          {
+            "name": "actor_kind",
+            "type": "text"
+          },
+          {
+            "name": "db_session_user",
+            "type": "text"
+          },
+          {
+            "name": "before_state",
+            "type": "jsonb"
+          },
+          {
+            "name": "after_state",
+            "type": "jsonb"
+          },
+          {
+            "name": "reason",
+            "type": "text"
+          },
+          {
+            "name": "approval_ref",
+            "type": "text"
+          },
+          {
+            "name": "created_at",
+            "type": "timestamp with time zone"
+          }
+        ]
+      }
+    ],
+    "pgauditLogSetting": "none",
+    "relevantExtensions": [],
+    "builtinCapabilities": {
+      "pg_ls_logdir": true,
+      "pg_ls_waldir": true,
+      "pg_read_file": true,
+      "pg_stat_file": true,
+      "pg_control_system": true
+    },
+    "archiveCommandConfigured": false,
+    "archiveLibraryConfigured": false,
+    "restoreCommandConfigured": false
+  },
+  "observedAt": "2026-10-24T14:02:29.245352+00:00",
+  "transactionReadOnly": "on",
+  "label": "q1-catalog",
+  "query": "select jsonb_build_object(\n 'server',jsonb_build_object('database',current_database(),'databaseOid',(select oid from pg_database where datname=current_database()),'serverVersion',current_setting('server_version'),'postmasterStartedAt',pg_postmaster_start_time(),'isInRecovery',pg_is_in_recovery()),\n 'settings',(select jsonb_object_agg(name,setting)from pg_settings where name in('wal_level','archive_mode','archive_timeout','wal_keep_size','logging_collector','log_destination','log_statement','log_min_duration_statement','track_commit_timestamp','data_checksums')),\n 'archiveCommandConfigured',coalesce(current_setting('archive_command',true)not in('','(disabled)'),false),\n 'archiveLibraryConfigured',coalesce(current_setting('archive_library',true)<>'',false),\n 'restoreCommandConfigured',coalesce(current_setting('restore_command',true)<>'',false),\n 'pgauditLogSetting',current_setting('pgaudit.log',true),\n 'archiver',(select to_jsonb(s)from(select archived_count,last_archived_time,failed_count,last_failed_time,stats_reset from pg_stat_archiver)s),\n 'relevantExtensions',(select coalesce(jsonb_agg(jsonb_build_object('name',extname,'version',extversion)order by extname),'[]')from pg_extension where extname in('pgaudit','pg_cron','pg_walinspect')),\n 'auditRelations',(select coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'columns',(select jsonb_agg(jsonb_build_object('name',a.attname,'type',format_type(a.atttypid,a.atttypmod))order by a.attnum)from pg_attribute a where a.attrelid=c.oid and a.attnum>0 and not a.attisdropped))order by n.nspname,c.relname),'[]')from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private')and c.relkind in('r','p')and c.relname~'(audit|history|event)'),\n 'builtinCapabilities',(select jsonb_object_agg(proname,true)from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='pg_catalog'and proname in('pg_control_system','pg_ls_waldir','pg_ls_logdir','pg_stat_file','pg_read_file'))\n)",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

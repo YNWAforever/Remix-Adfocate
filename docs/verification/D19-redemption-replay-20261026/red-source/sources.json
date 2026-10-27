@@ -1,0 +1,25 @@
+{
+  "scope": "Actual pre-fix SQL3fail/3pass and client7fail source; no assertions relaxed",
+  "files": [
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/redemption-replay.test.ts",
+      "snapshot": "docs/verification/D19-redemption-replay-20261026/red-source/redemption-replay.test.ts.txt",
+      "sha256": "8e1652b6a10512f9f1993d30e56b24c45964868b566b5d004be0517e8e9c965a"
+    },
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/redemption-client.test.tsx",
+      "snapshot": "docs/verification/D19-redemption-replay-20261026/red-source/redemption-client.test.tsx.txt",
+      "sha256": "b1a89bfd0459f0ebc73845a7c7eafee9691853338cfa0d7ec1e4027137651c65"
+    },
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/vitest.memory.mjs",
+      "snapshot": "docs/verification/D19-redemption-replay-20261026/red-source/vitest.memory.mjs.txt",
+      "sha256": "027762143fa0b68f877251da136746a89140f2105216d2b1e2f34571f1a1a75b"
+    },
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/vitest.client.mjs",
+      "snapshot": "docs/verification/D19-redemption-replay-20261026/red-source/vitest.client.mjs.txt",
+      "sha256": "cd61e2b7411262dd5a34774a8b7b5c6f3a54d728d552f2966264562fb9580761"
+    }
+  ]
+}

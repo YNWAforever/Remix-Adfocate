@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-25T11:04:47.603352+00:00",
+  "mode": "esm",
+  "nodeVersion": "v22.23.4",
+  "nodeExecutable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+  "physicalFreeGiB": 6.945953369140625,
+  "commitHeadroomGiB": 12.133594512939453,
+  "requiredPhysicalAndCommitGiB": 3,
+  "suiteStarted": false,
+  "resourceGatePassed": true
+}

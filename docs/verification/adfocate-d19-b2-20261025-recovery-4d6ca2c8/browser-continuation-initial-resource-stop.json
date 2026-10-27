@@ -1,0 +1,13 @@
+{
+  "recordedAt": "2026-10-25T10:16:00.311735+00:00",
+  "observationReference": "exec_command chunk53e042",
+  "status": "NOT_STARTED_RESOURCE_GATE",
+  "physicalFreeGiB": "UNKNOWN failure-time number was not emitted",
+  "commitHeadroomGiB": "UNKNOWN failure-time number was not emitted",
+  "requiredGiB": 3,
+  "adoptionChildStarted": false,
+  "identitySqlAuthCalls": 0,
+  "executionIntentCreated": false,
+  "doNotReplaceWithLaterReading": true,
+  "fix": "Private orchestration wrapper now records exact preflight values before gate; approved candidate/manifest unchanged."
+}

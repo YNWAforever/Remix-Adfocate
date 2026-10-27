@@ -1,0 +1,31 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "value": {
+    "parentId": "3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+    "metadata": {
+      "duration": {
+        "en": "15 minutes",
+        "zh": "15 分鐘"
+      },
+      "levelLabel": {
+        "en": "Synthetic introduction",
+        "zh": "合成入門"
+      },
+      "futureExtension": {
+        "nested": [
+          "retain",
+          {
+            "version": 1
+          }
+        ]
+      },
+      "learningEnabled": false,
+      "concurrentUnknown": {
+        "retain": true
+      }
+    },
+    "fault": "explicit PATCH503 mock",
+    "successfulSaveAndReload": "real API/Auth/RLS/DB",
+    "noLessonOrRewardWrite": true
+  }
+}

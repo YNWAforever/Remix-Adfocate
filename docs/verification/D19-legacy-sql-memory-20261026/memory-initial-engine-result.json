@@ -1,0 +1,18 @@
+{
+  "target": {
+    "kind": "in-process-postgres-wasm",
+    "locator": "memory://",
+    "persistent": false,
+    "externalNetwork": false
+  },
+  "enginesCreated": 7,
+  "enginesClosed": 7,
+  "networkAttempts": 0,
+  "profileDigest": "399944c3525bd920ab255b7c377823c4d3ebf566a2ea43acb0ca741bd913570d",
+  "tableFamiliesCompared": 9,
+  "externalClientsOrTargets": 0,
+  "externalAuthSubjectsOrFixtures": 0,
+  "applicationSourceChanges": 0,
+  "realPaymentsOrPendingRewards": 0,
+  "scope": "Core legacy function + real evidence guard on selected original table definitions only; not full migrations/Auth/RLS/campaign/notification/level hooks or independent-connection concurrency."
+}

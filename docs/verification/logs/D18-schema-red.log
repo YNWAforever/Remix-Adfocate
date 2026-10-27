@@ -1,0 +1,172 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/staff-access-schema.embedded.test.ts (11 tests | 11 failed) 1677ms
+   × D18 migration adds no automatic staff grants and browsers cannot self-assign 25ms
+     → expected false to be true // Object.is equality
+   × D18 workspace grant persists actor, revision and audit in one command 4ms
+     → expected false to be true // Object.is equality
+   × D18 exact replay returns the same saved result and one audit 3ms
+     → expected false to be true // Object.is equality
+   × D18 same request with different content conflicts without another mutation 3ms
+     → expected false to be true // Object.is equality
+   × D18 stale grant revision conflicts 3ms
+     → expected false to be true // Object.is equality
+   × D18 revoked staff denies even an exact successful request replay 2ms
+     → expected false to be true // Object.is equality
+   × D18 revoked membership denies even an exact successful request replay 4ms
+     → expected false to be true // Object.is equality
+   × D18 revoked role denies even an exact successful request replay 3ms
+     → expected false to be true // Object.is equality
+   × D18 normal access.manage cannot self-change or grant to another workspace 4ms
+     → expected false to be true // Object.is equality
+   × D18 audit failure rolls back role and command receipt 3ms
+     → expected false to be true // Object.is equality
+   × D18 platform content editor is separate and owner bootstrap is not callable by service or browser roles 3ms
+     → expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 migration adds no automatic staff grants and browsers cannot self-assign
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:25:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 workspace grant persists actor, revision and audit in one command
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:32:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 exact replay returns the same saved result and one audit
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:38:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 same request with different content conflicts without another mutation
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:42:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 stale grant revision conflicts
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:47:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 revoked staff denies even an exact successful request replay
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 revoked membership denies even an exact successful request replay
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 revoked role denies even an exact successful request replay
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:51:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 normal access.manage cannot self-change or grant to another workspace
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:56:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 audit failure rolls back role and command receipt
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:60:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  server/test/staff-access-schema.embedded.test.ts > D18 platform content editor is separate and owner bootstrap is not callable by service or browser roles
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ ready server/test/staff-access-schema.embedded.test.ts:11:173
+
+ ❯ server/test/staff-access-schema.embedded.test.ts:66:2
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ Test Files  1 failed (1)
+      Tests  11 failed (11)
+   Start at  20:45:32
+   Duration  2.20s (transform 41ms, setup 195ms, collect 28ms, tests 1.68s, environment 0ms, prepare 84ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-schema-red.json

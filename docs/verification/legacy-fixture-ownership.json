@@ -1,0 +1,38 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "workspaceIds": [
+    "00000000-0000-0000-0000-0000000000aa"
+  ],
+  "missionIds": [
+    "0080dbc8-eced-410e-9d75-ed71915a6516",
+    "1ed520ca-80a7-4c47-924f-89ae29d69015",
+    "7a830e8a-cf81-4a09-8341-c6d79adbbb73",
+    "7c7ca40c-3d34-4dca-911f-fd9a74fbf6e0",
+    "861f9499-cc3b-4940-892f-3e3bd9d9bea6",
+    "8b8ac39c-4472-448a-b5db-ca383d4967cc"
+  ],
+  "giftIds": [
+    "2ba25abf-d854-42aa-a8dc-7c2eb640729e",
+    "2fa77f49-9558-4a78-8c55-813a0c721e1b",
+    "4df55e74-66f6-4164-8126-16bc7b2e0378",
+    "70943f0f-efbb-48f4-8571-b74e4a562707",
+    "74897f28-b614-46da-9cf7-4ccf53dda8b4",
+    "842bfbf3-ed65-4a3b-8468-7ccbf1490d62",
+    "cac7f4ab-4636-49c5-a9c0-0e08b265f8d4",
+    "ed0bd3ec-fc6c-450e-8d30-f457ea2f3036"
+  ],
+  "seedSha256": "c0ae0c1bc5121021726c481307f5547bc9ede0475909dd0cb03d482e9c990319",
+  "cleanup": "baseline retained; helper-created rows cleaned only by exact creation IDs"
+}

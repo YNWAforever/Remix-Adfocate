@@ -1,0 +1,357 @@
+{
+  "readOnly": true,
+  "productionQueried": false,
+  "targets": {
+    "empty": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "observed": {
+        "roles": [
+          {
+            "role": "anon",
+            "bypassRls": false,
+            "superuser": false
+          },
+          {
+            "role": "authenticated",
+            "bypassRls": false,
+            "superuser": false
+          },
+          {
+            "role": "service_role",
+            "bypassRls": true,
+            "superuser": false
+          }
+        ],
+        "noPolicyTables": [
+          {
+            "rls": true,
+            "name": "brand_invites",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "campaign_rank_snapshots",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "creator_review_notes",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "creator_review_statuses",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "legacy_evidence_corrections",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_completion_decisions",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_pending_rewards",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_reward_contracts",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_shortlists",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "operator_audit_events",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "operator_crm_command_receipts",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "redemption_codes",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "staff_users",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          }
+        ],
+        "mutableFunctions": [
+          {
+            "name": "content_touch_updated_at",
+            "config": null,
+            "definition": "CREATE OR REPLACE FUNCTION public.content_touch_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\r\nbegin new.updated_at = now(); return new; end $function$\n",
+            "securityDefiner": false
+          },
+          {
+            "name": "match_kb_chunks",
+            "config": null,
+            "definition": "CREATE OR REPLACE FUNCTION public.match_kb_chunks(query_embedding vector, match_count integer DEFAULT 5, filter_locale text DEFAULT 'zh-HK'::text, filter_workspace text DEFAULT NULL::text)\n RETURNS TABLE(chunk_id uuid, document_id uuid, title text, source_type text, source_ref text, content text, similarity double precision)\n LANGUAGE sql\n STABLE\nAS $function$\r\n  select c.id, c.document_id, d.title, d.source_type, d.source_ref, c.content,\r\n         1 - (c.embedding <=> query_embedding) as similarity\r\n  from public.kb_chunks c\r\n  join public.kb_documents d on d.id = c.document_id\r\n  where d.locale = filter_locale\r\n    and (d.workspace is null or d.workspace = filter_workspace)\r\n  order by c.embedding <=> query_embedding\r\n  limit match_count;\r\n$function$\n",
+            "securityDefiner": false
+          }
+        ]
+      }
+    },
+    "shaped": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "observed": {
+        "roles": [
+          {
+            "role": "anon",
+            "bypassRls": false,
+            "superuser": false
+          },
+          {
+            "role": "authenticated",
+            "bypassRls": false,
+            "superuser": false
+          },
+          {
+            "role": "service_role",
+            "bypassRls": true,
+            "superuser": false
+          }
+        ],
+        "noPolicyTables": [
+          {
+            "rls": true,
+            "name": "brand_invites",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "campaign_rank_snapshots",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "creator_review_notes",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "creator_review_statuses",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "legacy_evidence_corrections",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_completion_decisions",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_pending_rewards",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_reward_contracts",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "mission_shortlists",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "operator_audit_events",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          },
+          {
+            "rls": true,
+            "name": "operator_crm_command_receipts",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": false,
+            "anonSelect": false,
+            "authenticatedWrite": false,
+            "authenticatedSelect": false
+          },
+          {
+            "rls": true,
+            "name": "staff_users",
+            "owner": "postgres",
+            "forceRls": false,
+            "anonWrite": true,
+            "anonSelect": true,
+            "authenticatedWrite": true,
+            "authenticatedSelect": true
+          }
+        ],
+        "mutableFunctions": [
+          {
+            "name": "content_touch_updated_at",
+            "config": null,
+            "definition": "CREATE OR REPLACE FUNCTION public.content_touch_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin new.updated_at = now(); return new; end $function$\n",
+            "securityDefiner": false
+          },
+          {
+            "name": "match_kb_chunks",
+            "config": null,
+            "definition": "CREATE OR REPLACE FUNCTION public.match_kb_chunks(query_embedding vector, match_count integer DEFAULT 5, filter_locale text DEFAULT 'zh-HK'::text, filter_workspace text DEFAULT NULL::text)\n RETURNS TABLE(chunk_id uuid, document_id uuid, title text, source_type text, source_ref text, content text, similarity double precision)\n LANGUAGE sql\n STABLE\nAS $function$\n  select c.id, c.document_id, d.title, d.source_type, d.source_ref, c.content,\n         1 - (c.embedding <=> query_embedding) as similarity\n  from public.kb_chunks c\n  join public.kb_documents d on d.id = c.document_id\n  where d.locale = filter_locale\n    and (d.workspace is null or d.workspace = filter_workspace)\n  order by c.embedding <=> query_embedding\n  limit match_count;\n$function$\n",
+            "securityDefiner": false
+          }
+        ]
+      }
+    }
+  },
+  "query": "select jsonb_build_object('noPolicyTables',(select jsonb_agg(jsonb_build_object('name',c.relname,'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'owner',pg_get_userbyid(c.relowner),'anonSelect',has_table_privilege('anon',c.oid,'SELECT'),'authenticatedSelect',has_table_privilege('authenticated',c.oid,'SELECT'),'anonWrite',has_table_privilege('anon',c.oid,'INSERT,UPDATE,DELETE'),'authenticatedWrite',has_table_privilege('authenticated',c.oid,'INSERT,UPDATE,DELETE')) order by c.relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' and c.relrowsecurity and not exists(select 1 from pg_policy p where p.polrelid=c.oid)),'mutableFunctions',(select jsonb_agg(jsonb_build_object('name',p.proname,'securityDefiner',p.prosecdef,'config',p.proconfig,'definition',pg_get_functiondef(p.oid)) order by p.proname) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('content_touch_updated_at','match_kb_chunks')),'roles',(select jsonb_agg(jsonb_build_object('role',rolname,'bypassRls',rolbypassrls,'superuser',rolsuper) order by rolname) from pg_roles where rolname in ('anon','authenticated','service_role')));"
+}

@@ -1,0 +1,28 @@
+import fs from'node:fs';
+import cp from'node:child_process';
+import {syncBuiltinESMExports}from'node:module';
+import process from'node:process';
+const counts={subprocess:0,privateKeyReads:0,fetch:0};
+const fail=()=>{counts.subprocess++;throw Error('Unexpected subprocess before refusal');};
+cp.execFileSync=fail;cp.spawnSync=fail;
+const originalRead=fs.readFileSync;
+fs.readFileSync=(path,...args)=>{if(String(path).endsWith('keys.private.json')){counts.privateKeyReads++;throw Error('Unexpected key read before refusal');}return originalRead(path,...args);};
+globalThis.fetch=()=>{counts.fetch++;throw Error('Unexpected HTTP before refusal');};
+syncBuiltinESMExports();
+for(const key of Object.keys(process.env))if(/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|RESEND|SMTP|SENDGRID|TWILIO/.test(key))process.env[key]='';
+const {verifiedTarget}=await import('../scripts/audit/local-targets.mjs');
+const cases=[
+ {id:'current-partial-target-refused',manifest:'docs/verification/D19-B2-runtime-manifest-neutrality-guard.json',authorization:'.codex-tmp/adfocate-d19-b2-20261025-b0db3134/runtime-authorization.private.json',expected:'B2 target/bootstrap receipt mismatch'},
+ {id:'unapproved-recovery-refused',manifest:'docs/verification/D19-B2-recovery-runtime-manifest.json',authorization:'docs/verification/D19-B2-recovery-runtime-authorization-template.json',expected:'B2 runtime authorization must bind the reviewed manifest and source'}
+];
+const results=[];
+for(const c of cases){
+ Object.assign(process.env,{ADFOCATE_B2_MANIFEST_PATH:c.manifest,ADFOCATE_B2_AUTHORIZATION_PATH:c.authorization,ADFOCATE_B2_PHASE:'role',ADFOCATE_B2_TARGET_RECEIPT_PATH:'.codex-tmp/adfocate-d19-b2-20261025-b0db3134/target-receipt.private.json'});
+ let error;try{verifiedTarget();}catch(e){error=e.message;}
+ if(error!==c.expected)throw Error('Unexpected refusal for '+c.id+': '+error);
+ results.push({case:c.id,passed:true,reason:error});
+}
+if(Object.values(counts).some(n=>n!==0))throw Error('A forbidden dependency was touched');
+const result={status:'PASS_LOCAL_FAIL_CLOSED_PROBES_NOT_RUNTIME_ACCEPTANCE',results,counts,applicationIntegrationOrBrowserRuns:0};
+fs.writeFileSync('docs/verification/D19-B2-runtime-cli-refusals.json',JSON.stringify(result,null,2)+'\n');
+process.stdout.write(JSON.stringify(result)+'\n');

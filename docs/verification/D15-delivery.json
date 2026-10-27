@@ -1,0 +1,453 @@
+{
+  "task": "D15",
+  "updatedAt": "2026-10-23T10:14:24.598668+00:00",
+  "executionModel": {
+    "model": "gpt-6.1-sol",
+    "verifiedFrom": "current execution interface turn_context",
+    "switched": false,
+    "checkedAt": "2026-10-23T09:05:18.568189+00:00"
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "newResult": {
+    "code": "implemented by extending existing Academy editor/routes and canonical eligibility; versioned units and durable self-only progress",
+    "test": "verified local full suite and scoped owned synthetic integration/UI",
+    "deployment": "not-deployed",
+    "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+  },
+  "contentStatus": "BLOCKED_CONTENT_NOT_PROVIDED",
+  "contentOwnerReply": "目前沒有，保留內容 blocker",
+  "acceptanceStatus": "N03 synthetic functionality PASS; UC-C18/UC-A51 original four-real-lessons acceptance BLOCKED, not PASS",
+  "priorCodeFingerprint": "27e174353ec8455d0fdfcb795c03724e7f1e85c8598fcdf1097957ef76989c85",
+  "codeFingerprint": "86932f69af586024db602aaf5a83897b61ee99ee449be1a580b800bba29ea777",
+  "changedFiles": [
+    "e2e/academy-learning.spec.ts",
+    "scripts/audit/run-academy-browser.mjs",
+    "scripts/audit/run-integration.mjs",
+    "scripts/release/contracts.ts",
+    "scripts/release/manifest.test.ts",
+    "scripts/release/manifest.ts",
+    "scripts/release/preflight.test.ts",
+    "server/app.ts",
+    "server/routes/academy.ts",
+    "server/routes/academyLessons.ts",
+    "server/routes/adminAcademy.ts",
+    "server/test/audit-academy-progress.test.ts",
+    "src/components/AcademyLearning.tsx",
+    "src/components/admin/AcademyEditor.tsx",
+    "src/components/admin/AcademyLessons.authoring.test.tsx",
+    "src/components/admin/AcademyLessonsEditor.tsx",
+    "src/lib/academy.ts",
+    "src/lib/academyProgress.ts",
+    "src/routes/-academy-learning.test.tsx",
+    "src/routes/_app.guide.track.$trackId.tsx",
+    "supabase/migrations/20261023091050_academy_learning.sql",
+    "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
+    "supabase/migrations/20261023095521_academy_approval_index.sql",
+    "supabase/release-manifest.json"
+  ],
+  "taskOnlyPatch": "D15-changes.patch",
+  "gates": [
+    {
+      "gate": "D15-targeted",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run src/routes/-academy-learning.test.tsx src/components/admin/AcademyLessons.authoring.test.tsx src/components/admin/AcademyEditor.test.tsx server/test/academy-availability.test.ts src/components/AcademyTrackCard.test.tsx 'src/routes/-_app.guide.track.$trackId.test.tsx' src/routes/-public-claims.test.tsx scripts/release --maxWorkers=1 --minWorkers=1",
+      "passed": 140,
+      "testFiles": 21,
+      "log": "logs/D15-targeted.log"
+    },
+    {
+      "gate": "D15-real-api",
+      "command": "npm exec --offline --yes --package=node@22 -- node scripts/audit/run-integration.mjs academy",
+      "passed": 12,
+      "log": "logs/D15-api-final.log"
+    },
+    {
+      "gate": "D15-browser",
+      "command": "npm exec --offline --yes --package=node@22 -- node scripts/audit/run-academy-browser.mjs",
+      "passed": 4,
+      "log": "logs/D15-browser-final.log"
+    },
+    {
+      "gate": "D15-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D15-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1762,
+      "skipped": 350,
+      "failed": 0,
+      "testFiles": 255,
+      "audit16Passed": 16,
+      "original194Passed": 194,
+      "log": "logs/D15-full-suite.log"
+    },
+    {
+      "gate": "D15-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D15-typecheck.log"
+    },
+    {
+      "gate": "D15-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "log": "logs/D15-lint.log"
+    },
+    {
+      "gate": "D15-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D15-build-node22.log"
+    },
+    {
+      "gate": "D15-manifest",
+      "command": "npm run release:manifest:check",
+      "exit": 0,
+      "log": "logs/D15-manifest-check.log"
+    },
+    {
+      "gate": "D15-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D15-diff-check.log"
+    }
+  ],
+  "api": {
+    "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "track": {
+      "id": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "slug": "d15-L0-d9c86453-c8a7-42eb-9353-1df5dd59309c"
+    },
+    "locked": {
+      "id": "c50f41b6-6762-49c5-9d86-98d99fc3d400",
+      "slug": "d15-L2-d9c86453-c8a7-42eb-9353-1df5dd59309c"
+    },
+    "ownedLessonIds": [
+      "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "d8736eef-e2db-4a4f-be7c-bd5750a44042",
+      "45ae08d4-ec44-4015-85e1-5ff5bec4279c",
+      "d3364712-031d-43d1-a77a-69002ff42135",
+      "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "849de7cd-61d0-42e6-afc0-5542171a83ec"
+    ],
+    "neutrality": {
+      "before": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "otherNeutrality": {
+      "before": {
+        "xp": 6000,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 6000,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "browserTrack": {
+      "id": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "slug": "d15-browser-d9c86453-c8a7-42eb-9353-1df5dd59309c"
+    },
+    "content": "explicitly synthetic only; no real course or owner approval claimed",
+    "cleanup": "all exact IDs retained; no delete/reset"
+  },
+  "browser": {
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+    "tests": [
+      {
+        "title": "D15 operator authors, previews, reloads and publishes two synthetic units inside the existing editor",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 9882
+          }
+        ]
+      },
+      {
+        "title": "D15 Creator handles a mocked write failure, completes a real unit and refreshes the same saved progress",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2819
+          }
+        ]
+      },
+      {
+        "title": "D15 separate Creator context has zero progress and ineligible Creator cannot read locked units",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2315
+          }
+        ]
+      },
+      {
+        "title": "D15 real version conflict preserves reading and history before an explicit refresh and completion",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2677
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-23T10:03:47.752Z",
+      "duration": 20923.261,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "persisted": {
+      "lessons": [
+        {
+          "id": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+          "status": "published",
+          "version": 1,
+          "position": 0,
+          "revision": 2,
+          "approvalRef": "SYNTHETIC ONLY/browser/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+        },
+        {
+          "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+          "status": "archived",
+          "version": 1,
+          "position": 1,
+          "revision": 3,
+          "approvalRef": "SYNTHETIC ONLY/browser/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+        },
+        {
+          "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+          "status": "published",
+          "version": 2,
+          "position": 1,
+          "revision": 2,
+          "approvalRef": "SYNTHETIC ONLY/v2/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+        },
+        {
+          "id": "849de7cd-61d0-42e6-afc0-5542171a83ec",
+          "status": "archived",
+          "version": 1,
+          "position": 100,
+          "revision": 3,
+          "approvalRef": "SYNTHETIC hidden ONLY/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+        }
+      ],
+      "progress": [
+        {
+          "version": 1,
+          "lessonId": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+          "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+          "completedAt": "2026-10-23T10:04:02.269634+00:00"
+        },
+        {
+          "version": 2,
+          "lessonId": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+          "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+          "completedAt": "2026-10-23T10:04:07.32474+00:00"
+        }
+      ]
+    },
+    "auth": "Real local Auth sessions from the identity-gated API fixture; separate Creator contexts.",
+    "browser": "Installed Microsoft Edge; 1280x900 operator and 390x844 Creator viewport emulation.",
+    "content": "Two explicitly synthetic lesson units; test approval references only. No approved curriculum claimed.",
+    "limitations": [
+      "No deployment, hosted runtime, physical device or Safari/WebKit acceptance.",
+      "One completion 503 is an explicit transport mock; successful completion and version-conflict 409 use the real local API and database."
+    ]
+  },
+  "financialNeutrality": {
+    "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+    "actorIds": [
+      "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+      "9c7f6aea-9463-4cd2-8bc3-9998941eddba"
+    ],
+    "before": [
+      {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      {
+        "xp": 6000,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    ],
+    "after": [
+      {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      {
+        "xp": 6000,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    ],
+    "allEqual": true,
+    "note": "Raw balances, XP, ledger counts and reward inventory; no normalization. No reward is awarded for learning."
+  },
+  "schema": {
+    "changed": true,
+    "newMigrations": 3,
+    "manifestDigest": "e9e801ff06c0c5382ec18e06ca0d9f05dc7a3d8a4ab1b68633e7f7bc5f14ca75",
+    "diff": "D15-schema-diff.json",
+    "catalog": "D15-schema-after.json",
+    "membershipPrimaryKey": "user_id",
+    "oldSqlChecksumsPreserved": true,
+    "productionQueried": false
+  },
+  "postRuntimeSourceChanges": false,
+  "limitations": [
+    "BLOCKED_CONTENT_NOT_PROVIDED: user confirmed no approved real curriculum. UC-C18/UC-A51 still require the original four real lesson units; neither is PASS. Two-unit synthetic N03 is functional evidence only.",
+    "Not deployed. No commit, push, merge, CI, hosted/production access, real membership changes, external messages/invites/publication, payments or paid AI/providers.",
+    "One completion 503 is an explicit browser transport mock. Successful reads/writes and the version-conflict 409 use real local Auth/RLS/API/database; sessions reused from the owned fixture. Manual approval references are recorded staff attestations, not independently verified content approvals.",
+    "Prior R0/R1 and D08/D09/D12/D13/D14 runtime remain historical at their preserved fingerprints. Full suite freshly protects 16 audit tests and 194 contracts; the entire legacy/active proof/reward handoff was not rerun for this D15 candidate.",
+    "Skipped broad integration is not PASS; legacy shared seeds and broad delete/reset remain excluded. Scoped owned Academy integration supplies the necessary D15 runtime evidence.",
+    "No Safari/WebKit, physical-device, full accessibility, load/performance, hosted advisors or production schema acceptance. Four prior app lint warnings and existing route/bundle build warnings remain. F27 remains partial: lesson fields use a labelled business form, while the existing parent track Metadata(JSON) editor is still exposed.",
+    "Original supplied CSV fields and originalAuditResult preserved. Original audit ZIP was not reopened this turn; expected audit SHA and prior evidence retained."
+  ],
+  "openAcceptance": [
+    "UC-C18",
+    "UC-A51"
+  ],
+  "nextTask": "D17",
+  "evidence": [
+    "D15-delivery.json",
+    "D15-api-contract.json",
+    "D15-browser-summary.json",
+    "D15-author-ui.json",
+    "D15-creator-ui.json",
+    "D15-isolation-ui.json",
+    "D15-conflict-ui.json",
+    "D15-browser-neutrality.json",
+    "D15-schema-before.json",
+    "D15-schema-after.json",
+    "D15-schema-diff.json",
+    "D15-db-lint.json",
+    "D15-forward-replay.json",
+    "D15-forward-correction.json",
+    "D15-forward-index.json",
+    "D15-fixture-retention.json",
+    "D15-changes.patch",
+    "logs/D15-targeted.log",
+    "logs/D15-api-final.log",
+    "logs/D15-browser-final.log",
+    "logs/D15-full-suite.log",
+    "logs/D15-typecheck.log",
+    "logs/D15-lint.log",
+    "logs/D15-build-node22.log",
+    "logs/D15-manifest-check.log",
+    "logs/D15-diff-check.log"
+  ],
+  "attempts": {
+    "originalProductRed": [
+      "D15-api-red-summary.json",
+      "D15-ui-red-summary.json",
+      "D15-author-red-summary.json"
+    ],
+    "corrections": [
+      "Real integration found a private-schema permission failure in the Boolean gate; corrected through a separate forward migration, not broad schema grants.",
+      "Domain conflicts used SQLSTATE 40001; observed delayed requests interfered with later publication. Terminal PT409 now returns immediate HTTP409; no claim about the exact retry component. Original applied migration bytes/checksum retained.",
+      "One synthetic verified-social fixture lacked workspace_id; corrected the fixture only, preserving canonical XP + owner_verified trust.",
+      "Existing release test fixtures/counts extended for three migrations and 30 actual capabilities; all earlier 471 capability validators retained. Corrected the fully qualified index mapping.",
+      "Default sandbox Node24 manifest temp-file rename failed EPERM; final cached Node22 full gates run under approved local execution, assertions unchanged.",
+      "Local CLI lint initially failed its default TLS connection; verified loopback TCP/container mapping and set sslmode=disable for these disposable targets only. Both final lints have no schema errors."
+    ]
+  }
+}

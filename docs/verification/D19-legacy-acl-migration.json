@@ -1,0 +1,1746 @@
+{
+  "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
+  "sha256": "4669bd408714f65c152320a1ffdd0a932dc0fbf391a5c2281a642a00d1223cd2",
+  "productionTouched": false,
+  "targets": [
+    {
+      "kind": "empty",
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "before": {
+        "tables": [
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=rdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_public_passports"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=Dxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_notes"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=Dxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_statuses"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=rdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_accounts"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=rDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_scan_snapshots"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=Dxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "mission_shortlists"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=Dxtm/postgres",
+              "authenticated=Dxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "operator_audit_events"
+          }
+        ],
+        "columns": [
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle"
+          },
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "platform"
+          },
+          {
+            "acl": [
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "profile_url"
+          },
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "workspace_id"
+          }
+        ]
+      },
+      "after": {
+        "tables": [
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres",
+              "authenticated=rd/postgres"
+            ],
+            "rls": true,
+            "name": "creator_public_passports"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_notes"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_statuses"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres",
+              "authenticated=rd/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_accounts"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres",
+              "authenticated=r/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_scan_snapshots"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "mission_shortlists"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxtm/postgres"
+            ],
+            "rls": true,
+            "name": "operator_audit_events"
+          }
+        ],
+        "columns": [
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle"
+          },
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "platform"
+          },
+          {
+            "acl": [
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "profile_url"
+          },
+          {
+            "acl": [
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "workspace_id"
+          }
+        ]
+      },
+      "oldHistoryRows": 71,
+      "newHistoryRows": 72,
+      "oldHistoryPreserved": true
+    },
+    {
+      "kind": "shaped",
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "before": {
+        "tables": [
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_public_passports"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_notes"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_statuses"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_accounts"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_scan_snapshots"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "mission_shortlists"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "anon=arwdDxt/postgres",
+              "authenticated=arwdDxt/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "operator_audit_events"
+          }
+        ],
+        "columns": [
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "enabled"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "last_viewed_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "public_token_hash"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "revoked_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "body"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "category"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "operator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "last_reviewed_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "reviewed_by"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "risk_level"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "summary"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "api_synced_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "avg_comments"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "avg_likes"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "bio"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "content_themes"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "engagement_rate"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "external_avatar_url"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "follower_count"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "following_count"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "freshness_score"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle_normalized"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "last_error_code"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "last_error_message"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "owner_verified"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "platform"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "post_count"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "posting_frequency"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "profile_url"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "summary"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "sync_status"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verification_code"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verification_code_expires_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verified_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "account_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "error_code"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "error_message"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "metrics"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "provider"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "recent_posts_summary"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "scanned_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "created_by"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "mission_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "notes"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "source"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "updated_by"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "actor_label"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "event_type"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "metadata"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "mission_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "operator_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "target_id"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "target_type"
+          },
+          {
+            "acl": [
+              "anon=arwx/postgres",
+              "authenticated=arwx/postgres",
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "workspace_id"
+          }
+        ]
+      },
+      "after": {
+        "tables": [
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres",
+              "authenticated=rd/postgres"
+            ],
+            "rls": true,
+            "name": "creator_public_passports"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_notes"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "creator_review_statuses"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres",
+              "authenticated=rd/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_accounts"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres",
+              "authenticated=r/postgres"
+            ],
+            "rls": true,
+            "name": "creator_social_scan_snapshots"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "mission_shortlists"
+          },
+          {
+            "acl": [
+              "postgres=arwdDxtm/postgres",
+              "service_role=arwdDxt/postgres"
+            ],
+            "rls": true,
+            "name": "operator_audit_events"
+          }
+        ],
+        "columns": [
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "enabled"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "last_viewed_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "public_token_hash"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_public_passports",
+            "column": "revoked_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "body"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "category"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "operator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_notes",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "last_reviewed_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "reviewed_by"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "risk_level"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "summary"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_review_statuses",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "api_synced_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "avg_comments"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "avg_likes"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "bio"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "content_themes"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres",
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "engagement_rate"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "external_avatar_url"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "follower_count"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "following_count"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "freshness_score"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres",
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "handle_normalized"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "last_error_code"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "last_error_message"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "owner_verified"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres",
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "platform"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "post_count"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "posting_frequency"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres",
+              "authenticated=aw/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "profile_url"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "summary"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "sync_status"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verification_code"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verification_code_expires_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "verified_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres",
+              "authenticated=a/postgres"
+            ],
+            "table": "creator_social_accounts",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "account_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "error_code"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "error_message"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "metrics"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "provider"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "recent_posts_summary"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "scanned_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "creator_social_scan_snapshots",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "created_by"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "mission_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "notes"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "source"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "status"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "updated_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "updated_by"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "mission_shortlists",
+            "column": "workspace_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "actor_label"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "created_at"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "creator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "event_type"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "metadata"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "mission_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "operator_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "target_id"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "target_type"
+          },
+          {
+            "acl": [
+              "service_role=arwx/postgres"
+            ],
+            "table": "operator_audit_events",
+            "column": "workspace_id"
+          }
+        ]
+      },
+      "oldHistoryRows": 55,
+      "newHistoryRows": 56,
+      "oldHistoryPreserved": true
+    }
+  ]
+}

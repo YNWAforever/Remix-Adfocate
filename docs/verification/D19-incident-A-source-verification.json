@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-24T14:52:06.428157+00:00",
+  "status": "PASS_TEMPLATE_AND_RECORD_BOUNDARIES_NOT_BEFORE_IMAGE_ACCEPTANCE",
+  "sourceNotProvided": true,
+  "templateIsEvidence": false,
+  "newResult": {
+    "code": "Local source request and unfilled template only; application/test/config/migrations unchanged",
+    "test": "Local document/source/hash and template-boundary checks only; no product, integration, browser or pristine rerun",
+    "deployment": "not-deployed; no commit/push/merge/deploy",
+    "runtime": "No new target, Docker, SQL, Auth or API access. Saved A reads retained; no trusted before image supplied. Incident OPEN; release HOLD; provider disabled."
+  },
+  "originalMissingHashMapResolved": false,
+  "preciseRestoreEligible": false,
+  "checks": {
+    "exactThreeIds": true,
+    "allBeforeValuesRemainUnknown": true,
+    "noFalseNullOrPretendSource": true,
+    "noAcceptancePromotion": true,
+    "onlyExistingArtifactReadAuthority": true,
+    "unchanged107CaseResults": true,
+    "unchangedD15ProviderAndR1": true,
+    "newResultFourLayers": true,
+    "onlyTwoSourceIntakePointersAddedToRoot": true,
+    "allOther1200LatestEvidenceFilesUnchanged": true,
+    "reportAndLedgerAppendOnly": true,
+    "allSourceRequestLinksResolve": true
+  },
+  "latestCheckpointEvidenceFiles": 1206,
+  "latestCheckpointEvidenceFilesUnchanged": 1200,
+  "latestCheckpointChangedMetadata": [
+    "docs/verification/D19-incident-A-changed-files.json",
+    "docs/verification/D19-incident-A-integrity.json",
+    "docs/verification/D19-incident-A-report.md",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/logs/D19-incident-A-document-check.log"
+  ]
+}

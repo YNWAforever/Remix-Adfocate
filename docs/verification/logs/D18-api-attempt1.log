@@ -1,0 +1,53 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-staff-capabilities.test.ts (8 tests) 12001ms
+   ✓ D18 exact-owned staff roles/API/RLS > keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings 600ms
+   ✓ D18 exact-owned staff roles/API/RLS > persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant 423ms
+   ✓ D18 exact-owned staff roles/API/RLS > revokes active staff, membership or role immediately using the same signed-in session 340ms
+   ✓ D18 exact-owned staff roles/API/RLS > hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances 2759ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-staff-capabilities.test.ts > D18 exact-owned staff roles/API/RLS
+AssertionError: expected [ { xp: 10, points: 50, …(7) }, …(1) ] to deeply equal [ { xp: +0, points: 50, …(7) }, …(1) ]
+
+- Expected
++ Received
+
+  Array [
+    Object {
+      "budget": null,
+      "budgetLedger": 0,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "points": 50,
+      "redemptions": 0,
+      "rewardInventory": Array [],
+      "withdrawable": 0,
+-     "xp": 0,
++     "xp": 10,
+    },
+    Object {
+      "budget": null,
+      "budgetLedger": 0,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "points": 50,
+      "redemptions": 0,
+      "rewardInventory": Array [],
+      "withdrawable": 0,
+      "xp": 0,
+    },
+  ]
+
+ ❯ server/test/audit-staff-capabilities.test.ts:18:117
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  8 passed (8)
+   Start at  21:17:19
+   Duration  12.50s (transform 592ms, setup 181ms, collect 79ms, tests 12.00s, environment 0ms, prepare 79ms)
+

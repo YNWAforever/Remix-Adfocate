@@ -1,0 +1,309 @@
+export type ReleasePhase =
+  | "active_mission"
+  | "publication_proof"
+  | "reward_handoff"
+  | "legacy_evidence"
+  | "operator_crm"
+  | "assistant_requests"
+  | "academy_learning"
+  | "staff_access";
+
+export interface ReleaseMigration {
+  readonly version: string;
+  readonly name: string;
+  readonly path: string;
+  readonly sha256: string;
+  readonly phase: ReleasePhase;
+  readonly dependsOn: readonly string[];
+  readonly capabilities: readonly string[];
+  readonly transactionExpectation: "transactional";
+  readonly replayExpectation: "migration_history_noop";
+}
+
+export interface ReleaseManifest {
+  readonly schemaVersion: 1;
+  readonly cliVersion: "2.110.0";
+  readonly generatedFrom: "supabase/migrations";
+  readonly migrations: readonly ReleaseMigration[];
+}
+
+export type CapabilityStatus = "present" | "absent" | "divergent" | "unverifiable";
+
+export interface PreflightCapability {
+  readonly name: string;
+  readonly status: CapabilityStatus;
+}
+
+export interface PreflightReport {
+  readonly schemaVersion: 1;
+  readonly targetProjectRef: string;
+  readonly manifestDigest: string;
+  readonly migrationListHash: string;
+  readonly dryRunHash: string;
+  readonly schemaFingerprint: string;
+  readonly capabilities: readonly PreflightCapability[];
+  readonly warnings: readonly string[];
+  readonly createdAt: string;
+}
+
+export interface RehearsalTarget {
+  readonly ref: string;
+  readonly databaseUrl: string;
+}
+
+export interface RehearsalShapedTarget extends RehearsalTarget {
+  readonly apiUrl: string;
+  readonly anonKey: string;
+  readonly serviceKey: string;
+}
+
+export interface RehearsalProductionTarget extends RehearsalTarget {
+  readonly schemaFingerprint: string;
+}
+
+export interface RehearsalInput {
+  readonly emptyTarget: RehearsalTarget;
+  readonly shapedTarget: RehearsalShapedTarget;
+  readonly production: RehearsalProductionTarget;
+  readonly manifestDigest: string;
+  readonly expectedCapabilities: readonly string[];
+  readonly now: Date;
+}
+
+export interface RehearsalCommandReport {
+  readonly label: string;
+  readonly code: 0;
+  readonly stdoutHash: string;
+  readonly stderrHash: string;
+}
+
+export interface RehearsalReport {
+  readonly schemaVersion: 1;
+  readonly status: "passed";
+  readonly manifestDigest: string;
+  readonly productionSchemaFingerprint: string;
+  readonly emptySchemaFingerprint: string;
+  readonly shapedSchemaFingerprint: string;
+  readonly commands: readonly RehearsalCommandReport[];
+  readonly createdAt: string;
+}
+
+export interface ReleaseMigrationRange {
+  readonly from: string;
+  readonly to: string;
+}
+
+export interface ReleaseMigrationChecksum {
+  readonly version: string;
+  readonly sha256: string;
+}
+
+export interface ReleaseRoleAssignments {
+  readonly executor: string;
+  readonly observer: string;
+  readonly containmentOwner: string;
+  readonly productOwner: string;
+  readonly approver: string;
+}
+
+export interface ReleaseTestResult {
+  readonly gate: string;
+  readonly status: "passed" | "failed" | "skipped";
+  readonly evidenceHash: string;
+}
+
+export interface ReleaseEvidence {
+  readonly schemaVersion: 1;
+  readonly targetProjectRef: string;
+  readonly schemaFingerprint: string;
+  readonly manifestDigest: string;
+  readonly preflightHash: string;
+  readonly rehearsalHash: string;
+  readonly applicationCommit: string;
+  readonly migrationRange: ReleaseMigrationRange;
+  readonly migrationChecksums: readonly ReleaseMigrationChecksum[];
+  readonly recoveryReference: string;
+  readonly roles: ReleaseRoleAssignments;
+  readonly testResults: readonly ReleaseTestResult[];
+  readonly proposedProductionCommands: readonly string[];
+  readonly containmentCommands: readonly string[];
+  readonly warnings: readonly string[];
+  readonly skippedChecks: readonly string[];
+  readonly createdAt: string;
+  readonly expiresAt: string;
+  readonly contentDigest: string;
+}
+
+export interface DeploymentInput {
+  readonly deploymentId: string;
+  readonly teamId: string;
+  readonly token: string;
+  readonly expectedCommit: string;
+  readonly productionAlias: string;
+  readonly appOrigin: string;
+  readonly expectedSchemaFingerprint: string;
+}
+
+export interface DeploymentReport {
+  readonly schemaVersion: 1;
+  readonly status: "passed";
+  readonly deploymentId: string;
+  readonly deploymentStatusCode: number;
+  readonly deploymentReadyState: "READY";
+  readonly deploymentTarget: "production";
+  readonly commit: string;
+  readonly commitRef: "main";
+  readonly productionAlias: string;
+  readonly healthStatusCode: number;
+  readonly homeStatusCode: number;
+  readonly schemaFingerprint: string;
+  readonly createdAt: string;
+  readonly verifiedAt: string;
+  readonly deploymentCreatedAt?: string;
+}
+
+/**
+ * The release pilot contracts intentionally use structural, database-facing
+ * names.  They are kept independent of Supabase's generated database types so
+ * the selector and observer can be tested with a tiny injected fake client.
+ */
+export interface PilotJoinContract {
+  readonly points_amount: number;
+  readonly cash_amount: number;
+  readonly currency: "HKD";
+  readonly xp_amount: 0;
+}
+
+export interface PilotCapabilityEvidence {
+  readonly name: string;
+  readonly status: CapabilityStatus;
+}
+
+export interface PilotCandidateReport {
+  readonly eligible: boolean;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly reasons: readonly string[];
+  readonly joinContract: PilotJoinContract | null;
+  readonly capabilities: readonly PilotCapabilityEvidence[];
+  readonly deployment?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status">;
+  readonly inspectedAt: string;
+  /** Gate inputs are retained so enablement can re-inspect the same boundary. */
+  readonly gateInput?: PilotGateInput;
+}
+
+export interface PilotEnableReport {
+  readonly enabled: boolean;
+  readonly applied: boolean;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly affectedRows: number;
+  readonly inspectedAt: string;
+}
+
+export interface PilotAtomicEnableInput {
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly expectedWorkflowMode: "legacy";
+  readonly nextWorkflowMode: "active_workspace";
+  readonly expectedMissionStatus: "draft";
+  readonly rejectIfSubmissionExists: true;
+}
+
+export interface PilotAtomicEnableResult {
+  readonly data?: unknown;
+  readonly error?: unknown;
+  readonly count?: number | null;
+  readonly affectedRows?: number;
+}
+
+export interface PilotGateInput {
+  /** Test-only/read-only structural mode; production pilot inspection must carry all gates. */
+  readonly structuralOnly?: boolean;
+  readonly approvedEvidenceDigest?: string;
+  readonly evidenceDigest?: string;
+  readonly expectedCapabilities?: readonly string[];
+  readonly capabilities?: readonly PilotCapabilityEvidence[];
+  readonly postflight?: { readonly capabilities?: readonly PilotCapabilityEvidence[] };
+  readonly schemaPostflight?: { readonly capabilities?: readonly PilotCapabilityEvidence[] };
+  readonly deployment?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status"> & {
+    readonly expectedCommit?: string;
+  };
+  readonly deploymentReport?: Pick<DeploymentReport, "deploymentReadyState" | "commit" | "status"> & {
+    readonly expectedCommit?: string;
+  };
+  readonly approvedCommit?: string;
+  readonly compatibilityEvidence?: boolean | { readonly passed: boolean };
+  readonly legacyCompatibilityEvidence?: boolean | { readonly passed: boolean };
+  readonly evidenceCreatedAt?: string;
+  readonly evidenceExpiresAt?: string;
+  readonly now?: Date;
+}
+
+export interface PilotObservationFinancialMovement {
+  readonly points: number;
+  readonly cash: number;
+  readonly xp: number;
+  readonly ledgerRows: number;
+}
+
+export interface PilotObservationThresholds {
+  readonly maxQueueAgeSeconds?: number;
+  readonly maxReviewLatencySeconds?: number;
+  readonly maxOverdueItems?: number;
+  readonly maxUnexpected5xx?: number;
+  readonly maxDatabaseErrorClusters?: number;
+  readonly maxNotificationDeadLetters?: number;
+}
+
+export interface PilotObservation {
+  readonly observedAt: string;
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly workflowCount: number;
+  readonly submissionCount: number;
+  readonly proofAttemptCount: number;
+  readonly completionDecisionCount: number;
+  readonly pendingRewards: number;
+  readonly completedWorkflows: number;
+  readonly completedCreatorCount: number;
+  readonly creatorIdentityHash?: string;
+  readonly workflowIds: readonly string[];
+  readonly integrityIncidents: number;
+  readonly tenantIsolationIncidents: number;
+  readonly illegalTransitions: number;
+  readonly duplicateDecisions: number;
+  readonly missingRewardContracts: number;
+  readonly notificationRetries: number;
+  readonly notificationDeadLetters: number;
+  readonly maxQueueAgeSeconds: number;
+  readonly reviewLatencySeconds: number;
+  readonly overdueItems: number;
+  readonly unexpected5xx: number;
+  readonly requestErrorClusters: number;
+  readonly databaseErrorClusters: number;
+  readonly financialMovement: PilotObservationFinancialMovement;
+  readonly queueHealthy: boolean;
+  /** True only when all operational/error/queue counters came from an explicit snapshot. */
+  readonly telemetryAvailable?: boolean;
+  readonly notificationQueueHealthy?: boolean;
+  readonly retryQueueHealthy?: boolean;
+  readonly queueOverdue?: boolean;
+  readonly thresholds?: PilotObservationThresholds;
+  readonly rewardSnapshotBefore?: Record<string, number>;
+  readonly rewardSnapshotAfter?: Record<string, number>;
+}
+
+export interface PilotObserveInput {
+  readonly workspaceId: string;
+  readonly missionId: string;
+  readonly observedAt?: Date | string;
+  readonly creatorIdentitySalt?: string;
+  readonly thresholds?: PilotObservationThresholds;
+  readonly financialSnapshotBefore?: Record<string, number>;
+  readonly financialSnapshotAfter?: Record<string, number>;
+}
+
+export type PilotExitDecision =
+  | { readonly decision: "expand"; readonly reasons: readonly [] }
+  | { readonly decision: "hold" | "contain"; readonly reasons: readonly string[] };

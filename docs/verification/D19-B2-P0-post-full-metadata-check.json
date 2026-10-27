@@ -1,0 +1,10 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "runtimeManifestSha256": "71421cbe72f671a242a8bdc6031654c61b634d7d2aabf7ebd4b85325f95691f1",
+  "command": "node node_modules/vitest/vitest.mjs run --no-file-parallelism server/test/b2-runtime-manifest.test.ts --reporter=json --outputFile=.codex-tmp/B2-P0-final-metadata-contract.json",
+  "passed": 3,
+  "failed": 0,
+  "sourceChangedAfterFullSuite": false,
+  "metadataOnlyChangesAfterFull": "Spec id/preparedAt/top-level sourceRecords and digest template made current; executable source, resource/write scopes, commands and acceptance semantics unchanged.",
+  "privateRawSha256": "a0c8e06a00c63063bc0a3019580a0e76e51a61caf31b1a39c862b288fb390b88"
+}

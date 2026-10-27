@@ -1,0 +1,70 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/PassportTrustSummary.test.tsx (2 tests | 1 failed | 1 skipped) 50ms
+   × PassportTrustSummary > shows legacy-only and failed accounts using the supplied private projection 48ms
+     → Unable to find an element with the text: @legacy. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-2"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <p
+        class="text-sm text-[var(--color-soft-ink)]"
+      >
+        Connect Instagram or Threads to sync public creator metrics.
+      </p>
+    </section>
+  </div>
+</body>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/PassportTrustSummary.test.tsx > PassportTrustSummary > shows legacy-only and failed accounts using the supplied private projection
+TestingLibraryElementError: Unable to find an element with the text: @legacy. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-2"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <p
+        class="text-sm text-[var(--color-soft-ink)]"
+      >
+        Connect Instagram or Threads to sync public creator metrics.
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/PassportTrustSummary.test.tsx:44:19
+     42|       { accountId: "failed", platform: "instagram", handle: "current",…
+     43|     ] }} />);
+     44|     expect(screen.getByText("@legacy")).toBeInTheDocument();
+       |                   ^
+     45|     expect(screen.getByText("@current")).toBeInTheDocument();
+     46|     expect(screen.getByText("Self-reported")).toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+   Start at  12:51:01
+   Duration  2.51s (transform 207ms, setup 314ms, collect 267ms, tests 50ms, environment 1.31s, prepare 193ms)
+

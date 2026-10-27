@@ -1,0 +1,44 @@
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {createHash} from 'node:crypto';
+import {isDeepStrictEqual as equal} from 'node:util';
+import assert from 'node:assert/strict';
+import process from 'node:process';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+import {FixtureJournal,journalOwnerSql} from '../scripts/audit/fixture-journal.mjs';
+import {fixtureInventorySql,assertInventoryCaps} from '../scripts/audit/b2-fixture-inventory.mjs';
+const root=process.cwd(),path='docs/verification/D19-C1-browser-continuation-runtime-manifest.json';
+const read=p=>JSON.parse(readFileSync(p,'utf8')),hash=b=>createHash('sha256').update(b).digest('hex');
+const m=read(path),r=m.execution.recovery;
+function bound(ref){const bytes=readFileSync(ref.path);assert.equal(hash(bytes),ref.sha256,ref.path);return JSON.parse(bytes);}
+for(const key of Object.keys(process.env))if(key.startsWith('DOCKER_')||/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
+Object.assign(process.env,m.execution.environment,{DOCKER_CONTEXT:'desktop-linux',ADFOCATE_B2_PHASE:'role',NODE_OPTIONS:''});
+const target=verifiedTarget(),context=target.context,base=resolve(root,'.codex-tmp',m.target.projectId),namespace=resolve(base,m.execution.artifactNamespace);
+assert(!existsSync(namespace),'No pre-adoption observer may create the adoption namespace');
+const transport=new FixtureJournal(resolve(base,`pre-adoption-readonly-owner-${process.pid}.jsonl`),context.lineage,{requests:m.fixture.transportWriteCapPerProcess});
+const privatePath=name=>{assert(/^[a-zA-Z0-9_.-]+$/.test(name));return resolve(base,'pre-adoption-'+name);};
+// Deliberately use a separate observation journal outside the unstarted adoption namespace.
+const owner=journalOwnerSql(query=>execFileSync('docker',['exec','-i',target.identity.databaseContainerId,'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U','post'+'gres','-d','post'+'gres'],{input:query,encoding:'utf8',timeout:30000}).trim(),transport,privatePath);
+const sql=query=>{assert(/^begin read only;/i.test(query.trim()));assert(/commit;\s*$/i.test(query));return JSON.parse(owner(query));};
+const observations=[];
+for(const phase of m.fixture.phases){
+ const ref=r.references.phases[phase.phase],lineage={...r.origin,phase:phase.phase,namespace:phase.plannedNamespace};
+ for(const j of ref.journals)assert.equal(hash(readFileSync(j.path)),j.sha256);
+ const original=new FixtureJournal(resolve(ref.privateDirectory,'owned-journal.jsonl'),lineage,m.fixture.rowCaps[phase.phase]);original.assertReady();
+ const old=bound(ref.inventory),inventory=sql(fixtureInventorySql(m.fixture.rowScopes,original.owned()));assert.deepEqual(inventory,old.inventory);assertInventoryCaps(inventory,m.fixture.rowCaps[phase.phase]);
+ observations.push({phase:phase.phase,families:Object.keys(inventory).length,allIdsHashesEqual:true,allCapsPass:true,authSubjects:inventory.auth_users.count,inventory});
+}
+const schema=bound(r.references.schema),norm=v=>Array.isArray(v)?v.map(norm).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,norm(v[k])])):v;
+const catalog=sql('begin read only;'+schema.query+'commit;');assert(equal(norm(catalog),norm(schema.observed)));
+const baseline=bound(r.references.baseline);
+for(const seed of baseline.seeds){const live=sql(seed.query);for(const id of seed.ids)assert.equal(live.rowHashes[id],seed.rowHashes[id]);}
+const history=sql(baseline.serviceMigrationHistory.query);assert.deepEqual(history.authHistory,baseline.serviceMigrationHistory.authHistory);assert.deepEqual(history.storageHistory,baseline.serviceMigrationHistory.storageHistory);
+const before=bound(r.references.state),financial=sql(before.query);assert.deepEqual(financial,before.financialTotals);
+const cp=r.checkpoint;
+const checkpoint=sql(`begin read only;select jsonb_agg(jsonb_build_object('workspaceId',w.workspace_id,'workflowId',w.id,'submissionId',w.mission_submission_id,'itemId',i.id,'revision',d.revision,'captionSha256',encode(extensions.digest(coalesce(d.caption_text,''),'sha256'),'hex'),'state',w.state,'itemState',i.state))from public.mission_workflows w join public.mission_work_items i on i.mission_workflow_id=w.id join public.mission_working_drafts d on d.mission_work_item_id=i.id where w.id='${cp.workflowId}'and i.id='${cp.itemId}';commit;`);assert.deepEqual(checkpoint,[cp]);
+const globalSubjects=sql('begin read only;select count(*)from auth.users;commit;');assert.equal(globalSubjects,84);
+transport.assertReady();assert(!existsSync(namespace));
+const record={at:new Date().toISOString(),identity:target.identity,lineage:context.lineage,manifestSha256:context.manifestSha256,allFiveServiceIdentityGuardsPassed:true,phaseInventories:observations,catalogSections:Object.keys(catalog).length,catalogUnchanged:true,seedRowHashesUnchanged:true,serviceHistoryUnchanged:true,financialTotals:financial,financialTotalsUnchanged:true,checkpointUnchanged:true,authSubjects:globalSubjects,sqlLayer:'Owner READ ONLY transactions; separate observation journal outside adoption namespace',authCalls:0,sdkClientCreated:false,newResources:0,namespaceCreated:false,roleCoreTestsRerun:0,browserCasesRun:0,providerEnabled:false};
+writeFileSync('docs/verification/'+m.target.projectId+'/browser-continuation-readonly-provenance.json',JSON.stringify(record,null,2)+'\n');
+process.stdout.write(JSON.stringify({status:'PASS_LIVE_READONLY_EXISTING_C1_PROVENANCE',familiesPerPhase:observations.map(p=>p.families),catalogSections:Object.keys(catalog).length,authSubjects:globalSubjects,allOldIdsHashesCapsSeedsHistoryFinancialCheckpointUnchanged:true,authSdkCalls:0,adoptionNamespaceCreated:false})+'\n');

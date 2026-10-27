@@ -1,0 +1,10 @@
+{
+  "file": "server/test/fixture-ownership.test.ts",
+  "originalSha256": "4e9b4d33b1aadb1434f1caf25ca04969d012038f0e02f74a7555a809cd611d04",
+  "restoredSha256": "4e9b4d33b1aadb1434f1caf25ca04969d012038f0e02f74a7555a809cd611d04",
+  "newTestPath": "server/test/pilot-fixture-ownership.test.ts",
+  "originalAssertionsPreserved": true,
+  "recoverySource": "Exact original creation and subsequent correction from this session execution transcript; recovered bytes match D19 pre-task fingerprint.",
+  "cause": "D19 test file name collided with an existing untracked D02 contract; final before-image guard caught it.",
+  "impact": "Earlier 1866-pass offline result omitted one prior fixture cleanup contract and is historical. Fresh full suite/type/lint/build required; real API/browser app/SQL/runner dependencies unchanged."
+}

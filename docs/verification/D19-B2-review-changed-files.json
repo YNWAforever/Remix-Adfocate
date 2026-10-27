@@ -1,0 +1,26 @@
+{
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "applicationTestConfigMigrationChanges": 0,
+  "modifiedExisting": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json"
+  ],
+  "newFiles": [
+    "docs/verification/D19-B2-acceptance-matrix.json",
+    "docs/verification/D19-B2-manifest-review.md",
+    "docs/verification/D19-B2-manifest.json",
+    "docs/verification/D19-B2-review-changed-files.json",
+    "docs/verification/D19-B2-review-check-records.py",
+    "docs/verification/D19-B2-review-delivery.json",
+    "docs/verification/D19-B2-review-findings.json",
+    "docs/verification/D19-B2-review-integrity.json",
+    "docs/verification/D19-B2-review-prior-adfocate-delivery.json",
+    "docs/verification/D19-B2-review-prior-adfocate-task-ledger.md",
+    "docs/verification/D19-B2-review-prior-evidence-integrity.json",
+    "docs/verification/logs/D19-B2-review-diff-check.log"
+  ],
+  "previousDirtyWorkPreserved": true,
+  "commit": null,
+  "deploy": false
+}

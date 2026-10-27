@@ -1,0 +1,87 @@
+{
+  "phase": "role",
+  "startedAt": "2026-10-24T05:11:21.596488+00:00",
+  "finishedAt": "2026-10-24T05:11:46.872457+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "command": "npm.cmd exec --offline --yes --package=node@22 -- node .codex-tmp/D19-current-api.mjs role",
+  "exit": 0,
+  "log": "logs/D19-current-role.log",
+  "priorEvidenceRestored": 956,
+  "captured": [
+    {
+      "historicalPath": "docs/verification/D19-api-contract.json",
+      "captured": "docs/verification/D19-current-runtime/role/D19-api-contract.json",
+      "bytes": 14218,
+      "sha256": "6e722c8f38276b931be5b9a5e15d27a52985db85dcfd8ad690c0295c3fc67e5d",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-fixtures.jsonl",
+      "captured": "docs/verification/D19-current-runtime/role/D19-fixtures.jsonl",
+      "bytes": 47987,
+      "sha256": "c582bffe594e9fffdcfbaae813525a7c7bc6a415b807fca7f569553d28e60010",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    },
+    {
+      "historicalPath": "docs/verification/workflow-runtime.jsonl",
+      "captured": "docs/verification/D19-current-runtime/role/workflow-runtime.jsonl",
+      "bytes": 2354,
+      "sha256": "f5a73d589219d338260e3d13192e8d40509b9b4472c951455fbd06849faa62f1",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    }
+  ],
+  "scope": "Existing tests/runner, fresh exact-owned fixtures; no production target, external providers or cleanup; original evidence bytes restored after phase",
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "file": "server/test/audit-staff-capabilities.test.ts",
+      "assertions": [
+        {
+          "title": "D19 exact-owned staff roles/API/RLS requires a separate staff grant despite brand owner membership and preserves no-membership scope errors",
+          "status": "passed",
+          "duration": 244.07489999999962
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings",
+          "status": "passed",
+          "duration": 653.0072
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS denies direct browser role writes/RPC/self-elevation even with forged user metadata",
+          "status": "passed",
+          "duration": 124.41580000000067
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant",
+          "status": "passed",
+          "duration": 480.35709999999926
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS revokes active staff, membership or role immediately using the same signed-in session",
+          "status": "passed",
+          "duration": 341.3778999999995
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS requires platform content editor for global drafts without inventing course content",
+          "status": "passed",
+          "duration": 239.30349999999999
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS preserves brand_users user_id primary key and owner-only bootstrap ACL",
+          "status": "passed",
+          "duration": 194.9499999999989
+        },
+        {
+          "title": "D19 exact-owned staff roles/API/RLS hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances",
+          "status": "passed",
+          "duration": 2717.9135000000006
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-25T18:41:00.107048+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/devApi.test.ts",
+    "server/devApi.transport.test.ts",
+    "scripts/release/cli.test.ts",
+    "scripts/release/manifest.test.ts",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-host-boundaries-results.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:41:00.022408+00:00",
+    "freePhysicalGiB": 6.063438415527344,
+    "freeCommitGiB": 6.317840576171875,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.02075958251953
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-host-boundaries",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-host-boundaries.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 43880
+}

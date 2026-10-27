@@ -1,0 +1,28 @@
+{
+  "files": [
+    "D19-pristine-rpc-executed-provision_d19_pristine.py",
+    "D19-pristine-rpc-executed-start_d19_pristine.py",
+    "D19-pristine-rpc-executed-recover_d19_auth.py",
+    "D19-pristine-rpc-executed-rebind_d19_pristine.py",
+    "D19-pristine-rpc-executed-setup_d19_pristine.py",
+    "D19-pristine-rpc-executed-resume_d19_pristine_schema.py",
+    "D19-pristine-rpc-executed-rearm_d19_pristine.py",
+    "D19-pristine-rpc-executed-repair_d19_rest.py",
+    "D19-pristine-rpc-executed-postflight_d19_pristine.py",
+    "D19-pristine-rpc-executed-resolve_d19_catalog_diff.py"
+  ],
+  "status": "Historical executed provisioning/repair/observation scripts; not a blind-run/reset recipe",
+  "credentials": "No env files, tokens or passwords copied; source references private current-run paths only",
+  "preflightAndRecoveryEvidence": [
+    "D19-pristine-rpc-creation-preflight-refusal.json",
+    "D19-pristine-rpc-network-pool-preflight.json",
+    "D19-pristine-rpc-prestart-identity.json",
+    "D19-pristine-rpc-auth-recovery.json",
+    "D19-pristine-rpc-network-rebind.json",
+    "D19-pristine-rpc-provider-profile-alignment.json",
+    "D19-pristine-rpc-rest-recovery.json",
+    "D19-pristine-rpc-catalog-diff-resolution.json"
+  ],
+  "initialFailuresPreserved": true,
+  "oldIncident": "OPEN"
+}

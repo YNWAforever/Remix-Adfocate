@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-26T02:55:36.303658+00:00",
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "currentManifestSha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65",
+  "currentRuntimeApproved": false,
+  "oldE8ApprovalPreserved": true,
+  "resumedRun": true,
+  "consecutiveResumedBlockingTurns": 3,
+  "previousGoalTurnClassification": "NO_PROGRESS",
+  "conditionKey": "CURRENT_4F_CB_C2_RUNTIME_AUTHORIZATION_NOT_GRANTED",
+  "fullObjectiveAchieved": false,
+  "independentLocalWork": "Previously identified local repairs, native gates and offline supplements are complete. Current remaining core acceptance requires actual authorized target/Auth/RLS/concurrency/browser/financial evidence; no new independently actionable defect or required local gate identified.",
+  "witnesses": [
+    {
+      "turn": 1,
+      "evidence": "docs/verification/D19-resumed-audit-20261026/observation.json",
+      "state": "active; current C2 unapproved; source unchanged"
+    },
+    {
+      "turn": 2,
+      "evidenceSource": "Actual conversation exec_command output, chunk ae483e, 2026-10-26T02:52:49.343572+00:00",
+      "selectedFields": {
+        "goalStatus": "active",
+        "currentRuntimeApproved": false,
+        "ownerReference": null,
+        "source": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+        "manifestSha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65",
+        "auditArchiveExists": false
+      }
+    },
+    {
+      "turn": 3,
+      "evidence": {
+        "at": "2026-10-26T02:55:36.303658+00:00",
+        "source": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+        "sourceFilesMatch": 793,
+        "manifestSha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65",
+        "currentRuntimeApproved": false,
+        "ownerReference": null,
+        "oldE8Approved": true,
+        "auditArchiveExists": false,
+        "wholeR1Verified": false
+      }
+    }
+  ],
+  "requestedGoalStatus": "blocked",
+  "actualGoalReceipt": "goal-transition-after-resume.json",
+  "newApprovalQuestion": false,
+  "newTests": 0,
+  "actualTargetCalls": 0,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "incidentOpen": true,
+  "nextAction": "Reply to the existing unchanged cb933614 C2 applications-only approval item; identity/provenance before any authorized client/setup. No new scope,74/redemption/old acceptance replay or publication."
+}

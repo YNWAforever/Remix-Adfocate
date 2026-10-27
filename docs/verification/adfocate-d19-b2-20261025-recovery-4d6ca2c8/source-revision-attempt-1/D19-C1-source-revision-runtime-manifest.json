@@ -1,0 +1,1599 @@
+{
+  "schemaVersion": 2,
+  "id": "D19-C1-SOURCE-REVISION-CONTINUATION-4d6ca2c8",
+  "preparedAtHongKong": "2026-10-25T14:38:32.554687+08:00",
+  "clientDate": "2026-10-25",
+  "reviewOnly": true,
+  "ownerApproved": false,
+  "canExecute": false,
+  "runtimeManifestComplete": true,
+  "verdict": "REVIEW_ONLY_EXISTING_C1_SOURCE_REVISION_NO_ADDITIONAL_RESOURCES",
+  "sourceRecords": 779,
+  "baselineHead": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "runtimeCommand": "execution.commands contains the three implemented phase commands; no command is approved by P0",
+  "target": {
+    "status": "ALREADY_CREATED_UNDER_C1_NEW_SOURCE_CONTINUATION_NOT_APPROVED",
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "plannedOwnerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "networkName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net",
+    "databaseVolumeName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+    "resourceCaps": {
+      "projects": 1,
+      "persistentDataVolumes": 1,
+      "networks": 1,
+      "containers": 5
+    },
+    "serviceImageIds": {
+      "db": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "auth": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "rest": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "kong": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "storage": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95"
+    },
+    "imageCacheAvailability": "All exact pinned images verified cached during approved C1; no pull performed.",
+    "ports": {
+      "host": "127.0.0.1",
+      "api": 56921,
+      "database": 56922,
+      "web": 56900,
+      "availability": "C1 ports verified before creation; exact DB/API bindings observed again in metadata-after-fix-readonly.json; web not started.",
+      "proxy": "none"
+    },
+    "networkProfile": {
+      "mode": "dedicated-bridge-no-masquerade",
+      "internal": false,
+      "enable_ip_masquerade": false,
+      "host_binding_ipv4": "127.0.0.1",
+      "exclusiveFiveMembers": true,
+      "notAPhysicalFirewallClaim": true,
+      "proposedIpam": {
+        "subnet": "10.251.220.0/28",
+        "gateway": "10.251.220.1",
+        "status": "Actual C1 subnet/gateway verified before creation; five captured members; no old network mutation."
+      }
+    },
+    "storage": "Actual HostConfig declares only /var/lib/storage rw,size=268435456; Docker omits tmpfs from Mounts. New source requires exactly one matching live kernel tmpfs mount with rw and exact capacity when omitted; unexpected mounts remain rejected.",
+    "databaseMount": "Only the new exact named volume at /var/lib/postgresql/data; no old volume/bind/volumes-from",
+    "actualContainerIds": {
+      "db": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+      "auth": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+      "rest": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+      "kong": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+      "storage": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+    },
+    "actualNetworkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c",
+    "actualVolumeCreatedAt": "2026-10-25T06:02:04Z",
+    "credentials": "Fresh local generated secrets; private only; no old env/JWT/key file copied",
+    "exclusions": [
+      "Retired shaped project/containers/network/volume",
+      "Existing empty target or old fixture data as fallback",
+      "Existing pristine project/volume/global acceptance rerun",
+      "Production/hosted/shared proxies",
+      "Arbitrary new resources beyond manifest",
+      "Retained failed B2 project adfocate-d19-b2-20261025-b0db3134, its five containers, network and volume; do not read its secrets or use it for acceptance"
+    ],
+    "storageTmpfs": {
+      "destination": "/var/lib/storage",
+      "sizeBytes": 268435456
+    },
+    "provisioning": "Already-created C1 exact IDs only. This continuation grants ZERO create/start/recreate/stop/remove/pull/network/volume operations. Reverify identity, then original sealed forward bootstrap and phase commands. Retained original B2 and incident targets remain excluded.",
+    "databaseInitialization": {
+      "initialDatabaseUser": "supabase_admin",
+      "databaseName": "postgres",
+      "pgdata": "/var/lib/postgresql/data",
+      "requiredBootstrapRole": {
+        "oid": 10,
+        "name": "supabase_admin",
+        "superuser": true
+      },
+      "requiredOrdinaryDatabaseRole": {
+        "name": "postgres",
+        "oidMustDifferFrom": 10,
+        "superuser": false
+      },
+      "prestartGuardPath": "D19-B2-recovery-db-bootstrap-guard.py",
+      "prestartGuardSha256": "b1a1e81f5cfbe585dd29beb10472b4e0e35d7ad2d3af8e986fa893e7b8bb5bdc",
+      "requiredStages": [
+        "actual new container environment before first start",
+        "actual new DB system catalog after immutable image initialization, before app migrations/clients"
+      ],
+      "freshSecretsOnly": true,
+      "neverAdoptFailedB2ClusterOrVolume": true,
+      "noResetOrBootstrapRoleRenameSurgery": true,
+      "systemServiceCredentialSetup": "Set new authenticator/Auth/Storage system credentials on only the new DB via captured owner infra SQL before those services start; no human/product role or membership mutation",
+      "applicationClientGate": "After all five live services are identity verified; 72 source migrations and conditional9 compatibility plus immutable seed/history checks before fixtures"
+    },
+    "additionalAllocationOnly": {
+      "newProjects": 0,
+      "newPersistentDataVolumes": 0,
+      "newNetworks": 0,
+      "newContainers": 0,
+      "existingC1ResourceCounts": {
+        "projects": 1,
+        "persistentDataVolumes": 1,
+        "networks": 1,
+        "containers": 5
+      },
+      "existingFailedB2ResourceCounts": {
+        "projects": 1,
+        "persistentDataVolumes": 1,
+        "networks": 1,
+        "containers": 5
+      },
+      "allResourcesRetained": true,
+      "noNewLifecycleAuthority": true
+    }
+  },
+  "identityAndBootstrapGates": [
+    "Direct approval of this source revision and final manifest digest before further application bootstrap/clients/fixtures. Prior C1 allocation approval remains valid and preserved; it is not silently reassigned to new source bytes.",
+    "Read-only reverify exact already-created C1 local Docker engine, captured five IDs/images/network/volume/ports; no resource creation or lifecycle action.",
+    "Read-only reverify exact configured tmpfs plus Docker descriptor or actual kernel mountinfo before application setup. Image initialization and system service credentials already completed under original C1, not rerun.",
+    "Reverify live host/proxy/container/project/network/volume before application SQL, key use, SDK import/client or fixture setup",
+    "Replay reviewed full72-source migration profile on the new empty volume only, compare42 protected manifest entries plus objects/RPC/columns/grants/RLS/history; do not db reset/db push/seed.sql or alter old checksums",
+    "Enumerate bootstrap-seed row/hash baseline separately from fixture-add caps; all baseline rows must remain unchanged by fixtures",
+    "Before every phase and after, check exact source/target/namespace/evidence lineage; drift stops dependent writes/cleanup"
+  ],
+  "schemaProfile": {
+    "protectedManifest": "../../supabase/release-manifest.json",
+    "protectedManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "protectedEntries": 42,
+    "fullMigrations": [
+      {
+        "path": "supabase/migrations/0001_init.sql",
+        "sha256": "32f4e8cc63137b4432d9fc4a8f4091f774301c9c510545be87e6212aab00d9ce"
+      },
+      {
+        "path": "supabase/migrations/0002_harden_rls.sql",
+        "sha256": "6799a0c01f33ce960575d79c53258ef67da900666f4da1969fa54ece53d30e29"
+      },
+      {
+        "path": "supabase/migrations/0003_onboarding.sql",
+        "sha256": "7a98a0d2482e08a476527f0785960ea3c341650b2a73757d537e3755f2c8a5e8"
+      },
+      {
+        "path": "supabase/migrations/0004_grants.sql",
+        "sha256": "d614f5acb85619185e1dbd3bcd9fcfc32e5ca426415d00d890fa7141551629e0"
+      },
+      {
+        "path": "supabase/migrations/0005_mission_submissions.sql",
+        "sha256": "56008d6eab5f21ae508eccd427be6482ee310630049ac1b4fc458e24da89426f"
+      },
+      {
+        "path": "supabase/migrations/0006_redemption.sql",
+        "sha256": "2c764a972fa795997ad8e2cb1b56093f79775971a9620bd842a28dedb9ae23b3"
+      },
+      {
+        "path": "supabase/migrations/0007_earnings.sql",
+        "sha256": "28bd8c4770a7a12ea9f4cdb189c6bd799ed69b21ca46d96e6414a1df1aafd2b2"
+      },
+      {
+        "path": "supabase/migrations/0008_leveling.sql",
+        "sha256": "de61d74dccb923477bf0b454086e02daa94ec8a7e9188e73b015acc624c2a011"
+      },
+      {
+        "path": "supabase/migrations/0009_passport_scores.sql",
+        "sha256": "d4a4515456c358bf481894b7b7bf33393e3e58d5a8fd7848a7ba68d8fb112dd2"
+      },
+      {
+        "path": "supabase/migrations/0010_applications.sql",
+        "sha256": "17f5d84d483158e52d3529dd3a7a65f70a9e3320b47c993ac0ffb817f52d88b9"
+      },
+      {
+        "path": "supabase/migrations/0011_mission_brief.sql",
+        "sha256": "92935c312efb2238f621279bd7d47c34f667bd3f843cb0ae55919ae89860bfcf"
+      },
+      {
+        "path": "supabase/migrations/0012_trust_profile_bundle.sql",
+        "sha256": "b067fc58ed8a1f79c61160e76dee32a7a5d73029e2a4211543be9c7dba815d4b"
+      },
+      {
+        "path": "supabase/migrations/0013_operator_creator_selection_crm.sql",
+        "sha256": "a58eff37a3fea25ace3ec04295c5c09315dd3e4ad11ba353e3b5b468f4f8f344"
+      },
+      {
+        "path": "supabase/migrations/0014_operator_crm_workspace_guard.sql",
+        "sha256": "7965275ed8a66074a64e5020b3a39dfefe0b92df7d72669e87bde3f22c6c40c1"
+      },
+      {
+        "path": "supabase/migrations/0015_creator_profile_media.sql",
+        "sha256": "893d9892b132e2065daa18520c69715e2577ab8820fab5421de8a1bd54bc5bf2"
+      },
+      {
+        "path": "supabase/migrations/0016_assistant.sql",
+        "sha256": "65e61b91b69dcedac4e5fda0d03f796d98facc9cbf2ecc9b3a9d48d7cfde820c"
+      },
+      {
+        "path": "supabase/migrations/0017_social_verification.sql",
+        "sha256": "766c0d3e3dddb28172b45b191d8c8b65d104e4ea986ef2ccf86747bd160b8b06"
+      },
+      {
+        "path": "supabase/migrations/0018_mission_authoring.sql",
+        "sha256": "c9eb5fc9681355152f0467e6b521318284a1ac1d677ccd03902ae647a70e577a"
+      },
+      {
+        "path": "supabase/migrations/0019_mission_brief_rich.sql",
+        "sha256": "bab216d21c2baa71ded7f6ea9458337670a33b76e16a09b31c647f8a61520886"
+      },
+      {
+        "path": "supabase/migrations/0020_staff_auth.sql",
+        "sha256": "5728a5b4a2c6dc5bba608085ebd9c8095cf5cf9d97f869f1599181710c5fbab7"
+      },
+      {
+        "path": "supabase/migrations/0021_content_hub.sql",
+        "sha256": "87ab9581264135997d6021731dbc2baeb494db8e80672aa744edf3e31d9cb874"
+      },
+      {
+        "path": "supabase/migrations/0022_notifications.sql",
+        "sha256": "b9c8d8195f9491805af9a520b1833711c05823d80b7decea5ea2da1a22a3139f"
+      },
+      {
+        "path": "supabase/migrations/0023_brand_access.sql",
+        "sha256": "6b74cbea6b3ef0d06661820ee80a8f45edefeeca5865d955e6bb397e64e24a87"
+      },
+      {
+        "path": "supabase/migrations/0024_brand_budget.sql",
+        "sha256": "e34f15e38c593c3102b199ab07cf104372020273d89fbfa9e471ebeda780683f"
+      },
+      {
+        "path": "supabase/migrations/0025_campaigns.sql",
+        "sha256": "fb7505cbe0ef8111fbf987e92438db84936b450bac8b535e522e70a66ecd92fc"
+      },
+      {
+        "path": "supabase/migrations/0026_campaigns_s2.sql",
+        "sha256": "ac2ed234d9f483a3fc49956cfa04664b7ee0b3cb53a361b4f1bdafb5a2dcc19d"
+      },
+      {
+        "path": "supabase/migrations/0027_brand_resources.sql",
+        "sha256": "b864aa1a742bc0d0ca60516a50e2121d3b5afb078ac50ef6ffd1921255836251"
+      },
+      {
+        "path": "supabase/migrations/0028_academy_content.sql",
+        "sha256": "a4f1e133be118bc3498f1c39cf0cc1977376f917e42b57b262bdb5be8d400497"
+      },
+      {
+        "path": "supabase/migrations/20260618135028_profile_media_private_grants.sql",
+        "sha256": "e48e24f578646d0ad43338193cd1673083e1fd8ed86efbfd75b0c3a331ed56fd"
+      },
+      {
+        "path": "supabase/migrations/20260619013000_profile_media_url_validation.sql",
+        "sha256": "5c5d3b223968c245e4cac5ddc92ecfb8428a8d3b6b5976be292dc12fba99700a"
+      },
+      {
+        "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+        "sha256": "7e84755bcacf066809e3201ce51eada0b51673e27841b9d44da70442730f560a"
+      },
+      {
+        "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+        "sha256": "b32f533964cda379d60a5d01c6d39c2f348aa9927d063b5a39ad9305778cfc63"
+      },
+      {
+        "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+        "sha256": "df002f9bc6d350363678950a1f51c14a18deae45f583e742a9eb2cda609e7266"
+      },
+      {
+        "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+        "sha256": "c666fe36add211a6bc40419ea761dc857585a904ea61e4ef87e3be22b6022846"
+      },
+      {
+        "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+        "sha256": "d15b28e3cccab1d4885c3cb33f08177ef1dd8023a694497a1f31f8ec8fe9ae6c"
+      },
+      {
+        "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+        "sha256": "24a5d5afb2eb9f1b8a51814d789e9f68d9deeb4df09b94a35886f7d70935b4eb"
+      },
+      {
+        "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+        "sha256": "29f754b8f5e19da60e6ad215f3153d38cfc39253aa6b061f5739ac8abb0cccfb"
+      },
+      {
+        "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+        "sha256": "57f0c0dfd9f306f5e38140c3e064ae05815dbd30be47f9b488659491b0b29038"
+      },
+      {
+        "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+        "sha256": "1bc2c60e3e93a06fcbabbe4e43a4731c343b5263ad46156dce80d055393533f7"
+      },
+      {
+        "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+        "sha256": "e1c81a85674242e21db02621f2c3d9cc801b4c3a34822cc5d1b5842e5be23c42"
+      },
+      {
+        "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+        "sha256": "01a6378ca4ef51fc733fce49298b55c796572be8dd04376ebc1f39dad54dd60c"
+      },
+      {
+        "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+        "sha256": "99cf4181a4df5201870e04f00e653f774e71fb8a8af4f2ff690cf260cff7cbf9"
+      },
+      {
+        "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+        "sha256": "74d7ed7d55a338c714a3e94edb76456ee335df0b3ffb07c608ba5b372c70b8c9"
+      },
+      {
+        "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+        "sha256": "15a79586bd3421739defd2f3985ff62e353a78e9fda1e76e30c968269070c079"
+      },
+      {
+        "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+        "sha256": "fa1320bec87257fd34f4d87f251705f0da4c55cd026321260eac19578123bf2c"
+      },
+      {
+        "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+        "sha256": "566956e437be029039ac55f1e626d3e5ea2f5db6605ecffbb2dd8cab056ed465"
+      },
+      {
+        "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+        "sha256": "3b72db44c228bcbaf457e26654a5abdc753905ca875b7fba31a7b200e49ac214"
+      },
+      {
+        "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+        "sha256": "e4f25b7083f0f6d46c9c52c0494194513ac635004abf147026f70ca7313b2da1"
+      },
+      {
+        "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+        "sha256": "afbce1ee2d1d253600950abc18c17f4b68dd120629b93628dedc0ba85127f776"
+      },
+      {
+        "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+        "sha256": "4e7a09b45d9390acc2cb7550b227e764adcfc4c518ee9d02c20a9f70f7b85a02"
+      },
+      {
+        "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+        "sha256": "93f996508c82da6df1200347050cd9dbe8e7024d6aa5e33f0ed63aba800a3f5f"
+      },
+      {
+        "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+        "sha256": "f7bcd391f4f0f70150a6d7af76c91869a55166a3fa3f4a6f717ff62a0adeacdb"
+      },
+      {
+        "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+        "sha256": "7552f2d601067b5e6b3a304886255f99d35b8abe2c60af59fb28082f6ad6ec12"
+      },
+      {
+        "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+        "sha256": "e360155f9122012538f07c6bbf826588937447fa7cc6dac9d7529f29d7243936"
+      },
+      {
+        "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+        "sha256": "e01d47414ee887ea69cc3f96fb31810a84da822fd06b2deebcbbe7df66fa5314"
+      },
+      {
+        "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+        "sha256": "001d47a1aa076592ff90ecbd3cad4f18610cba93644addcbbaa86b5d9e72c30c"
+      },
+      {
+        "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+        "sha256": "f0c3f0d51a5c71258b8cd2ac870f5a1fc8ded72b05b489ecbeb6615c192de260"
+      },
+      {
+        "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+        "sha256": "b543fa6c5b8ccc2db167544abd0f36489e824f752e16d0efb7ac58242e61d7ef"
+      },
+      {
+        "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+        "sha256": "4dd020d97905e398947fe4d535d56004283b02425d41787c265794e385912cf5"
+      },
+      {
+        "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+        "sha256": "f7a8409e7497ae250e1bd795d6985eff814f3f2e4fdbfca196072e4c630fe896"
+      },
+      {
+        "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+        "sha256": "2d2e0c3d0781c2c3ff21194321bfbef10b01d11c5534c448ed9b0939a082a61c"
+      },
+      {
+        "path": "supabase/migrations/20260805120000_review_hardening.sql",
+        "sha256": "0528a032ba8988e3e966ce19dc3e76975569a78576a336b31e715caa6e3e4592"
+      },
+      {
+        "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+        "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec"
+      },
+      {
+        "path": "supabase/migrations/20261022170751_audit_crm_commands.sql",
+        "sha256": "ac13fbd583edf7cedc26defb23fa6a864f9ac986e0b0e631335ef6640149bd71"
+      },
+      {
+        "path": "supabase/migrations/20261022171111_audit_creator_queue.sql",
+        "sha256": "aad787138b073d53638a24e82d14f21abf6f257c2141028577ce3c80ff79de20"
+      },
+      {
+        "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql",
+        "sha256": "c86547d7929441ec3dd3c138d8c148cf2c923f35c7234d6e6148668faa25d9c7"
+      },
+      {
+        "path": "supabase/migrations/20261022182544_audit_legacy_review_notes.sql",
+        "sha256": "64080d48945ee4079b2b0d6448f849b9f568a3bfda89f4dd840e11a06fc9b27f"
+      },
+      {
+        "path": "supabase/migrations/20261023091050_academy_learning.sql",
+        "sha256": "b11ea20f0e6e483bb59f582a66f3086aa71c03990c2ceafdc9466c65917602af"
+      },
+      {
+        "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
+        "sha256": "e95fcaa93204e33223a6324f4af2475f548db6491ac1d1ea489573339a04984b"
+      },
+      {
+        "path": "supabase/migrations/20261023095521_academy_approval_index.sql",
+        "sha256": "771fc8faab73eabc7677a07f9881690ba115bbb1e5618045d90c89199d025e34"
+      },
+      {
+        "path": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
+        "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a"
+      },
+      {
+        "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
+        "sha256": "4669bd408714f65c152320a1ffdd0a932dc0fbf391a5c2281a642a00d1223cd2"
+      }
+    ],
+    "historicalCompatibilityReference": "D19-pristine-rpc-catalog-diff-resolution.json",
+    "candidateCompatibilityStatementsNewTargetOnly": [
+      "grant update(\"avatar_url\")on public.\"creators\"to authenticated;",
+      "grant update(\"categories\")on public.\"creators\"to authenticated;",
+      "grant update(\"display_name\")on public.\"creators\"to authenticated;",
+      "grant update(\"level_seen\")on public.\"creators\"to authenticated;",
+      "grant update(\"onboarding_step\")on public.\"creators\"to authenticated;",
+      "grant update(\"phone\")on public.\"creators\"to authenticated;",
+      "grant update(\"social_handles\")on public.\"creators\"to authenticated;",
+      "grant update(\"read_at\")on public.\"notifications\"to authenticated;",
+      "revoke execute on function public.get_assistant_request(uuid,uuid)from service_role;"
+    ],
+    "compatibilityApplication": "Not blind approval: verify effective diff and exact profile in P0/new target; never use on production/old targets",
+    "bootstrapSeedRowInventory": "D19-B2-bootstrap-profile.json seedInventory; static top-level migration INSERT inventory with literal row ceilings and INSERT-SELECT classification. Actual final row IDs/hashes and Auth/storage service initialization metadata are NOT_RUN runtime receipts, required before fixture clients."
+  },
+  "fixture": {
+    "phaseOrder": [
+      "role",
+      "core",
+      "browser"
+    ],
+    "phases": [
+      {
+        "phase": "role",
+        "plannedNamespace": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6",
+        "intentOnlyNotCreated": true,
+        "plannedPrimaryWorkspaceId": "2177f882-9f30-4ad6-b5e2-c546b6709d61",
+        "plannedDenialWorkspaceId": "18a5ddd0-2064-496c-a269-74f67f728267",
+        "plannedMissions": [
+          {
+            "kind": "active",
+            "id": "1493fb84-50be-4b41-ad2c-d5452b7a2883"
+          }
+        ],
+        "plannedBudgetId": "f358485a-5966-45cd-888b-4523b2b068bc",
+        "plannedGiftId": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+        "authSubjectsCap": 11,
+        "workspaceCap": 2,
+        "missionCap": 1,
+        "workflowCap": 1,
+        "platformRoleRowCap": 1,
+        "workspaceRoleRowCap": 7,
+        "actualCreatedIds": null,
+        "historicalCountBasisOnly": {
+          "evidence": "D19-current-fixture-retention.json",
+          "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996"
+        }
+      },
+      {
+        "phase": "core",
+        "plannedNamespace": "bc1ba016-c483-4484-bb5b-706f9c74f2e6",
+        "intentOnlyNotCreated": true,
+        "plannedPrimaryWorkspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+        "plannedDenialWorkspaceId": "4675efe9-71e9-47a7-afc7-aacf6e63910f",
+        "plannedMissions": [
+          {
+            "kind": "active",
+            "id": "ef41ebf6-533d-425e-a61c-30f6b96f4d2f"
+          },
+          {
+            "kind": "unknown-contract",
+            "id": "d5d6b042-2e78-4860-8874-e4f8e1f81db3"
+          },
+          {
+            "kind": "legacy",
+            "id": "f40f4b8d-4cba-4fb9-b7f9-833218395753"
+          }
+        ],
+        "plannedBudgetId": "66b83f57-1350-4c3a-b15c-8f767f9098c9",
+        "plannedGiftId": "e690bc97-4fab-4f36-ab6d-afa4199c02c9",
+        "authSubjectsCap": 62,
+        "workspaceCap": 2,
+        "missionCap": 3,
+        "workflowCap": 2,
+        "platformRoleRowCap": 1,
+        "workspaceRoleRowCap": 6,
+        "actualCreatedIds": null,
+        "historicalCountBasisOnly": {
+          "evidence": "D19-current-fixture-retention.json",
+          "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996"
+        },
+        "plannedQueueCreatorIds": [
+          "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+          "e8d8e64f-9d63-430b-ae44-ecd96067a2c0",
+          "ca9a11df-d50f-4230-9524-4b13c5c11f85",
+          "ea6d95c3-2430-4016-a636-acf64503b7fe",
+          "0d83f11f-2be1-47e8-b31a-5c1d11db99b2",
+          "72aed531-b30f-454e-b419-ed963b2ff91d",
+          "1228052d-4974-4f47-85e0-f43a7045e81b",
+          "1bf8d6e3-71f6-4243-b596-ac692cdb063d",
+          "c43e7653-b035-4dc7-9142-f98f33668aa3",
+          "414c12e2-32bd-4625-807d-2785a041fa1b",
+          "065d6b5a-74cf-4353-a962-0561574d680b",
+          "9b509fed-989e-4fd6-b881-03bc21f6d157",
+          "036da1ad-2acc-4ce3-90f0-9cd97cc1a700",
+          "cf28f570-d68c-464d-8945-e87323f3be21",
+          "a57db74a-3649-4065-8a10-f075f9a73685",
+          "832326e0-8120-4a43-b80b-1828cc367af3",
+          "699c86dd-5921-4e48-b4f7-9ad89d4cb5b8",
+          "a72d5f50-c2ec-453f-89d7-cba75a0c8295",
+          "d0098a8a-b844-4c33-8407-e8d7140c2830",
+          "18ef4cd2-4090-455f-8ce9-b305e99ce7de",
+          "0442cff2-9cfb-40ea-b836-a65db4f88b20",
+          "3fab2ef7-d9ee-4d54-a483-5e26d712b0de",
+          "34916457-25c1-4918-bf05-3156fbaccbdd",
+          "55103922-e187-4fe9-a05b-970029818093",
+          "92e5bc03-e77c-4797-ab96-52af17120530",
+          "a9cfbae8-58c9-42b2-ad10-02ed83885cce",
+          "2d752204-65fd-41c1-9a12-e21280d66dbd",
+          "aaceb17f-90f8-42c1-9d44-cc6b9868cfd7",
+          "39c10b39-7c0d-4441-a0c1-3f5295552bf1",
+          "19bb38c2-c85e-432a-b997-65c0e3205ad5",
+          "8ca6bf74-7d61-4010-8cdb-f355310d211c",
+          "a1f3b9eb-5c34-4ac1-94d9-09cf6b9544de",
+          "5d85ab89-b834-4bae-892a-a7f13df7631b",
+          "9af7ee64-5c90-4620-8cc8-981c5dc9ded9",
+          "aea9c8aa-501f-4273-a3b4-aa8849f301d8",
+          "09b5fd3d-7b28-49d8-8220-5f9c66af9b96",
+          "7074b339-1b44-4907-837d-1dcd94490aec",
+          "128eb91b-f38c-4754-9681-6e1d579cecc5",
+          "f1dbbd09-9f35-4c1f-80e8-263981b2ae77",
+          "ab0be367-5bfe-475f-9159-37c47f11deff",
+          "598604d6-bce2-4b9e-b742-4809218b9ab4",
+          "b3894076-1095-48d7-bfee-88451faa9227",
+          "a3485ea2-65dd-470a-a5c3-1f82cfbc3ab8",
+          "af936d39-40fd-487a-a403-6e7120d80f2a",
+          "def63b40-c038-40e2-bed9-466d483701be",
+          "42546559-fb8c-4e6f-8aa6-78b637d1a3d7",
+          "3b1e58bc-f739-4fef-b64b-719dc9c1f8af",
+          "f100f3e2-3433-43bf-9a99-985faba61023",
+          "60de545e-3d6a-45e2-85bc-b2f0c196275d",
+          "d5cb1155-1f66-46e4-b3bf-58625c1531c5",
+          "29451578-c870-4e9c-a26e-f8206ae9e6ec"
+        ]
+      },
+      {
+        "phase": "browser",
+        "plannedNamespace": "ebf1f615-be72-4072-ad97-ee98b150a796",
+        "intentOnlyNotCreated": true,
+        "plannedPrimaryWorkspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+        "plannedDenialWorkspaceId": "0f8fa85a-df73-435c-8143-c7cba4489eb3",
+        "plannedMissions": [
+          {
+            "kind": "legacy",
+            "id": "615d857a-78fc-4e32-8468-0288201e2ead"
+          },
+          {
+            "kind": "active",
+            "id": "59a54451-7a75-45cc-9439-dc12b67e2cfa"
+          }
+        ],
+        "plannedBudgetId": "81f29f21-eb9b-4eda-a81c-0237b712bc64",
+        "plannedGiftId": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+        "authSubjectsCap": 11,
+        "workspaceCap": 2,
+        "missionCap": 2,
+        "workflowCap": 1,
+        "platformRoleRowCap": 1,
+        "workspaceRoleRowCap": 6,
+        "actualCreatedIds": null,
+        "historicalCountBasisOnly": {
+          "evidence": "D19-current-fixture-retention.json",
+          "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996"
+        }
+      }
+    ],
+    "aggregateAddCaps": {
+      "authSubjects": 84,
+      "workspaces": 6,
+      "missions": 6,
+      "workflows": 4,
+      "platformRoleRows": 3,
+      "workspaceRoleRows": 19,
+      "creators": 57,
+      "staffUsers": 27,
+      "brandUserRows": 21,
+      "fundedBudgetRows": 3,
+      "giftRows": 3,
+      "initialPointBalanceRows": 6,
+      "initialEarningsBalanceRows": 6,
+      "platformDraftResources": 1,
+      "pendingRowsAtEnd": 3,
+      "cancelledRowsAtEnd": 1,
+      "handoffRowsLifetime": 4,
+      "newNegativeLegacySubmission": 1,
+      "submissionRowsMaximumIncludingNegative": 7
+    },
+    "cardinalityBasis": {
+      "historicalAuth": [
+        11,
+        62,
+        11
+      ],
+      "historicalMainFamilies": {
+        "missions": 6,
+        "workflows": 4,
+        "platformRoles": 3,
+        "workspaceRoles": 19,
+        "pending": 3,
+        "cancelled": 1
+      },
+      "derivedActorRows": "Per phase:2 creators,9 staff,7 brand users; core adds51 queue-only Auth/Creator rows. Brand user_id PK remains one workspace per actor.",
+      "newNegativeCaseIsProposedNotCreated": true
+    },
+    "financialSeed": {
+      "budgetBalanceEach": 9000,
+      "budgetEnforced": true,
+      "giftStockEach": 3,
+      "pointBalanceEach": 50,
+      "earningsAvailableEach": 0,
+      "phaseBudgetAndGiftIds": "planned intent IDs above; success receipts mandatory"
+    },
+    "legacyExistingIssuanceRequiresExplicitRuntimeApproval": {
+      "maxValidApprovals": 2,
+      "phases": [
+        "core",
+        "browser"
+      ],
+      "cashEach": 125,
+      "pointsEach": 500,
+      "budgetDebitEach": 125,
+      "pointTotalCap": 1000,
+      "historicalCumulativeSubmissionXpAwarded": 135,
+      "approvalXpDelta": 100,
+      "paymentGatewayOrCashTransfer": false,
+      "cashCreditTotalCap": 250,
+      "budgetDebitTotalCap": 250,
+      "legacyJoinXpEach": 10,
+      "legacySubmitXpEach": 25,
+      "fiveStarBonusAllowed": false,
+      "testQualityRating": null,
+      "legacyXpTotalCap": 270,
+      "activeJoinXpTotalCap": 30
+    },
+    "pendingRewardFinancialWritesAllowed": false,
+    "allowedPendingBehavior": "Review/proof/completion/cancel/reapproval create only existing workflow/handoff/history effects; no ledger credit, withdrawable increase or budget debit in the measured windows. One current pending row per completed workflow; cancelled history retained.",
+    "roleMutations": "Newly created 合成 staff/membership/platform/workspace role rows only; planned revocation/restoration and idempotent audit/receipts. No real staff, PK change or self-elevation.",
+    "globalDraft": "One new unpublished resource in role phase only. Browser uses the role editor/session/resource through same project/global-run/source/manifest lineage; no new lesson/content approval.",
+    "assistant": "One core 合成 persisted request/turn via existing RPCs; provider not called; no new AI engine",
+    "transientDdlRequiresExplicitRuntimeApproval": {
+      "functionMax": 1,
+      "triggerMax": 1,
+      "nameTemplate": "audit_fault_<captured-core-phase-uuid-without-hyphens>",
+      "scope": "operator_audit_events; condition only captured core creator ID",
+      "createDrop": "Owner-only on new target; exact definition journalled and finally removed with catalog readback; failure stops run. Never disable safety triggers/RLS.",
+      "businessDataDeletion": false
+    },
+    "childRowCaps": "Explicit rowCaps/rowScopes below. Ceilings are proposed approval limits, not achieved counts. Missing relation/column fails the read-only zero-ID preflight before clients/setup. Count/hash every declared owned family after each phase; final readback repeats all three phases, including borrowed editor Auth side effects. No automatic cleanup.",
+    "identityJournal": "fsync append intent/reservation before writes, capture success IDs immediately; Auth private correlation saved before create; per-process outgoing HTTP/owner-SQL/browser journals with response digests/UUID references. Unanswered intent or UNKNOWN blocks automatic create/reseed. References are not table ownership or cleanup grants. Phase claim prevents whole-phase rerun.",
+    "browserRecoveryFixtureRule": "Add required stale409/network/empty obligations inside same owned journey BEFORE completion; no extra Auth/workspace/mission/workflow. Negative historical legacy fixture adds at most1 submission and must preserve quota/constraints.",
+    "dataCleanupApproved": false,
+    "retention": "Retain all exact created IDs and append-only evidence. No broad delete/reset or parent cascade cleanup. Stop/remove containers, volume/network deletion or export require later exact-ID approval.",
+    "rowScopes": {
+      "workspaces": {
+        "relation": "public.workspaces",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace-self"
+      },
+      "creators": {
+        "relation": "public.creators",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "missions": {
+        "relation": "public.missions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_submissions": {
+        "relation": "public.mission_submissions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_deliverable_templates": {
+        "relation": "public.mission_deliverable_templates",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_deliverable_requirements": {
+        "relation": "public.mission_deliverable_requirements",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_workflows": {
+        "relation": "public.mission_workflows",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_work_items": {
+        "relation": "public.mission_work_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_working_drafts": {
+        "relation": "public.mission_working_drafts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_draft_versions": {
+        "relation": "public.mission_draft_versions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_draft_assets": {
+        "relation": "public.mission_draft_assets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_review_rounds": {
+        "relation": "public.mission_review_rounds",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_review_items": {
+        "relation": "public.mission_review_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_revision_grants": {
+        "relation": "public.mission_revision_grants",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_fulfillments": {
+        "relation": "public.mission_fulfillments",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_workflow_events": {
+        "relation": "public.mission_workflow_events",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_instructions": {
+        "relation": "public.mission_publication_instructions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_attempts": {
+        "relation": "public.mission_publication_proof_attempts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_assets": {
+        "relation": "public.mission_publication_proof_assets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_reviews": {
+        "relation": "public.mission_publication_proof_reviews",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_review_items": {
+        "relation": "public.mission_publication_proof_review_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_reward_contracts": {
+        "relation": "public.mission_reward_contracts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_completion_decisions": {
+        "relation": "public.mission_completion_decisions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_pending_rewards": {
+        "relation": "public.mission_pending_rewards",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "point_balances": {
+        "relation": "public.point_balances",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "earnings_balances": {
+        "relation": "public.earnings_balances",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "point_transactions": {
+        "relation": "public.point_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "earnings_transactions": {
+        "relation": "public.earnings_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "workspace_budgets": {
+        "relation": "public.workspace_budgets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "workspace_budget_transactions": {
+        "relation": "public.workspace_budget_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemption_gifts": {
+        "relation": "public.redemption_gifts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemption_codes": {
+        "relation": "public.redemption_codes",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemptions": {
+        "relation": "public.redemptions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "notifications": {
+        "relation": "public.notifications",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_review_statuses": {
+        "relation": "public.creator_review_statuses",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_review_notes": {
+        "relation": "public.creator_review_notes",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "operator_audit_events": {
+        "relation": "public.operator_audit_events",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "legacy_evidence_corrections": {
+        "relation": "public.legacy_evidence_corrections",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "operator_crm_command_receipts": {
+        "relation": "public.operator_crm_command_receipts",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "assistant_requests": {
+        "relation": "public.assistant_requests",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_social_accounts": {
+        "relation": "public.creator_social_accounts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_portfolio_links": {
+        "relation": "public.creator_portfolio_links",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "brand_invites": {
+        "relation": "public.brand_invites",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaigns": {
+        "relation": "public.campaigns",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaign_participants": {
+        "relation": "public.campaign_participants",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaign_rank_snapshots": {
+        "relation": "public.campaign_rank_snapshots",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "auth_users": {
+        "relation": "auth.users",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-self"
+      },
+      "staff_users": {
+        "relation": "public.staff_users",
+        "key": [
+          "user_id"
+        ],
+        "selector": "auth-user"
+      },
+      "brand_users": {
+        "relation": "public.brand_users",
+        "key": [
+          "user_id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_workspace_roles": {
+        "relation": "public.staff_workspace_roles",
+        "key": [
+          "user_id",
+          "workspace_id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_platform_roles": {
+        "relation": "public.staff_platform_roles",
+        "key": [
+          "user_id",
+          "role"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_access_audit": {
+        "relation": "public.staff_access_audit",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_access_commands": {
+        "relation": "public.staff_access_commands",
+        "key": [
+          "request_id"
+        ],
+        "selector": "staff-command"
+      },
+      "academy_content": {
+        "relation": "public.academy_content",
+        "key": [
+          "id"
+        ],
+        "selector": "academy"
+      },
+      "academy_lessons": {
+        "relation": "public.academy_lessons",
+        "key": [
+          "id"
+        ],
+        "selector": "lesson"
+      },
+      "creator_lesson_progress": {
+        "relation": "public.creator_lesson_progress",
+        "key": [
+          "creator_id",
+          "lesson_id",
+          "content_version"
+        ],
+        "selector": "creator"
+      },
+      "assistant_conversations": {
+        "relation": "public.assistant_conversations",
+        "key": [
+          "id"
+        ],
+        "selector": "creator"
+      },
+      "assistant_messages": {
+        "relation": "public.assistant_messages",
+        "key": [
+          "id"
+        ],
+        "selector": "conversation"
+      },
+      "workflow_notification_dedupe": {
+        "relation": "private.mission_workflow_notification_dedupe",
+        "key": [
+          "recipient_id",
+          "notification_type",
+          "entity_type",
+          "entity_id",
+          "semantic_key"
+        ],
+        "selector": "recipient"
+      },
+      "draft_submission_idempotency": {
+        "relation": "private.mission_draft_submission_idempotency",
+        "key": [
+          "mission_work_item_id",
+          "idempotency_key"
+        ],
+        "selector": "workspace"
+      },
+      "auth_identities": {
+        "relation": "auth.identities",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_sessions": {
+        "relation": "auth.sessions",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_refresh_tokens": {
+        "relation": "auth.refresh_tokens",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_audit_log_entries": {
+        "relation": "auth.audit_log_entries",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-audit"
+      },
+      "auth_mfa_factors": {
+        "relation": "auth.mfa_factors",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_mfa_challenges": {
+        "relation": "auth.mfa_challenges",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-factor"
+      },
+      "auth_mfa_amr_claims": {
+        "relation": "auth.mfa_amr_claims",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-session"
+      },
+      "auth_one_time_tokens": {
+        "relation": "auth.one_time_tokens",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_flow_state": {
+        "relation": "auth.flow_state",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "storage_objects": {
+        "relation": "storage.objects",
+        "key": [
+          "id"
+        ],
+        "selector": "storage"
+      }
+    },
+    "rowCaps": {
+      "role": {
+        "workspaces": 2,
+        "creators": 2,
+        "missions": 1,
+        "mission_submissions": 1,
+        "mission_deliverable_templates": 2,
+        "mission_deliverable_requirements": 2,
+        "mission_workflows": 1,
+        "mission_work_items": 2,
+        "mission_working_drafts": 2,
+        "mission_draft_versions": 2,
+        "mission_draft_assets": 0,
+        "mission_review_rounds": 2,
+        "mission_review_items": 1,
+        "mission_revision_grants": 0,
+        "mission_fulfillments": 1,
+        "mission_workflow_events": 60,
+        "mission_publication_instructions": 2,
+        "mission_publication_proof_attempts": 2,
+        "mission_publication_proof_assets": 0,
+        "mission_publication_proof_reviews": 2,
+        "mission_publication_proof_review_items": 16,
+        "mission_reward_contracts": 1,
+        "mission_completion_decisions": 1,
+        "mission_pending_rewards": 1,
+        "point_balances": 2,
+        "earnings_balances": 2,
+        "point_transactions": 0,
+        "earnings_transactions": 0,
+        "workspace_budgets": 1,
+        "workspace_budget_transactions": 0,
+        "redemption_gifts": 1,
+        "redemption_codes": 0,
+        "redemptions": 0,
+        "notifications": 32,
+        "creator_review_statuses": 1,
+        "creator_review_notes": 1,
+        "operator_audit_events": 8,
+        "legacy_evidence_corrections": 0,
+        "operator_crm_command_receipts": 1,
+        "assistant_requests": 0,
+        "creator_social_accounts": 0,
+        "creator_portfolio_links": 0,
+        "brand_invites": 0,
+        "campaigns": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0,
+        "auth_users": 11,
+        "staff_users": 9,
+        "brand_users": 7,
+        "staff_workspace_roles": 7,
+        "staff_platform_roles": 1,
+        "staff_access_audit": 12,
+        "staff_access_commands": 12,
+        "academy_content": 1,
+        "academy_lessons": 0,
+        "creator_lesson_progress": 0,
+        "assistant_conversations": 0,
+        "assistant_messages": 0,
+        "workflow_notification_dedupe": 32,
+        "draft_submission_idempotency": 2,
+        "auth_identities": 11,
+        "auth_sessions": 16,
+        "auth_refresh_tokens": 32,
+        "auth_audit_log_entries": 128,
+        "auth_mfa_factors": 0,
+        "auth_mfa_challenges": 0,
+        "auth_mfa_amr_claims": 16,
+        "auth_one_time_tokens": 0,
+        "auth_flow_state": 0,
+        "storage_objects": 0,
+        "requests": 400
+      },
+      "core": {
+        "workspaces": 2,
+        "creators": 53,
+        "missions": 3,
+        "mission_submissions": 4,
+        "mission_deliverable_templates": 4,
+        "mission_deliverable_requirements": 4,
+        "mission_workflows": 2,
+        "mission_work_items": 4,
+        "mission_working_drafts": 4,
+        "mission_draft_versions": 2,
+        "mission_draft_assets": 0,
+        "mission_review_rounds": 2,
+        "mission_review_items": 1,
+        "mission_revision_grants": 0,
+        "mission_fulfillments": 1,
+        "mission_workflow_events": 100,
+        "mission_publication_instructions": 4,
+        "mission_publication_proof_attempts": 2,
+        "mission_publication_proof_assets": 0,
+        "mission_publication_proof_reviews": 2,
+        "mission_publication_proof_review_items": 16,
+        "mission_reward_contracts": 1,
+        "mission_completion_decisions": 3,
+        "mission_pending_rewards": 2,
+        "point_balances": 2,
+        "earnings_balances": 2,
+        "point_transactions": 1,
+        "earnings_transactions": 1,
+        "workspace_budgets": 1,
+        "workspace_budget_transactions": 1,
+        "redemption_gifts": 1,
+        "redemption_codes": 0,
+        "redemptions": 0,
+        "notifications": 32,
+        "creator_review_statuses": 1,
+        "creator_review_notes": 1,
+        "operator_audit_events": 8,
+        "legacy_evidence_corrections": 0,
+        "operator_crm_command_receipts": 1,
+        "assistant_requests": 1,
+        "creator_social_accounts": 0,
+        "creator_portfolio_links": 0,
+        "brand_invites": 0,
+        "campaigns": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0,
+        "auth_users": 62,
+        "staff_users": 9,
+        "brand_users": 7,
+        "staff_workspace_roles": 6,
+        "staff_platform_roles": 1,
+        "staff_access_audit": 7,
+        "staff_access_commands": 7,
+        "academy_content": 0,
+        "academy_lessons": 0,
+        "creator_lesson_progress": 0,
+        "assistant_conversations": 1,
+        "assistant_messages": 2,
+        "workflow_notification_dedupe": 32,
+        "draft_submission_idempotency": 2,
+        "auth_identities": 11,
+        "auth_sessions": 16,
+        "auth_refresh_tokens": 32,
+        "auth_audit_log_entries": 128,
+        "auth_mfa_factors": 0,
+        "auth_mfa_challenges": 0,
+        "auth_mfa_amr_claims": 16,
+        "auth_one_time_tokens": 0,
+        "auth_flow_state": 0,
+        "storage_objects": 0,
+        "requests": 400
+      },
+      "browser": {
+        "workspaces": 2,
+        "creators": 2,
+        "missions": 2,
+        "mission_submissions": 2,
+        "mission_deliverable_templates": 2,
+        "mission_deliverable_requirements": 2,
+        "mission_workflows": 1,
+        "mission_work_items": 2,
+        "mission_working_drafts": 2,
+        "mission_draft_versions": 2,
+        "mission_draft_assets": 0,
+        "mission_review_rounds": 2,
+        "mission_review_items": 1,
+        "mission_revision_grants": 0,
+        "mission_fulfillments": 0,
+        "mission_workflow_events": 60,
+        "mission_publication_instructions": 2,
+        "mission_publication_proof_attempts": 2,
+        "mission_publication_proof_assets": 0,
+        "mission_publication_proof_reviews": 2,
+        "mission_publication_proof_review_items": 16,
+        "mission_reward_contracts": 1,
+        "mission_completion_decisions": 1,
+        "mission_pending_rewards": 1,
+        "point_balances": 2,
+        "earnings_balances": 2,
+        "point_transactions": 1,
+        "earnings_transactions": 1,
+        "workspace_budgets": 1,
+        "workspace_budget_transactions": 1,
+        "redemption_gifts": 1,
+        "redemption_codes": 0,
+        "redemptions": 0,
+        "notifications": 32,
+        "creator_review_statuses": 0,
+        "creator_review_notes": 0,
+        "operator_audit_events": 0,
+        "legacy_evidence_corrections": 0,
+        "operator_crm_command_receipts": 0,
+        "assistant_requests": 0,
+        "creator_social_accounts": 0,
+        "creator_portfolio_links": 0,
+        "brand_invites": 0,
+        "campaigns": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0,
+        "auth_users": 11,
+        "staff_users": 9,
+        "brand_users": 7,
+        "staff_workspace_roles": 6,
+        "staff_platform_roles": 1,
+        "staff_access_audit": 7,
+        "staff_access_commands": 7,
+        "academy_content": 0,
+        "academy_lessons": 0,
+        "creator_lesson_progress": 0,
+        "assistant_conversations": 0,
+        "assistant_messages": 0,
+        "workflow_notification_dedupe": 32,
+        "draft_submission_idempotency": 2,
+        "auth_identities": 11,
+        "auth_sessions": 20,
+        "auth_refresh_tokens": 40,
+        "auth_audit_log_entries": 128,
+        "auth_mfa_factors": 0,
+        "auth_mfa_challenges": 0,
+        "auth_mfa_amr_claims": 20,
+        "auth_one_time_tokens": 0,
+        "auth_flow_state": 0,
+        "storage_objects": 0,
+        "requests": 400
+      }
+    },
+    "transportWriteCapPerProcess": 400,
+    "financialTotalsForReview": {
+      "initialBudget": 27000,
+      "allowedLegacyDebitTotal": 250,
+      "expectedBudgetAfterTwoValidLegacyApprovals": 26750,
+      "initialPointsTotal": 300,
+      "allowedLegacyPointCreditTotal": 1000,
+      "expectedPointsTotal": 1300,
+      "initialWithdrawableTotal": 0,
+      "allowedLegacySyntheticCreditTotal": 250,
+      "expectedWithdrawableTotal": 250,
+      "expectedTotalXpDelta": 300,
+      "pendingCompletionCancelReapprovalDelta": 0,
+      "realPaymentOrGatewayCalls": 0,
+      "scope": "new owned disposable fixtures only; existing legacy issuance explicitly proposed, distinct measured windows from neutral pending rewards"
+    },
+    "forbiddenAddsOrChanges": [
+      "migration seed/bucket/category/tag rows",
+      "D15 lesson/content approval/progress",
+      "campaign/global RPC rows/jobs",
+      "files/draft/proof/storage uploads",
+      "invites/messages/notifications sent externally",
+      "real staff/membership/roles",
+      "payment/withdrawal execution/new provider features"
+    ]
+  },
+  "execution": {
+    "phases": [
+      {
+        "phase": "role",
+        "source": "server/test/audit-staff-capabilities.test.ts",
+        "baseExpectedCases": 8
+      },
+      {
+        "phase": "core",
+        "source": "server/test/audit-workflow-roundtrip.test.ts",
+        "baseExpectedCases": 9
+      },
+      {
+        "phase": "browser",
+        "sources": [
+          "e2e/creator-operator-mission.spec.ts",
+          "e2e/staff-access.spec.ts"
+        ],
+        "baseExpectedCases": 5,
+        "requiredExtraObligations": 2
+      }
+    ],
+    "matrix": "D19-C1-source-revision-acceptance-matrix.json",
+    "commandsApprovedNow": [],
+    "parallelAgents": false,
+    "parallelRuntimePhases": false,
+    "pristineRpcRerun": false,
+    "externalProofMetadata": "Explicit unavailable/mock only; no real publishing/provider requests",
+    "notificationsPaymentsPaidAI": "disabled; internal notification rows are journalled fixture effects, not real sends",
+    "readback": "Creator public redacted projection/history plus operator/finance row ID, DB binding and refreshed equal canonical fields; do not expose private Creator ID",
+    "commands": [
+      {
+        "phase": "role",
+        "argv": [
+          "node",
+          "scripts/audit/run-integration.mjs",
+          "staff"
+        ],
+        "expectedCases": 8
+      },
+      {
+        "phase": "core",
+        "argv": [
+          "node",
+          "scripts/audit/run-integration.mjs",
+          "pilot"
+        ],
+        "expectedCases": 9
+      },
+      {
+        "phase": "browser",
+        "argv": [
+          "node",
+          "scripts/audit/run-pilot-browser.mjs"
+        ],
+        "expectedCases": 5
+      }
+    ],
+    "environment": {
+      "ADFOCATE_B2_MANIFEST_PATH": "docs/verification/D19-C1-source-revision-runtime-manifest.json",
+      "ADFOCATE_B2_AUTHORIZATION_PATH": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-authorization.private.json",
+      "ADFOCATE_B2_TARGET_RECEIPT_PATH": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-target-receipt.private.json",
+      "ADFOCATE_B2_PHASE": "role then core then browser; never parallel",
+      "ADFOCATE_ACCEPTANCE_TASK": "D19"
+    },
+    "phaseDependencies": "role phase-result exit0 before core; core exit0 before browser; exact lineage for borrowed role editor/resource before any browser fixture creation. No whole-phase reseed. --resume may only reuse a complete same-lineage browser fixture, with no new setup rows; not a general retry authority.",
+    "finalReadback": "Before any verified claim: current identity/source + all role/core/browser inventory/caps/journals and immutable bootstrap row hashes; exact handoff ID/workflow/submission/Creator binding; Creator redacted projection/operator+finance ID and history after reload; both legacy anchors and separate financial windows; transient DDL absent.",
+    "offlineVsRuntime": "Current-source offline gates and real read-only infrastructure metadata are evidence only. No SDK, 72 app migrations, fixture, role/core/browser or pending neutrality has run. The original C1 allocation authority is retained. This new candidate continuation remains unapproved.",
+    "neutralityPassCondition": "B2 API snapshots for completion/cancel/reapproval and the browser pending-only window include nine financial-table row ID/hash families and all workspace Creator XP. Browser phase additionally requires exact run/target/Creator/workspace/submission/workflow/lineage plus equal balances/counters/inventory and issued legacy anchors; missing/invalid evidence or any difference forces phase exit1 even if UI cases pass. Existing legacy issuance and the explicit active join+10 XP delta remain separate windows.",
+    "matrixSha256": "deec627fe44ba78d4159f6375f1204bd80fdf70fa6e47fb7c5f71dcf522e46bf"
+  },
+  "abortAndRollback": [
+    "Missing identity/source/profile/lineage/quota or unresolved cap => no client/setup/write",
+    "Unexpected mutation => stop dependent work, retain incident and exact IDs; no guessed reversal/delete",
+    "Do not touch original three campaigns; new fixtures cannot be their before images",
+    "No automatic resource shutdown/removal; retain then request exact-ID cleanup separately",
+    "Source rollback never restores data or clears B1/incident/HOLD"
+  ],
+  "approval": {
+    "P0Approved": true,
+    "originalC1RuntimeApproved": true,
+    "originalC1Reference": "Direct human reply call_70fd0be5fefd4269b44c021c56d56c10: approved C1 additional recovery target, retain B2",
+    "originalC1ManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+    "sourceRevisionRuntimeApproved": false,
+    "runtimeApproved": false,
+    "runtimeAuthorizationReceipt": "D19-C1-source-revision-authorization-template.json remains approved:false; create a separate bound private receipt only after direct human approval; preserve original C1 authority and receipt bytes.",
+    "noImplicitExpansion": "No new resources or lifecycle; no incident restoration/closure, production membership/roles/data, release clearance, provider calls or commit/push/merge/deploy."
+  },
+  "invariants": {
+    "B1RetirementRetained": true,
+    "incidentOpen": true,
+    "restored": false,
+    "releaseHold": true,
+    "wholeR1Verified": false,
+    "providerEnabled": false,
+    "D15ContentBlocked": true,
+    "advisorOwnerDeviceHostedStaffBlocked": true,
+    "productionDataOrMembershipAllowed": false,
+    "commitPushMergeDeployAllowed": false
+  },
+  "kind": "D19_B2_EXECUTION_SPEC",
+  "specificationReady": true,
+  "bootstrap": {
+    "historicalLegacy": {
+      "phase": "core",
+      "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+      "missionId": "f40f4b8d-4cba-4fb9-b7f9-833218395753",
+      "creatorId": "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+      "submissionId": "1bb5331f-8f98-44d6-86fb-e741b3ac727c",
+      "namespace": "bc1ba016-c483-4484-bb5b-706f9c74f2e6",
+      "contentUrls": [
+        "wwww"
+      ],
+      "queueIndex": 0,
+      "countedWithinCoreCaps": true,
+      "notIncidentBeforeImage": true
+    },
+    "profilePath": "D19-B2-recovery-bootstrap-profile.json",
+    "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+    "receiptPolicy": "Before SQL: verifiedB2BootstrapTarget() with separate runtime authority, fresh volume/network receipt and observed five services; no application keys returned. Verify public schema/history empty. Follow sealed 72-step forward profile with the one pre-guard core-owned checkpoint. Apply the nine exact compatibility statements only against the matching effective catalog diff. Save objects/RPC/columns/grants/RLS/history, migration seed row hashes and checkpoint receipts. Set verified only after actual readback; do not manufacture a true receipt in P0.",
+    "executor": "After direct source-revision approval only: existing sealed72-source profile and conditional9 diff resolution on the already initialized, application-empty C1 volume; no resource provisioner/first-start/credential initializer rerun.",
+    "immutableBaseline": "Capture after full profile, excluding only five explicitly owned historical-checkpoint rows (workspace/Auth/Creator/mission/submission). Hash migration seed rows; must remain unchanged after every phase and at final readback. Auth/storage service schema-migration baseline recorded independently.",
+    "initialDatabaseUser": "supabase_admin",
+    "requiredBeforeImageProfile": "Pure guard passes actual prestart configuration and post-image role-OID catalog; expected mock data is insufficient."
+  },
+  "candidate": {
+    "fingerprint": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+    "sourceRecords": 779,
+    "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+    "scope": "SHA256 of sorted path/canonical-LF-file-hash records; binds dirty source without inventing a commit; D13 includes modified root eslint.config.js; D17 also includes vite.config.ts and playwright.quality.config.ts; D18 includes playwright.staff.config.ts; D19 includes playwright.pilot.config.ts; D20 includes tests/fixtures and playwright.assistant.config.ts; R2 follow-up includes six support routes and metadata form plus scoped UI runner/fixtures. D17 R2 includes current quality harness, read-only advisor inspector and repaired existing UI. D19 support renewal adds only test fixture scope, exact-ID support launcher and test-only global-RPC guard. D19 pristine supplement extends only the existing identity/owned transport and original global-job acceptance runner; two additional test-tooling scripts.; B1 extends the existing acceptance identity guard and its target helper; adds the offline retirement regression. B2-P0 expands the binding to the complete versionable runtime/test/schema text source tree; preserves all prior354 paths and separately seals runtime manifest/data profiles. No commit invented. Completion audit adds only a complete browser pending-neutrality verifier and its offline behavioral runner tests; original engine/migrations/provider state unchanged. C1 continuation changes only the existing Docker optional-field extraction and strict kernel tmpfs evidence guard plus regression tests; no application engine, DB migration, role, payment, provider or expiry behavior changes."
+  },
+  "originReview": "D19-B2-manifest.json",
+  "originReviewFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "originRecovery": {
+    "priorApprovedManifest": "D19-B2-runtime-manifest-neutrality-guard.json",
+    "priorApprovedManifestSha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+    "failedProjectId": "adfocate-d19-b2-20261025-b0db3134",
+    "reason": "Initial database user selected incorrectly; pinned image cannot demote the bootstrap OID10 role. Do not skip image security migration or perform unreviewed role-name/catalog surgery.",
+    "sourceUnchanged": false,
+    "oldB2RetainedNoLifecycleApproved": true,
+    "newIdsAreNotBeforeImages": true,
+    "allPhasePlannedIdsRegenerated": true,
+    "actualNewRecoveryResources": 1,
+    "originalC1Manifest": "D19-B2-recovery-runtime-manifest.json",
+    "originalC1ManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+    "currentC1AllocationAlreadyApproved": true
+  },
+  "historicalSupersededUnapprovedP0Manifest": {
+    "path": "D19-B2-runtime-manifest.json",
+    "sha256": "71421cbe72f671a242a8bdc6031654c61b634d7d2aabf7ebd4b85325f95691f1",
+    "reason": "Browser runner previously stored financial snapshots without comparing them; original scope had not been approved or executed."
+  },
+  "sourceRevision": {
+    "before": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+    "after": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+    "changedSourcePaths": [
+      "scripts/audit/local-targets.mjs",
+      "server/test/b2-target-context.test.ts"
+    ],
+    "schemaAndProfileUnchanged": true,
+    "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+    "fixtureUuidsAndCapsUnchanged": true,
+    "additionalResources": 0,
+    "originalApprovalNotRewritten": true,
+    "readOnlyMetadataEvidence": "adfocate-d19-b2-20261025-recovery-4d6ca2c8/metadata-after-fix-readonly.json",
+    "dbImageInitializationEvidence": "adfocate-d19-b2-20261025-recovery-4d6ca2c8/db-foundation.json",
+    "requiredDecision": "Approve this guarded candidate continuing only on the existing C1 IDs; no new allocation, initialization or lifecycle."
+  }
+}

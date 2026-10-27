@@ -1,0 +1,27 @@
+{
+  "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+  "before": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  },
+  "after": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  },
+  "allEqual": true,
+  "note": "Existing legacy join grants 10 XP during fixture setup. The measured UI flow contains reads and rejected joins only; no XP normalization."
+}

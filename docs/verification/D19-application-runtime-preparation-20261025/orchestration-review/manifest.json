@@ -1,0 +1,30 @@
+{
+  "kind": "Reviewed private offline orchestration source copies; not runtime approval or credential stores",
+  "files": [
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-prepare.py",
+      "sha256": "4c7f008922538cb04b732ad723fedca06ec7fe343c81eb1d651e38e3e5642b83",
+      "bytes": 2083
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-gates.py",
+      "sha256": "372aa74f9f6e02a8dd1f2588e2cbbf65f903547128bc2b44867e0407bb4c0cfd",
+      "bytes": 6517
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-manifest.py",
+      "sha256": "21aed1fbfb2ac94865b56bc5cf0ff71aaebd67907b3266986eac417e6fb5d2fa",
+      "bytes": 12031
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-delivery.py",
+      "sha256": "7fd784a6ab57214ba935cdf96987e0233db7da50fd905a8207a044e07d50daa7",
+      "bytes": 17905
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/orchestration-review/D19-supplement-seal.py",
+      "sha256": "933c0b44dee28d4d7683c29bd644f73c25c08bd745246678c03b74c3a2af1024",
+      "bytes": 5818
+    }
+  ]
+}

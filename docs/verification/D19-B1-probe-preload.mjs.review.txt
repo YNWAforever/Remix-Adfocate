@@ -1,0 +1,12 @@
+// Negative CLI probe only: any child process or fetch attempt fails without executing it.
+import cp from 'node:child_process';
+import {syncBuiltinESMExports} from 'node:module';
+import {writeFileSync} from 'node:fs';
+import process from 'node:process';
+const attempts=[];
+for(const name of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork'])cp[name]=()=>{
+  attempts.push(name);throw Error('B1 probe blocked an unexpected subprocess attempt');
+};
+syncBuiltinESMExports();
+globalThis.fetch=()=>{attempts.push('fetch');return Promise.reject(Error('B1 probe blocked an unexpected fetch attempt'));};
+process.on('exit',()=>writeFileSync(process.env.D19_B1_PROBE_RECEIPT,JSON.stringify({attempts,subprocessesOrFetchExecuted:0})+'\n'));

@@ -1,0 +1,65 @@
+{
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "schemaSourceChanged": false,
+  "migrationsRawHashesPreserved": 72,
+  "protectedEntries": 42,
+  "protectedManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "bootstrapProfileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+  "actualImageInitialization": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/db-foundation.json",
+  "actualPrestartAndPostImageRoleGuardsPassed": true,
+  "bootstrapOid10": "supabase_admin SUPERUSER true; ordinary named DB role OID16384 SUPERUSER false",
+  "lastObservedApplicationCatalog": {
+    "authUsers": 0,
+    "publicTables": 0,
+    "bootstrapRole": {
+      "oid": "10",
+      "name": "supabase_admin",
+      "login": true,
+      "superuser": true
+    },
+    "serverVersion": "17.6",
+    "regularNamedRoles": [
+      {
+        "oid": "16446",
+        "name": "authenticator",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16384",
+        "name": "postgres",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "10",
+        "name": "supabase_admin",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16504",
+        "name": "supabase_auth_admin",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16506",
+        "name": "supabase_storage_admin",
+        "login": true,
+        "superuser": false
+      }
+    ],
+    "applicationHistory": null,
+    "authSchemaMigrations": 7
+  },
+  "lastObservedApplicationCatalogScope": "After immutable DB image initialization, before application migrations and later Auth/Storage service start; not a new full application catalog capture.",
+  "applicationMigrationsApplied": 0,
+  "compatibilityStatementsApplied": 0,
+  "historicalCheckpointCreated": false,
+  "fullObjectsRpcsGrantsRlsHistoryDiff": "NOT_RUN_APPLICATION_BOOTSTRAP_BLOCKED_ON_SOURCE_REVISION_BINDING",
+  "immutableMigrationSeedBaseline": "NOT_CAPTURED_APPLICATION_PROFILE_NOT_REPLAYED",
+  "systemServiceCredentialSetup": "Completed only for new C1 authenticator/Auth/Storage system DB credentials under original C1; no human/product staff role or membership changes",
+  "noOldMigrationChecksumChanged": true,
+  "noResetDbPushSeedSql": true
+}

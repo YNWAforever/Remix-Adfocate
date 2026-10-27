@@ -1,0 +1,32 @@
+
+> test:active-missions
+> vitest run --no-file-parallelism server/test/run-integration-tests.test.ts server/test/active-mission-schema.test.ts server/test/active-missions.test.ts server/test/reward-contracts.test.ts server/test/reward-handoffs.test.ts server/test/admin-reward-handoffs.test.ts server/test/notifications-triggers.test.ts src/lib/activationAnalytics.test.ts src/lib/activeMission.test.ts src/lib/adminRewardHandoff.test.ts src/lib/queries/activeMission.test.tsx src/components/active-mission/active-mission.test.tsx src/components/active-mission/RewardPendingCard.test.tsx src/components/admin/ActiveMissionReview.test.tsx src/components/admin/MissionCompletionReview.test.tsx src/components/admin/RewardHandoffQueue.test.tsx src/routes/-_app.my.$submissionId.test.tsx src/routes/-admin.active-missions.test.tsx src/routes/-admin.reward-handoffs.test.tsx --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/active-mission-schema.test.ts (54 tests | 9 skipped) 104ms
+ ✓ server/test/active-missions.test.ts (93 tests | 8 skipped) 130ms
+ ✓ src/routes/-admin.active-missions.test.tsx (35 tests) 2460ms
+ ✓ src/routes/-_app.my.$submissionId.test.tsx (25 tests) 1213ms
+ ✓ server/test/notifications-triggers.test.ts (31 tests | 11 skipped) 13ms
+ ✓ src/lib/queries/activeMission.test.tsx (28 tests) 560ms
+ ✓ server/test/reward-handoffs.test.ts (16 tests | 13 skipped) 6ms
+ ✓ server/test/admin-reward-handoffs.test.ts (53 tests) 108ms
+ ✓ src/components/admin/ActiveMissionReview.test.tsx (21 tests) 1102ms
+ ✓ src/components/admin/MissionCompletionReview.test.tsx (17 tests) 1058ms
+ ✓ src/components/active-mission/active-mission.test.tsx (16 tests) 432ms
+ ✓ src/lib/activationAnalytics.test.ts (35 tests) 18ms
+ ✓ src/routes/-admin.reward-handoffs.test.tsx (12 tests) 376ms
+ ✓ server/test/reward-contracts.test.ts (8 tests | 5 skipped) 10ms
+ ✓ src/lib/adminRewardHandoff.test.ts (12 tests) 12ms
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 493ms
+ ✓ src/lib/activeMission.test.ts (17 tests) 7ms
+ ✓ server/test/run-integration-tests.test.ts (6 tests) 10ms
+ ✓ src/components/active-mission/RewardPendingCard.test.tsx (5 tests) 243ms
+
+ Test Files  19 passed (19)
+      Tests  457 passed | 46 skipped (503)
+   Start at  03:26:48
+   Duration  53.89s (transform 1.99s, setup 7.46s, collect 5.42s, tests 8.35s, environment 24.59s, prepare 3.25s)
+

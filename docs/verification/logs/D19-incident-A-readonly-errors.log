@@ -1,0 +1,5 @@
+ERROR:  permission denied for function pg_stat_file
+ERROR:  column "target_idas" does not exist
+LINE 2: ... by created_at,id),'[]')from(select id,created_at,target_ida...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "operator_audit_events.target_id".

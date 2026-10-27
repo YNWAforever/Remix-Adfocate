@@ -1,0 +1,58 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "applicationSourceRollback": "Not needed; unchanged779-source candidate",
+  "metadataBefore": "D19-B2-runtime-before-index.json",
+  "resourceRollbackExecuted": false,
+  "resourceCleanupApproved": false,
+  "retainedExactResources": {
+    "containerIds": {
+      "db": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1",
+      "auth": "1e37f1567bd97224adb8bf75c76011d961269155fbbd15d88ed7a80838ddfea9",
+      "rest": "dea945cade01d729fccc7be446d7cd4f418041f511454a298066c4518e1bd372",
+      "kong": "efbc76a45f3ebae787e31cef913e5eaadd6875a8ed98a7bc022003b95f1d837a",
+      "storage": "79bed9eb713310cf3cc180d77e5a74c432227e80802a7de3de937d6180603309"
+    },
+    "volumeName": "adfocate-d19-b2-20261025-b0db3134-db-data",
+    "networkId": "6a680bf2f30acc8c7e38dc379e612a02786977f3ecb10af878eeb47d04f83b79"
+  },
+  "currentState": {
+    "dbRunning": true,
+    "otherFourStopped": true,
+    "applicationTables": 0,
+    "authUsers": 0,
+    "applicationHistory": null
+  },
+  "instructions": "No automatic stop/remove/reset/export, no catalog surgery or campaign restoration. Owner may approve C1 additional clean target, or separately review C2 exact lifecycle manifest. For local evidence rollback compare current hashes and restore only the named before copies, preserving unrelated dirty work and all incident records.",
+  "metadataFiles": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "D19-B2-runtime-before/adfocate-delivery.json",
+      "beforeSha256": "719d345eca5b24ced88139c545618133a653d59dd48d962d2259f7f12123402c",
+      "afterSha256": "5dae267872b7ce8bd8ce75cef9afbf80c98dd783b6f640f92f61e8f17f6f64b8"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "D19-B2-runtime-before/adfocate-task-ledger.md",
+      "beforeSha256": "eaf9ce928a75bd5309e041fd0158ba77d48d0edc93bc91af6e0dc727412b6d44",
+      "afterSha256": "5585ed9af91005d8f7fdc6c429fde4fa083d6ef73f0a92eaac9e1e6bbb5b0f20"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "beforeCopy": "D19-B2-runtime-before/audit_case_coverage.csv",
+      "beforeSha256": "dd89e54e8e437519b5e2e7cd5445d17a6ea37927dfe90fb3718bdebad700a77d",
+      "afterSha256": "4fc25fda84c95caf53cf07750dc3f74bf9d7d9bc006eb6e581bf7a358188d773"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "D19-B2-runtime-before/implementation_backlog.csv",
+      "beforeSha256": "5fbe684f63c4b5c927be0487652dca7dee6b7d2763adbb6aef24738c31360329",
+      "afterSha256": "ad7d4598394094e09f2afe708c320eaaca5e1206cf9e943719c3e1899fee2252"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeCopy": "D19-B2-runtime-before/implementation-plan.md",
+      "beforeSha256": "99f4f33faaecdb084b731504c354b86cb25586e65d7b3890c118ea69cf01f4d6",
+      "afterSha256": "ac698c9c6e521b5eb6e095928f46513288af5b3462872dfee6213a7ac1621580"
+    }
+  ]
+}

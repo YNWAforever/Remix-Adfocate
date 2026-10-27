@@ -1,0 +1,32 @@
+
+> lint
+> eslint .
+
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\D12-refresh-retention.mjs
+  13:1  error  'console' is not defined  no-undef
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\D13-before\src\routes\_app.onboarding.tsx
+  110:9  warning  The 'effectiveOnboarding' conditional could make the dependencies of useMemo Hook (at line 115) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'effectiveOnboarding' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\D13-observe-schema.mjs
+  14:1  error  'console' is not defined  no-undef
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\components\admin\PublicationProofReview.tsx
+  285:6  warning  React Hook useEffect has a missing dependency: 'review?.checklist'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\lib\authFeedback.ts
+  157:63  error  Unexpected control character(s) in regular expression: \x00  no-control-regex
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\lib\queries\activeMission.ts
+  351:6  warning  React Hook useEffect has a missing dependency: 'mutation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  535:6  warning  React Hook useEffect has a missing dependency: 'mutation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\_app.auth.callback.tsx
+  67:67  error  Unexpected control character(s) in regular expression: \x00  no-control-regex
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\_app.onboarding.tsx
+  113:9  warning  The 'effectiveOnboarding' conditional could make the dependencies of useMemo Hook (at line 118) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'effectiveOnboarding' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+✖ 9 problems (4 errors, 5 warnings)
+

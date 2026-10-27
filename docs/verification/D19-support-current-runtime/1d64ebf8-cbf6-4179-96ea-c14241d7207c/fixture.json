@@ -1,0 +1,60 @@
+{
+  "namespace": "1d64ebf8-cbf6-4179-96ea-c14241d7207c",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-shaped-20261023",
+    "proxy": "none",
+    "apiPort": 56521,
+    "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+    "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+  },
+  "workspaceId": "ecb4c1f3-d8f6-4b05-b627-b56d3500d60a",
+  "slug": "d19-support-1d64ebf8-cbf6-4179-96ea-c14241d7207c",
+  "seedMissions": [
+    {
+      "id": "ce34b368-98fa-4b0e-9d2b-5de296d5b985",
+      "sourceSlug": "koc-trial-serum",
+      "slug": "koc-trial-serum-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    },
+    {
+      "id": "3d120a50-612e-45c6-ada3-371bf49f3884",
+      "sourceSlug": "ugc-cafe",
+      "slug": "ugc-cafe-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    },
+    {
+      "id": "fc82e59e-d298-4444-96b1-18635d380bdf",
+      "sourceSlug": "clip-skincare",
+      "slug": "clip-skincare-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    },
+    {
+      "id": "82c65d84-7517-427c-802f-7b617951afc6",
+      "sourceSlug": "ugc-pet",
+      "slug": "ugc-pet-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    },
+    {
+      "id": "903eec12-486a-417e-b6bc-1b1629355897",
+      "sourceSlug": "koc-trial-mask",
+      "slug": "koc-trial-mask-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    },
+    {
+      "id": "54acca7f-3014-4098-8d97-3fb045ffa2ca",
+      "sourceSlug": "ugc-travel",
+      "slug": "ugc-travel-1d64ebf8-cbf6-4179-96ea-c14241d7207c"
+    }
+  ],
+  "existingPublishedAcademyReadOnly": {
+    "track": 9,
+    "playbook": 6,
+    "resource": 8,
+    "guide_doc": 8
+  },
+  "ownedIdAuthority": "Only this newly-created workspace/mission IDs plus successful inserts journalled by the existing owned fixture transport; no historical IDs loaded",
+  "cleanup": "Only current exact IDs; immutable workflow/access actors retained",
+  "provider": "disabled; external HTTP denied",
+  "stage": "planned"
+}

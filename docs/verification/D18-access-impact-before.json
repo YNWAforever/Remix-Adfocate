@@ -1,0 +1,1585 @@
+{
+  "productionQueried": false,
+  "scope": "Local disposable targets only. Production impact requires separately authorized read-only owner review; no production counts inferred.",
+  "ownerApproval": "Not requested or supplied for existing real staff grants. No automatic assignment.",
+  "rollback": "Do not deploy application enforcement until owners approve exact grants and impact. Roll back D18 app to earlier application version only after owner review; leave additive grant/audit/history tables and no broad delete/reset. No production mutation authorized.",
+  "targets": {
+    "empty": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "activeStaff": 256,
+      "activeWorkspaceMembers": 154,
+      "newGrantsNeeded": 154,
+      "platformReviewNeeded": 256,
+      "rows": [
+        {
+          "subjectHash": "fe338d92a29e2a5fe53a145d12f48578ca6789e4e20c1db0b4901ba7ca65afe3",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "02ccf247a4b625ddfdf22c6e5b59163ce4415748be698d1b86941be5c1ab575e",
+          "workspaceId": "9dfee1b8-5787-4a17-8650-fa519d91333b",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "dfcde9d2b436da3201fabe35837f068602b321ead5aeff2d834cab00ad83f7e0",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "26bd09e442047d13b553c0389bf505819dcf78881d1d9052b561b3ebd5e727c9",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9bb82e2ba8a4e896f8047d58e5908488284548bc3ccb4bff5dc94ec1065ec50b",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3b88cfde6764d7e3750478731f2896b4d162ae9ed3b797890c1f271aaa8785ef",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "37225d3d70c416ace227da4fc1170bbd54e103f87457ba93ab09c872edf7bf7d",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "61e47d39239a39843ca3705f5dddec70cc6b15d75b911a0a9f731bd8c170922d",
+          "workspaceId": "27046baf-504b-43b3-96d6-7e33b9b6df70",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a317f3d26b5de5a3df9c11fbe4524db3a54e55d68786c2c537b0bf0b37f3446e",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "10f4589522d754f3f680db9f29d7bbe683cb810eb6f085319522d36c2f1777d2",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ae75171c51ba5c7b394609c8206b052696d80aa53d5a7798b0d61cb89aac649d",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8e1c753dc643935673f37a22013857fa342f782b8dc09416e8c9b33b3069fdcf",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "0cd1645c70a2e9b93a0de9f9143e5d7587dac2ad66c3d6c90cbebca2f4d6108c",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bf822a844c7b9ac4093348d61b11df14f1be432df39cb706f8740ada14dc0bac",
+          "workspaceId": "405bcdda-3eb1-4672-a621-b119fd611dcc",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3a0a57c81e636d382dcaa835fcdbd276f50e1f2d5916268c134c74c65fd7fc40",
+          "workspaceId": "12619bac-a966-4ebc-8e60-f4a95a7eec02",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "df75ab7734bb6100d1415885eb886fe10bbbc98b29ebb20734b88faad2061d56",
+          "workspaceId": "e0b71427-492f-4a3b-9583-5100e6ec7b92",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "6e94bd2fc7e4784fb574a302f6b389ca49315fece735e78d8d7580d20088b7f7",
+          "workspaceId": "e4ef1dc8-31b3-4610-9b32-28b8a7c9ab94",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3d701abcfd199f040910899f7688523ae50dfc08ade9d0beb8799140798e54da",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2e965fe0da99cbb10b96b24387c2881fdec7f42ae90519ac771fc69181565fbf",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "cc16d54e19f02c926fe02e539ba638da3089f53609acd9a1e8165a97cca0f45c",
+          "workspaceId": "3eb6e65f-ff09-42a6-ae51-090e15e31429",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ebb27b42bb5e1962f9e9c12d306978ec387d1d093fc3b73d2061662121c1a028",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fd23c0c5a3d56d195c825ed6726a06f768875bf1e527ca342b3555bdea98be60",
+          "workspaceId": "b6481be5-ed48-4309-a9cb-f7ce518e5191",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "915d72ea8202382a01c0918aa9e4ffe191c54abf2bf56dcb0d4f4337a5a87a08",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "aa423bb80514283fc570b6c8473d097c103966b2c172149bf49644edf6d67444",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9cbee40385391dff60cea6d23d24c9b64bf628caab811895b78427c1deec84b7",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d79f8ba3a8c869c70954f516092943fa43fc0272473ddeb78d49ec19389fa8a9",
+          "workspaceId": "2e443f31-abf9-48fb-b7d5-bab86bf5e01c",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ee4086b207bd3fdbd9e0c76a67975a4ff24f7b3cbb1dbc18fc0c4b4b29199074",
+          "workspaceId": "e608a50f-8b29-4f30-845c-4849c2405184",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a9b2866cffd92fadc8aa533c3b5992455161bc0b5ea9b5ccde711b1c76988447",
+          "workspaceId": "d99d4338-4b76-405f-881b-ff213dfdce20",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "08e4f9bf32951606bd34d1fecb3c7514602c767c225fbe279153cb16b86b9b5f",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fd266cce208785c4ab76eadcaee1f0cdca72843b74b5ad305e49d4761fe243fc",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c8db16b807c2c0eb7cb1ee1a310c2a5b8ffd4cd4626cc1a904e6be06af17235e",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8b132b9cfb49781029009f1336d506cc6dbeff009b52f2a4e271adbc4c0bc1bc",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "260700712860bbaa1aae305841c19143a3b7b44e47cadd97519f0f4f5ca579b6",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a5252a488d4b834c576abb38a73698d0774e4f93db2fbaa356a044e4cecc1e89",
+          "workspaceId": "aa5dfac3-bab6-428c-958b-99481168394d",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5a9dd524387f198e737d064a85541e3264cf9e35e4bf64ce5df24ec5269387e5",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f2f7ae680232c975a81826c52c214ca3a712c027b31c9be9cbb7bf09c4c7e934",
+          "workspaceId": "08da5da3-c759-4070-bbd9-110a62997ea9",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "345551ee6a014bdeeb06dfcd987a02926177018235cafdbc8b2baaa5de7e5d9f",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d2e3c3ebad5158b2fd91c62fc6c0a01aee036ae2f6d9c80cd01ff97cb0d054c6",
+          "workspaceId": "c2750ab8-9a80-4a60-93cb-f7cbb6d051f0",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c901dfe8222a7ad562a852d94793ddc2c922de88efe207d04c63f4794845c161",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "72b3a67592c7de92d212a483a50c49f938d1fa7633478f8324b1bf8001ba79ad",
+          "workspaceId": "953f4cef-87fe-479e-90f6-41cd2517a6dc",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ac47b1e9fec9a901c291ce39dc3b892e438b0cf1f7ba505754b1a91ad9cf91a3",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "6844a0289f8315fb7012d4798e27daf7b95215ba8164b691b56237cd4131ad66",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5e68c5c537f9cdcc72eb72a357356870a46b078d9d1bb5fa50637e1448fa2828",
+          "workspaceId": "fae994da-0f28-404f-9f8b-99b1fda56fca",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "166357febbcb9eb398ce34574bee8cd6a98169bd74c75875eca71ddc23886e71",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "124d6a93bf367b3927599de98ff3fb9ecec3d8bdd096968fbf5d1fc397b19851",
+          "workspaceId": "11b24ab9-3869-4c79-b822-a8f19a8871ae",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "18d6b54fa3af76e19e83c399e7e8041e0c47967105d2228873758ffacd30b798",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c4669255b7649b6031edde4e33eea084c617bf35a83c89fd8c7a7bbff18f3075",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "05aba3ec35f4938a369fb43f8ef7a9b93f9bbd0b240cc064368a7503b9171aaf",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "420bd138e3e665bdd54bbc529107db4d89b214ca9a3bd411f972d9328324b538",
+          "workspaceId": "6bc49b7e-996b-460e-8572-ecb6d5885201",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e4a56d73e5169f07a3789f2980ff9ce5dee45d6f3acdc434a49be53b3927e80e",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "dadf654dbefa30d91a5d7b6b08ddf18aa6ebe4b532e3cadd633389203c39f0c2",
+          "workspaceId": "49c544c7-2941-4251-949f-cdfbe9c13445",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "01341be0b12f7a0c38cb3911c8828a724ef17b3a6f344eceb6c81a853ac357a4",
+          "workspaceId": "8c062953-c11b-4524-9ef7-c3ae43e26206",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fee198514c2fea99899fd4b13589775ccae16503d761dafca1d2de35688ea0b9",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "218a486fdd93a5267af7b2d9da2426342f0b550f1471838920e5dfb0d1fa614a",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f09f4ad762a9b96f713d36704ef1baa6dff661ed925c2e8ba5198e73961a6c55",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "869262c8a0bfc953db2583eaf13a558ae2f7b3f4123498b85202b4e6494149c5",
+          "workspaceId": "c3317b45-a200-4450-b8c6-4446a44c434e",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8ac6eae2905f8eb46ba6ee4f4f75769c18e1187a3bc22aaa76983a307ad554cf",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "634581f7df0363fced4c72b9849e8adcfd0dc66159e250daa77988e99b67ce6f",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c0b7ec79aff70c26e7331b6f77fd75c7eb0d007429d4b455e13320327ee056ad",
+          "workspaceId": "c4e369e9-8774-4dd2-9eb9-229aa8868b25",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fbcd7113f0207e8e37b8399111824a6f4c19ca1603699f062c04c154f9350b88",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b7e6292a1222f918ffd000dabc6b4905b35279ec9c5da8ca0addf905654b09eb",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3d87e9cc7331d1ec10d8c822f09ca73784ae4ffbea73aa8481dc40ee4d27795a",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8e32d75d40601f40a1c5183b525bf93a87e47921f95376e3686e8a9a837a5bfe",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "afafa26a943e2d02a1dc3c829fa9d18212f305a07605bb663009be02c5d99d86",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bc32f0475160b0ea894f6ff8b48552aafbe8e755e221a83a43ac8b7cddecada5",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "67db40c3b0485d0fb7eb4751eba3d430768874f5208956436c85946f533c53fa",
+          "workspaceId": "5ae8e368-a88a-43f5-a9ad-e9241e7213c9",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fa2d6c64e93265c6d298bcff5cd9a2410bb96290013c9fe950df695635191ce5",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4d7f4cfd81e3999109ba2013506cbf610fe28843a1f6227a2b528ea77aa33984",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f9b6e2d2acf059779cf7e3471589180908c30720a26df9faabf5089724f28ac5",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "039cf5560033f265ce204b3b142ae4275231ff0aa5948076dc37cf9b3b090224",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e4191885eb2147fa82bcf10ee60dd962cc2ecba14016368c684d639706e79bdf",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "abef0ea8ea36ba6b4c592fec4eea567aa94c89a083ab01b6a4d035ee38f60365",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f2d6457211acb60c891de41e30ff1f9479e0c96ed985b0f3cdd05fed2d1d8875",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5fdcfae74703e85bcd9a0d4c1fb20c0b00244520873fa05027f994843bb1d3c0",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b7bc51188cf23af69feb097826c9fd9ab824203e1d8449d7740338c358c0e66b",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "dfcbe7416f0c38b6cf8e94f4f3ca843d0f775aab012030ea985df42b01e6088e",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b7c2fd300b0e7afe6937c63766e6bad7108dbba37c15854ad0fff235c29572a0",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "55d770c2e2b76b043b7a2014bea13efbcd12a5f90f9d07cfd14aa32bd8801385",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d3d7447a08d895983f9d827842dca44e4e86a44029b57be69360974642ad5a24",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a65e9d000f479a92fc75a5ca8daa1b30aaed24c82f0961043752a7dc8f0d7f86",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f79d6756ffe7b0f2e24e8cd6ef1008e40428bf03c7962b0bedb1fac0274f8908",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ade82e2e06ab89149805b90322213a5635dc857881bb4708e2df14ff5123603c",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "edc908fb5c3bb6de83be366fe65e5aed20a03ce17bf0d50d4fe12215b07a1944",
+          "workspaceId": "be4117b6-bb87-4024-8418-0c64fb6913e1",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ba32e3d1d853a01e993b42c6f0ced59ace353d79c011afd608eb2bc002d508e6",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4b5e9da0a21d916369b83009e50924d61a0f06151d8364865b9efae4f06eef9f",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "deb6c618b891a34ecd0c3ed4689f9df9ae5740191c2a26128c12283685a9d1b8",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bc3be54588f9bbff7a64d5afaaf6a91f367e4b477bfe00859753590492494312",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "7b56d1540a618576276b366937d4c5b73e9be25b11549e4eedd79235f9be82e4",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4a6c1b4d3cacd99b8d99f9e48312b1220016cfc188acd72270c6cbfef7a9c155",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1a148122f23d4e905aea58eb77641c03bf8748e8d20dc7da3e610d23d8055cae",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "6c49e778c0c43f3a5762caeaf556688736e80eabdd62f2ed0c66d2c900c1d624",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "99ce63da3b81b0c6e027273fd472ebb0097e9499794a56c60162e01d8b3703f2",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "777b40638984695e9e4ed8b0eebe778844a28384fc5f2b29c35eeb9c4d17da3b",
+          "workspaceId": "b4d0d918-f6fb-4af5-a5a8-295ddcce8153",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "65795f77032133b4e9dd10c19fc29098dc1999d9656163466f9e0ce036034f68",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3823e7200638f6beafc1d4b833cb2bcc4dd43f1a4c7ec4bf36cfc5778fec0f74",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "cf5e1c95d51405f39cafe999497faa181deb9e205308472c096e9d7a3631471c",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e1057504269e56ab87be421701be625c0f0ec0ea101b6900b18af177e611b1a7",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "08dda461fa9fab54ec4e552b23c74ced9fa93967614496ccc53c416510f75b76",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e3f1216bcbb5568b9944dc6bc9f8cc80edfc51641eb2bd012958d6560d43292b",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1dc92949a86054df1a5ddbfdcc9dc1bd3f5a4628cca5aadc82640f048fa046ac",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "758eae1b2942a57ab9730d7709df31388e371ea159d281d5312c3f40cb38d0cc",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e42776cd52aef4e7d42fbc9e6c4adc4bdc23abb7ed1cabff7713ae63fc9dca37",
+          "workspaceId": "3126762c-9306-4436-b22a-275cd821c6be",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fa1d285232069ff22004322b87882d3bcb10ad7cdbb8812bbbb847f48779e9fe",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "46a26d6e27074b050414e9026df904a92c068895af88ea6051ea546162a0045c",
+          "workspaceId": "c4eadb92-a4f6-47fb-9a0e-ca143d15f703",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "659bbb50d0acbf781cc606992521d982986204aa07d95a3dbd799a2afe6aecbc",
+          "workspaceId": "8dcc00aa-c31a-4fd7-8226-3d91d8079514",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "7d43c2fa9e85fc808d6c39627f5a9ed140194deb2c4485a1d17323303ac65dd4",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2f59e85f2403089bb525556046626d564ccac0db29c66f902afcb86b7dcc0558",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f1f084c8f53e63b262d87f28069204021b37066a53096a8353b6165b236022b4",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "986c5c032f7fa298882684050fc681ef8a91649d19f5d64f56cf355c8dd0f09c",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e881ed0776e5857673d787eb9674656798df92a67c8610a49f082f92eaa98dfb",
+          "workspaceId": "07d32289-670b-4ac0-9f14-61229d65bb32",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a2a19a75055077a4286420f943f59d5eda110d346d4f4e179d1dd3fefb5217bc",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "37e4e4fb5b8a733ff4a8a8ae5960b2b67b660cc1f2e1c11bbf73fd4c8767615d",
+          "workspaceId": "eab53730-4014-4cd8-b4de-8eb846875d58",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "eba23719c4ed15e5d4bd42e1db535f0bae91bb256bfeef0a1e162237b11bbbf1",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4fa7b2d2c08a539d0d32d90006c95c287f702d69317dc6fd62ee32cb41568ff1",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "78769cf495a72d2b808d4f3769e24e89d4f26a293dc161db5fc5560a421801f2",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1382a04ce9bc0ef295e88b0473a04334e4d57f1cdb0996956fc78047eeb3a167",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "972bfad4a013cd88a2c377efdbf3d0a2a0e6e698dcb336f8fc5cbd647e1397bd",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c8a7923bb6bc18f226c3e6dce5f7b803255dc51670b0d3f59910a2108cf5e970",
+          "workspaceId": "92b65ea4-af3a-4619-8b4d-ee2de8aa6dd5",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2f377eb411f9fbe6db84da47b4c9071360e648b1c87c11afb69ddd158c5b3892",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8f81514dce9153ba1b8085ac598b9dc6abfda528ea5c74e53593d45bad5810bb",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4eb9e7eec2af855404bd3cc11120a99ce8d2c47e23a9aee314e83bd24fa6ff7a",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c2844633873eebc6a16d9131ae79de504c062b2eb2d51aa49196f6ea299903b9",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "15907f2375528cf4be64815b3cf9514575cc353fe27e9ec6162a7b012fbf5098",
+          "workspaceId": "0edfa910-1a5b-47d8-bcef-ba22f9166d1b",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ce6ef8dc252bf41a767d59f75178b78b6df4c527a7fe8b6a829843d61b0631dd",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1bffcb7dfab02d1a3a5c834bc4ce515e4b55e267d784374baa76295f1ef05d3a",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9cec89b39cdf795ef8c635a8a96677d770918904784436f31cb10c84c4836087",
+          "workspaceId": "42196062-a252-4011-b276-85c69db55cdf",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3723d2669a63da0f1ed83f91c4f6b443b3bb508ddce5dd80e6e36e75981457b2",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "905f999926a4ddaf17ba7c9a453f1029649a682152698470b7e1ba27068cac64",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fc69316f3bfa8d02fb9753e97dbf1b868eb8a711e89c8bd49a40742d80f22abf",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8636abed40166de052381a9ff95dee0c06c4b2af31fdd3f0e8fba827cf34cd01",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f1e7788f3c6a0581e7f637cce3ca015a8174454ccf13ed6878768dc539ee75b6",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ba481e89760054202002988ff31e90dd13f02a2a627a4c2c02c917897aa8539e",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1a67c46a90c3efe6e73efb390101de79ae548af045f45d416eaac99e42f1c3ef",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c2ec67e361a8323114d40869a8eed9e417c8c5108bc586fa27edb6f63fc2a1ae",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b0299e12955c669fe74be83e74da30270fc5fd69b67ff7ec36cfd89ada680a6e",
+          "workspaceId": "07197210-d106-435a-b334-9c0c570b36d6",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c433a78e9aed0bfef3516dfdb8a7510fcbcd8a05b68ccf1027beff2d8b7c703a",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "cacf0554dff3c1cb4974d2741f56832879a981271080708df9f04c061085ff68",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4f9ba382f7ee698d0b2742768b2df59fe16477b2d0ca1cc2516cfb1dc5d7fb6e",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d8a9de84276870546de1dd245f20671b07f8ca3e3988cb215c317c480fce32b0",
+          "workspaceId": "856ac6bb-5a79-40cf-b9af-ca0066a3eced",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a11494cf8c9dd6f0e43b3e01b8e72dc403ea612ed5beb60e95c0f0b5be0bc09d",
+          "workspaceId": "d2a74e16-ed48-4e50-a3f7-bf7c52ff2d08",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5f7c94614cdd8ec64be904d2f69215b36635eec10274ece435f667b467410ad1",
+          "workspaceId": "a7960d31-515d-4748-9409-2afb9fa790bd",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5f4bf226e48ded35bb91bdfc7cb04ed3b907dfa676e429b19e2365ab7011ffe5",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "eda43cb4379a2f2a4ea3969429a3f39f985ef01b3280de1878f367512cd63a56",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d61e6eae2261d5c7285932851afa55046cfc9fcb29c1d63923f5441839e67f37",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "a382ef3808211e6ce6224cd2782faf735dd75a2f9676ca9da71b0ad1a064c00e",
+          "workspaceId": "0781b568-56bd-4389-b943-af2ec9b13d63",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d1313b134ce72c4fc2ca5809bc7597a579eb414972517dc62609b462c3ca2699",
+          "workspaceId": "681ddc88-286c-4ea6-81b0-d4da1c9611fa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4e548d66359261ca0e3c9dbd677be955be25c33a90c921b1a4f62e89965d8794",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4f7a6810cd32440306b17ee6a940410c6dfbc77034a6006106974f4a42a6935f",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "093d1793fc14dfa214f2fd66404edd6973f4a83d1eceb360a1bd68ea962da95a",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "43870819545655bb0025b3403ba61721ab07178e21f8ce1b4f1f1e939ca70738",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ce3fc677ce16817d1c5136b67d0aeebb2431e9692a3da2b4fe4c103ffdbe17a1",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b5c4f80cad82ee6422ba80aea9d50363aba90ab65d372663430199fe3bdf8147",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fb9088231f313e39148f9991035777dd0cbbe7f19bd25e62183588f4ea5d8181",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c6df5251fec9e9a3e8bcf4b9712399aa697d31202c12cd35c4a2fedad7d5426d",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "8618ec97d02995f4d60586a16ee939f4fd76f1da1d5c6331a1070c201ecab41a",
+          "workspaceId": "feb5f4d5-8ade-4ca4-a87a-90b824257c8c",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d2e2239c9afaccbe84a07fe45da5dd75fe3989a7426b55c5ff04dc6a849a5a9f",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "0549c34ba9ce74d6aad00753e0eefc687b49557aa3bd29379ef9ae889a026c96",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5fc6a205e115fcc4a11b83b81d54739024de11fdc773896a35171a76f89d6d66",
+          "workspaceId": "2f9a694b-2d62-4a5e-85f5-b6ffd78c2be5",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e4235b0f126c0773dc5651f405bd0c1336a2027692c5b00eab8376db8c95f9eb",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1d784dab5e91e111706681c71073747d6b71ec5544b5402ca7720e6e63321280",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e3e01822f9b3cc7098bb7a7d88ab33d91bdf7246f36ff2562177cfedffee6c54",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "665dc8c54f1a3bed23d0006eeb2dde90bd0e87726400f4d88a3f8731c53b378d",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d379d663ce046e4f8284e24b1814a7f2ec2a04cb2c9371f427f0184cc75dd4bb",
+          "workspaceId": "6476bd68-1e92-462f-98e1-e41e6811d5b1",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ec673819c3325cd087911eb9966a58f6f66d3d506d06db16eb4c4ce6c62e995c",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "77a8a540b8d00cd9436f99ed2c6745f77d338c089776a308e578b9735fa0ada4",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "746b8db68d5d60a4dedbc4ff6f06425b73926b75627c24d568c5856ea66de43c",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1b6a400b22b23d35ee0748baed8ce07dbd05680cc2e1e91bd03efb48941da5f9",
+          "workspaceId": "10a9fb8d-f40f-4aa8-9f63-dc815a7c451a",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9ba8cba6888e96e25ac2d7e1e0ea4d8317fdfaeb8be308dd6b1569d1df77345b",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c5eb9e9ee4469b336cc909fe37f6ba0c42ef5007530d2a61d4a45e4473964ffa",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "daa53e53d8d199d3de64699e8aa3d2ab3a7f99f04a086595efc61d0b001b2c9b",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "7c80a384e20fce2e1b30f1a4f8664f081c1821aa13b4d42079048cc31701f62e",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "08bbc555040891e9be4dcf9c40585e660499b1f25044f00a7ee20129dc386f2e",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "0900c47dac6f24d0da4f03d5c22e5bfe945b279becfbacb5a2424841d5769803",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fe613be2d6ee8fb858f12424f418ffac2570409f4c0b44dee79a261da1cc12f7",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4a6c1320782f90bcf2bbd91795850120ad7efd2ed14dc97e955c085b519caf5e",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bcac96e8bf94788e0e2d0ff024d2528b9299557068e527f130831480aefbfeb4",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "01a1cda6c7a6dd443ca23f9b90581e97c4d9f45a02586f9b7520f9c5ec6ac847",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bf559740d7a189c596d0fa644d885149d0cecba75ef1bc033b852d73425b0057",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9fd51e5bb2c01498116b3c510c571a3660c1cf735dd7a855b3587f45d78170b7",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3bc3b2608ce48031d845a5d6475ec9f16750fdbd429aa8a3849eae91ee58d24a",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "56410e0577c6bc1bebc0e35617f5abef86ee25baf2e626ceb8f4dbcc34da2069",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4edcecf7175d2905457c13ff13f0174fba2c37cfc91b0cdc3c7162a5cf867dda",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4733f98d124d7c5265514ddce3a098c3ef971aebad5e296ddc9442d72849dd29",
+          "workspaceId": "df4e3dde-1466-4ded-9093-ffecb30b0e1d",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ef2fa2aca30e0497136a2a470c77901bf85b5693da4df89378a55a82c270a428",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3b1c04b87f673e24a851f7fd0a229c0eb7c72f66818fd1b8938a209e78ad0199",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ee5a9c5c8be63c53bd7c4862417d7a20daad0809aa54d7833c26a4815cc6aba6",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f639e7222addac618efee0621dcfc3d399e757c657e373465f673608a3e91f3f",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "98a1bbbaca0772193b3eade9baf9b5fdebd4476209a8e71e2947b4bf78f6406f",
+          "workspaceId": "744de16e-b461-4a20-afb6-c817213ea2a0",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "d077d21765105830efb679c84d127f465bc334e403a93f79571258eec11c8b0c",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "829c11a0c367ba09ab5e696bb872fbba55bd7fe63c4507347f6ffea47f2cbbbb",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "0b40c7e347a76f7a12f240cad8cf95e09f517a76eda10d745e84aaa27efce9ec",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "20b3ae6cc1a26c6b4b3e96912d020e972709e3bfe9da231de0ffabd5052a18f7",
+          "workspaceId": "72923d25-9143-45b9-a756-91ca86b59055",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4d3a22f7ae2506ea33b630407d92de0859904e7784c2da7367edf9c31cd966c0",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bab99e498a38868702758494a0032b555f6915e531896a37b33f259a14b6f351",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "47ca3d90d67b302a0bab0744775193a81cc5f77e7bb0e76d9d8cac1d051df850",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ce5411e7ecb73c9c4e1301a96f7e9c191f82c21b2d9ef5d1e473f884cfec784b",
+          "workspaceId": "f964db41-3fa4-44d8-aec6-df90bf341f32",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "987d4ac98128d99d43505564cd0b93ace703cf3ff2b6060593f88fb16ee28fba",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "33c803780d9feef1e2214a185e65b8ab5cfe86b726a7ebdbc04ccfad85822c8f",
+          "workspaceId": "d0d81029-84b2-4c3c-b6f6-3be61fd4d982",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "75693b2b8ab3602e8b8c0e3a0b75504da86be6be36829f2a1f19ac262deb9c1f",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "322ec74183b66b39d371f34ea37b1ca5e81dbf43b0b49aa8fe6ebc0b597f717f",
+          "workspaceId": "024d575c-ba34-4d12-bf14-ac492c54680b",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b1c16024faf0566d28702b906ca35462bb119c9cf0c8771b5c5a281cb738be51",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e51f90dc43ca42927d0ee44e68111302a8d3ca74da2e346d8298126aa1448302",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "87a2ba12fbd42f3a290dcb0b83d2ff3af98c235076cef7dcceb1aaf60d89fb0b",
+          "workspaceId": "b534f11e-825c-4027-acf3-d675a39be3b5",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "24782d53e9c5e4e2a1e1c0a9ca6636b4dfc42534cbc9fbbd08875bc2f0b15484",
+          "workspaceId": "6d607ff6-2a1b-445b-9fe8-63ad6bd4a3ee",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "25788737cf3c595d408ff44f912795855963244580d22c0c91cb9621de43ce5f",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fdc75606c2a43818bb4d7ba43534e0f53532ce08af3fafcae9d1033e4bfdc511",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "3184ab9e7e55e69d694aa54463a576c505afdb5068038f2668bd28303d8b3ecb",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "c5e867ea3f84304d19f81ceb0fe014900478b5e1097df2df9629cbaff421f032",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2474c054aee4d29a62e9561764b167b11359e67292ad95f4a8760cf68eba3186",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "bf0c607907bf1d8b80c387e94adbf95ebb578d4b2117c149125b6b6b64e3ffc3",
+          "workspaceId": "997b76ab-abad-4f74-be1c-4f77b321fb6f",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "732098737d91d950e10c9a032b89a5ffa93228a3c74adae5532e3399d9b65036",
+          "workspaceId": "9d72ad3e-eb6a-4a92-a5f7-9c571d0d55d8",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "19119e2750f3a798d9f31bbfc8312aaa7d1bd3fb2825d5375003e6e6f541e132",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "58d3e0943af3d6e96b0972b9b9f05bae8509c7678b949dc924d7e923bb04dbe3",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1c475eb84c9a72105afbadedfbf4042daf9ab372bc0b424202db28f27ce74fb5",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b4ec9cdb9ed8f61291570f53a82bfbcaddfacfee20bd877d5881dc61f3a114ec",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "144c7b3d30b9bb2db8c351cb9ee33f84a66064e64703ef2d93d022edd74bb6bc",
+          "workspaceId": "2b608fbd-0abe-4898-a628-1e3830453ca1",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e4b93db6626f7322804e2120a21338daac03300952b2f0b1b80dc05213b5264a",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ad1b429b639c2ebdc06f2b3ac44381074cf6c00942f1e8891ce3a371833c5fc8",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1392be076f9be60cc11eeb63b1ae46150b4d0618019dab932e6d344719af9857",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f42b240425a667ae756f09bae6351fd877595b4e4cb89c11ea64b618b8b66723",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "960165c4c9b00b559d9e9e7d4f8a5f2c35420717d7664d84d57b149814ec66b9",
+          "workspaceId": "005f74eb-d74b-4c9a-9cac-b116e1a7a4fb",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "4ff791b482ead310ee27204d611c797a753db97e3a0000f8170900a8275db122",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "65c42960f4c4caa3e7d78db0c84eda6bb8c6081b1eb4b55655d154d7796dd1f6",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2c2779a1b60ab7e8688c1763bdc0db1499670df3e84db4753962cb628908295c",
+          "workspaceId": "e708ff0d-ce17-4299-81bd-a632d592e7d1",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "640f0080f36294cd3a51009b03689212498795d58aef4eacc7aaeff5ee8f1311",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "462d3ad80254a0462a9a7a47bc83f88820ac5e406ba63bb702e3e1efc30e06a1",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5d07044696b78c19a5f5398e6668199ce82b728cf87c0011ddbaebd3920a2d30",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "fdcd59b7f170fa96852e38c26a4731e0d0a851341429a5089fb87e17083437e3",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "f6f9afc6821b4f9b19942c4c233c69f5e3490355520e514b7f95795a32223c0b",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e7af8c11bcb4871d4ec4eb40a88cf5d11677bc545777ae85308cbc339738cc0d",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "6b0452f0fefc76517e02bf3d3d700a356f4d67c07de063141badacc5ec9f7d17",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1dc97d87b0656d680124551597bdb77b6b5fbadefdb116f307e690bb1e2a84e9",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ae749f05eb3a424dff2723d23c3b3ed2e12fbc87fb81f9caf3544032e3c3abea",
+          "workspaceId": "1fa2a396-3455-4ce7-97ec-b122da0b409e",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "dc82c9aee55a2c8f626f06ce1a094f1d644141638f0138f8fa5837c1e3ae50a6",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "0b390ca57b4926e9fcbff630ff9bf933b78178b924e248adf82d451e26f7d3c9",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "7b9b1d0e1289e8ec9f80dde393d98a3d9d34da93c11cbe02daebd54e4978c75c",
+          "workspaceId": "75d653b4-63fd-48b1-9389-e5c2cf7e8571",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5aea724a1c7ec3a9453e71a3f9b59b0540e6070e645607b6279becc8708d9460",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "e5b788489b30c875d1f7fae0e4f7c3d3d1b858d52641f6fe3fdf31642b4d7da0",
+          "workspaceId": "f71bb6be-66be-4398-bd60-430f8ce12a9d",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "04ed9a0e43c3b9a4a028e879eb5ac1c343fb845961e45d3f2166c3712789c422",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "eec9fbffcc33f5f53f7b10193da662dd366e89781008dfa7f588b3fe77094366",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "5b350fd7147f068b746dfd37fc5e5e4d07efd1443e5a99d717cd990005553077",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "441d1175746813a3c06ac5fabbe4ac9b946225ce59eb47310831feab37fceb80",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "9be3997a0f98a769594863f7a8cd1c04eb49cc2930847ef0622a532cded76838",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1d1a138256af07c4a6bee91041627a617578def88b6c36a219151322659158dc",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "907882b305dd6e46340f1760e6a500c48659776fd4539c9e18ab5ab8d20d2834",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "22610e863fb7fb72ed524125e6163560d9bc92d9318fd13a6470a0c2062554b4",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2946e27529441c55b22653bac932466c4d7d7ecde44ff0a25865e0ca8e5f548a",
+          "workspaceId": "9d266c1b-80fc-497f-85fa-25c22707bea4",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "1f734420af12a35a073920d9988c98e6d87b980659c9488bfb83710d9225cbf1",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ad4989eda7cb7a1f80cd99245279cdbab2a2360c85e3b44e7ac43938e0e657bd",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "ee56a6ad0897894ab02f58ebda1be20cab6615dc5c28681ddf1d83d4c09b2517",
+          "workspaceId": "2d6e9982-f296-4189-8685-ffc7fb3cc3b6",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "05e4b3916ce07ab651cfa13e70c33e1bedd765c155a3c27c03b406a086a0ffc5",
+          "workspaceId": null,
+          "previousAccess": "global content only; no workspace membership",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "247e45ea10178ecb9333fe1eb5be6bead1aa2f1f5ac8c30058b914cd22b00706",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "2a41079c9ba4774d6edf2eb1dad12dbc89b151de8703e7df77d33a1b49f73cf7",
+          "workspaceId": "a97bd792-f138-4e6f-8255-fb57899c386d",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "b632f79ab89247c96a6e50cdb97544585a2ea814cabe190ebd1c6ca24eb990a8",
+          "workspaceId": "29033ceb-3663-4cac-8ded-f7251a13ca57",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "59813609707b971bf61a021930ef5ff82c4a6ea9939c464af88793ab20d58ced",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        },
+        {
+          "subjectHash": "11979aaff430911232e64d37f7ecdba5e88c4b60d003021e28421e5faac417b4",
+          "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+          "previousAccess": "staff+membership workspace operations and global content",
+          "afterNewEnforcement": "no new grant: deny workspace business operations and global content; staff identity remains"
+        }
+      ]
+    },
+    "shaped": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "activeStaff": 0,
+      "activeWorkspaceMembers": 0,
+      "newGrantsNeeded": 0,
+      "platformReviewNeeded": 0,
+      "rows": []
+    }
+  }
+}

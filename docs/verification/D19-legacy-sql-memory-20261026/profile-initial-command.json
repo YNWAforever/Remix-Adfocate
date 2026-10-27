@@ -1,0 +1,37 @@
+{
+  "startedAt": "2026-10-25T16:13:34.460380+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "--input-type=module",
+    "-e",
+    "import {createLegacyMemoryProfile} from './docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs';import{writeFileSync}from'node:fs';const{beforeFixtureSql,afterFixtureSql,...p}=createLegacyMemoryProfile();writeFileSync('docs/verification/D19-legacy-sql-memory-20261026/sql-profile.json',JSON.stringify(p,null,2)+'\\n');process.stdout.write(JSON.stringify({status:'PASS_PURE_ORIGINAL_SQL_PROFILE',sources:p.sources.length,statements:p.statements.length,profileDigest:p.profileDigest,externalTargetCalls:0})+'\\n');"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFilesUnchanged": 788,
+  "verificationArtifactSources": [
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/legacy-reward-core.node.mjs",
+      "sha256": "464579087e0b75675a63b60083ad621918f41d61a59161855b00b0f8b13d4e26"
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df"
+    }
+  ],
+  "verificationArtifactFingerprint": "4e3a7504ab4021888f27f974a24448481ef4a20f7a4659554948bb4d5d03a7f0",
+  "nodeVersion": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T16:13:34.329073+00:00",
+    "freePhysicalGiB": 6.6735076904296875,
+    "freeCommitGiB": 11.111156463623047,
+    "minimumGiB": 3
+  },
+  "scope": "Standalone in-process memory SQL, no full-suite/runtime claim",
+  "physicalTargetsOrClients": 0,
+  "realAuthSubjectsOrFixtures": 0,
+  "packageInstallOrNetworkProvider": false,
+  "nodePreloadsAndCredentialsStripped": true,
+  "pid": 38324,
+  "endedAt": "2026-10-25T16:13:34.743921+00:00",
+  "exit": 0
+}

@@ -1,0 +1,18 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-staff-capabilities.test.ts (8 tests) 55559ms
+   ✓ D19 exact-owned staff roles/API/RLS > requires a separate staff grant despite brand owner membership and preserves no-membership scope errors 1468ms
+   ✓ D19 exact-owned staff roles/API/RLS > keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings 2827ms
+   ✓ D19 exact-owned staff roles/API/RLS > denies direct browser role writes/RPC/self-elevation even with forged user metadata 587ms
+   ✓ D19 exact-owned staff roles/API/RLS > persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant 2331ms
+   ✓ D19 exact-owned staff roles/API/RLS > revokes active staff, membership or role immediately using the same signed-in session 1267ms
+   ✓ D19 exact-owned staff roles/API/RLS > requires platform content editor for global drafts without inventing course content 1028ms
+   ✓ D19 exact-owned staff roles/API/RLS > preserves brand_users user_id primary key and owner-only bootstrap ACL 565ms
+   ✓ D19 exact-owned staff roles/API/RLS > hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances 12787ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  02:39:22
+   Duration  66.44s (transform 4.93s, setup 8.03s, collect 567ms, tests 55.56s, environment 0ms, prepare 1.19s)
+

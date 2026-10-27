@@ -1,0 +1,83 @@
+{
+  "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "identity": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct user approval reply call_70fd0be5fefd4269b44c021c56d56c10; C1 recovery manifest 257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "atUtc": "2026-10-25T06:04:46.638738+00:00",
+  "actualPrestartContractPassed": true,
+  "actualPostImageContractPassed": true,
+  "observation": {
+    "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "containerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "imageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "configuration": {
+      "POSTGRES_USER": "supabase_admin",
+      "POSTGRES_DB": "postgres",
+      "PGDATA": "/var/lib/postgresql/data"
+    },
+    "catalog": {
+      "authUsers": 0,
+      "publicTables": 0,
+      "bootstrapRole": {
+        "oid": "10",
+        "name": "supabase_admin",
+        "login": true,
+        "superuser": true
+      },
+      "serverVersion": "17.6",
+      "regularNamedRoles": [
+        {
+          "oid": "16446",
+          "name": "authenticator",
+          "login": true,
+          "superuser": false
+        },
+        {
+          "oid": "16384",
+          "name": "postgres",
+          "login": true,
+          "superuser": false
+        },
+        {
+          "oid": "10",
+          "name": "supabase_admin",
+          "login": true,
+          "superuser": true
+        },
+        {
+          "oid": "16504",
+          "name": "supabase_auth_admin",
+          "login": true,
+          "superuser": false
+        },
+        {
+          "oid": "16506",
+          "name": "supabase_storage_admin",
+          "login": true,
+          "superuser": false
+        }
+      ],
+      "applicationHistory": null,
+      "authSchemaMigrations": 7
+    }
+  },
+  "immutableImageInitializationComplete": true,
+  "initializationLogSha256": "e5d0eca8b14bb30e6b217b12507bb90b15fba2f3022e506f1454d1bf9ed7e513",
+  "newSystemServiceCredentialsSet": true,
+  "applicationMigrationsApplied": 0,
+  "applicationFixturesCreated": 0,
+  "applicationClientsCreated": 0,
+  "oldTargetsMutated": false
+}

@@ -1,0 +1,9 @@
+{
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "remote": "https://github.com/YNWAforever/Remix-Adfocate.git",
+  "staged": [],
+  "statusMode": "--porcelain --untracked-files=all final snapshot only",
+  "statusEntries": 3170,
+  "noCommitPushMergeDeploy": true
+}

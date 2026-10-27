@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-25T13:54:02.198517+00:00",
+  "sourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "mode": "Single-agent source and layered-evidence review; no parallel agents or server-target actions.",
+  "codeChecks": {
+    "usesExistingApplicationWorkflowAndCrmEngines": true,
+    "serviceOnlyRpcAndIndependentLiveScopeCheck": true,
+    "trustedActorAndFrozenDecisionTime": true,
+    "atomicAuditReceiptAndWorkflowRollback": true,
+    "stableKeyAndPayloadConflict": true,
+    "legacyNoBodyCompatibility": true,
+    "unknownHistoricalActorNotInvented": true,
+    "noNewTableColumnFinancialEngineOrOldMigrationChecksumChange": true
+  },
+  "uiChecks": {
+    "labelledReasonAnd44pxActions": true,
+    "controlledInputKeyedByWorkspaceAndRow": true,
+    "currentEditedReasonUsedOnExplicitRetry": true,
+    "inflightOwnReasonFieldDisabled": true,
+    "known409WinnerSummaryRetained": true,
+    "creatorStoredReasonAndHonestMissingReason": true,
+    "reactTextEscapingNoRawHtml": true,
+    "claim": "Code/component-test checks only; no new physical-device/manual-AT/browser/hosted acceptance."
+  },
+  "evidenceChecks": {
+    "full": {
+      "passed": 2103,
+      "failed": 0,
+      "gatedSkip": 363,
+      "files": 291,
+      "report": {
+        "path": "docs/verification/D19-application-decisions-20261025/full-delivery-final.json",
+        "sha256": "9c3cb7e9efee8637db83243189a0d3ac2db1d548e8d85b2c2a6489017394bbe7"
+      }
+    },
+    "old16And194Pass": true,
+    "serverTargetActions": 0,
+    "allEarlierFailureReceiptsRetained": true,
+    "currentRuntimeAuthorityNotBorrowedFrom696e": true,
+    "originalAuditZipRecheck": "Absent at exact supplied Downloads path; no fresh hash verification.",
+    "modelInterface": "Retained UNKNOWN from prior kernel-init failure; not reverified or switched by this run."
+  },
+  "designReferences": [
+    "https://supabase.com/docs/guides/database/functions",
+    "https://www.postgresql.org/docs/current/explicit-locking.html"
+  ],
+  "referencesAreNotAcceptanceProof": true,
+  "wholeR1Verified": false,
+  "releaseHold": true
+}

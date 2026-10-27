@@ -1,0 +1,1160 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/lib/activationAnalytics.test.ts (35 tests) 15ms
+ ❯ src/routes/-_app.home.test.tsx (15 tests | 1 failed) 707ms
+   × Home > routes the primary action for an active joined mission to its submission workspace 136ms
+     → Unable to find an accessible element with the role "link" and name "新增證明"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"space-y-4"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "切換語言":
+  [36m<button[39m
+    [33maria-label[39m=[32m"切換語言"[39m
+    [33mclass[39m=[32m"inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "創作者護照":
+  [36m<a[39m
+    [33maria-label[39m=[32m"創作者護照"[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"[39m
+    [33mhref[39m=[32m"/passport"[39m
+  [36m/>[39m
+
+  Name "個人檔案":
+  [36m<a[39m
+    [33maria-label[39m=[32m"個人檔案"[39m
+    [33mclass[39m=[32m"flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"[39m
+    [33mhref[39m=[32m"/profile"[39m
+  [36m/>[39m
+
+  Name "Active mission 已加入":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+    [33mhref[39m=[32m"/my/sub-active"[39m
+  [36m/>[39m
+
+  Name "查看錢包詳情":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-3 inline-flex min-h-11 items-center px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+    [33mhref[39m=[32m"/wallet"[39m
+  [36m/>[39m
+
+  Name "設定興趣":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+    [33mhref[39m=[32m"/profile"[39m
+  [36m/>[39m
+
+  Name "新增社交帳號":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+    [33mhref[39m=[32m"/profile"[39m
+  [36m/>[39m
+
+  Name "驗證擁有權":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+    [33mhref[39m=[32m"/profile"[39m
+  [36m/>[39m
+
+  Name "限時任務":
+  [36m<a[39m
+    [33maria-label[39m=[32m"限時任務"[39m
+    [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"[39m
+    [33mhref[39m=[32m"/mission"[39m
+  [36m/>[39m
+
+  Name "積分兌換":
+  [36m<a[39m
+    [33maria-label[39m=[32m"積分兌換"[39m
+    [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"[39m
+    [33mhref[39m=[32m"/redemption"[39m
+  [36m/>[39m
+
+  Name "積分記錄":
+  [36m<a[39m
+    [33maria-label[39m=[32m"積分記錄"[39m
+    [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"[39m
+    [33mhref[39m=[32m"/wallet"[39m
+  [36m/>[39m
+
+  Name "探索獎賞":
+  [36m<a[39m
+    [33maria-label[39m=[32m"探索獎賞"[39m
+    [33mclass[39m=[32m"pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"[39m
+    [33mhref[39m=[32m"/explore"[39m
+  [36m/>[39m
+
+  Name "今日整乜好":
+  [36m<a[39m
+    [33maria-label[39m=[32m"今日整乜好"[39m
+    [33mclass[39m=[32m"flex items-center justify-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] p-4 font-heading text-lg font-bold text-white shadow-[4px_4px_0_0_var(--color-ink)]"[39m
+    [33mhref[39m=[32m"/match"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-[0.18em]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-sm text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-mono text-xs uppercase tracking-wide opacity-80"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 font-display text-4xl font-bold text-[var(--color-acid)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-sm leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-xs text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading text-sm font-semibold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "歡迎返嚟，阿明":
+  [36m<h1[39m
+    [33mclass[39m=[32m"mt-1 font-display text-2xl font-bold"[39m
+  [36m/>[39m
+
+  Name "進行中的任務":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading text-lg font-bold"[39m
+    [33mid[39m=[32m"_r_k_"[39m
+  [36m/>[39m
+
+  Name "收入":
+  [36m<h2[39m
+    [33mclass[39m=[32m"flex items-center gap-2 font-heading text-lg font-bold"[39m
+    [33mid[39m=[32m"_r_l_"[39m
+  [36m/>[39m
+
+  Name "適合你的任務":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading text-lg font-bold"[39m
+    [33mid[39m=[32m"suitable-missions-heading"[39m
+  [36m/>[39m
+
+  Name "設定里程碑":
+  [36m<h2[39m
+    [33mclass[39m=[32m"font-heading text-lg font-bold"[39m
+    [33mid[39m=[32m"_r_m_"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "進行中的任務":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_k_"[39m
+    [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"[39m
+  [36m/>[39m
+
+  Name "收入":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_l_"[39m
+    [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"[39m
+  [36m/>[39m
+
+  Name "適合你的任務":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"suitable-missions-heading"[39m
+    [33mclass[39m=[32m"space-y-3"[39m
+  [36m/>[39m
+
+  Name "設定里程碑":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"_r_m_"[39m
+    [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-3 space-y-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-4 space-y-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"rounded-xl border border-[var(--color-ink)] p-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-xs text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-xs text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 font-heading text-xl font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 font-heading text-xl font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  progressbar:
+
+  Name "設定里程碑":
+  [36m<div[39m
+    [33maria-label[39m=[32m"設定里程碑"[39m
+    [33maria-valuemax[39m=[32m"100"[39m
+    [33maria-valuemin[39m=[32m"0"[39m
+    [33maria-valuenow[39m=[32m"40"[39m
+    [33maria-valuetext[39m=[32m"2/5 個就緒里程碑已完成"[39m
+    [33mclass[39m=[32m"mt-3 h-3 overflow-hidden rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-paper)]"[39m
+    [33mrole[39m=[32m"progressbar"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "限時任務":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"限時任務"[39m
+    [33mclass[39m=[32m"grid grid-cols-2 gap-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"space-y-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center justify-end gap-2"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"切換語言"[39m
+            [33mclass[39m=[32m"inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mEN[0m
+          [36m</button>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"創作者護照"[39m
+            [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"[39m
+            [33mhref[39m=[32m"/passport"[39m
+          [36m>[39m
+            [0m🌱[0m
+            [0m [0m
+            [0mKOC 新手[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"個人檔案"[39m
+            [33mclass[39m=[32m"flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0m阿[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-[0.18em]"[39m
+          [36m>[39m
+            [0mADFOCATE · KOCMAX[0m
+          [36m</p>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"mt-1 font-display text-2xl font-bold"[39m
+          [36m>[39m
+            [0m歡迎返嚟，阿明[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 text-sm text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0m下一步、進行中工作同收入，一頁睇晒。[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<p[39m
+        [33mrole[39m=[32m"status"[39m
+      [36m>[39m
+        [0m正在載入你目前的工作…[0m
+      [36m</p>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_k_"[39m
+        [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading text-lg font-bold"[39m
+          [33mid[39m=[32m"_r_k_"[39m
+        [36m>[39m
+          [0m進行中的任務[0m
+        [36m</h2>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"mt-3 space-y-2"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+              [33mhref[39m=[32m"/my/sub-active"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"min-w-0 font-heading text-sm font-semibold"[39m
+              [36m>[39m
+                [0mActive mission[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"shrink-0 rounded-full border border-[var(--color-ink)] px-2 py-0.5 font-mono text-[10px] uppercase"[39m
+              [36m>[39m
+                [0m已加入[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+      [36m</section>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid gap-6 lg:grid-cols-2"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33maria-labelledby[39m=[32m"_r_l_"[39m
+          [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"flex items-center gap-2 font-heading text-lg font-bold"[39m
+            [33mid[39m=[32m"_r_l_"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-wallet-cards h-5 w-5"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 11h3c.8 0 1.6.3 2.1.9l1.1.9c1.6 1.6 4.1 1.6 5.7 0l1.1-.9c.5-.5 1.3-.9 2.1-.9H21"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m收入[0m
+          [36m</h2>[39m
+          [36m<dl[39m
+            [33mclass[39m=[32m"mt-4 grid gap-3 sm:grid-cols-2"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-xl bg-[var(--color-paper)] p-3"[39m
+            [36m>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-xs text-[var(--color-soft-ink)]"[39m
+              [36m>[39m
+                [0m可提取金額[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"mt-1 font-heading text-xl font-bold"[39m
+              [36m>[39m
+                [0mHK$125.00[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"rounded-xl bg-[var(--color-paper)] p-3"[39m
+            [36m>[39m
+              [36m<dt[39m
+                [33mclass[39m=[32m"text-xs text-[var(--color-soft-ink)]"[39m
+              [36m>[39m
+                [0m待審核或發放[0m
+              [36m</dt>[39m
+              [36m<dd[39m
+                [33mclass[39m=[32m"mt-1 font-heading text-xl font-bold"[39m
+              [36m>[39m
+                [0mHK$75.00[0m
+              [36m</dd>[39m
+            [36m</div>[39m
+          [36m</dl>[39m
+    ...
+ ✓ src/components/CreatorWorkHome.test.tsx (13 tests) 871ms
+ ✓ src/components/creator-activation.test.tsx (10 tests) 148ms
+ ✓ src/lib/activeMission.test.ts (17 tests) 5ms
+ ✓ src/lib/creatorActivation.test.ts (12 tests) 5ms
+ ✓ src/lib/useCreatorActivation.test.tsx (4 tests) 31ms
+ ✓ src/components/SideNav.test.tsx (3 tests) 256ms
+ ✓ src/components/BottomNav.test.tsx (2 tests) 147ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.home.test.tsx > Home > routes the primary action for an active joined mission to its submission workspace
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "新增證明"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  <header
+    class="space-y-4"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "切換語言":
+  <button
+    aria-label="切換語言"
+    class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"
+    type="button"
+  />
+
+  --------------------------------------------------
+  link:
+
+  Name "創作者護照":
+  <a
+    aria-label="創作者護照"
+    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
+    href="/passport"
+  />
+
+  Name "個人檔案":
+  <a
+    aria-label="個人檔案"
+    class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
+    href="/profile"
+  />
+
+  Name "Active mission 已加入":
+  <a
+    class="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+    href="/my/sub-active"
+  />
+
+  Name "查看錢包詳情":
+  <a
+    class="mt-3 inline-flex min-h-11 items-center px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+    href="/wallet"
+  />
+
+  Name "設定興趣":
+  <a
+    class="mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+    href="/profile"
+  />
+
+  Name "新增社交帳號":
+  <a
+    class="mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+    href="/profile"
+  />
+
+  Name "驗證擁有權":
+  <a
+    class="mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+    href="/profile"
+  />
+
+  Name "限時任務":
+  <a
+    aria-label="限時任務"
+    class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"
+    href="/mission"
+  />
+
+  Name "積分兌換":
+  <a
+    aria-label="積分兌換"
+    class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"
+    href="/redemption"
+  />
+
+  Name "積分記錄":
+  <a
+    aria-label="積分記錄"
+    class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"
+    href="/wallet"
+  />
+
+  Name "探索獎賞":
+  <a
+    aria-label="探索獎賞"
+    class="pastel-card flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 font-heading font-semibold"
+    href="/explore"
+  />
+
+  Name "今日整乜好":
+  <a
+    aria-label="今日整乜好"
+    class="flex items-center justify-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] p-4 font-heading text-lg font-bold text-white shadow-[4px_4px_0_0_var(--color-ink)]"
+    href="/match"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="font-mono text-[11px] uppercase tracking-[0.18em]"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-sm text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-mono text-xs uppercase tracking-wide opacity-80"
+  />
+
+  Name "":
+  <p
+    class="mt-1 font-display text-4xl font-bold text-[var(--color-acid)]"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-sm leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="mt-2 text-xs text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <p
+    class="font-heading text-sm font-semibold"
+  />
+
+  Name "":
+  <p
+    class="mt-1 text-xs leading-relaxed text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "歡迎返嚟，阿明":
+  <h1
+    class="mt-1 font-display text-2xl font-bold"
+  />
+
+  Name "進行中的任務":
+  <h2
+    class="font-heading text-lg font-bold"
+    id="_r_k_"
+  />
+
+  Name "收入":
+  <h2
+    class="flex items-center gap-2 font-heading text-lg font-bold"
+    id="_r_l_"
+  />
+
+  Name "適合你的任務":
+  <h2
+    class="font-heading text-lg font-bold"
+    id="suitable-missions-heading"
+  />
+
+  Name "設定里程碑":
+  <h2
+    class="font-heading text-lg font-bold"
+    id="_r_m_"
+  />
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  <p
+    role="status"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "進行中的任務":
+  <section
+    aria-labelledby="_r_k_"
+    class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
+  />
+
+  Name "收入":
+  <section
+    aria-labelledby="_r_l_"
+    class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
+  />
+
+  Name "適合你的任務":
+  <section
+    aria-labelledby="suitable-missions-heading"
+    class="space-y-3"
+  />
+
+  Name "設定里程碑":
+  <section
+    aria-labelledby="_r_m_"
+    class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ul
+    class="mt-3 space-y-2"
+  />
+
+  Name "":
+  <ul
+    class="mt-4 space-y-3"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  Name "":
+  <li
+    class="rounded-xl border border-[var(--color-ink)] p-3"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt
+    class="text-xs text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="text-xs text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd
+    class="mt-1 font-heading text-xl font-bold"
+  />
+
+  Name "":
+  <dd
+    class="mt-1 font-heading text-xl font-bold"
+  />
+
+  --------------------------------------------------
+  progressbar:
+
+  Name "設定里程碑":
+  <div
+    aria-label="設定里程碑"
+    aria-valuemax="100"
+    aria-valuemin="0"
+    aria-valuenow="40"
+    aria-valuetext="2/5 個就緒里程碑已完成"
+    class="mt-3 h-3 overflow-hidden rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-paper)]"
+    role="progressbar"
+  />
+
+  --------------------------------------------------
+  navigation:
+
+  Name "限時任務":
+  <nav
+    aria-label="限時任務"
+    class="grid grid-cols-2 gap-3"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+    >
+      <header
+        class="space-y-4"
+      >
+        <div
+          class="flex items-center justify-end gap-2"
+        >
+          <button
+            aria-label="切換語言"
+            class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"
+            type="button"
+          >
+            EN
+          </button>
+          <a
+            aria-label="創作者護照"
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
+            href="/passport"
+          >
+            🌱
+             
+            KOC 新手
+          </a>
+          <a
+            aria-label="個人檔案"
+            class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
+            href="/profile"
+          >
+            阿
+          </a>
+        </div>
+        <div>
+          <p
+            class="font-mono text-[11px] uppercase tracking-[0.18em]"
+          >
+            ADFOCATE · KOCMAX
+          </p>
+          <h1
+            class="mt-1 font-display text-2xl font-bold"
+          >
+            歡迎返嚟，阿明
+          </h1>
+          <p
+            class="mt-1 text-sm text-[var(--color-soft-ink)]"
+          >
+            下一步、進行中工作同收入，一頁睇晒。
+          </p>
+        </div>
+      </header>
+      <p
+        role="status"
+      >
+        正在載入你目前的工作…
+      </p>
+      <section
+        aria-labelledby="_r_k_"
+        class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
+      >
+        <h2
+          class="font-heading text-lg font-bold"
+          id="_r_k_"
+        >
+          進行中的任務
+        </h2>
+        <ul
+          class="mt-3 space-y-2"
+        >
+          <li>
+            <a
+              class="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              href="/my/sub-active"
+            >
+              <span
+                class="min-w-0 font-heading text-sm font-semibold"
+              >
+                Active mission
+              </span>
+              <span
+                class="shrink-0 rounded-full border border-[var(--color-ink)] px-2 py-0.5 font-mono text-[10px] uppercase"
+              >
+                已加入
+              </span>
+            </a>
+          </li>
+        </ul>
+      </section>
+      <div
+        class="grid gap-6 lg:grid-cols-2"
+      >
+        <section
+          aria-labelledby="_r_l_"
+          class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5"
+        >
+          <h2
+            class="flex items-center gap-2 font-heading text-lg font-bold"
+            id="_r_l_"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-wallet-cards h-5 w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <path
+                d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2"
+              />
+              <path
+                d="M3 11h3c.8 0 1.6.3 2.1.9l1.1.9c1.6 1.6 4.1 1.6 5.7 0l1.1-.9c.5-.5 1.3-.9 2.1-.9H21"
+              />
+            </svg>
+            收入
+          </h2>
+          <dl
+            class="mt-4 grid gap-3 sm:grid-cols-2"
+          >
+            <div
+              class="rounded-xl bg-[var(--color-paper)] p-3"
+            >
+              <dt
+                class="text-xs text-[var(--color-soft-ink)]"
+              >
+                可提取金額
+              </dt>
+              <dd
+                class="mt-1 font-heading text-xl font-bold"
+              >
+                HK$125.00
+              </dd>
+            </div>
+            <div
+              class="rounded-xl bg-[var(--color-paper)] p-3"
+            >
+              <dt
+                class="text-xs text-[var(--color-soft-ink)]"
+              >
+                待審核或發放
+              </dt>
+              <dd
+                class="mt-1 font-heading text-xl font-bold"
+              >
+                HK$75.00
+              </dd>
+            </div>
+          </dl>
+    ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.home.test.tsx:226:19
+ Test Files  1 failed | 8 passed (9)
+    224|     renderHome();
+    225| 
+    226|     expect(screen.getByRole("link", { name: dict.zh["app.activation.ne…
+       |                   ^
+    227|       .toHaveAttribute("href", "/my/sub-active");
+    228|   });
+      Tests  1 failed | 110 passed (111)
+   Start at  03:59:38
+   Duration  10.33s (transform 466ms, setup 2.47s, collect 2.42s, tests 2.19s, environment 8.44s, prepare 1.17s)
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

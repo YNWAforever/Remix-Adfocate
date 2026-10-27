@@ -1,0 +1,76 @@
+import {readFileSync,writeFileSync,readdirSync,existsSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {createHash} from 'node:crypto';
+import {isDeepStrictEqual as equal} from 'node:util';
+import assert from 'node:assert/strict';
+import process from 'node:process';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+import {FixtureJournal} from '../scripts/audit/fixture-journal.mjs';
+import {fixtureInventorySql,assertInventoryCaps} from '../scripts/audit/b2-fixture-inventory.mjs';
+import {neutralitySnapshot,legacyRewardAnchors,assertBrowserPendingNeutrality} from '../scripts/audit/neutrality-snapshot.mjs';
+const root=process.cwd(),path='docs/verification/D19-C1-browser-continuation-runtime-manifest.json';
+const read=p=>JSON.parse(readFileSync(p,'utf8')),hash=b=>createHash('sha256').update(b).digest('hex');
+const m=read(path),r=m.execution.recovery,base=resolve(root,'docs/verification',m.target.projectId,m.execution.artifactNamespace);
+function bound(ref){const bytes=readFileSync(ref.path);assert.equal(hash(bytes),ref.sha256,ref.path);return JSON.parse(bytes);}
+for(const key of Object.keys(process.env))if(key.startsWith('DOCKER_')||/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
+Object.assign(process.env,m.execution.environment,{DOCKER_CONTEXT:'desktop-linux',NODE_OPTIONS:''});
+function readonlyTarget(phase){
+ process.env.ADFOCATE_B2_PHASE=phase;const verified=verifiedTarget();
+ return {...verified,sql:q=>{const body=q.trim();if(/^begin read only;/i.test(body))return verified.sql(body);assert(/^select\b/i.test(body),'Final observer permits only SELECT/READ ONLY');return verified.sql('begin read only;'+body+(body.endsWith(';')?'':';')+'commit;');}};
+}
+const phases=[],originInventories={};let live;
+for(const phase of m.fixture.phases){
+ const target=readonlyTarget(phase.phase),context=target.context,ref=r.references.phases[phase.phase];
+ for(const item of ref.journals)assert.equal(hash(readFileSync(item.path)),item.sha256);
+ originInventories[phase.phase]=bound(ref.inventory).inventory;
+ const journal=new FixtureJournal(context.privatePath('owned-journal.jsonl'),context.lineage,m.fixture.rowCaps[phase.phase]);journal.assertReady();
+ const inventory=JSON.parse(target.sql(fixtureInventorySql(m.fixture.rowScopes,journal.owned())));assertInventoryCaps(inventory,m.fixture.rowCaps[phase.phase]);
+ const addedSessions=inventory.auth_sessions.count-originInventories[phase.phase].auth_sessions.count;
+ const addedRefreshTokens=inventory.auth_refresh_tokens.count-originInventories[phase.phase].auth_refresh_tokens.count;
+ assert(addedSessions>=0&&addedSessions<=r.authRenewal.maxSessionAdds[phase.phase]);
+ // Token rotation may add a refresh row without another session. Original per-family caps above stay mandatory.
+ assert(addedRefreshTokens>=0);
+ const result={at:new Date().toISOString(),identity:target.identity,lineage:context.lineage,inventory,allCapsPass:true,addedSessions,addedRefreshTokens};
+ writeFileSync(context.publicPath('fixture-inventory-after-readback.json'),JSON.stringify(result,null,2)+'\n');phases.push({phase:phase.phase,families:Object.keys(inventory).length,allCapsPass:true,addedSessions,addedRefreshTokens,inventory});
+ if(phase.phase==='browser')live=target;
+}
+const context=live.context,fixture=context.readPrivate('browser-fixture.private.json'),cp=fixture.core;assert(cp);
+const authAudit=read(resolve(base,'auth-session-audit.json'));
+assert(authAudit.existingActorsOnly);assert.equal(authAudit.approvedActorCount,6);assert.equal(authAudit.actionCounts.login,7);
+assert(Object.keys(authAudit.actionCounts).every(action=>['login','token_refreshed','token_revoked'].includes(action)));
+const baseline=bound(r.references.baseline),schema=bound(r.references.schema),origin=bound(r.references.state),proof=context.readPrivate('recovery-readback.private.json');
+const norm=v=>Array.isArray(v)?v.map(norm).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,norm(v[k])])):v;
+const catalog=JSON.parse(live.sql('begin read only;'+schema.query+'commit;'));assert(equal(norm(catalog),norm(schema.observed)));
+for(const seed of baseline.seeds){const now=JSON.parse(live.sql(seed.query));for(const id of seed.ids)assert.equal(now.rowHashes[id],seed.rowHashes[id]);}
+const history=JSON.parse(live.sql(baseline.serviceMigrationHistory.query));assert.deepEqual(history.authHistory,baseline.serviceMigrationHistory.authHistory);assert.deepEqual(history.storageHistory,baseline.serviceMigrationHistory.storageHistory);
+const totals=JSON.parse(live.sql(origin.query)),{workflows:beforeWorkflows,...beforeTotals}=origin.financialTotals,{workflows:afterWorkflows,...afterTotals}=totals;assert.deepEqual(afterTotals,beforeTotals);
+assert.deepEqual(afterWorkflows,beforeWorkflows.map(w=>w.id===cp.workflowId?{...w,state:'reward_pending'}:w));
+assert.equal(cp.workflowId,r.checkpoint.workflowId);assert.equal(cp.submissionId,r.checkpoint.submissionId);assert.equal(cp.itemId,r.checkpoint.itemId);assert.equal(cp.creatorId,fixture.creator.id);
+const pending=JSON.parse(live.sql(`select to_jsonb(p)from public.mission_pending_rewards p where p.id='${cp.pendingRewardId}';`));
+assert.equal(pending.workspace_id,fixture.workspaceId);assert.equal(pending.creator_id,cp.creatorId);assert.equal(pending.mission_workflow_id,cp.workflowId);assert.equal(pending.mission_submission_id,cp.submissionId);assert.equal(pending.status,'pending');
+assert.equal(live.sql(`select count(*)from public.mission_pending_rewards where mission_workflow_id='${cp.workflowId}'and status='pending';`),'1');
+const subjects=JSON.parse(live.sql('select jsonb_agg(id order by id)from auth.users;'));assert.deepEqual(subjects,proof.authSubjectIdsBefore);assert.equal(subjects.length,84);
+const expectedWorkspaces=[...new Set(Object.values(originInventories).flatMap(i=>i.workspaces.ids))].toSorted();
+const expectedMissions=[...new Set(Object.values(originInventories).flatMap(i=>i.missions.ids))].toSorted();
+const actualRoots=JSON.parse(live.sql("select jsonb_build_object('workspaces',(select jsonb_agg(id order by id)from public.workspaces),'missions',(select jsonb_agg(id order by id)from public.missions));"));assert.deepEqual(actualRoots.workspaces,expectedWorkspaces);assert.deepEqual(actualRoots.missions,expectedMissions);
+const workspaces=expectedWorkspaces.map(id=>"'"+id+"'").join(',');
+const legacy=JSON.parse(live.sql(`select jsonb_agg(s.id order by s.id)from public.mission_submissions s join public.missions m on m.id=s.mission_id and m.workspace_id=s.workspace_id where s.workspace_id in(${workspaces})and m.creator_workflow_mode='legacy'and s.status='approved';`));assert.deepEqual(legacy,proof.legacyIdsBefore);assert.equal(legacy.length,2);
+const allOldSubmissionHashes=Object.assign({},...Object.values(originInventories).map(i=>i.mission_submissions.rowHashes));const allNewSubmissionHashes=Object.assign({},...phases.map(p=>p.inventory.mission_submissions.rowHashes));
+for(const id of legacy)assert.equal(allNewSubmissionHashes[id],allOldSubmissionHashes[id]);
+const historical=m.bootstrap.historicalLegacy.submissionId;assert.equal(allNewSubmissionHashes[historical],allOldSubmissionHashes[historical]);
+const before=read(context.publicPath('browser-before-handoff.json'));
+const expected={lineage:context.lineage,runId:fixture.runId,target:live.identity,creatorId:fixture.creator.id,workspaceId:fixture.workspaceId,submissionId:cp.submissionId,workflowId:cp.workflowId,requireCompleteRows:true};
+const after={...expected,snapshot:neutralitySnapshot(live,fixture.creator.id,fixture.workspaceId,{complete:true}),legacyAnchors:legacyRewardAnchors(live,fixture.workspaceId)};
+const neutrality=assertBrowserPendingNeutrality(before,after,expected);assert(neutrality.passed);
+for(const phase of m.fixture.phases){
+ const target=readonlyTarget(phase.phase),ctx=target.context;
+ for(const name of readdirSync(resolve(ctx.privatePath('owned-journal.jsonl'),'..')).filter(n=>/^(?:(?:owner-)?transport-\d+|transport-browser-[a-z0-9-]+)\.jsonl$/.test(n)))new FixtureJournal(ctx.privatePath(name),ctx.lineage,{requests:m.fixture.transportWriteCapPerProcess}).assertReady();
+ phases.find(p=>p.phase===phase.phase).allJournalsResolved=true;
+}
+const role=read(resolve(base,'role/phase-result.json')),core=read(resolve(base,'core/phase-result.json')),browser=read(resolve(base,'browser/browser-summary.json'));
+assert.equal(role.apiCasesRerun,0);assert.equal(core.apiCasesRerun,0);assert.equal(browser.status,0);assert.equal(browser.passed,5);
+for(const summary of browser.summaries){assert.equal(summary.stats.skipped,0);assert.equal(summary.stats.unexpected,0);assert.equal(summary.stats.flaky,0);}
+const record={at:new Date().toISOString(),identity:live.identity,lineage:context.lineage,manifestSha256:context.manifestSha256,allFiveServiceIdentityGuardsPassed:true,phaseInventories:phases,catalogSections:Object.keys(catalog).length,catalogUnchanged:true,seedRowHashesUnchanged:true,serviceHistoryUnchanged:true,financialTotals:totals,wholeContinuationFinancialTotalsEqual:true,legacySubmissionIds:legacy,legacyRowHashesUnchanged:true,historicalInvalidLegacyRowHashUnchanged:true,authSubjects:subjects.length,workspaces:actualRoots.workspaces.length,missions:actualRoots.missions.length,noNewRootIds:true,pending:{id:pending.id,workspaceId:pending.workspace_id,creatorId:pending.creator_id,workflowId:pending.mission_workflow_id,submissionId:pending.mission_submission_id,status:pending.status,onePendingRow:true},browserPendingNeutrality:neutrality,browserBefore:before,browserAfter:after,carriedApiCases:{role:8,core:9,rerun:0},browserCases:{passed:5,failed:0,skipped:0,flaky:0},compositeJourney:true,freshColdJourney:false,productionDataOrMembershipWrites:false,providerEnabled:false,incidentOpen:true,restored:false,releaseHold:true,wholeR1Verified:false};
+const output=process.argv[2]??'final-readback.json';assert(/^[a-zA-Z0-9_.-]+\.json$/.test(output));assert(!existsSync(resolve(base,output)),'Keep prior final readbacks immutable');
+writeFileSync(resolve(base,output),JSON.stringify(record,null,2)+'\n');
+process.stdout.write(JSON.stringify({status:'PASS_APPROVED696E_FINAL_READBACK_NOT_WHOLE_R1',familiesPerPhase:phases.map(p=>p.families),allJournalsResolved:true,catalogSections:Object.keys(catalog).length,wholeContinuationFinancialTotalsEqual:true,browserPendingNeutrality:neutrality,authSubjects:subjects.length,workspaces:actualRoots.workspaces.length,missions:actualRoots.missions.length,legacyRowsUnchanged:true,onePendingRow:true,carriedApiCases:17,apiReruns:0,browserPassed:5,providerEnabled:false,releaseHold:true})+'\n');

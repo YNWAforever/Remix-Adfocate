@@ -1,0 +1,53 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "before": [
+    {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    {
+      "xp": 0,
+      "budget": null,
+      "points": 63,
+      "cashLedger": 2,
+      "pointLedger": 3,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 112.5,
+      "rewardInventory": []
+    }
+  ],
+  "after": [
+    {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    {
+      "xp": 0,
+      "budget": null,
+      "points": 63,
+      "cashLedger": 2,
+      "pointLedger": 3,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 112.5,
+      "rewardInventory": []
+    }
+  ],
+  "allEqual": true,
+  "fixtureSetup": "Historical ledger fixtures were seeded before this raw baseline; no measured action issues rewards or payments."
+}

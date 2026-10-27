@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-24T00:47:53.634748+00:00",
+  "status": "PASS_LOCAL_DELIVERY_REVIEW",
+  "sourceFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+  "sourceRecordsVerified": 330,
+  "sourceChanged": false,
+  "priorEvidenceRecordsVerified": 746,
+  "priorEvidenceUnchanged": 744,
+  "authorizedSharedEvidenceEdits": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/new_product_acceptance_cases.csv"
+  ],
+  "unexpectedEdits": [],
+  "all20TaskRecordsUnchanged": true,
+  "all107CaseResultsUnchanged": true,
+  "all28FindingRowsUnchanged": true,
+  "allOriginalAuditResultsUnchanged": true,
+  "originalCsvFieldsVerified": 1645,
+  "changedNewProductCells": [
+    [
+      "N11",
+      "newResult"
+    ],
+    [
+      "N11",
+      "releaseScope"
+    ]
+  ],
+  "historicalD19D20TestJsonAndLogsUnchanged": true,
+  "appendOnlySkipAccounting": {
+    "reports": 2,
+    "affectedFileCountersEach": 54,
+    "skippedAssertionsEach": 363,
+    "newProductTestExecution": false
+  },
+  "testEvidence": {
+    "latestFullPassed": 1931,
+    "skipped": 363,
+    "failed": 0,
+    "audit16": 16,
+    "protected194": 194,
+    "protectedContractNote": "194 passed; nine files equal baseline canonical bytes; one has only the previously documented HK-calendar reviewDueAt fixture-time correction. Assertions unchanged."
+  },
+  "evidenceReferencesCheckedBeforeReview": 435,
+  "manifestMigrationsVerified": 42,
+  "manifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestToolReceipt": {
+    "command": "npm exec --offline --yes --package=node@22 -- npm run release:manifest:check",
+    "exit": 0,
+    "digest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "toolSession": 72018,
+    "toolOutputChunks": [
+      "807fa5",
+      "2c10f1"
+    ],
+    "warning": "Existing _site.smoke.test.tsx route-discovery warning retained.",
+    "receiptType": "Observed tool output; no database access or release action."
+  },
+  "freshDiffAndD20ReverseChecks": "exit0 before and after review-document edits; check-only; no patch applied",
+  "gitIndexAndHeadUnchanged": true,
+  "fullSuiteRerun": false,
+  "runtimeRerun": false,
+  "releaseExpiryAndApprovalFieldsUnchanged": true,
+  "D15ContentAndStaffBlockersUnchanged": true,
+  "realProviderEnabled": false,
+  "productionQueried": false,
+  "productionWritten": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "newEvidenceSealFileCount": 755,
+  "priorSealSha256": "eddfe97e00ce2a33b073886890f542f83a39bb4910d455d998e5caefd380a8f9",
+  "originalAuditZipFreshHashVerified": false,
+  "rollback": {
+    "D20ReverseCheckPassed": true,
+    "earlierLayeredPatchesAllChecked": false,
+    "hostedRestoreDrill": "NOT_RUN_NOT_AUTHORIZED"
+  }
+}

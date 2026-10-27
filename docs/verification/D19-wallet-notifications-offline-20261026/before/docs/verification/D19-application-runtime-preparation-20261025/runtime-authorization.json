@@ -1,0 +1,10 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": true,
+  "ownerReference": "2026-10-26 direct human reply call_f61485a0a76947afa36bfffd9b99fab0 item0: approved exact applications-only C2 runtime",
+  "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "note": "Direct human approval for this exact C2 digest/source only. Original696e authority remains completed and not reused.",
+  "approvedAtUtc": "2026-10-25T17:39:35.514734+00:00",
+  "approvalEvidence": "docs/verification/D19-C2-runtime-20261026/owner-approval.json"
+}

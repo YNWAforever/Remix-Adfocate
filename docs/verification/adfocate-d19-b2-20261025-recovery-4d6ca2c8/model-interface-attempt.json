@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-25T09:47:14.195071+00:00",
+  "requestedLabel": "Codex GPT-6.1 Sol",
+  "status": "UNKNOWN_NODE_REPL_INITIALIZATION_FAILED",
+  "observedError": "failed to write kernel assets: 系統找不到指定的路徑。 (os error 3)",
+  "uiAppsListed": false,
+  "uiWindowStateOrScreenshotReturned": false,
+  "selectedModelObserved": false,
+  "modelIdInferred": false,
+  "modelSwitchPerformed": false,
+  "runtimeProviderCalls": 0,
+  "documentationCannotEstablishUserSpecificCurrentSelection": true,
+  "scope": "Attempted official computer-use node_repl initialization only; no app inputs, authentication or alternate UI bypass."
+}

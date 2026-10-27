@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-24T08:57:39.396578+00:00",
+  "status": "REFUSED_BEFORE_CREATION",
+  "cause": "Docker network absence uses not found; original gate accepted only No such",
+  "resourcesCreated": 0,
+  "clientsCreated": false,
+  "sqlExecuted": false,
+  "resolution": "Require inspect exit nonzero, [] output and known no such/not found diagnostic before creation"
+}

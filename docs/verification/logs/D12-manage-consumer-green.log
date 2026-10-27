@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/routes/-admin.missions.manage.test.tsx (5 tests) 872ms
+   ✓ MissionEditor active workflow authoring > adds, edits, and removes deliverables and checklist items in the exact save payload 484ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  12:06:00
+   Duration  3.66s (transform 327ms, setup 324ms, collect 638ms, tests 872ms, environment 1.34s, prepare 159ms)
+

@@ -1,0 +1,10 @@
+{
+  "payload": [],
+  "observedAt": "2026-10-24T14:12:27.840677+00:00",
+  "transactionReadOnly": "on",
+  "label": "q3-notification-references",
+  "query": "select coalesce(jsonb_agg(jsonb_build_object('campaignId',entity_id,'count',n)order by entity_id),'[]')from(select entity_id,count(*)n from public.notifications where entity_type='campaign'and entity_id in('937131f9-5417-4ab4-aebd-a5714681f6dd'::uuid,'9e2d04e2-cafb-4ff6-988b-348f0279bba3'::uuid,'d80d80dc-4833-4ab2-9e30-48efaef68d1d'::uuid)group by entity_id)s",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

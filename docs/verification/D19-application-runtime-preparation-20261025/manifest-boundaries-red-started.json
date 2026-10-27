@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-25T14:25:37.589230+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/application-supplement.test.ts",
+    "--no-file-parallelism",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-runtime-preparation-20261025\\manifest-boundaries-red.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 6.419811248779297,
+    "freeCommitGiB": 10.689323425292969,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "87a6f6123fcf88904096baacde10680285a3b878a198b8398fd0db153abecc10",
+  "sourceRecords": 787,
+  "pid": 31496
+}

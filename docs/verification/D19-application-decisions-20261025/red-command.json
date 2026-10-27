@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-25T12:07:08.234861+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-application-decisions.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=docs\\verification\\D19-application-decisions-20261025\\red.json"
+  ],
+  "exit": 1,
+  "offlineOnly": true
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PASS_C1_LOCAL_INFRA_AND_EVIDENCE_CHECKPOINT_NOT_R1_ACCEPTANCE",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "fullPassed": 2058,
+  "failed": 0,
+  "gatedSkip": 363,
+  "original16": 16,
+  "protected194": 194,
+  "priorEvidenceByteUnchanged": 1434,
+  "originalC1AllocationApproved": true,
+  "sourceRevisionRuntimeApproved": false,
+  "extraResources": 0,
+  "applicationSuitesExecuted": 0,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "verifiedAt": "2026-10-25T06:58:04.895773+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-C1-check-records.py"
+  ],
+  "meaning": "Local and C1 infrastructure evidence only; current application runtime not executed."
+}

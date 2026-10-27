@@ -1,0 +1,286 @@
+{
+  "at": "2026-10-25T15:21:31.477638+00:00",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "mode": "File-only current native evidence and historical source/scope review",
+  "newProductCodeChanges": 0,
+  "newApplicationTestRuns": 0,
+  "actualTargetCalls": 0,
+  "wholeR1Verified": false,
+  "cases": [
+    {
+      "caseId": "UC-C29",
+      "facets": [
+        {
+          "facet": "mime-and-size",
+          "requirement": "Enforce media type/size limits",
+          "status": "CURRENT_LOCAL_ONLY",
+          "evidence": [
+            "current-native-witnesses.json"
+          ],
+          "limit": "Native MIME/20MB policy and schema assertions pass; live upload-limit path is gated/skipped.",
+          "nextAcceptance": "Use real owned grant/object flow to verify rejection at limits and recovery without losing draft input."
+        },
+        {
+          "facet": "positive-upload",
+          "requirement": "Owned media can be uploaded/finalized",
+          "status": "SOURCE_UNBOUND_HISTORICAL_ONLY",
+          "evidence": [
+            "historical-log-witnesses.json"
+          ],
+          "limit": "Three reported passes: PNG grant only; GIF/MP4 use four synthetic signature bytes. No full media-decoder/browser file chooser acceptance; exact run source/target binding missing in standalone log.",
+          "nextAcceptance": "Valid bounded synthetic object through actual client/Storage/API finalization, exact IDs captured."
+        },
+        {
+          "facet": "failed-upload-cleanup",
+          "requirement": "Incomplete failed upload can be cleaned up safely",
+          "status": "CURRENT_LOCAL_ONLY",
+          "evidence": [
+            "current-native-witnesses.json"
+          ],
+          "limit": "Signed-URL failure/owner-path abandon mock and migration contracts pass; historic positive tests do not execute failed-grant cleanup branch.",
+          "nextAcceptance": "Force a bounded grant/upload/finalize failure on a new exact-owned asset; capture before/after row/object evidence and only explicitly authorized exact cleanup."
+        },
+        {
+          "facet": "owned-ui-recovery",
+          "requirement": "Permission/error/expiry/retry UI preserves authored input",
+          "status": "MISSING_CURRENT_ACCEPTANCE",
+          "evidence": [
+            "retained-c1-scope.json"
+          ],
+          "limit": "C1 all binary asset/object caps and observed counts are0; URL proof success is not media chooser/failure/recovery coverage.",
+          "nextAcceptance": "Actual isolated Creator UI + nonempty Storage asset, recoverable failure and retained input; physical-device evidence separate."
+        }
+      ],
+      "originalTitle": "\u5a92\u9ad4\u4e0a\u8f09\u5931\u6557",
+      "originalExpected": "\u4e0a\u9650\u53ca\u6b0a\u9650\u6b63\u78ba\uff0c\u53ef\u6e05\u7406\u672a\u5b8c\u6210\u4e0a\u8f09",
+      "originalAuditResult": "not-tested",
+      "originalEnvironment": "staging",
+      "wholeCurrentCaseVerified": false
+    },
+    {
+      "caseId": "UC-A14",
+      "facets": [
+        {
+          "facet": "current-url-proof",
+          "requirement": "Review/correction of current URL proof attempt",
+          "status": "RETAINED_C1_SCOPE_ONLY",
+          "evidence": [
+            "retained-c1-scope.json"
+          ],
+          "limit": "Original core passed at6285 and was carried after696e dependency revalidation at e839. Current source e8 has no new runtime. This facet uses URL evidence and zero binary objects.",
+          "nextAcceptance": "Retain the original facet with its original bindings; do not rerun completed696e."
+        },
+        {
+          "facet": "existing-old-attempt",
+          "requirement": "Only current attempt may be affected; old attempts remain unchanged",
+          "status": "MISSING_CURRENT_ACCEPTANCE",
+          "evidence": [
+            "server/test/publication-proof-review-live.test.ts"
+          ],
+          "limit": "The historical exact-attempt test rejects randomUUID(), an absent attempt. It does not try an existing older attempt and hash both persisted rows.",
+          "nextAcceptance": "Create/carry two exact owned real attempts; attempt mutation of existing older ID using otherwise valid current context, assert rejection and unchanged old/current rows."
+        },
+        {
+          "facet": "asset-row-rls",
+          "requirement": "Foreign Creator cannot enumerate private proof asset rows",
+          "status": "SOURCE_UNBOUND_HISTORICAL_ONLY",
+          "evidence": [
+            "server/test/publication-proof-asset-grant-live.test.ts",
+            "historical-log-witnesses.json"
+          ],
+          "limit": "Current source includes a foreign raw asset SELECT expecting[] and existing workflow404 in PNG test; current full run skips that live test. Standalone older log lacks full source/target binding.",
+          "nextAcceptance": "Actual signed-in foreign Creator on a real existing asset; non-enumerating denial and exact row preservation."
+        },
+        {
+          "facet": "stored-file-denial",
+          "requirement": "Cross-tenant stored proof file bytes cannot be read",
+          "status": "MISSING_CURRENT_ACCEPTANCE",
+          "evidence": [
+            "retained-c1-scope.json"
+          ],
+          "limit": "No binary object exists in C1 scope. Raw DB SELECT denial alone is not a Storage/object read denial or scoped signed-read API test.",
+          "nextAcceptance": "Owned private nonempty object plus wrong Creator/workspace request to actual read/grant boundary; deny access and verify object/row hashes unchanged."
+        }
+      ],
+      "originalTitle": "proof\u5be9\u6838",
+      "originalExpected": "\u53ea\u5f71\u97ff\u7576\u524dattempt\uff1b\u8de8\u79df\u6236\u6a94\u6848\u4e0d\u53ef\u8b80",
+      "originalAuditResult": "not-tested",
+      "originalEnvironment": "staging",
+      "wholeCurrentCaseVerified": false
+    },
+    {
+      "caseId": "UC-S01",
+      "facets": [
+        {
+          "facet": "owner-anchor",
+          "requirement": "Non-enumerating owner anchor and route error",
+          "status": "CURRENT_LOCAL_ONLY",
+          "evidence": [
+            "current-native-witnesses.json"
+          ],
+          "limit": "Current repository/route tests stub null ownership and verify404; they do not instantiate real Creator B Auth/RLS against existing A rows.",
+          "nextAcceptance": "Retain local contract; actual denial must use existing owned IDs, not a random missing resource."
+        },
+        {
+          "facet": "historical-owner-denial",
+          "requirement": "Historical cross-owner/workspace reads or schema relationship rejection",
+          "status": "SOURCE_UNBOUND_HISTORICAL_ONLY",
+          "evidence": [
+            "historical-log-witnesses.json",
+            "server/test/active-mission-schema.test.ts"
+          ],
+          "limit": "Console reports cross-owner/schema passes and source has relationship guards. Some assertions use privileged inserts/FK failures; no current live run-source/row witness established.",
+          "nextAcceptance": "Use real non-owner user client for the intended API/RPC read/write surface."
+        },
+        {
+          "facet": "unrelated-assistant-null",
+          "requirement": "Do not substitute assistant-request ownership for active workflow isolation",
+          "status": "NOT_AN_ACTIVE_WORKFLOW_WITNESS",
+          "evidence": [
+            "server/test/audit-workflow-roundtrip.test.ts"
+          ],
+          "limit": "C1 stranger get_assistant_request=null is scoped to assistant data. Staff cross-workspace denial is also distinct from same-workspace Creator resource isolation.",
+          "nextAcceptance": "No blanket inference to workflow/item/draft/proof."
+        },
+        {
+          "facet": "read-write-state",
+          "requirement": "Cross-Creator reads/writes denied and protected data unchanged",
+          "status": "MISSING_CURRENT_ACCEPTANCE",
+          "evidence": [
+            "retained-c1-scope.json"
+          ],
+          "limit": "Missing real signed-in B request to A workflow/item/draft/proof and saved before/after A+B row hashes; old grant test only supplies a narrower read facet.",
+          "nextAcceptance": "Two real same-workspace Creator subjects and exact existing resource IDs; read/write denial, non-enumeration and full relevant saved-state equality."
+        }
+      ],
+      "originalTitle": "\u8de8Creator\u8b80\u5beb",
+      "originalExpected": "\u975e\u679a\u8209\u62d2\u7d55\uff0cB\u8cc7\u6599\u4e0d\u8b8a",
+      "originalAuditResult": "not-tested",
+      "originalEnvironment": "staging",
+      "wholeCurrentCaseVerified": false
+    },
+    {
+      "caseId": "UC-A11",
+      "facets": [
+        {
+          "facet": "points-retry",
+          "requirement": "Original points award remains once on retry",
+          "status": "SOURCE_UNBOUND_HISTORICAL_ONLY",
+          "evidence": [
+            "historical-log-witnesses.json",
+            "server/test/admin.test.ts"
+          ],
+          "limit": "Older test checks250 points after first and second approve. Current full run skips that live group; exact current-source/target receipt absent for older console report.",
+          "nextAcceptance": "Read both balance and immutable transaction rows around same-submission retry/concurrent approval."
+        },
+        {
+          "facet": "xp-rating-notes",
+          "requirement": "Original XP, quality rating, notes and score snapshot correct",
+          "status": "PARTIAL_HISTORICAL_ONLY",
+          "evidence": [
+            "server/test/admin.test.ts",
+            "historical-log-witnesses.json"
+          ],
+          "limit": "Older source checks first XP135 and separate5-star XP185/rating/scores; retry test does not reread XP after second approval and rating test is a distinct submission. Notes persistence is not established by sending a notes payload.",
+          "nextAcceptance": "Actual saved XP/notes/rating/score rows read after approval and retry, including exact actor/history where applicable."
+        },
+        {
+          "facet": "cash-first",
+          "requirement": "Original legacy nonzero cash credited once to available/ledger",
+          "status": "PARTIAL_HISTORICAL_ONLY",
+          "evidence": [
+            "server/test/wallet.test.ts",
+            "historical-log-witnesses.json"
+          ],
+          "limit": "Older wallet test checks first available50,pending0,one earn transaction; it never reapproves that same cash-bearing submission. This is existing legacy credit, not payment and not new pending reward.",
+          "nextAcceptance": "A separately approved legacy financial fixture window with nonzero original rewards and exact balance/ledger assertions."
+        },
+        {
+          "facet": "same-submission-concurrency",
+          "requirement": "Points/XP/cash are each once across same legacy approval retry/race",
+          "status": "MISSING_CURRENT_ACCEPTANCE",
+          "evidence": [
+            "retained-c1-scope.json"
+          ],
+          "limit": "C1 core/browser issued distinct legacy submissions once. The C1 reapproval case reapproves ACTIVE completion while asserting old legacy anchors unchanged; it is not legacy approval replay. C2 expressly forbids legacy issuance/replay.",
+          "nextAcceptance": "Only a separate explicit exact-owned legacy financial scope may run this; do not invoke under pending-neutrality authority or touch old legacy fixtures."
+        }
+      ],
+      "originalTitle": "\u5be9\u7a3f\u8207\u767c\u5206",
+      "originalExpected": "points/XP/cash\u53ea\u589e\u52a0\u4e00\u6b21\uff0c\u8a55\u5206\u53ca\u610f\u898b\u6b63\u78ba",
+      "originalAuditResult": "not-tested",
+      "originalEnvironment": "staging",
+      "wholeCurrentCaseVerified": false
+    }
+  ],
+  "references": [
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.json",
+      "sha256": "21f201bc34e65a56b7d4e59b90ccf14492ef68e4ce2cf02c86378cfe92c96df3"
+    },
+    {
+      "path": "docs/verification/logs/proof-assets-ownership-final.log",
+      "sha256": "b9f63ab23e8ba626731927ee3b7ba23d2fa1e322e28c0d4f1c858e84bbc03a76"
+    },
+    {
+      "path": "docs/verification/logs/proof-review-real-final.log",
+      "sha256": "4cba738d068b0fb22463e074ea7c2f06e5976b79dae211d9ffd1c6cd23408218"
+    },
+    {
+      "path": "docs/verification/logs/legacy-owned-integration-complete.log",
+      "sha256": "86e9211dbf7298413412bb6d5a2ac1965f6e06019e4323608b77416c3b57fb8b"
+    },
+    {
+      "path": "docs/verification/logs/R1-disposable-complete.log",
+      "sha256": "67470b7018aeae8e11403cb11da190e4fa9e73b7e6f2ea884e42b23379c3f6c1"
+    },
+    {
+      "path": "server/test/publication-proof-asset-grant-live.test.ts",
+      "sha256": "fabdf8fa459129129a832d4bcd15bc5ed6c59b99b8dd93dbd2ab4be0bec118c9"
+    },
+    {
+      "path": "server/test/publication-proof-review-live.test.ts",
+      "sha256": "cb29ea135ea488a2cdb50147593aec51df7e4e051ffc9c15f48c16d43b36657b"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "sha256": "967f7ebbdf85af4a0a799af9ba6c2ff238241227f27954f38c029be510267c95"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "sha256": "30fa5f2a496cf87c99122b49d1e06def86119dd1743165f4d86f2d706eb01fb9"
+    },
+    {
+      "path": "server/test/admin.test.ts",
+      "sha256": "54c498178e1dcfe2c737cd00ee7a79016c60154c1b27ca23a611b65c1f712505"
+    },
+    {
+      "path": "server/test/wallet.test.ts",
+      "sha256": "11028e30b215be1ec01b66b58c2f2a6fcbdc90beffdd4ac123a1b830bba2e382"
+    },
+    {
+      "path": "server/test/audit-workflow-roundtrip.test.ts",
+      "sha256": "4f19c7ad04230cbaad456c724767ae1e19eb507be946f840a24bc0765126b6e2"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+      "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+    },
+    {
+      "path": "docs/verification/D19-C1-continuation-case-coverage.json",
+      "sha256": "9a87aed8b7a28a5fd2fc6f2b63fbfd80c8f00c3f03ff0621bbf9e82597e6ca2b"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/core/phase-result.json",
+      "sha256": "d9ae5743d1c78b874c2ffddd56a5d3721daf29e1cd789354e08d3cfdf9b88d72"
+    },
+    {
+      "path": "docs/verification/D08-prior-code-fingerprint.json",
+      "sha256": "64f39ccd6048acb97ffdbb2890b045a95b62264ab7eec7dcb8ff4d42a9fde456"
+    }
+  ],
+  "claimRule": "Pass titles, skipped live tests, nonexistent IDs, raw asset-row SELECT and active completion reapproval cannot replace the missing original acceptance facet. Preserve each historical positive report; do not claim the whole current case verified.",
+  "c2ManifestUnchanged": true,
+  "c2ApprovalPending": true,
+  "oldTargetPolicy": "Shaped remains forensic-only; no target or credential access/query. Old3-campaign incident OPEN/unrestored; no new pristine/global RPC acceptance."
+}

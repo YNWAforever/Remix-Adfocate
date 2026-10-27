@@ -1,0 +1,29 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "originalAuditRowsPreserved": 107,
+  "originalFindingRowsPreserved": 28,
+  "audit16Passed": 16,
+  "original194Passed": 194,
+  "fullPassed": 2047,
+  "fullFailed": 0,
+  "fullGatedSkipped": 363,
+  "files": 288,
+  "newLocalTests": 20,
+  "P0NewTestsRetained": 34,
+  "directLocalGuardCases": [
+    "UC-C32",
+    "UC-A15",
+    "UC-A16",
+    "UC-A37"
+  ],
+  "runtimeExecutedCases": 0,
+  "runtimeBaseCases": {
+    "role": 8,
+    "core": 9,
+    "browser": 5
+  },
+  "originalAuditResultOverwritten": false,
+  "D15UcC18UcA51": "BLOCKED_APPROVED_CONTENT_NOT_PROVIDED",
+  "priorRuntime": "Historical/source-bound only; not rebound to current 779-source candidate",
+  "coverageLimits": "20 local mock/pure tests prove comparator and runner refusal; not actual pending reward persistence, Auth/RLS, browser or physical device acceptance."
+}

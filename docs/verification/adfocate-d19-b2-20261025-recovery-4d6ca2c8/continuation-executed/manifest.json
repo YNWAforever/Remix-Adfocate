@@ -1,0 +1,66 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "scope": "Exact current approved-run orchestration/source review copies; only original script paths are executable. Initial observer failures retained separately.",
+  "files": [
+    {
+      "originalPath": ".codex-tmp/C1-authorize-browser-continuation.py",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-authorize-browser-continuation.py.txt",
+      "sha256": "0a986c405078123af3302f14cc2a996531759bf526b5fc8e85dcd68d5540a51b",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-run-browser-continuation.py",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-run-browser-continuation.py.txt",
+      "sha256": "cbdc3e72ec7a4fe5f2f0ea14c92baa8d232179e7a09001ae805945a4dd762525",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-continuation-identity-only.mjs",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-continuation-identity-only.mjs.txt",
+      "sha256": "1caa2a278fc29fc52cc16a8d3fb0afcc6770ad28d9826c7df6bec6350871065b",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-continuation-readonly-provenance.mjs",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-continuation-readonly-provenance.mjs.txt",
+      "sha256": "7517b30800c9185af4c6e53605279f3159852c489b2a11889ce8ea581f7ea092",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-continuation-auth-audit.mjs",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-continuation-auth-audit.mjs.txt",
+      "sha256": "6aa247821f7cc2d12250cdc51352087b4a70a452979759ebb1fbe756b16e9134",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-continuation-final-readback.mjs",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-continuation-final-readback.mjs.txt",
+      "sha256": "57546c0e5284f41d5562453572ae1bf96fcff22c3fbc57bacb7c1e4ed4bcbcdf",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-run-collection-readback.mjs",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-run-collection-readback.mjs.txt",
+      "sha256": "ed00c175e50732f56ebf0c375755095a8da88325aebbbaf7a3b166046b8b402c",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-collection-after-handoff.ts",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-collection-after-handoff.ts.txt",
+      "sha256": "865338d5ec3235a09741b576b07181904e7a5e8fec9ec195825641b7e0f71ac8",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-node22-checks.py",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-node22-checks.py.txt",
+      "sha256": "e3260f071e957d0491bae8819b4d10ccec18cf59153de94a6832c1977fef90a1",
+      "kind": "orchestration/review text, not a candidate source addition"
+    },
+    {
+      "originalPath": ".codex-tmp/C1-node22-npm-checks.py",
+      "reviewCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-executed/C1-node22-npm-checks.py.txt",
+      "sha256": "10e1cfc8f5265564e07a93cb34d7810e090f950ce59ff0970cc726ff6609d1ea",
+      "kind": "orchestration/review text, not a candidate source addition"
+    }
+  ]
+}

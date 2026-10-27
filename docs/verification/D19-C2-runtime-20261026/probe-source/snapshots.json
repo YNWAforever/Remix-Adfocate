@@ -1,0 +1,36 @@
+{
+  "capturedAt": "2026-10-25T18:52:15.056529+00:00",
+  "scope": "Exact retained controller/probe source bytes captured after terminal results for review. Not a claim of a pre-run hash receipt; original e8 binding and timestamped logs remain authoritative. Text snapshots are nonexecuting evidence. No private runtime output or credentials copied.",
+  "files": [
+    {
+      "privateSource": ".codex-tmp/D19-C2-approved-run.py",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-approved-run.py.txt",
+      "sha256": "b66661ead52618662ccb48f6144a612ff72279cd25796ec880dde91a8a0d8fce"
+    },
+    {
+      "privateSource": ".codex-tmp/D19-C2-permission-continuation.py",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-permission-continuation.py.txt",
+      "sha256": "5bfa32d70273a24496d63128e94985cee69f8162c7b898ed6bfa13d13a8785f4"
+    },
+    {
+      "privateSource": ".codex-tmp/D19-C2-readonly-provenance.mjs",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-readonly-provenance.mjs.txt",
+      "sha256": "7c155e10174ed70325838fb9e6fe5673221e176df031908d39bb2ed02b5cf13a"
+    },
+    {
+      "privateSource": ".codex-tmp/D19-C2-readonly-checked-run.py",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-readonly-checked-run.py.txt",
+      "sha256": "edf5892d55e9fc2c11850d1b829f74f703228d1586241411299a86208de71047"
+    },
+    {
+      "privateSource": ".codex-tmp/D19-C2-post-failure-readonly.mjs",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-post-failure-readonly.mjs.txt",
+      "sha256": "d10bfb264aef3de0782d99e9a63e995228ff967aba35b4c1454245723ed00d5c"
+    },
+    {
+      "privateSource": ".codex-tmp/D19-C2-post-failure-readonly-run.py",
+      "snapshot": "docs/verification/D19-C2-runtime-20261026/probe-source/D19-C2-post-failure-readonly-run.py.txt",
+      "sha256": "a2c4021c105faa4b8c2be9bee7183259b896f3f16f04a9e9e5e1aa134263aa9c"
+    }
+  ]
+}

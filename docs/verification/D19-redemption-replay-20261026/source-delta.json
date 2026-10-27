@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-25T20:23:58.645839+00:00",
+  "sourceFingerprint": "151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06",
+  "sourceRecords": 793,
+  "fromThisTaskBaseline": {
+    "beforeFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+    "beforeRecords": 789,
+    "changedExisting": [
+      {
+        "path": "server/routes/redemption.ts",
+        "before": "530a95bad6792abd4380db36c3fa91af40d0c2ada72ff52c72592bfba82fb455",
+        "after": "67ffe5811ac1c110e05ce147b1bde4ea75df3b6114b3d2d99fc58e599c63682b"
+      },
+      {
+        "path": "src/components/RedeemGiftCard.tsx",
+        "before": "8f52db3e078dbb31156507ef8eddc5afb97718283e6d1b5d0f3b91ed29cc9ddd",
+        "after": "42fa95db2464f9358ab5d8d36e3df3f50bb9356c9f0451112538c393159f3d09"
+      },
+      {
+        "path": "src/lib/i18n.dict.ts",
+        "before": "c9cd4f014b7b3df83ba934d6bed759c0e8a9fc02f95bf59f0a9e3c188624f75b",
+        "after": "621cb00253feaec2c8121ffd101bbf6f2606c2078d87266efcda0f75527f39aa"
+      },
+      {
+        "path": "src/lib/queries/kocmax.ts",
+        "before": "0e405c27249d29462a7b079c726eb8507b9578b0606cee39c235514583b06a87",
+        "after": "5a7dfdc629e202d236a694997c97ad7158a2f4463ccfeebf3522892470b561c9"
+      }
+    ],
+    "added": [
+      {
+        "path": "server/test/redemption-intent-memory.test.ts",
+        "sha256": "77d2fc5c754b0ce8b8e70dffdb176405c1d2b2a5b8d65f2f7ae992372f3fceff"
+      },
+      {
+        "path": "src/components/RedeemGiftCard.intent.test.tsx",
+        "sha256": "7bfedc7d508ff4e975477781b855bad9f630e04db9a116dcd321027a22865edf"
+      },
+      {
+        "path": "src/lib/redemptionIntent.ts",
+        "sha256": "cbbb11cdbae063b0ec1731c0efdb254c3aeb05ceb96558da4d265095fadc5334"
+      },
+      {
+        "path": "supabase/migrations/20261025194402_redemption_intents.sql",
+        "sha256": "c0bdf76d8d4dda6117c9aaeec537c238e95560c19b12ca20ab131dd89d8f78b6"
+      }
+    ],
+    "otherPriorRecordsUnchanged": 785
+  },
+  "fromOriginalApprovedC2": {
+    "beforeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "beforeRecords": 788,
+    "changedExisting": [
+      {
+        "path": "scripts/audit/local-targets.mjs",
+        "before": "f1b41b4e419814a8bfa04cba743a0325e17ab17b490d7be24bf996df09b55be8",
+        "after": "962353d71d395dc0e1f0cb334c356fedd583f6b0eff8b1fef51997e740fef58a"
+      },
+      {
+        "path": "server/routes/redemption.ts",
+        "before": "530a95bad6792abd4380db36c3fa91af40d0c2ada72ff52c72592bfba82fb455",
+        "after": "67ffe5811ac1c110e05ce147b1bde4ea75df3b6114b3d2d99fc58e599c63682b"
+      },
+      {
+        "path": "src/components/RedeemGiftCard.tsx",
+        "before": "8f52db3e078dbb31156507ef8eddc5afb97718283e6d1b5d0f3b91ed29cc9ddd",
+        "after": "42fa95db2464f9358ab5d8d36e3df3f50bb9356c9f0451112538c393159f3d09"
+      },
+      {
+        "path": "src/lib/i18n.dict.ts",
+        "before": "c9cd4f014b7b3df83ba934d6bed759c0e8a9fc02f95bf59f0a9e3c188624f75b",
+        "after": "621cb00253feaec2c8121ffd101bbf6f2606c2078d87266efcda0f75527f39aa"
+      },
+      {
+        "path": "src/lib/queries/kocmax.ts",
+        "before": "0e405c27249d29462a7b079c726eb8507b9578b0606cee39c235514583b06a87",
+        "after": "5a7dfdc629e202d236a694997c97ad7158a2f4463ccfeebf3522892470b561c9"
+      }
+    ],
+    "added": [
+      {
+        "path": "server/test/audit-docker-output-capture.test.ts",
+        "sha256": "eac74d685f04a7cb827e8187b3ca494615b90479fa7b650dc91c00b3bf5c4bee"
+      },
+      {
+        "path": "server/test/redemption-intent-memory.test.ts",
+        "sha256": "77d2fc5c754b0ce8b8e70dffdb176405c1d2b2a5b8d65f2f7ae992372f3fceff"
+      },
+      {
+        "path": "src/components/RedeemGiftCard.intent.test.tsx",
+        "sha256": "7bfedc7d508ff4e975477781b855bad9f630e04db9a116dcd321027a22865edf"
+      },
+      {
+        "path": "src/lib/redemptionIntent.ts",
+        "sha256": "cbbb11cdbae063b0ec1731c0efdb254c3aeb05ceb96558da4d265095fadc5334"
+      },
+      {
+        "path": "supabase/migrations/20261025194402_redemption_intents.sql",
+        "sha256": "c0bdf76d8d4dda6117c9aaeec537c238e95560c19b12ca20ab131dd89d8f78b6"
+      }
+    ],
+    "otherPriorRecordsUnchanged": 783
+  },
+  "old73MigrationBytesPreserved": true,
+  "noSourceResetOrCommit": true
+}

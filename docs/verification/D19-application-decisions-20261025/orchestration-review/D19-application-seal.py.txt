@@ -1,0 +1,23 @@
+from pathlib import Path
+import datetime,hashlib,json
+R=Path(__file__).resolve().parents[1];V=R/'docs/verification';A=V/'D19-application-decisions-20261025';T=V/'D19-application-decisions-integrity.json'
+def read(p):return json.loads(p.read_text(encoding='utf-8'))
+def put(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def rel(p):return p.relative_to(R).as_posix()
+s=read(A/'candidate-source.json');root=read(V/'adfocate-delivery.json');assert root['codeFingerprint']==s['fingerprint']
+if not T.exists():put(T,{'status':'PENDING_SEAL'})
+if not(A/'verification-summary.json').exists():put(A/'verification-summary.json',{'status':'PENDING_FILE_ONLY_CHECK_NOT_ACCEPTANCE'})
+paths=[p for p in V.rglob('*')if p.is_file()and p!=V/'evidence-integrity.json']
+root['evidenceIntegrity']={'path':'evidence-integrity.json','records':len(paths),'codeFingerprint':s['fingerprint'],'taskSubset':rel(T),'checker':rel(A/'verify-delivery.py'),'approvedCurrentRuntimeScopeVerified':False,'retainedApproved696eSource':s['originFingerprint'],'wholeR1Verified':False};put(V/'adfocate-delivery.json',root)
+rollback=read(A/'rollback.json');checkpoint=read(A/'checkpoint.json');rollback['metadataFiles']=[]
+for x in checkpoint['files']:
+ if x['path'].startswith('docs/')and x['path']!='docs/verification/evidence-integrity.json'and sha(R/x['path'])!=x['sha256']:
+  rollback['metadataFiles'].append({'path':x['path'],'beforeCopy':x['beforeCopy'],'beforeSha256':x['sha256'],'afterSha256':sha(R/x['path'])})
+rollback['dynamicEvidenceSeals']='Current seal files are regenerated after source/metadata selection. Their prior bytes are preserved in the checkpoint; after-hashes are excluded from rollback metadata to avoid a self-referential hash cycle.'
+put(A/'rollback.json',rollback)
+task={p for p in A.rglob('*')if p.is_file()};task.update(R/x for x in s['changedPaths']+s['addedPaths']);task.update(R/x['path']for x in rollback['metadataFiles'])
+def records(paths):return[{'path':rel(p),'sha256':sha(p),'bytes':p.stat().st_size}for p in sorted(paths)]
+now=datetime.datetime.now(datetime.timezone.utc).isoformat();put(T,{'createdAt':now,'codeFingerprint':s['fingerprint'],'method':'Exact raw-byte SHA256 of current local task evidence/source/metadata. Own seal excluded. No current real runtime or whole R1 claim.','files':records(task)})
+paths=[p for p in V.rglob('*')if p.is_file()and p!=V/'evidence-integrity.json'];assert len(paths)==root['evidenceIntegrity']['records'];put(V/'evidence-integrity.json',{'createdAt':now,'codeFingerprint':s['fingerprint'],'method':'Exact raw-byte SHA256 of every verification file; exclude only this root seal. All nested historical seals and exact before images retained.','files':records(paths)})
+print(json.dumps({'status':'SEALED_LOCAL_APPLICATION_REPAIR_NOT_WHOLE_R1','sourceFingerprint':s['fingerprint'],'globalRecords':len(paths),'taskRecords':len(task)}))

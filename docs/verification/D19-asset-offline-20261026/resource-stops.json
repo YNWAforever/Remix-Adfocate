@@ -1,0 +1,39 @@
+{
+  "stops": [
+    {
+      "label": "boundary-final",
+      "resource": {
+        "path": "docs/verification/D19-asset-offline-20261026/boundary-final-resource.json",
+        "sha256": "efd974e71a966c64a70f77c423440ab099fa8bafad0d6bc7ff09d60136f9a8e4"
+      },
+      "reading": {
+        "at": "2026-10-25T21:06:07.081802+00:00",
+        "freePhysicalGiB": 3.9231109619140625,
+        "freeCommitGiB": 2.7292442321777344,
+        "minimumGiB": 3,
+        "freeDiskGiB": 21.841957092285156
+      },
+      "childStarted": false,
+      "testResult": null,
+      "classification": "RESOURCE_GATE_BEFORE_CHILD_NOT_TEST_FAILURE"
+    },
+    {
+      "label": "type-final",
+      "resource": {
+        "path": "docs/verification/D19-asset-offline-20261026/type-final-resource.json",
+        "sha256": "264a3026704676ab3ce8f953b3d389a3ba79e5ecbf65623d071d92232ffe56f2"
+      },
+      "reading": {
+        "at": "2026-10-25T21:10:50.445591+00:00",
+        "freePhysicalGiB": 4.006687164306641,
+        "freeCommitGiB": 2.946361541748047,
+        "minimumGiB": 3,
+        "freeDiskGiB": 21.80754852294922
+      },
+      "childStarted": false,
+      "testResult": null,
+      "classification": "RESOURCE_GATE_BEFORE_CHILD_NOT_TEST_FAILURE"
+    }
+  ],
+  "subsequentGate": "Fresh independent readings passed before the final test and type child; no threshold lowered, no shared process/resource stopped."
+}

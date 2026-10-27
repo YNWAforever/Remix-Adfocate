@@ -1,0 +1,340 @@
+
+[WebServer] (node:25992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 4 tests using 1 worker
+
+
+(node:37608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] e2e\d17-r2-quality.spec.ts:27:1 › D17 R2 admin heading remains fully readable beside workspace, role and account
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+  1) e2e\d17-r2-quality.spec.ts:27:1 › D17 R2 admin heading remains fully readable beside workspace, role and account 
+
+    Error: heading has readable space at 1024
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      35 |     const dimensions = await heading.evaluate(el => ({ width: el.clientWidth, contentWidth: el.scrollWidth, text: el.textContent }));
+      36 |     cells.push({ width, ...dimensions });
+    > 37 |     expect.soft(dimensions.width, `heading has readable space at ${width}`).toBeGreaterThan(0);
+         |                                                                             ^
+      38 |     expect.soft(dimensions.contentWidth, `full heading at ${width}`).toBeLessThanOrEqual(dimensions.width + 1);
+      39 |     await expect(header.getByRole("button", { name: /Sign out/i })).toBeVisible();
+      40 |     await expect(header.getByRole("combobox", { name: "workspace", exact: true })).toBeVisible();
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:37:77
+
+    Error: full heading at 1024
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1
+    Received:    101
+
+      36 |     cells.push({ width, ...dimensions });
+      37 |     expect.soft(dimensions.width, `heading has readable space at ${width}`).toBeGreaterThan(0);
+    > 38 |     expect.soft(dimensions.contentWidth, `full heading at ${width}`).toBeLessThanOrEqual(dimensions.width + 1);
+         |                                                                      ^
+      39 |     await expect(header.getByRole("button", { name: /Sign out/i })).toBeVisible();
+      40 |     await expect(header.getByRole("combobox", { name: "workspace", exact: true })).toBeVisible();
+      41 |   }
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:38:70
+
+    Error: full heading at 1280
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 11
+    Received:    101
+
+      36 |     cells.push({ width, ...dimensions });
+      37 |     expect.soft(dimensions.width, `heading has readable space at ${width}`).toBeGreaterThan(0);
+    > 38 |     expect.soft(dimensions.contentWidth, `full heading at ${width}`).toBeLessThanOrEqual(dimensions.width + 1);
+         |                                                                      ^
+      39 |     await expect(header.getByRole("button", { name: /Sign out/i })).toBeVisible();
+      40 |     await expect(header.getByRole("combobox", { name: "workspace", exact: true })).toBeVisible();
+      41 |   }
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:38:70
+
+    Error Context: test-results\d17-r2-quality-D17-R2-admi-be84d--workspace-role-and-account\error-context.md
+
+
+
+(node:13408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/4] e2e\d17-r2-quality.spec.ts:45:1 › D17 R2 current core and supporting pages reflow at 360, 390, 768 and 320 CSS pixels
+  2) e2e\d17-r2-quality.spec.ts:45:1 › D17 R2 current core and supporting pages reflow at 360, 390, 768 and 320 CSS pixels 
+
+    Error: /guide width 320
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 321
+    Received:    327
+
+      54 |         const dimensions = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
+      55 |         cells.push({ path, width, ...dimensions });
+    > 56 |         expect.soft(dimensions.scroll, `${path} width ${width}`).toBeLessThanOrEqual(dimensions.viewport + 1);
+         |                                                                  ^
+      57 |       }
+      58 |     }
+      59 |     await ctx.close();
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:56:66
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('main').getByRole('heading').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('main').getByRole('heading').first() with timeout 15000ms
+      - waiting for locator('main').getByRole('heading').first()
+
+
+      48 |     const ctx = await context(browser, staff), page = await ctx.newPage();
+      49 |     for (const path of staff ? [...staffPaths, `/admin/academy/${fx.tracks[0].id}`] : creatorPaths) {
+    > 50 |       await page.goto(path); await expect(page.locator("main").getByRole("heading").first()).toBeVisible();
+         |                                                                                              ^
+      51 |       await page.waitForLoadState("networkidle");
+      52 |       for (const width of [360, 390, 768, 320]) {
+      53 |         await page.setViewportSize({ width, height: 900 });
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:50:94
+
+    Error Context: test-results\d17-r2-quality-D17-R2-curr-01d38--390-768-and-320-CSS-pixels\error-context.md
+
+
+
+(node:24960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/4] e2e\d17-r2-quality.spec.ts:64:1 › D17 R2 current core, supporting pages and parent form pass selected automated A and AA checks
+  3) e2e\d17-r2-quality.spec.ts:64:1 › D17 R2 current core, supporting pages and parent form pass selected automated A and AA checks 
+
+    Error: /guide
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 110
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "id": "color-contrast",
+    +     "impact": "serious",
+    +     "targets": Array [
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(1) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(1) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(4) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(4) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(7) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(7) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(11) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(11) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(15) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(15) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(17) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(17) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(21) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(21) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(23) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(23) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(25) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(25) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(26) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(26) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(27) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(27) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(28) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(28) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(29) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(29) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(30) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(30) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(31) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(31) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(32) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(32) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(33) > .min-w-0.flex-1 > .leading-snug",
+    +       ],
+    +       Array [
+    +         ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(33) > .min-w-0.flex-1 > .mt-0\\.5",
+    +       ],
+    +     ],
+    +   },
+    + ]
+
+      73 |         return (await axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(v => ({ id: v.id, impact: v.impact, targets: v.nodes.map(n => n.target) }));
+      74 |       });
+    > 75 |       scans.push({ path, violations: result }); expect.soft(result, path).toEqual([]);
+         |                                                                           ^
+      76 |     }
+      77 |     await ctx.close();
+      78 |   }
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:75:75
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('main').getByRole('heading').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('main').getByRole('heading').first() with timeout 15000ms
+      - waiting for locator('main').getByRole('heading').first()
+
+
+      67 |     const ctx = await context(browser, staff), page = await ctx.newPage();
+      68 |     for (const path of staff ? [...staffPaths, `/admin/academy/${fx.tracks[0].id}`] : creatorPaths) {
+    > 69 |       await page.goto(path); await expect(page.locator("main").getByRole("heading").first()).toBeVisible();
+         |                                                                                              ^
+      70 |       await page.waitForLoadState("networkidle"); await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
+      71 |       const result = await page.evaluate(async () => {
+      72 |         const axe = (window as unknown as { axe: { run: (node: Document, options: unknown) => Promise<{ violations: Array<{ id: string; impact: string; nodes: Array<{ target: string[] }> }> }> } }).axe;
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:69:94
+
+    Error Context: test-results\d17-r2-quality-D17-R2-curr-52e3b-d-automated-A-and-AA-checks\error-context.md
+
+
+(node:42700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[4/4] e2e\d17-r2-quality.spec.ts:82:1 › D17 R2 keyboard retry preserves parent input and mobile navigation remains usable
+  4) e2e\d17-r2-quality.spec.ts:82:1 › D17 R2 keyboard retry preserves parent input and mobile navigation remains usable 
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator: getByRole('textbox', { name: 'Difficulty label (中文)', exact: true })
+    Expected: focused
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeFocused" getByRole('textbox', { name: 'Difficulty label (中文)', exact: true }) with timeout 15000ms
+      - waiting for getByRole('textbox', { name: 'Difficulty label (中文)', exact: true })
+
+
+      86 |   await expect(field).toBeVisible(); await field.fill("Unsaved keyboard review");
+      87 |   await field.focus(); await expect(field).toBeFocused(); await page.keyboard.press("Tab");
+    > 88 |   await expect(page.getByRole("textbox", { name: "Difficulty label (中文)", exact: true })).toBeFocused();
+         |                                                                                           ^
+      89 |   const menu = page.getByRole("button", { name: /Open navigation/i });
+      90 |   await menu.focus(); await page.keyboard.press("Enter"); await expect(menu).toHaveAttribute("aria-expanded", "true");
+      91 |   const close = page.getByRole("button", { name: /Close navigation/i });
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\d17-r2-quality.spec.ts:88:91
+
+    Error Context: test-results\d17-r2-quality-D17-R2-keyb-defe7-e-navigation-remains-usable\error-context.md
+
+
+  4 failed
+    e2e\d17-r2-quality.spec.ts:27:1 › D17 R2 admin heading remains fully readable beside workspace, role and account 
+    e2e\d17-r2-quality.spec.ts:45:1 › D17 R2 current core and supporting pages reflow at 360, 390, 768 and 320 CSS pixels 
+    e2e\d17-r2-quality.spec.ts:64:1 › D17 R2 current core, supporting pages and parent form pass selected automated A and AA checks 
+    e2e\d17-r2-quality.spec.ts:82:1 › D17 R2 keyboard retry preserves parent input and mobile navigation remains usable 

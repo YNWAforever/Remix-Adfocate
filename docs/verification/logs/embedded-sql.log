@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > preserves historical invalid evidence and blocks ordinary approval
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > returns invalid evidence for correction once, preserving the old reason and URLs
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > rolls back review, note and receipt when the audit insert fails
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > replays one receipt and rejects payload reuse and stale revision
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > enforces database workspace scope independently of the HTTP route
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > paginates 51 tied rows without leaking workspace B or losing the final creator
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > claims a generation once and atomically persists/replays the pair of turns
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > rolls back both messages and a new conversation on a persistence fault
+ ✓ server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > enforces shared in-flight/quota records and creator ownership
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > does not turn an Auth service outage into a new login requirement
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > injects the verified workspace into an unfiltered legacy queue request
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > refuses an opaque creator ID from another workspace
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > authenticated staff without membership cannot read the legacy queue
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > All workspaces contains only the active membership scope
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > does not accept another workspace as a query filter
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > membership storage failure is unavailable, independently of authentication
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > a disabled staff member is denied
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  01:48:50
+   Duration  4.04s (transform 322ms, setup 442ms, collect 462ms, tests 1.52s, environment 802ms, prepare 355ms)
+

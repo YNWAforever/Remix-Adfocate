@@ -1,0 +1,195 @@
+{
+  "priorSourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "files": [
+    {
+      "path": "e2e/creator-operator-mission.spec.ts",
+      "kind": "modified",
+      "beforeSha256": "21cb0c57cdbb1e506809fb9944a67a5eb1e78c20737a3ba29186e7c8973e1bf5",
+      "afterSha256": "f5d2459af2be32d4068f95c95c5ca76ab9a67b1c434348076ef6d10ac5a741d8",
+      "beforeCopy": "D19-B2-P0-source-before/e2e/creator-operator-mission.spec.ts"
+    },
+    {
+      "path": "e2e/staff-access.spec.ts",
+      "kind": "modified",
+      "beforeSha256": "1d1815da9459bbd78251b82e7a64991c74f12b9190d1bf9b45e8bce3e5fa1d7f",
+      "afterSha256": "2e1f1f1b5a172d0f384d8c1d0a6ae8af3526167eee33b34e8297a9817409ec8f",
+      "beforeCopy": "D19-B2-P0-source-before/e2e/staff-access.spec.ts"
+    },
+    {
+      "path": "playwright.pilot.config.ts",
+      "kind": "modified",
+      "beforeSha256": "dbe7df0410d16049cce80ced0c9a8691c758c451d86e9cc62197406298fcd9c2",
+      "afterSha256": "bc80181b2c298928d4dc48bb8d50bdabd05e2674417bcd361309ad0d973eeef9",
+      "beforeCopy": "D19-B2-P0-source-before/playwright.pilot.config.ts"
+    },
+    {
+      "path": "playwright.quality.config.ts",
+      "kind": "modified",
+      "beforeSha256": "a767ccd8785964365fd368ed4111caec569134f596b3889a2b165bf67d98bd34",
+      "afterSha256": "b3ef8fd0dcd1ef40ee9e787b94e529bd7cbbe7c1c51f641ac24cd93270dcb19b",
+      "beforeCopy": "D19-B2-P0-source-before/playwright.quality.config.ts"
+    },
+    {
+      "path": "scripts/audit/b2-bootstrap-profile.mjs",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "4ea8120a048f85c3acd99dea880bed9182a49afe3b5658d4c1db17c072dac8eb",
+      "beforeCopy": null
+    },
+    {
+      "path": "scripts/audit/b2-fixture-inventory.mjs",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "4d6d504ad090630977bb420b01c9886912316a3d4ea4ada494c6c88a6e301fb2",
+      "beforeCopy": null
+    },
+    {
+      "path": "scripts/audit/deny-external-fetch.mjs",
+      "kind": "modified",
+      "beforeSha256": "f8d6cb39958932d86e370e8928ace993ccf3d1e732e8acd979c1193077716689",
+      "afterSha256": "2236014c548a6a90431890de540598f4e46d7d1215fc9c92e9e6cbd81136f31c",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/deny-external-fetch.mjs"
+    },
+    {
+      "path": "scripts/audit/fixture-journal.mjs",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "56f8beeb46bf6590659383bc943fb5e3960a199ebaac675313a69d68711f2bf8",
+      "beforeCopy": null
+    },
+    {
+      "path": "scripts/audit/local-targets.mjs",
+      "kind": "modified",
+      "beforeSha256": "9b369b958fef96e49a51192deea189231ebd7f43d2826b7b1132ae5c609e13e3",
+      "afterSha256": "402695168a2b49055823307a4b74ea055132de14c2d3c4097fbeba1b7bb1d2f5",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/local-targets.mjs"
+    },
+    {
+      "path": "scripts/audit/prepare-pilot-browser.ts",
+      "kind": "modified",
+      "beforeSha256": "d07b6a5e7ddb115f45a5d52444a3d2ff5355d6bed3cbc593a030f467c7e4e509",
+      "afterSha256": "860ab1cddb1c8e619bec31db9595d73d40f5bf151da6ff41ecac03433a3c288e",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/prepare-pilot-browser.ts"
+    },
+    {
+      "path": "scripts/audit/run-integration.mjs",
+      "kind": "modified",
+      "beforeSha256": "cd698ec3b98a152015f8b12787edba870e105d4c56ac5a953ad8c52abe9adb17",
+      "afterSha256": "3eb6e7d14adc9513b04422b6f5f520d22d206ec953527a78a3a3ad3ac90338e0",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/run-integration.mjs"
+    },
+    {
+      "path": "scripts/audit/run-pilot-browser.mjs",
+      "kind": "modified",
+      "beforeSha256": "917acff19230ddf12cad89a0b8c3742f464ce2e999b3925f946e40223d90b199",
+      "afterSha256": "31feae58528b0104f335823d6db07090c47e3e0c7dcffc1fe717a475fe66d7a9",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/run-pilot-browser.mjs"
+    },
+    {
+      "path": "scripts/audit/serve-quality.ts",
+      "kind": "modified",
+      "beforeSha256": "ad679d8531f25b79ac2305e9637fa1834f1f265edabf58153a43596c5444882f",
+      "afterSha256": "ff69246c91c6420765da63b157e8578014bfb386d651d4271c59835c345a8288",
+      "beforeCopy": "D19-B2-P0-source-before/scripts/audit/serve-quality.ts"
+    },
+    {
+      "path": "server/test/audit-staff-capabilities.test.ts",
+      "kind": "modified",
+      "beforeSha256": "1949e659c02d98d2a1cd25a7d494c014e987d6f953dcac45d576aac7b2b1b7cd",
+      "afterSha256": "13200da2718a14f62141799514d627d86103137981c001b964c4dbf16e7ce0c1",
+      "beforeCopy": "D19-B2-P0-source-before/server/test/audit-staff-capabilities.test.ts"
+    },
+    {
+      "path": "server/test/audit-workflow-roundtrip.test.ts",
+      "kind": "modified",
+      "beforeSha256": "8ac2d0f694da69970ba7dd3b75f37a4f670b63706263ab495b30332e9f3c1bdf",
+      "afterSha256": "4f19c7ad04230cbaad456c724767ae1e19eb507be946f840a24bc0765126b6e2",
+      "beforeCopy": "D19-B2-P0-source-before/server/test/audit-workflow-roundtrip.test.ts"
+    },
+    {
+      "path": "server/test/auditWorkflowFixture.ts",
+      "kind": "modified",
+      "beforeSha256": "eb4fc612a41bfba7298c071398389329ee091b009bb0a5eca7dfc07389a29779",
+      "afterSha256": "0450bd6a8c7acf8267c5bb08d3f40be60932fbafa12d5d495ce9ab8424d4ca0c",
+      "beforeCopy": "D19-B2-P0-source-before/server/test/auditWorkflowFixture.ts"
+    },
+    {
+      "path": "server/test/b2-bootstrap-profile.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "f0b259a7b2e87fadcc0c2d0b5c48d56a79acda95072be597c87783e067a2a85c",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-fixture-inventory.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "bc0399b77907d2c687c77a09798b424cc28d7f93b448aa8b1f79760c6e06c9f1",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-fixture-journal.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "d26f2448a86a9eb35457860f23569901feec1fed8a2ca775bad56f12a7069338",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-fixture-wiring.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "935c8684f8ad43ce9c0cb142f7d779bab74952334a55fa8780bc2f648bbcdc2d",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-origin-binding.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "7a621bfbb77de541926736253b9d149815993d6e854f0bc526f1252dc6feb0e0",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-runtime-manifest.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "40df57238c89e74461d9252c6e11c22540ad1abbb586e47c4f05b45dd7670ff8",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/b2-target-context.test.ts",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "833de5183ae2d1a9f560ce1e9089ec6e2e7c642b2c91452b5c4f3cc5928cceae",
+      "beforeCopy": null
+    },
+    {
+      "path": "server/test/staffCapabilityFixture.ts",
+      "kind": "modified",
+      "beforeSha256": "0c8a7129138f8aaf6edaca43ab4ecb8d223232bb2fa5b59fa8355dfb22bb3d2f",
+      "afterSha256": "c7b9d5b1a0577e9246d170fbe7d11ed5bea7dc1e31325aba32dc95561bb62648",
+      "beforeCopy": "D19-B2-P0-source-before/server/test/staffCapabilityFixture.ts"
+    },
+    {
+      "path": "src/components/active-mission/DraftEditor.recovery.test.tsx",
+      "kind": "new",
+      "beforeSha256": null,
+      "afterSha256": "5525080acc9fcb160d89c96cb618d9f62a6570f9949837b4ae0d86d424c5c427",
+      "beforeCopy": null
+    },
+    {
+      "path": "src/components/active-mission/DraftEditor.tsx",
+      "kind": "modified",
+      "beforeSha256": "69b3f3e0cad5372a1000e87a0816158769edbc675508fc442cf6f4a8389a9266",
+      "afterSha256": "8412cd2daef33baadb0395ffbbe05e0b0f1117cc2ed9729af277a799ee896b05",
+      "beforeCopy": "D19-B2-P0-source-before/src/components/active-mission/DraftEditor.tsx"
+    },
+    {
+      "path": "src/lib/i18n.dict.ts",
+      "kind": "modified",
+      "beforeSha256": "538c39706048940342bb9887b64473909d01a315be2df0fc7a99a122e4e37176",
+      "afterSha256": "c9cd4f014b7b3df83ba934d6bed759c0e8a9fc02f95bf59f0a9e3c188624f75b",
+      "beforeCopy": "D19-B2-P0-source-before/src/lib/i18n.dict.ts"
+    }
+  ]
+}

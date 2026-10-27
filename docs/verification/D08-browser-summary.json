@@ -1,0 +1,54 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+  "auth": "Creator real local password sign-in; operator reuses setup's real Auth session",
+  "browser": "installed Microsoft Edge; desktop emulation only",
+  "tests": [
+    {
+      "title": "Creator navigation reaches every existing destination at 360px and preserves wallet reloads",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 15685
+        }
+      ]
+    },
+    {
+      "title": "real roles reload one durable pending reward and its revision/proof history",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 42066
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-22T20:13:40.943Z",
+    "duration": 62227.465000000004,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "externalProviders": "external HTTP disabled; proof metadata unavailable; no social publication",
+  "flow": "Creator UI + operator UI review/revision/proof/completion; read-only API and SQL persistence assertions",
+  "limitations": [
+    "No Safari/WebKit or physical mobile acceptance.",
+    "Synthetic publication URLs and manual checklist decisions; external social publication and metadata retrieval disabled."
+  ]
+}

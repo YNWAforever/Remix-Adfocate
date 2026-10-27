@@ -1,0 +1,1066 @@
+{
+  "receipts": [
+    {
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "kind": "empty",
+      "file": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
+      "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a",
+      "before": [
+        {
+          "name": "init",
+          "version": "0001"
+        },
+        {
+          "name": "harden_rls",
+          "version": "0002"
+        },
+        {
+          "name": "onboarding",
+          "version": "0003"
+        },
+        {
+          "name": "grants",
+          "version": "0004"
+        },
+        {
+          "name": "mission_submissions",
+          "version": "0005"
+        },
+        {
+          "name": "redemption",
+          "version": "0006"
+        },
+        {
+          "name": "earnings",
+          "version": "0007"
+        },
+        {
+          "name": "leveling",
+          "version": "0008"
+        },
+        {
+          "name": "passport_scores",
+          "version": "0009"
+        },
+        {
+          "name": "applications",
+          "version": "0010"
+        },
+        {
+          "name": "mission_brief",
+          "version": "0011"
+        },
+        {
+          "name": "trust_profile_bundle",
+          "version": "0012"
+        },
+        {
+          "name": "operator_creator_selection_crm",
+          "version": "0013"
+        },
+        {
+          "name": "operator_crm_workspace_guard",
+          "version": "0014"
+        },
+        {
+          "name": "creator_profile_media",
+          "version": "0015"
+        },
+        {
+          "name": "assistant",
+          "version": "0016"
+        },
+        {
+          "name": "social_verification",
+          "version": "0017"
+        },
+        {
+          "name": "mission_authoring",
+          "version": "0018"
+        },
+        {
+          "name": "mission_brief_rich",
+          "version": "0019"
+        },
+        {
+          "name": "staff_auth",
+          "version": "0020"
+        },
+        {
+          "name": "content_hub",
+          "version": "0021"
+        },
+        {
+          "name": "notifications",
+          "version": "0022"
+        },
+        {
+          "name": "brand_access",
+          "version": "0023"
+        },
+        {
+          "name": "brand_budget",
+          "version": "0024"
+        },
+        {
+          "name": "campaigns",
+          "version": "0025"
+        },
+        {
+          "name": "campaigns_s2",
+          "version": "0026"
+        },
+        {
+          "name": "brand_resources",
+          "version": "0027"
+        },
+        {
+          "name": "academy_content",
+          "version": "0028"
+        },
+        {
+          "name": "profile_media_private_grants",
+          "version": "20260618135028"
+        },
+        {
+          "name": "profile_media_url_validation",
+          "version": "20260619013000"
+        },
+        {
+          "name": "active_mission_workspace",
+          "version": "20260715163350"
+        },
+        {
+          "name": "receive_mission_fulfillment",
+          "version": "20260717190420"
+        },
+        {
+          "name": "active_mission_operator_lifecycle",
+          "version": "20260718134500"
+        },
+        {
+          "name": "harden_active_mission_operator_lifecycle",
+          "version": "20260718193000"
+        },
+        {
+          "name": "author_active_mission_workflow_policies",
+          "version": "20260718210000"
+        },
+        {
+          "name": "guard_mission_authoring_snapshot_race",
+          "version": "20260718213000"
+        },
+        {
+          "name": "submit_active_mission_draft",
+          "version": "20260719133000"
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "version": "20260719160000"
+        },
+        {
+          "name": "active_mission_workflow_notifications",
+          "version": "20260719200000"
+        },
+        {
+          "name": "migrate_pristine_joined_active_mission",
+          "version": "20260719220000"
+        },
+        {
+          "name": "final_review_active_mission_contracts",
+          "version": "20260720033542"
+        },
+        {
+          "name": "grant_service_role_budget_read",
+          "version": "20260720175319"
+        },
+        {
+          "name": "resolve_mission_submission_relationships",
+          "version": "20260720193637"
+        },
+        {
+          "name": "publication_proof_validation",
+          "version": "20260723090000"
+        },
+        {
+          "name": "publication_proof_rollout",
+          "version": "20260723170000"
+        },
+        {
+          "name": "publication_proof_rollout_compat",
+          "version": "20260725090000"
+        },
+        {
+          "name": "publication_proof_asset_policy",
+          "version": "20260725110000"
+        },
+        {
+          "name": "publication_proof_asset_mutation_guards",
+          "version": "20260725130000"
+        },
+        {
+          "name": "publication_proof_asset_guards",
+          "version": "20260725140000"
+        },
+        {
+          "name": "publication_proof_public_guards",
+          "version": "20260725143000"
+        },
+        {
+          "name": "publication_proof_public_rpc_final",
+          "version": "20260725150000"
+        },
+        {
+          "name": "publication_proof_instrumentation",
+          "version": "20260727120000"
+        },
+        {
+          "name": "publication_proof_existing_setup",
+          "version": "20260727130000"
+        },
+        {
+          "name": "fix_publication_proof_asset_path_regex",
+          "version": "20260728135000"
+        },
+        {
+          "name": "align_publication_proof_asset_mime_contract",
+          "version": "20260729010000"
+        },
+        {
+          "name": "reward_handoff_schema",
+          "version": "20260731100000"
+        },
+        {
+          "name": "reward_contract_capture",
+          "version": "20260731110000"
+        },
+        {
+          "name": "reward_handoff_transitions",
+          "version": "20260731120000"
+        },
+        {
+          "name": "reward_handoff_notifications",
+          "version": "20260731130000"
+        },
+        {
+          "name": "reward_handoff_release_hardening",
+          "version": "20260731140000"
+        },
+        {
+          "name": "enable_pilot_if_empty",
+          "version": "20260731150000"
+        },
+        {
+          "name": "review_hardening",
+          "version": "20260805120000"
+        },
+        {
+          "name": "audit_legacy_evidence",
+          "version": "20261022170454"
+        },
+        {
+          "name": "audit_crm_commands",
+          "version": "20261022170751"
+        },
+        {
+          "name": "audit_creator_queue",
+          "version": "20261022171111"
+        },
+        {
+          "name": "audit_assistant_requests",
+          "version": "20261022171843"
+        },
+        {
+          "name": "audit_legacy_review_notes",
+          "version": "20261022182544"
+        },
+        {
+          "name": "academy_learning",
+          "version": "20261023091050"
+        },
+        {
+          "name": "academy_learning_conflicts",
+          "version": "20261023093445"
+        },
+        {
+          "name": "academy_approval_index",
+          "version": "20261023095521"
+        }
+      ],
+      "after": [
+        {
+          "name": "init",
+          "version": "0001"
+        },
+        {
+          "name": "harden_rls",
+          "version": "0002"
+        },
+        {
+          "name": "onboarding",
+          "version": "0003"
+        },
+        {
+          "name": "grants",
+          "version": "0004"
+        },
+        {
+          "name": "mission_submissions",
+          "version": "0005"
+        },
+        {
+          "name": "redemption",
+          "version": "0006"
+        },
+        {
+          "name": "earnings",
+          "version": "0007"
+        },
+        {
+          "name": "leveling",
+          "version": "0008"
+        },
+        {
+          "name": "passport_scores",
+          "version": "0009"
+        },
+        {
+          "name": "applications",
+          "version": "0010"
+        },
+        {
+          "name": "mission_brief",
+          "version": "0011"
+        },
+        {
+          "name": "trust_profile_bundle",
+          "version": "0012"
+        },
+        {
+          "name": "operator_creator_selection_crm",
+          "version": "0013"
+        },
+        {
+          "name": "operator_crm_workspace_guard",
+          "version": "0014"
+        },
+        {
+          "name": "creator_profile_media",
+          "version": "0015"
+        },
+        {
+          "name": "assistant",
+          "version": "0016"
+        },
+        {
+          "name": "social_verification",
+          "version": "0017"
+        },
+        {
+          "name": "mission_authoring",
+          "version": "0018"
+        },
+        {
+          "name": "mission_brief_rich",
+          "version": "0019"
+        },
+        {
+          "name": "staff_auth",
+          "version": "0020"
+        },
+        {
+          "name": "content_hub",
+          "version": "0021"
+        },
+        {
+          "name": "notifications",
+          "version": "0022"
+        },
+        {
+          "name": "brand_access",
+          "version": "0023"
+        },
+        {
+          "name": "brand_budget",
+          "version": "0024"
+        },
+        {
+          "name": "campaigns",
+          "version": "0025"
+        },
+        {
+          "name": "campaigns_s2",
+          "version": "0026"
+        },
+        {
+          "name": "brand_resources",
+          "version": "0027"
+        },
+        {
+          "name": "academy_content",
+          "version": "0028"
+        },
+        {
+          "name": "profile_media_private_grants",
+          "version": "20260618135028"
+        },
+        {
+          "name": "profile_media_url_validation",
+          "version": "20260619013000"
+        },
+        {
+          "name": "active_mission_workspace",
+          "version": "20260715163350"
+        },
+        {
+          "name": "receive_mission_fulfillment",
+          "version": "20260717190420"
+        },
+        {
+          "name": "active_mission_operator_lifecycle",
+          "version": "20260718134500"
+        },
+        {
+          "name": "harden_active_mission_operator_lifecycle",
+          "version": "20260718193000"
+        },
+        {
+          "name": "author_active_mission_workflow_policies",
+          "version": "20260718210000"
+        },
+        {
+          "name": "guard_mission_authoring_snapshot_race",
+          "version": "20260718213000"
+        },
+        {
+          "name": "submit_active_mission_draft",
+          "version": "20260719133000"
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "version": "20260719160000"
+        },
+        {
+          "name": "active_mission_workflow_notifications",
+          "version": "20260719200000"
+        },
+        {
+          "name": "migrate_pristine_joined_active_mission",
+          "version": "20260719220000"
+        },
+        {
+          "name": "final_review_active_mission_contracts",
+          "version": "20260720033542"
+        },
+        {
+          "name": "grant_service_role_budget_read",
+          "version": "20260720175319"
+        },
+        {
+          "name": "resolve_mission_submission_relationships",
+          "version": "20260720193637"
+        },
+        {
+          "name": "publication_proof_validation",
+          "version": "20260723090000"
+        },
+        {
+          "name": "publication_proof_rollout",
+          "version": "20260723170000"
+        },
+        {
+          "name": "publication_proof_rollout_compat",
+          "version": "20260725090000"
+        },
+        {
+          "name": "publication_proof_asset_policy",
+          "version": "20260725110000"
+        },
+        {
+          "name": "publication_proof_asset_mutation_guards",
+          "version": "20260725130000"
+        },
+        {
+          "name": "publication_proof_asset_guards",
+          "version": "20260725140000"
+        },
+        {
+          "name": "publication_proof_public_guards",
+          "version": "20260725143000"
+        },
+        {
+          "name": "publication_proof_public_rpc_final",
+          "version": "20260725150000"
+        },
+        {
+          "name": "publication_proof_instrumentation",
+          "version": "20260727120000"
+        },
+        {
+          "name": "publication_proof_existing_setup",
+          "version": "20260727130000"
+        },
+        {
+          "name": "fix_publication_proof_asset_path_regex",
+          "version": "20260728135000"
+        },
+        {
+          "name": "align_publication_proof_asset_mime_contract",
+          "version": "20260729010000"
+        },
+        {
+          "name": "reward_handoff_schema",
+          "version": "20260731100000"
+        },
+        {
+          "name": "reward_contract_capture",
+          "version": "20260731110000"
+        },
+        {
+          "name": "reward_handoff_transitions",
+          "version": "20260731120000"
+        },
+        {
+          "name": "reward_handoff_notifications",
+          "version": "20260731130000"
+        },
+        {
+          "name": "reward_handoff_release_hardening",
+          "version": "20260731140000"
+        },
+        {
+          "name": "enable_pilot_if_empty",
+          "version": "20260731150000"
+        },
+        {
+          "name": "review_hardening",
+          "version": "20260805120000"
+        },
+        {
+          "name": "audit_legacy_evidence",
+          "version": "20261022170454"
+        },
+        {
+          "name": "audit_crm_commands",
+          "version": "20261022170751"
+        },
+        {
+          "name": "audit_creator_queue",
+          "version": "20261022171111"
+        },
+        {
+          "name": "audit_assistant_requests",
+          "version": "20261022171843"
+        },
+        {
+          "name": "audit_legacy_review_notes",
+          "version": "20261022182544"
+        },
+        {
+          "name": "academy_learning",
+          "version": "20261023091050"
+        },
+        {
+          "name": "academy_learning_conflicts",
+          "version": "20261023093445"
+        },
+        {
+          "name": "academy_approval_index",
+          "version": "20261023095521"
+        },
+        {
+          "name": "staff_access_capabilities",
+          "version": "20261023124149"
+        }
+      ],
+      "initialCounts": {
+        "audit": 0,
+        "commands": 0,
+        "platformRoles": 0,
+        "workspaceRoles": 0
+      },
+      "oldHistoryUnchanged": true,
+      "forwardOnly": true
+    },
+    {
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "kind": "shaped",
+      "file": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
+      "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a",
+      "before": [
+        {
+          "name": "init",
+          "version": "20260613123947"
+        },
+        {
+          "name": "harden_rls",
+          "version": "20260613124252"
+        },
+        {
+          "name": "slice9_applications",
+          "version": "20260616122212"
+        },
+        {
+          "name": "mission_brief",
+          "version": "20260616171712"
+        },
+        {
+          "name": "0012_trust_profile_bundle",
+          "version": "20260618181926"
+        },
+        {
+          "name": "0013_operator_creator_selection_crm",
+          "version": "20260618181954"
+        },
+        {
+          "name": "0014_operator_crm_workspace_guard",
+          "version": "20260618182014"
+        },
+        {
+          "name": "0015_creator_profile_media",
+          "version": "20260618182057"
+        },
+        {
+          "name": "20260618135028_profile_media_private_grants",
+          "version": "20260618182116"
+        },
+        {
+          "name": "20260619013000_profile_media_url_validation",
+          "version": "20260618182132"
+        },
+        {
+          "name": "0016_assistant",
+          "version": "20260619123106"
+        },
+        {
+          "name": "0017_social_verification",
+          "version": "20260621175440"
+        },
+        {
+          "name": "0021_content_hub",
+          "version": "20260623152437"
+        },
+        {
+          "name": "0022_notifications",
+          "version": "20260623155639"
+        },
+        {
+          "name": "active_mission_workspace",
+          "version": "20260715163350"
+        },
+        {
+          "name": "receive_mission_fulfillment",
+          "version": "20260717190420"
+        },
+        {
+          "name": "active_mission_operator_lifecycle",
+          "version": "20260718134500"
+        },
+        {
+          "name": "harden_active_mission_operator_lifecycle",
+          "version": "20260718193000"
+        },
+        {
+          "name": "author_active_mission_workflow_policies",
+          "version": "20260718210000"
+        },
+        {
+          "name": "guard_mission_authoring_snapshot_race",
+          "version": "20260718213000"
+        },
+        {
+          "name": "submit_active_mission_draft",
+          "version": "20260719133000"
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "version": "20260719160000"
+        },
+        {
+          "name": "active_mission_workflow_notifications",
+          "version": "20260719200000"
+        },
+        {
+          "name": "migrate_pristine_joined_active_mission",
+          "version": "20260719220000"
+        },
+        {
+          "name": "final_review_active_mission_contracts",
+          "version": "20260720033542"
+        },
+        {
+          "name": "grant_service_role_budget_read",
+          "version": "20260720175319"
+        },
+        {
+          "name": "resolve_mission_submission_relationships",
+          "version": "20260720193637"
+        },
+        {
+          "name": "publication_proof_validation",
+          "version": "20260723090000"
+        },
+        {
+          "name": "publication_proof_rollout",
+          "version": "20260723170000"
+        },
+        {
+          "name": "publication_proof_rollout_compat",
+          "version": "20260725090000"
+        },
+        {
+          "name": "publication_proof_asset_policy",
+          "version": "20260725110000"
+        },
+        {
+          "name": "publication_proof_asset_mutation_guards",
+          "version": "20260725130000"
+        },
+        {
+          "name": "publication_proof_asset_guards",
+          "version": "20260725140000"
+        },
+        {
+          "name": "publication_proof_public_guards",
+          "version": "20260725143000"
+        },
+        {
+          "name": "publication_proof_public_rpc_final",
+          "version": "20260725150000"
+        },
+        {
+          "name": "publication_proof_instrumentation",
+          "version": "20260727120000"
+        },
+        {
+          "name": "publication_proof_existing_setup",
+          "version": "20260727130000"
+        },
+        {
+          "name": "fix_publication_proof_asset_path_regex",
+          "version": "20260728135000"
+        },
+        {
+          "name": "align_publication_proof_asset_mime_contract",
+          "version": "20260729010000"
+        },
+        {
+          "name": "reward_handoff_schema",
+          "version": "20260731100000"
+        },
+        {
+          "name": "reward_contract_capture",
+          "version": "20260731110000"
+        },
+        {
+          "name": "reward_handoff_transitions",
+          "version": "20260731120000"
+        },
+        {
+          "name": "reward_handoff_notifications",
+          "version": "20260731130000"
+        },
+        {
+          "name": "reward_handoff_release_hardening",
+          "version": "20260731140000"
+        },
+        {
+          "name": "enable_pilot_if_empty",
+          "version": "20260731150000"
+        },
+        {
+          "name": "review_hardening",
+          "version": "20260805120000"
+        },
+        {
+          "name": "audit_legacy_evidence",
+          "version": "20261022170454"
+        },
+        {
+          "name": "audit_crm_commands",
+          "version": "20261022170751"
+        },
+        {
+          "name": "audit_creator_queue",
+          "version": "20261022171111"
+        },
+        {
+          "name": "audit_assistant_requests",
+          "version": "20261022171843"
+        },
+        {
+          "name": "audit_legacy_review_notes",
+          "version": "20261022182544"
+        },
+        {
+          "name": "academy_learning",
+          "version": "20261023091050"
+        },
+        {
+          "name": "academy_learning_conflicts",
+          "version": "20261023093445"
+        },
+        {
+          "name": "academy_approval_index",
+          "version": "20261023095521"
+        }
+      ],
+      "after": [
+        {
+          "name": "init",
+          "version": "20260613123947"
+        },
+        {
+          "name": "harden_rls",
+          "version": "20260613124252"
+        },
+        {
+          "name": "slice9_applications",
+          "version": "20260616122212"
+        },
+        {
+          "name": "mission_brief",
+          "version": "20260616171712"
+        },
+        {
+          "name": "0012_trust_profile_bundle",
+          "version": "20260618181926"
+        },
+        {
+          "name": "0013_operator_creator_selection_crm",
+          "version": "20260618181954"
+        },
+        {
+          "name": "0014_operator_crm_workspace_guard",
+          "version": "20260618182014"
+        },
+        {
+          "name": "0015_creator_profile_media",
+          "version": "20260618182057"
+        },
+        {
+          "name": "20260618135028_profile_media_private_grants",
+          "version": "20260618182116"
+        },
+        {
+          "name": "20260619013000_profile_media_url_validation",
+          "version": "20260618182132"
+        },
+        {
+          "name": "0016_assistant",
+          "version": "20260619123106"
+        },
+        {
+          "name": "0017_social_verification",
+          "version": "20260621175440"
+        },
+        {
+          "name": "0021_content_hub",
+          "version": "20260623152437"
+        },
+        {
+          "name": "0022_notifications",
+          "version": "20260623155639"
+        },
+        {
+          "name": "active_mission_workspace",
+          "version": "20260715163350"
+        },
+        {
+          "name": "receive_mission_fulfillment",
+          "version": "20260717190420"
+        },
+        {
+          "name": "active_mission_operator_lifecycle",
+          "version": "20260718134500"
+        },
+        {
+          "name": "harden_active_mission_operator_lifecycle",
+          "version": "20260718193000"
+        },
+        {
+          "name": "author_active_mission_workflow_policies",
+          "version": "20260718210000"
+        },
+        {
+          "name": "guard_mission_authoring_snapshot_race",
+          "version": "20260718213000"
+        },
+        {
+          "name": "submit_active_mission_draft",
+          "version": "20260719133000"
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "version": "20260719160000"
+        },
+        {
+          "name": "active_mission_workflow_notifications",
+          "version": "20260719200000"
+        },
+        {
+          "name": "migrate_pristine_joined_active_mission",
+          "version": "20260719220000"
+        },
+        {
+          "name": "final_review_active_mission_contracts",
+          "version": "20260720033542"
+        },
+        {
+          "name": "grant_service_role_budget_read",
+          "version": "20260720175319"
+        },
+        {
+          "name": "resolve_mission_submission_relationships",
+          "version": "20260720193637"
+        },
+        {
+          "name": "publication_proof_validation",
+          "version": "20260723090000"
+        },
+        {
+          "name": "publication_proof_rollout",
+          "version": "20260723170000"
+        },
+        {
+          "name": "publication_proof_rollout_compat",
+          "version": "20260725090000"
+        },
+        {
+          "name": "publication_proof_asset_policy",
+          "version": "20260725110000"
+        },
+        {
+          "name": "publication_proof_asset_mutation_guards",
+          "version": "20260725130000"
+        },
+        {
+          "name": "publication_proof_asset_guards",
+          "version": "20260725140000"
+        },
+        {
+          "name": "publication_proof_public_guards",
+          "version": "20260725143000"
+        },
+        {
+          "name": "publication_proof_public_rpc_final",
+          "version": "20260725150000"
+        },
+        {
+          "name": "publication_proof_instrumentation",
+          "version": "20260727120000"
+        },
+        {
+          "name": "publication_proof_existing_setup",
+          "version": "20260727130000"
+        },
+        {
+          "name": "fix_publication_proof_asset_path_regex",
+          "version": "20260728135000"
+        },
+        {
+          "name": "align_publication_proof_asset_mime_contract",
+          "version": "20260729010000"
+        },
+        {
+          "name": "reward_handoff_schema",
+          "version": "20260731100000"
+        },
+        {
+          "name": "reward_contract_capture",
+          "version": "20260731110000"
+        },
+        {
+          "name": "reward_handoff_transitions",
+          "version": "20260731120000"
+        },
+        {
+          "name": "reward_handoff_notifications",
+          "version": "20260731130000"
+        },
+        {
+          "name": "reward_handoff_release_hardening",
+          "version": "20260731140000"
+        },
+        {
+          "name": "enable_pilot_if_empty",
+          "version": "20260731150000"
+        },
+        {
+          "name": "review_hardening",
+          "version": "20260805120000"
+        },
+        {
+          "name": "audit_legacy_evidence",
+          "version": "20261022170454"
+        },
+        {
+          "name": "audit_crm_commands",
+          "version": "20261022170751"
+        },
+        {
+          "name": "audit_creator_queue",
+          "version": "20261022171111"
+        },
+        {
+          "name": "audit_assistant_requests",
+          "version": "20261022171843"
+        },
+        {
+          "name": "audit_legacy_review_notes",
+          "version": "20261022182544"
+        },
+        {
+          "name": "academy_learning",
+          "version": "20261023091050"
+        },
+        {
+          "name": "academy_learning_conflicts",
+          "version": "20261023093445"
+        },
+        {
+          "name": "academy_approval_index",
+          "version": "20261023095521"
+        },
+        {
+          "name": "staff_access_capabilities",
+          "version": "20261023124149"
+        }
+      ],
+      "initialCounts": {
+        "audit": 0,
+        "commands": 0,
+        "platformRoles": 0,
+        "workspaceRoles": 0
+      },
+      "oldHistoryUnchanged": true,
+      "forwardOnly": true
+    }
+  ],
+  "productionChanged": false,
+  "noResetOrDbPush": true
+}

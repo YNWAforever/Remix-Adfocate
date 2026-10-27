@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/run-integration-tests.test.ts (18 tests) 18ms
+ ✓ server/test/support-rpc-ownership.test.ts (7 tests) 50ms
+ ✓ server/test/support-fresh-scope.test.ts (9 tests) 160ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-final-targeted.private.json
+
+ Test Files  3 passed (3)
+      Tests  34 passed (34)
+   Start at  17:54:12
+   Duration  5.74s (transform 200ms, setup 1.35s, collect 191ms, tests 228ms, environment 2.77s, prepare 550ms)
+

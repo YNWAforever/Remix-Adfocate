@@ -1,0 +1,86 @@
+// Operates only on the two disposable projects created for this authorized run.
+// No SDK import, SQL connection, fixture or migration precedes Docker identity verification.
+import { execFileSync } from "node:child_process";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { resolve } from "node:path";
+import process from "node:process";
+import { log } from "node:console";
+import { verifyIntegrationIdentity } from "../run-integration-tests.mjs";
+
+const runId = "01a16483-e55d-7332-9ddc-7e8a3f68eb11";
+const ownerAuthorization = "2026-10-23 user: you decide; local disposable targets only";
+const root = process.cwd();
+function docker(args, options = {}) {
+  return execFileSync("docker", args, { encoding: "utf8", timeout: 120000, ...options }).trim();
+}
+export function verifiedTarget(kind) {
+  if (!["empty", "shaped"].includes(kind)) throw new Error("unknown disposable target");
+  const projectId = `adfocate-r1-${kind}-20261023`;
+  const port = kind === "empty" ? 56421 : 56521;
+  const metadata = (service) => JSON.parse(docker(["inspect", "--format",
+    '{"id":{{json .Id}},"image":{{json .Image}},"network":{{json .NetworkSettings.Networks}}}',
+    `supabase_${service}_${projectId}`]));
+  const api = metadata("kong"), database = metadata("db");
+  const network = Object.values(api.network).find((entry) => Object.values(database.network)
+    .some((peer) => peer.NetworkID === entry.NetworkID));
+  if (!network) throw new Error("target has no exclusive verified network");
+  const identity = { runId, ownerAuthorization, disposable: true, projectId, proxy: "none",
+    apiPort: port, apiContainerId: api.id, databaseContainerId: database.id,
+    apiImageId: api.image, databaseImageId: database.image, networkId: network.NetworkID };
+  const publicEnv = { SUPABASE_URL: `http://127.0.0.1:${port}`,
+    SUPABASE_SERVICE_KEY: "identity-check-before-key-read", SUPABASE_ANON_KEY: "identity-check-before-key-read",
+    INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify(identity) };
+  verifyIntegrationIdentity(publicEnv);
+  const networkMetadata = JSON.parse(docker(["network", "inspect", "--format",
+    '{"labels":{{json .Labels}},"options":{{json .Options}}}', identity.networkId]));
+  if (networkMetadata.labels?.["adfocate.run"] !== runId
+      || networkMetadata.options?.["com.docker.network.bridge.host_binding_ipv4"] !== "127.0.0.1") {
+    throw new Error("target network is not owned by this run or is not loopback-bound");
+  }
+  const sql = (query) => docker(["exec", "-i", identity.databaseContainerId, "psql", "-X", "-q", "-A", "-t",
+    "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres"], { input: query });
+  // These are freshly generated keys for this run's local target, never hosted credentials.
+  const lines = readFileSync(resolve(root, `.codex-tmp/${kind}-start.private.log`), "utf8").split(/\r?\n/);
+  const keys = JSON.parse(lines.filter((line) => line.startsWith('{"DB_URL"')).at(-1));
+  if (keys.API_URL !== publicEnv.SUPABASE_URL) throw new Error("local key source target mismatch");
+  const env = { ...publicEnv, SUPABASE_ANON_KEY: keys.ANON_KEY, SUPABASE_SERVICE_KEY: keys.SERVICE_ROLE_KEY };
+  return { identity, sql, env };
+}
+
+function saveIdentity(target, kind) {
+  writeFileSync(resolve(root, `docs/verification/target-${kind}.json`), JSON.stringify({
+    verifiedAt: new Date().toISOString(), identity: target.identity, clientSetupAfterVerification: true,
+    externalProviders: "disabled", keys: "not retained in evidence" }, null, 2) + "\n");
+  writeFileSync(resolve(root, `.codex-tmp/target-${kind}.private.json`), JSON.stringify(target.env));
+}
+function applyEmpty(target) {
+  const existing = Number(target.sql("select count(*) from pg_tables where schemaname='public';"));
+  if (existing !== 0) throw new Error("empty target is not empty; refusing reset/replay");
+  target.sql("create schema if not exists supabase_migrations; create table if not exists supabase_migrations.schema_migrations(version text primary key, statements text[], name text);");
+  const results = [];
+  for (const file of readdirSync(resolve(root, "supabase/migrations")).filter((f) => f.endsWith(".sql")).sort()) {
+    const match = /^(\d+)_([a-z0-9_]+)\.sql$/.exec(file);
+    if (!match) throw new Error("invalid local migration filename");
+    const source = readFileSync(resolve(root, "supabase/migrations", file), "utf8");
+    // Flatten only explicit top-level transaction lines, keeping file bytes/checksums unchanged.
+    const transactionalSource = source.replace(/^begin;\s*$/gmi, "").replace(/^commit;\s*$/gmi, "");
+    target.sql(`begin;\n${transactionalSource}\ninsert into supabase_migrations.schema_migrations(version,name) values ('${match[1]}','${match[2]}');\ncommit;`);
+    results.push({ file, status: "applied-transactionally" });
+  }
+  target.sql("notify pgrst, 'reload schema';");
+  writeFileSync(resolve(root, "docs/verification/empty-replay.json"), JSON.stringify({
+    target: target.identity, migrations: results, replayPolicy: "history_noop; no SQL reapplied",
+    pendingOnSecondPass: readdirSync(resolve(root,"supabase/migrations")).filter((f)=>f.endsWith(".sql"))
+      .filter((f)=>!target.sql(`select 1 from supabase_migrations.schema_migrations where version='${f.split('_')[0]}';`)),
+  }, null, 2) + "\n");
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === resolve(root, "scripts/audit/local-targets.mjs")) {
+  const action = process.argv[2] ?? "identity";
+  for (const kind of ["empty", "shaped"]) {
+    const target = verifiedTarget(kind);
+    saveIdentity(target, kind);
+    if (action === "apply-empty" && kind === "empty") applyEmpty(target);
+    log(`${kind}: Docker identity verified; ${action}`);
+  }
+}

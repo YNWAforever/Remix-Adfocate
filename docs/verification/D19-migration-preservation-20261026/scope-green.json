@@ -1,0 +1,12 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-migration-preservation-20261026\\verify-preservation.py",
+    "--claims"
+  ],
+  "exit": 0,
+  "stdout": "{\"status\": \"PASS_EXPLICIT_MIGRATION_SCOPE\", \"issues\": [], \"actualTargetCalls\": 0, \"productTestFailure\": false}\n",
+  "stderr": "",
+  "productTestRun": false,
+  "actualTargetCalls": 0
+}

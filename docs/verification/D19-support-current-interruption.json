@@ -1,0 +1,21 @@
+{
+  "runs": [
+    {
+      "namespace": "a651759c-d965-42bc-b730-b41550833cff",
+      "workspaceId": "6bf3a4f5-f50d-4c6a-bb49-8e93c1d0713b",
+      "completeSupportReport": false,
+      "resultReceipt": false
+    },
+    {
+      "namespace": "c1133f56-3d5c-4417-8aa9-133f1dcaab03",
+      "workspaceId": "c19c11c1-b22e-428d-8dc3-814318ad93a9",
+      "completeSupportReport": true,
+      "resultReceipt": true
+    }
+  ],
+  "attempt2": "INTERRUPTED_NO_FINAL_REPORT",
+  "ownNodeProcessCheck": "No matching node process after execution interface changed; no broad process termination",
+  "oldSessionId": "unavailable after tool/runtime change",
+  "oldLogsOrFixturesRemoved": false,
+  "noPassClaimForInterruptedRun": true
+}

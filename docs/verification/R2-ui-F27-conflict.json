@@ -1,0 +1,31 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "value": {
+    "parentId": "3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+    "real409": true,
+    "explicitAcknowledgement": true,
+    "metadata": {
+      "duration": {
+        "en": "Concurrent 20 minutes",
+        "zh": "保留的中文時間"
+      },
+      "levelLabel": {
+        "en": "Synthetic introduction",
+        "zh": "合成入門"
+      },
+      "futureExtension": {
+        "nested": [
+          "retain",
+          {
+            "version": 1
+          }
+        ]
+      },
+      "learningEnabled": false,
+      "concurrentUnknown": {
+        "retain": true
+      }
+    },
+    "reloadEqual": true
+  }
+}

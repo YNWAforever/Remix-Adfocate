@@ -1,0 +1,146 @@
+{
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "full": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\full-suite-final.json"
+    ],
+    "exit": 0,
+    "passed": 2058,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 288,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final-command.json"
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "releaseFoundationFromFull": {
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0,
+    "total": 107
+  },
+  "identityRed": {
+    "passed": 19,
+    "failed": 3,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-gate-red.json"
+  },
+  "identityGreen": {
+    "passed": 22,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-gate-green.json",
+    "sourceRevision": "pre-final manifest-reference-only test change"
+  },
+  "b2Regression": {
+    "passed": 43,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/b2-regression.json",
+    "sourceRevision": "pre-final manifest-reference-only test change"
+  },
+  "finalCurrentBinding": {
+    "passed": 25,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/current-binding-green.json"
+  },
+  "initialFullAttempt": {
+    "sourceFingerprint": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+    "passed": 2046,
+    "failed": 12,
+    "gatedSkip": 363,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite.json",
+    "classification": "One stale current-manifest test reference fixed; nine loopback failures and two temp-rename failures confirmed permission-dependent by unchanged-source privileged recheck."
+  },
+  "permissionRecheck": {
+    "passed": 28,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/permission-recheck.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/permission-recheck-command.json"
+  },
+  "typeCheck": {
+    "exit": 0,
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/type-check.log",
+    "finalAffectedTestTypeCheck": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/type-check-final.log",
+    "command": [
+      "npm",
+      "run",
+      "type-check"
+    ],
+    "finalCommand": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "finalExit": 0
+  },
+  "lint": {
+    "exit": 0,
+    "existingWarnings": 4,
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/lint.log",
+    "finalAffectedFileLint": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/lint-final.log",
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "."
+    ],
+    "finalCommand": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "scripts/audit/local-targets.mjs",
+      "server/test/b2-target-context.test.ts",
+      "server/test/b2-runtime-manifest.test.ts"
+    ],
+    "finalExit": 0
+  },
+  "releaseManifest": {
+    "exit": 0,
+    "digest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/release-manifest-check.log",
+    "command": [
+      "node",
+      "node_modules/vite-node/vite-node.mjs",
+      "--script",
+      "scripts/release/manifest-cli.ts",
+      "check"
+    ]
+  },
+  "esm": {
+    "exit": 0,
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/check-esm.log",
+    "command": [
+      "node",
+      "scripts/check-esm-extensions.mjs"
+    ]
+  },
+  "node": "v24.18.0",
+  "Node22": "NOT_RUN_NOT_INSTALLED_BY_THIS_RUN",
+  "build": "NOT_RERUN: application/UI source unchanged; guard/test-only change; type/lint/full recorded",
+  "realApplicationRoleCoreBrowser": "NOT_RUN",
+  "wholeR1Verified": false,
+  "realOfflineContextRefusals": {
+    "passed": 2,
+    "failed": 0,
+    "command": [
+      "node",
+      ".codex-tmp/C1-source-gate-refusals.mjs"
+    ],
+    "report": "adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-gate-refusals.json",
+    "applicationKeysRead": false,
+    "clientSetup": false,
+    "targetCalls": 0
+  }
+}

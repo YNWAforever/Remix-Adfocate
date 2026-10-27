@@ -1,0 +1,6 @@
+{
+  "passed": 0,
+  "failed": 3,
+  "log": "logs/D15-api-red.log",
+  "note": "Original RED log preserved. The temporary red JSON was overwritten by the later 6-pass/6-fail implementation attempt; it is not used as the original RED result."
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.json",
+  "include": [
+    "assets.test.tsx",
+    "../../../src",
+    "../../../server",
+    "../../../api",
+    "../../../scripts",
+    "../../../vite.config.ts"
+  ]
+}

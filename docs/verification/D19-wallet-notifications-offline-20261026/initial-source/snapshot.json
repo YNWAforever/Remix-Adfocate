@@ -1,0 +1,15 @@
+{
+  "scope": "Initial8 assertions PASS; preserve before verifier-only lint/config/trace corrections",
+  "files": [
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+      "snapshot": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/wallet-notifications.test.tsx.txt",
+      "sha256": "bac6cf3eedcf843424a8fa5982c8759b856103c36a75103f43b99f4c3449e2ee"
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json",
+      "snapshot": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/tsconfig.offline.json.txt",
+      "sha256": "5cc5694ef8fcfe85b85265dbc9573d1e741d44bab6350b2a676b3805aba3c600"
+    }
+  ]
+}

@@ -1,0 +1,373 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/pilot.test.ts > pilot candidate guard > accepts one new legacy mission and exposes a frozen neutral join contract
+ ✓ scripts/release/pilot.test.ts > pilot candidate guard > rejects submissions, cross-workspace missions, or a second active pilot
+ × scripts/release/pilot.test.ts > pilot candidate guard > requires exact approval, re-inspects, and performs one conditional mode update
+   → pilot candidate rejected before update: approved evidence has expired
+ × scripts/release/pilot.test.ts > pilot candidate guard > rejects a conditional update race and never publishes
+   → expected [Function] to throw error including 'submission race' but got 'pilot candidate rejected before updat…'
+ × src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A25: failed review must show an actionable error and retain the note 511ms
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A26: flag action must collect an operator reason before committing
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A27: workspace lookup failure must be distinguishable from All workspaces
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A28: later today in Hong Kong remains today across UTC midnight
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A29: tomorrow in Hong Kong is not labelled today because UTC date matches
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <span
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold"
+>
+  app.admin.activeMission.queue.dueToday
+</span> instead
+ × src/audit-tests/admin-live-followup.audit.test.tsx > 2026-10-22 staff live follow-up acceptance > UC-A53: mission load failure must show an actionable error, not an unexplained blank list
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/admin-live-followup.audit.test.tsx > 2026-10-22 staff live follow-up acceptance > UC-A54: invalid legacy evidence must not enable ordinary approval 525ms
+   → expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-label="app.admin.submissionsApprove"
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+/>
+ × src/audit-tests/crm-atomicity.audit.test.ts > CRM partial-write acceptance > UC-A31: an audit failure must not leave an unrecorded changed review
+   → status and audit must commit together: expected { creator_id: 'creator', …(6) } to be null
+ × src/audit-tests/crm-atomicity.audit.test.ts > CRM partial-write acceptance > UC-A32: retry after a failed note response must not duplicate a persisted note
+   → same logical retry must not duplicate a note: expected 2 to be less than or equal to 1
+ × src/audit-tests/admin-creators.audit.test.tsx > 2026-10-22 operator queue acceptance > UC-A04: all 26 creators are reachable from the queue
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/admin-creators.audit.test.tsx > 2026-10-22 operator queue acceptance > UC-A05: a list request failure must be visible and recoverable
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/admin-decisions.audit.test.tsx > 2026-10-22 decision failure acceptance > UC-A06: failed acceptance must show an actionable error while keeping the row
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C05: a failed request must show a recoverable error, not a no-missions claim
+   → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p
+  class="text-sm text-[var(--color-soft-ink)]"
+>
+  app.my.empty
+</p> instead
+ × src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C06: applied applications remain discoverable
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C06: declined applications remain discoverable
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ × src/audit-tests/staff-unavailable.audit.test.tsx > UC-A30: a staff service outage must not be presented as signed out
+   → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/audit-tests/admin-creators.audit.test.tsx > 2026-10-22 operator queue acceptance > UC-A04: all 26 creators are reachable from the queue
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/admin-creators.audit.test.tsx:20:68
+     18|   show();await screen.findByText('Creator 25');
+     19|   const next=screen.queryByRole('button',{name:/next|load more|下一|更…
+     20|   expect(next,'26th creator needs a reachable pagination control').toB…
+       |                                                                    ^
+     21|   fireEvent.click(next!);await screen.findByText('Creator 26');
+     22|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯
+
+ FAIL  src/audit-tests/admin-creators.audit.test.tsx > 2026-10-22 operator queue acceptance > UC-A05: a list request failure must be visible and recoverable
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/admin-creators.audit.test.tsx:26:39
+     24|   h.fetch.mockRejectedValue(new Error('network unavailable'));const qc…
+     25|   await waitFor(()=>expect(qc.getQueryCache().getAll()[0]?.state.statu…
+     26|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                       ^
+     27|  });
+     28| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯
+
+ FAIL  src/audit-tests/admin-decisions.audit.test.tsx > 2026-10-22 decision failure acceptance > UC-A06: failed acceptance must show an actionable error while keeping the row
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/admin-decisions.audit.test.tsx:23:39
+     21|   await waitFor(()=>expect(qc.getMutationCache().getAll()[0]?.state.st…
+     22|   expect(screen.getByText('Audit Creator')).toBeInTheDocument();
+     23|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                       ^
+     24|  });
+     25| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯
+
+ FAIL  src/audit-tests/admin-live-followup.audit.test.tsx > 2026-10-22 staff live follow-up acceptance > UC-A53: mission load failure must show an actionable error, not an unexplained blank list
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/admin-live-followup.audit.test.tsx:37:39
+     35|   const qc=show(MissionsRoute.options.component);
+     36|   await waitFor(()=>expect(qc.getQueryCache().getAll()[0]?.state.statu…
+     37|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                       ^
+     38|   expect(screen.queryByRole('button',{name:/retry|reload|重試|重新載入…
+     39|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯
+
+ FAIL  src/audit-tests/admin-live-followup.audit.test.tsx > 2026-10-22 staff live follow-up acceptance > UC-A54: invalid legacy evidence must not enable ordinary approval
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-label="app.admin.submissionsApprove"
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+/>
+ ❯ src/audit-tests/admin-live-followup.audit.test.tsx:47:76
+     45|   show(SubmissionsRoute.options.component);
+     46|   await screen.findByText('Audit Creator');
+     47|   expect(screen.getByRole('button',{name:'app.admin.submissionsApprove…
+       |                                                                            ^
+     48|   expect(screen.queryByRole('link',{name:'wwww'})).not.toBeInTheDocume…
+     49|   expect(h.approve).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯
+
+ FAIL  src/audit-tests/crm-atomicity.audit.test.ts > CRM partial-write acceptance > UC-A31: an audit failure must not leave an unrecorded changed review
+AssertionError: status and audit must commit together: expected { creator_id: 'creator', …(6) } to be null
+
+- Expected: 
+null
+
++ Received: 
+Object {
+  "creator_id": "creator",
+  "last_reviewed_at": "2026-10-22T16:56:04.987Z",
+  "reviewed_by": "synthetic-operator",
+  "risk_level": "low",
+  "status": "approved",
+  "summary": "fixture",
+  "workspace_id": "workspace",
+}
+
+ ❯ src/audit-tests/crm-atomicity.audit.test.ts:30:64
+     28|   const {client,state}=fixture();
+     29|   await expect(updateCreatorReview(client,{creatorId:'creator',status:…
+     30|   expect(state.review,'status and audit must commit together').toBeNul…
+       |                                                                ^
+     31|  });
+     32|  it('UC-A32: retry after a failed note response must not duplicate a p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯
+
+ FAIL  src/audit-tests/crm-atomicity.audit.test.ts > CRM partial-write acceptance > UC-A32: retry after a failed note response must not duplicate a persisted note
+AssertionError: same logical retry must not duplicate a note: expected 2 to be less than or equal to 1
+ ❯ src/audit-tests/crm-atomicity.audit.test.ts:36:77
+     34|   await expect(addCreatorReviewNote(client,input)).rejects.toThrow('in…
+     35|   await expect(addCreatorReviewNote(client,input)).rejects.toThrow('in…
+     36|   expect(state.notes.length,'same logical retry must not duplicate a n…
+       |                                                                             ^
+     37|  });
+     38| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯
+
+ FAIL  src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C05: a failed request must show a recoverable error, not a no-missions claim
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p
+  class="text-sm text-[var(--color-soft-ink)]"
+>
+  app.my.empty
+</p> instead
+ ❯ src/audit-tests/my-missions.audit.test.tsx:14:50
+     12|  it('UC-C05: a failed request must show a recoverable error, not a no-…
+     13|   h.state.isError=true;h.state.error=new Error('server unavailable');s…
+     14|   expect(screen.queryByText('app.my.empty')).not.toBeInTheDocument();
+       |                                                  ^
+     15|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+     16|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯
+
+ FAIL  src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C06: applied applications remain discoverable
+ FAIL  src/audit-tests/my-missions.audit.test.tsx > 2026-10-22 creator regression acceptance > UC-C06: declined applications remain discoverable
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/my-missions.audit.test.tsx:19:51
+     17|  it.each(['applied','declined'])('UC-C06: %s applications remain disco…
+     18|   h.state.data=[{id:'test-sub',status,points_awarded:0,missions:{title…
+     19|   expect(screen.queryByText('Audit application')).toBeInTheDocument();
+       |                                                   ^
+     20|  });
+     21| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A25: failed review must show an actionable error and retain the note
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:31:39
+     29|   await waitFor(()=>expect(qc.getMutationCache().getAll()[0]?.state.st…
+     30|   expect(screen.getByLabelText('Review note')).toHaveValue('Synthetic …
+     31|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                       ^
+     32|  });
+     33|  it('UC-A26: flag action must collect an operator reason before commit…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A26: flag action must collect an operator reason before committing
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:37:69
+     35|   fireEvent.click(screen.getByRole('button',{name:'Flag Synthetic crea…
+     36|   expect(h.review).not.toHaveBeenCalled();
+     37|   expect(screen.queryByRole('textbox',{name:/reason|note|原因|備註/i})…
+       |                                                                     ^
+     38|  });
+     39|  it('UC-A27: workspace lookup failure must be distinguishable from All…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A27: workspace lookup failure must be distinguishable from All workspaces
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:43:39
+     41|   const qc=wrap(<AdminWorkspaceProvider><WorkspaceSwitcher/></AdminWor…
+     42|   await waitFor(()=>expect(qc.getQueryCache().getAll()[0]?.state.statu…
+     43|   expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                       ^
+     44|  });
+     45|  it('UC-A28: later today in Hong Kong remains today across UTC midnigh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A28: later today in Hong Kong remains today across UTC midnight
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:47:72
+     45|  it('UC-A28: later today in Hong Kong remains today across UTC midnigh…
+     46|   queue('2026-10-23T03:00:00Z','2026-10-22T23:30:00Z');
+     47|   expect(screen.queryByText('app.admin.activeMission.queue.dueToday'))…
+       |                                                                        ^
+     48|  });
+     49|  it('UC-A29: tomorrow in Hong Kong is not labelled today because UTC d…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A29: tomorrow in Hong Kong is not labelled today because UTC date matches
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <span
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold"
+>
+  app.admin.activeMission.queue.dueToday
+</span> instead
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:51:76
+     49|  it('UC-A29: tomorrow in Hong Kong is not labelled today because UTC d…
+     50|   queue('2026-10-22T17:00:00Z','2026-10-22T15:30:00Z');
+     51|   expect(screen.queryByText('app.admin.activeMission.queue.dueToday'))…
+       |                                                                            ^
+     52|  });
+     53| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/18]⎯
+
+ FAIL  src/audit-tests/staff-unavailable.audit.test.tsx > UC-A30: a staff service outage must not be presented as signed out
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/staff-unavailable.audit.test.tsx:12:38
+     10|  render(<StaffAuthGate>{()=> <div>Authorized content</div>}</StaffAuth…
+     11|  await waitFor(()=>expect(screen.queryByText('common.signingIn')).not.…
+     12|  expect(screen.queryByRole('alert')).toBeInTheDocument();
+       |                                      ^
+     13|  expect(screen.queryByText('Authorized content')).not.toBeInTheDocumen…
+     14| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/18]⎯
+
+ FAIL  scripts/release/pilot.test.ts > pilot candidate guard > requires exact approval, re-inspects, and performs one conditional mode update
+Error: pilot candidate rejected before update: approved evidence has expired
+ ❯ Module.enablePilot scripts/release/pilot.ts:379:31
+    377|   };
+    378|   const report = await inspectPilotCandidate(client, reinspectionInput…
+    379|   if (!report.eligible) throw new Error(`pilot candidate rejected befo…
+       |                               ^
+    380|   const result = await conditionalUpdate(client, workspaceId, missionI…
+    381|   if (result.error) throw new Error(`pilot enablement update failed: $…
+ ❯ scripts/release/pilot.test.ts:122:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/18]⎯
+
+ FAIL  scripts/release/pilot.test.ts > pilot candidate guard > rejects a conditional update race and never publishes
+AssertionError: expected [Function] to throw error including 'submission race' but got 'pilot candidate rejected before updat…'
+
+Expected: "submission race"
+Received: "pilot candidate rejected before update: approved evidence has expired"
+
+ ❯ scripts/release/pilot.test.ts:139:5
+    137|     const raceDigest = "c".repeat(64);
+    138|     const report = await inspectPilotCandidate(client, { workspaceId: …
+    139|     await expect(enablePilot(client, {
+       |     ^
+    140|       ...report,
+    141|       apply: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/18]⎯
+
+ Test Files  8 failed (8)
+      Tests  18 failed | 2 passed (20)
+   Start at  00:55:29
+   Duration  39.25s (transform 3.17s, setup 18.65s, collect 8.61s, tests 2.06s, environment 41.73s, prepare 2.36s)
+

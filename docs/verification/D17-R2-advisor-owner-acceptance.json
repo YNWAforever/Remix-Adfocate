@@ -1,0 +1,102 @@
+{
+  "status": "BLOCKED_NAMED_OWNER_AND_HOSTED_EVIDENCE_MISSING",
+  "localReviewPrepared": true,
+  "namedOwnerAccepted": false,
+  "hostedAccepted": false,
+  "canDeploy": false,
+  "canEnablePilot": false,
+  "schemaManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "currentObserved": 393,
+  "currentLevels": {
+    "INFO": 297,
+    "WARN": 96
+  },
+  "historicalUnion": 481,
+  "notObservedNowButStillOpen": 88,
+  "checklist": "D17-R2-advisor-owner-checklist.csv",
+  "checklistSha256": "e9bfe5d07641555e047580554853e18ab31a28f7598a4c10930612092be21453",
+  "ownerGroups": [
+    {
+      "proposedRole": "Access security owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 8,
+      "currentlyObservedNotices": 8
+    },
+    {
+      "proposedRole": "DB function owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 4,
+      "currentlyObservedNotices": 4
+    },
+    {
+      "proposedRole": "DB performance owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 352,
+      "currentlyObservedNotices": 264
+    },
+    {
+      "proposedRole": "DB platform owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 2,
+      "currentlyObservedNotices": 2
+    },
+    {
+      "proposedRole": "DB security owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 29,
+      "currentlyObservedNotices": 29
+    },
+    {
+      "proposedRole": "DB security/performance owner",
+      "namedOwner": null,
+      "authorityReference": null,
+      "decision": "PENDING",
+      "acceptedAt": null,
+      "historicalUnionNotices": 86,
+      "currentlyObservedNotices": 86
+    }
+  ],
+  "sources": [
+    {
+      "path": "D17-advisor-dispositions.csv",
+      "sha256": "8fef17f28953057c54a51a9789161441a059e2d3714b3773fdfe09e43ef1383f"
+    },
+    {
+      "path": "D18-advisor-dispositions.csv",
+      "sha256": "4d846b2bc7d3258778863e57cc944907b436b4b254741093f2de5b1714550cf1"
+    },
+    {
+      "path": "D17-R2-advisors.json",
+      "sha256": "5d3969ea03b5c752656678bc7fa0351e1a54909ca258a2cb6c01c8b05dfdd569"
+    }
+  ],
+  "requiredForHumanAcceptance": [
+    "Record a real named owner and authority reference for every notice; a proposed role or agent-generated document is not acceptance.",
+    "Review exact target identity, current schema/catalog/history, notice scope, risk, disposition and validation evidence; do not silently close disappeared local unused-index notices.",
+    "For a proposed forward fix, retain equivalent role/RLS denial and workload-specific query-plan evidence. Do not add permissive policies or drop indexes solely to silence advisors.",
+    "Attach authorized hosted advisor evidence bound to its project, reviewed schema/source and timestamp; local snapshots do not satisfy hosted acceptance.",
+    "Record explicit decision and acceptance timestamp/reference for every item. This checklist never grants production membership, release or pilot authorization."
+  ],
+  "limitations": [
+    "No human owner name/authority/attestation was provided. All acceptance fields intentionally blank/PENDING.",
+    "No hosted target queried. No DDL, grants, RLS, history or membership changed.",
+    "Current statistics are a point-in-time local sample, captured while read-only browser checks ran. Previous D17=463 and D18=471 snapshots remain unchanged.",
+    "D15 approved curriculum is still absent; formal staff transition and real provider enablement remain blocked."
+  ],
+  "dbPortGate": "Exact current Docker DB host-port binding verified before SQL and CLI connections; four mocked regression cases green."
+}

@@ -1,0 +1,32 @@
+{
+  "scope": "Observation/output preservation only; reuse existing D19 acceptance tests, engines and exact-ID fixture factory; no application source change",
+  "files": [
+    {
+      "path": "docs/verification/D19-current-harness/D19_current_identity.py",
+      "sha256": "21bd4c6d84b19545ea886471b091b988c1d4b4dc07ad2eb03bc81e56c4083972"
+    },
+    {
+      "path": "docs/verification/D19-current-harness/D19-current-catalog.mjs",
+      "sha256": "f928296409d6721770629f5678da8c81a9226ad044fcf3f4306bdafbaab42650"
+    },
+    {
+      "path": "docs/verification/D19-current-harness/D19-current-api.mjs",
+      "sha256": "9c509fef02c4f1310a5f04fa8ec6cfcca7a0a21c06161c1eb34bf44b5f341535"
+    },
+    {
+      "path": "docs/verification/D19-current-harness/D19_current_phase.py",
+      "sha256": "739c877b9184620926f7fbb42145247ff064f5f25aae48963480761d638fe8ca"
+    },
+    {
+      "path": "docs/verification/D19-current-harness/D19_current_gates.py",
+      "sha256": "08033cd6e8c872cd3a6e0d0c36306a846972139fb4334f862ce632d454e0ac1f"
+    },
+    {
+      "path": "docs/verification/D19-current-harness/D19-current-observe.mjs",
+      "sha256": "4674959af60b4f5fe52dff9cfcdc3d37c54b7a9e81ad3a7e03ccd653cdaecd56"
+    }
+  ],
+  "privateCredentials": "Never copied; existing pointers restored byte-for-byte, new exact-ID private receipts retained locally",
+  "originalSharedRuntime": "Original D19 paths restored after each phase; new phase output and append-only deltas captured separately",
+  "beforeImages": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\.codex-tmp\\D19-current-20261024-before"
+}

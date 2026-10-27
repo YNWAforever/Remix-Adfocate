@@ -1,0 +1,40 @@
+{
+  "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+  "targetProject": "adfocate-r1-empty-20261023",
+  "browser": "installed Edge; emulated viewports, not physical devices",
+  "viewports": [
+    {
+      "width": 360,
+      "fivePrimaryDestinations": true,
+      "minimumTarget44px": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 390,
+      "fivePrimaryDestinations": true,
+      "minimumTarget44px": true,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 768,
+      "fivePrimaryDestinations": true,
+      "minimumTarget44px": true,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "moreDestinations": [
+    "/campaigns",
+    "/notifications",
+    "/redemption",
+    "/explore",
+    "/guide",
+    "/profile",
+    "/passport",
+    "/match"
+  ],
+  "keyboard": "focus + Enter on each More link",
+  "desktopMyMissions": true,
+  "canonicalWalletAndLegacyRedirectReload": true,
+  "externalNetwork": "blocked",
+  "production": false
+}

@@ -1,0 +1,25 @@
+{
+  "startedAt": "2026-10-25T12:41:06.265979+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    "scripts/release/manifest-cli.ts",
+    "write"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.541473388671875,
+    "freeCommitGiB": 11.719585418701172,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "132fc5c84125b788dc233ceaa5006fda9290da83aa5b321f87d1ec5a1909e9a3",
+  "sourceRecords": 785,
+  "pid": 31544,
+  "endedAt": "2026-10-25T12:41:08.545568+00:00",
+  "exit": 0
+}

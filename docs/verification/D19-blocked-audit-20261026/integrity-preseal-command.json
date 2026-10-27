@@ -1,0 +1,25 @@
+{
+  "command": [
+    "python",
+    "docs/verification/D19-blocked-audit-20261026/verify-audit.py",
+    "--preseal"
+  ],
+  "exit": 0,
+  "fileOnly": true,
+  "goalStatusReturned": "blocked",
+  "result": {
+    "status": "PASS_BLOCKED_AUDIT_NOT_R1",
+    "previousTurn": "PROGRESS",
+    "sameBlockerConsecutiveTurns": 3,
+    "sourceUnchanged": 793,
+    "currentC2UnchangedAndUnapproved": true,
+    "oldE8Approved": true,
+    "caseRowsUnchanged": 107,
+    "priorEvidenceRecordsPreserved": 2787,
+    "requiredPlanValidationReopened": true,
+    "newTestsOrRuntime": false,
+    "beforeGoalTransition": false,
+    "goalStatus": "blocked",
+    "preseal": true
+  }
+}

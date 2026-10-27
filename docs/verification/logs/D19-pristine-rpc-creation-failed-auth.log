@@ -1,0 +1,1 @@
+{"level":"fatal","msg":"Failed to load configuration: envconfig.Process: assigning GOTRUE_JWT_KEYS to Keys: converting '' to type conf.JwtKeysDecoder. details: unexpected end of JSON input","time":"2026-10-24T09:03:14Z"}

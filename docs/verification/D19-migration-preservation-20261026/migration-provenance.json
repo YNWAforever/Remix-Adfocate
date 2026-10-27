@@ -1,0 +1,1024 @@
+{
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFilesUnchanged": 788,
+  "sourceSqlFiles": 73,
+  "historicalC1RawMigrationMatches": [
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "sha256": "32f4e8cc63137b4432d9fc4a8f4091f774301c9c510545be87e6212aab00d9ce"
+    },
+    {
+      "path": "supabase/migrations/0002_harden_rls.sql",
+      "sha256": "6799a0c01f33ce960575d79c53258ef67da900666f4da1969fa54ece53d30e29"
+    },
+    {
+      "path": "supabase/migrations/0003_onboarding.sql",
+      "sha256": "7a98a0d2482e08a476527f0785960ea3c341650b2a73757d537e3755f2c8a5e8"
+    },
+    {
+      "path": "supabase/migrations/0004_grants.sql",
+      "sha256": "d614f5acb85619185e1dbd3bcd9fcfc32e5ca426415d00d890fa7141551629e0"
+    },
+    {
+      "path": "supabase/migrations/0005_mission_submissions.sql",
+      "sha256": "56008d6eab5f21ae508eccd427be6482ee310630049ac1b4fc458e24da89426f"
+    },
+    {
+      "path": "supabase/migrations/0006_redemption.sql",
+      "sha256": "2c764a972fa795997ad8e2cb1b56093f79775971a9620bd842a28dedb9ae23b3"
+    },
+    {
+      "path": "supabase/migrations/0007_earnings.sql",
+      "sha256": "28bd8c4770a7a12ea9f4cdb189c6bd799ed69b21ca46d96e6414a1df1aafd2b2"
+    },
+    {
+      "path": "supabase/migrations/0008_leveling.sql",
+      "sha256": "de61d74dccb923477bf0b454086e02daa94ec8a7e9188e73b015acc624c2a011"
+    },
+    {
+      "path": "supabase/migrations/0009_passport_scores.sql",
+      "sha256": "d4a4515456c358bf481894b7b7bf33393e3e58d5a8fd7848a7ba68d8fb112dd2"
+    },
+    {
+      "path": "supabase/migrations/0010_applications.sql",
+      "sha256": "17f5d84d483158e52d3529dd3a7a65f70a9e3320b47c993ac0ffb817f52d88b9"
+    },
+    {
+      "path": "supabase/migrations/0011_mission_brief.sql",
+      "sha256": "92935c312efb2238f621279bd7d47c34f667bd3f843cb0ae55919ae89860bfcf"
+    },
+    {
+      "path": "supabase/migrations/0012_trust_profile_bundle.sql",
+      "sha256": "b067fc58ed8a1f79c61160e76dee32a7a5d73029e2a4211543be9c7dba815d4b"
+    },
+    {
+      "path": "supabase/migrations/0013_operator_creator_selection_crm.sql",
+      "sha256": "a58eff37a3fea25ace3ec04295c5c09315dd3e4ad11ba353e3b5b468f4f8f344"
+    },
+    {
+      "path": "supabase/migrations/0014_operator_crm_workspace_guard.sql",
+      "sha256": "7965275ed8a66074a64e5020b3a39dfefe0b92df7d72669e87bde3f22c6c40c1"
+    },
+    {
+      "path": "supabase/migrations/0015_creator_profile_media.sql",
+      "sha256": "893d9892b132e2065daa18520c69715e2577ab8820fab5421de8a1bd54bc5bf2"
+    },
+    {
+      "path": "supabase/migrations/0016_assistant.sql",
+      "sha256": "65e61b91b69dcedac4e5fda0d03f796d98facc9cbf2ecc9b3a9d48d7cfde820c"
+    },
+    {
+      "path": "supabase/migrations/0017_social_verification.sql",
+      "sha256": "766c0d3e3dddb28172b45b191d8c8b65d104e4ea986ef2ccf86747bd160b8b06"
+    },
+    {
+      "path": "supabase/migrations/0018_mission_authoring.sql",
+      "sha256": "c9eb5fc9681355152f0467e6b521318284a1ac1d677ccd03902ae647a70e577a"
+    },
+    {
+      "path": "supabase/migrations/0019_mission_brief_rich.sql",
+      "sha256": "bab216d21c2baa71ded7f6ea9458337670a33b76e16a09b31c647f8a61520886"
+    },
+    {
+      "path": "supabase/migrations/0020_staff_auth.sql",
+      "sha256": "5728a5b4a2c6dc5bba608085ebd9c8095cf5cf9d97f869f1599181710c5fbab7"
+    },
+    {
+      "path": "supabase/migrations/0021_content_hub.sql",
+      "sha256": "87ab9581264135997d6021731dbc2baeb494db8e80672aa744edf3e31d9cb874"
+    },
+    {
+      "path": "supabase/migrations/0022_notifications.sql",
+      "sha256": "b9c8d8195f9491805af9a520b1833711c05823d80b7decea5ea2da1a22a3139f"
+    },
+    {
+      "path": "supabase/migrations/0023_brand_access.sql",
+      "sha256": "6b74cbea6b3ef0d06661820ee80a8f45edefeeca5865d955e6bb397e64e24a87"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "sha256": "e34f15e38c593c3102b199ab07cf104372020273d89fbfa9e471ebeda780683f"
+    },
+    {
+      "path": "supabase/migrations/0025_campaigns.sql",
+      "sha256": "fb7505cbe0ef8111fbf987e92438db84936b450bac8b535e522e70a66ecd92fc"
+    },
+    {
+      "path": "supabase/migrations/0026_campaigns_s2.sql",
+      "sha256": "ac2ed234d9f483a3fc49956cfa04664b7ee0b3cb53a361b4f1bdafb5a2dcc19d"
+    },
+    {
+      "path": "supabase/migrations/0027_brand_resources.sql",
+      "sha256": "b864aa1a742bc0d0ca60516a50e2121d3b5afb078ac50ef6ffd1921255836251"
+    },
+    {
+      "path": "supabase/migrations/0028_academy_content.sql",
+      "sha256": "a4f1e133be118bc3498f1c39cf0cc1977376f917e42b57b262bdb5be8d400497"
+    },
+    {
+      "path": "supabase/migrations/20260618135028_profile_media_private_grants.sql",
+      "sha256": "e48e24f578646d0ad43338193cd1673083e1fd8ed86efbfd75b0c3a331ed56fd"
+    },
+    {
+      "path": "supabase/migrations/20260619013000_profile_media_url_validation.sql",
+      "sha256": "5c5d3b223968c245e4cac5ddc92ecfb8428a8d3b6b5976be292dc12fba99700a"
+    },
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "7e84755bcacf066809e3201ce51eada0b51673e27841b9d44da70442730f560a"
+    },
+    {
+      "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+      "sha256": "b32f533964cda379d60a5d01c6d39c2f348aa9927d063b5a39ad9305778cfc63"
+    },
+    {
+      "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+      "sha256": "df002f9bc6d350363678950a1f51c14a18deae45f583e742a9eb2cda609e7266"
+    },
+    {
+      "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "sha256": "c666fe36add211a6bc40419ea761dc857585a904ea61e4ef87e3be22b6022846"
+    },
+    {
+      "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+      "sha256": "d15b28e3cccab1d4885c3cb33f08177ef1dd8023a694497a1f31f8ec8fe9ae6c"
+    },
+    {
+      "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "sha256": "24a5d5afb2eb9f1b8a51814d789e9f68d9deeb4df09b94a35886f7d70935b4eb"
+    },
+    {
+      "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+      "sha256": "29f754b8f5e19da60e6ad215f3153d38cfc39253aa6b061f5739ac8abb0cccfb"
+    },
+    {
+      "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+      "sha256": "57f0c0dfd9f306f5e38140c3e064ae05815dbd30be47f9b488659491b0b29038"
+    },
+    {
+      "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+      "sha256": "1bc2c60e3e93a06fcbabbe4e43a4731c343b5263ad46156dce80d055393533f7"
+    },
+    {
+      "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+      "sha256": "e1c81a85674242e21db02621f2c3d9cc801b4c3a34822cc5d1b5842e5be23c42"
+    },
+    {
+      "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+      "sha256": "01a6378ca4ef51fc733fce49298b55c796572be8dd04376ebc1f39dad54dd60c"
+    },
+    {
+      "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+      "sha256": "99cf4181a4df5201870e04f00e653f774e71fb8a8af4f2ff690cf260cff7cbf9"
+    },
+    {
+      "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+      "sha256": "74d7ed7d55a338c714a3e94edb76456ee335df0b3ffb07c608ba5b372c70b8c9"
+    },
+    {
+      "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+      "sha256": "15a79586bd3421739defd2f3985ff62e353a78e9fda1e76e30c968269070c079"
+    },
+    {
+      "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+      "sha256": "fa1320bec87257fd34f4d87f251705f0da4c55cd026321260eac19578123bf2c"
+    },
+    {
+      "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+      "sha256": "566956e437be029039ac55f1e626d3e5ea2f5db6605ecffbb2dd8cab056ed465"
+    },
+    {
+      "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+      "sha256": "3b72db44c228bcbaf457e26654a5abdc753905ca875b7fba31a7b200e49ac214"
+    },
+    {
+      "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+      "sha256": "e4f25b7083f0f6d46c9c52c0494194513ac635004abf147026f70ca7313b2da1"
+    },
+    {
+      "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+      "sha256": "afbce1ee2d1d253600950abc18c17f4b68dd120629b93628dedc0ba85127f776"
+    },
+    {
+      "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+      "sha256": "4e7a09b45d9390acc2cb7550b227e764adcfc4c518ee9d02c20a9f70f7b85a02"
+    },
+    {
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "sha256": "93f996508c82da6df1200347050cd9dbe8e7024d6aa5e33f0ed63aba800a3f5f"
+    },
+    {
+      "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+      "sha256": "f7bcd391f4f0f70150a6d7af76c91869a55166a3fa3f4a6f717ff62a0adeacdb"
+    },
+    {
+      "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+      "sha256": "7552f2d601067b5e6b3a304886255f99d35b8abe2c60af59fb28082f6ad6ec12"
+    },
+    {
+      "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "sha256": "e360155f9122012538f07c6bbf826588937447fa7cc6dac9d7529f29d7243936"
+    },
+    {
+      "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "sha256": "e01d47414ee887ea69cc3f96fb31810a84da822fd06b2deebcbbe7df66fa5314"
+    },
+    {
+      "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+      "sha256": "001d47a1aa076592ff90ecbd3cad4f18610cba93644addcbbaa86b5d9e72c30c"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+      "sha256": "f0c3f0d51a5c71258b8cd2ac870f5a1fc8ded72b05b489ecbeb6615c192de260"
+    },
+    {
+      "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+      "sha256": "b543fa6c5b8ccc2db167544abd0f36489e824f752e16d0efb7ac58242e61d7ef"
+    },
+    {
+      "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+      "sha256": "4dd020d97905e398947fe4d535d56004283b02425d41787c265794e385912cf5"
+    },
+    {
+      "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+      "sha256": "f7a8409e7497ae250e1bd795d6985eff814f3f2e4fdbfca196072e4c630fe896"
+    },
+    {
+      "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+      "sha256": "2d2e0c3d0781c2c3ff21194321bfbef10b01d11c5534c448ed9b0939a082a61c"
+    },
+    {
+      "path": "supabase/migrations/20260805120000_review_hardening.sql",
+      "sha256": "0528a032ba8988e3e966ce19dc3e76975569a78576a336b31e715caa6e3e4592"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec"
+    },
+    {
+      "path": "supabase/migrations/20261022170751_audit_crm_commands.sql",
+      "sha256": "ac13fbd583edf7cedc26defb23fa6a864f9ac986e0b0e631335ef6640149bd71"
+    },
+    {
+      "path": "supabase/migrations/20261022171111_audit_creator_queue.sql",
+      "sha256": "aad787138b073d53638a24e82d14f21abf6f257c2141028577ce3c80ff79de20"
+    },
+    {
+      "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql",
+      "sha256": "c86547d7929441ec3dd3c138d8c148cf2c923f35c7234d6e6148668faa25d9c7"
+    },
+    {
+      "path": "supabase/migrations/20261022182544_audit_legacy_review_notes.sql",
+      "sha256": "64080d48945ee4079b2b0d6448f849b9f568a3bfda89f4dd840e11a06fc9b27f"
+    },
+    {
+      "path": "supabase/migrations/20261023091050_academy_learning.sql",
+      "sha256": "b11ea20f0e6e483bb59f582a66f3086aa71c03990c2ceafdc9466c65917602af"
+    },
+    {
+      "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
+      "sha256": "e95fcaa93204e33223a6324f4af2475f548db6491ac1d1ea489573339a04984b"
+    },
+    {
+      "path": "supabase/migrations/20261023095521_academy_approval_index.sql",
+      "sha256": "771fc8faab73eabc7677a07f9881690ba115bbb1e5618045d90c89199d025e34"
+    },
+    {
+      "path": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
+      "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a"
+    },
+    {
+      "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
+      "sha256": "4669bd408714f65c152320a1ffdd0a932dc0fbf391a5c2281a642a00d1223cd2"
+    }
+  ],
+  "historicalC1RawMigrationMatchCount": 72,
+  "protectedManifestLfMatches": [
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "00b6a2fb39a9f5f05d5822dcc0ad906857b960130ff9ffe22774b2e3cad8ecd5"
+    },
+    {
+      "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+      "sha256": "e00bed624f8f7d13cee3d422d921e28d79d64ae70fd1b03717ac2da2b24a32e4"
+    },
+    {
+      "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+      "sha256": "16b757e808eaa97e2d9df160a4416b167f006d7e66c5dd5f71e95fcb9d31bf96"
+    },
+    {
+      "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "sha256": "a6fc1fd8ab7b56a483ab08b4bf3bbca2151e4ea553221cf7b08f52bc48c717eb"
+    },
+    {
+      "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+      "sha256": "6adc69efe2ee6c4e3ec1eb5c667c8044ba208298775886ffcff9fae4e44435bb"
+    },
+    {
+      "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "sha256": "f8cf31e74e9be0ea92e16b3ba060b68e37992117fa204384a58bb5b9b0c2ef8d"
+    },
+    {
+      "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+      "sha256": "6f59d84a299fb09c31b8d5c1e073f47b7e75bd6200c75f57d5c1b3ad06ec25f2"
+    },
+    {
+      "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+      "sha256": "6cbb7ed6b21a5eab470f1cc31e418af7cf4859ffbda0a5ab562cbd5a41b445b0"
+    },
+    {
+      "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+      "sha256": "f0b46aa8f23fca4ab327a12d4e22ba4ab667c7882b1558613c64c6ee828d50b1"
+    },
+    {
+      "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+      "sha256": "9bc00424e195d9daaaa218434a737c4608aade5f07d5533e46e433e13dfaeef2"
+    },
+    {
+      "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+      "sha256": "5055cf4e22c43a968426d48b3d50c5d908786ea0428632d610ea2bf04860de3e"
+    },
+    {
+      "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+      "sha256": "d7e9f431f9effb2f3473ea1f2514c58c8cf6e2c2c7110ac44db9a7626d68955f"
+    },
+    {
+      "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+      "sha256": "47db6932bbfe05aff34d6f91e2f8717ae3dd14c3ccf0041d5678ee29a8e16436"
+    },
+    {
+      "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+      "sha256": "64fa33b5f47eccdd17f4a0a8c638a055aea0472c36bb1f388d63eb208cc0f5b5"
+    },
+    {
+      "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+      "sha256": "5b69abffda80aac3cbf007515cc1ef0956a1edc8f2f2b4dc833ad7f44dbd97bf"
+    },
+    {
+      "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+      "sha256": "3dd13606c2e9d70824805fc6656a2d29dd86faf5567262d0a1f41d777f6e3766"
+    },
+    {
+      "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+      "sha256": "61469f3004f292fc4678a1cb77f1e0eed16b27561eb479002fcfae3b9d49aa53"
+    },
+    {
+      "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+      "sha256": "2ec12b4e672552b018fcfdd7e5737044ade0ed790f421796e02f342a95c301b0"
+    },
+    {
+      "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+      "sha256": "e461544af2a2bfae2964a42777d6421e758c8f60298dff5297ecbd6e40c95d92"
+    },
+    {
+      "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+      "sha256": "4c7a752a7b1dd41461249307a1ff0ae9153065db5ef3e81570611071c97f05ec"
+    },
+    {
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "sha256": "8e7f1e4893f081d1196f7fe66268e308dbbb2d27796373d54f37ef3b34dbb7f3"
+    },
+    {
+      "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+      "sha256": "bd56dda15ee21b640ee99ee8e7b3d8bd3ce34eab95a44bb97906cb2bddb0a9af"
+    },
+    {
+      "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+      "sha256": "cbb412dc35c2d3f0ab33926229c4009ace7459c4ffaf80045b47d8cac0cbc248"
+    },
+    {
+      "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "sha256": "a4a909bb7711ffcfb50a8f4b4b8947c7695bccbea319d266854b0a5733dd15b4"
+    },
+    {
+      "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "sha256": "9d667de55f18307d5152201b07450e00d158a000456c538c60194030cd846d19"
+    },
+    {
+      "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+      "sha256": "b4966d226b2dc72759a1a5d768b90cb67cc8b84b996a0f1cf60541c2af548674"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+      "sha256": "90e97bc465c59ce71bba076eb5aa4dd769436ac41435623fbe9583e7bbe4c973"
+    },
+    {
+      "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+      "sha256": "a12096f7fc26e514dbbebb28462de365fa9d2b9a07fead61c48ccd10cd505632"
+    },
+    {
+      "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+      "sha256": "2f0d71622ff3b906ceb8f07d918869c7b3ac18f9a1f46e786f779a1298a4c1a8"
+    },
+    {
+      "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+      "sha256": "17ed4ee4542bb4f658137accfab9325976cf5a48d00ef587d7bd1d111c8c1d5b"
+    },
+    {
+      "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+      "sha256": "bd3ddfbb8fb0c5b5bf4f8544d7bffa6156630aa19775f0fd9536ce958011b95e"
+    },
+    {
+      "path": "supabase/migrations/20260805120000_review_hardening.sql",
+      "sha256": "faf4018d589db8d4702327c55e6ccc3461ea05fb0e9a8229901638e706f3d65c"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec"
+    },
+    {
+      "path": "supabase/migrations/20261022170751_audit_crm_commands.sql",
+      "sha256": "ac13fbd583edf7cedc26defb23fa6a864f9ac986e0b0e631335ef6640149bd71"
+    },
+    {
+      "path": "supabase/migrations/20261022171111_audit_creator_queue.sql",
+      "sha256": "aad787138b073d53638a24e82d14f21abf6f257c2141028577ce3c80ff79de20"
+    },
+    {
+      "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql",
+      "sha256": "c86547d7929441ec3dd3c138d8c148cf2c923f35c7234d6e6148668faa25d9c7"
+    },
+    {
+      "path": "supabase/migrations/20261022182544_audit_legacy_review_notes.sql",
+      "sha256": "64080d48945ee4079b2b0d6448f849b9f568a3bfda89f4dd840e11a06fc9b27f"
+    },
+    {
+      "path": "supabase/migrations/20261023091050_academy_learning.sql",
+      "sha256": "b11ea20f0e6e483bb59f582a66f3086aa71c03990c2ceafdc9466c65917602af"
+    },
+    {
+      "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
+      "sha256": "e95fcaa93204e33223a6324f4af2475f548db6491ac1d1ea489573339a04984b"
+    },
+    {
+      "path": "supabase/migrations/20261023095521_academy_approval_index.sql",
+      "sha256": "771fc8faab73eabc7677a07f9881690ba115bbb1e5618045d90c89199d025e34"
+    },
+    {
+      "path": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
+      "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a"
+    },
+    {
+      "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
+      "sha256": "4669bd408714f65c152320a1ffdd0a932dc0fbf391a5c2281a642a00d1223cd2"
+    },
+    {
+      "path": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c"
+    }
+  ],
+  "protectedManifestLfMatchCount": 43,
+  "shapedLfMatches": [
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "00b6a2fb39a9f5f05d5822dcc0ad906857b960130ff9ffe22774b2e3cad8ecd5"
+    },
+    {
+      "path": "supabase/migrations/20260717190420_receive_mission_fulfillment.sql",
+      "sha256": "e00bed624f8f7d13cee3d422d921e28d79d64ae70fd1b03717ac2da2b24a32e4"
+    },
+    {
+      "path": "supabase/migrations/20260718134500_active_mission_operator_lifecycle.sql",
+      "sha256": "16b757e808eaa97e2d9df160a4416b167f006d7e66c5dd5f71e95fcb9d31bf96"
+    },
+    {
+      "path": "supabase/migrations/20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "sha256": "a6fc1fd8ab7b56a483ab08b4bf3bbca2151e4ea553221cf7b08f52bc48c717eb"
+    },
+    {
+      "path": "supabase/migrations/20260718210000_author_active_mission_workflow_policies.sql",
+      "sha256": "6adc69efe2ee6c4e3ec1eb5c667c8044ba208298775886ffcff9fae4e44435bb"
+    },
+    {
+      "path": "supabase/migrations/20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "sha256": "f8cf31e74e9be0ea92e16b3ba060b68e37992117fa204384a58bb5b9b0c2ef8d"
+    },
+    {
+      "path": "supabase/migrations/20260719133000_submit_active_mission_draft.sql",
+      "sha256": "6f59d84a299fb09c31b8d5c1e073f47b7e75bd6200c75f57d5c1b3ad06ec25f2"
+    },
+    {
+      "path": "supabase/migrations/20260719160000_abandon_active_mission_asset.sql",
+      "sha256": "6cbb7ed6b21a5eab470f1cc31e418af7cf4859ffbda0a5ab562cbd5a41b445b0"
+    },
+    {
+      "path": "supabase/migrations/20260719200000_active_mission_workflow_notifications.sql",
+      "sha256": "f0b46aa8f23fca4ab327a12d4e22ba4ab667c7882b1558613c64c6ee828d50b1"
+    },
+    {
+      "path": "supabase/migrations/20260719220000_migrate_pristine_joined_active_mission.sql",
+      "sha256": "9bc00424e195d9daaaa218434a737c4608aade5f07d5533e46e433e13dfaeef2"
+    },
+    {
+      "path": "supabase/migrations/20260720033542_final_review_active_mission_contracts.sql",
+      "sha256": "5055cf4e22c43a968426d48b3d50c5d908786ea0428632d610ea2bf04860de3e"
+    },
+    {
+      "path": "supabase/migrations/20260720175319_grant_service_role_budget_read.sql",
+      "sha256": "d7e9f431f9effb2f3473ea1f2514c58c8cf6e2c2c7110ac44db9a7626d68955f"
+    },
+    {
+      "path": "supabase/migrations/20260720193637_resolve_mission_submission_relationships.sql",
+      "sha256": "47db6932bbfe05aff34d6f91e2f8717ae3dd14c3ccf0041d5678ee29a8e16436"
+    },
+    {
+      "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+      "sha256": "64fa33b5f47eccdd17f4a0a8c638a055aea0472c36bb1f388d63eb208cc0f5b5"
+    },
+    {
+      "path": "supabase/migrations/20260723170000_publication_proof_rollout.sql",
+      "sha256": "5b69abffda80aac3cbf007515cc1ef0956a1edc8f2f2b4dc833ad7f44dbd97bf"
+    },
+    {
+      "path": "supabase/migrations/20260725090000_publication_proof_rollout_compat.sql",
+      "sha256": "3dd13606c2e9d70824805fc6656a2d29dd86faf5567262d0a1f41d777f6e3766"
+    },
+    {
+      "path": "supabase/migrations/20260725110000_publication_proof_asset_policy.sql",
+      "sha256": "61469f3004f292fc4678a1cb77f1e0eed16b27561eb479002fcfae3b9d49aa53"
+    },
+    {
+      "path": "supabase/migrations/20260725130000_publication_proof_asset_mutation_guards.sql",
+      "sha256": "2ec12b4e672552b018fcfdd7e5737044ade0ed790f421796e02f342a95c301b0"
+    },
+    {
+      "path": "supabase/migrations/20260725140000_publication_proof_asset_guards.sql",
+      "sha256": "e461544af2a2bfae2964a42777d6421e758c8f60298dff5297ecbd6e40c95d92"
+    },
+    {
+      "path": "supabase/migrations/20260725143000_publication_proof_public_guards.sql",
+      "sha256": "4c7a752a7b1dd41461249307a1ff0ae9153065db5ef3e81570611071c97f05ec"
+    },
+    {
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "sha256": "8e7f1e4893f081d1196f7fe66268e308dbbb2d27796373d54f37ef3b34dbb7f3"
+    },
+    {
+      "path": "supabase/migrations/20260727120000_publication_proof_instrumentation.sql",
+      "sha256": "bd56dda15ee21b640ee99ee8e7b3d8bd3ce34eab95a44bb97906cb2bddb0a9af"
+    },
+    {
+      "path": "supabase/migrations/20260727130000_publication_proof_existing_setup.sql",
+      "sha256": "cbb412dc35c2d3f0ab33926229c4009ace7459c4ffaf80045b47d8cac0cbc248"
+    },
+    {
+      "path": "supabase/migrations/20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "sha256": "a4a909bb7711ffcfb50a8f4b4b8947c7695bccbea319d266854b0a5733dd15b4"
+    },
+    {
+      "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "sha256": "9d667de55f18307d5152201b07450e00d158a000456c538c60194030cd846d19"
+    },
+    {
+      "path": "supabase/migrations/20260731100000_reward_handoff_schema.sql",
+      "sha256": "b4966d226b2dc72759a1a5d768b90cb67cc8b84b996a0f1cf60541c2af548674"
+    },
+    {
+      "path": "supabase/migrations/20260731110000_reward_contract_capture.sql",
+      "sha256": "90e97bc465c59ce71bba076eb5aa4dd769436ac41435623fbe9583e7bbe4c973"
+    },
+    {
+      "path": "supabase/migrations/20260731120000_reward_handoff_transitions.sql",
+      "sha256": "a12096f7fc26e514dbbebb28462de365fa9d2b9a07fead61c48ccd10cd505632"
+    },
+    {
+      "path": "supabase/migrations/20260731130000_reward_handoff_notifications.sql",
+      "sha256": "2f0d71622ff3b906ceb8f07d918869c7b3ac18f9a1f46e786f779a1298a4c1a8"
+    },
+    {
+      "path": "supabase/migrations/20260731140000_reward_handoff_release_hardening.sql",
+      "sha256": "17ed4ee4542bb4f658137accfab9325976cf5a48d00ef587d7bd1d111c8c1d5b"
+    },
+    {
+      "path": "supabase/migrations/20260731150000_enable_pilot_if_empty.sql",
+      "sha256": "bd3ddfbb8fb0c5b5bf4f8544d7bffa6156630aa19775f0fd9536ce958011b95e"
+    },
+    {
+      "path": "supabase/migrations/20260805120000_review_hardening.sql",
+      "sha256": "faf4018d589db8d4702327c55e6ccc3461ea05fb0e9a8229901638e706f3d65c"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec"
+    },
+    {
+      "path": "supabase/migrations/20261022170751_audit_crm_commands.sql",
+      "sha256": "ac13fbd583edf7cedc26defb23fa6a864f9ac986e0b0e631335ef6640149bd71"
+    },
+    {
+      "path": "supabase/migrations/20261022171111_audit_creator_queue.sql",
+      "sha256": "aad787138b073d53638a24e82d14f21abf6f257c2141028577ce3c80ff79de20"
+    },
+    {
+      "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql",
+      "sha256": "c86547d7929441ec3dd3c138d8c148cf2c923f35c7234d6e6148668faa25d9c7"
+    }
+  ],
+  "shapedLfMatchCount": 36,
+  "historicalEmptyFileCount": 66,
+  "historicalShapedOldHistoryCount": 14,
+  "historicalAdditionalNoteMigrationTargets": 2,
+  "originalC1PhaseCount": 3,
+  "originalC1FamilyCountPerPhase": 70,
+  "originalC1UniqueRowCounts": {
+    "academy_content": 1,
+    "academy_lessons": 0,
+    "assistant_conversations": 1,
+    "assistant_messages": 2,
+    "assistant_requests": 1,
+    "auth_audit_log_entries": 46,
+    "auth_flow_state": 0,
+    "auth_identities": 33,
+    "auth_mfa_amr_claims": 41,
+    "auth_mfa_challenges": 0,
+    "auth_mfa_factors": 0,
+    "auth_one_time_tokens": 0,
+    "auth_refresh_tokens": 43,
+    "auth_sessions": 41,
+    "auth_users": 84,
+    "brand_invites": 0,
+    "brand_users": 21,
+    "campaign_participants": 0,
+    "campaign_rank_snapshots": 0,
+    "campaigns": 0,
+    "creator_lesson_progress": 0,
+    "creator_portfolio_links": 0,
+    "creator_review_notes": 2,
+    "creator_review_statuses": 2,
+    "creator_social_accounts": 0,
+    "creators": 57,
+    "draft_submission_idempotency": 6,
+    "earnings_balances": 6,
+    "earnings_transactions": 2,
+    "legacy_evidence_corrections": 0,
+    "mission_completion_decisions": 5,
+    "mission_deliverable_requirements": 8,
+    "mission_deliverable_templates": 8,
+    "mission_draft_assets": 0,
+    "mission_draft_versions": 6,
+    "mission_fulfillments": 2,
+    "mission_pending_rewards": 4,
+    "mission_publication_instructions": 8,
+    "mission_publication_proof_assets": 0,
+    "mission_publication_proof_attempts": 6,
+    "mission_publication_proof_review_items": 3,
+    "mission_publication_proof_reviews": 6,
+    "mission_review_items": 3,
+    "mission_review_rounds": 6,
+    "mission_revision_grants": 0,
+    "mission_reward_contracts": 3,
+    "mission_submissions": 7,
+    "mission_work_items": 8,
+    "mission_workflow_events": 52,
+    "mission_workflows": 4,
+    "mission_working_drafts": 8,
+    "missions": 6,
+    "notifications": 26,
+    "operator_audit_events": 4,
+    "operator_crm_command_receipts": 2,
+    "point_balances": 6,
+    "point_transactions": 2,
+    "redemption_codes": 0,
+    "redemption_gifts": 3,
+    "redemptions": 0,
+    "staff_access_audit": 24,
+    "staff_access_commands": 24,
+    "staff_platform_roles": 3,
+    "staff_users": 27,
+    "staff_workspace_roles": 19,
+    "storage_objects": 0,
+    "workflow_notification_dedupe": 24,
+    "workspace_budget_transactions": 2,
+    "workspace_budgets": 3,
+    "workspaces": 6
+  },
+  "originalC1RowHashAlgorithm": "PostgreSQL MD5 of serialized row, sealed by artifact SHA256; counts are historical file evidence, not live state",
+  "originalC1CohortDigest": "62dbca15a893fd62114a0be4b7680fa6ae8d6d2f91bd6b584c7bd3b94be96f60",
+  "plannedForwardMigration": {
+    "file": "supabase/migrations/20261025120934_application_decisions.sql",
+    "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+    "baselineMigrationCount": 72,
+    "forwardOnly": true,
+    "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+    "allowedWrites": [
+      "One new function with explicit ACL",
+      "One new history row in same transaction",
+      "Local PostgREST schema reload notification"
+    ]
+  },
+  "plannedFinancialFamilies": [
+    "point_balances",
+    "point_transactions",
+    "earnings_balances",
+    "earnings_transactions",
+    "workspace_budgets",
+    "workspace_budget_transactions",
+    "redemptions",
+    "redemption_gifts",
+    "redemption_codes"
+  ],
+  "plannedBeforeClientChecks": [
+    "provenance: async () => {",
+    "oldRows = jsonSql(originalQuery);",
+    "save(\"before.json\"",
+    "migrate: async () => {",
+    "assert.deepEqual(jsonSql(originalQuery), oldRows);",
+    "save(\"migration.json\"",
+    "createClient: async () => {"
+  ],
+  "retainedNativeWitnesses": [
+    {
+      "path": "server/test/application-supplement.test.ts",
+      "assertions": [
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) proves approval, identity and provenance before claim, migration, client or setup",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on authorize failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on identity failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on provenance failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on claim failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on migrate failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on createClient failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on fixture failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on api failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on browser failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) stops dependent work on finalReadback failure without deleting, compensating or retrying",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) cannot turn a failed final financial readback into success",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) accepts either legal race winner with exactly one durable transaction",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects duplicate or missing race side effect xp",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects duplicate or missing race side effect filled",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects duplicate or missing race side effect workflows",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects duplicate or missing race side effect audit",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects duplicate or missing race side effect receipts",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects two winners, a stale winner attribution or an invalid timestamp",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) compares all rollback rows and all financial row contents, not just totals",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) accepts a bounded local review plan without granting runtime authority",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects implicit expansion of providerEnabled",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects implicit expansion of legacyIssuance",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects implicit expansion of cleanupApproved",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects implicit expansion of runtimeApproved",
+          "status": "passed"
+        },
+        {
+          "title": "D19 supplement pure safety orchestration (no runtime evidence) rejects resource additions, another migration or omitted subject bounds",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "server/test/audit-forward-migrations.embedded.test.ts",
+      "assertions": [
+        {
+          "title": "forward SQL contracts on an owned memory engine preserves historical invalid evidence and blocks ordinary approval",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine returns invalid evidence for correction once, preserving the old reason and URLs",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine rolls back review, note and receipt when the audit insert fails",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine replays one receipt and rejects payload reuse and stale revision",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine deduplicates an independent note command",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine does not let a browser role claim that a provider generation started",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine enforces database workspace scope independently of the HTTP route",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine paginates 51 tied rows without leaking workspace B or losing the final creator",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine claims a generation once and atomically persists/replays the pair of turns",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine rolls back both messages and a new conversation on a persistence fault",
+          "status": "passed"
+        },
+        {
+          "title": "forward SQL contracts on an owned memory engine enforces shared in-flight/quota records and creator ownership",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "server/test/audit-schema-compatibility.test.ts",
+      "assertions": [
+        {
+          "title": "integration identity before client creation does not treat a loopback address as authorization or container identity",
+          "status": "passed"
+        },
+        {
+          "title": "integration identity before client creation rejects an identity document pointing through an unverified proxy",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/rehearsal.test.ts",
+      "assertions": [
+        {
+          "title": "release rehearsal checks production shape before applying and runs the complete ordered gates",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal fails closed before process execution when the target API is not loopback",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects an IPv6 loopback API because the integration runner does not accept it",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal fails closed before process execution without declared capabilities",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal does not write a shaped target when its preflight fingerprint drifts",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal requires every empty-target capability before shaped-target commands",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal requires every declared capability after shaped-target replay",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects replay output that does not prove a clean migration history: pass",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects replay output that does not prove a clean migration history: would be applied: 20260731100000_reward_handoff_schema.sql",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "retainedNativeAssertionCount": 48,
+  "references": [
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d"
+    },
+    {
+      "path": "docs/verification/D19-C1-source-revision-runtime-manifest.json",
+      "sha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989"
+    },
+    {
+      "path": "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+      "sha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d"
+    },
+    {
+      "path": "docs/verification/shaped-replay.json",
+      "sha256": "2c19039aa4a712af36d5635cfdb71b8b937c3c8a001f43777ea092542835b705"
+    },
+    {
+      "path": "docs/verification/empty-replay.json",
+      "sha256": "209fcd9bc5414dd01a3fa2d0d82abb5786aab8db3a6b04afd78d23f662794be1"
+    },
+    {
+      "path": "docs/verification/pending-forward-replay.json",
+      "sha256": "07d07a7dbd774c99e7e7130f1ab0cb4cf0a2146ca3ff7ea28089e7dc1efd4e8a"
+    },
+    {
+      "path": "docs/verification/D19-C1-continuation-schema.json",
+      "sha256": "830846fc3a18edc1c1b7670f67c9d36a00ed4185b670499498146d9360af1d91"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+      "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+    },
+    {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019"
+    },
+    {
+      "path": "scripts/audit/apply-shaped-manifest.mjs",
+      "sha256": "333577a562f28f8900809f12dac45c6a7426cd46b661511d4c5d93264a2d9b86"
+    },
+    {
+      "path": "scripts/audit/execute-application-supplement.mjs",
+      "sha256": "0cc6c047a7935009b86badd0c680f6f38342d6c71e0b012090603a4ff5dad89b"
+    },
+    {
+      "path": "scripts/audit/application-supplement.mjs",
+      "sha256": "68c2c187390a05d1513e600cbb9a1dd7a2add0ba97fd9abb39baeb466105cff4"
+    },
+    {
+      "path": "scripts/audit/b2-bootstrap-profile.mjs",
+      "sha256": "4ea8120a048f85c3acd99dea880bed9182a49afe3b5658d4c1db17c072dac8eb"
+    },
+    {
+      "path": "scripts/audit/b2-fixture-inventory.mjs",
+      "sha256": "4d6d504ad090630977bb420b01c9886912316a3d4ea4ada494c6c88a6e301fb2"
+    },
+    {
+      "path": "supabase/release-manifest.json",
+      "sha256": "4659eda99773b5b1c8cd5e3b569de2e2240b1626d135f4843d0a8dded67e5997"
+    },
+    {
+      "path": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.json",
+      "sha256": "21f201bc34e65a56b7d4e59b90ccf14492ef68e4ce2cf02c86378cfe92c96df3"
+    }
+  ],
+  "c2ManifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "c2RuntimeApproved": false,
+  "c2RuntimeExecuted": false,
+  "actualTargetCalls": 0,
+  "databaseEnginesCreated": 0,
+  "newApplicationOrMemoryTestRuns": 0
+}

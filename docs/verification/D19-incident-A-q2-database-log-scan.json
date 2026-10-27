@@ -1,0 +1,30 @@
+{
+  "channel": "database",
+  "containerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+  "windowUTC": {
+    "from": "2026-10-23T19:31:12.024230Z",
+    "strictUpperBound": "2026-10-24T07:12:04.875188Z"
+  },
+  "command": [
+    "docker",
+    "logs",
+    "--timestamps",
+    "--since",
+    "2026-10-23T19:31:12.024230Z",
+    "--until",
+    "2026-10-24T07:12:04.875188Z",
+    "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176"
+  ],
+  "exit": 0,
+  "streamBytes": 192211,
+  "lineCount": 420,
+  "streamSha256": "98f2692d65716b90d454e50b52f11de2da22dea8af0422b51f48d828b2127a72",
+  "firstReturnedLogTime": "2026-10-23T19:31:15.036615905Z",
+  "lastReturnedLogTime": "2026-10-24T07:12:02.777219840Z",
+  "limitTruncated": false,
+  "exactIdMatches": [],
+  "oldTupleCandidatesDetected": 0,
+  "rawLogBodiesRetainedOrDisplayed": false,
+  "privacy": "Only hashes/timestamps/exact campaign-ID hits retained; no URI, headers, note, actor, user or Auth data exported",
+  "coverage": "Only current retained Docker stdout/stderr logs in requested before-image window. Zero hits is not proof that older/rotated/external audit never existed."
+}

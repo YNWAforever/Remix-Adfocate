@@ -1,0 +1,5 @@
+
+> test
+> vitest run --no-file-parallelism server/devApi.test.ts server/devApi.transport.test.ts scripts/release/manifest.test.ts --reporter=json --outputFile=.codex-tmp/D19-B1-environment.json
+
+JSON report written to <worktree>/.codex-tmp/D19-B1-environment.json

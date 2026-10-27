@@ -1,0 +1,93 @@
+{
+  "checkerSha256": "0006dad864d68efbc18a779cd76dab6fde95be97ec16dafeddec42ac60dd178a",
+  "preseal": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-migration-preservation-20261026/verify-preservation.py",
+      "--preseal"
+    ],
+    "startedAt": "2026-10-25T16:47:20.854144+00:00",
+    "endedAt": "2026-10-25T16:47:21.456629+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_LOCAL_MIGRATION_SCOPE_REVIEW_SEAL_PENDING\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceFilesUnchanged\": 788, \"sourceMigrations\": 73, \"historicalRaw72Match\": 72, \"protectedLf43Match\": 43, \"historicalShapedLf36Match\": 36, \"originalC1HistoricalRows\": {\"mission_submissions\": 7, \"mission_workflows\": 4, \"mission_pending_rewards\": 4, \"mission_publication_proof_attempts\": 6, \"point_transactions\": 2, \"earnings_transactions\": 2, \"workspace_budget_transactions\": 2, \"storage_objects\": 0}, \"correctedNewResultCase\": \"UC-R04\", \"originalCasesPreserved\": 107, \"D15AndLegacyMemoryRowsUnchanged\": true, \"priorEvidenceRecordsPreserved\": 2171, \"currentEvidenceRecords\": null, \"newTargetsRequiredOrAuthorizedByThisReview\": 0, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"newTestRuns\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_LOCAL_MIGRATION_SCOPE_REVIEW_SEAL_PENDING",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceFilesUnchanged": 788,
+      "sourceMigrations": 73,
+      "historicalRaw72Match": 72,
+      "protectedLf43Match": 43,
+      "historicalShapedLf36Match": 36,
+      "originalC1HistoricalRows": {
+        "mission_submissions": 7,
+        "mission_workflows": 4,
+        "mission_pending_rewards": 4,
+        "mission_publication_proof_attempts": 6,
+        "point_transactions": 2,
+        "earnings_transactions": 2,
+        "workspace_budget_transactions": 2,
+        "storage_objects": 0
+      },
+      "correctedNewResultCase": "UC-R04",
+      "originalCasesPreserved": 107,
+      "D15AndLegacyMemoryRowsUnchanged": true,
+      "priorEvidenceRecordsPreserved": 2171,
+      "currentEvidenceRecords": null,
+      "newTargetsRequiredOrAuthorizedByThisReview": 0,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "newTestRuns": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  },
+  "scope": "File-only evidence checker; not an application/memory test suite or physical-target runtime. Final terminal receipt is captured, resealed, then checked again.",
+  "final": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-migration-preservation-20261026/verify-preservation.py"
+    ],
+    "startedAt": "2026-10-25T16:47:41.646251+00:00",
+    "endedAt": "2026-10-25T16:47:43.114505+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_LOCAL_MIGRATION_SCOPE_REVIEW_NOT_RUNTIME_ACCEPTANCE\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceFilesUnchanged\": 788, \"sourceMigrations\": 73, \"historicalRaw72Match\": 72, \"protectedLf43Match\": 43, \"historicalShapedLf36Match\": 36, \"originalC1HistoricalRows\": {\"mission_submissions\": 7, \"mission_workflows\": 4, \"mission_pending_rewards\": 4, \"mission_publication_proof_attempts\": 6, \"point_transactions\": 2, \"earnings_transactions\": 2, \"workspace_budget_transactions\": 2, \"storage_objects\": 0}, \"correctedNewResultCase\": \"UC-R04\", \"originalCasesPreserved\": 107, \"D15AndLegacyMemoryRowsUnchanged\": true, \"priorEvidenceRecordsPreserved\": 2171, \"currentEvidenceRecords\": 2196, \"newTargetsRequiredOrAuthorizedByThisReview\": 0, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"newTestRuns\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_LOCAL_MIGRATION_SCOPE_REVIEW_NOT_RUNTIME_ACCEPTANCE",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceFilesUnchanged": 788,
+      "sourceMigrations": 73,
+      "historicalRaw72Match": 72,
+      "protectedLf43Match": 43,
+      "historicalShapedLf36Match": 36,
+      "originalC1HistoricalRows": {
+        "mission_submissions": 7,
+        "mission_workflows": 4,
+        "mission_pending_rewards": 4,
+        "mission_publication_proof_attempts": 6,
+        "point_transactions": 2,
+        "earnings_transactions": 2,
+        "workspace_budget_transactions": 2,
+        "storage_objects": 0
+      },
+      "correctedNewResultCase": "UC-R04",
+      "originalCasesPreserved": 107,
+      "D15AndLegacyMemoryRowsUnchanged": true,
+      "priorEvidenceRecordsPreserved": 2171,
+      "currentEvidenceRecords": 2196,
+      "newTargetsRequiredOrAuthorizedByThisReview": 0,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "newTestRuns": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  }
+}

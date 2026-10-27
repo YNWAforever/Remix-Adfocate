@@ -1,0 +1,63 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-admin.missions.editor.test.tsx (14 tests | 2 failed) 2747ms
+   × MissionEditor > retains the existing travel category visibly and on an unrelated edit 305ms
+     → expect(element).toHaveValue(travel)
+
+Expected the element to have value:
+  travel
+Received:
+
+   × MissionEditor > retains the existing 原有未知長中文分類 category visibly and on an unrelated edit 71ms
+     → expect(element).toHaveValue(原有未知長中文分類)
+
+Expected the element to have value:
+  原有未知長中文分類
+Received:
+
+   ✓ MissionEditor > authors complete publication defaults on active-workspace deliverables 351ms
+   ✓ MissionEditor > localizes every publication-policy server error in zh 366ms
+   ✓ MissionEditor > preserves unknown Task 3 and legacy server field messages 301ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-admin.missions.editor.test.tsx > MissionEditor > retains the existing travel category visibly and on an unrelated edit
+Error: expect(element).toHaveValue(travel)
+
+Expected the element to have value:
+  travel
+Received:
+
+ ❯ src/routes/-admin.missions.editor.test.tsx:35:54
+     33|     const onSave = vi.fn().mockResolvedValue({});
+     34|     renderEditor({mode:"edit",mission:{...active,status:"draft",catego…
+     35|     expect(screen.getByRole("combobox",{name:"分類"})).toHaveValue(cat…
+       |                                                      ^
+     36|     fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Upd…
+     37|     fireEvent.click(screen.getByRole("button",{name:"儲存"}));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-admin.missions.editor.test.tsx > MissionEditor > retains the existing 原有未知長中文分類 category visibly and on an unrelated edit
+Error: expect(element).toHaveValue(原有未知長中文分類)
+
+Expected the element to have value:
+  原有未知長中文分類
+Received:
+
+ ❯ src/routes/-admin.missions.editor.test.tsx:35:54
+     33|     const onSave = vi.fn().mockResolvedValue({});
+     34|     renderEditor({mode:"edit",mission:{...active,status:"draft",catego…
+     35|     expect(screen.getByRole("combobox",{name:"分類"})).toHaveValue(cat…
+       |                                                      ^
+     36|     fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Upd…
+     37|     fireEvent.click(screen.getByRole("button",{name:"儲存"}));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 passed (14)
+   Start at  04:50:03
+   Duration  10.80s (transform 1.70s, setup 620ms, collect 2.21s, tests 2.75s, environment 3.41s, prepare 384ms)
+

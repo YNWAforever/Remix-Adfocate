@@ -1,0 +1,61 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests | 1 failed) 102ms
+   × 2026-10-22 staff live follow-up acceptance > UC-A54: invalid legacy evidence must not enable ordinary approval 27ms
+     → expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-label="app.admin.submissionsApprove"
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+/>
+ ❯ src/audit-tests/admin-creators.audit.test.tsx (2 tests | 1 failed) 120ms
+   × 2026-10-22 operator queue acceptance > UC-A04: all 26 creators are reachable from the queue 54ms
+     → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ✓ src/audit-tests/my-missions.audit.test.tsx (3 tests) 53ms
+ ✓ src/audit-tests/admin-decisions.audit.test.tsx (1 test) 86ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/audit-tests/admin-creators.audit.test.tsx > 2026-10-22 operator queue acceptance > UC-A04: all 26 creators are reachable from the queue
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/admin-creators.audit.test.tsx:20:68
+     18|   show();await screen.findByText('Creator 25');
+     19|   const next=screen.queryByRole('button',{name:/next|load more|下一|更…
+     20|   expect(next,'26th creator needs a reachable pagination control').toB…
+       |                                                                    ^
+     21|   fireEvent.click(next!);await screen.findByText('Creator 26');
+     22|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/audit-tests/admin-live-followup.audit.test.tsx > 2026-10-22 staff live follow-up acceptance > UC-A54: invalid legacy evidence must not enable ordinary approval
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-label="app.admin.submissionsApprove"
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+/>
+ ❯ src/audit-tests/admin-live-followup.audit.test.tsx:47:76
+     45|   show(SubmissionsRoute.options.component);
+     46|   await screen.findByText('Audit Creator');
+     47|   expect(screen.getByRole('button',{name:'app.admin.submissionsApprove…
+       |                                                                            ^
+     48|   expect(screen.queryByRole('link',{name:'wwww'})).not.toBeInTheDocume…
+     49|   expect(h.approve).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed | 2 passed (4)
+      Tests  2 failed | 6 passed (8)
+   Start at  01:02:14
+   Duration  3.74s (transform 175ms, setup 955ms, collect 675ms, tests 362ms, environment 3.87s, prepare 522ms)
+

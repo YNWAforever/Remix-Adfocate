@@ -1,0 +1,31 @@
+{
+  "sourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "helpers": [
+    {
+      "source": ".codex-tmp/D19-application-fingerprint.py",
+      "reviewCopy": "docs/verification/D19-application-decisions-20261025/orchestration-review/D19-application-fingerprint.py.txt",
+      "sha256": "67078b3d5c64925f8a562168f922aa8ed88db382cad5d3103a2a51701e7325b7",
+      "reviewOnlyTextNotActiveApplicationSource": true
+    },
+    {
+      "source": ".codex-tmp/D19-application-local-gates.py",
+      "reviewCopy": "docs/verification/D19-application-decisions-20261025/orchestration-review/D19-application-local-gates.py.txt",
+      "sha256": "0c6a797181404328960e26aa6c51fb430399af22444c5b3cb071a08d65ab9403",
+      "reviewOnlyTextNotActiveApplicationSource": true
+    },
+    {
+      "source": ".codex-tmp/D19-application-finalize.py",
+      "reviewCopy": "docs/verification/D19-application-decisions-20261025/orchestration-review/D19-application-finalize.py.txt",
+      "sha256": "135827c79d2de4ca6ed7f4d88c8f5991de7a64cb320820c7fa81f203b5bf3e65",
+      "reviewOnlyTextNotActiveApplicationSource": true
+    },
+    {
+      "source": ".codex-tmp/D19-application-seal.py",
+      "reviewCopy": "docs/verification/D19-application-decisions-20261025/orchestration-review/D19-application-seal.py.txt",
+      "sha256": "7327e963d62c563ee1b9d3c0d08fd3f038428c23e0da4675ea8c35057573da6e",
+      "reviewOnlyTextNotActiveApplicationSource": true,
+      "revision": "Metadata-only dynamic seal self-reference repair"
+    }
+  ],
+  "credentialsIncluded": false
+}

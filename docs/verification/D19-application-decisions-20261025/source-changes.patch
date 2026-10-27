@@ -1,0 +1,637 @@
+--- before/scripts/release/manifest.test.ts
++++ scripts/release/manifest.test.ts
+@@ -64,6 +64,7 @@
+   "20261023095521_academy_approval_index.sql",
+   "20261023124149_staff_access_capabilities.sql",
+   "20261023192141_pilot_legacy_access_hardening.sql",
++  "20261025120934_application_decisions.sql",
+ ] as const;
+ 
+ // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+@@ -144,7 +145,8 @@
+     expect(manifest.migrations[0].phase).toBe("active_mission");
+     expect(manifest.migrations[13].phase).toBe("publication_proof");
+     expect(manifest.migrations[25].phase).toBe("reward_handoff");
+-    expect(manifest.migrations.at(-1)?.phase).toBe("staff_access");
++    expect(manifest.migrations.find((migration) => migration.version === "20261023192141")?.phase).toBe("staff_access");
++    expect(manifest.migrations.at(-1)?.phase).toBe("operator_crm");
+     expect(manifest.migrations[0].dependsOn).toEqual([]);
+     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
+     expect(
+--- before/scripts/release/manifest.ts
++++ scripts/release/manifest.ts
+@@ -1009,6 +1009,15 @@
+   "transactionExpectation": "transactional",
+   "replayExpectation": "migration_history_noop"
+ },
++  {
++    version: "20261025120934", name: "application_decisions", phase: "operator_crm",
++    dependsOn: ["20260715163350", "20261022170751", "20261023192141"],
++    capabilities: ["function:public.decide_mission_application",
++      "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++      "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++      "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"],
++    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
++  },
+ ] as const satisfies readonly ReviewedMigration[];
+ 
+ const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
+--- before/scripts/release/preflight.test.ts
++++ scripts/release/preflight.test.ts
+@@ -38,8 +38,14 @@
+       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+     ];
+ 
+-    // Retain all 529 earlier capabilities; add the D19 legacy denial contracts.
+-    expect(capabilities).toHaveLength(587);
++    // Retain all587 earlier capabilities and add the four application contracts.
++    expect(capabilities).toHaveLength(591);
++    const applicationCapabilities = ["function:public.decide_mission_application",
++      "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++      "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++      "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"];
++    expect(capabilities).toEqual(expect.arrayContaining(applicationCapabilities));
++    expect(capabilities.filter((capability) => !applicationCapabilities.includes(capability))).toHaveLength(587);
+     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+   });
+ 
+--- before/server/routes/admin.ts
++++ server/routes/admin.ts
+@@ -1,4 +1,5 @@
+ import { Hono } from "hono";
++import { createHash } from "node:crypto";
+ import type { SupabaseClient } from "@supabase/supabase-js";
+ import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
+ import { adminMissionRoutes } from "./adminMissions.js";
+@@ -285,27 +286,44 @@
+   return { data: submission, error: null, stage: null };
+ }
+ 
+-adminRoutes.post("/applications/:id/accept", async (c) => {
+-  const result = await acceptApplicationWithWorkflow(serviceClient(), c.req.param("id"));
+-  if (result.stage === "accept" || result.stage === "workflow") {
+-    return c.json({ error: result.error!.message, code: "rpc_error" }, 400);
+-  }
+-  if (result.stage === "mission") {
+-    return c.json({ error: result.error!.message, code: "db_error" }, 500);
+-  }
+-  if (result.stage === "not_found") {
+-    return c.json({ error: "not_found", code: "not_found" }, 404);
+-  }
+-  return c.json(result.data);
+-});
+-
+-adminRoutes.post("/applications/:id/decline", async (c) => {
+-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}) as { notes?: string })).notes ?? null;
+-  const svc = serviceClient();
+-  const { data, error } = await svc.rpc("decline_application", { p_submission: c.req.param("id"), p_notes: notes });
+-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+-  return c.json(data);
+-});
++for (const action of ["accept", "decline"] as const) {
++  adminRoutes.post(`/applications/:id/${action}`, async (c) => {
++    let body: { notes?: unknown; request_id?: unknown; expected_revision?: unknown } | null = null;
++    try { const text = await c.req.text(); body = text.trim() ? JSON.parse(text) : {}; } catch { /* Reject malformed non-empty JSON below. */ }
++    if (!body || typeof body !== "object" || Array.isArray(body)) return c.json({ error: "Invalid application command", code: "invalid_command" }, 400);
++    const notes = typeof body.notes === "string" ? body.notes.trim() : null;
++    if (action === "decline" && !notes) return c.json({ error: "請填寫拒絕原因 / A decline reason is required", code: "application_reason_required" }, 400);
++    if (typeof body.notes === "string" && [...body.notes].length > 500) return c.json({ error: "原因上限為 500 字 / Limit: 500 characters", code: "application_reason_too_long" }, 400);
++    const revision = body.expected_revision ?? 0;
++    if (!Number.isSafeInteger(revision) || Number(revision) < 0) return c.json({ error: "Invalid application revision", code: "invalid_command" }, 400);
++    const scope = c.get("authorizedWorkspace"), operator = c.get("staff").userId!;
++    // Older callers send {}. Their logical decision still has one stable receipt;
++    // an explicitly supplied request key is never replaced on a transport retry.
++    const hex = createHash("sha256").update(JSON.stringify(["application/v1", scope.workspaceId, operator, c.req.param("id"), action])).digest("hex");
++    const fallback = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-${((parseInt(hex[16], 16) & 3) | 8).toString(16)}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
++    const request = body.request_id ?? fallback;
++    if (typeof request !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(request)) return c.json({ error: "Invalid application request", code: "invalid_command" }, 400);
++    const { data, error } = await Promise.resolve(serviceClient().rpc("decide_mission_application", {
++      p_workspace: scope.workspaceId, p_operator: operator, p_submission: c.req.param("id"),
++      p_request: request, p_expected_revision: Number(revision), p_decision: action, p_notes: action === "decline" ? notes : null,
++    })).catch(() => ({ data: null, error: { message: "unavailable" } }));
++    if (error) {
++      if (error.message === "FORBIDDEN") return c.json({ error: "Application review access is required", code: "FORBIDDEN" }, 403);
++      if (error.message === "application_not_found") return c.json({ error: "Application not found", code: "not_found" }, 404);
++      if (["APPLICATION_STALE", "IDEMPOTENCY_CONFLICT"].includes(error.message)) return c.json({ error: "申請已更新；保留輸入並重新讀取 / Refresh the application; input is retained", code: error.message }, 409);
++      if (["mission_full", "application_reason_required", "application_reason_too_long", "invalid_command"].includes(error.message)) return c.json({ error: error.message, code: error.message }, 400);
++      return c.json({ error: "申請服務未能完成；保留輸入並重試同一要求 / Application unavailable; retry the same request", code: "application_unavailable" }, 503);
++    }
++    if (!data?.decision && !data?.conflict) return c.json({ error: "尚未確認保存；請重試同一要求 / Saving is not confirmed; retry the same request", code: "application_unavailable" }, 503);
++    if (data?.conflict) {
++      const winner = data.decision;
++      const time = winner?.decidedAt && Number.isFinite(Date.parse(winner.decidedAt))
++        ? new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Hong_Kong" }).format(new Date(winner.decidedAt)) : "未提供 / Unknown";
++      return c.json({ error: `申請已處理：${winner?.actorLabel || "處理者未提供 / Unknown operator"} · ${time}。請重新讀取；輸入已保留。 / Already processed; refresh to continue.`, code: "APPLICATION_DECIDED", current_decision: winner }, 409);
++    }
++    return c.json(data);
++  });
++}
+ 
+ adminRoutes.post("/social/:accountId/verify", async (c) => {
+   try {
+--- before/server/test/b2-runtime-manifest.test.ts
++++ server/test/b2-runtime-manifest.test.ts
+@@ -18,9 +18,20 @@
+   expect(m.bootstrap.historicalLegacy.countedWithinCoreCaps).toBe(true);
+   for(const phase of ["role","core","browser"]){expect(caps[phase].academy_lessons).toBe(0);expect(caps[phase].mission_draft_assets).toBe(0);expect(caps[phase].storage_objects).toBe(0);}
+  });
+- it("binds current source and bootstrap profile without reusing pristine/global RPC acceptance",()=>{
+-  const fp=read("docs/verification/code-fingerprint.json"),m=read(fp.runtimeManifestPath??"docs/verification/D19-C1-source-revision-runtime-manifest.json"),profile=read(`docs/verification/${m.bootstrap.profilePath}`);
+-  expect(m.candidate.fingerprint).toBe(fp.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
++ it("binds retained runtime source/profile and leaves a changed local candidate without runtime authority",()=>{
++  const fp=read("docs/verification/code-fingerprint.json");
++  let runtimeSource=fp;
++  if(fp.runtimeEvidenceSource){
++    const snapshot=readFileSync(fp.runtimeEvidenceSource.path);
++    expect(createHash("sha256").update(snapshot).digest("hex")).toBe(fp.runtimeEvidenceSource.sha256);
++    runtimeSource=JSON.parse(snapshot.toString("utf8"));
++    expect(runtimeSource.fingerprint).toBe(fp.runtimeEvidenceSource.fingerprint);
++    expect(runtimeSource.fingerprint).not.toBe(fp.fingerprint);
++    expect(fp.runtimeManifestPath).toBeNull();expect(fp.runtimeApprovalStatus).toBe("NOT_GRANTED_FOR_CURRENT_SOURCE");
++    expect(fp.runtimeEvidenceSource.currentCandidateRuntimeProven).toBe(false);
++  }
++  const m=read(runtimeSource.runtimeManifestPath??"docs/verification/D19-C1-source-revision-runtime-manifest.json"),profile=read(`docs/verification/${m.bootstrap.profilePath}`);
++  expect(m.candidate.fingerprint).toBe(runtimeSource.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
+   expect(m.execution.pristineRpcRerun).toBe(false);expect(m.fixture.legacyExistingIssuanceRequiresExplicitRuntimeApproval.approvalXpDelta).toBe(100);
+   expect(m.execution.commands).toHaveLength(m.execution.recovery?2:3);
+  });
+--- before/src/routes/-_app.mission.$missionSlug.test.tsx
++++ src/routes/-_app.mission.$missionSlug.test.tsx
+@@ -130,6 +130,17 @@
+     hoisted.my.data = [{ id: "s1", status: "declined", content_urls: [], points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
+     renderDetail();
+     expect(screen.getByText("未獲接受")).toBeInTheDocument();
++    expect(screen.getByText(/未提供原因/)).toBeInTheDocument();
++  });
++
++  it("UC-C25 reads the saved decline reason again on a fresh mount", () => {
++    hoisted.mission.data.access_type = "application";
++    hoisted.my.data = [{ id: "s1", status: "declined", content_urls: [], review_notes: "Please improve the portfolio", points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
++    const first = renderDetail();
++    expect(screen.getByText(/Please improve the portfolio/)).toBeInTheDocument();
++    first.unmount(); renderDetail();
++    expect(screen.getByText(/Please improve the portfolio/)).toBeInTheDocument();
++    expect(screen.queryByText("申請任務")).not.toBeInTheDocument();
+   });
+ 
+   it("reveals the hook generator panel when the CTA is clicked", () => {
+--- before/src/routes/-admin.applications.test.tsx
++++ src/routes/-admin.applications.test.tsx
+@@ -45,4 +45,38 @@
+     fireEvent.click(screen.getByLabelText("接受"));
+     await waitFor(() => expect(h.acceptApplication).toHaveBeenCalledWith("a1"));
+   });
++
++  it("UC-C25 retains the decline reason and row after a failure and retries explicitly", async () => {
++    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
++    h.declineApplication.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({});
++    r(); await screen.findByText("Amy");
++    const reason = screen.getByLabelText(/拒絕原因/);
++    expect(screen.getByLabelText("拒絕")).toBeDisabled();
++    fireEvent.change(reason, { target: { value: "Please improve the portfolio" } });
++    fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
++    expect(reason).toHaveValue("Please improve the portfolio"); expect(screen.getByText("Amy")).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
++    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
++    expect(h.declineApplication.mock.calls).toEqual([["a1", "Please improve the portfolio"], ["a1", "Please improve the portfolio"]]);
++  });
++
++  it("UC-A10 shows who already processed the application and keeps local input on409", async () => {
++    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
++    h.declineApplication.mockRejectedValue(Object.assign(new Error("Already processed by Test operator at 2026-10-25 18:00 HKT"), { status: 409, code: "APPLICATION_DECIDED" }));
++    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
++    fireEvent.change(reason, { target: { value: "My retained reason" } }); fireEvent.click(screen.getByLabelText("拒絕"));
++    await screen.findByText(/Already processed by Test operator/); expect(reason).toHaveValue("My retained reason");
++    expect(screen.getByText("Amy")).toBeInTheDocument(); expect(h.declineApplication).toHaveBeenCalledTimes(1);
++  });
++
++  it("UC-A06 retries the currently visible reason after an operator edits a failed request", async () => {
++    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
++    h.declineApplication.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({});
++    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
++    fireEvent.change(reason, { target: { value: "First reason" } }); fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
++    fireEvent.change(reason, { target: { value: "Updated reason" } }); fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
++    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
++    expect(h.declineApplication.mock.calls).toEqual([["a1", "First reason"], ["a1", "Updated reason"]]);
++    expect(reason).toHaveValue("Updated reason");
++  });
+ });
+--- before/src/routes/_app.mission.$missionSlug.tsx
++++ src/routes/_app.mission.$missionSlug.tsx
+@@ -124,9 +124,10 @@
+               <><p className="text-sm">{sub.review_notes}</p><LegacySubmissionForm missionSlug={missionSlug} initialUrls={sub.content_urls} /></>
+             )
+           ) : (
+-            <section className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
++            <section className="pastel-card flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+               <span className="font-heading font-bold">{t("app.mission.statusLabel")}</span>
+               <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · ${t("app.mission.pointsAwarded", { n: sub.points_awarded ?? 0 })}` : ""}</span>
++              {sub.status === "declined" && <p className="w-full break-words text-sm">原因 / Reason：{sub.review_notes?.trim() || "未提供原因 / No reason provided"}</p>}
+             </section>
+           )}
+ 
+--- before/src/routes/admin.applications.tsx
++++ src/routes/admin.applications.tsx
+@@ -1,5 +1,5 @@
+ import { createFileRoute } from "@tanstack/react-router";
+-import { useEffect } from "react";
++import { useEffect, useState } from "react";
+ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+ import {
+   AdminAuthError,
+@@ -21,6 +21,7 @@
+   const { t } = useI18n();
+   const { authed, reportAuthError } = useAdminAuth();
+   const { workspace } = useAdminWorkspace();
++  const [reasons, setReasons] = useState<Record<string, string>>({});
+   const qc = useQueryClient();
+   const apps = useQuery({
+     queryKey: adminKeys.applications(workspace),
+@@ -34,17 +35,26 @@
+   }, [apps.error, reportAuthError]);
+ 
+   const decide = useMutation({
+-    mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" }) =>
+-      action === "accept" ? acceptApplication(id) : declineApplication(id),
+-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.applications(workspace) }),
++    mutationFn: ({ id, action, notes }: { id: string; action: "accept" | "decline"; notes?: string; workspace: string }) =>
++      action === "accept" ? acceptApplication(id) : declineApplication(id, notes),
++    onSuccess: (_data, variables) => qc.invalidateQueries({ queryKey: adminKeys.applications(variables.workspace) }),
+   });
++  const decisionError = decide.variables?.workspace === workspace ? decide.error : null;
++  const alreadyDecided = decisionError && "code" in decisionError && decisionError.code === "APPLICATION_DECIDED";
+ 
+   if (apps.isLoading) return <p className="text-sm">{t("common.loading")}</p>;
+ 
+   return (
+     <div className="space-y-3">
+       <RequestFeedback error={apps.error} stale={Boolean(visibleApps)} retry={() => void apps.refetch()} />
+-      <RequestFeedback error={decide.error} />
++      <RequestFeedback error={decisionError} summary={alreadyDecided ? decisionError.message : undefined}
++        retry={() => {
++          if (alreadyDecided) void apps.refetch();
++          else if (decide.variables?.workspace === workspace) {
++            const command = decide.variables;
++            decide.mutate(command.action === "decline" ? { ...command, notes: reasons[`${workspace}:${command.id}`] ?? command.notes } : command);
++          }
++        }} />
+       {!apps.isError && visibleApps?.applications.length === 0 && <p role="status" className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.applicationsEmpty")}</p>}
+       {visibleApps?.applications.map((a: Application) => (
+         <div
+@@ -66,9 +76,18 @@
+               <a href={`/operator/missions/${a.mission_id}`} className="text-xs font-bold underline">Mission selection</a>
+             ) : null}
+           </div>
+-          <div className="flex shrink-0 gap-2">
+-            <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
+-            <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "decline" })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
++          <div className="w-full space-y-2 sm:w-auto sm:max-w-md">
++            <label className="block space-y-1 text-sm" htmlFor={`application-reason-${a.id}`}>
++              <span>拒絕原因 / Decline reason（上限 500 字）</span>
++              <textarea id={`application-reason-${a.id}`} value={reasons[`${workspace}:${a.id}`] ?? ""} maxLength={500}
++                disabled={decide.isPending && decide.variables?.workspace === workspace && decide.variables.id === a.id}
++                onChange={(event) => setReasons((previous) => ({ ...previous, [`${workspace}:${a.id}`]: event.target.value }))}
++                className="min-h-20 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1" />
++            </label>
++            <div className="flex shrink-0 gap-2">
++              <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "accept", workspace })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
++              <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending || apps.isError || apps.isFetching || !reasons[`${workspace}:${a.id}`]?.trim()} onClick={() => decide.mutate({ id: a.id, action: "decline", notes: reasons[`${workspace}:${a.id}`], workspace })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
++            </div>
+           </div>
+         </div>
+       ))}
+--- before/supabase/release-manifest.json
++++ supabase/release-manifest.json
+@@ -1235,6 +1235,26 @@
+       ],
+       "transactionExpectation": "transactional",
+       "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261025120934",
++      "name": "application_decisions",
++      "path": "supabase/migrations/20261025120934_application_decisions.sql",
++      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
++      "phase": "operator_crm",
++      "dependsOn": [
++        "20260715163350",
++        "20261022170751",
++        "20261023192141"
++      ],
++      "capabilities": [
++        "function:public.decide_mission_application",
++        "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++        "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
++        "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
+     }
+   ]
+ }
+--- /dev/null
++++ server/test/audit-application-decisions.test.ts
+@@ -0,0 +1,93 @@
++// @vitest-environment node
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { Hono } from "hono";
++
++const h = vi.hoisted(() => ({ rpc: vi.fn(), mode: "success" }));
++const workspace = "00000000-0000-4000-8000-0000000000aa";
++const actor = "00000000-0000-4000-8000-000000000011";
++const submission = "00000000-0000-4000-8000-000000000031";
++const request = "00000000-0000-4000-8000-000000000041";
++const decision = { action: "accept", actorId: actor, actorLabel: "Test operator", decidedAt: "2026-10-25T10:00:00Z", revision: 1 };
++vi.mock("../lib/supabase", () => ({
++  makeUserClient: () => ({ auth: { getUser: async () => ({ data: { user: { id: actor, email: "operator@example.test" } }, error: null }) } }),
++  serviceClient: () => ({ rpc: h.rpc, from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { creator_workflow_mode: "legacy" }, error: null }) }) }) }) }),
++}));
++vi.mock("../lib/staffAuth", () => ({ resolveStaff: async () => ({ user_id: actor, email: "operator@example.test", active: true }) }));
++vi.mock("../lib/staffWorkspace", async (original) => ({ ...await original<typeof import("../lib/staffWorkspace")>(),
++  requireStaffWorkspace: async () => ({ workspaceId: workspace, workspaceSlug: "test-a", userId: actor }), assertStaffResource: async () => undefined,
++}));
++vi.mock("../lib/staffCapabilities", async (original) => ({ ...await original<typeof import("../lib/staffCapabilities")>(), requireCapability: async () => undefined }));
++import { adminRoutes } from "../routes/admin";
++
++const app = new Hono().route("/api/admin", adminRoutes);
++const req = (action: string, body: object) => app.request(`/api/admin/applications/${submission}/${action}`, {
++  method: "POST", headers: { Authorization: "Bearer offline-transport-only", "Content-Type": "application/json", "X-Workspace-Slug": "test-a" }, body: JSON.stringify(body),
++});
++
++describe("UC-A10 application decision transport (offline, not Auth/RLS evidence)", () => {
++  beforeEach(() => {
++    h.mode = "success";
++    h.rpc.mockReset().mockImplementation(async (name: string) => {
++      if (h.mode === "conflict") return name === "decide_mission_application"
++        ? { data: { conflict: true, decision }, error: null }
++        : { data: null, error: { message: "wrong_state", code: "P0001" } };
++      return { data: { id: submission, status: name === "decline_application" ? "declined" : "joined", ...(name === "decide_mission_application" ? { decision } : {}) }, error: null };
++    });
++  });
++
++  it("persists a decision with trusted actor and request identity in one command", async () => {
++    const response = await req("accept", { request_id: request, expected_revision: 0, operator_id: "forged" });
++    expect(response.status).toBe(200);
++    expect(await response.json()).toMatchObject({ id: submission, status: "joined", decision });
++    expect(h.rpc).toHaveBeenCalledTimes(1);
++    expect(h.rpc).toHaveBeenCalledWith("decide_mission_application", expect.objectContaining({
++      p_workspace: workspace, p_operator: actor, p_submission: submission, p_request: request, p_expected_revision: 0, p_decision: "accept",
++    }));
++  });
++
++  it("shows the winning actor and time on a recoverable concurrent decision conflict", async () => {
++    h.mode = "conflict";
++    const response = await req("decline", { request_id: request, expected_revision: 0, notes: "Keep this reason" });
++    expect(response.status).toBe(409);
++    const body = await response.json();
++    expect(body).toMatchObject({ code: "APPLICATION_DECIDED", current_decision: decision });
++    expect(body.error).toContain("Test operator");
++    expect(body.error).toMatch(/2026|25/);
++  });
++
++  it("rejects an empty decline reason before any business command", async () => {
++    const response = await req("decline", { request_id: request, expected_revision: 0, notes: "  " });
++    expect(response.status).toBe(400);
++    expect(await response.json()).toMatchObject({ code: "application_reason_required" });
++    expect(h.rpc).not.toHaveBeenCalled();
++  });
++
++  it("never reports an empty database result as a saved decision", async () => {
++    h.rpc.mockResolvedValue({ data: null, error: null });
++    const response = await req("accept", {});
++    expect(response.status).toBe(503);
++    expect(await response.json()).toMatchObject({ code: "application_unavailable" });
++  });
++
++  it("keeps a stable logical receipt for older empty-body retries", async () => {
++    expect((await req("accept", {})).status).toBe(200);
++    expect((await req("accept", {})).status).toBe(200);
++    expect(h.rpc.mock.calls[0]).toEqual(h.rpc.mock.calls[1]);
++    expect(h.rpc.mock.calls[0][1].p_request).toMatch(/^[0-9a-f-]{36}$/);
++  });
++
++  it("handles the installed SDK's rejecting PromiseLike without claiming a saved decision", async () => {
++    h.rpc.mockReturnValue({ then: (_resolve: unknown, reject: (error: Error) => void) => reject(new Error("Offline transport outage")) });
++    const response = await req("accept", {});
++    expect(response.status).toBe(503);
++    expect(await response.json()).toMatchObject({ code: "application_unavailable" });
++  });
++
++  it("preserves the original accept-without-a-body contract and the same retry identity as an empty object", async () => {
++    const response = await app.request(`/api/admin/applications/${submission}/accept`, {
++      method: "POST", headers: { Authorization: "Bearer offline-transport-only", "X-Workspace-Slug": "test-a" },
++    });
++    expect(response.status).toBe(200); expect(await response.json()).toMatchObject({ status: "joined", decision });
++    await req("accept", {}); expect(h.rpc.mock.calls[0]).toEqual(h.rpc.mock.calls[1]);
++  });
++});
+--- /dev/null
++++ server/test/audit-application-decisions.embedded.test.ts
+@@ -0,0 +1,113 @@
++// @vitest-environment node
++import { readFile } from "node:fs/promises";
++import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
++import type { PGlite } from "@electric-sql/pglite";
++
++// Function/transaction contracts only. The workflow function below is a narrow
++// stub, not real workflow/Auth/RLS/Storage or multi-connection race evidence.
++const target = Object.freeze({ storage: "memory://", transport: "in-process-wasm", network: "none" });
++const A = "00000000-0000-4000-8000-0000000000aa", B = "00000000-0000-4000-8000-0000000000bb";
++const actor = "00000000-0000-4000-8000-000000000011", other = "00000000-0000-4000-8000-000000000012";
++const creator = "00000000-0000-4000-8000-000000000013", mission = "00000000-0000-4000-8000-000000000021";
++const submission = "00000000-0000-4000-8000-000000000031", request = "00000000-0000-4000-8000-000000000041";
++let db: PGlite;
++const base = `
++create role anon; create role authenticated; create role service_role bypassrls;
++create schema auth; create schema private; grant usage on schema private to service_role;
++create table auth.users(id uuid primary key);
++create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
++create table public.workspaces(id uuid primary key,slug text,name text);
++create table public.creators(id uuid primary key references auth.users(id),workspace_id uuid references public.workspaces(id),display_name text,level text default 'L0',scores jsonb default '{}',created_at timestamptz default now(),xp integer default 0);
++create table public.staff_users(user_id uuid primary key,email text,active boolean);
++create table public.brand_users(user_id uuid primary key,workspace_id uuid,email text,role text,active boolean);
++create table public.staff_workspace_roles(user_id uuid,workspace_id uuid,role text,active boolean);
++create table public.missions(id uuid primary key,workspace_id uuid,creator_workflow_mode text default 'active_workspace',filled integer default 0,quota integer default 1,status text default 'active',access_type text default 'application',deadline date);
++create table public.mission_submissions(id uuid primary key,workspace_id uuid,mission_id uuid,creator_id uuid,status text constraint mission_submissions_status_check check(status in ('joined','submitted','approved')),content_urls text[] default '{}',reviewer_notes text,reviewed_at timestamptz,xp_awarded integer default 0);
++create table public.mission_workflows(id uuid primary key default gen_random_uuid(),mission_submission_id uuid unique,state text default 'drafting');
++create function public.create_mission_workflow(p_submission uuid) returns jsonb language plpgsql as $$
++declare v jsonb; begin
++insert into public.mission_workflows(mission_submission_id)values(p_submission)on conflict do nothing;
++select to_jsonb(w)into v from public.mission_workflows w where mission_submission_id=p_submission;return v;end;$$;
++insert into public.workspaces values('${A}','a','Test A'),('${B}','b','Test B');
++insert into auth.users values('${actor}'),('${other}'),('${creator}');
++insert into public.creators(id,workspace_id,display_name)values('${creator}','${A}','Test Creator');
++insert into public.staff_users values('${actor}','operator-a@example.test',true),('${other}','operator-b@example.test',true);
++insert into public.brand_users values('${actor}','${A}','operator-a@example.test','member',true),('${other}','${A}','operator-b@example.test','member',true);
++insert into public.staff_workspace_roles values('${actor}','${A}','operator',true),('${other}','${A}','operator',true);
++insert into public.missions(id,workspace_id)values('${mission}','${A}');
++`;
++async function value<T>(sql: string, params: unknown[] = []): Promise<T> { return (await db.query<{ value: T }>(sql, params)).rows[0]?.value; }
++const sql = "select public.decide_mission_application($1,$2,$3,$4,$5,$6,$7)as value";
++const args = (action = "accept", notes: string | null = null, who = actor, id = request) => [A, who, submission, id, 0, action, notes];
++async function rejected(command: string, params: unknown[], message: string) {
++  await db.exec("savepoint expected_failure"); await expect(db.query(command, params)).rejects.toThrow(message); await db.exec("rollback to savepoint expected_failure");
++}
++async function counts() { return value<{ xp: number; filled: number; receipts: number; audit: number; workflows: number; status: string }>(`select jsonb_build_object(
++'xp',(select xp from public.creators where id='${creator}'),'filled',(select filled from public.missions where id='${mission}'),
++'receipts',(select count(*)from public.operator_crm_command_receipts),'audit',(select count(*)from public.operator_audit_events),
++'workflows',(select count(*)from public.mission_workflows),'status',(select status from public.mission_submissions where id='${submission}'))as value`); }
++beforeAll(async () => {
++  expect(target).toEqual({ storage: "memory://", transport: "in-process-wasm", network: "none" });
++  const { PGlite: Engine } = await import("@electric-sql/pglite"); db = await Engine.create(target.storage); await db.exec(base);
++  for (const file of ["0013_operator_creator_selection_crm.sql", "0010_applications.sql", "20261022170751_audit_crm_commands.sql", "20261025120934_application_decisions.sql"]) await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
++  await db.exec(`insert into public.mission_submissions(id,workspace_id,mission_id,creator_id,status)values('${submission}','${A}','${mission}','${creator}','applied')`);
++}, 60000);
++beforeEach(async () => { await db.exec("begin"); }); afterEach(async () => { await db.exec("rollback"); }); afterAll(async () => { await db?.close(); });
++
++describe("UC-C25/UC-A10 owned-memory application command", () => {
++  it("records actor/time, one workflow, audit and receipt while retaining the original one-time XP/quota semantics", async () => {
++    const first = await value<{ decision: { actorId: string; decidedAt: string } }>(sql, args());
++    expect(first.decision.actorId).toBe(actor); expect(Date.parse(first.decision.decidedAt)).not.toBeNaN();
++    expect(await value(sql, args())).toEqual(first);
++    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
++  });
++  it("persists a decline reason without quota, workflow or XP changes", async () => {
++    const result = await value<{ decision: { action: string; reason: string } }>(sql, args("decline", "Please improve the portfolio"));
++    expect(result.decision).toMatchObject({ action: "decline", reason: "Please improve the portfolio" });
++    expect(await value(sql, args("decline", "Please improve the portfolio"))).toEqual(result);
++    expect(await counts()).toEqual({ xp: 0, filled: 0, receipts: 1, audit: 1, workflows: 0, status: "declined" });
++  });
++  it("returns the winning decision to another operator without changing the legal terminal state", async () => {
++    const first = await value<{ decision: unknown }>(sql, args());
++    const second = await value(sql, args("decline", "Retained local reason", other));
++    expect(second).toEqual({ conflict: true, decision: first.decision });
++    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
++  });
++  it("rejects key reuse with a different payload and keeps the first reason", async () => {
++    await value(sql, args("decline", "First reason"));
++    await rejected(sql, args("decline", "Another reason"), "IDEMPOTENCY_CONFLICT");
++    expect(await value("select reviewer_notes as value from public.mission_submissions where id=$1", [submission])).toBe("First reason");
++  });
++  it("rolls back acceptance, quota, XP, workflow and receipt when the audit insert fails", async () => {
++    await db.exec("create function private.audit_fault()returns trigger language plpgsql as $$begin raise exception 'test audit outage';end;$$;create trigger test_audit_fault before insert on public.operator_audit_events for each row execute function private.audit_fault()");
++    await rejected(sql, args(), "test audit outage");
++    expect(await counts()).toEqual({ xp: 0, filled: 0, receipts: 0, audit: 0, workflows: 0, status: "applied" });
++  });
++  it("rolls back the application when workflow creation fails", async () => {
++    await db.exec("create function private.workflow_fault()returns trigger language plpgsql as $$begin raise exception 'test workflow outage';end;$$;create trigger test_workflow_fault before insert on public.mission_workflows for each row execute function private.workflow_fault()");
++    await rejected(sql, args(), "test workflow outage");
++    expect(await counts()).toEqual({ xp: 0, filled: 0, receipts: 0, audit: 0, workflows: 0, status: "applied" });
++  });
++  it("checks live membership/capability even on exact receipt replay", async () => {
++    await value(sql, args()); await db.query("update public.brand_users set active=false where user_id=$1", [actor]);
++    await rejected(sql, args(), "FORBIDDEN");
++    await db.query("update public.brand_users set active=true where user_id=$1", [actor]);
++    await db.query("update public.staff_workspace_roles set role='finance_viewer'where user_id=$1", [actor]);
++    await rejected(sql, args(), "FORBIDDEN");
++  });
++  it("does not invent an actor/time or rewrite a historical processed row", async () => {
++    await db.query("update public.mission_submissions set status='joined'where id=$1", [submission]);
++    expect(await value(sql, args())).toMatchObject({ conflict: true, decision: { actorId: null, decidedAt: null, historicalUnknown: true } });
++    expect(await counts()).toEqual({ xp: 0, filled: 0, receipts: 0, audit: 0, workflows: 0, status: "joined" });
++  });
++  it("denies cross-workspace targets and direct authenticated execution", async () => {
++    await rejected(sql, [B, actor, ...args().slice(2)], "FORBIDDEN");
++    await db.exec("set local role authenticated"); await rejected(sql, args(), "permission denied");
++  });
++  it("lets only the service role execute a command with the independently checked staff scope", async () => {
++    await db.exec("set local role service_role");
++    expect(await value(sql, args())).toMatchObject({ decision: { actorId: actor, revision: 1 } });
++    await db.exec("reset role");
++    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
++  });
++});
+--- /dev/null
++++ supabase/migrations/20261025120934_application_decisions.sql
+@@ -0,0 +1,91 @@
++begin;
++
++-- The existing application, workflow, CRM receipt and audit engines share this
++-- transaction. Historical decisions are not backfilled with invented actors.
++create function public.decide_mission_application(
++  p_workspace uuid, p_operator uuid, p_submission uuid, p_request uuid,
++  p_expected_revision bigint, p_decision text, p_notes text
++) returns jsonb language plpgsql security definer set search_path = '' as $$
++declare
++  v_sub public.mission_submissions%rowtype;
++  v_saved public.operator_crm_command_receipts%rowtype;
++  v_actor text; v_hash text; v_mode text; v_notes text;
++  v_workflow jsonb; v_result jsonb; v_decision jsonb;
++  v_at timestamptz;
++begin
++  if p_request is null or p_expected_revision is null or p_expected_revision < 0
++    or p_decision is null or p_decision not in ('accept','decline') then
++    raise exception using errcode='22023',message='invalid_command';
++  end if;
++  v_notes := nullif(btrim(p_notes),'');
++  if p_decision='decline' and v_notes is null then
++    raise exception using errcode='22023',message='application_reason_required';
++  end if;
++  if length(coalesce(p_notes,''))>500 then
++    raise exception using errcode='22023',message='application_reason_too_long';
++  end if;
++  select s.email into v_actor from public.staff_users s
++    join public.brand_users b on b.user_id=s.user_id
++    join public.staff_workspace_roles r on r.user_id=s.user_id and r.workspace_id=b.workspace_id
++    where s.user_id=p_operator and s.active and b.workspace_id=p_workspace and b.active
++      and r.active and r.role in ('workspace_admin','operator') for share of s,b,r;
++  if not found then raise exception using errcode='42501',message='FORBIDDEN'; end if;
++
++  -- Serialize request-key reuse across application resources before the row lock.
++  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(
++    p_workspace::text||':'||p_operator::text||':'||p_request::text,21));
++  select s.* into v_sub from public.mission_submissions s
++    join public.missions m on m.id=s.mission_id and m.workspace_id=s.workspace_id
++    join public.creators c on c.id=s.creator_id and c.workspace_id=s.workspace_id
++    where s.id=p_submission and s.workspace_id=p_workspace for update of s;
++  if not found then raise exception using errcode='P0002',message='application_not_found'; end if;
++  v_hash := encode(sha256(convert_to(jsonb_build_object('kind','application_decision',
++    'submission',p_submission,'revision',p_expected_revision,'decision',p_decision,
++    'notes',case when p_decision='decline' then v_notes else null end)::text,'UTF8')),'hex');
++  select * into v_saved from public.operator_crm_command_receipts
++    where workspace_id=p_workspace and operator_id=p_operator and request_id=p_request;
++  if found then
++    if v_saved.payload_hash<>v_hash then
++      raise exception using errcode='PT409',message='IDEMPOTENCY_CONFLICT';
++    end if;
++    return v_saved.result;
++  end if;
++  if v_sub.status<>'applied' then
++    select metadata->'decision' into v_decision from public.operator_audit_events
++      where workspace_id=p_workspace and target_type='application' and target_id=p_submission::text
++        and event_type='application.decided' order by created_at desc,id desc limit 1;
++    if v_decision is null then
++      v_decision:=jsonb_build_object('action',null,'status',v_sub.status,
++        'actorId',null,'actorLabel',null,'decidedAt',null,'revision',null,'historicalUnknown',true);
++    end if;
++    return jsonb_build_object('conflict',true,'decision',v_decision);
++  end if;
++  if p_expected_revision<>0 then raise exception using errcode='PT409',message='APPLICATION_STALE'; end if;
++  select creator_workflow_mode into v_mode from public.missions where id=v_sub.mission_id;
++  if p_decision='accept' then
++    v_sub:=public.accept_application(p_submission);
++    if v_mode='active_workspace' then
++      select to_jsonb(public.create_mission_workflow(p_submission)) into v_workflow;
++    end if;
++  else
++    v_sub:=public.decline_application(p_submission,v_notes);
++  end if;
++  v_at:=clock_timestamp();
++  update public.mission_submissions set reviewed_at=v_at where id=p_submission returning * into v_sub;
++  v_decision:=jsonb_build_object('action',p_decision,'actorId',p_operator,
++    'actorLabel',v_actor,'decidedAt',v_at,'revision',1,
++    'reason',case when p_decision='decline' then v_notes else null end);
++  v_result:=case when v_workflow is null then to_jsonb(v_sub)
++    else jsonb_build_object('submission',to_jsonb(v_sub),'workflow',v_workflow) end
++    ||jsonb_build_object('decision',v_decision);
++  insert into public.operator_audit_events(workspace_id,operator_id,actor_label,event_type,target_type,target_id,creator_id,metadata)
++    values(p_workspace,p_operator::text,v_actor,'application.decided','application',p_submission::text,v_sub.creator_id,
++      jsonb_build_object('request_id',p_request,'decision',v_decision));
++  insert into public.operator_crm_command_receipts(workspace_id,operator_id,request_id,payload_hash,result)
++    values(p_workspace,p_operator,p_request,v_hash,v_result);
++  return v_result;
++end;
++$$;
++revoke all on function public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text) from public,anon,authenticated;
++grant execute on function public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text) to service_role;
++commit;

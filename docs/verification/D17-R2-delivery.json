@@ -1,0 +1,85 @@
+{
+  "task": "D17 R2 quality/owner follow-up",
+  "updatedAt": "2026-10-24T03:23:58.570459+00:00",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "worktree": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "priorCodeFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+  "codeFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "sourceRecords": 348,
+  "changedFiles": [
+    "e2e/d17-r2-quality.spec.ts",
+    "playwright.d17-r2.config.ts",
+    "scripts/audit/inspect-d17-r2-advisors.mjs",
+    "scripts/audit/inspect-d17-r2-advisors.test.ts",
+    "scripts/audit/run-d17-r2-quality.mjs",
+    "src/components/AcademyTrackCard.tsx",
+    "src/components/PlaybookCard.tsx",
+    "src/components/admin/AdminTopBar.tsx",
+    "src/routes/_app.home.tsx"
+  ],
+  "newResult": {
+    "code": "Extended existing admin header, guide cards and Creator home loading layout, plus the read-only advisor DB-port identity gate; qualification and authorization engines preserved",
+    "test": "1954 passed / 363 explicitly gated skipped / 275 files; original16+194 unchanged; 5 final Edge cases plus 1 sequential post-gates performance case; 5 static gates",
+    "deployment": "not-deployed",
+    "runtime": "12 current pages, 48 CSS reflow cells, 12 zero-violation axe scans, keyboard input/navigation/retry; 100 exact-owned two-Creator queue reads; local advisors393, named owner/hosted acceptance blocked"
+  },
+  "testCounts": {
+    "passed": 1954,
+    "skipped": 363,
+    "failed": 0,
+    "files": 275,
+    "audit16": 16,
+    "protected194": 194
+  },
+  "browserCases": 5,
+  "extraSequentialPerformanceCases": 1,
+  "responsiveCells": 48,
+  "automatedPageScans": 12,
+  "gates": "D17-R2-gate-exits.json",
+  "schema": "D17-R2-schema-diff.json",
+  "performance": "D17-R2-performance-profile-final-post-gates.json",
+  "performanceSummary": {
+    "apiP50Ms": 52.124699999998484,
+    "apiP95Ms": 59.439800000000105,
+    "maxLcpMs": 744,
+    "maxCls": 0.012834114583333334
+  },
+  "advisors": "D17-R2-advisors.json",
+  "ownerAcceptance": "D17-R2-advisor-owner-acceptance.json",
+  "neutrality": "D17-R2-neutrality-final.json",
+  "postGatesNeutrality": "D17-R2-neutrality-profile-final-post-gates.json",
+  "fixtureRetention": "D17-R2-fixture-retention.json",
+  "testHistory": "D17-R2-test-history.json",
+  "limitations": [
+    "D15 BLOCKED_CONTENT_NOT_PROVIDED: UC-C18/UC-A51 still require four real approved lessons; no curriculum or lesson created.",
+    "No native browser zoom, physical mobile/device, Safari/WebKit or manual screen-reader evidence. CSS widths and automated axe are bounded local evidence.",
+    "No hosted/CI/production/pilot enablement or formal staff membership/role transition. Staff login alone never grants workspace access.",
+    "393 current local notices (297 INFO/96 WARN), historical union481; all owner names/authority/attestations missing.88 not-observed-now notices stay open. No hosted advisor acceptance.",
+    "12-page lab LCP/CLS and 100 two-Creator queue reads only. Historical1k/10k,24 interactions,INP and bundle comparison not renewed; no field p75 or speed gain claim.",
+    "Missing durable operator-start/decision and unclear-state help-event observations remain unavailable; no fabricated zero or pilot success metric.",
+    "True provider remains disabled; no paid AI, external notifications/invitations/publication, payment, ledger/withdrawable credit or budget debit.",
+    "Full legacy/active/proof/reward persisted handoff and funded neutrality remain D19 historical at their own source; this read-only UI task does not recertify R1.",
+    "Four pre-existing lint warnings and route/bundle warnings remain; skip363 assertions are not passes."
+  ],
+  "rollback": {
+    "patch": "D17-R2-changes.patch",
+    "scope": "Review/reverse only the9 task source hunks, using before-images; preserve all prior dirty work and every fixture/evidence record. No SQL rollback or cleanup needed.",
+    "verification": "git apply --check --reverse --ignore-space-change docs/verification/D17-R2-changes.patch; check-only, not applied",
+    "beforeImages": ".codex-tmp/D17-R2-20261024-before",
+    "remoteRollback": "none; not deployed"
+  },
+  "nextTask": {
+    "id": "D17",
+    "status": "BLOCKED_NAMED_OWNER_DEVICE_HOSTED_ACCEPTANCE",
+    "scope": "Named owner/authority and per-notice decisions for481 historical/current items; authorized hosted evidence, native zoom, physical device/Safari/manual AT and field evidence. D15 curriculum and formal staff cutover remain independent blockers."
+  },
+  "D15ContentBlocker": true,
+  "realProviderEnabled": false,
+  "canDeploy": false,
+  "canEnablePilot": false
+}

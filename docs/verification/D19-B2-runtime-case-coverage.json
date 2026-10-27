@@ -1,0 +1,29 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "auditCases": 107,
+  "findings": 28,
+  "originalAuditResultOverwritten": false,
+  "retainedUnchangedSourceOffline": {
+    "fullPass": 2047,
+    "fullFail": 0,
+    "gatedSkip": 363,
+    "files": 288,
+    "audit16": 16,
+    "protected194": 194,
+    "evidence": "D19-B2-neutrality-guard-full-results.json",
+    "rerunThisRuntimeTurn": false
+  },
+  "newLocalGuardCases": 6,
+  "offlineCliRefusals": 2,
+  "roleExecuted": 0,
+  "coreExecuted": 0,
+  "browserExecuted": 0,
+  "expectedRole": 8,
+  "expectedCore": 9,
+  "expectedBrowser": 5,
+  "newE2ePersistenceProven": false,
+  "financialNeutrality": "NOT_MEASURED_APPLICATION_SCHEMA_AND_FIXTURES_NOT_CREATED",
+  "legacyFinancialApprovalsExecuted": 0,
+  "currentR1Verified": false,
+  "D15ContentBlocked": true
+}

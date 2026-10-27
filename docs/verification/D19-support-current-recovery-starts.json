@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-24T08:08:11.880649+00:00",
+  "actions": [
+    {
+      "target": "empty",
+      "containerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "action": "start existing container"
+    },
+    {
+      "target": "shaped",
+      "containerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+      "action": "start existing container"
+    },
+    {
+      "target": "empty",
+      "containerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "action": "start existing container"
+    },
+    {
+      "target": "shaped",
+      "containerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+      "action": "start existing container"
+    }
+  ],
+  "newContainerCreated": false,
+  "resetOrMigrationInvoked": false,
+  "clientSetupPerformed": false
+}

@@ -1,0 +1,7 @@
+{
+  "appRulesUnchanged": true,
+  "appRuleCount": 124,
+  "privateArtifactsIgnored": true,
+  "exclusion": ".codex-tmp/**",
+  "reason": "git-ignored backups and emitted native-check JS; no application, test or script rule removed"
+}

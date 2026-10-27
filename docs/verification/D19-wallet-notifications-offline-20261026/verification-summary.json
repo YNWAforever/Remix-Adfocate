@@ -1,0 +1,57 @@
+{
+  "checkerSha256": "f5c7b5e5fc58742e1796da287b7ec52cddeacfa2a7b92b57f274a2850d4d6b9b",
+  "scope": "File-only current delivery/source/before-image/case/approval/rollback/evidence-integrity checks; not new app tests, SQL or runtime acceptance.",
+  "preseal": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-wallet-notifications-offline-20261026\\verify-delivery.py",
+      "--preseal"
+    ],
+    "startedAt": "2026-10-25T19:21:14.535897+00:00",
+    "endedAt": "2026-10-25T19:21:15.434836+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_OFFLINE_WALLET_NOTIFICATION_DELIVERY_NOT_R1\", \"sourceUnchanged\": 789, \"standalonePassed\": 8, \"retainedNativeFullPassedNotRerun\": 2133, \"originalCases\": 107, \"priorEvidenceRecordsPreserved\": 2377, \"c2ManifestUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"preseal\": true}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_OFFLINE_WALLET_NOTIFICATION_DELIVERY_NOT_R1",
+      "sourceUnchanged": 789,
+      "standalonePassed": 8,
+      "retainedNativeFullPassedNotRerun": 2133,
+      "originalCases": 107,
+      "priorEvidenceRecordsPreserved": 2377,
+      "c2ManifestUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "preseal": true
+    }
+  },
+  "final": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-wallet-notifications-offline-20261026\\verify-delivery.py"
+    ],
+    "startedAt": "2026-10-25T19:21:19.139884+00:00",
+    "endedAt": "2026-10-25T19:21:21.896468+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_OFFLINE_WALLET_NOTIFICATION_DELIVERY_NOT_R1\", \"sourceUnchanged\": 789, \"standalonePassed\": 8, \"retainedNativeFullPassedNotRerun\": 2133, \"originalCases\": 107, \"priorEvidenceRecordsPreserved\": 2377, \"c2ManifestUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"preseal\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_OFFLINE_WALLET_NOTIFICATION_DELIVERY_NOT_R1",
+      "sourceUnchanged": 789,
+      "standalonePassed": 8,
+      "retainedNativeFullPassedNotRerun": 2133,
+      "originalCases": 107,
+      "priorEvidenceRecordsPreserved": 2377,
+      "c2ManifestUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "preseal": false
+    }
+  }
+}

@@ -1,0 +1,80 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T11:55:37.182Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T11:55:37.234Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T11:55:37.284Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T11:55:37.463Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T11:55:37.505Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T11:55:37.510Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T11:55:37.516Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T11:55:37.556Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T11:55:37.561Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a Creator as operator
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T11:55:37.571Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a Creator as operator
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T11:55:37.611Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/audit-quality.test.ts (5 tests | 2 failed) 3950ms
+   × D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days 371ms
+     → Cannot read properties of undefined (reading 'timezone')
+   × D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics 54ms
+     → expected 404 to be 403 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+TypeError: Cannot read properties of undefined (reading 'timezone')
+ ❯ server/test/audit-quality.test.ts:40:59
+     38|   it("reloads net posted credits and all 10000 creators in complete HK…
+     39|     const { response, body } = await request("posted-ledger-and-total"…
+     40|     expect(response.status).toBe(200); expect(body.window.timezone).to…
+       |                                                           ^
+     41|     expect(body.window.from).toContain("T16:00:00.000Z"); expect(body.…
+     42|     expect(body.kpis.pointsIssued.value).toBe(17); expect(body.kpis.ca…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ server/test/audit-quality.test.ts:52:29
+     50|   it("denies a foreign workspace without returning its metrics", async…
+     51|     const { response, body } = await request("foreign-workspace", fx.o…
+     52|     expect(response.status).toBe(403); expect(body.kpis).toBeUndefined…
+       |                             ^
+     53|   });
+     54|   it("denies a Creator as operator", async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  19:55:32
+   Duration  5.20s (transform 530ms, setup 211ms, collect 28ms, tests 3.95s, environment 714ms, prepare 98ms)
+

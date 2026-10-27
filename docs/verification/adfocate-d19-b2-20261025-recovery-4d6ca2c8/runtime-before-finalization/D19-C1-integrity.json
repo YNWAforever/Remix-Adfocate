@@ -1,0 +1,352 @@
+{
+  "createdAt": "2026-10-25T06:58:05.406537+00:00",
+  "codeFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "method": "SHA256 raw bytes; task subset excludes only its own seal. Real application acceptance NOT_RUN.",
+  "files": [
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "0a4f1e39843c27a0d86a9a1023fb63ae8e7d7a7291544042f72ca08a9475f50b",
+      "bytes": 61970
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/b2-regression.json",
+      "sha256": "60cd2c0b94540e32cec2e8b1da9713c762aa6078ef95db2f0a147fd6947df7b9",
+      "bytes": 18486
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "ac698c9c6e521b5eb6e095928f46513288af5b3462872dfee6213a7ac1621580",
+      "bytes": 61382
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/adfocate-delivery.json",
+      "sha256": "5dae267872b7ce8bd8ce75cef9afbf80c98dd783b6f640f92f61e8f17f6f64b8",
+      "bytes": 544163
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/adfocate-task-ledger.md",
+      "sha256": "5585ed9af91005d8f7fdc6c429fde4fa083d6ef73f0a92eaac9e1e6bbb5b0f20",
+      "bytes": 26397
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/audit_case_coverage.csv",
+      "sha256": "4fc25fda84c95caf53cf07750dc3f74bf9d7d9bc006eb6e581bf7a358188d773",
+      "bytes": 152948
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/code-fingerprint.json",
+      "sha256": "156781ec3fdde3c09903bc0bfd8f3250cf10a63394504c0565e2841a3209af2b",
+      "bytes": 118659
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/evidence-integrity.json",
+      "sha256": "cb47f0e9e1f887cbc45b7be3fd501d028d9578fb32b909e9c8e2a5bbc234458b",
+      "bytes": 267118
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/finding_traceability.csv",
+      "sha256": "21880878a5c76e00d964c858131d07f22ccd96dd2c194d74d0338040bea1c7f4",
+      "bytes": 9803
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/implementation_backlog.csv",
+      "sha256": "ad7d4598394094e09f2afe708c320eaaca5e1206cf9e943719c3e1899fee2252",
+      "bytes": 17913
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/check-esm.log",
+      "sha256": "49a764f4ae0db9ab504d7ea1ba1ed268ecd5cbaacaaba93ff34ca489f8b34ac0",
+      "bytes": 99
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/current-binding-green.json",
+      "sha256": "b40621a46b9a15a202524d0d0f5122cf4eb551632c443a78dc0c768a0feaec9b",
+      "bytes": 10643
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/db-foundation.json",
+      "sha256": "6de8109e565e31352fe26b52f5ec85739732c4e325aae41daa6c85aa93355847",
+      "bytes": 3019
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/executed-helper-digests.json",
+      "sha256": "eb9ea3896d12b7aa3766e493583e321018cf43734d8aecf9d63a1f412a5bdb1b",
+      "bytes": 1756
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-command.json",
+      "sha256": "528bf4d17fb67f2ae5101093710640108a742b42561e4c5d5b99d6c40caaef41",
+      "bytes": 572
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final-command.json",
+      "sha256": "9e6caa70b11e4149b65337b64d7f0b92745675a9d4e7ccb6936a5db51609126b",
+      "bytes": 679
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final.json",
+      "sha256": "31049f9c3117b2170c8ef1e972adf022fa0ede212bd288cf9266e2c3dba57008",
+      "bytes": 809270
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final.log",
+      "sha256": "3b13aec045a5e57fab1cb87d148ead4efde6abf4a91af0260c31a0efa1137b7b",
+      "bytes": 1011
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite.json",
+      "sha256": "38cac6b593952f59efa70d5dbe010c69d2f88c6210940d35a65eb3edc9785d5a",
+      "bytes": 817299
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite.log",
+      "sha256": "46cd99dbef71e251bbf4579022d6b7729dac4d6598aec330088fa757e735e272",
+      "bytes": 1005
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-gate-green.json",
+      "sha256": "8f2a43d5cf1d8398d85b535797fb85f02e0c8bc27e0a69fec10eba24107e7780",
+      "bytes": 9034
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-gate-red.json",
+      "sha256": "074c25cb46711aca8623f8d7009d519023e6658b43b5ad91460a256e9327b44d",
+      "bytes": 13061
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/infrastructure-preflight.json",
+      "sha256": "1ca95c15656bc7396e622844dcb66f3609d87e04280ea8d14cd1e61e8e20d4d2",
+      "bytes": 3940
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/infrastructure-prestart.json",
+      "sha256": "20b20067be7a9219522e61f3fd839ddd2ccf2cd91ddcc4caa444685a11a2c3b4",
+      "bytes": 21262
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/lint.log",
+      "sha256": "dbf3893ef319e1e4f0428423590095027b5e8539f5dfaf5716c49dd18ce50caf",
+      "bytes": 1131
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/metadata-after-fix-readonly.json",
+      "sha256": "aea9008fd53ad917f174e10198eec61828f0cf5c63ef667ace9d750737848f28",
+      "bytes": 8368
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/original-c1-authority.json",
+      "sha256": "2cc12bab1963bba43c50d6775901571357ee944001c5a8ac729019862f8a5164",
+      "bytes": 656
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/original-c1-target-receipt.json",
+      "sha256": "e0a51e3502740d684cc7c8ae96e3f4144c730553d10a636d0a92ecb3f6b607ee",
+      "bytes": 1760
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/original-metadata-parser-diagnostic.json",
+      "sha256": "0458d4fbd7b5e2416ba52ad057dcd2ffa826a758933483233e510493760d941b",
+      "bytes": 2199
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/original-optional-metadata-diagnostic.json",
+      "sha256": "c1e9ee5b187c82ac0137ac50af69310581022b99a4a863e4d8f87f1e9990b34d",
+      "bytes": 565
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/permission-recheck-command.json",
+      "sha256": "2fad95cfcfda22555ccd6cd73b2fb397de70c62838bf67abeba1ae6c674bdcb5",
+      "bytes": 844
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/permission-recheck.json",
+      "sha256": "949a8d91efed701b6bcd80fba6321d33c6cc323866de03a050bfa8a55cc682a2",
+      "bytes": 10765
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/permission-recheck.log",
+      "sha256": "439568f82017a1fd7ca5ceb43652a283a396d9a6e141f7486a1cd49bc95fef82",
+      "bytes": 173
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/private-receipt-preservation.json",
+      "sha256": "58d402a47234b04d7d04473b573ffdd4a5cd7dd7ed5178253464e86115121aa8",
+      "bytes": 681
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/release-manifest-check.log",
+      "sha256": "4cf75071160185f3a652a637dc72421b0fbc1e55e2001f16c55b70d93b7a5037",
+      "bytes": 660
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-gate-refusals.json",
+      "sha256": "41726621942e5d20ba45b1152909fe9eb1572613a40d5071e9a79a020b9eb213",
+      "bytes": 771
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-attempt-1/D19-C1-source-revision-acceptance-matrix.json",
+      "sha256": "deec627fe44ba78d4159f6375f1204bd80fdf70fa6e47fb7c5f71dcf522e46bf",
+      "bytes": 9979
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-attempt-1/D19-C1-source-revision-authorization-template.json",
+      "sha256": "6ab1205fb5e6898220b8d3834688521b44f628b83094e67e8d2135b4eeb1fa9a",
+      "bytes": 462
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-attempt-1/D19-C1-source-revision-runtime-manifest.json",
+      "sha256": "1ceced8e9366df12f92a1ed288d0a2a85633c5b249d9b8fea1ef964882773ec2",
+      "bytes": 65078
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-attempt-1/source-revision-offline-check.json",
+      "sha256": "cf84ccc0e4aa116ec448e253d876833e4af55ec8c301b4c8b6f9da27ae2771a4",
+      "bytes": 686
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-attempt-1/source-revision.json",
+      "sha256": "fbb00a8c54cb5edb03263c44d77bae6a89abd385cdfe5db89b0f449c8ccc3a62",
+      "bytes": 596
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-offline-check.json",
+      "sha256": "1bdae7f97d0b4d075ff96d6e232adeabb0be2053b547dd5c30ea63edd92cc0bf",
+      "bytes": 714
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision.json",
+      "sha256": "827386d31d30b7dcce52c3e593b2624f8fea56ede6533edd5f8786da88611a46",
+      "bytes": 709
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/type-check-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/type-check.log",
+      "sha256": "5e4d7d66398b65ea33f10280c7d0d6272ff94a2519b3a0987dec94034313fdc1",
+      "bytes": 644
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "4ebedf2d2407e3da9bce2eb2e23a2f2517bf8b3120a97d98ded228045957173c",
+      "bytes": 551393
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "9c1570ce122a46ed32a6160f2f1b6411eca985631930cf2405759532bb92e824",
+      "bytes": 27190
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "a44cdceb99341129fffffaa2589a9e0419a67ee78ea540bce242f6bf3202e2d9",
+      "bytes": 156308
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "c5a5ecc30f2e96c3b0a3627b6f7432fc8a1baea771779e4308ff9dd2fc691ed8",
+      "bytes": 118659
+    },
+    {
+      "path": "docs/verification/D19-C1-case-coverage.json",
+      "sha256": "2db623e08ed0b4307092fcad79dddcbbfafebd97884059f676b59b3233e5c997",
+      "bytes": 1394
+    },
+    {
+      "path": "docs/verification/D19-C1-changed-files.json",
+      "sha256": "09c82094abc8e9a6d762351467e6c463314a0cecf0c2453d43bec11e0b2ab279",
+      "bytes": 6280
+    },
+    {
+      "path": "docs/verification/D19-C1-check-records.py",
+      "sha256": "cf99cd01997cc5ac1fb91a9b9e5be37d2c85e3d878ca4ea9d3bbf58f4d38545a",
+      "bytes": 8077
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.json",
+      "sha256": "d96a47e47251a3b284132423607db7c9fdd583b2dc5b733b910a94ba2429579c",
+      "bytes": 2869
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.md",
+      "sha256": "16a7f0844a2f416126023c0ffd6402f68c1184c6a744761bc3cc1dccfbab11f0",
+      "bytes": 3527
+    },
+    {
+      "path": "docs/verification/D19-C1-gates.json",
+      "sha256": "dc71ed79846f2d936f5d478722b59d5305fa0a557d03684a903e1a0a06fd852f",
+      "bytes": 4699
+    },
+    {
+      "path": "docs/verification/D19-C1-preservation.json",
+      "sha256": "1e94688092141813ab2d4ccff3a03fc844414f86b09564869c03ec5ddbb62988",
+      "bytes": 618
+    },
+    {
+      "path": "docs/verification/D19-C1-remaining-acceptance.json",
+      "sha256": "e6c165d6eaee3e33e1d02eb2034c66ec122e654b1e283f8b4d3e4cfe6078e98a",
+      "bytes": 6705
+    },
+    {
+      "path": "docs/verification/D19-C1-rollback.json",
+      "sha256": "b1afc7e0c847c6c86f3fee26dbfc885d424f55538f6586b8f0cc35d9bd581869",
+      "bytes": 4891
+    },
+    {
+      "path": "docs/verification/D19-C1-schema-diff.json",
+      "sha256": "cfbebd891d971270d2c07610fbcd91e81f2fe4e027c6df1f84d3d013c9ed9c44",
+      "bytes": 2377
+    },
+    {
+      "path": "docs/verification/D19-C1-source-changes.patch",
+      "sha256": "eb7959682c7c00db51ef0486ac0a1b7d8ff6101cac6ea340f360c09994292d54",
+      "bytes": 8696
+    },
+    {
+      "path": "docs/verification/D19-C1-source-revision-acceptance-matrix.json",
+      "sha256": "678fd7aff62590f062a38c52118e58eb1e33ceabcff8ee02b4d46ba396a3aab2",
+      "bytes": 9979
+    },
+    {
+      "path": "docs/verification/D19-C1-source-revision-authorization-template.json",
+      "sha256": "a5e114d63289cd89eab0cd377ec7e18c72c59058d114b4ed5866756a0a8e15c1",
+      "bytes": 462
+    },
+    {
+      "path": "docs/verification/D19-C1-source-revision-runtime-manifest.json",
+      "sha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+      "bytes": 65279
+    },
+    {
+      "path": "docs/verification/D19-C1-verification-summary.json",
+      "sha256": "3fdbcb772b26b56de18a1c940fb694d67fde57547c093c9ae8102fa5dc227250",
+      "bytes": 758
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "0555248ee98f97f4a8b31cd3d1ff3175f0f9f971e594ecfb044d826f35a37e1a",
+      "bytes": 17716
+    },
+    {
+      "path": "scripts/audit/local-targets.mjs",
+      "sha256": "ae191c1466b320fffb34625269cb606d4541276c3d8c2acee535b14a7f5fc707",
+      "bytes": 18762
+    },
+    {
+      "path": "server/test/b2-runtime-manifest.test.ts",
+      "sha256": "0195d6d8be57c641e69a161fd13deaebe126bbcc1e32d326716c79e9f61fb23d",
+      "bytes": 2623
+    },
+    {
+      "path": "server/test/b2-target-context.test.ts",
+      "sha256": "37a44c04f409f4ce2f78a07b3a0b0c3ae5ed4888ec1a494138cf55db2cf67774",
+      "bytes": 14366
+    }
+  ]
+}

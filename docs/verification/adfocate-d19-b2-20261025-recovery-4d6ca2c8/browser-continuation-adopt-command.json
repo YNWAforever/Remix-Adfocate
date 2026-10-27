@@ -1,0 +1,24 @@
+{
+  "startedAt": "2026-10-25T10:24:07.447872+00:00",
+  "finishedAt": "2026-10-25T10:24:14.780730+00:00",
+  "phase": "adopt",
+  "command": [
+    "node",
+    "scripts/audit/adopt-browser-fixture.mjs",
+    "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+    "--adopt"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "resource": {
+    "observedAt": "2026-10-25T10:24:07.447318+00:00",
+    "physicalFreeGiB": 7.636802673339844,
+    "commitHeadroomGiB": 11.021038055419922,
+    "requiredGiB": 3,
+    "gatePassed": true
+  },
+  "privateLog": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-adopt.private.log",
+  "scope": "Approved696e existing C1 continuation only; no setup/bootstrap/new resources/subjects/legacy replay",
+  "paidProviderEnabled": false,
+  "productionTargetUsed": false
+}

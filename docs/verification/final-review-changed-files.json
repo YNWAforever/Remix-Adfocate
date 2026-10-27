@@ -1,0 +1,4385 @@
+{
+  "at": "2026-10-24T00:47:53.634748+00:00",
+  "reviewOnly": {
+    "modified": [
+      "docs/verification/adfocate-delivery.json",
+      "docs/verification/new_product_acceptance_cases.csv",
+      "docs/verification/evidence-integrity.json"
+    ],
+    "added": [
+      "docs/verification/D01-D20-final-delivery-review.md",
+      "docs/verification/D01-D20-final-delivery-review.json",
+      "docs/verification/final-review-integrity.json",
+      "docs/verification/final-review-changed-files.json",
+      "docs/verification/final-review-test-accounting.json",
+      "docs/verification/final-review-prior-delivery.json",
+      "docs/verification/final-review-prior-evidence-integrity.json",
+      "docs/verification/final-review-prior-new-product-acceptance-cases.csv",
+      "docs/verification/logs/final-review-local-checks.log"
+    ],
+    "productSourceChanges": 0
+  },
+  "candidate": {
+    "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+    "branch": "codex/adfocate-r1-pilot-20261023",
+    "commit": null,
+    "sourceFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+    "sourceRecords": 330,
+    "dirtyFiles": 1087,
+    "statusCounts": {
+      " M": 187,
+      "??": 900
+    },
+    "files": [
+      {
+        "status": " M",
+        "path": ".gitignore"
+      },
+      {
+        "status": " M",
+        "path": "eslint.config.js"
+      },
+      {
+        "status": " M",
+        "path": "package-lock.json"
+      },
+      {
+        "status": " M",
+        "path": "package.json"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/cli.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/contracts.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/executor.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/manifest.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/manifest.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/pilot.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/preflight.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/preflight.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/release/supabase-workflow-contract.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "scripts/run-integration-tests.mjs"
+      },
+      {
+        "status": " M",
+        "path": "server/app.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/activeMission/metrics.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/assistant/chat.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/assistant/prompt.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/assistant/retrieve.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/insights.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/insights.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/llm.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/missionMatch.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/missionMatch.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/operatorCrm/repo.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/operatorCrm/serializers.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/operatorCrm/types.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/social/passportSocial.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/social/passportSocial.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/lib/staffAuth.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/academy.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/admin.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/adminAcademy.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/adminInsights.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/adminMissions.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/adminOperatorCrm.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/adminRadar.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/assistant.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/match.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/me.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/missions.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/onboarding.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/routes/social.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/academy.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/active-missions.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/admin-staff.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/admin.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/adminAcademy.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/adminContent.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/applications.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/assistant.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/bootstrap.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/brand.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/brandResources.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/campaigns-s2.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/campaigns.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/content.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/copilot.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/fixtures/publicationProofRelease.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/helpers.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/insights.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/leveling.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/match.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/me.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/missionAuthoring.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/missions.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/notifications-api.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/notifications-triggers.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/onboarding.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/operator-crm-schema.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/operator-crm.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/passport.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/public-passport.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/publication-proof-asset-grant-live.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/radar.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/redemption.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/rls.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/run-integration-tests.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/social-schema.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/social.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/verificationGate.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "server/test/wallet.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/components/-MissionFacts.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/AcademyTrackCard.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/ActiveMissionSummary.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/AuthFeedback.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/BottomNav.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/BottomNav.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/EarningsSummaryCard.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/MissionCard.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/MissionCommitmentSummary.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/MissionCommitmentSummary.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/MissionFacts.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/NextBestActionCard.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/PassportTrustSummary.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/PassportTrustSummary.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/SideNav.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/SocialTrustPanel.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/SocialTrustPanel.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/active-mission/DraftEditor.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/active-mission/PublicationInstructions.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/AcademyEditor.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/AcademyEditor.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/ActiveMissionQueue.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/ActiveMissionReview.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/AdminSideNav.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/AdminTopBar.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/MissionEditor.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/RewardHandoffQueue.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/StaffAuthGate.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/WorkspaceSwitcher.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/admin/useAdminQueueCounts.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/components/assistant/AssistantMessage.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/assistant/AssistantPanel.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/assistant/AssistantPanel.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/components.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/creator-activation.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/navItems.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/components/onboarding/OnboardingSteps.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/operator/CreatorReviewRow.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/components/operator/ReviewActionPanel.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/data/mockData.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/academy.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/activationAnalytics.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/admin.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/auth-flow.test.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/auth-flow.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/authFeedback.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/creatorActivation.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/creatorFormatting.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/i18n.dict.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/labels.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/missionCategories.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/missionMeta.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/queries/activeMission.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/queries/kocmax.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/lib/useCreatorActivation.ts"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.auth.callback.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.auth.reset-password.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.guide.track.$trackId.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.home.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.login.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.match.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.mission.index.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.onboarding.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.passport.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-_app.profile.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-admin.active-missions.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-admin.missions.editor.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-admin.missions.manage.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-app.auth.callback.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/-operator.creators.$creatorId.test.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.auth.callback.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.auth.reset-password.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.guide.track.$trackId.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.home.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.login.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.match.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.mission.$missionSlug.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.mission.index.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.my.$submissionId.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.my.index.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.onboarding.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.passport.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.profile.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_app.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_site.contact.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_site.creators.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_site.index.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/_site.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.academy.$id.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.academy.index.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.active-missions.$workflowId.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.applications.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.creators.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.insights.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.missions.$missionId.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.missions.index.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.missions.new.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.radar.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.submissions.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/admin.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/operator.creators.$creatorId.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/routes/operator.tsx"
+      },
+      {
+        "status": " M",
+        "path": "src/test/setup.ts"
+      },
+      {
+        "status": " M",
+        "path": "supabase/release-manifest.json"
+      },
+      {
+        "status": " M",
+        "path": "vite.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "docs/operations/staff-access-transition.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/superpowers/specs/2026-10-23-adfocate-product-design.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/2026-10-23-adfocate-baseline.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/2026-10-23-adfocate-quality.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/2026-10-23-adfocate-release.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/2026-10-23-adfocate-staff-access.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/2026-10-24-adfocate-pilot-readiness.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D01-D20-final-delivery-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D01-D20-final-delivery-review.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-browser-attempt2-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-browser-before-handoff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-home-in_review.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-home-revision_requested.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-home-reward_pending.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-home-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-navigation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D08-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-browser-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-discovery-360.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-schema-observation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-unknown-cash-detail-360-red.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-unknown-cash-detail-360.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D09-unverified-desktop.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-authoring-preview.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-authoring-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-browser-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-creator-guidance.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-navigation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-schema-observation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-target-resume.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D12-unknown-policy-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-auth-recovery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-auth-runtime-config.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-browser-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-eslint-scope.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-login.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-onboarding-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-post-runtime-format.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-profile-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-recovery-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-schema-observation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D13-social-passport.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-api-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-author-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-contact-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-copy-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-copy-zh-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creator-reading.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creator-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creators-en-desktop.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creators-en-mobile.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creators-zh-desktop.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-creators-zh-mobile.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-editor-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-public-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-recovery-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D14-schema-observation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-api-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-author-editor.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-author-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-author-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-conflict-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-creator-progress.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-creator-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-db-lint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-forward-correction.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-forward-index.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-forward-replay.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-isolation-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-schema-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-schema-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-sql-dry-run.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-target-resume.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D15-ui-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-accessibility-scans.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-advisor-catalog.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-advisor-dispositions.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-advisor-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-advisors.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-api-performance.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-browser-final.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-browser-red.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-bundle-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-bundle-before-runtime.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-bundle-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-bundle-unsplit.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-dialog.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-environment.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-fixture-setup.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-insights-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-integrity-check.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-metrics-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-neutrality-final.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-neutrality-red.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-outcome-edges-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-outcome-hook-red-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-performance-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-responsive.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-runtime-performance.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-scale-ids.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-schema-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-schema-before-empty.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-schema-before-shaped.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-target-resume-empty.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-target-resume-shaped.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D17-test-history.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-access-impact-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-advisor-dispositions.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-advisor-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-advisors.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-existing-join-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-finance-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-fixtures.jsonl"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-forward-replay.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-handoff-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-initial-green-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-initial-green-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-integrity-check.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-platform-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-prior-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-prior-evidence-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-reviewer-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-schema-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-schema-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-suite-results.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-targeted-results.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D18-test-history.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-auth-runtime-config.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-before-handoff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-fixture.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-legacy.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-case-coverage.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-disposable-capabilities.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-finance-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-fixture-retention.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-fixtures.jsonl"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-handoff-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-integrity-check.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-before-handoff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-fixture.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-legacy.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-finance-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-handoff-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-intermediate-runtime/D19-reviewer-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-legacy-acl-empty-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-legacy-acl-migration.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-legacy-acl-shaped-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-platform-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-evidence-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-api-contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-before-handoff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-fixture.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-legacy.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-finance-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-handoff-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-prior-runtime/D19-reviewer-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-reviewer-ui.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-runtime-catalog-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-runtime-catalog-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-runtime-source-binding.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-schema-after.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-schema-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-support-attempts.jsonl"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-support-fixture.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-support-owned-ids.jsonl"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-support-sentinel-check.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-test-restoration.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D19-test-results.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-case-coverage.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-changed-files.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-changes.patch"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-delivery.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-gate-exits.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-integrity-check.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-mock-browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-mock-panel-en.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-mock-panel-zh.png"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-model-verification.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-prior-adfocate-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-prior-code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-prior-evidence-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-red-green.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-redaction-review.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-resource-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-source-preservation.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/D20-test-results.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/adfocate-assistant-evaluation.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/adfocate-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/adfocate-task-ledger.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/audit_case_coverage.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/browser-before-handoff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/browser-neutrality.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/browser-roundtrip.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/browser-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/case-results.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/changed-files.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/code-fingerprint.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/disposable-capabilities.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/empty-replay.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/evidence-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/evidence-redaction.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-changed-files.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-prior-delivery.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-prior-evidence-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-prior-new-product-acceptance-cases.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/final-review-test-accounting.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/finding_traceability.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/fixture_contract.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/implementation-path-mapping.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/implementation_backlog.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/legacy-fixture-ownership.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D01-baseline.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D01-clock-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-capability-lifecycle-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-empty-replay.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-fixture-ownership-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-fixture-ownership-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-identity-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-identity-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-manifest-baseline.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-shaped-bootstrap.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D02-shaped-replay.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D03-auth-outage-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D03-scope-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D03-scope-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D03-session-race-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D03-ui.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D04-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-correction-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-correction-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-evidence-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-evidence-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-forward-replay.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-real-schema-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D05-real-schema-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D06-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-final-neutral.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-first.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-full-ui-rerun.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-full-ui.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-second.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-browser-third.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-proof-runner-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-proof-runner-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-roundtrip-first.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-roundtrip-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-roundtrip-second.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D07-roundtrip-third.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-browser-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-browser-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-build-startup-blocked.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-full-suite-startup-blocked.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-home-followup-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-home-green-candidate.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-home-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-home-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D08-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-desktop-label.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-duplicate-link.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-hidden-link.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-navigation-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-navigation-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-browser-readability-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-consumers.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-contract-green-candidate.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-contract-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-contract-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-editor-contract-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-editor-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-full-suite-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-general-card-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-integration-contract-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-integration-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-integration-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-legacy-integration.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-lint-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-native-esm-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-native-esm-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-native-esm-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-recommendation-gate-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-recovery-category-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-typecheck-candidate.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-typecheck-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D09-unknown-category-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D10-pagination.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D10-return-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D10-return-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D11-audit-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-api-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-authoring-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-authoring-green-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-authoring-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-browser-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-browser-pre-review.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-error-focus-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-existing-consumers-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-form-consumers.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-full-suite-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-full-suite-pre-review.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-manage-consumer-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-native-esm-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-navigation-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-navigation-workspace-query.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-retained-policy-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-startup-blocked.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-typecheck-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D12-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-api-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-api-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-api-attempt3.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-api-attempt4.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-before-lint-refactor.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-before-score-copy.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-pre-review.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-browser-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-callback-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-completed-onboarding-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-diff-check-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-identity-green-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-identity-green-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-identity-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-identity-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-lint-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-lint-generated-artifact-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-native-esm-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-passport-recovery-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-pending-input-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-pending-onboarding-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-presentation-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-profile-exact-roundtrip-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-profile-preservation-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-recovery-fragment-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-replacement-return-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-score-copy-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-social-recovery-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-targeted-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-typecheck-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-typecheck-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-typecheck-final-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D13-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-api-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-copy-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-copy-zh-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-editor-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-recovery-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-runtime-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-runtime-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-runtime-attempt3.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-runtime-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-targeted-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D14-types-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-api-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-api-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-api-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-api-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-apply-correction.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-apply-index.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-apply.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-author-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-capability-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-db-lint-empty.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-db-lint-shaped.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-index-migration-create.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-manifest-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-manifest-write-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-manifest-write.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-sql-dry-run.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-targeted-before-count-update.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-targeted-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-targeted-second.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-types-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-ui-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D15-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D16-all-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D16-persistence-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D16-persistence-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D16-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-advisors-empty.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-advisors-shaped.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-api-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-api-contract-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-api-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-api-performance.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-browser-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-browser-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-bundle-before.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-bundle-unsplit.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-docker-start.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-identity-final-preflight.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-identity-resumed.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-identity.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-lint-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-manifest-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-metrics-api-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-metrics-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-metrics-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-outcome-edges-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-outcome-hook-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-prepare.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-query-diagnosis.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-target-resume.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-targeted-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-targeted-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-type-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-type-second.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D17-typecheck-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-access-followup-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-advisors-empty.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-advisors-shaped.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-advisors.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-api-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-api-boundary-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-api-boundary-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-api-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-api-prior-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-attempt1-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-backend-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-followup-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-followup-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-browser-initial-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-build-node22-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-build-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-capabilities-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-capabilities-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-cli-version.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-lint-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-manifest-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-manifest-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-manifest-write.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-migration-help.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-migration-new.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-release-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-release-harness-error.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-release-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-retention-final-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-retention-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-retention-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-retention.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-reviewer-ui-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-reviewer-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-schema-after.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-schema-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-schema-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-schema-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-targeted-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-type-browser.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-type-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-type-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-type-ui.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-ui-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-ui-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D18-ui-settings-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-browser-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-browser-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-browser-funded-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-build-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-capabilities-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-child-ownership-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-cli-migration-help.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-core-api-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-core-api-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-core-api-final2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-core-funded-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-delivery-update.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-fixture-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-fixture-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-full-suite-pre-restoration.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-funded-neutrality-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-funded-owner-setup.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-grant-validator-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-lint-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-lint-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-manifest-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-manifest-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-manifest-write.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-ownership-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-ownership-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-parent-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-parent-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-preflight.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-restoration-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-role-api-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-role-api.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-role-funded-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-staff-fixture-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-support-attempt1.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-support-attempt2.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-support-attempt3.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-support-attempt4.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-support-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-type-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-unread-parent-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D19-url-transport-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-approved-anchor-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-approved-ui-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-browser-harness-attempt.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-browser-runner-initial.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-browser.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-build.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-envelope-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-full-suite-before-approval-anchor.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-harness-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-input-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-live-guard-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-manifest.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-patch-reverse-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-recovery-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-route-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-typecheck-test-annotation.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/D20-typecheck.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/R1-disposable-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/R1-disposable-integration-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/R1-disposable-integration.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/active-missions-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/audit-16-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/browser-api-assisted-summary.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/browser-neutrality-before-login-mismatch.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/build-fixture-esm-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/build-node22-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/build-node24-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/campaign-scope-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/diff-check-native.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/diff-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/disposable-capabilities-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/disposable-capabilities.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/embedded-sql-first.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/embedded-sql-hardened.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/embedded-sql.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/final-review-local-checks.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/final-scope-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/final-scope-red.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/followup-contracts.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite-candidate.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite-node22-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite-node22.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/full-suite.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-fixture-port-targeted.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-namespace-green.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-owned-integration-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-owned-integration-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-owned-integration-first.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-owned-integration-rerun.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/legacy-owned-integration-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/lint-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/lint-final-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/lint-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/lint-verified.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/lint.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/local-phone-auth.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/manifest-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/manifest-tests.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/manifest-write.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/npm-ci.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/original-194-contracts.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/original-194-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/proof-assets-ownership-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/proof-review-real-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/release-check-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/release-check-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/schema-diff.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/schema-join_mission.diff"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/schema-settle_campaign.diff"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/schema-submit_mission.diff"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/type-check.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/typecheck-after-D16.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/typecheck-complete.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/typecheck-final.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/typecheck-fixture-port.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/typecheck-interim.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/logs/windows-boundaries.log"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/new_product_acceptance_cases.csv"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/original-results-integrity.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/pending-forward-replay.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/release-review-request.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-acl.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-details.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-diff.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-empty-catalog.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-generated.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-observed.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-reconstruction.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/schema-shaped-catalog.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/self-review.md"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/shaped-before.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/shaped-replay.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/target-empty.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/target-shaped.json"
+      },
+      {
+        "status": "??",
+        "path": "docs/verification/workflow-runtime.jsonl"
+      },
+      {
+        "status": "??",
+        "path": "e2e/academy-learning.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/accessibility.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/creator-identity-profile.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/creator-navigation.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/creator-operator-mission.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/fixtures/mission-assist.html"
+      },
+      {
+        "status": "??",
+        "path": "e2e/fixtures/mission-assist.tsx"
+      },
+      {
+        "status": "??",
+        "path": "e2e/mission-assist.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/mission-discovery.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/operator-authoring.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/public-claims.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "e2e/staff-access.spec.ts"
+      },
+      {
+        "status": "??",
+        "path": "playwright.assistant.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "playwright.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "playwright.pilot.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "playwright.quality.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "playwright.staff.config.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/apply-pending.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/apply-shaped-manifest.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/bind-local-targets.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/build-quality.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/capture-schema.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/configure-local-auth.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/deny-external-fetch.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/local-targets.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/measure-quality.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/neutrality-snapshot.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/prepare-browser.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/prepare-pilot-browser.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/prepare-quality.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/reconstruct-shaped.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-academy-browser.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-authoring.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-browser.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-discovery.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-identity.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-integration.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-legacy-integration.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-pilot-browser.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-pilot-support.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-public-claims.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-quality.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/run-staff-browser.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/serve-assistant.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/serve-quality.ts"
+      },
+      {
+        "status": "??",
+        "path": "scripts/audit/verify-capabilities.mjs"
+      },
+      {
+        "status": "??",
+        "path": "scripts/release/staff-access.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/assistant/contextPolicy.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/assistant/contextPolicy.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/assistant/requestPolicy.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/assistant/requestPolicy.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/insights-quality.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/missionDecision.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/staffCapabilities.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/staffCapabilities.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/lib/staffWorkspace.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/routes/academyLessons.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/routes/adminStaffAccess.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/academy-availability.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-academy-progress.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-admin-scope.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-assistant-persistence.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-forward-migrations.embedded.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-identity-contract.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-legacy-evidence.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-mission-authoring-contract.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-mission-authoring.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-mission-list-contract.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-mission-list-projection.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-public-claims-contract.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-quality.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-schema-compatibility.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-staff-capabilities.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/audit-workflow-roundtrip.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/auditWorkflowFixture.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/fixture-ownership.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/fixture-staff-grants.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/fixtureStaffTransport.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/insights-window-contract.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/mission-assist.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/ownedFixtureTransport.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/pilot-fixture-ownership.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/staff-access-schema.embedded.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/staff-capability-boundary.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "server/test/staffCapabilityFixture.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/admin-creators.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/admin-decisions.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/admin-live-followup.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/crm-atomicity.audit.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/my-missions.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/operator-continuation.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/audit-tests/staff-unavailable.audit.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/AcademyLearning.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/AuthFeedback.return.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/CreatorWorkHome.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/CreatorWorkHome.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/MissionCard.contract.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/RequestFeedback.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/SocialAccountSummary.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/AcademyLessons.authoring.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/AcademyLessonsEditor.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/AdminShell.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/MissionEditor.permissions.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/ProofPolicyFields.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/ProofPolicyFields.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/StaffAccessContext.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/StaffAccessShell.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/StaffAuthGate.scope.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/admin/useMissionEditorNavigation.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/components/assistant/MissionAssistLauncher.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/assistant/MissionAssistPanel.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/components/assistant/MissionAssistPanel.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/academyProgress.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/creatorQueueSearch.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/creatorQueueSearch.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/missionAssist.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/missionCategories.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/missionWorkflowAuthoring.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/productOutcomeAnalytics.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/queries/productOutcome.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/socialAccountPresentation.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/socialAccountPresentation.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/submissionEvidence.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/workspaceCalendar.test.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/lib/workspaceCalendar.ts"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/-academy-learning.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/-admin.creators-access.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/-admin.submissions-evidence.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/-public-claims.test.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/_app.more.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/routes/_app.wallet.earnings.tsx"
+      },
+      {
+        "status": "??",
+        "path": "src/test/creatorWorkWorkspace.ts"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261022170751_audit_crm_commands.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261022171111_audit_creator_queue.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261022171843_audit_assistant_requests.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261022182544_audit_legacy_review_notes.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261023091050_academy_learning.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261023095521_academy_approval_index.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261023124149_staff_access_capabilities.sql"
+      },
+      {
+        "status": "??",
+        "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql"
+      },
+      {
+        "status": "??",
+        "path": "tests/fixtures/assistant-workflow-eval.json"
+      }
+    ],
+    "hashPolicy": "Whole pending diff path inventory; avoids self-reference. Source hashes are in code-fingerprint.json; evidence hashes in evidence-integrity.json. Per-task source patches remain historical task boundaries."
+  }
+}

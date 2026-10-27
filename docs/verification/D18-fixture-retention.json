@@ -1,0 +1,961 @@
+{
+  "productionQueried": false,
+  "runs": [
+    {
+      "runId": "732ba2b7-2407-4c4f-9030-67599e427b5e",
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "authIds": [
+        "7f740cfd-7bff-45b6-a103-4e8a66135874",
+        "bb4d132e-e2d3-4f58-8efe-2120f2e92c6f",
+        "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+        "fa336b5c-ff24-4a2a-8a81-62275f9639ba",
+        "91a22329-11d1-4d9c-a0ea-fde828a89cf3",
+        "e0fcbdfb-0463-4a9a-a8ab-e41bb7f8e9a1",
+        "39398a37-0f2c-4c9f-be23-ce43ad97d281",
+        "2a59a786-9d3e-4fd4-9b61-525870b73bf8",
+        "6fced6f0-247a-47e2-b13f-74c612b11f91",
+        "aed12d60-acfa-46ea-b365-b65c50cf17c2",
+        "b0bec729-ede5-4589-89a9-b5d81b9d6d4a"
+      ],
+      "workspaceIds": [
+        "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a",
+        "665f2b5e-a568-438e-a10e-cbb1cd44caaf"
+      ],
+      "bootstrapRequests": [
+        "58574be6-626f-48b8-bfae-29ef8d8af76a",
+        "91d19be0-8d7c-43d9-938c-9aa3e19a9a86",
+        "eba0958e-c23e-4c69-817c-5b41c4389cd9",
+        "5633467d-c6e0-44bf-a09a-6ffdc941b3d6",
+        "df7fa4b6-3ee8-45f0-a0f0-e60c05d30a12",
+        "4c2098fd-4f1c-4a02-9a95-a6ab6c260fac",
+        "80573d56-de16-4453-aa28-9eafb15c1d4f"
+      ],
+      "core": {
+        "workflowId": "4754db53-ca97-437d-8c4e-2b8ec299cc1c",
+        "submissionId": "b89e4bd2-79b5-4979-9467-a8ab05a738dd",
+        "itemId": "bdbcb803-f88a-45f7-8c81-d2cca8e4d8a9",
+        "pendingRewardId": "7a53e9d9-db80-4d9e-a504-3e21bbca032c",
+        "creatorId": "7f740cfd-7bff-45b6-a103-4e8a66135874"
+      },
+      "observed": {
+        "staff": [
+          {
+            "active": true,
+            "userId": "2a59a786-9d3e-4fd4-9b61-525870b73bf8"
+          },
+          {
+            "active": true,
+            "userId": "39398a37-0f2c-4c9f-be23-ce43ad97d281"
+          },
+          {
+            "active": true,
+            "userId": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15"
+          },
+          {
+            "active": true,
+            "userId": "6fced6f0-247a-47e2-b13f-74c612b11f91"
+          },
+          {
+            "active": true,
+            "userId": "91a22329-11d1-4d9c-a0ea-fde828a89cf3"
+          },
+          {
+            "active": true,
+            "userId": "aed12d60-acfa-46ea-b365-b65c50cf17c2"
+          },
+          {
+            "active": true,
+            "userId": "b0bec729-ede5-4589-89a9-b5d81b9d6d4a"
+          },
+          {
+            "active": true,
+            "userId": "e0fcbdfb-0463-4a9a-a8ab-e41bb7f8e9a1"
+          },
+          {
+            "active": true,
+            "userId": "fa336b5c-ff24-4a2a-8a81-62275f9639ba"
+          }
+        ],
+        "authIds": [
+          "2a59a786-9d3e-4fd4-9b61-525870b73bf8",
+          "39398a37-0f2c-4c9f-be23-ce43ad97d281",
+          "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+          "6fced6f0-247a-47e2-b13f-74c612b11f91",
+          "7f740cfd-7bff-45b6-a103-4e8a66135874",
+          "91a22329-11d1-4d9c-a0ea-fde828a89cf3",
+          "aed12d60-acfa-46ea-b365-b65c50cf17c2",
+          "b0bec729-ede5-4589-89a9-b5d81b9d6d4a",
+          "bb4d132e-e2d3-4f58-8efe-2120f2e92c6f",
+          "e0fcbdfb-0463-4a9a-a8ab-e41bb7f8e9a1",
+          "fa336b5c-ff24-4a2a-8a81-62275f9639ba"
+        ],
+        "members": [
+          {
+            "active": true,
+            "userId": "39398a37-0f2c-4c9f-be23-ce43ad97d281",
+            "brandRole": "member",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "active": true,
+            "userId": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "brandRole": "member",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "active": true,
+            "userId": "6fced6f0-247a-47e2-b13f-74c612b11f91",
+            "brandRole": "member",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "active": true,
+            "userId": "91a22329-11d1-4d9c-a0ea-fde828a89cf3",
+            "brandRole": "member",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "active": true,
+            "userId": "aed12d60-acfa-46ea-b365-b65c50cf17c2",
+            "brandRole": "owner",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "active": true,
+            "userId": "b0bec729-ede5-4589-89a9-b5d81b9d6d4a",
+            "brandRole": "member",
+            "workspaceId": "665f2b5e-a568-438e-a10e-cbb1cd44caaf"
+          },
+          {
+            "active": true,
+            "userId": "e0fcbdfb-0463-4a9a-a8ab-e41bb7f8e9a1",
+            "brandRole": "member",
+            "workspaceId": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          }
+        ],
+        "auditIds": [
+          "193c8deb-ffc0-4c4f-b27f-4cf27cf3d4a7",
+          "27882b4e-1e7c-461f-a036-45bc32acc4de",
+          "53421bf5-1eeb-4699-ba7b-09d7870558b7",
+          "5b2a64f2-c470-41ca-b013-60d67a8c53c8",
+          "9cf9fbc7-1f0f-48fc-9e27-f8ac0be2e0ca",
+          "9db16cee-c088-4534-b1c7-058d2c59bdc0",
+          "a2262e9b-fca4-4780-9869-f8fb81c60baf",
+          "c6451631-c345-4a5f-9ba4-ca6f1f9265b2",
+          "e11a68ce-12d8-442a-8a80-77c0a7ff2a9c",
+          "ee6e70f8-c064-4744-812d-9f38c93f68a8"
+        ],
+        "eventIds": [
+          "51168449-2b71-4221-a6cf-4e09a24e68de",
+          "af44ae6c-edc2-4c0e-a7b3-b98fe4c1d92c",
+          "f39bd851-d9fc-4cea-b86e-83e1856ff790",
+          "3e0228a9-c918-4c23-ae7b-68d0db5edcfe",
+          "6dbb8216-5b31-4914-8adc-76ce4d071ada",
+          "94bc13d6-b7b7-4b18-bd23-7e9d54a2ea41",
+          "d7bbc589-4bb7-4510-b022-2b869d5d246e",
+          "03651fd0-355c-4ca6-9b14-dcbd2e93ba7a",
+          "0975619f-6042-42c8-a04a-500f4b43cff1",
+          "37255089-0ebd-4083-b943-cf49b88bd35e",
+          "a6d337ff-f30c-4bf7-bdea-5613e5be4cdb",
+          "c1776164-6b9d-48a5-90fd-fa54262fe992",
+          "d0dd756b-8288-4ca0-b649-1c9d65f6d618",
+          "701ebede-bacf-40dc-8b43-dea524bafa0c",
+          "35535c70-43cd-48ac-b438-fd1f8f04df24",
+          "78bb7f0f-a65f-45a0-894b-71821d276c09",
+          "9d72953a-489f-417e-b6ee-a96ff17b0ef8"
+        ],
+        "commandIds": [
+          "36bc4443-1a2a-482b-802e-148d8ddde3a8",
+          "445bc0b7-e7e0-43b3-b3a1-a5c28fab561c",
+          "4c2098fd-4f1c-4a02-9a95-a6ab6c260fac",
+          "5633467d-c6e0-44bf-a09a-6ffdc941b3d6",
+          "58574be6-626f-48b8-bfae-29ef8d8af76a",
+          "601dbaca-38c0-42db-b208-44d9a4ce94c5",
+          "80573d56-de16-4453-aa28-9eafb15c1d4f",
+          "91d19be0-8d7c-43d9-938c-9aa3e19a9a86",
+          "df7fa4b6-3ee8-45f0-a0f0-e60c05d30a12",
+          "eba0958e-c23e-4c69-817c-5b41c4389cd9"
+        ],
+        "missionIds": [
+          "dfbc1f59-179d-48e7-8d40-d02f6d3ae11b"
+        ],
+        "resourceIds": [
+          "d04c18f4-85b7-4bd1-bbf9-5b6d2797d501"
+        ],
+        "workItemIds": [
+          "917c2b91-d497-48da-9ff5-53c328ee4c5d",
+          "bdbcb803-f88a-45f7-8c81-d2cca8e4d8a9"
+        ],
+        "platformRoles": [
+          {
+            "role": "content_editor",
+            "active": true,
+            "user_id": "2a59a786-9d3e-4fd4-9b61-525870b73bf8",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:23.792654+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15"
+          }
+        ],
+        "submissionIds": [
+          "b89e4bd2-79b5-4979-9467-a8ab05a738dd"
+        ],
+        "pendingRewards": [
+          {
+            "id": "7a53e9d9-db80-4d9e-a504-3e21bbca032c",
+            "status": "pending",
+            "workflowId": "4754db53-ca97-437d-8c4e-2b8ec299cc1c",
+            "submissionId": "b89e4bd2-79b5-4979-9467-a8ab05a738dd"
+          }
+        ],
+        "proofReviewIds": [
+          "02c77d83-917b-4eb7-bab5-3cabd76198c8",
+          "7197591d-97e4-48b3-89b4-ac2a7f8cc6b6"
+        ],
+        "workspaceRoles": [
+          {
+            "role": "finance_viewer",
+            "active": true,
+            "user_id": "39398a37-0f2c-4c9f-be23-ce43ad97d281",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:23.413642+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:22.212558+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "6fced6f0-247a-47e2-b13f-74c612b11f91",
+            "revision": 3,
+            "granted_at": "2026-10-23T13:17:28.209699+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "91a22329-11d1-4d9c-a0ea-fde828a89cf3",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:22.617068+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "aed12d60-acfa-46ea-b365-b65c50cf17c2",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:27.712944+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "b0bec729-ede5-4589-89a9-b5d81b9d6d4a",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:24.716535+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "665f2b5e-a568-438e-a10e-cbb1cd44caaf"
+          },
+          {
+            "role": "reviewer",
+            "active": true,
+            "user_id": "e0fcbdfb-0463-4a9a-a8ab-e41bb7f8e9a1",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:17:23.023845+00:00",
+            "granted_by": "4a0f8fae-0652-4b1c-adbe-a09aabbb6d15",
+            "workspace_id": "fdaeee7e-cc53-49dd-a7a7-07f4be5adf4a"
+          }
+        ],
+        "proofAttemptIds": [
+          "1ec3a512-3337-473c-8dd2-78f28230c304",
+          "c1a2eab6-19c9-4ed0-b653-d85742c1eef2"
+        ]
+      },
+      "creatorSnapshots": [
+        {
+          "xp": 10,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        },
+        {
+          "xp": 0,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        }
+      ],
+      "cleanup": "none; exact owned IDs retained, including the run whose afterAll clock-independent XP assumption failed"
+    },
+    {
+      "runId": "9ec04ee5-669d-4abb-861e-74eeac107fad",
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "authIds": [
+        "901194a9-aa77-48d3-8f6c-a41bc752320d",
+        "9c426fc4-0ec7-4cc2-9798-f5ce7ccca025",
+        "9966529c-2346-42f6-8757-7e662239546e",
+        "b5c78266-7d60-4f81-85c8-5849677671ef",
+        "e8bdd634-9685-40d8-8509-34e6b5ece0d5",
+        "7cc0df04-42db-4363-985d-39efbe6a42a2",
+        "b79038c0-4e71-42fe-a671-71328239b1b1",
+        "eb0864f9-a641-4347-b912-5cfafd6f29fe",
+        "a0fc4171-bfde-4a25-86e2-5e35af86753a",
+        "55d1d074-a36f-4379-be75-8b5e00030d31",
+        "fe3521f1-c93e-4b27-ab94-81033b1dd20c"
+      ],
+      "workspaceIds": [
+        "98146f8d-d924-4c41-a7bf-b331288af0da",
+        "5022a45f-98f9-4dab-9b73-6f9fa2e33e9f"
+      ],
+      "bootstrapRequests": [
+        "bf6ddd6d-5749-42d8-bfbb-172f414569e6",
+        "f2b64bbd-6b87-4585-a08b-c123ba25e97b",
+        "3352cf27-13f6-40dd-ad64-f659f458a185",
+        "cef89544-12bb-40d6-8f14-9e9313b2ce42",
+        "97dfa5e2-743d-4cdb-a87e-95b27da89c2c",
+        "59af17e9-c1cc-419f-9c07-2b1284f927a9",
+        "b35f8ffc-71ec-43cc-bd87-7d64cc8538c7"
+      ],
+      "core": {
+        "workflowId": "401e7d6e-212e-4d5f-b119-2a2f1899e3cf",
+        "submissionId": "f6c2709e-9a9c-4ab5-b7ec-fe51683943cb",
+        "itemId": "ea466fee-6d35-45ff-92e7-995f0f80ca03",
+        "pendingRewardId": "a83867da-c951-4207-8ebc-3f5b585523f5",
+        "creatorId": "901194a9-aa77-48d3-8f6c-a41bc752320d"
+      },
+      "observed": {
+        "staff": [
+          {
+            "active": true,
+            "userId": "55d1d074-a36f-4379-be75-8b5e00030d31"
+          },
+          {
+            "active": true,
+            "userId": "7cc0df04-42db-4363-985d-39efbe6a42a2"
+          },
+          {
+            "active": true,
+            "userId": "9966529c-2346-42f6-8757-7e662239546e"
+          },
+          {
+            "active": true,
+            "userId": "a0fc4171-bfde-4a25-86e2-5e35af86753a"
+          },
+          {
+            "active": true,
+            "userId": "b5c78266-7d60-4f81-85c8-5849677671ef"
+          },
+          {
+            "active": true,
+            "userId": "b79038c0-4e71-42fe-a671-71328239b1b1"
+          },
+          {
+            "active": true,
+            "userId": "e8bdd634-9685-40d8-8509-34e6b5ece0d5"
+          },
+          {
+            "active": true,
+            "userId": "eb0864f9-a641-4347-b912-5cfafd6f29fe"
+          },
+          {
+            "active": true,
+            "userId": "fe3521f1-c93e-4b27-ab94-81033b1dd20c"
+          }
+        ],
+        "authIds": [
+          "55d1d074-a36f-4379-be75-8b5e00030d31",
+          "7cc0df04-42db-4363-985d-39efbe6a42a2",
+          "901194a9-aa77-48d3-8f6c-a41bc752320d",
+          "9966529c-2346-42f6-8757-7e662239546e",
+          "9c426fc4-0ec7-4cc2-9798-f5ce7ccca025",
+          "a0fc4171-bfde-4a25-86e2-5e35af86753a",
+          "b5c78266-7d60-4f81-85c8-5849677671ef",
+          "b79038c0-4e71-42fe-a671-71328239b1b1",
+          "e8bdd634-9685-40d8-8509-34e6b5ece0d5",
+          "eb0864f9-a641-4347-b912-5cfafd6f29fe",
+          "fe3521f1-c93e-4b27-ab94-81033b1dd20c"
+        ],
+        "members": [
+          {
+            "active": true,
+            "userId": "55d1d074-a36f-4379-be75-8b5e00030d31",
+            "brandRole": "owner",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "7cc0df04-42db-4363-985d-39efbe6a42a2",
+            "brandRole": "member",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "9966529c-2346-42f6-8757-7e662239546e",
+            "brandRole": "member",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "a0fc4171-bfde-4a25-86e2-5e35af86753a",
+            "brandRole": "member",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "b79038c0-4e71-42fe-a671-71328239b1b1",
+            "brandRole": "member",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "e8bdd634-9685-40d8-8509-34e6b5ece0d5",
+            "brandRole": "member",
+            "workspaceId": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "active": true,
+            "userId": "fe3521f1-c93e-4b27-ab94-81033b1dd20c",
+            "brandRole": "member",
+            "workspaceId": "5022a45f-98f9-4dab-9b73-6f9fa2e33e9f"
+          }
+        ],
+        "auditIds": [
+          "268ce0a5-e4e8-4f37-a6f7-2a3692f6025e",
+          "2ca062a2-67e2-4ca4-80ae-0400e985349b",
+          "2d82d66d-8a55-41df-b11e-3411cc4e08fb",
+          "44180dfc-dda4-4704-acc8-7a973bc7ed89",
+          "59fd5341-dee9-45a1-83e6-7a7f72b4af4a",
+          "858c9394-2693-48ee-90a8-1f24f8d4d514",
+          "9754e3b4-0a3c-423a-a7c8-8f23ede4324b",
+          "a0c232ff-8289-4402-bf5b-437b1164cce9",
+          "ad23bb1b-2ed5-4a4c-a238-4e6baaa92395",
+          "f3cbd763-97b0-477e-9f18-afbb2f7eaaa9"
+        ],
+        "eventIds": [
+          "27639849-14c4-4403-83d5-63dfcdcd94ff",
+          "9efb0c5e-d7ad-4609-933f-55867d0427ac",
+          "edf50626-9fa4-4011-9b05-b74add6c1713",
+          "ba39ed3e-d3ba-41ad-8bb4-796a8641f089",
+          "aab7367e-df5c-461a-8dbc-32aa2f2b1d9b",
+          "996b504d-68e1-4852-abd8-62bc8e060534",
+          "7f148801-6cd5-4ee0-9a82-3a303b1e7092",
+          "2aad1732-cc18-4340-85bc-8bb1c9cf2f53",
+          "0dec1b00-db46-4438-abbb-98941e885454",
+          "86ca932b-31ab-426a-861c-2a0e7d59c7b9",
+          "5f109560-7563-41f0-8a6e-76ddd23776c1",
+          "d40f3831-d7e2-44fc-900e-2b01bb34990e",
+          "bc1440ee-c998-420e-964d-a1cf4e5621d3",
+          "08a49a7c-d568-4c56-a95d-d07b1c2c3379",
+          "fe5939e5-87ec-42b0-b013-2949b9a2f84d",
+          "25f78fcb-e218-4678-a6e5-ab6ae0367437",
+          "8fea7d3c-df29-40ff-9866-164a9cb1905c"
+        ],
+        "commandIds": [
+          "125ed730-464d-4113-82ac-579ee44bf55b",
+          "3352cf27-13f6-40dd-ad64-f659f458a185",
+          "59af17e9-c1cc-419f-9c07-2b1284f927a9",
+          "97dfa5e2-743d-4cdb-a87e-95b27da89c2c",
+          "b35f8ffc-71ec-43cc-bd87-7d64cc8538c7",
+          "bd2a513c-4eeb-4903-869a-93d1fd2f93bd",
+          "bf6ddd6d-5749-42d8-bfbb-172f414569e6",
+          "cef89544-12bb-40d6-8f14-9e9313b2ce42",
+          "ec773a72-1af9-4857-8149-bec45508f675",
+          "f2b64bbd-6b87-4585-a08b-c123ba25e97b"
+        ],
+        "missionIds": [
+          "e9ca8281-8bf7-4447-8517-ca59e3aabae7"
+        ],
+        "resourceIds": [
+          "b1515e15-6893-42cc-9eb3-7534cf245918"
+        ],
+        "workItemIds": [
+          "9c5ae5d2-42b2-4b76-bf46-eaa771476cee",
+          "ea466fee-6d35-45ff-92e7-995f0f80ca03"
+        ],
+        "platformRoles": [
+          {
+            "role": "content_editor",
+            "active": true,
+            "user_id": "eb0864f9-a641-4347-b912-5cfafd6f29fe",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:54.229717+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e"
+          }
+        ],
+        "submissionIds": [
+          "f6c2709e-9a9c-4ab5-b7ec-fe51683943cb"
+        ],
+        "pendingRewards": [
+          {
+            "id": "a83867da-c951-4207-8ebc-3f5b585523f5",
+            "status": "pending",
+            "workflowId": "401e7d6e-212e-4d5f-b119-2a2f1899e3cf",
+            "submissionId": "f6c2709e-9a9c-4ab5-b7ec-fe51683943cb"
+          }
+        ],
+        "proofReviewIds": [
+          "4e9701fc-ad9a-4e12-b674-140535a52184",
+          "928e7055-1971-4be2-a0e7-6fcc340521b0"
+        ],
+        "workspaceRoles": [
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "55d1d074-a36f-4379-be75-8b5e00030d31",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:58.258116+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "reviewer",
+            "active": true,
+            "user_id": "7cc0df04-42db-4363-985d-39efbe6a42a2",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:53.448319+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "9966529c-2346-42f6-8757-7e662239546e",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:52.644209+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "a0fc4171-bfde-4a25-86e2-5e35af86753a",
+            "revision": 3,
+            "granted_at": "2026-10-23T13:24:58.775341+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "finance_viewer",
+            "active": true,
+            "user_id": "b79038c0-4e71-42fe-a671-71328239b1b1",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:53.842031+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "e8bdd634-9685-40d8-8509-34e6b5ece0d5",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:53.024892+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "98146f8d-d924-4c41-a7bf-b331288af0da"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "fe3521f1-c93e-4b27-ab94-81033b1dd20c",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:24:55.199695+00:00",
+            "granted_by": "9966529c-2346-42f6-8757-7e662239546e",
+            "workspace_id": "5022a45f-98f9-4dab-9b73-6f9fa2e33e9f"
+          }
+        ],
+        "proofAttemptIds": [
+          "3bce76d4-2b14-4a90-af2b-6e50eebccaa0",
+          "918cadf6-0de0-49cd-bd78-ca8221762e15"
+        ]
+      },
+      "creatorSnapshots": [
+        {
+          "xp": 10,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        },
+        {
+          "xp": 0,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        }
+      ],
+      "cleanup": "none; exact owned IDs retained, including the run whose afterAll clock-independent XP assumption failed"
+    },
+    {
+      "runId": "9e0691dd-e541-4cdc-ad0e-77898325ddc6",
+      "target": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "authIds": [
+        "e76127c8-e536-402c-b2f1-6e7a4726c90e",
+        "b68e3dbd-cb7d-495b-b767-cd1ad3c1f51d",
+        "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+        "8d2f699b-f1c1-4db4-8fa7-cf686087e7e9",
+        "21729741-e23b-4315-bd5c-8fe48a998c93",
+        "7ebbc97f-7848-4611-a063-f483ed703b3a",
+        "e065ef15-4605-4d61-9f97-5376d0df9cc3",
+        "130ef091-ae36-483e-abbf-23f1fd812918",
+        "2ad1cbdd-285a-4742-ae50-c35d6763be46",
+        "9990b68f-29f2-4080-8af6-645e7c8c3902",
+        "837b838c-dd07-4733-a41d-e301bd037f37"
+      ],
+      "workspaceIds": [
+        "aeafe577-5885-4305-bd8c-4102a312dcb1",
+        "a2c52fb0-d69a-491d-a992-80040feab508"
+      ],
+      "bootstrapRequests": [
+        "8dc41393-d6f1-4516-93ad-b9f040d10ab0",
+        "85f5e96b-f41d-4841-a1e5-95f238c5fc4e",
+        "67266e99-fce4-4f35-a212-79d24f418ea9",
+        "128f8b65-28ab-432d-a00b-92671b0192b5",
+        "b100d328-bc96-4cf1-b837-5a9d0b36b297",
+        "18eca3b0-a9fd-4802-9200-ed871cc32e69",
+        "231b6b6a-f701-4637-b6ca-cb76c4bba209"
+      ],
+      "core": {
+        "workflowId": "e4ddc78e-85e3-43d8-a6fe-24736546b79e",
+        "submissionId": "9dd754fe-c005-48b7-ac3d-28ba2b145be0",
+        "itemId": "0339e3e2-7cea-4531-93f7-6aa97dd808b8",
+        "pendingRewardId": "8bdb76a5-117a-45cb-805e-17ba5c11da7c",
+        "creatorId": "e76127c8-e536-402c-b2f1-6e7a4726c90e"
+      },
+      "observed": {
+        "staff": [
+          {
+            "active": true,
+            "userId": "130ef091-ae36-483e-abbf-23f1fd812918"
+          },
+          {
+            "active": true,
+            "userId": "21729741-e23b-4315-bd5c-8fe48a998c93"
+          },
+          {
+            "active": true,
+            "userId": "2ad1cbdd-285a-4742-ae50-c35d6763be46"
+          },
+          {
+            "active": true,
+            "userId": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3"
+          },
+          {
+            "active": true,
+            "userId": "7ebbc97f-7848-4611-a063-f483ed703b3a"
+          },
+          {
+            "active": true,
+            "userId": "837b838c-dd07-4733-a41d-e301bd037f37"
+          },
+          {
+            "active": true,
+            "userId": "8d2f699b-f1c1-4db4-8fa7-cf686087e7e9"
+          },
+          {
+            "active": true,
+            "userId": "9990b68f-29f2-4080-8af6-645e7c8c3902"
+          },
+          {
+            "active": true,
+            "userId": "e065ef15-4605-4d61-9f97-5376d0df9cc3"
+          }
+        ],
+        "authIds": [
+          "130ef091-ae36-483e-abbf-23f1fd812918",
+          "21729741-e23b-4315-bd5c-8fe48a998c93",
+          "2ad1cbdd-285a-4742-ae50-c35d6763be46",
+          "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+          "7ebbc97f-7848-4611-a063-f483ed703b3a",
+          "837b838c-dd07-4733-a41d-e301bd037f37",
+          "8d2f699b-f1c1-4db4-8fa7-cf686087e7e9",
+          "9990b68f-29f2-4080-8af6-645e7c8c3902",
+          "b68e3dbd-cb7d-495b-b767-cd1ad3c1f51d",
+          "e065ef15-4605-4d61-9f97-5376d0df9cc3",
+          "e76127c8-e536-402c-b2f1-6e7a4726c90e"
+        ],
+        "members": [
+          {
+            "active": true,
+            "userId": "21729741-e23b-4315-bd5c-8fe48a998c93",
+            "brandRole": "member",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "active": true,
+            "userId": "2ad1cbdd-285a-4742-ae50-c35d6763be46",
+            "brandRole": "member",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "active": true,
+            "userId": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "brandRole": "member",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "active": true,
+            "userId": "7ebbc97f-7848-4611-a063-f483ed703b3a",
+            "brandRole": "member",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "active": true,
+            "userId": "837b838c-dd07-4733-a41d-e301bd037f37",
+            "brandRole": "member",
+            "workspaceId": "a2c52fb0-d69a-491d-a992-80040feab508"
+          },
+          {
+            "active": true,
+            "userId": "9990b68f-29f2-4080-8af6-645e7c8c3902",
+            "brandRole": "owner",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "active": true,
+            "userId": "e065ef15-4605-4d61-9f97-5376d0df9cc3",
+            "brandRole": "member",
+            "workspaceId": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          }
+        ],
+        "auditIds": [
+          "465414cf-eee7-4462-894b-3eac1a87faa2",
+          "5d5e40d6-d4c6-4620-ad62-f61144063b40",
+          "72187d7f-4814-4ba3-90c2-326a93b640e5",
+          "89b65dcb-385a-4872-85ee-a0aa913eb678",
+          "bbfb6168-2c30-42f1-9f7b-33892bb05b16",
+          "c0257be1-1e83-4488-a859-e891bfc724b2",
+          "dc4ea5c0-b8a9-4245-96bb-bc54240346fd",
+          "eb1e2848-8d04-4e57-bfb5-475127d7bfdd",
+          "f056903a-480a-4d2d-817c-7ceb3634aa83",
+          "fe661980-cf79-48c6-995f-9d242f5d6dd2"
+        ],
+        "eventIds": [
+          "5479b939-cd3b-4818-a5d8-c36e68f5bfc6",
+          "3dda7299-8687-4eb7-8fc6-1d420d4a5612",
+          "0f5711cf-aa5c-4d82-ad67-566ace624be5",
+          "0fae3c05-9276-464f-8447-cc86b8b920cb",
+          "01c9b5a6-bae3-4da8-85cb-9a40456d86f6",
+          "cca578a6-f0c1-42b1-a172-c2267d5e3bf5",
+          "ba6e97a2-f7e2-4c45-8e6a-a237c412473f",
+          "91bfd616-5028-468a-9043-76e1fd4c8385",
+          "0e0ab4d4-59b5-46e1-ae53-24c942368e42",
+          "64f2e484-081d-4a9e-9505-0878a1bc44d1",
+          "8a512c06-eb5a-4664-83a0-b875338a2557",
+          "b7b8d87f-6ad9-48df-8277-394551f065a9",
+          "d5864c1f-ffd0-4b0e-bbf9-6b68e4e47ed7",
+          "3359c256-d602-427b-ab80-794c2ff78a38",
+          "90894003-8d13-4720-b581-5cbd63bb371e",
+          "0fd4729d-0827-45eb-a5b5-d5a737cec194",
+          "1dbc0136-5e6f-478e-87e6-c7b7b0faedfb"
+        ],
+        "commandIds": [
+          "128f8b65-28ab-432d-a00b-92671b0192b5",
+          "18eca3b0-a9fd-4802-9200-ed871cc32e69",
+          "231b6b6a-f701-4637-b6ca-cb76c4bba209",
+          "6361beaf-a7c2-4d79-9828-ad73b8212be9",
+          "67266e99-fce4-4f35-a212-79d24f418ea9",
+          "73c43c29-ee82-4b23-91bb-957b1546468a",
+          "85f5e96b-f41d-4841-a1e5-95f238c5fc4e",
+          "8dc41393-d6f1-4516-93ad-b9f040d10ab0",
+          "9f2ac2db-7f9c-472f-8a00-4492b64391db",
+          "b100d328-bc96-4cf1-b837-5a9d0b36b297"
+        ],
+        "missionIds": [
+          "fd56babc-8871-4e7f-9d2d-c5d9bfa671c7"
+        ],
+        "resourceIds": [
+          "732ffdb8-31ef-4aa2-a58c-e079afa9020d"
+        ],
+        "workItemIds": [
+          "0339e3e2-7cea-4531-93f7-6aa97dd808b8",
+          "5782a5df-6254-4064-bf67-d330c7507006"
+        ],
+        "platformRoles": [
+          {
+            "role": "content_editor",
+            "active": true,
+            "user_id": "130ef091-ae36-483e-abbf-23f1fd812918",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:19.408633+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3"
+          }
+        ],
+        "submissionIds": [
+          "9dd754fe-c005-48b7-ac3d-28ba2b145be0"
+        ],
+        "pendingRewards": [
+          {
+            "id": "8bdb76a5-117a-45cb-805e-17ba5c11da7c",
+            "status": "pending",
+            "workflowId": "e4ddc78e-85e3-43d8-a6fe-24736546b79e",
+            "submissionId": "9dd754fe-c005-48b7-ac3d-28ba2b145be0"
+          }
+        ],
+        "proofReviewIds": [
+          "780bbc5c-4d4d-4634-9dec-7fa5d895b6ea",
+          "c421ebe1-5bda-410d-b109-0af0484423e7"
+        ],
+        "workspaceRoles": [
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "21729741-e23b-4315-bd5c-8fe48a998c93",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:18.283178+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "2ad1cbdd-285a-4742-ae50-c35d6763be46",
+            "revision": 3,
+            "granted_at": "2026-10-23T13:58:23.755455+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:17.9008+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "role": "reviewer",
+            "active": true,
+            "user_id": "7ebbc97f-7848-4611-a063-f483ed703b3a",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:18.660791+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "role": "workspace_admin",
+            "active": true,
+            "user_id": "837b838c-dd07-4733-a41d-e301bd037f37",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:20.350386+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "a2c52fb0-d69a-491d-a992-80040feab508"
+          },
+          {
+            "role": "operator",
+            "active": true,
+            "user_id": "9990b68f-29f2-4080-8af6-645e7c8c3902",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:23.256454+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          },
+          {
+            "role": "finance_viewer",
+            "active": true,
+            "user_id": "e065ef15-4605-4d61-9f97-5376d0df9cc3",
+            "revision": 1,
+            "granted_at": "2026-10-23T13:58:19.042389+00:00",
+            "granted_by": "3f059272-4ab2-493d-9ce7-ed058c4ef7e3",
+            "workspace_id": "aeafe577-5885-4305-bd8c-4102a312dcb1"
+          }
+        ],
+        "proofAttemptIds": [
+          "49561ed6-a602-4013-b066-d2d1fa4a5a99",
+          "9bd3c43c-fe44-464d-9f60-7b5d319f1a5f"
+        ]
+      },
+      "creatorSnapshots": [
+        {
+          "xp": 10,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        },
+        {
+          "xp": 0,
+          "budget": null,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "rewardInventory": []
+        }
+      ],
+      "cleanup": "none; exact owned IDs retained, including the run whose afterAll clock-independent XP assumption failed"
+    }
+  ],
+  "noCleanupOrReset": true,
+  "scope": "Only the two D18 runs; no membership/role writes to pre-existing staff. New fixture flags were restored and are observed above."
+}

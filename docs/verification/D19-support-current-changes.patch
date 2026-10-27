@@ -1,0 +1,806 @@
+--- a/eslint.config.js
++++ b/eslint.config.js
+@@ -8,6 +8,10 @@
+   js.configs.recommended,
+   ...tseslint.configs.recommended,
+   {
++    files: ["docs/verification/**/*.mjs"],
++    languageOptions: { globals: { process: "readonly", URL: "readonly", console: "readonly" } },
++  },
++  {
+     plugins: { "react-hooks": reactHooks },
+     rules: {
+       "react-hooks/rules-of-hooks": "error",
+--- /dev/null
++++ b/scripts/audit/fresh-support.mjs
+@@ -0,0 +1,40 @@
++// Fresh exact-ID mode of the existing support launcher. No migration, reset or old fixture authority.
++import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
++import {randomUUID} from 'node:crypto';
++import {resolve} from 'node:path';
++import {pathToFileURL} from 'node:url';
++import {spawnSync} from 'node:child_process';
++import {isDeepStrictEqual} from 'node:util';
++import process from 'node:process';
++import {verifiedTarget} from './local-targets.mjs';
++import {integrationFiles,publicationProofPreflightFile} from '../run-integration-tests.mjs';
++const target=verifiedTarget('shaped'); // Before keys used by any SDK/client, setup or test import.
++const proof=JSON.parse(readFileSync('docs/verification/D19-support-current-identity.json','utf8'));
++if(!proof.passed||!isDeepStrictEqual(proof.targets.shaped.identity,target.identity))throw new Error('Fresh support target attestation missing/drifted');
++const requested=process.argv.slice(3);if(requested.some(f=>!integrationFiles.includes(f)))throw new Error('Unreviewed support file');
++const namespace=randomUUID(),workspaceId=randomUUID(),slug=`d19-support-${namespace}`;
++const folder=`docs/verification/D19-support-current-runtime/${namespace}`;mkdirSync(folder,{recursive:true});
++const out=(name,value)=>writeFileSync(`${folder}/${name}`,JSON.stringify(value,null,2)+'\n');
++const known=['koc-trial-serum','ugc-cafe','clip-skincare','ugc-pet','koc-trial-mask','ugc-travel'];
++const seedMissions=known.map(sourceSlug=>({id:randomUUID(),sourceSlug,slug:`${sourceSlug}-${namespace}`}));
++const counts=JSON.parse(target.sql("begin read only;select jsonb_object_agg(kind,n)from(select kind,count(*)n from public.academy_content where status='published'group by kind)s;commit;"));
++if(!isDeepStrictEqual(counts,{guide_doc:8,track:9,playbook:6,resource:8}))throw new Error('Existing immutable shared Academy seed shape differs; no overwrite permitted');
++if(target.sql(`begin read only;select count(*)from public.workspaces where id='${workspaceId}'or slug='${slug}';commit;`)!=='0')throw new Error('Fresh workspace collision');
++out('fixture.json',{namespace,target:target.identity,workspaceId,slug,seedMissions,existingPublishedAcademyReadOnly:counts,ownedIdAuthority:'Only this newly-created workspace/mission IDs plus successful inserts journalled by the existing owned fixture transport; no historical IDs loaded',cleanup:'Only current exact IDs; immutable workflow/access actors retained',provider:'disabled; external HTTP denied',stage:'planned'});
++target.sql(`begin;insert into public.workspaces(id,slug,name)values('${workspaceId}','${slug}','Owned fresh support fixture');${seedMissions.map(m=>`insert into public.missions(id,workspace_id,slug,title,mission_type,access_type,points_reward,cash_reward,quota,filled,status,required_level,category,deadline)select '${m.id}','${workspaceId}','${m.slug}','Owned support baseline',mission_type,access_type,points_reward,cash_reward,quota,0,status,required_level,category,null from public.missions where slug='${m.sourceSlug}';`).join('\n')}commit;`);
++const actual=JSON.parse(target.sql(`begin read only;select jsonb_agg(id order by id)from public.missions where workspace_id='${workspaceId}';commit;`));
++if(!isDeepStrictEqual(actual,[...seedMissions.map(m=>m.id)].sort()))throw new Error('Fresh baseline creation incomplete; retain planned IDs');
++const ownedPath=resolve(`.codex-tmp/D19-support-current-owned-${namespace}.json`),journal=resolve(`${folder}/owned-ids.jsonl`);
++writeFileSync(ownedPath,JSON.stringify({tables:{workspaces:{key:'id',ids:[workspaceId]},missions:{key:'id',ids:actual}}})+'\n');writeFileSync(journal,'');
++const scope={workspaceId,slug,namespace,createdThisRun:true};
++const env={...process.env,...target.env,INTEGRATION_FIXTURE_NAMESPACE:namespace,INTEGRATION_FRESH_WORKSPACE_JSON:JSON.stringify(scope),INTEGRATION_FIXTURE_SCOPE_JSON:JSON.stringify({runId:target.identity.runId,workspaceIds:[workspaceId]}),INTEGRATION_OWNED_IDS_PATH:ownedPath,INTEGRATION_OWNED_JOURNAL:journal,INTEGRATION_MUTATION_OWNERSHIP:'1',INTEGRATION_CAPABILITY_FIXTURES:'1',INTEGRATION_RETAIN_FIXTURES:'0',RUN_INTEGRATION:'1',INTEGRATION_RUNNER:'1',RUN_AUDIT_INTEGRATION:'0',ADFOCATE_ACCEPTANCE_TASK:'D19',BOOTSTRAP_WORKSPACE_SLUGS:slug,VITE_DEFAULT_WORKSPACE:slug,OPENAI_API_KEY:'',OPENROUTER_API_KEY:'',ANTHROPIC_API_KEY:'',RAPIDAPI_KEY:'',NODE_OPTIONS:`--import=${pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href}`};
++const results=[];
++out('blocked-cases.json',{status:'BLOCKED_GLOBAL_RPC_REQUIRES_PRISTINE_DB',tests:['close_due_campaigns closes past-deadline active only, idempotent','snapshot_campaign_leaderboards captures active-campaign ranks'],reason:'Zero-argument global mutators cannot be bounded to this run on the existing retained fixture targets; original tests and SQL are unchanged, these are not passes'});
++for(const [stage,files]of [['proof',[publicationProofPreflightFile]],['support',requested.length?requested:integrationFiles]]){
++ const args=['node_modules/vitest/vitest.mjs','run','--no-file-parallelism','--maxWorkers=1','--minWorkers=1','--reporter=dot','--reporter=json',`--outputFile=.codex-tmp/D19-support-current-${namespace}-${stage}.private.json`,...(stage==='support'?['--testNamePattern','^(?!.*(?:close_due_campaigns|snapshot_campaign_leaderboards)).*$']:[]),...files];
++ const result=spawnSync(process.execPath,args,{env,stdio:'inherit'});results.push({stage,files,command:[process.execPath,...args],exit:result.status??1});if(result.status!==0)break;
++}
++const checked=verifiedTarget('shaped');if(!isDeepStrictEqual(checked.identity,target.identity))throw new Error('Fresh support postflight target drift');
++out('result.json',{namespace,target:checked.identity,workspaceId,slug,results,providerEnabled:false,productionQueried:false,productionWritten:false,historicalFixtureIdsLoaded:0,newFixtureIdsOnly:true,stage:'tests-finished'});
++writeFileSync('.codex-tmp/D19-support-current-last-run.json',JSON.stringify({namespace,folder,workspaceId,slug,results})+'\n');
++process.exitCode=results.some(r=>r.exit!==0)?1:0;
+--- a/scripts/audit/run-pilot-support.mjs
++++ b/scripts/audit/run-pilot-support.mjs
+@@ -7,6 +7,9 @@
+ import process from 'node:process';
+ import {verifiedTarget} from './local-targets.mjs';
+ import {integrationFiles,publicationProofPreflightFile} from '../run-integration-tests.mjs';
++if(process.argv[2]==='--fresh'){
++ await import('./fresh-support.mjs');
++}else{
+ const target=verifiedTarget('shaped'),receipt='.codex-tmp/D19-support.private.json';
+ const tableNames=JSON.parse(target.sql("select jsonb_agg(tablename order by tablename) from pg_tables where schemaname='public';"));
+ if(!tableNames.every(n=>/^[a-z0-9_]+$/.test(n)))throw new Error('unexpected catalog identifier');
+@@ -43,3 +46,4 @@
+ }
+ writeFileSync('docs/verification/D19-support-sentinel-check.json',JSON.stringify({runId:fixture.runId,target:live.identity,preExistingPublicRowsUnchanged:changes.length===0,changes,originalRows:Object.values(fixture.before).reduce((n,rows)=>n+rows.length,0),scope:'All pre-existing public base-table rows in shaped target; only hashes exported, not authored row content. Schema/Auth/Storage identity and original SQL are checked separately.'},null,2)+'\n');
+ process.exit(status||changes.length?1:0);
++}
+--- a/server/test/academy.test.ts
++++ b/server/test/academy.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -7,7 +8,7 @@
+ const suite = hasSupabaseEnv ? describe : describe.skip;
+ 
+ function koreq(path: string, jwt: string) {
+-  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
++  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG } });
+ }
+ 
+ suite("GET /api/academy (creator reads)", () => {
+--- a/server/test/active-missions.test.ts
++++ b/server/test/active-missions.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { randomUUID } from "node:crypto";
+ import { readFileSync, readdirSync } from "node:fs";
+@@ -1401,7 +1402,7 @@
+ const { app } = createApp();
+ function request(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request("/api" + path, { ...init, headers: {
+-    Authorization: "Bearer " + jwt, "X-Workspace-Slug": "demo", "Content-Type": "application/json",
++    Authorization: "Bearer " + jwt, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json",
+     ...(init.headers ?? {}),
+   } });
+ }
+--- a/server/test/admin.test.ts
++++ b/server/test/admin.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG, DEMO_WS } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { readFileSync, readdirSync } from "node:fs";
+ import { join } from "node:path";
+@@ -310,7 +311,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+@@ -531,7 +532,7 @@
+ });
+ 
+ suite("B2: workspace-scoped review", () => {
+-  const DEMO = "00000000-0000-0000-0000-0000000000aa";
++  const DEMO = DEMO_WS;
+   const OTHER = "00000000-0000-0000-0000-0000000000bb";
+   afterAll(cleanup);
+ 
+@@ -573,7 +574,7 @@
+   it("returns the mission + bucketed activity", async () => {
+     const koc = await makeCreator(fixtureName("activity@test.local"), 0);
+     await makeMission({ slug: fixtureName("test-activity"), points_reward: 200, quota: 5 });
+-    const list = await (await adminreq(`/admin/missions?workspace=00000000-0000-0000-0000-0000000000aa`)).json();
++    const list = await (await adminreq(`/admin/missions?workspace=${DEMO_WS}`)).json();
+     const m = (list.missions as Array<{ id: string; slug: string }>).find((x) => x.slug === fixtureName("test-activity"))!;
+ 
+     await koreq(fixtureName("/missions/test-activity/join"), koc.jwt, { method: "POST" });
+--- a/server/test/adminAcademy.test.ts
++++ b/server/test/adminAcademy.test.ts
+@@ -1,3 +1,4 @@
++import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
+ import { serviceForTests, cleanup, hasSupabaseEnv } from "./helpers";
+@@ -18,7 +19,7 @@
+ // test rows by slug directly (same local-scoped pattern as campaigns.test.ts's serviceForTests()
+ // deletes) in addition to the shared cleanup() for parity with adminContent.test.ts.
+ async function cleanupAcademyTestRows() {
+-  await serviceForTests().from("academy_content").delete().in("slug", ["t-bad", "r-test-1"]);
++  await serviceForTests().from("academy_content").delete().in("slug", [fixtureName("t-bad"), fixtureName("r-test-1")]);
+ }
+ 
+ suite("admin academy CRUD", () => {
+@@ -51,7 +52,7 @@
+   it("creates → publishes → archives a draft", async () => {
+     const create = await adminreq("/admin/academy", {
+       method: "POST",
+-      body: JSON.stringify({ kind: "resource", slug: "r-test-1", title_zh: "測試資源" }),
++      body: JSON.stringify({ kind: "resource", slug: fixtureName("r-test-1"), title_zh: "測試資源" }),
+     });
+     expect(create.status).toBe(201);
+     const { item } = await create.json();
+--- a/server/test/applications.test.ts
++++ b/server/test/applications.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { randomUUID } from "node:crypto";
+ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+@@ -23,7 +24,7 @@
+ function req(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
+   });
+ }
+ function adminReq(path: string, init: RequestInit = {}) {
+@@ -146,7 +147,7 @@
+ 
+   it("requires authentication to apply", async () => {
+     const res = await app.request(fixtureName("/api/missions/test-app-apply/apply"), {
+-      method: "POST", headers: { "X-Workspace-Slug": "demo", "Content-Type": "application/json" },
++      method: "POST", headers: { "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json" },
+     });
+     expect(res.status).toBe(401);
+   });
+--- a/server/test/assistant.test.ts
++++ b/server/test/assistant.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { randomUUID } from "node:crypto";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+@@ -33,7 +34,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- a/server/test/bootstrap.test.ts
++++ b/server/test/bootstrap.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -10,12 +11,12 @@
+   return app.request("/api/me/bootstrap", {
+     method: "POST",
+     headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" },
+-    body: JSON.stringify({ slug: "demo" }),
++    body: JSON.stringify({ slug: FIXTURE_WORKSPACE_SLUG }),
+   });
+ }
+ function getMe(jwt: string) {
+   return app.request("/api/me", {
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG },
+   });
+ }
+ 
+--- a/server/test/brand.test.ts
++++ b/server/test/brand.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -8,7 +9,7 @@
+ const req = (path: string, jwt: string, init: RequestInit = {}) =>
+   app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", "X-Workspace-Slug": "demo", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, ...(init.headers ?? {}) },
+   });
+ 
+ suite("brand portal", () => {
+--- a/server/test/campaigns.test.ts
++++ b/server/test/campaigns.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { grantStaffFixture } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+@@ -19,7 +20,7 @@
+   return app.request(`/api${path}`, { ...init, headers });
+ }
+ function creatorReq(path: string, jwt: string, init: RequestInit = {}) {
+-  return app.request(`/api${path}`, { ...init, headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) } });
++  return app.request(`/api${path}`, { ...init, headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) } });
+ }
+ const svc = () => serviceForTests();
+ 
+--- a/server/test/content.test.ts
++++ b/server/test/content.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -7,7 +8,7 @@
+ const suite = hasSupabaseEnv ? describe : describe.skip;
+ 
+ function koreq(path: string, jwt: string) {
+-  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
++  return app.request(`/api${path}`, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG } });
+ }
+ 
+ suite("creator content reads (RLS)", () => {
+@@ -25,48 +26,48 @@
+     if (categoryError) throw categoryError;
+     const categoryId = cat!.id;
+     await svc.from("content_items").insert([
+-      { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
+-      { kind: "article", slug: "c1-draft", status: "draft", title_zh: "草稿", body_zh: "x", audience: "creator" },
+-      { kind: "article", slug: "c1-brand-leak", status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", category_id: categoryId, published_at: new Date().toISOString() },
+-      { kind: "article", slug: "c1-related-creator", status: "published", title_zh: "相關創作者文章", body_zh: "z", audience: "creator", category_id: categoryId, published_at: new Date().toISOString() },
++      { kind: "article", slug: fixtureName("c1-pub"), status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
++      { kind: "article", slug: fixtureName("c1-draft"), status: "draft", title_zh: "草稿", body_zh: "x", audience: "creator" },
++      { kind: "article", slug: fixtureName("c1-brand-leak"), status: "published", title_zh: "品牌專屬", body_zh: "y", audience: "brand", category_id: categoryId, published_at: new Date().toISOString() },
++      { kind: "article", slug: fixtureName("c1-related-creator"), status: "published", title_zh: "相關創作者文章", body_zh: "z", audience: "creator", category_id: categoryId, published_at: new Date().toISOString() },
+     ]);
+   });
+   afterAll(async () => {
+-    await serviceForTests().from("content_items").delete().in("slug", ["c1-pub", "c1-draft", "c1-brand-leak", "c1-related-creator"]);
++    await serviceForTests().from("content_items").delete().in("slug", [fixtureName("c1-pub"), fixtureName("c1-draft"), fixtureName("c1-brand-leak"), fixtureName("c1-related-creator")]);
+     await cleanup();
+   });
+ 
+   it("list returns published, hides draft", async () => {
+     const { items } = await (await koreq("/content", koc.jwt)).json();
+     const slugs = items.map((i: { slug: string }) => i.slug);
+-    expect(slugs).toContain("c1-pub");
+-    expect(slugs).not.toContain("c1-draft");
++    expect(slugs).toContain(fixtureName("c1-pub"));
++    expect(slugs).not.toContain(fixtureName("c1-draft"));
+   });
+ 
+   it("detail 404s a draft slug, 200s a published one and increments views", async () => {
+-    expect((await koreq("/content/c1-draft", koc.jwt)).status).toBe(404);
+-    const res = await koreq("/content/c1-pub", koc.jwt);
++    expect((await koreq(fixtureName("/content/c1-draft"), koc.jwt)).status).toBe(404);
++    const res = await koreq(fixtureName("/content/c1-pub"), koc.jwt);
+     expect(res.status).toBe(200);
+-    expect((await res.json()).item.slug).toBe("c1-pub");
+-    const { data } = await serviceForTests().from("content_items").select("views").eq("slug", "c1-pub").single();
++    expect((await res.json()).item.slug).toBe(fixtureName("c1-pub"));
++    const { data } = await serviceForTests().from("content_items").select("views").eq("slug", fixtureName("c1-pub")).single();
+     expect(data!.views).toBeGreaterThanOrEqual(1);
+   });
+ 
+   it("never returns a brand-audience row in the list, even with a kind filter", async () => {
+     const { items } = await (await koreq("/content", koc.jwt)).json();
+-    expect(items.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
++    expect(items.map((i: { slug: string }) => i.slug)).not.toContain(fixtureName("c1-brand-leak"));
+     const { items: filtered } = await (await koreq("/content?kind=article", koc.jwt)).json();
+-    expect(filtered.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
++    expect(filtered.map((i: { slug: string }) => i.slug)).not.toContain(fixtureName("c1-brand-leak"));
+   });
+ 
+   it("404s a direct slug fetch of a brand-audience row", async () => {
+-    expect((await koreq("/content/c1-brand-leak", koc.jwt)).status).toBe(404);
++    expect((await koreq(fixtureName("/content/c1-brand-leak"), koc.jwt)).status).toBe(404);
+   });
+ 
+   it("never returns a brand-audience row in related articles, even via a shared category", async () => {
+-    const res = await koreq("/content/c1-related-creator", koc.jwt);
++    const res = await koreq(fixtureName("/content/c1-related-creator"), koc.jwt);
+     expect(res.status).toBe(200);
+     const { related } = await res.json();
+-    expect(related.map((i: { slug: string }) => i.slug)).not.toContain("c1-brand-leak");
++    expect(related.map((i: { slug: string }) => i.slug)).not.toContain(fixtureName("c1-brand-leak"));
+   });
+ });
+--- a/server/test/copilot.test.ts
++++ b/server/test/copilot.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -9,7 +10,7 @@
+ function req(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
+   });
+ }
+ 
+@@ -48,7 +49,7 @@
+ 
+   it("requires authentication", async () => {
+     const res = await app.request("/api/copilot/hook-generator", {
+-      method: "POST", headers: { "X-Workspace-Slug": "demo", "Content-Type": "application/json" },
++      method: "POST", headers: { "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json" },
+       body: JSON.stringify({ mission_slug: fixtureName("test-hooks-mission"), platform: "instagram" }),
+     });
+     expect(res.status).toBe(401);
+--- a/server/test/fixtureStaffTransport.ts
++++ b/server/test/fixtureStaffTransport.ts
+@@ -3,7 +3,7 @@
+ // Auth-gate tests use createApp directly, so rejection/auto-enrol assertions are not bypassed.
+ import { randomUUID } from "node:crypto";
+ import { createApp } from "../app.js";
+-import { DEMO_WS, makeStaff, serviceForTests, grantStaffFixture } from "./helpers.js";
++import { DEMO_WS, FIXTURE_WORKSPACE_SLUG, makeStaff, serviceForTests, grantStaffFixture } from "./helpers.js";
+ import { captureFixtureRows } from "./ownedFixtureTransport.js";
+ 
+ export function createFixtureStaffApp() {
+@@ -30,7 +30,7 @@
+     const secret=headers.get("x-admin-secret");
+     if(secret && secret===(process.env.ADMIN_SECRET||"test-admin-secret") && !headers.has("Authorization")){
+       const staff=await fixtureOperator();headers.delete("x-admin-secret");headers.set("Authorization",`Bearer ${staff.jwt}`);
+-      headers.set("X-Workspace-Slug","demo");
++      headers.set("X-Workspace-Slug",FIXTURE_WORKSPACE_SLUG);
+       const response=await original(input,{...init,headers},env,ctx);
+       if(process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"&&response.ok&&["POST","PATCH"].includes(init?.method??"GET")){
+         const path=new URL(input instanceof Request?input.url:String(input),"http://fixture.invalid").pathname;
+--- a/server/test/fixtures/publicationProofRelease.ts
++++ b/server/test/fixtures/publicationProofRelease.ts
+@@ -3,6 +3,7 @@
+   activeMissionIntegrationSkipReason,
+   creatorRewardSnapshot,
+   DEMO_WS,
++  FIXTURE_WORKSPACE_SLUG,
+   makeStaff,
+   seedActiveMission,
+   serviceForTests,
+@@ -199,7 +200,7 @@
+   } = snapshot;
+   if (
+     workspace?.id !== DEMO_WS
+-    || workspace.slug !== "demo"
++    || workspace.slug !== FIXTURE_WORKSPACE_SLUG
+     || mission?.workspaceId !== DEMO_WS
+     || mission.slug !== MISSION_SLUG
+     || !nonBlank(mission.id)
+--- a/server/test/helpers.ts
++++ b/server/test/helpers.ts
+@@ -78,13 +78,32 @@
+   return createClient(url, anonKey, nextClientOptions(jwt));
+ }
+ 
+-export const DEMO_WS = "00000000-0000-0000-0000-0000000000aa";
++function resolveFixtureWorkspace(): {id:string;slug:string;name:string} {
++  const raw=process.env.INTEGRATION_FRESH_WORKSPACE_JSON;
++  if(!raw)return {id:"00000000-0000-0000-0000-0000000000aa",slug:"demo",name:"Demo Brand"};
++  try {
++    const fresh=JSON.parse(raw),scope=JSON.parse(process.env.INTEGRATION_FIXTURE_SCOPE_JSON??"{}"),identity=JSON.parse(process.env.INTEGRATION_TARGET_IDENTITY_JSON??"{}");
++    const uuid=/^[a-f0-9-]{36}$/i;
++    if(process.env.INTEGRATION_MUTATION_OWNERSHIP!=="1"||fresh?.createdThisRun!==true
++      ||!uuid.test(fresh.workspaceId)||!uuid.test(fresh.namespace)||!uuid.test(identity.runId)
++      ||fresh.namespace!==process.env.INTEGRATION_FIXTURE_NAMESPACE
++      ||fresh.slug!==`d19-support-${fresh.namespace}`||scope.runId!==identity.runId
++      ||!Array.isArray(scope.workspaceIds)||!scope.workspaceIds.includes(fresh.workspaceId))throw new Error("scope mismatch");
++    return {id:fresh.workspaceId,slug:fresh.slug,name:"Owned fresh support fixture"};
++  } catch {throw new Error("Invalid fresh integration fixture scope");}
++}
++const fixtureWorkspace=resolveFixtureWorkspace();
++export const DEMO_WS = fixtureWorkspace.id;
++export const FIXTURE_WORKSPACE_SLUG = fixtureWorkspace.slug;
++export const FIXTURE_WORKSPACE_NAME = fixtureWorkspace.name;
+ 
+ /** Fresh names let repeated disposable runs preserve immutable historical fixtures. */
+ export function fixtureName(value: string): string {
+   const namespace = process.env.INTEGRATION_FIXTURE_NAMESPACE;
+   if (!namespace) return value;
+   if (!/^[0-9a-f-]{36}$/.test(namespace)) throw new Error("invalid integration fixture namespace");
++  if(process.env.INTEGRATION_FRESH_WORKSPACE_JSON&&['koc-trial-serum','ugc-cafe','clip-skincare','ugc-pet','koc-trial-mask','ugc-travel'].includes(value))return `${value}-${namespace}`;
++  if(process.env.INTEGRATION_FRESH_WORKSPACE_JSON&&/\bc1-(pub|draft|brand-leak|related-creator)\b/.test(value))return value.replace(/\bc1-(pub|draft|brand-leak|related-creator)\b/g,slug=>`${slug}-${namespace}`);
+   if (value.endsWith("@test.local")) return value.replace("@test.local", `-${namespace}@test.local`);
+   return value.replace(/\btest-[a-z0-9-]+/g, (slug) => `${slug}-${namespace}`);
+ }
+--- a/server/test/leveling.test.ts
++++ b/server/test/leveling.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -11,7 +12,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- a/server/test/match.test.ts
++++ b/server/test/match.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -9,7 +10,7 @@
+ function req(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
+   });
+ }
+ 
+--- a/server/test/me.test.ts
++++ b/server/test/me.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -12,7 +13,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+@@ -56,7 +57,7 @@
+ 
+   it("joins the allow-listed workspace", async () => {
+     // Also gives cleanup() a creator row (display_name "%@test.local") to remove afterwards.
+-    const res = await bootstrap("demo", user.jwt);
++    const res = await bootstrap(FIXTURE_WORKSPACE_SLUG, user.jwt);
+     expect(res.status).toBe(200);
+     expect((await res.json()).created).toBe(true);
+   });
+--- a/server/test/missions.test.ts
++++ b/server/test/missions.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG, FIXTURE_WORKSPACE_NAME } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+ import { createApp } from "../app";
+@@ -38,7 +39,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+@@ -454,7 +455,7 @@
+     const joined = missions.find((m: { slug: string }) => m.slug === fixtureName("test-list-joined"));
+     expect(joined.my_status).toBe("joined");
+     // a seed mission the koc never joined stays null
+-    const other = missions.find((m: { slug: string }) => m.slug === "ugc-cafe");
++    const other = missions.find((m: { slug: string }) => m.slug === fixtureName("ugc-cafe"));
+     expect(other.my_status).toBeNull();
+   });
+ 
+@@ -484,7 +485,7 @@
+     const res = await req(fixtureName("/missions/test-brief-fields"), koc.jwt);
+     expect(res.status).toBe(200);
+     const body = await res.json();
+-    expect(body.brand).toBe("Demo Brand");          // joined from workspaces.name
++    expect(body.brand).toBe(FIXTURE_WORKSPACE_NAME); // exact name joined from the selected fixture workspace
+     expect(Array.isArray(body.deliverables)).toBe(true);
+     expect(Array.isArray(body.requirements)).toBe(true);
+     expect(Array.isArray(body.platforms)).toBe(true);
+--- a/server/test/notifications-api.test.ts
++++ b/server/test/notifications-api.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -9,7 +10,7 @@
+ function req(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
+   });
+ }
+ 
+--- a/server/test/onboarding.test.ts
++++ b/server/test/onboarding.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -11,7 +12,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- a/server/test/operator-crm.test.ts
++++ b/server/test/operator-crm.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { randomUUID } from "node:crypto";
+ import { afterAll, beforeAll, describe, expect, it } from "vitest";
+@@ -34,7 +35,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${actor.jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "x-operator-id": operator.id,
+       "x-operator-label": operator.label,
+       "Content-Type": "application/json",
+--- a/server/test/ownedFixtureTransport.ts
++++ b/server/test/ownedFixtureTransport.ts
+@@ -30,6 +30,9 @@
+  return async(input,init)=>{
+   const url=new URL(input instanceof Request?input.url:String(input)),method=(init?.method??(input instanceof Request?input.method:'GET')).toUpperCase();
+   if(url.origin!==origin)return new Response(JSON.stringify({code:'FIXTURE_TARGET_MISMATCH',message:'Fixture transport cannot leave its verified target'}),{status:403});
++  // These zero-argument RPCs mutate every due/active campaign, including older runs.
++  // An owned child/workspace cannot constrain them. Require a separate pristine DB.
++  if(method==='POST'&&['/rest/v1/rpc/close_due_campaigns','/rest/v1/rpc/snapshot_campaign_leaderboards'].includes(url.pathname))return new Response(JSON.stringify({code:'FIXTURE_UNSCOPED_RPC',message:'Database-wide campaign jobs require a separately isolated pristine target'}),{status:403});
+   const headers=new Headers(init?.headers??(input instanceof Request?input.headers:undefined));
+   const match=/^\/rest\/v1\/([^/]+)$/.exec(url.pathname),table=match?.[1];
+   if(table&&['PATCH','DELETE'].includes(method)){
+--- a/server/test/passport.test.ts
++++ b/server/test/passport.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+ const failingSocialAccountReads = new Set<string>();
+@@ -50,7 +51,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- a/server/test/public-passport.test.ts
++++ b/server/test/public-passport.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG, DEMO_WS } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+ import { createApp } from "../app";
+@@ -50,7 +51,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+@@ -90,7 +91,7 @@
+     const svc = serviceForTests();
+     await svc.from("creator_review_statuses").insert({
+       creator_id: c.userId,
+-      workspace_id: "00000000-0000-0000-0000-0000000000aa",
++      workspace_id: DEMO_WS,
+       status: "flagged",
+       risk_level: "high",
+       summary: "Internal-only summary.",
+@@ -98,7 +99,7 @@
+     });
+     await svc.from("creator_review_notes").insert({
+       creator_id: c.userId,
+-      workspace_id: "00000000-0000-0000-0000-0000000000aa",
++      workspace_id: DEMO_WS,
+       operator_id: "privacy-test",
+       category: "brand_safety",
+       body: "Internal-only note.",
+@@ -144,7 +145,7 @@
+     await svc.from("creator_portfolio_links").insert([
+       {
+         creator_id: c.userId,
+-        workspace_id: "00000000-0000-0000-0000-0000000000aa",
++        workspace_id: DEMO_WS,
+         url: "https://example.com/public-highlight",
+         title: "Public campaign",
+         platform_type: "website",
+@@ -154,7 +155,7 @@
+       },
+       {
+         creator_id: c.userId,
+-        workspace_id: "00000000-0000-0000-0000-0000000000aa",
++        workspace_id: DEMO_WS,
+         url: "https://example.com/private-link",
+         title: "Private campaign",
+         platform_type: "website",
+--- a/server/test/redemption.test.ts
++++ b/server/test/redemption.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
+@@ -14,7 +15,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- a/server/test/rls.test.ts
++++ b/server/test/rls.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+@@ -6,7 +7,7 @@
+ const { app } = createApp();
+ 
+ function call(path: string, jwt: string) {
+-  return app.request(path, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" } });
++  return app.request(path, { headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG } });
+ }
+ 
+ // Integration test — requires a live Supabase (local `supabase start` stack or cloud)
+@@ -46,7 +47,7 @@
+       "ugc-pet",
+       "koc-trial-mask",
+       "ugc-travel",
+-    ]));
++    ].map(fixtureName)));
+   });
+ 
+   it("points history returns an array scoped to the creator", async () => {
+--- a/server/test/social.test.ts
++++ b/server/test/social.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+ import { createApp } from "../app";
+@@ -58,7 +59,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },
+--- /dev/null
++++ b/server/test/support-fresh-scope.test.ts
+@@ -0,0 +1,32 @@
++// @vitest-environment node
++import {afterEach,beforeEach,expect,it,vi} from 'vitest';
++const h=vi.hoisted(()=>({createClient:vi.fn()}));
++vi.mock('@supabase/supabase-js',()=>({createClient:h.createClient}));
++const id='11111111-1111-4111-8111-111111111111',namespace='22222222-2222-4222-8222-222222222222',runId='33333333-3333-4333-8333-333333333333';
++function fresh(patch:Record<string,unknown>={}){
++ vi.stubEnv('INTEGRATION_MUTATION_OWNERSHIP','1');vi.stubEnv('INTEGRATION_FIXTURE_NAMESPACE',namespace);
++ vi.stubEnv('INTEGRATION_TARGET_IDENTITY_JSON',JSON.stringify({runId}));
++ vi.stubEnv('INTEGRATION_FIXTURE_SCOPE_JSON',JSON.stringify({runId,workspaceIds:[id]}));
++ vi.stubEnv('INTEGRATION_FRESH_WORKSPACE_JSON',JSON.stringify({workspaceId:id,slug:`d19-support-${namespace}`,namespace,createdThisRun:true,...patch}));
++}
++beforeEach(()=>{vi.resetModules();vi.clearAllMocks();vi.stubEnv('INTEGRATION_FRESH_WORKSPACE_JSON','');});
++afterEach(()=>vi.unstubAllEnvs());
++it('retains the existing default workspace when fresh support scope is absent',async()=>{
++ const helpers=await import('./helpers');expect(helpers.DEMO_WS).toBe('00000000-0000-0000-0000-0000000000aa');expect(h.createClient).not.toHaveBeenCalled();
++});
++it('uses the exact newly-created support workspace and slug before any client setup',async()=>{
++ fresh();const helpers=await import('./helpers')as Record<string,unknown>;
++ expect(helpers.DEMO_WS).toBe(id);expect(helpers.FIXTURE_WORKSPACE_SLUG).toBe(`d19-support-${namespace}`);expect(h.createClient).not.toHaveBeenCalled();
++});
++it.each([{workspaceId:'invalid'},{createdThisRun:false},{namespace:runId},{slug:'demo'}])('rejects malformed or historical fresh scope before creating a client: %j',async patch=>{
++ fresh(patch);await expect(import('./helpers')).rejects.toThrow(/fresh.*scope/i);expect(h.createClient).not.toHaveBeenCalled();
++});
++it('rejects a workspace outside the exact attested current scope',async()=>{
++ fresh();vi.stubEnv('INTEGRATION_FIXTURE_SCOPE_JSON',JSON.stringify({runId,workspaceIds:[namespace]}));await expect(import('./helpers')).rejects.toThrow(/fresh.*scope/i);expect(h.createClient).not.toHaveBeenCalled();
++});
++it('rejects a fresh workspace without mutation ownership enabled',async()=>{
++ fresh();vi.stubEnv('INTEGRATION_MUTATION_OWNERSHIP','0');await expect(import('./helpers')).rejects.toThrow(/fresh.*scope/i);expect(h.createClient).not.toHaveBeenCalled();
++});
++it('rejects stale target attestation or malformed JSON before any client setup',async()=>{
++ fresh();vi.stubEnv('INTEGRATION_TARGET_IDENTITY_JSON',JSON.stringify({runId:namespace}));await expect(import('./helpers')).rejects.toThrow(/fresh.*scope/i);expect(h.createClient).not.toHaveBeenCalled();
++});
+--- /dev/null
++++ b/server/test/support-rpc-ownership.test.ts
+@@ -0,0 +1,20 @@
++// @vitest-environment node
++import {afterEach,beforeEach,expect,it,vi} from 'vitest';
++beforeEach(()=>{vi.resetModules();vi.stubEnv('SUPABASE_URL','http://127.0.0.1:56521');vi.stubEnv('INTEGRATION_OWNED_IDS_PATH','');vi.stubEnv('INTEGRATION_OWNED_JOURNAL','');});
++afterEach(()=>vi.unstubAllEnvs());
++it.each(['close_due_campaigns','snapshot_campaign_leaderboards'])('blocks the database-wide %s RPC before it can mutate prior fixtures',async name=>{
++ const delegate=vi.fn(async()=>new Response('1',{status:200}));const {createOwnedFixtureFetch}=await import('./ownedFixtureTransport');
++ const response=await createOwnedFixtureFetch(delegate)(`http://127.0.0.1:56521/rest/v1/rpc/${name}`,{method:'POST',body:'{}'});
++ expect(response.status).toBe(403);expect((await response.json()).code).toBe('FIXTURE_UNSCOPED_RPC');expect(delegate).not.toHaveBeenCalled();
++});
++it('cannot make a global RPC safe merely by passing an owned campaign ID',async()=>{
++ const delegate=vi.fn(async()=>new Response('1',{status:200}));const {createOwnedFixtureFetch,captureFixtureRows}=await import('./ownedFixtureTransport');
++ captureFixtureRows('campaigns',{id:'11111111-1111-4111-8111-111111111111'});
++ const response=await createOwnedFixtureFetch(delegate)('http://127.0.0.1:56521/rest/v1/rpc/close_due_campaigns',{method:'POST',body:JSON.stringify({p_campaign:'11111111-1111-4111-8111-111111111111'})});
++ expect(response.status).toBe(403);expect(delegate).not.toHaveBeenCalled();
++});
++it('keeps the existing exact campaign RPC transport intact',async()=>{
++ const delegate=vi.fn(async()=>new Response('{}',{status:200}));const {createOwnedFixtureFetch}=await import('./ownedFixtureTransport');
++ const response=await createOwnedFixtureFetch(delegate)('http://127.0.0.1:56521/rest/v1/rpc/close_campaign',{method:'POST',body:'{}'});
++ expect(response.status).toBe(200);expect(delegate).toHaveBeenCalledOnce();
++});
+--- a/server/test/verificationGate.test.ts
++++ b/server/test/verificationGate.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+ import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
+@@ -23,7 +24,7 @@
+ function req(path: string, jwt: string, init: RequestInit = {}) {
+   return app.request(`/api${path}`, {
+     ...init,
+-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
++    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
+   });
+ }
+ 
+--- a/server/test/wallet.test.ts
++++ b/server/test/wallet.test.ts
+@@ -1,3 +1,4 @@
++import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
+@@ -14,7 +15,7 @@
+     ...init,
+     headers: {
+       Authorization: `Bearer ${jwt}`,
+-      "X-Workspace-Slug": "demo",
++      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+       "Content-Type": "application/json",
+       ...(init.headers ?? {}),
+     },

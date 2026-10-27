@@ -1,0 +1,79 @@
+{
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "metadataFiles": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/adfocate-delivery.json",
+      "beforeSha256": "5dae267872b7ce8bd8ce75cef9afbf80c98dd783b6f640f92f61e8f17f6f64b8",
+      "afterSha256": "4ebedf2d2407e3da9bce2eb2e23a2f2517bf8b3120a97d98ded228045957173c"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/implementation_backlog.csv",
+      "beforeSha256": "ad7d4598394094e09f2afe708c320eaaca5e1206cf9e943719c3e1899fee2252",
+      "afterSha256": "0555248ee98f97f4a8b31cd3d1ff3175f0f9f971e594ecfb044d826f35a37e1a"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/audit_case_coverage.csv",
+      "beforeSha256": "4fc25fda84c95caf53cf07750dc3f74bf9d7d9bc006eb6e581bf7a358188d773",
+      "afterSha256": "a44cdceb99341129fffffaa2589a9e0419a67ee78ea540bce242f6bf3202e2d9"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/adfocate-task-ledger.md",
+      "beforeSha256": "5585ed9af91005d8f7fdc6c429fde4fa083d6ef73f0a92eaac9e1e6bbb5b0f20",
+      "afterSha256": "9c1570ce122a46ed32a6160f2f1b6411eca985631930cf2405759532bb92e824"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/code-fingerprint.json",
+      "beforeSha256": "156781ec3fdde3c09903bc0bfd8f3250cf10a63394504c0565e2841a3209af2b",
+      "afterSha256": "c5a5ecc30f2e96c3b0a3627b6f7432fc8a1baea771779e4308ff9dd2fc691ed8"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/before/2026-10-23-adfocate-implementation-plan.md",
+      "beforeSha256": "ac698c9c6e521b5eb6e095928f46513288af5b3462872dfee6213a7ac1621580",
+      "afterSha256": "0a4f1e39843c27a0d86a9a1023fb63ae8e7d7a7291544042f72ca08a9475f50b"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "scripts/audit/local-targets.mjs",
+      "beforePrivateCopy": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-fix-before/local-targets.mjs",
+      "beforeSha256": "402695168a2b49055823307a4b74ea055132de14c2d3c4097fbeba1b7bb1d2f5",
+      "afterSha256": "ae191c1466b320fffb34625269cb606d4541276c3d8c2acee535b14a7f5fc707"
+    },
+    {
+      "path": "server/test/b2-runtime-manifest.test.ts",
+      "beforePrivateCopy": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-fix-before/b2-runtime-manifest.test.ts",
+      "beforeSha256": "78a2007beb0305817d669ab1d2dae42e443a2dbdb261e9d77bf8bd7b00af32b1",
+      "afterSha256": "0195d6d8be57c641e69a161fd13deaebe126bbcc1e32d326716c79e9f61fb23d"
+    },
+    {
+      "path": "server/test/b2-target-context.test.ts",
+      "beforePrivateCopy": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/identity-fix-before/b2-target-context.test.ts",
+      "beforeSha256": "833de5183ae2d1a9f560ce1e9089ec6e2e7c642b2c91452b5c4f3cc5928cceae",
+      "afterSha256": "37a44c04f409f4ce2f78a07b3a0b0c3ae5ed4888ec1a494138cf55db2cf67774"
+    }
+  ],
+  "codeRollback": "Only restore the three recorded source paths and matching fingerprint from exact before copies if separately desired; preserve every other dirty path. This restores the Docker metadata bug and does not permit a runtime claim.",
+  "dataRollbackExecuted": false,
+  "resourceStopDeleteResetRecreateAllowed": false,
+  "retainedC1ExactIds": {
+    "db": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "auth": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+    "rest": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+    "kong": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "storage": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+  },
+  "retainedNetworkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c",
+  "retainedVolume": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+  "applicationDataCleanup": "None performed or approved; application fixture rows created0. No blanket delete/seed/reset.",
+  "originalIncident": "OPEN/unrestored; no reliable original before image; no guessed restoration or fixture substitution.",
+  "releaseHold": true,
+  "providerEnabled": false,
+  "oldTargetsLifecycleAllowed": false,
+  "originalC1ReceiptsUnmodified": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/private-receipt-preservation.json"
+}

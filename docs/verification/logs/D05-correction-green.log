@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests) 157ms
+ ✓ src/routes/-admin.submissions-evidence.test.tsx (1 test) 139ms
+ ✓ server/test/audit-legacy-evidence.test.ts (7 tests) 6ms
+
+ Test Files  3 passed (3)
+      Tests  10 passed (10)
+   Start at  01:43:13
+   Duration  4.81s (transform 148ms, setup 1.15s, collect 562ms, tests 302ms, environment 4.02s, prepare 558ms)
+

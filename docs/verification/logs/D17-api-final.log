@@ -1,0 +1,44 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T11:56:57.139Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T11:56:57.163Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T11:56:57.211Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T11:56:57.395Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T11:56:57.433Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies signed-in staff with no membership as a scope failure
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T11:56:57.439Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T11:56:57.444Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T11:56:57.479Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a foreign workspace without returning its metrics
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T11:56:57.485Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a Creator as operator
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T11:56:57.492Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-quality.test.ts > D17 exact-owned durable Insights and role scope > denies a Creator as operator
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T11:56:57.526Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-quality.test.ts (5 tests) 3523ms
+   ✓ D17 exact-owned durable Insights and role scope > reloads net posted credits and all 10000 creators in complete HK calendar days 334ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  19:56:53
+   Duration  4.72s (transform 501ms, setup 199ms, collect 30ms, tests 3.52s, environment 697ms, prepare 81ms)
+

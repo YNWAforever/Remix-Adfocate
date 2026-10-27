@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-23T21:17:15.078705+00:00",
+  "status": "NO_SCHEMA_CHANGE",
+  "manifestDigestBefore": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestDigestAfter": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestFileSha256": "3d908920fca9f95f94f219b5ae206672bbaa8773cb5e1db69bd5fb9c898d1bf8",
+  "manifestEntries": 42,
+  "declaredDistinctCapabilities": 587,
+  "effectiveCapabilities": {
+    "count": 584,
+    "source": "Historical D19 owned-target evidence, not re-queried in D20"
+  },
+  "newMigrationFiles": [],
+  "allPriorSqlFilesUnchanged": 73,
+  "objectsRpcGrantsRlsHistory": "No D20 changes or target queries; D19 catalog evidence retained unchanged.",
+  "productionQueried": false,
+  "productionWrites": false,
+  "membershipRoleChanges": false
+}

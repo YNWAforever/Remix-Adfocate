@@ -1,0 +1,75 @@
+{
+  "documentType": "UNFILLED_SOURCE_INTAKE_TEMPLATE_NOT_A_BEFORE_IMAGE",
+  "status": "SOURCE_NOT_PROVIDED",
+  "preparedAt": "2026-10-24T14:52:06.428157+00:00",
+  "sourceReference": "UNKNOWN",
+  "sourceContentSha256": "UNKNOWN",
+  "sourceOwnerAuthorityReference": "UNKNOWN",
+  "captureTimeUTC": "UNKNOWN",
+  "proofSourcePredatesOriginalAffectedRun": "UNKNOWN",
+  "targetLineage": {
+    "projectId": "adfocate-r1-shaped-20261023",
+    "databaseContainerIdAtInvestigation": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+    "dataVolume": "supabase_db_adfocate-r1-shaped-20261023",
+    "historicalIdentityEvidence": "D19-incident-A-identity.json",
+    "snapshotOrBackupLineageReference": "UNKNOWN",
+    "note": "These are identity facts from the saved A investigation, not a new runtime identity gate."
+  },
+  "originalMissingBeforeMd5SetUnmapped": [
+    "2c992a43374bebf71fc3e5237348342e",
+    "32ae750fb714d21fd20f96d7217dbd13",
+    "d04eb0463aebbcf453f566f8af902682"
+  ],
+  "digestMethodReference": "Exact historical full-row PostgreSQL JSONB-to-text MD5 used by the original preservation baseline; preserve original schema and serialization. SHA256 of a supplied file is a separate integrity check.",
+  "rows": [
+    {
+      "campaignId": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "before": {
+        "status": "UNKNOWN",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "originalFullRowMd5": "UNKNOWN",
+      "originalHashProvenanceReference": "UNKNOWN"
+    },
+    {
+      "campaignId": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "before": {
+        "status": "UNKNOWN",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "originalFullRowMd5": "UNKNOWN",
+      "originalHashProvenanceReference": "UNKNOWN"
+    },
+    {
+      "campaignId": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "before": {
+        "status": "UNKNOWN",
+        "closed_at": "UNKNOWN",
+        "updated_at": "UNKNOWN"
+      },
+      "originalFullRowMd5": "UNKNOWN",
+      "originalHashProvenanceReference": "UNKNOWN"
+    }
+  ],
+  "nullSemantics": "UNKNOWN means no evidence. Only replace with JSON null when the trusted original source directly records SQL NULL; do not infer NULL from missing fields.",
+  "acceptance": {
+    "trustedSourceVerified": false,
+    "predatesAffectedRunVerified": false,
+    "exactThreeIdsVerified": false,
+    "originalValuesVerified": false,
+    "idToOriginalHashMapVerified": false,
+    "preciseRestoreEligible": false
+  },
+  "authorization": {
+    "readExistingProvidedArtifactOnly": true,
+    "newPrivilegesOrCloneApproved": false,
+    "restoreApproved": false,
+    "deleteApproved": false,
+    "createDataApproved": false,
+    "incidentClosureApproved": false,
+    "releaseHoldLiftApproved": false
+  },
+  "privacy": "Do not include credentials, tokens, Auth rows or unrelated personal/authored data. The authorized source holder can compute a full-row digest in the already-readable historical source and return only these three rows of required fields plus provenance."
+}

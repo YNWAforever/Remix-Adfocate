@@ -1,0 +1,57 @@
+{
+  "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+  "actorIds": [
+    "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+    "9c7f6aea-9463-4cd2-8bc3-9998941eddba"
+  ],
+  "before": [
+    {
+      "xp": 0,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    {
+      "xp": 6000,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    }
+  ],
+  "after": [
+    {
+      "xp": 0,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    {
+      "xp": 6000,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    }
+  ],
+  "allEqual": true,
+  "note": "Raw balances, XP, ledger counts and reward inventory; no normalization. No reward is awarded for learning."
+}

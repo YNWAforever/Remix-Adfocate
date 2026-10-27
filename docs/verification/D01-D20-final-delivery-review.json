@@ -1,0 +1,1408 @@
+{
+  "schemaVersion": 1,
+  "kind": "D01_D20_FINAL_DELIVERY_REVIEW",
+  "at": "2026-10-24T00:47:53.634748+00:00",
+  "status": "DELIVERY_RECORDS_REVIEWED_LOCAL_ONLY; RELEASE_AND_PILOT_HELD",
+  "scope": "Local delivery-document review only; no source/test/SQL edit, DB access, external service/provider call, data/membership/role mutation, commit/push/merge/deploy.",
+  "identity": {
+    "repo": "YNWAforever/Remix-Adfocate",
+    "remote": "https://github.com/YNWAforever/Remix-Adfocate.git",
+    "worktree": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023",
+    "branch": "codex/adfocate-r1-pilot-20261023",
+    "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+    "comparisonBaseline": "7cfa3dc84c821719a4dff754229a591c81786c53",
+    "commit": null,
+    "dirty": true
+  },
+  "source": {
+    "fingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+    "records": 330,
+    "codeChangedThisReview": false,
+    "latestOfflineEvidence": "D20-test-results.json",
+    "latestRealRuntimeFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+    "runtimeRefreshedThisReview": false
+  },
+  "newResult": {
+    "code": "NO_PRODUCT_SOURCE_CHANGE; existing D01-D20 implementation reviewed",
+    "test": "Bound D20 full1931/skip363, targeted88, original16+194, mockEdge6 and static5 retained; fresh manifest/diff/reverse-check and integrity checks only.",
+    "deployment": "not-deployed",
+    "runtime": "D19 real owned journey/role/funded-neutrality retained at D19 fingerprint; D20/offline and current review do not renew real runtime."
+  },
+  "releaseGateInterpretation": {
+    "R0": "Local baseline/schema/access safeguards verified; production schema still not authorized or certified.",
+    "R1": "D19_VERIFIED_LOCAL_DISPOSABLE_SINGLE_WORKSPACE; current D20 source offline-only; formal pilot held.",
+    "R2": "BOUNDED_LOCAL_IMPLEMENTATION; broader support UI, quality, named owners and hosted acceptance remain open.",
+    "R3": "HELD; real content unavailable, real provider disabled, real quality/usage evaluation not run.",
+    "canDeploy": false,
+    "canEnablePilot": false
+  },
+  "taskCount": 20,
+  "tasks": [
+    {
+      "task": "D01",
+      "title": "確認基線、保留回歸測試及固定release測試時鐘",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Audit 16 reproduced, expiry clock fixed without changing production expiry; 194 original contracts retained.",
+      "evidence": [
+        "logs/D01-baseline.log",
+        "logs/D01-clock-green.log",
+        "logs/audit-16-final.log",
+        "logs/original-194-final.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D02",
+      "title": "修復schema相容性及隔離重演",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Catalog-only production diff; empty and production-shaped replay; forward-only five new SQL files; effective capability lifecycle repaired without changing old SQL checksums.",
+      "evidence": [
+        "schema-diff.json",
+        "empty-replay.json",
+        "shaped-replay.json",
+        "pending-forward-replay.json",
+        "disposable-capabilities.json",
+        "logs/D02-capability-lifecycle-red.log",
+        "logs/release-check-complete.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D03",
+      "title": "統一staff／workspace權限與可恢復登入狀態",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Real human JWT and active single-workspace membership; scope errors separated from schema errors; no interactive secret or domain auto-enrol; stale session response guarded.",
+      "evidence": [
+        "logs/D03-scope-red.log",
+        "logs/D03-scope-green.log",
+        "logs/D03-session-race-red.log",
+        "logs/D05-real-schema-green.log",
+        "logs/R1-disposable-complete.log",
+        "logs/legacy-owned-integration-complete.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D04",
+      "title": "修復假空白及清單／審批錯誤回饋",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Recoverable query/auth/conflict states; retained inputs and stale data where authorized; wallet canonical route and redirect.",
+      "evidence": [
+        "logs/audit-16-final.log",
+        "logs/full-suite-candidate.log",
+        "logs/D07-browser-full-ui-rerun.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D05",
+      "title": "對legacy作品輸入及批准加證據有效性防護",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "All-or-nothing evidence URL validation, legacy invalid approval denied, audited correction; canonical reviewer_notes alias and forward repair.",
+      "evidence": [
+        "logs/D05-evidence-red.log",
+        "logs/D05-evidence-green.log",
+        "logs/D05-correction-red.log",
+        "logs/D05-real-schema-green.log",
+        "logs/R1-disposable-complete.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D06",
+      "title": "CRM決策、備註與audit原子提交及重送去重",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Service-only transactional review/note/audit commands, CAS revision, request receipts, real forced-audit rollback and concurrent replay.",
+      "evidence": [
+        "logs/D06-targeted.log",
+        "logs/audit-16-final.log",
+        "logs/R1-disposable-complete.log",
+        "workflow-runtime.jsonl"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D07",
+      "title": "把既有active交付／proof／reward流程跑通",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Existing workflow/proof/reward engines exercised through real local API and full browser role handoff. Same pending reward/history after reload; pending and cancellation financially neutral.",
+      "evidence": [
+        "logs/R1-disposable-complete.log",
+        "logs/proof-review-real-final.log",
+        "logs/proof-assets-ownership-final.log",
+        "logs/legacy-owned-integration-complete.log",
+        "browser-summary.json",
+        "browser-roundtrip.json",
+        "browser-neutrality.json"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D08",
+      "title": "Creator首頁以當前工作為先並修復導航",
+      "backlogNewResult": "verified-local-and-disposable",
+      "newResult": {
+        "code": "implemented; canonical engines reused",
+        "test": "verified local/full suite and real disposable UI",
+        "deployment": "not-deployed",
+        "runtime": "verified disposable Edge only"
+      },
+      "detail": "D08-delivery.md",
+      "evidence": [
+        "logs/D08-home-red.log",
+        "logs/D08-home-followup-red.log",
+        "logs/D08-home-green.log",
+        "logs/D08-full-suite.log",
+        "logs/D08-browser-final.log",
+        "D08-home-roundtrip.json",
+        "D08-navigation.json",
+        "D08-browser-roundtrip.json",
+        "D08-browser-neutrality.json"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D09",
+      "title": "任務列表DTO、分類與資格一致",
+      "backlogNewResult": "verified-local-and-disposable",
+      "newResult": {
+        "code": "implemented; existing DTO consumers, category list and eligibility extended",
+        "test": "verified local/full suite and real disposable API/UI",
+        "deployment": "not-deployed",
+        "runtime": "verified disposable Edge only"
+      },
+      "detail": "D09-delivery.md",
+      "evidence": [
+        "D09-api-contract.json",
+        "D09-browser-summary.json",
+        "D09-browser-roundtrip.json",
+        "D09-browser-neutrality.json",
+        "D09-schema-observation.json",
+        "logs/D09-contract-green.log",
+        "logs/D09-consumers.log",
+        "logs/D09-general-card-green.log",
+        "logs/D09-integration-green.log",
+        "logs/D09-legacy-integration.log",
+        "logs/D09-browser-final.log",
+        "logs/D09-full-suite.log",
+        "logs/D09-typecheck-final.log",
+        "logs/D09-lint-final.log",
+        "logs/D09-native-esm-node22.log",
+        "logs/D09-build-node22.log",
+        "logs/D09-manifest-check.log",
+        "logs/D09-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D10",
+      "title": "Creator queue服務端分頁與詳情返回上下文",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Existing operator repository extended with scoped DB pagination; 51 actual DB actors, stable pages 25/25/1; query/search/return/focus contracts.",
+      "evidence": [
+        "logs/audit-16-final.log",
+        "logs/R1-disposable-complete.log",
+        "workflow-runtime.jsonl"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D11",
+      "title": "香港到期標籤與雷達直達工作",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "HK calendar-day labels separated from instant overdue; radar targets submission; original 194 fixture clock semantics retained.",
+      "evidence": [
+        "logs/D11-audit-green.log",
+        "logs/original-194-final.log",
+        "logs/audit-16-final.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D12",
+      "title": "任務作者表單以交付要求及預覽編輯",
+      "backlogNewResult": "verified-local-and-disposable",
+      "newResult": {
+        "code": "implemented; existing authoring/RPC/validation/publication components extended",
+        "test": "verified local full suite and real disposable API/UI",
+        "deployment": "not-deployed",
+        "runtime": "verified disposable Edge only"
+      },
+      "detail": "D12-delivery.md",
+      "evidence": [
+        "D12-api-contract.json",
+        "D12-browser-summary.json",
+        "D12-authoring-roundtrip.json",
+        "D12-unknown-policy-roundtrip.json",
+        "D12-navigation.json",
+        "D12-browser-neutrality.json",
+        "D12-schema-observation.json",
+        "D12-fixture-retention.json",
+        "D12-changes.patch",
+        "logs/D12-authoring-final.log",
+        "logs/D12-manage-consumer-green.log",
+        "logs/D12-browser-final.log",
+        "logs/D12-full-suite.log",
+        "logs/D12-typecheck.log",
+        "logs/D12-lint.log",
+        "logs/D12-build-node22.log",
+        "logs/D12-native-esm-node22.log",
+        "logs/D12-manifest-check.log",
+        "logs/D12-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D13",
+      "title": "統一登入、onboarding及社交帳戶projection",
+      "backlogNewResult": "verified-local-and-disposable",
+      "newResult": {
+        "code": "implemented using existing Auth/onboarding/social/Passport modules",
+        "test": "verified local full suite and guarded disposable integration/UI",
+        "deployment": "not-deployed",
+        "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+      },
+      "detail": "D13-delivery.md",
+      "evidence": [
+        "D13-delivery.json",
+        "D13-api-contract.json",
+        "D13-browser-summary.json",
+        "D13-auth-recovery.json",
+        "D13-profile-roundtrip.json",
+        "D13-onboarding-roundtrip.json",
+        "D13-recovery-ui.json",
+        "D13-browser-neutrality.json",
+        "D13-schema-observation.json",
+        "D13-auth-runtime-config.json",
+        "D13-fixture-retention.json",
+        "D13-eslint-scope.json",
+        "D13-post-runtime-format.json",
+        "D13-changes.patch",
+        "logs/D13-targeted-final.log",
+        "logs/D13-browser-verified.log",
+        "logs/D13-full-suite.log",
+        "logs/D13-typecheck.log",
+        "logs/D13-lint.log",
+        "logs/D13-build-node22.log",
+        "logs/D13-native-esm-node22.log",
+        "logs/D13-manifest-check.log",
+        "logs/D13-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D14",
+      "title": "修正公開承諾及未完成課程顯示",
+      "backlogNewResult": "verified-local-and-disposable; D15 original lesson acceptance remains-open",
+      "newResult": {
+        "code": "implemented with existing LEVELS, Academy API/editor and eligibility engine",
+        "test": "verified local full suite and guarded owned integration/UI",
+        "deployment": "not-deployed",
+        "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+      },
+      "detail": "D14-delivery.md",
+      "evidence": [
+        "D14-delivery.json",
+        "D14-api-contract.json",
+        "D14-browser-summary.json",
+        "D14-public-ui.json",
+        "D14-contact-ui.json",
+        "D14-author-ui.json",
+        "D14-creator-ui.json",
+        "D14-browser-neutrality.json",
+        "D14-schema-observation.json",
+        "D14-schema-diff.json",
+        "D14-fixture-retention.json",
+        "D14-changes.patch",
+        "logs/D14-targeted.log",
+        "logs/D14-runtime-verified.log",
+        "logs/D14-full-suite.log",
+        "logs/D14-typecheck.log",
+        "logs/D14-lint.log",
+        "logs/D14-build-node22.log",
+        "logs/D14-manifest-check.log",
+        "logs/D14-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D15",
+      "title": "真正的課程單元及持久化進度",
+      "backlogNewResult": "implemented-verified-local-synthetic; BLOCKED_CONTENT_NOT_PROVIDED",
+      "newResult": {
+        "code": "implemented by extending existing Academy editor/routes and canonical eligibility; versioned units and durable self-only progress",
+        "test": "verified local full suite and scoped owned synthetic integration/UI",
+        "deployment": "not-deployed",
+        "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+      },
+      "detail": "D15-delivery.md",
+      "evidence": [
+        "D15-delivery.json",
+        "D15-api-contract.json",
+        "D15-browser-summary.json",
+        "D15-author-ui.json",
+        "D15-creator-ui.json",
+        "D15-isolation-ui.json",
+        "D15-conflict-ui.json",
+        "D15-browser-neutrality.json",
+        "D15-schema-before.json",
+        "D15-schema-after.json",
+        "D15-schema-diff.json",
+        "D15-db-lint.json",
+        "D15-forward-replay.json",
+        "D15-forward-correction.json",
+        "D15-forward-index.json",
+        "D15-fixture-retention.json",
+        "D15-changes.patch",
+        "logs/D15-targeted.log",
+        "logs/D15-api-final.log",
+        "logs/D15-browser-final.log",
+        "logs/D15-full-suite.log",
+        "logs/D15-typecheck.log",
+        "logs/D15-lint.log",
+        "logs/D15-build-node22.log",
+        "logs/D15-manifest-check.log",
+        "logs/D15-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D16",
+      "title": "修復現有AI生成、保存及重試可靠性",
+      "backlogNewResult": "verified-local",
+      "newResult": {
+        "code": "implemented-or-existing extended",
+        "test": "see gates/evidence",
+        "deployment": "not-deployed",
+        "runtime": "local/disposable only"
+      },
+      "detail": "Existing assistant uses service-only reserve/claim/save/unknown state, shared quota, bounded input and provider deadline; no automatic re-generation of unknown outcome.",
+      "evidence": [
+        "logs/full-suite-candidate.log",
+        "logs/R1-disposable-complete.log",
+        "logs/legacy-owned-integration-complete.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D17",
+      "title": "效能、可存取性及產品結果量度",
+      "backlogNewResult": "implemented-verified-bounded-local; native-device/hosted/owner limits retained",
+      "newResult": {
+        "code": "extended existing Insights/metrics/events; measured vendor partitions, responsive controls, readable retry and input/focus preservation",
+        "test": "verified selected local scope; full suite plus 5 real local API and 5 Edge cases",
+        "deployment": "not-deployed",
+        "runtime": "1k/10k queue totals; 300 API reads, 24 UI interactions; known-ledger HK windows, 5 page axe scans and raw financial neutrality"
+      },
+      "detail": "2026-10-23-adfocate-quality.md",
+      "evidence": [
+        "D17-delivery.json",
+        "2026-10-23-adfocate-quality.md",
+        "D17-browser-final.json",
+        "D17-responsive.json",
+        "D17-dialog.json",
+        "D17-insights-ui.json",
+        "D17-accessibility-scans.json",
+        "D17-api-contract.json",
+        "D17-performance-summary.json",
+        "D17-runtime-performance.json",
+        "D17-api-performance.json",
+        "D17-bundle-unsplit.json",
+        "D17-bundle-after.json",
+        "D17-neutrality-final.json",
+        "D17-schema-diff.json",
+        "D17-schema-after.json",
+        "D17-advisor-review.json",
+        "D17-advisor-catalog.json",
+        "D17-advisor-dispositions.csv",
+        "D17-fixture-retention.json",
+        "D17-scale-ids.json",
+        "D17-environment.json",
+        "D17-test-history.json",
+        "D17-changes.patch",
+        "logs/D17-targeted-final.log",
+        "logs/D17-api-final.log",
+        "logs/D17-browser-final.log",
+        "logs/D17-full-suite.log",
+        "logs/D17-typecheck-final.log",
+        "logs/D17-lint-final.log",
+        "logs/D17-manifest-final.log",
+        "logs/D17-build-node22.log",
+        "logs/D17-diff-check.log"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D18",
+      "title": "營運角色能力分離及安全銜接",
+      "backlogNewResult": "implemented-verified-bounded-local; real-staff-transition-open",
+      "newResult": {
+        "code": "explicit workspace/platform capabilities on existing admin gates; transactional audited revisioned grants, zero automatic promotion, role-aware shell and recoverable denial",
+        "test": "216 targeted; 1849 full pass / 363 skip; 16 audit +194 contracts; 8 real API +4 Edge",
+        "deployment": "not-deployed",
+        "runtime": "owned disposable Auth/API/RLS role matrix and same-session revocation; Creator→reviewer→operator→finance durable pending handoff; raw neutral delivery snapshots"
+      },
+      "detail": "2026-10-23-adfocate-staff-access.md",
+      "evidence": [
+        "2026-10-23-adfocate-staff-access.md",
+        "D18-access-impact-before.json",
+        "D18-advisor-dispositions.csv",
+        "D18-advisor-review.json",
+        "D18-advisors.json",
+        "D18-api-contract.json",
+        "D18-browser-neutrality.json",
+        "D18-browser-summary.json",
+        "D18-changes.patch",
+        "D18-delivery.json",
+        "D18-delivery.md",
+        "D18-existing-join-contract.json",
+        "D18-finance-ui.json",
+        "D18-fixture-retention.json",
+        "D18-fixtures.jsonl",
+        "D18-forward-replay.json",
+        "D18-handoff-ui.json",
+        "D18-initial-green-browser-neutrality.json",
+        "D18-initial-green-browser-summary.json",
+        "D18-platform-ui.json",
+        "D18-prior-api-contract.json",
+        "D18-prior-code-fingerprint.json",
+        "D18-prior-delivery.json",
+        "D18-prior-evidence-integrity.json",
+        "D18-reviewer-ui.json",
+        "D18-schema-after.json",
+        "D18-schema-before.json",
+        "D18-schema-diff.json",
+        "D18-suite-results.json",
+        "D18-targeted-results.json",
+        "D18-test-history.json"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D19",
+      "title": "整合107案例、發布證據與受控pilot交接",
+      "backlogNewResult": "R1_VERIFIED_LOCAL_DISPOSABLE_SINGLE_WORKSPACE; production pilot not enabled; formal staff handoff open",
+      "newResult": {
+        "code": "Existing workflow/proof/reward/release foundation reused; one forward legacy ACL repair; only necessary fixture, transport and release validator extensions",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Verified owned single-workspace legacy→reviewer→active revision/proof→operator completion→Creator/operator/finance reload; funded pending/cancel/reapproval neutrality; no production or real staff transition"
+      },
+      "detail": "2026-10-24-adfocate-pilot-readiness.md",
+      "evidence": [
+        "D19-delivery.json",
+        "D19-case-coverage.json",
+        "D19-schema-diff.json",
+        "D19-test-results.json",
+        "D19-browser-neutrality.json"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    },
+    {
+      "task": "D20",
+      "title": "嵌入式AI brief coach與審稿摘要試行",
+      "backlogNewResult": "OFFLINE_IMPLEMENTED_MOCK_VERIFIED_LIVE_DISABLED",
+      "newResult": {
+        "code": "OFFLINE_IMPLEMENTED; existing assistant/context/read-only summary and on-demand deterministic checklist; live provider disabled",
+        "test": "88 targeted; 1931 full passed /363 environment-gated skipped /272 files; original16+194; 6 Edge offline mock cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "PASS_OFFLINE_MOCK_ONLY; no new Auth/RLS/DB/real-provider integration"
+      },
+      "detail": "Embedded brief coach and review summary: offline implementation/mock verification only; live provider disabled.",
+      "evidence": [
+        "D20-delivery.json",
+        "D20-case-coverage.json",
+        "adfocate-assistant-evaluation.md"
+      ],
+      "review": "Evidence paths and source binding checked; task results are historical at their recorded fingerprints, not freshly re-executed."
+    }
+  ],
+  "caseCoverage": {
+    "auditCases": 107,
+    "findings": [
+      {
+        "id": "F01",
+        "title": "正式資料庫缺少已部署任務工作流程結構",
+        "newResult": "verified-local-schema; production-unresolved; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F02",
+        "title": "我的任務把讀取失敗顯示成沒有任務",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F03",
+        "title": "首頁錢包 CTA 連到不存在的路由",
+        "newResult": "D04 fix retained; D08 canonical/legacy wallet UI and hard reload verified; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable Edge; not production"
+      },
+      {
+        "id": "F04",
+        "title": "營運 Creator 清單無法到第 26 人",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F05",
+        "title": "後台清單及審批失敗缺乏可見回饋",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F06",
+        "title": "已申請及被拒申請在我的任務消失",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F07",
+        "title": "任務清單 API 未回傳 UI 所需決策欄位",
+        "newResult": "D09 verified-local-and-disposable; original production result retained; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "real disposable API/Edge; not production"
+      },
+      {
+        "id": "F08",
+        "title": "任務分類篩選與既有任務分類不一致",
+        "newResult": "D09 verified-local-and-disposable; original production result retained; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "real disposable API/Edge; not production"
+      },
+      {
+        "id": "F09",
+        "title": "社交帳戶分成兩套資料與介面",
+        "newResult": "verified-local-and-disposable; not production; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "D13 private source/sync/ownership projection and shared email access; real local Auth/API/Storage and Edge; no external provider acceptance"
+      },
+      {
+        "id": "F10",
+        "title": "主要導航缺少我的任務；手機底欄過於擠迫",
+        "newResult": "D08 navigation retained; D17 selected 5-page reflow, keyboard focus and axe checks verified local; native zoom/device/whole-site acceptance open; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "5 Edge quality cases; simulated 360/390/768 and 200% reflow only"
+      },
+      {
+        "id": "F11",
+        "title": "正式域名聯絡表格仍是預覽",
+        "newResult": "verified-local-and-disposable; not production; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+      },
+      {
+        "id": "F12",
+        "title": "公開頁示範等級及數字與正式規則矛盾",
+        "newResult": "verified-local-and-disposable; not production; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+      },
+      {
+        "id": "F13",
+        "title": "登入品牌與主要文案不一致",
+        "newResult": "verified-local-and-disposable; not production; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "D13 private source/sync/ownership projection and shared email access; real local Auth/API/Storage and Edge; no external provider acceptance"
+      },
+      {
+        "id": "F14",
+        "title": "標示四堂課的學院課程只有一段簡介",
+        "newResult": "D14 honest display + D15 versioned units/progress verified synthetic; original four-real-lessons acceptance BLOCKED_CONTENT_NOT_PROVIDED; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+      },
+      {
+        "id": "F15",
+        "title": "後台認證錯誤狀態無法可靠恢復",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F16",
+        "title": "舊CRM與審批權限範圍過廣；新工作流另有workspace驗證",
+        "newResult": "D03+D18 verified-local explicit capabilities; real staff owner transition/hosted acceptance open; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "owned Auth/API/RLS role matrix +same-session revoke +4 Edge; D18-delivery.json"
+      },
+      {
+        "id": "F17",
+        "title": "發佈測試依賴固定過期日期",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F18",
+        "title": "Creator queue 先全取資料，客戶端每鍵搜尋；首包偏大",
+        "newResult": "D10 server queue retained; D17 1k/10k totals and 300 API reads +24 UI interactions measured. Entry smaller; total initial gzip slightly larger, no speed gain claim; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "D17-performance-summary.json; suggested local API/vital budgets met, production not measured"
+      },
+      {
+        "id": "F19",
+        "title": "AI 聊天成功回應未核對儲存結果",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F20",
+        "title": "資料庫安全及效能 advisors 有待分級覆核",
+        "newResult": "partial-local-review: 463 notices dispositioned with owner role/risk/validation; no policies/grants widened. Named owner and hosted acceptance pending; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "D17-advisor-review.json; exact-owned local catalogs only; production not queried"
+      },
+      {
+        "id": "F21",
+        "title": "CRM多步寫入失敗後留下部分結果，備註重試可重複",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F22",
+        "title": "審核佇列以UTC日期判斷今天，香港跨日標籤錯誤",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F23",
+        "title": "快速Flag跳過具體原因並直接設定高風險",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F24",
+        "title": "Creator個案離開統一後台導航，返回清單丟失篩選",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F25",
+        "title": "Staff可選workspace但缺少工作流資格，錯誤未提供處理方向",
+        "newResult": "D03+D18 verified-local explicit capabilities; real staff owner transition/hosted acceptance open; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "owned Auth/API/RLS role matrix +same-session revoke +4 Edge; D18-delivery.json"
+      },
+      {
+        "id": "F26",
+        "title": "無效作品網址進入審批，普通批准仍可操作",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      },
+      {
+        "id": "F27",
+        "title": "營運表單暴露JSON及程式欄位，缺少業務化編輯",
+        "newResult": "partial: D12 retained; D15 labelled lesson authoring/preview/order/conflict recovery verified local/disposable; existing parent track Metadata(JSON) editor still exposed; approved content blocked",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+      },
+      {
+        "id": "F28",
+        "title": "雷達提示逾期但沒有直接處理入口",
+        "newResult": "implemented-and-verified-local; D19 final local contract/support/role validation reviewed; runtime scope and outstanding limits: D19-case-coverage.json",
+        "deploymentStatus": "not-deployed",
+        "runtimeStatus": "disposable-only"
+      }
+    ],
+    "newProductGroups": 12,
+    "auditCaseCounts": {
+      "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained": 49,
+      "PASS_FRESH_OWNED_CORE_OR_ROLE": 38,
+      "PASS_FRESH_OWNED_SUPPORT_API_DB": 9,
+      "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN": 5,
+      "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open": 2,
+      "PASS_FRESH_LOCAL_CONTRACT; D17_manual_hosted_limits_OPEN": 3,
+      "blocked-production": 1
+    },
+    "classificationScope": "D19 coverage retained; D20 offline contracts do not imply fresh per-case runtime.",
+    "fivePartialUiCases": [
+      "UC-C15",
+      "UC-C16",
+      "UC-C17",
+      "UC-A45",
+      "UC-A49"
+    ],
+    "contentBlocked": [
+      "UC-C18",
+      "UC-A51"
+    ],
+    "qualityHostedLimits": [
+      "UC-Q01",
+      "UC-Q02",
+      "UC-Q03"
+    ],
+    "hostedBlocked": [
+      "UC-R03"
+    ],
+    "originalCsvFieldsChecked": 1645,
+    "allOriginalAuditResultsPreserved": true,
+    "newProductResults": [
+      {
+        "id": "N01",
+        "task": "D08",
+        "newResult": "pass-unit-and-disposable-ui; same real fixture progresses through all three states; one primary action; reload preserves state",
+        "releaseScope": "D08 local/disposable verified; not deployed"
+      },
+      {
+        "id": "N02",
+        "task": "D12",
+        "newResult": "pass-unit-real-api-and-disposable-ui; unknown nested keys preserved on edit/save/hard reload; invalid raw JSON blocked",
+        "releaseScope": "R2 D12 local/disposable verified; not deployed"
+      },
+      {
+        "id": "N03",
+        "task": "D15",
+        "newResult": "PASS-local-synthetic-functional: 2 units / 2 Creators / version history; real curriculum BLOCKED_CONTENT_NOT_PROVIDED",
+        "releaseScope": "Local/disposable N03 only; UC-C18/UC-A51 original four-real-lessons acceptance remains open"
+      },
+      {
+        "id": "N04",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N05",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N06",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N07",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N08",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N09",
+        "task": "D20",
+        "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+        "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+      },
+      {
+        "id": "N10",
+        "task": "D10",
+        "newResult": "pass-local",
+        "releaseScope": "R1"
+      },
+      {
+        "id": "N11",
+        "task": "D18",
+        "newResult": "PASS_LOCAL_DISPOSABLE_D18_D19; formal_staff_transition_NOT_RUN",
+        "releaseScope": "D18/D19 exact-owned single-workspace role denial/RLS; 8 real role API cases and 78 HTTP observations; D20 offline boundary retained; no production grants/membership/cutover"
+      },
+      {
+        "id": "N12",
+        "task": "D02",
+        "newResult": "pass-identity-gate",
+        "releaseScope": "R1"
+      }
+    ]
+  },
+  "recordCorrections": [
+    {
+      "id": "N11_NEWRESULT",
+      "prior": "not-run",
+      "newResult": "PASS_LOCAL_DISPOSABLE_D18_D19; formal_staff_transition_NOT_RUN",
+      "unchangedOriginalResult": "not-run",
+      "changedFields": [
+        "newResult",
+        "releaseScope"
+      ],
+      "evidence": [
+        "D18-api-contract.json",
+        "D19-api-contract.json",
+        "logs/D19-role-funded-final.log",
+        "D19-test-results.json",
+        "D18-browser-summary.json"
+      ],
+      "note": "Real-role8 and HTTP78 are historical owned D18/D19 evidence, not skipped D20 integration or formal staff cutover."
+    },
+    {
+      "id": "PER_FILE_SKIP_ACCOUNTING",
+      "appendOnlyCorrection": "final-review-test-accounting.json",
+      "affectedHistoricalReports": [
+        "D19-test-results.json",
+        "D20-test-results.json"
+      ],
+      "filesWithCounterMismatchPerReport": 54,
+      "skippedPerReport": 363,
+      "originalReportsAndAssertionsUnchanged": true,
+      "passTotalsUnchanged": true
+    }
+  ],
+  "testEvidence": {
+    "latestOffline": {
+      "sourceFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+      "fullPassed": 1931,
+      "fullSkipped": 363,
+      "failed": 0,
+      "actualFiles": 272,
+      "targetedPassed": 88,
+      "targetedFiles": 11,
+      "audit16": 16,
+      "protected194": 194,
+      "mockGoldenCases": 24,
+      "mockEdge": 6,
+      "staticGateCount": 5,
+      "commands": {
+        "targeted": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run server/lib/assistant src/components/assistant server/test/mission-assist.test.ts --maxWorkers=1 --minWorkers=1 --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D20-targeted.json",
+        "full": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --no-file-parallelism --reporter=dot --reporter=json --outputFile=.codex-tmp/D20-full-suite.json",
+        "browser": "npm exec --offline --yes --package=node@22 -- node node_modules/@playwright/test/cli.js test -c playwright.assistant.config.ts"
+      },
+      "static": [
+        {
+          "name": "typecheck",
+          "command": [
+            "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "type-check"
+          ],
+          "exit": 0,
+          "durationMs": 23033
+        },
+        {
+          "name": "harness-typecheck",
+          "command": [
+            "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+            "node_modules/typescript/bin/tsc",
+            "--noEmit",
+            "-p",
+            ".codex-tmp/tsconfig.D20.json"
+          ],
+          "exit": 0,
+          "durationMs": 18931
+        },
+        {
+          "name": "lint",
+          "command": [
+            "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "lint"
+          ],
+          "exit": 0,
+          "durationMs": 35953
+        },
+        {
+          "name": "manifest",
+          "command": [
+            "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "release:manifest:check"
+          ],
+          "exit": 0,
+          "durationMs": 2760
+        },
+        {
+          "name": "build",
+          "command": [
+            "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+            "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "build"
+          ],
+          "exit": 0,
+          "durationMs": 32053
+        }
+      ],
+      "logs": [
+        "logs/D20-red.log",
+        "logs/D20-route-red.log",
+        "logs/D20-live-guard-red.log",
+        "logs/D20-recovery-red.log",
+        "logs/D20-input-red.log",
+        "logs/D20-envelope-red.log",
+        "logs/D20-approved-anchor-red.log",
+        "logs/D20-approved-ui-red.log",
+        "logs/D20-targeted.log",
+        "logs/D20-full-suite.log",
+        "logs/D20-typecheck.log",
+        "logs/D20-harness-typecheck.log",
+        "logs/D20-lint.log",
+        "logs/D20-manifest.log",
+        "logs/D20-build.log",
+        "logs/D20-browser.log",
+        "logs/D20-browser-runner-initial.log",
+        "logs/D20-browser-harness-attempt.log",
+        "logs/D20-full-suite-before-approval-anchor.log",
+        "logs/D20-typecheck-test-annotation.log"
+      ],
+      "suiteRerunThisReview": false
+    },
+    "latestRealOwned": {
+      "sourceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "fullPassed": 1867,
+      "fullSkipped": 363,
+      "support": 441,
+      "proofPreflight": 3,
+      "roleApi": 8,
+      "roleHttpObservations": 78,
+      "coreApi": 9,
+      "edge": 5,
+      "requiredIntegrationSkipped": 0,
+      "gates": [
+        {
+          "gate": "full-suite",
+          "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D19-full-suite.json",
+          "passed": 1867,
+          "skipped": 363,
+          "files": 269,
+          "log": "logs/D19-full-suite.log",
+          "environment": "RUN_INTEGRATION=0 RUN_AUDIT_INTEGRATION=0; DB/provider keys empty; Node22.23.4"
+        },
+        {
+          "gate": "support",
+          "command": "npm exec --offline --yes --package=node@22 -- node scripts/audit/run-pilot-support.mjs",
+          "passed": 441,
+          "skipped": 0,
+          "files": 40,
+          "log": "logs/D19-support-final.log",
+          "target": "owned shaped"
+        },
+        {
+          "gate": "proof-preflight",
+          "passed": 3,
+          "skipped": 0,
+          "files": 1,
+          "command": "same support runner, fail-closed preflight before business suites",
+          "log": "logs/D19-support-final.log"
+        },
+        {
+          "gate": "role-api",
+          "command": "ADFOCATE_ACCEPTANCE_TASK=D19 npm exec --offline --yes --package=node@22 -- node scripts/audit/run-integration.mjs staff",
+          "passed": 8,
+          "httpObservations": 78,
+          "log": "logs/D19-role-funded-final.log"
+        },
+        {
+          "gate": "core-api",
+          "command": "ADFOCATE_ACCEPTANCE_TASK=D19 npm exec --offline --yes --package=node@22 -- node scripts/audit/run-integration.mjs pilot",
+          "passed": 9,
+          "log": "logs/D19-core-funded-final.log"
+        },
+        {
+          "gate": "browser",
+          "command": "npm exec --offline --yes --package=node@22 -- node scripts/audit/run-pilot-browser.mjs",
+          "passed": 5,
+          "log": "logs/D19-browser-funded-final.log",
+          "browser": "Edge/Playwright on local target; real Creator 密碼 login; actual reviewer/operator/finance sessions"
+        },
+        {
+          "gate": "typecheck",
+          "command": "npm run type-check",
+          "exit": 0,
+          "log": "logs/D19-type-final.log"
+        },
+        {
+          "gate": "lint",
+          "command": "npm run lint",
+          "exit": 0,
+          "preExistingWarnings": 4,
+          "log": "logs/D19-lint-final.log"
+        },
+        {
+          "gate": "manifest",
+          "command": "npm run release:manifest:check (cached Node22/vite-node)",
+          "exit": 0,
+          "log": "logs/D19-manifest-final.log"
+        },
+        {
+          "gate": "build/native-esm",
+          "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+          "exit": 0,
+          "log": "logs/D19-build-final.log"
+        },
+        {
+          "gate": "diff",
+          "command": "git diff --check",
+          "exit": 0,
+          "log": "logs/D19-diff-check.log"
+        }
+      ],
+      "identity": [
+        {
+          "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+          "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+          "disposable": true,
+          "projectId": "adfocate-r1-empty-20261023",
+          "proxy": "none",
+          "apiPort": 56421,
+          "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+          "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+          "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+          "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+          "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        },
+        {
+          "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+          "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+          "disposable": true,
+          "projectId": "adfocate-r1-shaped-20261023",
+          "proxy": "none",
+          "apiPort": 56521,
+          "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+          "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+          "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+          "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+          "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      ],
+      "identityCheckedNow": false
+    },
+    "freshChecks": [
+      {
+        "command": "git diff --check",
+        "exit": 0,
+        "mutatedFiles": false
+      },
+      {
+        "command": "git apply --check --reverse --ignore-space-change docs/verification/D20-changes.patch",
+        "exit": 0,
+        "mutatedFiles": false
+      }
+    ],
+    "manifestToolReceipt": {
+      "command": "npm exec --offline --yes --package=node@22 -- npm run release:manifest:check",
+      "exit": 0,
+      "digest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+      "toolSession": 72018,
+      "toolOutputChunks": [
+        "807fa5",
+        "2c10f1"
+      ],
+      "warning": "Existing _site.smoke.test.tsx route-discovery warning retained.",
+      "receiptType": "Observed tool output; no database access or release action."
+    },
+    "normalisedPerFileAccounting": "final-review-test-accounting.json",
+    "protectedContractSemantics": "194 passed; nine files equal baseline canonical bytes; one has only the previously documented HK-calendar reviewDueAt fixture-time correction. Assertions unchanged.",
+    "fullSuiteSkipMeaning": "363 environment-gated assertions are not PASS; real D19 necessary integrations have separate non-skipped evidence."
+  },
+  "schema": {
+    "manifest": "../../supabase/release-manifest.json",
+    "digest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "manifestEntries": 42,
+    "declaredDistinctCapabilities": 587,
+    "effectiveCapabilities": {
+      "count": 584,
+      "source": "Historical D19 two-owned-target catalog; no DB query this review"
+    },
+    "diffs": [
+      "schema-diff.json",
+      "D15-schema-diff.json",
+      "D18-schema-diff.json",
+      "D19-schema-diff.json",
+      "D20-schema-diff.json"
+    ],
+    "migrationChecksumsVerifiedLocally": 42,
+    "newMigrationsThisReview": [],
+    "productionCatalogObservation": "Historical D02 observed missing tables; no fresh production query or claim this review.",
+    "schemaAndMembershipMissingAreSeparate": true,
+    "singleWorkspacePrimaryKeyPreserved": true,
+    "productionWrites": false,
+    "historyRepair": false
+  },
+  "financialNeutrality": {
+    "scope": "D19 funded pending completion/cancel/reapproval only; not the full legacy issuance journey.",
+    "browserRawBefore": {
+      "xp": 145,
+      "budget": 8875,
+      "points": 550,
+      "cashLedger": 1,
+      "pointLedger": 1,
+      "redemptions": 0,
+      "budgetLedger": 1,
+      "withdrawable": 125,
+      "rewardInventory": [
+        {
+          "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    "browserRawAfter": {
+      "xp": 145,
+      "budget": 8875,
+      "points": 550,
+      "cashLedger": 1,
+      "pointLedger": 1,
+      "redemptions": 0,
+      "budgetLedger": 1,
+      "withdrawable": 125,
+      "rewardInventory": [
+        {
+          "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    "checks": {
+      "financialSnapshotEqual": true,
+      "legacyIssuedAnchorsEqual": true,
+      "onePendingReward": true,
+      "fundedBudget": true,
+      "inventoryNonEmpty": true,
+      "persistedAfterReload": true
+    },
+    "allEqual": true,
+    "legacyAccounting": "Existing legacy approval issues its pre-existing rewards and can debit the enforced budget. Those raw persisted anchors precede the measured pending handoff and are not reset or called neutral. Pending completion creates no payment/ledger/withdrawable/budget/inventory mutation.",
+    "cancelReapproval": "workflow-runtime.jsonl: D07-core/D19-reapproval rows for current core run; one pending plus retained cancelled predecessor",
+    "newRuntimeOrFinancialQueryThisReview": false,
+    "evidence": [
+      "D19-browser-neutrality.json",
+      "D19-api-contract.json",
+      "workflow-runtime.jsonl",
+      "D19-browser-summary.json"
+    ]
+  },
+  "blockedAndUntested": [
+    {
+      "id": "D15_CONTENT",
+      "status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "cases": [
+        "UC-C18",
+        "UC-A51"
+      ],
+      "missing": "Four approved real lessons; user explicitly confirmed no approved material.",
+      "next": "Resume D15 only after approved repo content/reference; preserve original four-real-lessons semantics."
+    },
+    {
+      "id": "FORMAL_STAFF",
+      "status": "NOT_AUTHORIZED_NOT_RUN",
+      "missing": "Exact existing staff/workspace list, named owner, minimum grant/bootstrap and cutover authorization.",
+      "next": "Keep active membership and explicit capability gates; brand_users.user_id remains single-workspace primary key."
+    },
+    {
+      "id": "R2_SUPPORT_UI",
+      "status": "PARTIAL",
+      "cases": [
+        "UC-C15",
+        "UC-C16",
+        "UC-C17",
+        "UC-A45",
+        "UC-A49"
+      ],
+      "missing": "Broader redemption/challenge/Academy/application/content UI acceptance; API evidence is bounded.",
+      "next": "Define enabled product scope, verify each UI and resolve failures; no implicit owner waiver."
+    },
+    {
+      "id": "F27_PARENT_EDITOR",
+      "status": "PARTIAL",
+      "missing": "Existing parent track Metadata(JSON) editor remains exposed.",
+      "next": "Continue business-form editing only within a separately selected task scope; D12/D15 functional work retained."
+    },
+    {
+      "id": "D17_QUALITY_F20",
+      "status": "BOUNDED_LOCAL_ONLY",
+      "cases": [
+        "UC-Q01",
+        "UC-Q02",
+        "UC-Q03"
+      ],
+      "missing": "Native zoom, physical devices, Safari/WebKit, manual AT, hosted/field performance, named advisor owners and some durable outcome inputs.",
+      "next": "Retain unavailable measurements and historical 463/471 advisor snapshots; validate actual hosted scope before performance/accessibility claims."
+    },
+    {
+      "id": "D20_LIVE_PROVIDER",
+      "status": "DISABLED_NOT_RUN",
+      "cases": [
+        "N04",
+        "N05",
+        "N06",
+        "N07",
+        "N08",
+        "N09"
+      ],
+      "missing": "Real answer-quality >=90% evaluation, actual token/latency/cost evidence and reviewed D16 durable staff/context-bound quota/request/crash/replay.",
+      "next": "Keep real provider and live generation disabled; mock structural safety scores cannot establish model quality. Separate authorization required before live calls."
+    },
+    {
+      "id": "CURRENT_RUNTIME",
+      "status": "D19_HISTORICAL_ONLY",
+      "missing": "Complete real Auth/RLS/DB/legacy/active/roles/neutrality run for current D20 source.",
+      "next": "On a settled later candidate, verify exact isolated identity before clients/setup and refresh necessary integration/E2E according to changed dependencies."
+    },
+    {
+      "id": "HOSTED_RELEASE_UC_R03",
+      "status": "HELD_NOT_DEPLOYED",
+      "cases": [
+        "UC-R03"
+      ],
+      "missing": "Reviewed candidate commit, exact CI/deployment SHA, current target-bound read-only schema/RPC/grants/RLS/history preflight, named operator/rollback owner/ticket and fresh protected evidence.",
+      "next": "Use prepared release-review-request.json; canDeploy/canEnablePilot stay false. Never extend old expiry or blind db push."
+    },
+    {
+      "id": "PILOT_OBSERVER",
+      "status": "NOT_ENABLED_NOT_RUN",
+      "missing": "Formal pilot enablement and consecutive seven-day observation/exit sign-off.",
+      "next": "Only after exact release prerequisites and contemporaneous authorization."
+    },
+    {
+      "id": "EXTERNAL_ACTIONS",
+      "status": "MOCK_OR_NOT_RUN",
+      "missing": "Real notifications/invites/email/SMS, social metadata/publication, paid AI, payments/withdrawal provider acceptance.",
+      "next": "Keep sandbox/mock labels; no external action or cost authorized here."
+    },
+    {
+      "id": "AUDIT_ARCHIVE_BYTES",
+      "status": "NOT_AVAILABLE_AT_EXACT_PATH",
+      "missing": "C:/Users/laich/Downloads/Adfocate_Audit_Test_Pack_2026-10-22.zip",
+      "next": "Retain historical receipt and expected hash; fresh archive-byte verification needs the original readable ZIP."
+    }
+  ],
+  "rollback": {
+    "D20Patch": {
+      "path": "D20-changes.patch",
+      "reverseCheckOnly": true,
+      "checkPassed": true,
+      "applied": false
+    },
+    "earlierPatches": "Per-task dependency/hunk review required; overlapping earlier patches not all reverse-checked on current layered worktree. No bulk revert/reset/clean.",
+    "security": "Keep membership/capability and legacy ACL fail-closed; restoring pre-D18 server/broad grants requires explicit security/owner review; prefer compatible forward repair.",
+    "schemaAndData": "Retain forward migration history/checksums, audit/proof/reward/ledger and exact fixture IDs. No down/reset/blind push or broad cleanup.",
+    "hostedRollback": "NOT_RUN_NOT_AUTHORIZED; previous compatible live SHA and named rollback owner remain unbound.",
+    "reviewBeforeImages": [
+      "final-review-prior-delivery.json",
+      "final-review-prior-evidence-integrity.json",
+      "final-review-prior-new-product-acceptance-cases.csv"
+    ],
+    "afterAnySourceRepair": "Regenerate source fingerprint, rerun affected gates and bind fresh release evidence; no expiry extension."
+  },
+  "nextTask": {
+    "id": "D15",
+    "status": "BLOCKED_CONTENT_NOT_PROVIDED",
+    "scope": "Resume approved real lessons only when content is supplied; D20 live evaluation/activation stays blocked pending separate authorization and durable staff-request review."
+  },
+  "noD21Defined": true,
+  "releaseReview": "release-review-request.json",
+  "protectedEvidenceChanged": false,
+  "originalAuditArchive": {
+    "pathChecked": "C:/Users/laich/Downloads/Adfocate_Audit_Test_Pack_2026-10-22.zip",
+    "present": false,
+    "expectedSha256": "0a9d6b96c5e7e216489b80abd45c28731d8e378eeaa6316158340e780bc859e8",
+    "newArchiveHashVerified": false,
+    "scope": "One exact-path check only; prior audit evidence/test imports retained, no archive search or fabricated verification."
+  },
+  "changesThisReview": {
+    "modified": [
+      "docs/verification/adfocate-delivery.json",
+      "docs/verification/new_product_acceptance_cases.csv",
+      "docs/verification/evidence-integrity.json"
+    ],
+    "added": [
+      "docs/verification/D01-D20-final-delivery-review.md",
+      "docs/verification/D01-D20-final-delivery-review.json",
+      "docs/verification/final-review-integrity.json",
+      "docs/verification/final-review-changed-files.json",
+      "docs/verification/final-review-test-accounting.json",
+      "docs/verification/final-review-prior-delivery.json",
+      "docs/verification/final-review-prior-evidence-integrity.json",
+      "docs/verification/final-review-prior-new-product-acceptance-cases.csv",
+      "docs/verification/logs/final-review-local-checks.log"
+    ],
+    "sourceFilesChanged": 0,
+    "commit": null
+  },
+  "integrity": {
+    "report": "final-review-integrity.json",
+    "priorEvidenceFiles": 746,
+    "priorEvidenceUnchanged": 744,
+    "newSealedEvidenceFiles": 755,
+    "beforeSealSha256": "eddfe97e00ce2a33b073886890f542f83a39bb4910d455d998e5caefd380a8f9",
+    "evidenceReferencesChecked": 435
+  },
+  "authorization": {
+    "productionAccess": false,
+    "dataMembershipRoleWrites": false,
+    "realProvider": false,
+    "externalMessagesOrPayments": false,
+    "commit": false,
+    "push": false,
+    "merge": false,
+    "deploy": false,
+    "approvalRequestedThisReview": false
+  }
+}

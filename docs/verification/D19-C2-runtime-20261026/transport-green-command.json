@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-10-25T18:24:24.176589+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-docker-output-capture.test.ts",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-green-results.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:24:24.175838+00:00",
+    "freePhysicalGiB": 5.309482574462891,
+    "freeCommitGiB": 7.174259185791016,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.032123565673828
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-green",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-green.log",
+  "runtimeTargetCallsRequested": false,
+  "pid": 18132,
+  "endedAt": "2026-10-25T18:24:26.571397+00:00",
+  "exit": 0
+}

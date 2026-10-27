@@ -1,0 +1,14 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {spawnSync} from 'node:child_process';
+import process from 'node:process';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+const path='docs/verification/D19-C1-browser-continuation-runtime-manifest.json',m=JSON.parse(readFileSync(path,'utf8'));
+for(const key of Object.keys(process.env))if(key.startsWith('DOCKER_')||/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
+Object.assign(process.env,m.execution.environment,{DOCKER_CONTEXT:'desktop-linux',ADFOCATE_B2_PHASE:'browser',NODE_OPTIONS:''});
+const target=verifiedTarget(),fixture=target.context.readPrivate('browser-fixture.private.json'),env={...process.env,...target.env,NODE_ENV:'test',RUN_INTEGRATION:'0',RUN_AUDIT_INTEGRATION:'0',VITE_DEFAULT_WORKSPACE:fixture.slug,NODE_OPTIONS:'--import='+pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href};
+const args=['node_modules/vite-node/vite-node.mjs','--script','.codex-tmp/C1-collection-after-handoff.ts'],log=resolve('.codex-tmp',m.target.projectId,'collection-after-handoff.private.log'),startedAt=new Date().toISOString();
+const result=spawnSync(process.execPath,args,{env,encoding:'utf8',stdio:['ignore','pipe','pipe']});writeFileSync(log,(result.stdout??'')+(result.stderr??''));
+writeFileSync('docs/verification/'+m.target.projectId+'/'+m.execution.artifactNamespace+'/collection-readback-command.json',JSON.stringify({startedAt,finishedAt:new Date().toISOString(),command:[process.execPath,...args],exit:result.status,privateLog:log,sourceFingerprint:m.candidate.fingerprint,scope:'Existing Creator authenticated GET only; no new login/setup or original role/core rerun'},null,2)+'\n');
+process.stdout.write(JSON.stringify({status:result.status===0?'PASS_READONLY_COLLECTION_SUPPLEMENT':'READONLY_COLLECTION_SUPPLEMENT_FAILED',exit:result.status,privateLog:log})+'\n');process.exit(result.status??1);

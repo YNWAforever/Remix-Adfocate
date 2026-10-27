@@ -1,0 +1,301 @@
+{
+  "task": "D08",
+  "updatedAt": "2026-10-22T20:19:52.346825+00:00",
+  "newResult": {
+    "code": "implemented; canonical engines reused",
+    "test": "verified local/full suite and real disposable UI",
+    "deployment": "not-deployed",
+    "runtime": "verified disposable Edge only"
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "priorCodeFingerprint": "219fff96a67905b1e2ce7293f5e39bda35295427319e9d89c1d79c3d39af99be",
+  "codeFingerprint": "51f635f49b22960943af450c65d924ebae5b0aca4d8795a2c3cfae1c36a89dbb",
+  "changedFiles": [
+    "e2e/creator-navigation.spec.ts",
+    "e2e/creator-operator-mission.spec.ts",
+    "scripts/audit/run-browser.mjs",
+    "src/components/ActiveMissionSummary.tsx",
+    "src/components/BottomNav.test.tsx",
+    "src/components/BottomNav.tsx",
+    "src/components/CreatorWorkHome.test.tsx",
+    "src/components/CreatorWorkHome.tsx",
+    "src/components/NextBestActionCard.tsx",
+    "src/components/SideNav.test.tsx",
+    "src/components/navItems.ts",
+    "src/lib/creatorActivation.ts",
+    "src/lib/i18n.dict.ts",
+    "src/lib/queries/activeMission.ts",
+    "src/lib/useCreatorActivation.ts",
+    "src/routes/-_app.home.test.tsx",
+    "src/routes/_app.home.tsx",
+    "src/routes/_app.more.tsx",
+    "src/test/creatorWorkWorkspace.ts"
+  ],
+  "gates": [
+    {
+      "gate": "D08-targeted",
+      "command": "node node_modules/vitest/vitest.mjs run src/components/CreatorWorkHome.test.tsx src/components/BottomNav.test.tsx src/components/SideNav.test.tsx src/lib/activeMission.test.ts src/lib/activationAnalytics.test.ts src/lib/creatorActivation.test.ts src/lib/useCreatorActivation.test.tsx src/routes/-_app.home.test.tsx src/components/creator-activation.test.tsx src/lib/i18n.test.ts --maxWorkers=2 --minWorkers=1",
+      "passed": 124,
+      "files": 10,
+      "log": "logs/D08-home-green.log"
+    },
+    {
+      "gate": "D08-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D08-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1658,
+      "skipped": 312,
+      "failed": 0,
+      "passedFiles": 202,
+      "skippedFiles": 37,
+      "log": "logs/D08-full-suite.log",
+      "audit16Passed": 16,
+      "original194Passed": 194
+    },
+    {
+      "gate": "D08-browser",
+      "command": "node scripts/audit/run-browser.mjs navigation",
+      "passed": 2,
+      "skipped": 0,
+      "log": "logs/D08-browser-final.log"
+    },
+    {
+      "gate": "D08-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D08-typecheck.log"
+    },
+    {
+      "gate": "D08-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "errors": 0,
+      "preExistingWarnings": 4,
+      "log": "logs/D08-lint.log"
+    },
+    {
+      "gate": "D08-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D08-build-node22.log"
+    },
+    {
+      "gate": "D08-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D08-diff-check.log"
+    }
+  ],
+  "browser": {
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+    "auth": "Creator real local password sign-in; operator reuses setup's real Auth session",
+    "browser": "installed Microsoft Edge; desktop emulation only",
+    "tests": [
+      {
+        "title": "Creator navigation reaches every existing destination at 360px and preserves wallet reloads",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 15685
+          }
+        ]
+      },
+      {
+        "title": "real roles reload one durable pending reward and its revision/proof history",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 42066
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-22T20:13:40.943Z",
+      "duration": 62227.465000000004,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "externalProviders": "external HTTP disabled; proof metadata unavailable; no social publication",
+    "flow": "Creator UI + operator UI review/revision/proof/completion; read-only API and SQL persistence assertions",
+    "limitations": [
+      "No Safari/WebKit or physical mobile acceptance.",
+      "Synthetic publication URLs and manual checklist decisions; external social publication and metadata retrieval disabled."
+    ]
+  },
+  "home": {
+    "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+    "submissionId": "393be669-d8ae-4abf-a05f-1316d1d7537d",
+    "workflowId": "a536ca82-22a9-40b8-87c5-ac829618c2ea",
+    "homeChecks": [
+      {
+        "state": "in_review",
+        "action": "View submitted version",
+        "clicks": 1,
+        "revision": 0
+      },
+      {
+        "state": "revision_requested",
+        "action": "Revise draft",
+        "clicks": 1,
+        "revision": 0
+      },
+      {
+        "state": "reward_pending",
+        "action": "View reward review",
+        "clicks": 1,
+        "revision": 1
+      }
+    ],
+    "creatorViewport": {
+      "width": 360,
+      "height": 800
+    },
+    "minimumPrimaryTarget44px": true,
+    "noHomeHorizontalOverflow": true,
+    "persistedAfterNavigationAndReload": true
+  },
+  "navigation": {
+    "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+    "targetProject": "adfocate-r1-empty-20261023",
+    "browser": "installed Edge; emulated viewports, not physical devices",
+    "viewports": [
+      {
+        "width": 360,
+        "fivePrimaryDestinations": true,
+        "minimumTarget44px": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "width": 390,
+        "fivePrimaryDestinations": true,
+        "minimumTarget44px": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "width": 768,
+        "fivePrimaryDestinations": true,
+        "minimumTarget44px": true,
+        "noHorizontalOverflow": true
+      }
+    ],
+    "moreDestinations": [
+      "/campaigns",
+      "/notifications",
+      "/redemption",
+      "/explore",
+      "/guide",
+      "/profile",
+      "/passport",
+      "/match"
+    ],
+    "keyboard": "focus + Enter on each More link",
+    "desktopMyMissions": true,
+    "canonicalWalletAndLegacyRedirectReload": true,
+    "externalNetwork": "blocked",
+    "production": false
+  },
+  "financialNeutrality": {
+    "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+    "before": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true,
+    "initialSeedSnapshot": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "note": "Existing welcome XP occurs at sign-in, before the measured handoff; XP is compared without normalization."
+  },
+  "schema": {
+    "changed": false,
+    "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+    "diff": "schema-diff.json",
+    "newMigrationCount": 0,
+    "productionWrites": false
+  },
+  "cases": [
+    "UC-C03",
+    "UC-C04",
+    "UC-C09",
+    "UC-Q01 (bounded partial)",
+    "N01"
+  ],
+  "limitations": [
+    "No deployment or production verification.",
+    "Full offline suite skips 312 integration tests; previous R1 runtime evidence retained. D08 real Auth/API/DB/UI was rerun on the exact disposable target.",
+    "No Safari/WebKit, physical device, 200% zoom, whole-site accessibility or load/performance certification. D17 remains open.",
+    "Four existing lint warnings, existing route export warning and large bundle warning remain.",
+    "No new independent agent review was authorized; sequential author self-review only.",
+    "One earlier completion confirmation dialog absence remains an observed intermittent issue of unestablished cause; the final explicit operator reload path passed."
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "result": "2 browser tests passed; Creator desktop and navigation mobile",
+      "log": "logs/D08-browser-initial.log"
+    },
+    {
+      "attempt": 2,
+      "result": "1 passed, 1 failed; completion confirmation dialog absent; cause not established; explicit operator reload used for the final path",
+      "log": "logs/D08-browser-attempt2.log",
+      "summary": "D08-browser-attempt2-summary.json"
+    },
+    {
+      "attempt": 3,
+      "result": "2 passed; explicit operator reload before completion; Creator home 360px; persisted state/neutrality assertions unchanged",
+      "log": "logs/D08-browser-final.log"
+    }
+  ],
+  "startup": "sandbox npm cache ENOTFOUND prevented initial full/build start; preserved startup logs, then used cached Node22 offline; not a product test failure",
+  "rollback": "D08-delivery.md#rollback",
+  "nextTask": "D09",
+  "push": false,
+  "merge": false,
+  "deploy": false
+}

@@ -1,0 +1,455 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runs": [
+    {
+      "runId": "52230e4d-8c9a-46e2-8bf9-0d4ea41e47f5",
+      "workspaceIds": [
+        "024d575c-ba34-4d12-bf14-ac492c54680b",
+        "076f722f-bc5f-45ac-a08e-db81564dbe16"
+      ],
+      "authIds": [
+        "74c90ee6-a374-4f17-b1d4-1aa73f83b8a7",
+        "db5622e6-4c5c-4c0e-a6d5-9a3ad6ebb6d8",
+        "c715fc1c-3260-4d35-9585-898819c4f273",
+        "4e7b7356-a765-4904-af7f-21d0032b6985"
+      ],
+      "missionIds": []
+    },
+    {
+      "runId": "60b9f101-5839-46d3-8752-8289a61cf721",
+      "workspaceIds": [
+        "c3317b45-a200-4450-b8c6-4446a44c434e",
+        "560d2d42-f6b5-45de-8d7f-ae44b4ab8667"
+      ],
+      "authIds": [
+        "e076fc39-b88d-496b-b98b-98ccaa509ea5",
+        "7bfbb204-7836-4002-9e26-d380ecbc0d4f",
+        "398660fc-0685-4002-a6da-cbccc488fdda",
+        "494e3138-79bf-4bc9-b612-79d34ffd9ecb"
+      ],
+      "missionIds": []
+    },
+    {
+      "runId": "61a2d936-af00-4b4f-af4a-f0d93393cb02",
+      "workspaceIds": [
+        "b4d0d918-f6fb-4af5-a5a8-295ddcce8153",
+        "747c5511-37fb-43aa-ac42-22e98486ff9a"
+      ],
+      "authIds": [
+        "49d5b810-9f47-46fd-9032-7b170deafb9e",
+        "1ba36198-dd32-4752-aaa4-8113ad68f694",
+        "59ac5e0e-2331-4c08-a665-4d343133283f",
+        "7fd97476-915c-42d7-a639-b54a725ac137"
+      ],
+      "missionIds": []
+    },
+    {
+      "runId": "6bedd16a-7ac5-4ab7-8d34-2742d5998c69",
+      "workspaceIds": [
+        "0edfa910-1a5b-47d8-bcef-ba22f9166d1b",
+        "00ce9a0f-4948-484c-92cd-5385e8d72f05"
+      ],
+      "authIds": [
+        "70f51770-0841-44cd-ad51-e42c4d280536",
+        "c2a99c43-6d36-4150-858a-99f3394637b7",
+        "79fb13ad-fb64-4b88-a465-420f2a7a751d",
+        "ca3692e2-015d-4e78-8a7a-d3c0e83a3310"
+      ],
+      "missionIds": []
+    },
+    {
+      "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+      "workspaceIds": [
+        "08da5da3-c759-4070-bbd9-110a62997ea9",
+        "4ae62ae0-61ea-42ad-97a9-d96005c4d09f"
+      ],
+      "authIds": [
+        "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+        "9c7f6aea-9463-4cd2-8bc3-9998941eddba",
+        "273afec5-ba62-4dea-855f-c277dcf365c4",
+        "6b5d59b1-9055-477a-b73e-c44006d9fc7b"
+      ],
+      "missionIds": []
+    }
+  ],
+  "contents": [
+    {
+      "id": "6be4e7d4-1f05-4d46-8e50-53b72b90317c",
+      "kind": "track",
+      "slug": "d15-browser-52230e4d-8c9a-46e2-8bf9-0d4ea41e47f5",
+      "status": "published"
+    },
+    {
+      "id": "cc88a95a-1efc-4b2d-859b-96bf08489ec3",
+      "kind": "track",
+      "slug": "d15-browser-60b9f101-5839-46d3-8752-8289a61cf721",
+      "status": "published"
+    },
+    {
+      "id": "327e9a1f-374d-48a0-8fd4-685802ffc819",
+      "kind": "track",
+      "slug": "d15-browser-6bedd16a-7ac5-4ab7-8d34-2742d5998c69",
+      "status": "draft"
+    },
+    {
+      "id": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "kind": "track",
+      "slug": "d15-browser-d9c86453-c8a7-42eb-9353-1df5dd59309c",
+      "status": "published"
+    },
+    {
+      "id": "b7e59ed5-85e5-4d91-8d60-3047c2a5f49b",
+      "kind": "track",
+      "slug": "d15-L0-52230e4d-8c9a-46e2-8bf9-0d4ea41e47f5",
+      "status": "published"
+    },
+    {
+      "id": "395b6341-1d7e-4703-bf9c-4a8e8a1039ad",
+      "kind": "track",
+      "slug": "d15-L0-60b9f101-5839-46d3-8752-8289a61cf721",
+      "status": "published"
+    },
+    {
+      "id": "8e982d53-d0dc-4207-959b-a4263fdc481c",
+      "kind": "track",
+      "slug": "d15-L0-61a2d936-af00-4b4f-af4a-f0d93393cb02",
+      "status": "published"
+    },
+    {
+      "id": "a0a1b439-1d29-4670-9ca4-d3dfcd8e8866",
+      "kind": "track",
+      "slug": "d15-L0-6bedd16a-7ac5-4ab7-8d34-2742d5998c69",
+      "status": "published"
+    },
+    {
+      "id": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "kind": "track",
+      "slug": "d15-L0-d9c86453-c8a7-42eb-9353-1df5dd59309c",
+      "status": "published"
+    },
+    {
+      "id": "8a467b52-676c-464b-8a68-7d39aff29b82",
+      "kind": "track",
+      "slug": "d15-L2-52230e4d-8c9a-46e2-8bf9-0d4ea41e47f5",
+      "status": "published"
+    },
+    {
+      "id": "44b09a42-7043-4d19-bc86-130f2dc7107f",
+      "kind": "track",
+      "slug": "d15-L2-60b9f101-5839-46d3-8752-8289a61cf721",
+      "status": "published"
+    },
+    {
+      "id": "eac9c9d3-1142-4c0d-a306-7066abdf6986",
+      "kind": "track",
+      "slug": "d15-L2-61a2d936-af00-4b4f-af4a-f0d93393cb02",
+      "status": "published"
+    },
+    {
+      "id": "c2af7639-b153-49bf-bb6a-d1cb1d7199a5",
+      "kind": "track",
+      "slug": "d15-L2-6bedd16a-7ac5-4ab7-8d34-2742d5998c69",
+      "status": "published"
+    },
+    {
+      "id": "c50f41b6-6762-49c5-9d86-98d99fc3d400",
+      "kind": "track",
+      "slug": "d15-L2-d9c86453-c8a7-42eb-9353-1df5dd59309c",
+      "status": "published"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+      "status": "archived",
+      "trackId": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "version": 1
+    },
+    {
+      "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+      "status": "published",
+      "trackId": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "version": 2
+    },
+    {
+      "id": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+      "status": "published",
+      "trackId": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "version": 1
+    },
+    {
+      "id": "849de7cd-61d0-42e6-afc0-5542171a83ec",
+      "status": "archived",
+      "trackId": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "version": 1
+    },
+    {
+      "id": "5037fb09-4523-4d52-a3f0-75220453047a",
+      "status": "archived",
+      "trackId": "327e9a1f-374d-48a0-8fd4-685802ffc819",
+      "version": 1
+    },
+    {
+      "id": "162be1c0-f940-409f-90d8-6a8736e61743",
+      "status": "published",
+      "trackId": "395b6341-1d7e-4703-bf9c-4a8e8a1039ad",
+      "version": 1
+    },
+    {
+      "id": "2e95752b-2959-4ad6-b2d7-2f5271388197",
+      "status": "draft",
+      "trackId": "395b6341-1d7e-4703-bf9c-4a8e8a1039ad",
+      "version": 1
+    },
+    {
+      "id": "e026320c-ec73-4ece-a33b-f1e79aaceac8",
+      "status": "archived",
+      "trackId": "395b6341-1d7e-4703-bf9c-4a8e8a1039ad",
+      "version": 1
+    },
+    {
+      "id": "e026320c-ec73-4ece-a33b-f1e79aaceac8",
+      "status": "published",
+      "trackId": "395b6341-1d7e-4703-bf9c-4a8e8a1039ad",
+      "version": 2
+    },
+    {
+      "id": "5ce015bc-7f41-47fc-b3de-663a61375e55",
+      "status": "published",
+      "trackId": "44b09a42-7043-4d19-bc86-130f2dc7107f",
+      "version": 1
+    },
+    {
+      "id": "45ae08d4-ec44-4015-85e1-5ff5bec4279c",
+      "status": "draft",
+      "trackId": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "version": 1
+    },
+    {
+      "id": "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "status": "archived",
+      "trackId": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "version": 1
+    },
+    {
+      "id": "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "status": "published",
+      "trackId": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "version": 2
+    },
+    {
+      "id": "d8736eef-e2db-4a4f-be7c-bd5750a44042",
+      "status": "published",
+      "trackId": "464d6376-9d6f-41c3-ba56-373626f591ef",
+      "version": 1
+    },
+    {
+      "id": "3caebb2a-7a28-4745-b77e-a98ea7a554df",
+      "status": "published",
+      "trackId": "6be4e7d4-1f05-4d46-8e50-53b72b90317c",
+      "version": 1
+    },
+    {
+      "id": "4ae2be8f-8852-4ec3-9623-d1531969649c",
+      "status": "archived",
+      "trackId": "6be4e7d4-1f05-4d46-8e50-53b72b90317c",
+      "version": 1
+    },
+    {
+      "id": "53c91f77-9cf7-47ac-82e6-230aca7eefa0",
+      "status": "archived",
+      "trackId": "6be4e7d4-1f05-4d46-8e50-53b72b90317c",
+      "version": 1
+    },
+    {
+      "id": "53c91f77-9cf7-47ac-82e6-230aca7eefa0",
+      "status": "published",
+      "trackId": "6be4e7d4-1f05-4d46-8e50-53b72b90317c",
+      "version": 2
+    },
+    {
+      "id": "c32942ba-1a50-4ab6-acaa-d5a9f84e9d4e",
+      "status": "published",
+      "trackId": "8a467b52-676c-464b-8a68-7d39aff29b82",
+      "version": 1
+    },
+    {
+      "id": "4b88a3b3-6304-43db-883c-09c920fdae37",
+      "status": "archived",
+      "trackId": "a0a1b439-1d29-4670-9ca4-d3dfcd8e8866",
+      "version": 1
+    },
+    {
+      "id": "4b88a3b3-6304-43db-883c-09c920fdae37",
+      "status": "published",
+      "trackId": "a0a1b439-1d29-4670-9ca4-d3dfcd8e8866",
+      "version": 2
+    },
+    {
+      "id": "4c05efc0-3bc4-4099-b5dc-f5d36d074680",
+      "status": "draft",
+      "trackId": "a0a1b439-1d29-4670-9ca4-d3dfcd8e8866",
+      "version": 1
+    },
+    {
+      "id": "a9ea55eb-d15e-4157-8a78-2880c4905b57",
+      "status": "published",
+      "trackId": "a0a1b439-1d29-4670-9ca4-d3dfcd8e8866",
+      "version": 1
+    },
+    {
+      "id": "3d5ac7f3-ec8d-44bc-af53-e87326828b07",
+      "status": "archived",
+      "trackId": "b7e59ed5-85e5-4d91-8d60-3047c2a5f49b",
+      "version": 1
+    },
+    {
+      "id": "3d5ac7f3-ec8d-44bc-af53-e87326828b07",
+      "status": "published",
+      "trackId": "b7e59ed5-85e5-4d91-8d60-3047c2a5f49b",
+      "version": 2
+    },
+    {
+      "id": "868dd867-a0d5-42f4-b493-18dd56076d9b",
+      "status": "draft",
+      "trackId": "b7e59ed5-85e5-4d91-8d60-3047c2a5f49b",
+      "version": 1
+    },
+    {
+      "id": "fd60654c-ed00-4066-9fc8-f8b43aaafc5b",
+      "status": "published",
+      "trackId": "b7e59ed5-85e5-4d91-8d60-3047c2a5f49b",
+      "version": 1
+    },
+    {
+      "id": "69fa3eaa-924d-4743-8801-062b8eaf5756",
+      "status": "published",
+      "trackId": "c2af7639-b153-49bf-bb6a-d1cb1d7199a5",
+      "version": 1
+    },
+    {
+      "id": "d3364712-031d-43d1-a77a-69002ff42135",
+      "status": "published",
+      "trackId": "c50f41b6-6762-49c5-9d86-98d99fc3d400",
+      "version": 1
+    },
+    {
+      "id": "5147cb54-a99e-4402-adbb-4c92e5c4f718",
+      "status": "published",
+      "trackId": "cc88a95a-1efc-4b2d-859b-96bf08489ec3",
+      "version": 1
+    },
+    {
+      "id": "94e5ff12-1845-4b78-86d4-44044f4964c9",
+      "status": "archived",
+      "trackId": "cc88a95a-1efc-4b2d-859b-96bf08489ec3",
+      "version": 1
+    },
+    {
+      "id": "94e5ff12-1845-4b78-86d4-44044f4964c9",
+      "status": "published",
+      "trackId": "cc88a95a-1efc-4b2d-859b-96bf08489ec3",
+      "version": 2
+    },
+    {
+      "id": "c4015f5a-cc5b-4988-b8ff-9c9ea42d2a27",
+      "status": "archived",
+      "trackId": "cc88a95a-1efc-4b2d-859b-96bf08489ec3",
+      "version": 1
+    }
+  ],
+  "progress": [
+    {
+      "version": 2,
+      "lessonId": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+      "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+      "completedAt": "2026-10-23T10:04:07.32474+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+      "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+      "completedAt": "2026-10-23T10:04:02.269634+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+      "completedAt": "2026-10-23T10:03:42.658059+00:00"
+    },
+    {
+      "version": 2,
+      "lessonId": "aa84db63-2035-462b-8cdf-c8c7a6db9143",
+      "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+      "completedAt": "2026-10-23T10:03:43.367011+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "4b88a3b3-6304-43db-883c-09c920fdae37",
+      "creatorId": "70f51770-0841-44cd-ad51-e42c4d280536",
+      "completedAt": "2026-10-23T09:32:32.995241+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "3caebb2a-7a28-4745-b77e-a98ea7a554df",
+      "creatorId": "74c90ee6-a374-4f17-b1d4-1aa73f83b8a7",
+      "completedAt": "2026-10-23T09:57:34.804492+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "3d5ac7f3-ec8d-44bc-af53-e87326828b07",
+      "creatorId": "74c90ee6-a374-4f17-b1d4-1aa73f83b8a7",
+      "completedAt": "2026-10-23T09:57:15.820452+00:00"
+    },
+    {
+      "version": 2,
+      "lessonId": "3d5ac7f3-ec8d-44bc-af53-e87326828b07",
+      "creatorId": "74c90ee6-a374-4f17-b1d4-1aa73f83b8a7",
+      "completedAt": "2026-10-23T09:57:16.553629+00:00"
+    },
+    {
+      "version": 2,
+      "lessonId": "53c91f77-9cf7-47ac-82e6-230aca7eefa0",
+      "creatorId": "74c90ee6-a374-4f17-b1d4-1aa73f83b8a7",
+      "completedAt": "2026-10-23T09:57:39.279176+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "5147cb54-a99e-4402-adbb-4c92e5c4f718",
+      "creatorId": "e076fc39-b88d-496b-b98b-98ccaa509ea5",
+      "completedAt": "2026-10-23T09:49:14.003867+00:00"
+    },
+    {
+      "version": 2,
+      "lessonId": "94e5ff12-1845-4b78-86d4-44044f4964c9",
+      "creatorId": "e076fc39-b88d-496b-b98b-98ccaa509ea5",
+      "completedAt": "2026-10-23T09:49:18.153175+00:00"
+    },
+    {
+      "version": 1,
+      "lessonId": "e026320c-ec73-4ece-a33b-f1e79aaceac8",
+      "creatorId": "e076fc39-b88d-496b-b98b-98ccaa509ea5",
+      "completedAt": "2026-10-23T09:37:24.651281+00:00"
+    },
+    {
+      "version": 2,
+      "lessonId": "e026320c-ec73-4ece-a33b-f1e79aaceac8",
+      "creatorId": "e076fc39-b88d-496b-b98b-98ccaa509ea5",
+      "completedAt": "2026-10-23T09:37:25.984433+00:00"
+    }
+  ],
+  "cleanup": "All exact IDs retained, including RED and failed/partial attempts. No seed/reset, broad delete or cleanup.",
+  "realData": false
+}

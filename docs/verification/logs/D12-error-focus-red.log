@@ -1,0 +1,1726 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/admin/ProofPolicyFields.test.tsx (12 tests | 2 failed | 10 skipped) 2312ms
+   × D12 policy fields through the real authoring form > reports malformed retained policy after switching to legacy and preserves it for repair 1188ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <div
+  class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+  role="alert"
+>
+  <p
+    class="font-bold"
+  >
+    請核對以下欄位。
+  </p>
+  <ul>
+    <li>
+      <button
+        class="py-1 text-left underline"
+        type="button"
+      >
+        交付項目 1
+         ··
+        發佈證明要求必須是有效的 JSON 物件。
+      </button>
+    </li>
+  </ul>
+</div>
+Received element with focus:
+  <body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <div
+        class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+        role="alert"
+      >
+        <p
+          class="font-bold"
+        >
+          請核對以下欄位。
+        </p>
+        <ul>
+          <li … />
+        </ul>
+      </div>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select … />
+        </label>
+        <p
+          class="block text-sm font-bold"
+        >
+          交付內容
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          注意事項 / 要求
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          發佈平台
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <div … />
+          <div … />
+        </div>
+        <label
+          class="block text-sm font-bold"
+          for="m-audience"
+        >
+          目標受眾
+        </label>
+        <textarea
+          aria-label="目標受眾"
+          class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+          id="m-audience"
+          rows="2"
+        />
+        <p
+          class="block text-sm font-bold"
+        >
+          建議做法（Do's）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          避免事項（Don'ts）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          重點訊息
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          參考及素材連結
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <label
+          class="block text-sm"
+        >
+          投入程度
+          <select … />
+        </label>
+      </section>
+      <div
+        class="space-y-3"
+      >
+        <button
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+          type="button"
+        >
+          預覽
+        </button>
+      </div>
+      <button
+        aria-busy="false"
+        class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+      >
+        儲存變更
+      </button>
+    </fieldset>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<fieldset[39m
+        [33mclass[39m=[32m"min-w-0 space-y-5"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-bold"[39m
+          [36m>[39m
+            [0m請核對以下欄位。[0m
+          [36m</p>[39m
+          [36m<ul>[39m
+            [36m<li>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"py-1 text-left underline"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0m交付項目 1[0m
+                [0m · [0m
+                [0m發佈證明要求必須是有效的 JSON 物件。[0m
+              [36m</button>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</div>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m基本[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m品牌[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"品牌"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m標題 (zh-HK)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"標題"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"合成作者任務"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務網址代號（英數字及連字號）[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"任務網址代號"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"synthetic-authoring"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m分類[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"分類"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務類型[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"任務類型"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m參與方式[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"參與方式"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m等級要求[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"等級要求"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m獎勵[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m積分獎勵[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"積分獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"500"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m現金獎勵 (HK$)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"現金獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"125"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m名額與期限[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m名額[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"名額"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mmin[39m=[32m"1"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"10"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m截止日期[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"截止日期"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33...
+   × D12 policy fields through the real authoring form > shows a recoverable save failure inline and keeps all entered values 1123ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <div
+  class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+  role="alert"
+>
+  <p
+    class="font-bold"
+  >
+    儲存失敗，已保留輸入。請修正問題或重試。
+  </p>
+  <ul />
+</div>
+Received element with focus:
+  <body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <div
+        class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+        role="alert"
+      >
+        <p
+          class="font-bold"
+        >
+          儲存失敗，已保留輸入。請修正問題或重試。
+        </p>
+        <ul />
+      </div>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select … />
+        </label>
+        <div
+          class="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"
+        >
+          <label … />
+          <label … />
+          <label … />
+          <label … />
+          <p … />
+          <button … />
+          <fieldset … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          發佈平台
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <div … />
+          <div … />
+        </div>
+        <label
+          class="block text-sm font-bold"
+          for="m-audience"
+        >
+          目標受眾
+        </label>
+        <textarea
+          aria-label="目標受眾"
+          class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+          id="m-audience"
+          rows="2"
+        />
+        <p
+          class="block text-sm font-bold"
+        >
+          建議做法（Do's）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          避免事項（Don'ts）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          重點訊息
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          參考及素材連結
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <label
+          class="block text-sm"
+        >
+          投入程度
+          <select … />
+        </label>
+      </section>
+      <div
+        class="space-y-3"
+      >
+        <button
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+          type="button"
+        >
+          預覽
+        </button>
+      </div>
+      <button
+        aria-busy="false"
+        class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+      >
+        儲存變更
+      </button>
+    </fieldset>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<fieldset[39m
+        [33mclass[39m=[32m"min-w-0 space-y-5"[39m
+        [33mtabindex[39m=[32m"-1"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-bold"[39m
+          [36m>[39m
+            [0m儲存失敗，已保留輸入。請修正問題或重試。[0m
+          [36m</p>[39m
+          [36m<ul />[39m
+        [36m</div>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m基本[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m品牌[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"品牌"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m標題 (zh-HK)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"標題"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"失敗後保留的標題"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務網址代號（英數字及連字號）[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"任務網址代號"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mvalue[39m=[32m"synthetic-authoring"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m分類[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"分類"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m任務類型[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"任務類型"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m參與方式[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"參與方式"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m等級要求[0m
+            [36m<select[39m
+              [33maria-label[39m=[32m"等級要求"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m獎勵[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m積分獎勵[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"積分獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"500"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m現金獎勵 (HK$)[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"現金獎勵"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"125"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0m名額與期限[0m
+          [36m</h2>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m名額[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"名額"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mmin[39m=[32m"1"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m"10"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"block text-sm"[39m
+          [36m>[39m
+            [0m截止日期[0m
+            [36m<input[39m
+              [33maria-label[39m=[32m"截止日期"[39m
+              [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2030-11-30"[39m
+            [36m/>[39m
+          [36m</label>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > reports malformed retained policy after switching to legacy and preserves it for repair
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <div
+  class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+  role="alert"
+>
+  <p
+    class="font-bold"
+  >
+    請核對以下欄位。
+  </p>
+  <ul>
+    <li>
+      <button
+        class="py-1 text-left underline"
+        type="button"
+      >
+        交付項目 1
+         ··
+        發佈證明要求必須是有效的 JSON 物件。
+      </button>
+    </li>
+  </ul>
+</div>
+Received element with focus:
+  <body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <div
+        class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+        role="alert"
+      >
+        <p
+          class="font-bold"
+        >
+          請核對以下欄位。
+        </p>
+        <ul>
+          <li … />
+        </ul>
+      </div>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select … />
+        </label>
+        <p
+          class="block text-sm font-bold"
+        >
+          交付內容
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          注意事項 / 要求
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          發佈平台
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <div … />
+          <div … />
+        </div>
+        <label
+          class="block text-sm font-bold"
+          for="m-audience"
+        >
+          目標受眾
+        </label>
+        <textarea
+          aria-label="目標受眾"
+          class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+          id="m-audience"
+          rows="2"
+        />
+        <p
+          class="block text-sm font-bold"
+        >
+          建議做法（Do's）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          避免事項（Don'ts）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          重點訊息
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          參考及素材連結
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <label
+          class="block text-sm"
+        >
+          投入程度
+          <select … />
+        </label>
+      </section>
+      <div
+        class="space-y-3"
+      >
+        <button
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+          type="button"
+        >
+          預覽
+        </button>
+      </div>
+      <button
+        aria-busy="false"
+        class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+      >
+        儲存變更
+      </button>
+    </fieldset>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <fieldset
+        class="min-w-0 space-y-5"
+        tabindex="-1"
+      >
+        <div
+          class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+          role="alert"
+        >
+          <p
+            class="font-bold"
+          >
+            請核對以下欄位。
+          </p>
+          <ul>
+            <li>
+              <button
+                class="py-1 text-left underline"
+                type="button"
+              >
+                交付項目 1
+                 · 
+                發佈證明要求必須是有效的 JSON 物件。
+              </button>
+            </li>
+          </ul>
+        </div>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            基本
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            品牌
+            <select
+              aria-label="品牌"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              disabled=""
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            標題 (zh-HK)
+            <input
+              aria-label="標題"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="合成作者任務"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            任務網址代號（英數字及連字號）
+            <input
+              aria-label="任務網址代號"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="synthetic-authoring"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            分類
+            <select
+              aria-label="分類"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            任務類型
+            <select
+              aria-label="任務類型"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            參與方式
+            <select
+              aria-label="參與方式"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            等級要求
+            <select
+              aria-label="等級要求"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            獎勵
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            積分獎勵
+            <input
+              aria-label="積分獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="500"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            現金獎勵 (HK$)
+            <input
+              aria-label="現金獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="125"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            名額與期限
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            名額
+            <input
+              aria-label="名額"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              min="1"
+              type="number"
+              value="10"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            截止日期
+            <input
+              aria-label="截止日期"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              [33...
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:101:39
+     99|     const alert = await screen.findByRole("alert");
+    100|     expect(alert).toHaveTextContent("發佈證明要求必須是有效的 JSON 物…
+    101|     await waitFor(() => expect(alert).toHaveFocus());
+       |                                       ^
+    102|     expect(onSave).not.toHaveBeenCalled();
+    103|     fireEvent.change(screen.getByLabelText("交付流程"), { target: { va…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > shows a recoverable save failure inline and keeps all entered values
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <div
+  class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+  role="alert"
+>
+  <p
+    class="font-bold"
+  >
+    儲存失敗，已保留輸入。請修正問題或重試。
+  </p>
+  <ul />
+</div>
+Received element with focus:
+  <body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <div
+        class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+        role="alert"
+      >
+        <p
+          class="font-bold"
+        >
+          儲存失敗，已保留輸入。請修正問題或重試。
+        </p>
+        <ul />
+      </div>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input … />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea … />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select … />
+        </label>
+        <div
+          class="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3"
+        >
+          <label … />
+          <label … />
+          <label … />
+          <label … />
+          <p … />
+          <button … />
+          <fieldset … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          發佈平台
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <div … />
+          <div … />
+        </div>
+        <label
+          class="block text-sm font-bold"
+          for="m-audience"
+        >
+          目標受眾
+        </label>
+        <textarea
+          aria-label="目標受眾"
+          class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+          id="m-audience"
+          rows="2"
+        />
+        <p
+          class="block text-sm font-bold"
+        >
+          建議做法（Do's）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          避免事項（Don'ts）
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          重點訊息
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <p
+          class="block text-sm font-bold"
+        >
+          參考及素材連結
+        </p>
+        <div
+          class="space-y-2"
+        >
+          <input … />
+        </div>
+        <label
+          class="block text-sm"
+        >
+          投入程度
+          <select … />
+        </label>
+      </section>
+      <div
+        class="space-y-3"
+      >
+        <button
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+          type="button"
+        >
+          預覽
+        </button>
+      </div>
+      <button
+        aria-busy="false"
+        class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold"
+      >
+        儲存變更
+      </button>
+    </fieldset>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <fieldset
+        class="min-w-0 space-y-5"
+        tabindex="-1"
+      >
+        <div
+          class="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm"
+          role="alert"
+        >
+          <p
+            class="font-bold"
+          >
+            儲存失敗，已保留輸入。請修正問題或重試。
+          </p>
+          <ul />
+        </div>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            基本
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            品牌
+            <select
+              aria-label="品牌"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              disabled=""
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            標題 (zh-HK)
+            <input
+              aria-label="標題"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="失敗後保留的標題"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            任務網址代號（英數字及連字號）
+            <input
+              aria-label="任務網址代號"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              value="synthetic-authoring"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            分類
+            <select
+              aria-label="分類"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            任務類型
+            <select
+              aria-label="任務類型"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            參與方式
+            <select
+              aria-label="參與方式"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            等級要求
+            <select
+              aria-label="等級要求"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            獎勵
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            積分獎勵
+            <input
+              aria-label="積分獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="500"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            現金獎勵 (HK$)
+            <input
+              aria-label="現金獎勵"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="number"
+              value="125"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class="font-heading font-bold"
+          >
+            名額與期限
+          </h2>
+          <label
+            class="block text-sm"
+          >
+            名額
+            <input
+              aria-label="名額"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              min="1"
+              type="number"
+              value="10"
+            />
+          </label>
+          <label
+            class="block text-sm"
+          >
+            截止日期
+            <input
+              aria-label="截止日期"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+              type="date"
+              value="2030-11-30"
+            />
+          </label>
+        </section>
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <h2
+            class[39...
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:120:39
+    118|     const alert = await screen.findByRole("alert");
+    119|     expect(alert).toHaveTextContent("儲存失敗");
+    120|     await waitFor(() => expect(alert).toHaveFocus());
+       |                                       ^
+    121|     expect(screen.getByLabelText("標題")).toHaveValue("失敗後保留的標…
+    122|     expect(screen.getByRole("button", { name: "儲存變更" })).toBeEnabl…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 10 skipped (12)
+   Start at  12:18:19
+   Duration  5.49s (transform 311ms, setup 387ms, collect 1.47s, tests 2.31s, environment 940ms, prepare 155ms)
+

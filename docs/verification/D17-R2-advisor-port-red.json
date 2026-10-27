@@ -1,0 +1,24 @@
+{
+  "passed": 1,
+  "failed": 3,
+  "mocked": true,
+  "noNetworkOrSql": true,
+  "assertions": [
+    {
+      "title": "rejects missing published DB port before any SQL or CLI connection despite a matching local URL",
+      "status": "failed"
+    },
+    {
+      "title": "rejects different host port before any SQL or CLI connection despite a matching local URL",
+      "status": "failed"
+    },
+    {
+      "title": "rejects non-loopback host binding before any SQL or CLI connection despite a matching local URL",
+      "status": "failed"
+    },
+    {
+      "title": "opens the mocked read-only inspections only after both exact container DB port mappings agree",
+      "status": "passed"
+    }
+  ]
+}

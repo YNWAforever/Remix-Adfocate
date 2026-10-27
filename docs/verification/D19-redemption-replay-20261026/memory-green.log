@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/redemption-intent-memory.test.ts (6 tests) 7343ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > same intent after a lost response returns the same saved code and debits only once 1370ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a deliberate second new intent still receives a DISTINCT code and its own debit 1025ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > retry recovers the original saved result even when that first action exhausted stock 1149ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > the same intent cannot be changed to another gift and debit a second time 1157ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes 1358ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > another recipient using the same client UUID never receives the first person's code 1279ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  03:51:08
+   Duration  7.92s (transform 71ms, setup 0ms, collect 158ms, tests 7.34s, environment 0ms, prepare 172ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/memory-green-native.json

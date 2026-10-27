@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-24",
+  "attempt2": "interrupted without a final support report; no matching node process remained",
+  "attempt3Preflight": "Docker daemon npipe absent; rejected before SDK/client/setup; no new run folder created",
+  "daemonStartupAttempted": true,
+  "productionQueried": false,
+  "oldLogsOrIdsRemoved": false,
+  "daemonStartup": {
+    "method": "Start installed Docker Desktop with WindowStyle Hidden",
+    "processId": 28624,
+    "resetOrRecreateTargets": false,
+    "identityReverificationRequired": true
+  },
+  "initialRuntimeReadyClaim": false,
+  "runtimeReadyAfterRecovery": true,
+  "identityReverification": "D19-support-current-identity-recheck2.json",
+  "recoveryLifecycle": "D19-support-current-recovery-starts.json",
+  "successfulSafeNamespace": "1d64ebf8-cbf6-4179-96ea-c14241d7207c",
+  "resetOrRecreateTargets": false
+}

@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-staff-capabilities.test.ts (8 tests | 8 skipped) 2760ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-staff-capabilities.test.ts > D19 exact-owned staff roles/API/RLS
+Error: permission denied for table workspace_budgets
+ ❯ Object.must server/test/auditWorkflowFixture.ts:19:29
+     17|   const missionIds: string[] = [];
+     18|   const must = <T extends { data: unknown; error: { message: string } …
+     19|     if (result.error) throw new Error(result.error.message);
+       |                             ^
+     20|     return result.data;
+     21|   };
+ ❯ Module.createStaffCapabilityFixture server/test/staffCapabilityFixture.ts:41:8
+ ❯ server/test/audit-staff-capabilities.test.ts:13:28
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  8 skipped (8)
+   Start at  03:39:31
+   Duration  3.31s (transform 125ms, setup 189ms, collect 86ms, tests 2.76s, environment 0ms, prepare 87ms)
+

@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-24T05:24:13.457213+00:00",
+  "status": "NO_PERSISTENT_SCHEMA_OR_HISTORY_CHANGE",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "manifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestEntries": 42,
+  "declaredCapabilities": 587,
+  "observedCapabilitiesPerTarget": 584,
+  "before": "D19-current-schema-before.json",
+  "after": "D19-current-schema-after.json",
+  "historyRows": {
+    "empty": 72,
+    "shaped": 56
+  },
+  "objectsRpcGrantsRlsConstraintsIndexesTriggersCompared": true,
+  "allPreExistingPublicAndAuthUserRowsPreserved": true,
+  "newMigrations": [],
+  "oldHistoryChecksumRewritten": false,
+  "transientFaultInjection": "Existing core test creates/drops only its unique run-ID audit-fault function/trigger; final complete catalog identical",
+  "productionQueried": false,
+  "hostedVerified": false
+}

@@ -1,0 +1,15 @@
+{
+  "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+  "phase": "immediately-before-completion",
+  "snapshot": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  }
+}

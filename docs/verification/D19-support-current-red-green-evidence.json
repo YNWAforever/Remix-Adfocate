@@ -1,0 +1,668 @@
+{
+  "groups": {
+    "scope-red": {
+      "passed": 1,
+      "failed": 8,
+      "skipped": 0,
+      "rawSha256": "ef7be3a29b3c2d841f9e0b397a208b73bd0036c3c4c1893e012ff493d8923559",
+      "assertions": [
+        {
+          "title": "retains the existing default workspace when fresh support scope is absent",
+          "status": "passed"
+        },
+        {
+          "title": "uses the exact newly-created support workspace and slug before any client setup",
+          "status": "failed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"workspaceId\":\"invalid\"}",
+          "status": "failed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"createdThisRun\":false}",
+          "status": "failed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"namespace\":\"33333333-3333-4333-8333-333333333333\"}",
+          "status": "failed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"slug\":\"demo\"}",
+          "status": "failed"
+        },
+        {
+          "title": "rejects a workspace outside the exact attested current scope",
+          "status": "failed"
+        },
+        {
+          "title": "rejects a fresh workspace without mutation ownership enabled",
+          "status": "failed"
+        },
+        {
+          "title": "rejects stale target attestation or malformed JSON before any client setup",
+          "status": "failed"
+        }
+      ]
+    },
+    "scope-green": {
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "rawSha256": "48102b9c96e508dd41b06a7b288bfafdcc0c6500803bb800ae2a63f98180c5fa",
+      "assertions": [
+        {
+          "title": "D19 compatibility operator explicitly receives workspace and platform grants before business requests",
+          "status": "passed"
+        },
+        {
+          "title": "D19 compatibility fixture cannot grant a pre-existing unowned staff subject",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses a cleanup selector when no exact current-run IDs are owned",
+          "status": "passed"
+        },
+        {
+          "title": "D19 constrains a broad cleanup selector to exact successful creation IDs",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses an explicitly foreign ID even when the same table has an owned ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 allows a child cleanup only when its parent selector is an exact owned creator ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 passes an absolute string URL to the external-fetch deny preload across URL realms",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an RPC-created child through an exact owned workspace before deleting that child ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 rejects a child belonging to a workspace outside the exact owned scope",
+          "status": "passed"
+        },
+        {
+          "title": "D19 captures RPC-created work item IDs only after an owned-parent read",
+          "status": "passed"
+        },
+        {
+          "title": "D19 captures an owned workflow read before an exact fulfilment update",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an unread RPC parent before updating mission_fulfillments",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an unread RPC parent before updating mission_publication_instructions",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses an unread RPC parent in a foreign workspace",
+          "status": "passed"
+        },
+        {
+          "title": "retains the existing default workspace when fresh support scope is absent",
+          "status": "passed"
+        },
+        {
+          "title": "uses the exact newly-created support workspace and slug before any client setup",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"workspaceId\":\"invalid\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"createdThisRun\":false}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"namespace\":\"33333333-3333-4333-8333-333333333333\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"slug\":\"demo\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects a workspace outside the exact attested current scope",
+          "status": "passed"
+        },
+        {
+          "title": "rejects a fresh workspace without mutation ownership enabled",
+          "status": "passed"
+        },
+        {
+          "title": "rejects stale target attestation or malformed JSON before any client setup",
+          "status": "passed"
+        }
+      ]
+    },
+    "guards-green": {
+      "passed": 46,
+      "failed": 0,
+      "skipped": 2,
+      "rawSha256": "6da88dec903f5069c4c494956b0c43843fb072e5e2d66572c4d03e6e3e265a17",
+      "assertions": [
+        {
+          "title": "D19 compatibility operator explicitly receives workspace and platform grants before business requests",
+          "status": "passed"
+        },
+        {
+          "title": "D19 compatibility fixture cannot grant a pre-existing unowned staff subject",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses a cleanup selector when no exact current-run IDs are owned",
+          "status": "passed"
+        },
+        {
+          "title": "D19 constrains a broad cleanup selector to exact successful creation IDs",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses an explicitly foreign ID even when the same table has an owned ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 allows a child cleanup only when its parent selector is an exact owned creator ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 passes an absolute string URL to the external-fetch deny preload across URL realms",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an RPC-created child through an exact owned workspace before deleting that child ID",
+          "status": "passed"
+        },
+        {
+          "title": "D19 rejects a child belonging to a workspace outside the exact owned scope",
+          "status": "passed"
+        },
+        {
+          "title": "D19 captures RPC-created work item IDs only after an owned-parent read",
+          "status": "passed"
+        },
+        {
+          "title": "D19 captures an owned workflow read before an exact fulfilment update",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an unread RPC parent before updating mission_fulfillments",
+          "status": "passed"
+        },
+        {
+          "title": "D19 attests an unread RPC parent before updating mission_publication_instructions",
+          "status": "passed"
+        },
+        {
+          "title": "D19 refuses an unread RPC parent in a foreign workspace",
+          "status": "passed"
+        },
+        {
+          "title": "retains the existing default workspace when fresh support scope is absent",
+          "status": "passed"
+        },
+        {
+          "title": "uses the exact newly-created support workspace and slug before any client setup",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"workspaceId\":\"invalid\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"createdThisRun\":false}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"namespace\":\"33333333-3333-4333-8333-333333333333\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"slug\":\"demo\"}",
+          "status": "passed"
+        },
+        {
+          "title": "rejects a workspace outside the exact attested current scope",
+          "status": "passed"
+        },
+        {
+          "title": "rejects a fresh workspace without mutation ownership enabled",
+          "status": "passed"
+        },
+        {
+          "title": "rejects stale target attestation or malformed JSON before any client setup",
+          "status": "passed"
+        },
+        {
+          "title": "blocks the database-wide close_due_campaigns RPC before it can mutate prior fixtures",
+          "status": "passed"
+        },
+        {
+          "title": "blocks the database-wide snapshot_campaign_leaderboards RPC before it can mutate prior fixtures",
+          "status": "passed"
+        },
+        {
+          "title": "cannot make a global RPC safe merely by passing an owned campaign ID",
+          "status": "passed"
+        },
+        {
+          "title": "keeps the existing exact campaign RPC transport intact",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release output summarizes only acceptance identifiers and never secrets",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release output keeps the executable seed script on the shared secret-safe summary",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release auth-only residue rejects a stable creator auth user without fixture app rows",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release auth-only residue rejects a stable operator auth user without fixture app rows",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release auth-only residue ignores unrelated auth users",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant returns all four stable named item IDs for a clean pre-action fixture",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: wrong onboarding step",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: missing named item",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: inactive staff identity",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: inactive workspace membership",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: wrong required flag",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: missing approved version",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: mismatched draft revision",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: mismatched evidence policy",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: missing compatibility review round",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects partial replay state: wrong compatibility review round",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects post-action replay state: proof attempt",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects post-action replay state: proof review",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release replay invariant rejects post-action replay state: proof-submitted item",
+          "status": "passed"
+        },
+        {
+          "title": "publication proof release live fixture replays safely with mixed publication paths and pre-action baselines",
+          "status": "skipped"
+        },
+        {
+          "title": "publication proof release live fixture survives the shared integration cleanup ownership sweep",
+          "status": "skipped"
+        }
+      ]
+    },
+    "rpc-red": {
+      "passed": 1,
+      "failed": 2,
+      "skipped": 0,
+      "rawSha256": "1d1092bb73a8fe0af20d5978af3041f203738b04e9532384a56ee856b04f3d24",
+      "assertions": [
+        {
+          "title": "blocks the database-wide close_due_campaigns RPC before it can mutate prior fixtures",
+          "status": "failed"
+        },
+        {
+          "title": "cannot make a global RPC safe merely by passing an owned campaign ID",
+          "status": "failed"
+        },
+        {
+          "title": "keeps the existing exact campaign RPC transport intact",
+          "status": "passed"
+        }
+      ]
+    },
+    "rpc-red2": {
+      "passed": 1,
+      "failed": 3,
+      "skipped": 0,
+      "rawSha256": "d3d0977e381d695db613dea480dab5b1120131861a776652139661e8e93f733a",
+      "assertions": [
+        {
+          "title": "blocks the database-wide close_due_campaigns RPC before it can mutate prior fixtures",
+          "status": "failed"
+        },
+        {
+          "title": "blocks the database-wide snapshot_campaign_leaderboards RPC before it can mutate prior fixtures",
+          "status": "failed"
+        },
+        {
+          "title": "cannot make a global RPC safe merely by passing an owned campaign ID",
+          "status": "failed"
+        },
+        {
+          "title": "keeps the existing exact campaign RPC transport intact",
+          "status": "passed"
+        }
+      ]
+    },
+    "sandbox-probe": {
+      "passed": 30,
+      "failed": 2,
+      "skipped": 0,
+      "rawSha256": "30847451acd2007c85052b333d10283021425686b658320651b7964a0bbd68d2",
+      "assertions": [
+        {
+          "title": "Vite development API middleware routes /api requests to Hono instead of the SPA fallback",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware preserves Vite's SPA fallback for non-API requests",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts intercepts exact /api and nested /api paths without swallowing /apix",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts forwards method, body, query, authorization, and cookie headers",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts preserves duplicate Set-Cookie plus status, statusText, and other headers",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts completes HEAD and null-body responses without writing a body",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts delivers response chunks incrementally instead of buffering the full body",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts cancels the Fetch body when the client aborts",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts completes an app failure as JSON without hanging the Node response",
+          "status": "passed"
+        },
+        {
+          "title": "release npm entrypoints fails closed when release:execute runs without database configuration",
+          "status": "failed"
+        },
+        {
+          "title": "release npm entrypoints fails closed when release:evidence runs without an input file",
+          "status": "failed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the npm/vite-node evaluate boundary even when VITEST is inherited",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the real npm entrypoint and fails closed with JSON",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands refuses pilot inspect without explicit service-client configuration",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands evaluates observations from an approved input path without a database client",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands fails closed when evaluate input or containment evidence is missing",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest orders, classifies, hashes, and digests the complete reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest normalizes LF, CRLF, and lone CR migration checkouts before hashing",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest declares capabilities for migrations previously emitted as empty",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unreviewed migrations before, inside, or after the reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects empty, truncated, and interior-incomplete reviewed ranges",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unknown JSON fields, missing fields, bad types, and invalid enums",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects a shape-valid migration path that does not match version and name",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not alias mutable capability metadata between builds",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not replace an existing artifact on invalid write and leaves no temp file",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest runs write as a direct vite-node CLI and prints its digest",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a missing direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a unsupported direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects checksum drift, missing files, duplicates, and bad dependencies",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects an edited, deleted, or newly added baseline migration",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects migrations the timestamp filter used to drop",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects migration order mismatches",
+          "status": "passed"
+        }
+      ]
+    },
+    "sandbox-probe2": {
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "rawSha256": "b0c411e3ce5e9eada850e4de886b2db1da7b6320fda473f3bb871f55f4e78959",
+      "assertions": [
+        {
+          "title": "Vite development API middleware routes /api requests to Hono instead of the SPA fallback",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware preserves Vite's SPA fallback for non-API requests",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts intercepts exact /api and nested /api paths without swallowing /apix",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts forwards method, body, query, authorization, and cookie headers",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts preserves duplicate Set-Cookie plus status, statusText, and other headers",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts completes HEAD and null-body responses without writing a body",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts delivers response chunks incrementally instead of buffering the full body",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts cancels the Fetch body when the client aborts",
+          "status": "passed"
+        },
+        {
+          "title": "Vite development API middleware transport contracts completes an app failure as JSON without hanging the Node response",
+          "status": "passed"
+        },
+        {
+          "title": "release npm entrypoints fails closed when release:execute runs without database configuration",
+          "status": "passed"
+        },
+        {
+          "title": "release npm entrypoints fails closed when release:evidence runs without an input file",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the npm/vite-node evaluate boundary even when VITEST is inherited",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the real npm entrypoint and fails closed with JSON",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands refuses pilot inspect without explicit service-client configuration",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands evaluates observations from an approved input path without a database client",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands fails closed when evaluate input or containment evidence is missing",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest orders, classifies, hashes, and digests the complete reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest normalizes LF, CRLF, and lone CR migration checkouts before hashing",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest declares capabilities for migrations previously emitted as empty",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unreviewed migrations before, inside, or after the reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects empty, truncated, and interior-incomplete reviewed ranges",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unknown JSON fields, missing fields, bad types, and invalid enums",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects a shape-valid migration path that does not match version and name",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not alias mutable capability metadata between builds",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not replace an existing artifact on invalid write and leaves no temp file",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest runs write as a direct vite-node CLI and prints its digest",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a missing direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a unsupported direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects checksum drift, missing files, duplicates, and bad dependencies",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects an edited, deleted, or newly added baseline migration",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects migrations the timestamp filter used to drop",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects migration order mismatches",
+          "status": "passed"
+        }
+      ]
+    }
+  },
+  "testSourcesOrAssertionsRemoved": false,
+  "sandboxFullFailure": "D19-support-current-full-sandbox-attempt1-results.json",
+  "cliRunnerFix": "Set existing npm_execpath in private runner; no production/test change",
+  "environmentFailuresNotProductPasses": true
+}

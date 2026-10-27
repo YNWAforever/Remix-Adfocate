@@ -1,0 +1,56 @@
+{
+  "foreignKeyDependencies": [
+    {
+      "fk": "campaign_missions_workspace_id_campaign_id_fkey",
+      "table": "campaign_missions",
+      "counts": {
+        "937131f9-5417-4ab4-aebd-a5714681f6dd": 0,
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3": 0,
+        "d80d80dc-4833-4ab2-9e30-48efaef68d1d": 0
+      }
+    },
+    {
+      "fk": "campaign_participants_workspace_id_campaign_id_fkey",
+      "table": "campaign_participants",
+      "counts": {
+        "937131f9-5417-4ab4-aebd-a5714681f6dd": 0,
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3": 0,
+        "d80d80dc-4833-4ab2-9e30-48efaef68d1d": 0
+      }
+    },
+    {
+      "fk": "campaign_rank_snapshots_campaign_id_fkey",
+      "table": "campaign_rank_snapshots",
+      "counts": {
+        "937131f9-5417-4ab4-aebd-a5714681f6dd": 0,
+        "9e2d04e2-cafb-4ff6-988b-348f0279bba3": 0,
+        "d80d80dc-4833-4ab2-9e30-48efaef68d1d": 0
+      }
+    }
+  ],
+  "notificationReferences": {
+    "937131f9-5417-4ab4-aebd-a5714681f6dd": 0,
+    "9e2d04e2-cafb-4ff6-988b-348f0279bba3": 0,
+    "d80d80dc-4833-4ab2-9e30-48efaef68d1d": 0
+  },
+  "audits": [
+    {
+      "channel": "public.operator_audit_events",
+      "matchedReferenceCount": 0
+    },
+    {
+      "channel": "public.mission_workflow_events",
+      "matchedReferenceCount": 0
+    },
+    {
+      "channel": "public.staff_access_audit",
+      "matchedReferenceCount": 0
+    }
+  ],
+  "backupMarkers": "UNKNOWN_PERMISSION_DENIED",
+  "topLevelBackupNamedEntries": "UNKNOWN_PERMISSION_DENIED",
+  "replicationSlots": [],
+  "walFiles": "UNKNOWN_NOT_READ_AFTER_SERVER_FILE_PERMISSION_DENIAL",
+  "replicaIdentity": "d",
+  "note": "Current settings/WAL/files are not a trusted old tuple; no slot peek/advance, WAL decode, restore or clone created"
+}

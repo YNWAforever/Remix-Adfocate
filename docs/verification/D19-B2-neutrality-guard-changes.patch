@@ -1,0 +1,284 @@
+--- before/e2e/creator-operator-mission.spec.ts
++++ after/e2e/creator-operator-mission.spec.ts
+@@ -159,13 +159,12 @@
+   // @ts-expect-error Native ESM test utility has no declaration file.
+   const {verifiedTarget}=await import("../scripts/audit/local-targets.mjs");
+   // @ts-expect-error Native ESM test utility has no declaration file.
+-  const {neutralitySnapshot}=await import("../scripts/audit/neutrality-snapshot.mjs");
++  const {neutralitySnapshot,legacyRewardAnchors}=await import("../scripts/audit/neutrality-snapshot.mjs");
+   const target=verifiedTarget();
+   expect(target.sql(`select state from public.mission_workflows where id='${workflowId}';`)).toBe("proof_verified");
+-  writeFileSync(selected?.publicPath("browser-before-handoff.json")??`docs/verification/${evidencePrefix}browser-before-handoff.json`,JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,phase:"immediately-before-completion",snapshot:neutralitySnapshot(target,fixture.creator.id,fixture.workspaceId)},null,2)+"\n");
++  writeFileSync(selected?.publicPath("browser-before-handoff.json")??`docs/verification/${evidencePrefix}browser-before-handoff.json`,JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,target:target.identity,creatorId:fixture.creator.id,workspaceId:fixture.workspaceId,submissionId,workflowId,phase:"immediately-before-completion",snapshot:neutralitySnapshot(target,fixture.creator.id,fixture.workspaceId,{complete:Boolean(selected)})},null,2)+"\n");
+   if(pilot){
+-    const anchors=verified.sql(`select jsonb_agg(jsonb_build_object('id',id,'status',status,'pointsAwarded',points_awarded,'xpAwarded',xp_awarded) order by id) from public.mission_submissions where workspace_id='${fixture.workspaceId}' and status='approved';`);
+-    const before=JSON.parse(readFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json","utf8"));before.legacyAnchors=JSON.parse(anchors);writeFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json",JSON.stringify(before,null,2)+"\n");
++    const before=JSON.parse(readFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json","utf8"));before.legacyAnchors=legacyRewardAnchors(verified,fixture.workspaceId);writeFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json",JSON.stringify(before,null,2)+"\n");
+     await operatorContext.close();operatorContext=await browser.newContext();await operatorContext.addInitScript(session=>{localStorage.setItem("lang","en");localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},fixture.operatorSession);
+     if(selected)await bindBrowserJournal(operatorContext,new FixtureJournal(selected.privatePath(`transport-browser-${process.pid}-operator.jsonl`),selected.lineage,{requests:selected.manifest.fixture.transportWriteCapPerProcess}),selected.origins);
+     else await operatorContext.route("**/*",route=>{const u=new URL(route.request().url());return (selected?.origins??["http://127.0.0.1:56400","http://127.0.0.1:56421"]).includes(u.origin)?route.continue():route.abort();});operator=await operatorContext.newPage();
+--- before/scripts/audit/neutrality-snapshot.mjs
++++ after/scripts/audit/neutrality-snapshot.mjs
+@@ -1,6 +1,13 @@
+-export function neutralitySnapshot(target,id,workspace){
++import {isDeepStrictEqual} from "node:util";
++
++const financialTables=["point_balances","point_transactions","earnings_balances","earnings_transactions","workspace_budgets","workspace_budget_transactions","redemptions","redemption_gifts","redemption_codes"];
++const numericFields=["xp","points","withdrawable","budget","pointLedger","cashLedger","redemptions","budgetLedger"];
++export function neutralitySnapshot(target,id,workspace,{complete=false}={}){
+   if(![id,workspace].every((value)=>/^[a-f0-9-]{36}$/.test(value)))throw new Error("invalid exact fixture ID");
+-  return JSON.parse(target.sql(`select jsonb_build_object(
++  const rows=complete?`, 'financialRows',jsonb_build_object(
++    'creatorsXp',coalesce((select jsonb_agg(jsonb_build_object('id',id,'xp',xp)order by id)from public.creators where workspace_id='${workspace}'),'[]'::jsonb),
++    ${financialTables.map(table=>`'${table}',coalesce((select jsonb_agg(jsonb_build_object('id',t.id,'hash',md5(to_jsonb(t)::text))order by t.id)from public.${table} t where t.workspace_id='${workspace}'),'[]'::jsonb)`).join(",")})`:"";
++  return JSON.parse(target.sql(`${complete?"begin read only;":""}select jsonb_build_object(
+     'xp',(select xp from public.creators where id='${id}'),
+     'points',(select balance from public.point_balances where creator_id='${id}'),
+     'withdrawable',(select available from public.earnings_balances where creator_id='${id}'),
+@@ -9,5 +16,27 @@
+     'cashLedger',(select count(*) from public.earnings_transactions where creator_id='${id}'),
+     'redemptions',(select count(*) from public.redemptions where creator_id='${id}'),
+     'budgetLedger',(select count(*) from public.workspace_budget_transactions where workspace_id='${workspace}'),
+-    'rewardInventory',coalesce((select jsonb_agg(jsonb_build_object('id',id,'stock_qty',stock_qty,'stock_remaining',stock_remaining) order by id) from public.redemption_gifts where workspace_id='${workspace}'),'[]'::jsonb));`));
++    'rewardInventory',coalesce((select jsonb_agg(jsonb_build_object('id',id,'stock_qty',stock_qty,'stock_remaining',stock_remaining) order by id) from public.redemption_gifts where workspace_id='${workspace}'),'[]'::jsonb)${rows});${complete?"commit;":""}`));
+ }
++
++export function legacyRewardAnchors(target,workspace){
++  if(!/^[a-f0-9-]{36}$/.test(workspace))throw new Error("invalid exact fixture workspace");
++  return JSON.parse(target.sql(`begin read only;select coalesce(jsonb_agg(jsonb_build_object('id',s.id,'missionId',s.mission_id,'creatorId',s.creator_id,'status',s.status,'pointsAwarded',s.points_awarded,'xpAwarded',s.xp_awarded,'reviewedAt',s.reviewed_at)order by s.id),'[]'::jsonb)from public.mission_submissions s join public.missions m on m.id=s.mission_id and m.workspace_id=s.workspace_id where s.workspace_id='${workspace}' and m.creator_workflow_mode='legacy' and s.status='approved';commit;`));
++}
++
++export function assertBrowserPendingNeutrality(before,after,expected){
++  const fail=code=>{throw Object.assign(new Error(code),{code});};
++  for(const evidence of [before,after]){
++    if(!evidence||!expected)fail("D19_PENDING_REWARD_EVIDENCE_INCOMPLETE");
++    for(const key of ["runId","target","creatorId","workspaceId","submissionId","workflowId"]){
++      if(expected[key]===undefined||!isDeepStrictEqual(evidence[key],expected[key]))fail("D19_PENDING_REWARD_FRAME_MISMATCH");
++    }
++    if(expected.lineage&&!isDeepStrictEqual(evidence.lineage,expected.lineage))fail("D19_PENDING_REWARD_FRAME_MISMATCH");
++    const snapshot=evidence.snapshot;
++    if(!snapshot||numericFields.some(key=>typeof snapshot[key]!=="number"||!Number.isFinite(snapshot[key]))
++      ||!Array.isArray(snapshot.rewardInventory)||!Array.isArray(evidence.legacyAnchors)||evidence.legacyAnchors.length===0)fail("D19_PENDING_REWARD_EVIDENCE_INCOMPLETE");
++    if(expected.requireCompleteRows!==false&&(!snapshot.financialRows||["creatorsXp",...financialTables].some(key=>!Array.isArray(snapshot.financialRows[key]))))fail("D19_PENDING_REWARD_EVIDENCE_INCOMPLETE");
++  }
++  if(!isDeepStrictEqual(before.snapshot,after.snapshot)||!isDeepStrictEqual(before.legacyAnchors,after.legacyAnchors))fail("D19_PENDING_REWARD_NEUTRALITY_CHANGED");
++  return{passed:true,financialRowsCompared:expected.requireCompleteRows!==false,financialTableFamiliesCompared:expected.requireCompleteRows!==false?financialTables.length:0,legacyAnchorsEqual:true};
++}
+--- before/scripts/audit/run-pilot-browser.mjs
++++ after/scripts/audit/run-pilot-browser.mjs
+@@ -5,7 +5,7 @@
+ import {isDeepStrictEqual as equal} from 'node:util';
+ import process from 'node:process';
+ import {verifiedTarget} from './local-targets.mjs';
+-import {neutralitySnapshot} from './neutrality-snapshot.mjs';
++import {neutralitySnapshot,legacyRewardAnchors,assertBrowserPendingNeutrality} from './neutrality-snapshot.mjs';
+ import {captureB2Inventory} from './b2-fixture-inventory.mjs';
+ const target=verifiedTarget();
+ const context=target.context;
+@@ -23,8 +23,18 @@
+  const visit=s=>{for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});for(const child of s.suites??[])visit(child);};for(const s of raw.suites)visit(s);
+  summaries.push({phase,tests,stats:raw.stats});if(status)break;
+ }
+-const live=verifiedTarget(),after=neutralitySnapshot(live,fx.creator.id,fx.workspaceId);
++const live=verifiedTarget();if(!equal(live.identity,target.identity))throw new Error('D19 browser target drift before financial readback');
++const after=neutralitySnapshot(live,fx.creator.id,fx.workspaceId,{complete:Boolean(context)});
++let neutrality={passed:false,reason:'D19_PENDING_REWARD_EVIDENCE_INCOMPLETE'};
++try{
++ const saved=context?context.readPrivate('browser-fixture.private.json'):JSON.parse(readFileSync('.codex-tmp/D19-browser-fixture.private.json','utf8'));
++ const expected={...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:live.identity,creatorId:fx.creator.id,workspaceId:fx.workspaceId,submissionId:saved.core?.submissionId,workflowId:saved.core?.workflowId,requireCompleteRows:Boolean(context)};
++ const before=JSON.parse(readFileSync(context?.publicPath('browser-before-handoff.json')??'docs/verification/D19-browser-before-handoff.json','utf8'));
++ const current={...expected,snapshot:after,legacyAnchors:legacyRewardAnchors(live,fx.workspaceId)};
++ neutrality={...assertBrowserPendingNeutrality(before,current,expected),reason:null};
++ writeFileSync(context?.publicPath('browser-neutrality.json')??'docs/verification/D19-browser-neutrality.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:live.identity,before,after:current,neutrality},null,2)+'\n');
++}catch(error){status=1;neutrality={passed:false,reason:['D19_PENDING_REWARD_FRAME_MISMATCH','D19_PENDING_REWARD_NEUTRALITY_CHANGED'].includes(error.code)?error.code:'D19_PENDING_REWARD_EVIDENCE_INCOMPLETE'};process.stderr.write('D19 browser pending neutrality gate failed; retain evidence and HOLD.\n');}
+ if(context){try{captureB2Inventory(live);}catch{status=1;process.stderr.write('B2 browser inventory/identity/journal gate failed; no reseed.\n');}writeFileSync(context.publicPath('phase-result.json'),JSON.stringify({lineage:context.lineage,target:live.identity,exitCode:status,at:new Date().toISOString()},null,2)+'\n');}
+-writeFileSync(context?.publicPath('browser-after.json')??'docs/verification/D19-browser-after.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:live.identity,after},null,2)+'\n');
+-writeFileSync(context?.publicPath('browser-summary.json')??'docs/verification/D19-browser-summary.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:target.identity,summaries,passed:summaries.flatMap(s=>s.tests).filter(t=>t.ok).length,status,scope:'Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider.'},null,2)+'\n');
++writeFileSync(context?.publicPath('browser-after.json')??'docs/verification/D19-browser-after.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:live.identity,after,neutrality},null,2)+'\n');
++writeFileSync(context?.publicPath('browser-summary.json')??'docs/verification/D19-browser-summary.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:target.identity,summaries,passed:summaries.flatMap(s=>s.tests).filter(t=>t.ok).length,status,neutrality,scope:'Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider.'},null,2)+'\n');
+ process.exit(status);
+--- before/server/test/audit-staff-capabilities.test.ts
++++ after/server/test/audit-staff-capabilities.test.ts
+@@ -88,7 +88,11 @@
+     const submissionId = winner.result.submission.id as string;
+     const creator = winner.creator;
+     afterJoin=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));
+-    expect(afterJoin).toEqual(joinBefore.map((row,i)=>({...row,xp:row.xp+(fixture.creators[i].id===creator.id?10:0)})));
++    expect(afterJoin).toEqual(joinBefore.map((row,i)=>{
++      const financialRows="financialRows" in row?row.financialRows as Record<string,unknown[]>:null;
++      return{...row,xp:row.xp+(fixture.creators[i].id===creator.id?10:0),
++        ...(financialRows?{financialRows:{...financialRows,creatorsXp:(financialRows.creatorsXp as {id:string;xp:number}[]).map(value=>value.id===creator.id?{...value,xp:value.xp+10}:value)}}:{})};
++    }));
+     joinBaseline={before:joinBefore,after:afterJoin,creatorId:creator.id,existingJoinXpDelta:10,contract:"D18-existing-join-contract.json"};
+     const read = () => request<ActiveMissionWorkspace>(creator.jwt,`/my-missions/${submissionId}/workspace`);
+     let workspace = await read(); const workflowId=workspace.workflow.id; const itemId=workspace.workItems.find((item)=>item.required)!.id;
+--- before/server/test/auditWorkflowFixture.ts
++++ after/server/test/auditWorkflowFixture.ts
+@@ -105,7 +105,7 @@
+     }
+     return { id, slug: missionSlug };
+   }
+-  async function neutrality(creatorId: string) {
++  async function legacyNeutrality(creatorId: string) {
+     const row = async (table: string, fields: string, key: string, value: string) => must(await service.from(table).select(fields).eq(key,value).maybeSingle()) as unknown as Record<string,number> | null;
+     const count = async (table: string, key: string, value: string) => {
+       const result = await service.from(table).select("*",{head:true,count:"exact"}).eq(key,value); must(result); return result.count ?? 0;
+@@ -119,6 +119,14 @@
+       pointLedger: await count("point_transactions","creator_id",creatorId), cashLedger: await count("earnings_transactions","creator_id",creatorId),
+       redemptions: await count("redemptions","creator_id",creatorId), budgetLedger: await count("workspace_budget_transactions","workspace_id",workspaceId),
+       rewardInventory: inventory ?? [] };
++  }
++  async function neutrality(creatorId: string) {
++    if (!context) return legacyNeutrality(creatorId);
++    // Same read-only snapshot helper as the browser gate; all pending/cancel/reapproval
++    // assertions now include unchanged row fingerprints, not just balance/count totals.
++    // @ts-expect-error Native existing acceptance snapshot helper.
++    const {neutralitySnapshot} = await import("../../scripts/audit/neutrality-snapshot.mjs");
++    return neutralitySnapshot(target,creatorId,workspaceId,{complete:true}) as Awaited<ReturnType<typeof legacyNeutrality>> & {financialRows:Record<string,unknown[]>};
+   }
+   const publicIds = () => ({ runId, workspaceIds: [workspaceId,otherWorkspaceId], authIds, missionIds });
+   function queueCreators(count: number) {
+--- before/server/test/b2-runtime-manifest.test.ts
++++ after/server/test/b2-runtime-manifest.test.ts
+@@ -4,13 +4,13 @@
+ const read=(p:string)=>JSON.parse(readFileSync(p,"utf8"));
+ describe("B2 reviewable runtime manifest is explicit authority, not P0 permission",()=>{
+  it("requires a separate unapproved digest-bound runtime receipt and keeps original incident/release/provider states",()=>{
+-  const m=read("docs/verification/D19-B2-runtime-manifest.json"),a=read("docs/verification/D19-B2-runtime-authorization-template.json");
++  const m=read("docs/verification/D19-B2-runtime-manifest-neutrality-guard.json"),a=read("docs/verification/D19-B2-runtime-authorization-template-neutrality-guard.json");
+   expect(m.kind).toBe("D19_B2_EXECUTION_SPEC");expect(m.specificationReady).toBe(true);expect(a.approved).toBe(false);
+-  expect(a.manifestSha256).toBe(createHash("sha256").update(readFileSync("docs/verification/D19-B2-runtime-manifest.json")).digest("hex"));
++  expect(a.manifestSha256).toBe(createHash("sha256").update(readFileSync("docs/verification/D19-B2-runtime-manifest-neutrality-guard.json")).digest("hex"));
+   expect(m.invariants).toMatchObject({incidentOpen:true,restored:false,releaseHold:true,providerEnabled:false,wholeR1Verified:false,D15ContentBlocked:true,advisorOwnerDeviceHostedStaffBlocked:true});
+  });
+  it("separates bounded fixture additions from migration seeds and the adopted historical checkpoint",()=>{
+-  const m=read("docs/verification/D19-B2-runtime-manifest.json"),caps=m.fixture.rowCaps;
++  const m=read("docs/verification/D19-B2-runtime-manifest-neutrality-guard.json"),caps=m.fixture.rowCaps;
+   expect(caps.role.auth_users+caps.core.auth_users+caps.browser.auth_users).toBe(84);
+   expect(caps.role.workspaces+caps.core.workspaces+caps.browser.workspaces).toBe(6);
+   expect(caps.role.mission_submissions+caps.core.mission_submissions+caps.browser.mission_submissions).toBe(7);
+@@ -19,7 +19,7 @@
+   for(const phase of ["role","core","browser"]){expect(caps[phase].academy_lessons).toBe(0);expect(caps[phase].mission_draft_assets).toBe(0);expect(caps[phase].storage_objects).toBe(0);}
+  });
+  it("binds current source and bootstrap profile without reusing pristine/global RPC acceptance",()=>{
+-  const m=read("docs/verification/D19-B2-runtime-manifest.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read("docs/verification/D19-B2-bootstrap-profile.json");
++  const m=read("docs/verification/D19-B2-runtime-manifest-neutrality-guard.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read("docs/verification/D19-B2-bootstrap-profile.json");
+   expect(m.candidate.fingerprint).toBe(fp.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
+   expect(m.execution.pristineRpcRerun).toBe(false);expect(m.fixture.legacyExistingIssuanceRequiresExplicitRuntimeApproval.approvalXpDelta).toBe(100);
+   expect(m.execution.commands).toHaveLength(3);
+--- before/server/test/browser-pending-neutrality-runner.test.ts
++++ after/server/test/browser-pending-neutrality-runner.test.ts
+@@ -0,0 +1,39 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++const io=vi.hoisted(()=>({read:vi.fn(),write:vi.fn(),spawn:vi.fn(),target:{}as Record<string,unknown>,capture:vi.fn()}));
++vi.mock("node:fs",async original=>{const fs=await original<typeof import("node:fs")>();return{...fs,default:{...fs,readFileSync:io.read,writeFileSync:io.write},readFileSync:io.read,writeFileSync:io.write};});
++vi.mock("node:child_process",async original=>{const cp=await original<typeof import("node:child_process")>();return{...cp,default:{...cp,spawnSync:io.spawn},spawnSync:io.spawn};});
++vi.mock("../../scripts/audit/local-targets.mjs",()=>({verifiedTarget:()=>io.target}));
++vi.mock("../../scripts/audit/b2-fixture-inventory.mjs",()=>({captureB2Inventory:io.capture}));
++const originalArgv=[...process.argv];
++afterEach(()=>{process.argv=originalArgv;vi.restoreAllMocks();vi.resetModules();});
++class Stopped extends Error{constructor(readonly status:number){super("Unit runner stopped");}}
++function scenario(changed:boolean){
++ const ids={creatorId:"11111111-1111-4111-8111-111111111111",workspaceId:"22222222-2222-4222-8222-222222222222",submissionId:"33333333-3333-4333-8333-333333333333",workflowId:"44444444-4444-4444-8444-444444444444"};
++ const identity={projectId:"unit-only",runId:"unit-owner"},lineage={projectId:"unit-only",phase:"browser",manifestSha256:"unit",sourceFingerprint:"unit"};
++ const financialRows=Object.fromEntries(["point_balances","point_transactions","earnings_balances","earnings_transactions","workspace_budgets","workspace_budget_transactions","redemptions","redemption_gifts","redemption_codes","creatorsXp"].map(t=>[t,[]]));
++ const snapshot={xp:145,points:550,withdrawable:125,budget:8875,pointLedger:1,cashLedger:1,redemptions:0,budgetLedger:1,rewardInventory:[],financialRows};
++ const anchors=[{id:ids.submissionId,status:"approved",pointsAwarded:500,xpAwarded:135}];
++ const fx={runId:"unit-phase",target:identity,creator:{id:ids.creatorId},workspaceId:ids.workspaceId,slug:"unit",core:{submissionId:ids.submissionId,workflowId:ids.workflowId}};
++ const context={phase:"browser",lineage,privatePath:(n:string)=>"unit-private/"+n,publicPath:(n:string)=>"unit-public/"+n,readPrivate:()=>fx};
++ const before={...ids,lineage,runId:fx.runId,target:identity,snapshot,legacyAnchors:anchors};
++ io.target={context,identity,env:{SUPABASE_URL:"http://127.0.0.1:56821",SUPABASE_ANON_KEY:"unit-only"},sql:(query:string)=>JSON.stringify(query.includes("'legacy'")?anchors:{...snapshot,budget:snapshot.budget+(changed?1:0)})};
++ io.read.mockReset().mockImplementation((p:string)=>p.endsWith("browser-before-handoff.json")?JSON.stringify(before):JSON.stringify({stats:{},suites:[{specs:[{title:"Mocked browser success",ok:true,tests:[{results:[{status:"passed",duration:1}]}]}]}]}));
++ io.write.mockReset();io.spawn.mockReset().mockReturnValue({status:0});io.capture.mockReset();
++ process.argv=["node","unit-runner","--resume"];
++ vi.spyOn(process,"exit").mockImplementation(((status:number)=>{throw new Stopped(status);})as never);
++}
++describe("D19 browser runner requires financial evidence beyond browser success",()=>{
++ it("exits1 and persists a failed phase when browser cases pass but the saved budget changes",async()=>{
++  scenario(true);
++  // @ts-expect-error Native executable is evaluated only with all I/O and subprocesses mocked.
++  await expect(import("../../scripts/audit/run-pilot-browser.mjs")).rejects.toMatchObject({status:1});
++  const phase=io.write.mock.calls.find(([p])=>p.endsWith("phase-result.json"));expect(JSON.parse(phase![1])).toMatchObject({exitCode:1});
++  const summary=io.write.mock.calls.find(([p])=>p.endsWith("browser-summary.json"));expect(JSON.parse(summary![1])).toMatchObject({status:1,neutrality:{passed:false,reason:"D19_PENDING_REWARD_NEUTRALITY_CHANGED"}});
++ });
++ it("exits0 only after unchanged complete financial rows and legacy anchors have been compared",async()=>{
++  scenario(false);
++  // @ts-expect-error Native executable is evaluated only with all I/O and subprocesses mocked.
++  await expect(import("../../scripts/audit/run-pilot-browser.mjs")).rejects.toMatchObject({status:0});
++  const summary=io.write.mock.calls.find(([p])=>p.endsWith("browser-summary.json"));expect(JSON.parse(summary![1])).toMatchObject({status:0,neutrality:{passed:true,financialRowsCompared:true,financialTableFamiliesCompared:9,legacyAnchorsEqual:true}});
++ });
++});
+--- before/server/test/browser-pending-neutrality.test.ts
++++ after/server/test/browser-pending-neutrality.test.ts
+@@ -0,0 +1,49 @@
++import { describe, expect, it } from "vitest";
++// @ts-expect-error Existing native ESM acceptance helper.
++import { assertBrowserPendingNeutrality, neutralitySnapshot } from "../../scripts/audit/neutrality-snapshot.mjs";
++const id="11111111-1111-4111-8111-111111111111",workspaceId="22222222-2222-4222-8222-222222222222";
++const tableNames=["point_balances","point_transactions","earnings_balances","earnings_transactions","workspace_budgets","workspace_budget_transactions","redemptions","redemption_gifts","redemption_codes"];
++function samples(){
++ const expected={runId:id,target:{projectId:"unit-b2",databaseContainerId:"unit-db"},creatorId:id,workspaceId,submissionId:"33333333-3333-4333-8333-333333333333",workflowId:"44444444-4444-4444-8444-444444444444",lineage:{projectId:"unit-b2",sourceFingerprint:"unit",manifestSha256:"unit",phase:"browser"}};
++ const before={...expected,snapshot:{xp:145,points:550,withdrawable:125,budget:8875,pointLedger:1,cashLedger:1,redemptions:0,budgetLedger:1,rewardInventory:[{id,stock_qty:3,stock_remaining:3}],financialRows:{creatorsXp:[{id,xp:145}],...Object.fromEntries(tableNames.map(t=>[t,[]]))} as Record<string,unknown>},legacyAnchors:[{id,status:"approved",pointsAwarded:500,xpAwarded:135,reviewedAt:"2026-10-25T00:00:00Z"}]};
++ return{expected,before,after:structuredClone(before)};
++}
++describe("D19 browser pending reward gate",()=>{
++ it("accepts unchanged funded state only within the exact saved run/target/workflow frame",()=>{
++  const s=samples();expect(assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toMatchObject({passed:true,financialRowsCompared:true,legacyAnchorsEqual:true});
++ });
++ it.each(["xp","points","withdrawable","budget","pointLedger","cashLedger","redemptions","budgetLedger"])("rejects a %s delta even when browser cases reported success",key=>{
++  const s=samples();s.after.snapshot[key as "xp"]+=1;
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_NEUTRALITY_CHANGED");
++ });
++ it("rejects an altered ledger row with unchanged balances and ledger counts",()=>{
++  const s=samples();s.before.snapshot.financialRows.point_transactions=[{id,hash:"before"}];s.after.snapshot.financialRows.point_transactions=[{id,hash:"after"}];
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_NEUTRALITY_CHANGED");
++ });
++ it("rejects stock changes and altered issued legacy anchors",()=>{
++  const s=samples();s.after.snapshot.rewardInventory[0].stock_remaining=2;
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_NEUTRALITY_CHANGED");
++  s.after=structuredClone(s.before);s.after.legacyAnchors[0].xpAwarded=235;
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_NEUTRALITY_CHANGED");
++ });
++ it.each(["runId","creatorId","workspaceId","workflowId","submissionId"])("rejects a borrowed %s frame",key=>{
++  const s=samples();s.after[key as "runId"]="55555555-5555-4555-8555-555555555555";
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_FRAME_MISMATCH");
++ });
++ it("refuses missing complete row evidence, wrong lineage and absent funded values",()=>{
++  const s=samples();delete (s.after.snapshot as Partial<typeof s.after.snapshot>).financialRows;
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_EVIDENCE_INCOMPLETE");
++  s.after=structuredClone(s.before);s.after.lineage.sourceFingerprint="other";
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_FRAME_MISMATCH");
++  s.after=structuredClone(s.before);s.after.snapshot.budget=Number.NaN;
++  expect(()=>assertBrowserPendingNeutrality(s.before,s.after,s.expected)).toThrow("D19_PENDING_REWARD_EVIDENCE_INCOMPLETE");
++ });
++ it("uses a single read-only exact-workspace query for complete row hashes and all creator XP",()=>{
++  const s=samples();let query="";
++  const target={sql:(sql:string)=>{query=sql;return JSON.stringify(s.before.snapshot);}};
++  expect(neutralitySnapshot(target,id,workspaceId,{complete:true})).toEqual(s.before.snapshot);
++  expect(query).toMatch(/^begin read only;/);expect(query).toContain(workspaceId);
++  for(const table of tableNames)expect(query).toContain("public."+table);
++  expect(query).toContain("md5(to_jsonb(t)::text)");expect(query).not.toMatch(/insert into|update public|delete from|truncate/i);
++ });
++});
+--- before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md
++++ after/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md
+@@ -582,7 +582,7 @@
+ 
+ ### D19 · 整合107案例、發布證據與受控pilot交接
+ 
+-**階段：** GATE　**依賴：** D01, D02, D03, D04, D05, D06, D07, D10, D11, D16　**規模：** L　**狀態：** R1 verified local/disposable；未部署／未啟用；正式staff與D15內容blocker保留
++**階段：** GATE　**依賴：** D01, D02, D03, D04, D05, D06, D07, D10, D11, D16　**規模：** L　**狀態：** 當前整體R1未verified；B2本機準備已有離線證據，B2 runtime未授權／未執行；事故OPEN、release HOLD、未部署；正式staff及D15等blockers保留
+ 
+ **對應：** 完整旅程／新產品要求；案例 UC-C13, UC-C14, UC-C15, UC-C16, UC-C17, UC-C33, UC-C36, UC-A09, UC-A18, UC-A19, UC-A45, UC-A46, UC-A49, UC-S04。
+ 
+@@ -615,7 +615,9 @@
+ - [ ] **5. 核對完成條件並交接。** code/test/deployment/runtime四種狀態分開；沒有外部授權停在release-ready且提供具體可核對變更，不稱production完成。 更新task/case ledger及evidence；對應diff review後，依授權保存小範圍local commit。
+ 
+ 
+-**D19 本輪交接：** local／disposable 驗證及可review材料已完成，見 `docs/verification/D19-delivery.json`。第5項中的protected workflow／commit／pilot／observer不在本輪授權，保持未執行；正式staff owner grants／銜接、D15真實核准教材及hosted/manual驗收仍open。沒有push／merge／deploy或正式membership／角色修改。下一項D20未開始。
++**D19 歷史交接（非當前candidate runtime證據）：** local／disposable 驗證及可review材料已完成，見 `docs/verification/D19-delivery.json`。第5項中的protected workflow／commit／pilot／observer不在本輪授權，保持未執行；正式staff owner grants／銜接、D15真實核准教材及hosted/manual驗收仍open。沒有push／merge／deploy或正式membership／角色修改。下一項D20未開始。
++
++**D19 completion audit 補充（2026-10-25）：** 先前的 `[x]` 及 local/disposable 成果保留為其source-bound歷史，不能重綁為當前R1 verified。當前 B2 runtime 仍待明確批准；browser runner 已補上 pending 前後的財務／legacy anchor 相等驗收，缺失或不一致必須exit1。原16／194及原稽核結果保留。新source、offline gates、未測項與最新runtime manifest見 `docs/verification/D19-B2-neutrality-guard-delivery.json`。
+ 
+ ### D20 · 嵌入式AI brief coach與審稿摘要試行
+ 

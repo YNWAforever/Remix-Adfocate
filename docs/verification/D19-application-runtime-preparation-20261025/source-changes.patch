@@ -1,0 +1,516 @@
+--- /dev/null
++++ b/scripts/audit/application-supplement.mjs
+@@ -0,0 +1,78 @@
++// Pure acceptance orchestration. Importing this module cannot create a client or touch a target.
++import assert from "node:assert/strict";
++
++export function assertApplicationSupplementPlan(manifest) {
++  const p = manifest?.supplement;
++  assert.equal(manifest?.kind, "D19_B2_EXECUTION_SPEC");
++  assert.equal(manifest.schemaVersion, 2); assert.equal(manifest.specificationReady, true);
++  assert(/^[a-f0-9]{64}$/.test(manifest.candidate?.fingerprint));
++  assert(/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(manifest.execution?.artifactNamespace));
++  assert.equal(p?.kind, "APPLICATION_DECISIONS_ONLY");
++  assert.equal(p.originManifestSha256, "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d");
++  assert.deepEqual(p.resourceAdds, { projects: 0, volumes: 0, networks: 0, containers: 0 });
++  assert.equal(p.authSubjects, 6); assert.equal(p.workspaces, 1); assert.equal(p.missions, 4);
++  assert.equal(p.schema?.file, "supabase/migrations/20261025120934_application_decisions.sql");
++  assert(/^[a-f0-9]{64}$/.test(p.schema.sha256)); assert.equal(p.schema.baselineMigrationCount, 72);
++  for (const key of ["providerEnabled", "legacyIssuance", "cleanupApproved", "runtimeApproved"]) assert.equal(p[key], false, key);
++  for (const key of ["incidentOpen", "releaseHold"]) assert.equal(p[key], true, key);
++  assert.equal(p.originalApiReruns, 0); assert.equal(p.originalBrowserReruns, 0);
++  return p;
++}
++
++export function assertApplicationRollback(before, after) {
++  assert.deepEqual(after, before, "Application transaction did not fully roll back");
++}
++
++export function assertFinancialRowsUnchanged(before, after) {
++  assert.deepEqual(after, before, "Application supplement changed financial rows");
++}
++
++export function assertDecisionRace(responses, before, after) {
++  assert.equal(responses.length, 2);
++  const success = responses.filter(r => r.status === 200);
++  const conflict = responses.filter(r => r.status === 409);
++  assert.equal(success.length, 1, "Exactly one operator must win");
++  assert.equal(conflict.length, 1, "Exactly one operator must see the saved winning decision");
++  const decision = success[0].body?.decision;
++  assert(decision && ["accept", "decline"].includes(decision.action));
++  assert(typeof decision.actorId === "string" && decision.actorId.length > 0);
++  assert(typeof decision.actorLabel === "string" && decision.actorLabel.length > 0);
++  assert(Number.isFinite(Date.parse(decision.decidedAt)), "Saved attribution requires a real time");
++  assert.equal(decision.revision, 1);
++  assert.equal(conflict[0].body?.code, "APPLICATION_DECIDED");
++  assert.deepEqual(conflict[0].body.current_decision, decision);
++  assert.deepEqual(after.decision, decision);
++  const accepted = decision.action === "accept" ? 1 : 0;
++  assert.equal(before.status, "applied");
++  assert.equal(after.status, accepted ? "joined" : "declined");
++  for (const [field, delta] of Object.entries({ filled: accepted, xp: accepted * 10, workflows: accepted, audit: 1, receipts: 1 })) {
++    assert.equal(after[field], before[field] + delta, `Wrong atomic race delta: ${field}`);
++  }
++  return decision;
++}
++
++export async function runApplicationSupplement(driver) {
++  let stage = "authorize";
++  try {
++    // Keep these sequential. Even a client constructor or setup import can have effects.
++    await driver.authorize();
++    stage = "identity"; await driver.identity();
++    stage = "provenance"; await driver.provenance();
++    stage = "claim"; await driver.claim();
++    stage = "migrate"; await driver.migrate();
++    stage = "createClient"; await driver.createClient();
++    stage = "fixture"; await driver.fixture();
++    stage = "api"; await driver.api();
++    stage = "browser"; await driver.browser();
++    stage = "finalReadback"; const final = await driver.finalReadback();
++    assert.equal(final?.allEqual, true, "Final financial/provenance readback is incomplete");
++    await driver.record({ status: "PASS_APPLICATION_SUPPLEMENT", allEqual: true, releaseHold: true,
++      wholeR1Verified: false, incidentOpen: true, provider: "disabled" });
++    return final;
++  } catch (error) {
++    // A missing response is UNKNOWN. Never compensate, reseed or auto-retry here.
++    await driver.record({ status: "STOPPED_RETAIN_EXACT_RECORDS", failedStage: stage, releaseHold: true,
++      incidentOpen: true, provider: "disabled", reason: "Inspect private journal and exact readback before any continuation" });
++    throw error;
++  }
++}
+--- /dev/null
++++ b/scripts/audit/execute-application-supplement.mjs
+@@ -0,0 +1,345 @@
++// Run with vite-node. Default is a file-only review; runtime needs a separately approved digest.
++import assert from "node:assert/strict";
++import { createHash, randomUUID } from "node:crypto";
++import { readFileSync, existsSync, mkdirSync, openSync, closeSync } from "node:fs";
++import { resolve, relative, isAbsolute, dirname } from "node:path";
++import { pathToFileURL, URL } from "node:url";
++import { spawn, execFileSync } from "node:child_process";
++import { setTimeout as pause } from "node:timers/promises";
++import process from "node:process";
++import { assertApplicationSupplementPlan, runApplicationSupplement, assertDecisionRace, assertApplicationRollback, assertFinancialRowsUnchanged } from "./application-supplement.mjs";
++import { b2ExecutionContext, verifiedTarget } from "./local-targets.mjs";
++import { FixtureJournal, durableJson, bindBrowserJournal } from "./fixture-journal.mjs";
++import { fixtureInventorySql, assertInventoryCaps } from "./b2-fixture-inventory.mjs";
++
++const hash = value => createHash("sha256").update(value).digest("hex");
++const root = process.cwd();
++const local = path => { const p = resolve(root, path), r = relative(root, p); assert(!r.startsWith("..") && !isAbsolute(r)); return p; };
++const read = path => JSON.parse(readFileSync(local(path), "utf8"));
++const bound = ref => { assert(ref && /^[a-f0-9]{64}$/.test(ref.sha256)); const bytes = readFileSync(local(ref.path)); assert.equal(hash(bytes), ref.sha256, `Bound reference changed: ${ref.path}`); return JSON.parse(bytes); };
++const uuid = x => typeof x === "string" && /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(x);
++const literal = x => { assert(uuid(x)); return `'${x}'`; };
++const catalogSql = `begin read only; select jsonb_build_object(
++ 'relations',(select jsonb_agg(jsonb_build_object('oid',c.oid,'schema',n.nspname,'name',c.relname,'kind',c.relkind,'rls',c.relrowsecurity,'force',c.relforcerowsecurity,'acl',c.relacl)order by c.oid)from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private')),
++ 'functions',(select jsonb_agg(jsonb_build_object('oid',p.oid,'hash',md5(pg_get_functiondef(p.oid)),'acl',p.proacl,'owner',p.proowner)order by p.oid)from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname in('public','private')and p.prokind='f'and p.proname<>'decide_mission_application'),
++ 'policies',(select jsonb_agg(to_jsonb(p)order by p.oid)from pg_policy p join pg_class c on c.oid=p.polrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private')),
++ 'columns',(select jsonb_agg(to_jsonb(a)order by a.attrelid,a.attnum)from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname in('public','private')and a.attnum>0 and not a.attisdropped),
++ 'history',(select jsonb_agg(to_jsonb(h)order by h.version)from supabase_migrations.schema_migrations h where version<>'20261025120934'),
++ 'newFunction',(select count(*)from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'and p.proname='decide_mission_application'),
++ 'newHistory',(select count(*)from supabase_migrations.schema_migrations where version='20261025120934'));commit;`;
++const financialTables = ["point_balances", "point_transactions", "earnings_balances", "earnings_transactions", "workspace_budgets", "workspace_budget_transactions", "redemptions", "redemption_gifts", "redemption_codes"];
++const financialSql = `begin read only;select jsonb_build_object(${financialTables.map(t => `'${t}',(select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'hash',md5(to_jsonb(t)::text))order by t.id),'[]'::jsonb)from public.${t} t)`).join(",")});commit;`;
++
++// No target metadata, credentials, SQL, SDK, Auth or browser is touched by review().
++export function review(path) {
++  const manifest = read(path), plan = assertApplicationSupplementPlan(manifest);
++  const source = bound(manifest.supplement.source);
++  assert.equal(source.fingerprint, manifest.candidate.fingerprint);
++  assert.equal(hash(JSON.stringify(source.files)), source.fingerprint);
++  for (const f of source.files) assert.equal(hash(readFileSync(local(f.path), "utf8").replace(/\r\n/g, "\n")), f.sha256, f.path);
++  const origin = bound(plan.originManifest), final = bound(plan.originFinalReadback);
++  assert.equal(plan.originManifest.sha256, plan.originManifestSha256);
++  assert.equal(origin.target.projectId, manifest.target.projectId);
++  assert.deepEqual(origin.target.actualContainerIds, manifest.target.actualContainerIds);
++  assert.deepEqual(origin.target.serviceImageIds, manifest.target.serviceImageIds);
++  assert.deepEqual(origin.fixture.rowScopes, manifest.fixture.rowScopes);
++  assert.equal(final.incidentOpen, true); assert.equal(final.releaseHold, true);
++  const migration = readFileSync(local(plan.schema.file), "utf8"); assert.equal(hash(migration), plan.schema.sha256);
++  assert.equal(manifest.fixture.phases.length, 1); assert.equal(manifest.fixture.phases[0].phase, "role");
++  const fixture = manifest.fixture.phases[0];
++  assert.equal(fixture.plannedNamespace, manifest.execution.artifactNamespace); assert(uuid(fixture.plannedPrimaryWorkspaceId));
++  assert.equal(fixture.plannedMissions.length, 4); assert(fixture.plannedMissions.every(m => uuid(m.id) && uuid(m.templateId) && uuid(m.requirementId)));
++  const ids = [fixture.plannedNamespace, fixture.plannedPrimaryWorkspaceId, ...fixture.plannedMissions.flatMap(m => [m.id, m.templateId, m.requirementId])];
++  assert.equal(new Set(ids).size, ids.length);
++  assert(!origin.fixture.phases.some(p => p.plannedNamespace === fixture.plannedNamespace || p.plannedPrimaryWorkspaceId === fixture.plannedPrimaryWorkspaceId));
++  bound(plan.originTargetReceipt); // Local allocation provenance only; never current runtime authority.
++  const originalCatalog = bound(plan.originCatalog), immutable = bound(plan.originImmutableBaseline);
++  return { manifest, source, plan, final, fixture, originalCatalog, immutable, manifestSha256: hash(readFileSync(local(path))) };
++}
++
++export async function execute(path) {
++  const r = review(path), { manifest, plan, fixture: planned } = r;
++  let context, target, service, app, journal, baseline, oldRows, financial, actors, applications, browserEvidence;
++  const oldOwned = Object.fromEntries(["workspaces", "auth_users", "academy_content"].map(family => [family, [...new Set(r.final.phaseInventories.flatMap(p => p.inventory[family].ids))].sort()]));
++  const originalQuery = fixtureInventorySql(manifest.fixture.rowScopes, oldOwned);
++  const jsonSql = query => JSON.parse(target.sql(query));
++  const save = (name, value) => durableJson(context.publicPath(name), { lineage: context.lineage, ...value });
++  const assertImmutable = () => {
++    for (const seed of r.immutable.seeds) {
++      const current = jsonSql(seed.query);
++      for (const [id, digest] of Object.entries(seed.rowHashes)) assert.equal(current.rowHashes[id], digest, `Immutable seed ${seed.table} changed`);
++    }
++    const service = r.immutable.serviceMigrationHistory;
++    assert.deepEqual(jsonSql(service.query), { authHistory: service.authHistory, storageHistory: service.storageHistory });
++  };
++  const assertCatalog = afterMigration => {
++    const current = jsonSql(r.originalCatalog.query);
++    if (afterMigration) {
++      assert.equal(current.functions.filter(f => f.schema === "public" && f.name === "decide_mission_application").length, 1);
++      assert.equal(current.history.filter(h => h.version === "20261025120934").length, 1);
++      current.functions = current.functions.filter(f => !(f.schema === "public" && f.name === "decide_mission_application"));
++      current.history = current.history.filter(h => h.version !== "20261025120934");
++    }
++    assert.deepEqual(current, r.originalCatalog.observed, "Original complete eight-section catalog drift; reconcile read-only");
++  };
++  const must = result => { assert.equal(result.error, null, "SDK operation failed; inspect exact private receipt without exposing credentials"); assert(result.data); return result.data; };
++  const api = async (actor, path, method = "GET", body) => {
++    const response = await app.request(`/api${path}`, { method, headers: { Authorization: `Bearer ${actor.session.access_token}`, "X-Workspace-Slug": `application-${planned.plannedNamespace}`, "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
++    return { status: response.status, body: await response.json() };
++  };
++  const insert = async (table, rows, key = "id") => {
++    assert(Array.isArray(rows) && rows.length && rows.every(row => uuid(row[key])));
++    await journal.perform(`insert:${table}`, { [table]: rows.length }, async () => {
++      const saved = must(await service.from(table).insert(rows).select(key));
++      assert.deepEqual(saved.map(row => row[key]).sort(), rows.map(row => row[key]).sort());
++      return { [table]: saved.map(row => row[key]) };
++    }, { [table]: rows.map(row => row[key]) });
++  };
++  const snapshot = async submission => {
++    assert(uuid(submission));
++    return jsonSql(`begin read only;select jsonb_build_object('status',s.status,'filled',m.filled,'xp',c.xp,
++      'workflows',(select count(*)from public.mission_workflows where mission_submission_id=s.id),
++      'audit',(select count(*)from public.operator_audit_events where target_type='application'and target_id=s.id::text),
++      'receipts',(select count(*)from public.operator_crm_command_receipts where result->'decision' is not null and(result->>'id'=s.id::text or result->'submission'->>'id'=s.id::text)),
++      'decision',(select metadata->'decision'from public.operator_audit_events where target_type='application'and target_id=s.id::text order by created_at desc limit 1),
++      'rows',jsonb_build_object('submission',to_jsonb(s),'workflows',(select jsonb_agg(to_jsonb(w)order by w.id)from public.mission_workflows w where w.mission_submission_id=s.id),
++       'notifications',(select jsonb_agg(to_jsonb(n)order by n.id)from public.notifications n where n.entity_id=s.id)))
++      from public.mission_submissions s join public.missions m on m.id=s.mission_id join public.creators c on c.id=s.creator_id where s.id=${literal(submission)};commit;`);
++  };
++  return runApplicationSupplement({
++    authorize: async () => {
++      assert.equal(process.env.ADFOCATE_B2_MANIFEST_PATH, path); assert.equal(process.env.ADFOCATE_B2_PHASE, "role");
++      context = b2ExecutionContext(); assert.equal(context.manifestSha256, r.manifestSha256);
++      const receipt = globalThis.structuredClone(bound(plan.originTargetReceipt));
++      receipt.originResourceReceipt = plan.originTargetReceipt; receipt.allocationFactsInheritedNotRecreated = true;
++      receipt.manifestSha256 = context.manifestSha256; receipt.sourceFingerprint = manifest.candidate.fingerprint;
++      receipt.identity.ownerAuthorization = context.approval.ownerReference;
++      const dest = context.privatePath("supplement-target-receipt.private.json"); assert(!existsSync(dest), "No automatic phase replay");
++      durableJson(dest, receipt); process.env.ADFOCATE_B2_TARGET_RECEIPT_PATH = dest;
++    },
++    identity: async () => { target = verifiedTarget(); assert.deepEqual(target.context.lineage, context.lineage); save("identity.json", { target: target.identity, beforeClient: true, physicalLifecycleActions: 0 }); },
++    provenance: async () => {
++      baseline = jsonSql(catalogSql); assert.equal(baseline.history.length, 72); assert.equal(baseline.newFunction, 0); assert.equal(baseline.newHistory, 0);
++      assert.deepEqual(baseline.history.map(x => x.version).sort(), manifest.supplement.baselineVersions);
++      assertCatalog(false); assertImmutable();
++      oldRows = jsonSql(originalQuery);
++      for (const phase of r.final.phaseInventories) for (const [family, inventory] of Object.entries(phase.inventory)) {
++        for (const [id, digest] of Object.entries(inventory.rowHashes)) assert.equal(oldRows[family].rowHashes[id], digest, `Original ${family} changed; read-only reconciliation required`);
++      }
++      assert.equal(jsonSql("begin read only;select count(*)from auth.users;commit;"), 84);
++      assert.equal(jsonSql("begin read only;select count(*)from public.workspaces;commit;"), 6);
++      assert.equal(jsonSql("begin read only;select count(*)from public.missions;commit;"), 6);
++      financial = jsonSql(financialSql);
++      assert.equal(jsonSql(`begin read only;select count(*)from public.workspaces where id=${literal(planned.plannedPrimaryWorkspaceId)};commit;`), 0);
++      save("before.json", { catalog: baseline, oldRows, financial, authSubjects: 84, currentFunctionAbsent: true });
++    },
++    claim: async () => { const claim = context.privatePath("supplement-claim.json"); mkdirSync(dirname(claim), { recursive: true }); closeSync(openSync(claim, "wx", 0o600)); durableJson(claim, { lineage: context.lineage, claimed: true }); journal = new FixtureJournal(context.privatePath("owned-journal.jsonl"), context.lineage, manifest.fixture.rowCaps.role); journal.assertReady(); },
++    migrate: async () => {
++      const sql = readFileSync(local(plan.schema.file), "utf8").replace(/^begin;\s*$/gmi, "").replace(/^commit;\s*$/gmi, "");
++      target.sql(`begin;${sql}\ninsert into supabase_migrations.schema_migrations(version,name)values('20261025120934','application_decisions');commit;`);
++      target.sql("notify pgrst,'reload schema';");
++      const after = jsonSql(catalogSql); assert.equal(after.newFunction, 1); assert.equal(after.newHistory, 1);
++      assert.deepEqual({ ...after, newFunction: 0, newHistory: 0 }, baseline);
++      assertCatalog(true); assertImmutable();
++      const signature = "public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)";
++      assert.deepEqual(jsonSql(`begin read only;select jsonb_build_object('anon',has_function_privilege('anon','${signature}','execute'),'authenticated',has_function_privilege('authenticated','${signature}','execute'),'service',has_function_privilege('service_role','${signature}','execute'));commit;`), { anon: false, authenticated: false, service: true });
++      assert.deepEqual(jsonSql(originalQuery), oldRows); assertFinancialRowsUnchanged(financial, jsonSql(financialSql));
++      save("migration.json", { before: baseline, after, existingRowsUnchanged: true, financialRowsUnchanged: true, source: plan.schema });
++    },
++    createClient: async () => {
++      Object.assign(process.env, target.env, { OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "", RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0" });
++      await import("./deny-external-fetch.mjs");
++      const { createClient } = await import("@supabase/supabase-js");
++      service = createClient(target.env.SUPABASE_URL, target.env.SUPABASE_SERVICE_KEY, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
++      const { createApp } = await import("../../server/app.ts"); app = createApp().app;
++    },
++    fixture: async () => {
++      const workspace = planned.plannedPrimaryWorkspaceId;
++      await insert("workspaces", [{ id: workspace, slug: `application-${planned.plannedNamespace}`, name: "Synthetic application acceptance" }]);
++      actors = {};
++      for (const role of ["creatorA", "creatorB", "operatorA", "operatorB", "noMembership", "finance"]) {
++        const email = `${role.toLowerCase()}-${planned.plannedNamespace}@example.test`, password = `Audit-${randomUUID()}!`;
++        durableJson(context.privatePath(`account-intent-${role}.private.json`), { lineage: context.lineage, role, email, password });
++        let user;
++        await journal.perform(`auth:${role}`, { auth_users: 1 }, async () => { user = must(await service.auth.admin.createUser({ email, password, email_confirm: true })).user; assert(uuid(user.id)); return { auth_users: [user.id] }; });
++        const actor = { id: user.id, email, password }; actors[role] = actor;
++        if (role.startsWith("creator")) await insert("creators", [{ id: actor.id, workspace_id: workspace, display_name: role, xp: 0, onboarding_completed: true }]);
++        else {
++          await insert("staff_users", [{ user_id: actor.id, email, active: true }], "user_id");
++          if (role !== "noMembership") {
++            await insert("brand_users", [{ user_id: actor.id, email, workspace_id: workspace, active: true, role: "member" }], "user_id");
++            const assignedRole = role === "finance" ? "finance_viewer" : "operator";
++            // This protected table is deliberately SELECT-only to service_role.
++            // Owner bootstrap is limited to this newly created exact synthetic subject.
++            journal.performSync(`fixture-role:${role}`, { staff_workspace_roles: 1 }, () => {
++              target.sql(`begin;insert into public.staff_workspace_roles(user_id,workspace_id,role,active,granted_by)values(${literal(actor.id)},${literal(workspace)},'${assignedRole}',true,${literal(actor.id)});commit;`);
++              return { staff_workspace_roles: [actor.id] };
++            }, { staff_workspace_roles: [actor.id] });
++          }
++        }
++        const response = await globalThis.fetch(`${target.env.SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: { apikey: target.env.SUPABASE_ANON_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
++        assert.equal(response.status, 200); actor.session = await response.json(); assert.equal(actor.session.user.id, actor.id);
++        actor.session.expires_at ??= Math.floor(Date.now() / 1000) + actor.session.expires_in;
++        durableJson(context.privatePath("actors.private.json"), { lineage: context.lineage, actors });
++      }
++      for (const m of planned.plannedMissions) {
++        await insert("missions", [{ id: m.id, workspace_id: workspace, slug: `app-${m.id}`, title: `Synthetic application ${m.kind}`, mission_type: "ugc", access_type: "application", status: "active", quota: 1, required_level: "L0", creator_workflow_mode: "active_workspace", fulfillment_required: false, revision_limit: 2, review_sla_hours: 48, revision_response_hours: 48, points_reward: 500, cash_reward: 125, platforms: ["instagram"], deliverables: ["One synthetic post"], requirements: ["Synthetic fixture only"] }]);
++        await insert("mission_deliverable_templates", [{ id: m.templateId, workspace_id: workspace, mission_id: m.id, title: "Required synthetic post", platform: "instagram", required: true, position: 0, publication_window_hours: 72, publication_instructions: "Never publish; synthetic only", required_disclosures: [], proof_evidence_policy: {} }]);
++        await insert("mission_deliverable_requirements", [{ id: m.requirementId, workspace_id: workspace, mission_deliverable_template_id: m.templateId, category: "format", requirement_text: "Show synthetic fixture", required: true, position: 0 }]);
++      }
++      applications = {};
++      for (const m of planned.plannedMissions) {
++        const creator = m.kind === "stale" ? actors.creatorB : actors.creatorA;
++        const result = await api(creator, `/missions/app-${m.id}/apply`, "POST"); assert.equal(result.status, 200); assert(uuid(result.body.id));
++        applications[m.kind] = { mission: m, creator, id: result.body.id }; journal.observe({ mission_submissions: [result.body.id] });
++        const duplicate = await api(creator, `/missions/app-${m.id}/apply`, "POST"); assert.equal(duplicate.status, 409); assert.equal(duplicate.body.code, "already_applied");
++      }
++      durableJson(context.privatePath("fixture.private.json"), { lineage: context.lineage, actors, applications });
++      save("fixture.json", { owned: journal.owned(), syntheticOnly: true, cleanupApproved: false });
++    },
++    api: async () => {
++      const fault = applications.fault, race = applications.race;
++      const decide = (actor, row, action, request, notes = "Synthetic decline reason") => api(actor, `/admin/applications/${row.id}/${action}`, "POST", { request_id: request, expected_revision: 0, notes });
++      const request = randomUUID();
++      for (const actor of [actors.noMembership, actors.finance]) { const denied = await decide(actor, fault, "accept", randomUUID()); assert.equal(denied.status, 403); }
++      const args = { p_workspace: planned.plannedPrimaryWorkspaceId, p_operator: actors.operatorA.id, p_submission: fault.id, p_request: request, p_expected_revision: 0, p_decision: "accept", p_notes: null };
++      const direct = await globalThis.fetch(`${target.env.SUPABASE_URL}/rest/v1/rpc/decide_mission_application`, { method: "POST", headers: { apikey: target.env.SUPABASE_ANON_KEY, Authorization: `Bearer ${actors.operatorA.session.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify(args) }); assert.equal(direct.status, 403);
++      for (const kind of ["audit", "workflow"]) {
++        const before = await snapshot(fault.id), name = `app_${kind}_${planned.plannedNamespace.replaceAll("-", "").slice(0, 12)}`;
++        const table = kind === "audit" ? "operator_audit_events" : "mission_workflows";
++        const condition = kind === "audit" ? `new.target_type='application' and new.target_id=${literal(fault.id)}::text` : `new.mission_submission_id=${literal(fault.id)}`;
++        target.sql(`begin;create function private.${name}()returns trigger language plpgsql as $$begin if ${condition} then raise exception 'synthetic application fault';end if;return new;end;$$;create trigger ${name} before insert on public.${table} for each row execute function private.${name}();commit;`);
++        const functionHash = target.sql(`begin read only;select md5(pg_get_functiondef('private.${name}()'::regprocedure));commit;`);
++        const failed = await decide(actors.operatorA, fault, "accept", request); assert.equal(failed.status, 503); assertApplicationRollback(before, await snapshot(fault.id));
++        assert.equal(target.sql(`begin read only;select md5(pg_get_functiondef('private.${name}()'::regprocedure));commit;`), functionHash);
++        // Explicitly reviewed exact owned fault objects only; no data cleanup.
++        target.sql(`begin;drop trigger ${name} on public.${table};drop function private.${name}();commit;`);
++        save(`rollback-${kind}.json`, { submissionId: fault.id, requestId: request, before, after: await snapshot(fault.id), rollbackComplete: true, faultObjectsRemoved: [name], functionHash });
++      }
++      const saved = await decide(actors.operatorA, fault, "accept", request); assert.equal(saved.status, 200);
++      const after = await snapshot(fault.id); const replay = await decide(actors.operatorA, fault, "accept", request); assert.deepEqual(replay, saved); assert.deepEqual(await snapshot(fault.id), after);
++      const changed = await decide(actors.operatorA, fault, "decline", request); assert.equal(changed.status, 409); assert.equal(changed.body.code, "IDEMPOTENCY_CONFLICT"); assert.deepEqual(await snapshot(fault.id), after);
++      const actorId = literal(actors.operatorA.id), workspace = literal(planned.plannedPrimaryWorkspaceId);
++      // Approved scope must name these four updates of the new fixture actor only.
++      assert.equal(target.sql(`begin read only;select active::text from public.brand_users where user_id=${actorId}and workspace_id=${workspace};commit;`), "true");
++      target.sql(`begin;update public.brand_users set active=false where user_id=${actorId}and workspace_id=${workspace}and active=true;commit;`);
++      assert.equal((await decide(actors.operatorA, fault, "accept", request)).status, 403);
++      const replayDenied = await service.rpc("decide_mission_application", args); assert.equal(replayDenied.error?.message, "FORBIDDEN");
++      target.sql(`begin;update public.brand_users set active=true where user_id=${actorId}and workspace_id=${workspace}and active=false;commit;`);
++      assert.equal(target.sql(`begin read only;select role from public.staff_workspace_roles where user_id=${actorId}and workspace_id=${workspace};commit;`), "operator");
++      target.sql(`begin;update public.staff_workspace_roles set role='finance_viewer'where user_id=${actorId}and workspace_id=${workspace}and role='operator';commit;`);
++      const capabilityDenied = await service.rpc("decide_mission_application", args); assert.equal(capabilityDenied.error?.message, "FORBIDDEN");
++      target.sql(`begin;update public.staff_workspace_roles set role='operator'where user_id=${actorId}and workspace_id=${workspace}and role='finance_viewer';commit;`);
++      const foreign = await service.rpc("decide_mission_application", { ...args, p_workspace: oldOwned.workspaces[0] }); assert.equal(foreign.error?.message, "FORBIDDEN");
++      assert.deepEqual(await snapshot(fault.id), after); assert.deepEqual(await decide(actors.operatorA, fault, "accept", request), saved);
++      const beforeRace = await snapshot(race.id);
++      const responses = await Promise.all([decide(actors.operatorA, race, "accept", randomUUID()), decide(actors.operatorB, race, "decline", randomUUID())]);
++      const afterRace = await snapshot(race.id), decision = assertDecisionRace(responses, beforeRace, afterRace);
++      assert([actors.operatorA.id, actors.operatorB.id].includes(decision.actorId));
++      save("api.json", { fault: { requestId: request, saved: after, exactReplay: true, changedPayloadConflict: true, liveMembershipReplayDenied: true, liveCapabilityReplayDenied: true }, race: { submissionId: race.id, before: beforeRace, after: afterRace, responses }, directRpcDenied: true, missingMembershipDenied: true, financeDenied: true, foreignWorkspaceArgumentDenied: true });
++    },
++    browser: async () => { browserEvidence = await applicationBrowser({ target, context, actors, applications, api, snapshot }); save("browser.json", browserEvidence); },
++    finalReadback: async () => {
++      journal.assertReady(); const currentOld = jsonSql(originalQuery); assert.deepEqual(currentOld, oldRows);
++      assertCatalog(true); assertImmutable();
++      assertFinancialRowsUnchanged(financial, jsonSql(financialSql));
++      const catalog = jsonSql(catalogSql); assert.deepEqual({ ...catalog, newFunction: 0, newHistory: 0 }, baseline);
++      assert.equal(catalog.newFunction, 1); assert.equal(catalog.newHistory, 1);
++      const inventory = jsonSql(fixtureInventorySql(manifest.fixture.rowScopes, journal.owned())); assertInventoryCaps(inventory, manifest.fixture.rowCaps.role);
++      assert.equal(jsonSql("begin read only;select count(*)from auth.users;commit;"), 90);
++      assert.equal(jsonSql("begin read only;select count(*)from public.workspaces;commit;"), 7);
++      assert.equal(jsonSql("begin read only;select count(*)from public.missions;commit;"), 10);
++      const statuses = await Promise.all(Object.values(applications).map(row => snapshot(row.id)));
++      const xp = jsonSql(`begin read only;select sum(xp)from public.creators where workspace_id=${literal(planned.plannedPrimaryWorkspaceId)};commit;`);
++      assert.equal(xp, 10 * statuses.filter(s => s.status === "joined").length, "Only original one-time application acceptance XP is allowed");
++      for (const row of Object.values(applications)) {
++        const state = await snapshot(row.id), notifications = await api(row.creator, "/notifications?limit=50"); assert.equal(notifications.status, 200);
++        const matching = notifications.body.items.filter(n => n.entity_id === row.id && n.type === (state.status === "joined" ? "application_accepted" : "application_declined")); assert.equal(matching.length, 1);
++        assert.equal(matching[0].data.mission_slug, `app-${row.mission.id}`); assert.equal(matching[0].read_at, null);
++        const foreign = await api(row.creator === actors.creatorA ? actors.creatorB : actors.creatorA, "/notifications?limit=50"); assert.equal(foreign.status, 200); assert(!foreign.body.items.some(n => n.entity_id === row.id));
++      }
++      save("final.json", { allEqual: true, financialRowsUnchanged: true, original70FamilyRowsUnchanged: true, catalogPreservedExceptExact73rdFunctionAndHistory: true, inventory, xp, statuses, browserEvidence,
++        pendingRewardRevalidated: false, legacyReplay: false, originalApiReruns: 0, originalBrowserReruns: 0, productionWrites: 0 });
++      return { allEqual: true };
++    },
++    record: async value => { if (context) save("result.json", value); },
++  });
++}
++
++async function applicationBrowser({ target, context, actors, applications, api, snapshot }) {
++  const env = { ...process.env, ...target.env, VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY,
++    VITE_DEFAULT_WORKSPACE: `application-${context.plan.plannedNamespace}`, VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false",
++    NODE_OPTIONS: `--import=${pathToFileURL(resolve(root, "scripts/audit/deny-external-fetch.mjs")).href}` };
++  // Strict port: Vite must fail if occupied. Never reuse/stop an unknown existing server.
++  const { createServer } = await import("node:net");
++  await new Promise((resolvePort, reject) => { const probe = createServer(); probe.once("error", reject); probe.listen(context.manifest.target.ports.web, "127.0.0.1", () => probe.close(resolvePort)); });
++  const server = spawn(process.execPath, ["node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", String(context.manifest.target.ports.web), "--strictPort"], { cwd: root, env, stdio: ["ignore", "pipe", "pipe"], windowsHide: true });
++  let startup = "", startError;
++  server.once("error", error => { startError = error; });
++  for (const stream of [server.stdout, server.stderr]) stream.on("data", data => { startup = (startup + data.toString()).slice(-16000); });
++  let browser; const contexts = [];
++  try {
++    let ready = false;
++    for (let i = 0; i < 60 && server.exitCode === null && !startError; i++) {
++      await pause(500);
++      if (!startup.includes(context.origins[0])) continue;
++      const sockets = execFileSync("netstat.exe", ["-ano", "-p", "tcp"], { encoding: "utf8", windowsHide: true }).split(/\r?\n/).map(s => s.trim().split(/\s+/));
++      assert(sockets.some(s => s[0] === "TCP" && s[1] === `127.0.0.1:${context.manifest.target.ports.web}` && s.at(-1) === String(server.pid)), "Listening process does not match exact new child");
++      try { ready = (await globalThis.fetch(`${context.origins[0]}/api/health`)).ok; } catch { /* bounded read-only startup check */ }
++      if (ready) break;
++    }
++    assert(ready && server.exitCode === null, "Exact local server did not start; no port fallback");
++    const { chromium, expect } = await import("@playwright/test"); browser = await chromium.launch({ channel: "msedge" });
++    const pageFor = async actor => {
++      const c = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "en-HK", timezoneId: "Asia/Hong_Kong" }); contexts.push(c);
++      await bindBrowserJournal(c, new FixtureJournal(context.privatePath(`transport-browser-application-${actor.id}.jsonl`), context.lineage, { requests: 150 }), context.origins);
++      await c.addInitScript(session => { globalThis.localStorage.setItem("lang", "en"); globalThis.localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, actor.session);
++      return c.newPage();
++    };
++    const operator = await pageFor(actors.operatorA), creatorA = await pageFor(actors.creatorA), creatorB = await pageFor(actors.creatorB);
++    const decline = applications.decline, stale = applications.stale, base = context.origins[0];
++    await operator.goto(`${base}/admin/applications?ws=${context.plan.plannedPrimaryWorkspaceId}`);
++    const textarea = operator.locator(`#application-reason-${decline.id}`), row = textarea.locator("xpath=../../..");
++    await expect(textarea).toBeVisible(); await textarea.fill("Synthetic first reason");
++    const declinePath = `/api/admin/applications/${decline.id}/decline`, pattern = `**${declinePath}`;
++    await operator.route(pattern, route => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "application_unavailable", error: "Synthetic transport outage" }) }));
++    await row.getByRole("button", { name: /Decline|拒絕/, exact: true }).click(); await expect(operator.getByRole("alert")).toBeVisible();
++    await expect(textarea).toHaveValue("Synthetic first reason"); await textarea.fill("Synthetic edited reason retained after reload");
++    await operator.unroute(pattern); const retried = operator.waitForResponse(r => new URL(r.url()).pathname === declinePath && r.request().method() === "POST");
++    await operator.getByRole("button", { name: "重試 / Retry" }).click(); assert.equal((await retried).status(), 200);
++    await creatorA.goto(`${base}/mission/app-${decline.mission.id}`); await creatorA.reload();
++    await expect(creatorA.getByText("Synthetic edited reason retained after reload", { exact: true })).toBeVisible();
++    // Keep the stale row rendered while the other real operator commits the winning decision.
++    const staleText = operator.locator(`#application-reason-${stale.id}`); await expect(staleText).toBeVisible(); await staleText.fill("Synthetic retained losing reason");
++    const accepted = await api(actors.operatorB, `/admin/applications/${stale.id}/accept`, "POST", { request_id: randomUUID(), expected_revision: 0 }); assert.equal(accepted.status, 200);
++    const conflict = operator.waitForResponse(r => new URL(r.url()).pathname === `/api/admin/applications/${stale.id}/decline` && r.status() === 409);
++    await staleText.locator("xpath=../../..").getByRole("button", { name: /Decline|拒絕/, exact: true }).click(); const body = await (await conflict).json();
++    assert.equal(body.current_decision.actorId, actors.operatorB.id); assert(Number.isFinite(Date.parse(body.current_decision.decidedAt)));
++    await expect(staleText).toHaveValue("Synthetic retained losing reason"); await expect(operator.getByRole("alert")).toContainText(actors.operatorB.email);
++    await operator.getByRole("button", { name: "重試 / Retry" }).click(); await expect(staleText).toHaveCount(0);
++    await creatorB.goto(`${base}/mission/app-${stale.mission.id}`); await creatorB.reload(); assert.equal((await snapshot(stale.id)).status, "joined");
++    await operator.reload(); await expect(operator.locator(`#application-reason-${decline.id}`)).toHaveCount(0);
++    return { cases: ["decline503-input-retention-edited-retry", "creator-saved-reason-reload", "second-operator409-winning-attribution-input-retention-explicit-refresh"], passed: 3,
++      failed: 0, skipped: 0, auth: "Real six synthetic setup sign-ins; three existing sessions injected into isolated Edge contexts, no UI login claim", transport503: "Explicit synthetic browser response; no target write for failed request", stale409: "Real committed decision by second operator", device: "Desktop Edge only", originalCasesRerun: 0 };
++  } finally {
++    try { for (const c of contexts) await c.close(); }
++    finally { try { if (browser) await browser.close(); }
++      finally {
++        // Only this exact child handle is eligible; no process lookup/kill by name or port.
++        if (server.exitCode === null) server.kill();
++      }
++    }
++  }
++}
++
++const entry = process.argv[1] && resolve(process.argv[1]) === resolve(root, "scripts/audit/execute-application-supplement.mjs");
++if (entry) {
++  const path = process.argv[2], mode = process.argv[3] ?? "--offline-check";
++  assert(path && ["--offline-check", "--execute"].includes(mode));
++  if (mode === "--offline-check") { const r = review(path); process.stdout.write(JSON.stringify({ status: "PASS_LOCAL_MANIFEST_REVIEW_NOT_RUNTIME", source: r.source.fingerprint, sourceRecords: r.source.files.length, runtimeAuthorized: false, actualTargetCalls: 0 }) + "\n"); }
++  else {
++    const memory = JSON.parse(execFileSync("python", ["-c", "import ctypes,json;M=type('M',(ctypes.Structure,),{'_fields_':[('length',ctypes.c_ulong),('load',ctypes.c_ulong)]+[(n,ctypes.c_ulonglong)for n in ['totalPhys','availPhys','totalCommit','availCommit','totalVirtual','availVirtual','extended']]});m=M();m.length=ctypes.sizeof(m);ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m));print(json.dumps({'freePhysical':m.availPhys,'freeCommit':m.availCommit}))"], { encoding: "utf8", windowsHide: true }));
++    assert(Math.min(memory.freePhysical, memory.freeCommit) >= 3 * 2 ** 30, "3GiB resource gate; no runtime started");
++    await execute(path);
++  }
++}
+--- /dev/null
++++ b/server/test/application-supplement.test.ts
+@@ -0,0 +1,84 @@
++// @vitest-environment node
++import { describe, expect, it, vi } from "vitest";
++// @ts-expect-error Native pure acceptance orchestration, no client imports.
++import { runApplicationSupplement, assertDecisionRace, assertApplicationRollback, assertFinancialRowsUnchanged, assertApplicationSupplementPlan } from "../../scripts/audit/application-supplement.mjs";
++
++const winner = { action: "accept", actorId: "operator-a", actorLabel: "A", decidedAt: "2026-10-25T12:00:00Z", revision: 1 };
++const before = { status: "applied", filled: 0, xp: 0, workflows: 0, audit: 0, receipts: 0 };
++const financial = { balance: 0, ledger: [], inventory: [{ id: "gift", stock: 3 }] };
++function drivers(failAt = "") {
++  const order: string[] = [];
++  const step = (name: string, value: unknown = {}) => vi.fn(async () => { order.push(name); if (failAt === name) throw new Error(name); return value; });
++  return { order, authorize: step("authorize"), identity: step("identity"), provenance: step("provenance"),
++    claim: step("claim"), migrate: step("migrate"), createClient: step("createClient"), fixture: step("fixture"),
++    api: step("api"), browser: step("browser"), finalReadback: step("finalReadback", { allEqual: true }),
++    record: vi.fn(async (value: Record<string, unknown>) => { void value; }) };
++}
++
++describe("D19 supplement pure safety orchestration (no runtime evidence)", () => {
++  it("proves approval, identity and provenance before claim, migration, client or setup", async () => {
++    const d = drivers(); await runApplicationSupplement(d);
++    expect(d.order).toEqual(["authorize", "identity", "provenance", "claim", "migrate", "createClient", "fixture", "api", "browser", "finalReadback"]);
++    expect(d.record.mock.calls.at(-1)?.[0]).toMatchObject({ status: "PASS_APPLICATION_SUPPLEMENT", allEqual: true });
++  });
++  for (const stage of ["authorize", "identity", "provenance", "claim", "migrate", "createClient", "fixture", "api", "browser", "finalReadback"]) {
++    it(`stops dependent work on ${stage} failure without deleting, compensating or retrying`, async () => {
++      const d = drivers(stage); await expect(runApplicationSupplement(d)).rejects.toThrow(stage);
++      expect(d.order.at(-1)).toBe(stage);
++      expect(d.order.filter(x => x === stage)).toHaveLength(1);
++      expect(d.record.mock.calls.at(-1)?.[0]).toMatchObject({ status: "STOPPED_RETAIN_EXACT_RECORDS", failedStage: stage, releaseHold: true, incidentOpen: true });
++    });
++  }
++  it("cannot turn a failed final financial readback into success", async () => {
++    const d = drivers(); d.finalReadback.mockResolvedValue({ allEqual: false });
++    await expect(runApplicationSupplement(d)).rejects.toThrow(/financial/i);
++    expect(d.record.mock.calls.at(-1)?.[0]).toMatchObject({ status: "STOPPED_RETAIN_EXACT_RECORDS" });
++  });
++  it("accepts either legal race winner with exactly one durable transaction", () => {
++    for (const action of ["accept", "decline"]) {
++      const decision = { ...winner, action };
++      const after = { ...before, status: action === "accept" ? "joined" : "declined", filled: action === "accept" ? 1 : 0,
++        xp: action === "accept" ? 10 : 0, workflows: action === "accept" ? 1 : 0, audit: 1, receipts: 1, decision };
++      expect(() => assertDecisionRace([{ status: 200, body: { decision } }, { status: 409, body: { code: "APPLICATION_DECIDED", current_decision: decision } }], before, after)).not.toThrow();
++    }
++  });
++  it.each(["xp", "filled", "workflows", "audit", "receipts"])("rejects duplicate or missing race side effect %s", key => {
++    const after = { ...before, status: "joined", filled: 1, xp: 10, workflows: 1, audit: 1, receipts: 1, decision: winner, [key]: 2 };
++    expect(() => assertDecisionRace([{ status: 200, body: { decision: winner } }, { status: 409, body: { code: "APPLICATION_DECIDED", current_decision: winner } }], before, after)).toThrow();
++  });
++  it("rejects two winners, a stale winner attribution or an invalid timestamp", () => {
++    const after = { ...before, status: "joined", filled: 1, xp: 10, workflows: 1, audit: 1, receipts: 1, decision: winner };
++    const success = { status: 200, body: { decision: winner } };
++    expect(() => assertDecisionRace([success, success], before, after)).toThrow();
++    expect(() => assertDecisionRace([success, { status: 409, body: { code: "APPLICATION_DECIDED", current_decision: { ...winner, actorId: "wrong" } } }], before, after)).toThrow();
++    expect(() => assertDecisionRace([{ status: 200, body: { decision: { ...winner, decidedAt: "invalid" } } }, { status: 409, body: { code: "APPLICATION_DECIDED", current_decision: winner } }], before, after)).toThrow();
++  });
++  it("compares all rollback rows and all financial row contents, not just totals", () => {
++    expect(() => assertApplicationRollback(before, { ...before })).not.toThrow();
++    expect(() => assertApplicationRollback(before, { ...before, receipts: 1 })).toThrow();
++    expect(() => assertFinancialRowsUnchanged(financial, structuredClone(financial))).not.toThrow();
++    expect(() => assertFinancialRowsUnchanged(financial, { ...financial, inventory: [{ id: "different", stock: 3 }] })).toThrow();
++  });
++  const plan = () => ({ kind: "D19_B2_EXECUTION_SPEC", schemaVersion: 2, specificationReady: true,
++    candidate: { fingerprint: "a".repeat(64) }, execution: { artifactNamespace: "00000000-0000-4000-8000-000000000099" },
++    supplement: { kind: "APPLICATION_DECISIONS_ONLY", originManifestSha256: "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
++      resourceAdds: { projects: 0, volumes: 0, networks: 0, containers: 0 }, authSubjects: 6, workspaces: 1, missions: 4,
++      schema: { file: "supabase/migrations/20261025120934_application_decisions.sql", sha256: "b".repeat(64), baselineMigrationCount: 72 },
++      originalApiReruns: 0, originalBrowserReruns: 0, legacyIssuance: false, providerEnabled: false, cleanupApproved: false,
++      incidentOpen: true, releaseHold: true, runtimeApproved: false } });
++  it("accepts a bounded local review plan without granting runtime authority", () => {
++    expect(() => assertApplicationSupplementPlan(plan())).not.toThrow();
++  });
++  it.each(["providerEnabled", "legacyIssuance", "cleanupApproved", "runtimeApproved"])("rejects implicit expansion of %s", field => {
++    const p = plan(); (p.supplement as Record<string, unknown>)[field] = true;
++    expect(() => assertApplicationSupplementPlan(p)).toThrow();
++  });
++  it("rejects resource additions, another migration or omitted subject bounds", () => {
++    const p = plan(); p.supplement.resourceAdds.containers = 1;
++    expect(() => assertApplicationSupplementPlan(p)).toThrow();
++    p.supplement.resourceAdds.containers = 0; p.supplement.schema.file = "reset.sql";
++    expect(() => assertApplicationSupplementPlan(p)).toThrow();
++    p.supplement.schema.file = "supabase/migrations/20261025120934_application_decisions.sql"; p.supplement.authSubjects = 7;
++    expect(() => assertApplicationSupplementPlan(p)).toThrow();
++  });
++});

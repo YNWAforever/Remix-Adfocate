@@ -1,0 +1,54 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-forward-migrations.embedded.test.ts (11 tests | 1 failed) 1749ms
+   × forward SQL contracts on an owned memory engine > returns invalid evidence for correction once, preserving the old reason and URLs 26ms
+     → column "review_notes" of relation "mission_submissions" does not exist
+ ❯ server/test/audit-workflow-roundtrip.test.ts (4 tests | 1 failed) 8431ms
+   × D07 exact-ID disposable workflow roundtrip > loads the real creator mission collection before and after joining 142ms
+     → /missions/my: {"error":"column mission_submissions.review_notes does not exist","code":"db_error"}: expected 500 to be 200 // Object.is equality
+   ✓ D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 5157ms
+   ✓ D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation 401ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > returns invalid evidence for correction once, preserving the old reason and URLs
+error: column "review_notes" of relation "mission_submissions" does not exist
+ ❯ pe.Oe node_modules/@electric-sql/pg-protocol/src/parser.ts:442:11
+ ❯ pe.tt node_modules/@electric-sql/pg-protocol/src/parser.ts:220:16
+ ❯ pe.parse node_modules/@electric-sql/pg-protocol/src/parser.ts:104:21
+ ❯ D.Ne node_modules/@electric-sql/pglite/src/pglite.ts:763:26
+ ❯ node_modules/@electric-sql/pglite/src/pglite.ts:716:14
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:5951568
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2629075
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2661584
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:2662188
+ ❯ null.<anonymous> wasm:/wasm/0269dffe:1:5597565
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > loads the real creator mission collection before and after joining
+AssertionError: /missions/my: {"error":"column mission_submissions.review_notes does not exist","code":"db_error"}: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ request server/test/audit-workflow-roundtrip.test.ts:21:104
+     19|       "X-Workspace-Slug":fixture.slug, "Content-Type":"application/jso…
+     20|       ...(body === undefined ? {} : {body:JSON.stringify(body)}) });
+     21|     const result = await response.json(); expect(response.status,`${pa…
+       |                                                                                                        ^
+     22|   }
+     23|   it("loads the real creator mission collection before and after joini…
+ ❯ server/test/audit-workflow-roundtrip.test.ts:24:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 13 passed (15)
+   Start at  02:25:26
+   Duration  11.25s (transform 518ms, setup 366ms, collect 59ms, tests 10.18s, environment 0ms, prepare 208ms)
+

@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T18:03:50.066687+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    "scripts/audit/execute-application-supplement.mjs",
+    "docs/verification/D19-C2-application-runtime-manifest.json",
+    "--execute"
+  ],
+  "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceRecords": 788,
+  "resource": {
+    "at": "2026-10-25T18:03:50.059121+00:00",
+    "freePhysicalGiB": 4.503196716308594,
+    "freeCommitGiB": 8.22897720336914,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.132305145263672
+  },
+  "decision": "docs/verification/D19-C2-runtime-20261026/permission-continuation-decision.json",
+  "privateLog": ".codex-tmp/D19-C2-runtime-20261026/runtime-permission-continuation.private.log",
+  "automaticRetry": false,
+  "sameApprovedScope": true,
+  "permissions": "Host Docker pipe access; same exact guarded C1 resources",
+  "pid": 28532,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T18:03:54.771946+00:00",
+  "exit": 1
+}

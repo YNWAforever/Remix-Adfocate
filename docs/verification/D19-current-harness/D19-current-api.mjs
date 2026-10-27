@@ -1,0 +1,10 @@
+import {spawnSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+const kind=process.argv[2];if(!['role','core'].includes(kind))throw new Error('Explicit selected API scope required');
+const target=verifiedTarget('empty');
+const file=kind==='role'?'server/test/audit-staff-capabilities.test.ts':'server/test/audit-workflow-roundtrip.test.ts';
+const env={...process.env,...target.env,RUN_INTEGRATION:'0',RUN_AUDIT_INTEGRATION:'1',ADFOCATE_ACCEPTANCE_TASK:'D19',OPENAI_API_KEY:'',OPENROUTER_API_KEY:'',ANTHROPIC_API_KEY:'',RAPIDAPI_KEY:'',NODE_OPTIONS:`--import=${pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href}`};
+const run=spawnSync(process.execPath,['node_modules/vitest/vitest.mjs','run','--maxWorkers=1','--minWorkers=1','--reporter=default','--reporter=json',`--outputFile=.codex-tmp/D19-current-${kind}-results.private.json`,file],{env,stdio:'inherit'});
+process.exit(run.status??1);

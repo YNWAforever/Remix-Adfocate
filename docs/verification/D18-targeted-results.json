@@ -1,0 +1,1047 @@
+{
+  "success": true,
+  "passed": 216,
+  "failed": 0,
+  "skipped": 0,
+  "testFiles": 29,
+  "files": [
+    {
+      "path": "server/lib/staffCapabilities.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 workspace_admin can creator.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can creator.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can application.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can submission.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can proof.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can mission.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can completion.approve",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can reward.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can reward.settings",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace_admin can access.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can creator.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can creator.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can application.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can submission.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can proof.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator cannot mission.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can completion.approve",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator can reward.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator cannot reward.settings",
+          "status": "passed"
+        },
+        {
+          "title": "D18 operator cannot access.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer can creator.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot creator.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot application.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer can submission.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer can proof.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot mission.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot completion.approve",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot reward.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot reward.settings",
+          "status": "passed"
+        },
+        {
+          "title": "D18 reviewer cannot access.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot creator.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot creator.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot application.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot submission.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot proof.review",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot mission.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot completion.approve",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer can reward.read",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot reward.settings",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance_viewer cannot access.manage",
+          "status": "passed"
+        },
+        {
+          "title": "D18 missing or brand-only role null is never promoted",
+          "status": "passed"
+        },
+        {
+          "title": "D18 missing or brand-only role owner is never promoted",
+          "status": "passed"
+        },
+        {
+          "title": "D18 missing or brand-only role member is never promoted",
+          "status": "passed"
+        },
+        {
+          "title": "D18 missing or brand-only role unknown is never promoted",
+          "status": "passed"
+        },
+        {
+          "title": "D18 role lookup errors cannot become empty grants or login errors",
+          "status": "passed"
+        },
+        {
+          "title": "D18 a platform grant requires its own active role and active human staff identity",
+          "status": "passed"
+        },
+        {
+          "title": "D18 all mounted business routes have a capability requirement",
+          "status": "passed"
+        },
+        {
+          "title": "D18 unrecognized methods and paths fail closed, including inside known scopes",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "server/test/audit-admin-scope.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "staff workspace API boundary does not turn an Auth service outage into a new login requirement",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary injects the verified workspace into an unfiltered legacy queue request",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary refuses an opaque creator ID from another workspace",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary authenticated staff without membership cannot read the legacy queue",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary All workspaces contains only the active membership scope",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary does not accept another workspace as a query filter",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary membership storage failure is unavailable, independently of authentication",
+          "status": "passed"
+        },
+        {
+          "title": "staff workspace API boundary a disabled staff member is denied",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "server/test/staff-access-schema.embedded.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 migration adds no automatic staff grants and browsers cannot self-assign",
+          "status": "passed"
+        },
+        {
+          "title": "D18 workspace grant persists actor, revision and audit in one command",
+          "status": "passed"
+        },
+        {
+          "title": "D18 exact replay returns the same saved result and one audit",
+          "status": "passed"
+        },
+        {
+          "title": "D18 same request with different content conflicts without another mutation",
+          "status": "passed"
+        },
+        {
+          "title": "D18 stale grant revision conflicts",
+          "status": "passed"
+        },
+        {
+          "title": "D18 revoked staff denies even an exact successful request replay",
+          "status": "passed"
+        },
+        {
+          "title": "D18 revoked membership denies even an exact successful request replay",
+          "status": "passed"
+        },
+        {
+          "title": "D18 revoked role denies even an exact successful request replay",
+          "status": "passed"
+        },
+        {
+          "title": "D18 normal access.manage cannot self-change or grant to another workspace",
+          "status": "passed"
+        },
+        {
+          "title": "D18 audit failure rolls back role and command receipt",
+          "status": "passed"
+        },
+        {
+          "title": "D18 an admin can revoke an existing grant after its target loses staff or membership",
+          "status": "passed"
+        },
+        {
+          "title": "D18 platform content editor is separate and owner bootstrap is not callable by service or browser roles",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "server/test/staff-capability-boundary.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 finance cannot change the reward processing window or reach the settings write",
+          "status": "passed"
+        },
+        {
+          "title": "D18 a reviewer cannot create missions, including through a direct API URL",
+          "status": "passed"
+        },
+        {
+          "title": "D18 a workspace admin does not inherit access to global Academy drafts",
+          "status": "passed"
+        },
+        {
+          "title": "D18 inactive role remains denied even with an active staff identity and membership",
+          "status": "passed"
+        },
+        {
+          "title": "D18 missing grant schema is a recoverable schema failure, separate from missing membership",
+          "status": "passed"
+        },
+        {
+          "title": "D18 access discovery reports independent workspace and platform capabilities",
+          "status": "passed"
+        },
+        {
+          "title": "D18 a permitted grant endpoint attributes the command to the authenticated actor",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/admin-creators.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "2026-10-22 operator queue acceptance UC-A04: all 26 creators are reachable from the queue",
+          "status": "passed"
+        },
+        {
+          "title": "2026-10-22 operator queue acceptance UC-A05: a list request failure must be visible and recoverable",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/admin-decisions.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "2026-10-22 decision failure acceptance UC-A06: failed acceptance must show an actionable error while keeping the row",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/admin-live-followup.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "2026-10-22 staff live follow-up acceptance UC-A53: mission load failure must show an actionable error, not an unexplained blank list",
+          "status": "passed"
+        },
+        {
+          "title": "2026-10-22 staff live follow-up acceptance UC-A54: invalid legacy evidence must not enable ordinary approval",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/crm-atomicity.audit.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CRM partial-write acceptance UC-A31: an audit failure must not leave an unrecorded changed review",
+          "status": "passed"
+        },
+        {
+          "title": "CRM partial-write acceptance UC-A32: retry after a failed note response must not duplicate a persisted note",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/my-missions.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "2026-10-22 creator regression acceptance UC-C05: a failed request must show a recoverable error, not a no-missions claim",
+          "status": "passed"
+        },
+        {
+          "title": "2026-10-22 creator regression acceptance UC-C06: applied applications remain discoverable",
+          "status": "passed"
+        },
+        {
+          "title": "2026-10-22 creator regression acceptance UC-C06: declined applications remain discoverable",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/operator-continuation.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "Operator continuation acceptance UC-A25: failed review must show an actionable error and retain the note",
+          "status": "passed"
+        },
+        {
+          "title": "Operator continuation acceptance UC-A26: flag action must collect an operator reason before committing",
+          "status": "passed"
+        },
+        {
+          "title": "Operator continuation acceptance UC-A27: workspace lookup failure must be distinguishable from All workspaces",
+          "status": "passed"
+        },
+        {
+          "title": "Operator continuation acceptance UC-A28: later today in Hong Kong remains today across UTC midnight",
+          "status": "passed"
+        },
+        {
+          "title": "Operator continuation acceptance UC-A29: tomorrow in Hong Kong is not labelled today because UTC date matches",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/audit-tests/staff-unavailable.audit.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "UC-A30: a staff service outage must not be presented as signed out",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/routes/-admin.missions.editor.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "MissionEditor retains the existing travel category visibly and on an unrelated edit",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor retains the existing 原有未知長中文分類 category visibly and on an unrelated edit",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor shows CPM fields only for performance_cpm",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor disables slug & mission_type on a published mission, and economic fields when engaged",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor renders per-field server errors from AdminRequestError.fields",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor submits brief fields as arrays and audience as text",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor renders a preview of the brief from form state",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor authors complete publication defaults on active-workspace deliverables",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor renders publication policy authoring copy in en",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor renders publication policy authoring copy in zh",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor blocks save and shows localized validation when proof evidence policy JSON is malformed",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor localizes every publication-policy server error in en",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor localizes every publication-policy server error in zh",
+          "status": "passed"
+        },
+        {
+          "title": "MissionEditor preserves unknown Task 3 and legacy server field messages",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/components/admin/MissionEditor.permissions.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 announces a recoverable permission denial in en without losing authored input",
+          "status": "passed"
+        },
+        {
+          "title": "D18 announces a recoverable permission denial in zh without losing authored input",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "src/components/admin/StaffAccessShell.test.tsx",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 finance navigation exposes handoffs and does not prefetch review queues",
+          "status": "passed"
+        },
+        {
+          "title": "D18 platform-only editor has editorial navigation without a workspace request or re-login prompt",
+          "status": "passed"
+        },
+        {
+          "title": "D18 failed access discovery is announced and retry keeps an existing draft",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance handoff view does not offer a processing-window mutation",
+          "status": "passed"
+        },
+        {
+          "title": "D18 a reviewer can read a Creator without an approve or note editor",
+          "status": "passed"
+        },
+        {
+          "title": "D18 finance handoff keeps saved decision information without offering a forbidden workflow link",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/ci-workflow-contract.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "CI integration toolchain pins Supabase CLI to the release toolchain version",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/cli.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release npm entrypoints fails closed when release:execute runs without database configuration",
+          "status": "passed"
+        },
+        {
+          "title": "release npm entrypoints fails closed when release:evidence runs without an input file",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the npm/vite-node evaluate boundary even when VITEST is inherited",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands executes the real npm entrypoint and fails closed with JSON",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands refuses pilot inspect without explicit service-client configuration",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands evaluates observations from an approved input path without a database client",
+          "status": "passed"
+        },
+        {
+          "title": "guarded pilot/observer commands fails closed when evaluate input or containment evidence is missing",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/deployment.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "production deployment verification requires READY production deployment at the expected commit and healthy URLs",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification uses the Vercel bearer token and team-scoped deployment URL without exposing headers",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification fails closed when deployment identity does not match production",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification requires a healthy API response and home response",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification redacts token and URLs from request failures",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification binds application probes to the verified production alias",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification fails closed when the guarded CLI is missing trusted environment inputs",
+          "status": "passed"
+        },
+        {
+          "title": "production deployment verification runs through the package command contract with sanitized environment inputs",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/evidence.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release evidence is deterministic and rejects secret-bearing values",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence rejects literal credentials pasted into free-form command and note fields",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence accepts placeholder-templated runbook commands",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence reports every fail-closed verification mismatch",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence fails closed for malformed external evidence instead of crashing or persisting it",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence writes timestamped evidence exclusively and does not overwrite an existing artifact",
+          "status": "passed"
+        },
+        {
+          "title": "release evidence generates a sanitized append-only artifact from an explicit input file",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/executor.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "production release executor dry-runs first, writes only with exact approval, and proves postflight",
+          "status": "passed"
+        },
+        {
+          "title": "production release executor does not write when evidence or approval fails and redacts database URLs",
+          "status": "passed"
+        },
+        {
+          "title": "production release executor rejects a trusted checkout commit mismatch before the dry-run",
+          "status": "passed"
+        },
+        {
+          "title": "production release executor rejects an empty or incomplete postflight capability report",
+          "status": "passed"
+        },
+        {
+          "title": "production release executor rejects a manifest validation failure before the first preflight",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/manifest.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release migration manifest orders, classifies, hashes, and digests the complete reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest normalizes LF, CRLF, and lone CR migration checkouts before hashing",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest declares capabilities for migrations previously emitted as empty",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unreviewed migrations before, inside, or after the reviewed range",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects empty, truncated, and interior-incomplete reviewed ranges",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects unknown JSON fields, missing fields, bad types, and invalid enums",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects a shape-valid migration path that does not match version and name",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not alias mutable capability metadata between builds",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest does not replace an existing artifact on invalid write and leaves no temp file",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest runs write as a direct vite-node CLI and prints its digest",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a missing direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest returns a nonzero usage error for a unsupported direct CLI command",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects checksum drift, missing files, duplicates, and bad dependencies",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects an edited, deleted, or newly added baseline migration",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest rejects migrations the timestamp filter used to drop",
+          "status": "passed"
+        },
+        {
+          "title": "release migration manifest detects migration order mismatches",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/observer.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "pilot observer and seven-day exit expands only after seven distinct stable days with one neutral handoff",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit holds for fewer than seven days and contains integrity, isolation, or money movement",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit records structural counts and hashes identities without leaking raw IDs",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit scopes submissions and workflow relations to the selected mission",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit rejects missing or mismatched row scope instead of filtering it away",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit marks malformed operational snapshot values unavailable",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit holds malformed imported observations even when telemetryAvailable is forged true",
+          "status": "passed"
+        },
+        {
+          "title": "pilot observer and seven-day exit holds a structurally complete seven-day sample when operational telemetry is unavailable",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/pilot.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "pilot candidate guard accepts one new legacy mission and exposes a frozen neutral join contract",
+          "status": "passed"
+        },
+        {
+          "title": "pilot candidate guard rejects submissions, cross-workspace missions, or a second active pilot",
+          "status": "passed"
+        },
+        {
+          "title": "pilot candidate guard requires exact approval, re-inspects, and performs one conditional mode update",
+          "status": "passed"
+        },
+        {
+          "title": "pilot candidate guard rejects a conditional update race and never publishes",
+          "status": "passed"
+        },
+        {
+          "title": "pilot candidate guard still rejects evidence that expired before the inspection clock",
+          "status": "passed"
+        },
+        {
+          "title": "pilot candidate guard refuses to enable when the re-inspection clock is past the evidence expiry",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/preflight.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release preflight does not claim a removed grant is safe from dump text alone",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight retires obsolete constraint and RPC grant requirements in the CLI's final capability set",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight has a validator for every capability declared by the committed release manifest",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight matches every declared capability kind against its bound schema object",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight does not accept an unrelated column name as evidence for the target table",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight does not let a trigger match across statements to a later target relation",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight redacts a rejected command runner error before rethrowing it",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight accepts pg_dump function grant formatting without broadening table grants",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight uses only migration list, dry-run, and schema dump without reporting the URL",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight fails before reporting a result when any read-only command fails",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight normalizes schema fingerprints and fail-closes unknown capabilities",
+          "status": "passed"
+        },
+        {
+          "title": "release preflight writes a deduplicated manifest preflight only to the requested non-migration output",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/process.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release command runner executes npm's npx CLI through Node on Windows while preserving shell:false",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/rehearsal.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "release rehearsal checks production shape before applying and runs the complete ordered gates",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal fails closed before process execution when the target API is not loopback",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects an IPv6 loopback API because the integration runner does not accept it",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal fails closed before process execution without declared capabilities",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal does not write a shaped target when its preflight fingerprint drifts",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal requires every empty-target capability before shaped-target commands",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal requires every declared capability after shaped-target replay",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects replay output that does not prove a clean migration history: pass",
+          "status": "passed"
+        },
+        {
+          "title": "release rehearsal rejects replay output that does not prove a clean migration history: would be applied: 20260731100000_reward_handoff_schema.sql",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/release-acceptance.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "production release foundation acceptance exposes complete non-mutating checks and disposable rehearsal",
+          "status": "passed"
+        },
+        {
+          "title": "production release foundation acceptance documents exact approval and containment boundaries",
+          "status": "passed"
+        },
+        {
+          "title": "production release foundation acceptance keeps the runbook sections in the approved operator order",
+          "status": "passed"
+        },
+        {
+          "title": "production release foundation acceptance fails closed at the package rehearsal entrypoint without disposable targets",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/staff-access.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "D18 release manifest includes the reviewed forward staff-access contract",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/supabase-workflow-contract.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "Supabase production workflow delegates the only write to the guarded executor",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a scheduled trigger",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a pull request trigger",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a reusable workflow trigger",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects an arbitrary action",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a psql write step",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a dispatch input interpolated into the command",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects a context expansion in an unrelated command",
+          "status": "passed"
+        },
+        {
+          "title": "Supabase production workflow rejects an indirect write script",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/target-guard.test.ts",
+      "status": "passed",
+      "assertions": [
+        {
+          "title": "rehearsal target guard rejects the production ref or production URL",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard requires explicit disposable naming",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard compares canonical URLs without accepting credentials as a distinction",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard normalizes postgres URLs and project refs before comparing them",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard requires a full disposable token and rejects malformed database URLs",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard rejects the production database reached through a second connection form",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard requires each URL to identify the project reference it is filed under",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard refuses a pooled connection for a target claimed to be disposable",
+          "status": "passed"
+        },
+        {
+          "title": "rehearsal target guard accepts local targets and targets whose URL identifies their own project",
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

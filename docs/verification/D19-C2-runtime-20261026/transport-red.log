@@ -1,0 +1,55 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-docker-output-capture.test.ts (4 tests | 2 failed) 373ms
+   × Docker owner transport captures complete bounded catalog output > returns a complete 2MiB catalog-shaped JSON instead of ENOBUFS at the default1MiB 135ms
+     → {"ok":false,"code":"ENOBUFS","status":null,"capturedBytes":1114112}: expected false to be true // Object.is equality
+   × Docker owner transport captures complete bounded catalog output > preserves complete multibyte Unicode output above1MiB of bytes 82ms
+     → {"ok":false,"code":"ENOBUFS","status":null,"capturedBytes":1114113}: expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-docker-output-capture.test.ts > Docker owner transport captures complete bounded catalog output > returns a complete 2MiB catalog-shaped JSON instead of ENOBUFS at the default1MiB
+AssertionError: {"ok":false,"code":"ENOBUFS","status":null,"capturedBytes":1114112}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ server/test/audit-docker-output-capture.test.ts:41:79
+     39|   it("returns a complete 2MiB catalog-shaped JSON instead of ENOBUFS a…
+     40|     const result = capture("x", 2 * 1024 * 1024);
+     41|     expect(result.ok, result.ok ? "Complete result" : JSON.stringify(r…
+       |                                                                               ^
+     42|     if (!result.ok) return;
+     43|     const data = JSON.parse(result.text);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-docker-output-capture.test.ts > Docker owner transport captures complete bounded catalog output > preserves complete multibyte Unicode output above1MiB of bytes
+AssertionError: {"ok":false,"code":"ENOBUFS","status":null,"capturedBytes":1114113}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ server/test/audit-docker-output-capture.test.ts:49:84
+     47|   it("preserves complete multibyte Unicode output above1MiB of bytes",…
+     48|     const result = capture("界", 500_000);
+     49|     expect(result.ok, result.ok ? "Complete UTF8 result" : JSON.string…
+       |                                                                                    ^
+     50|     if (!result.ok) return;
+     51|     const data = JSON.parse(result.text);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  02:23:51
+   Duration  5.77s (transform 88ms, setup 3.56s, collect 744ms, tests 373ms, environment 0ms, prepare 722ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-C2-runtime-20261026/transport-red-results.json

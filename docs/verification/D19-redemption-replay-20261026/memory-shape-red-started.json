@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T19:56:19.819551+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-redemption-replay-20261026/vitest.memory.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/memory-shape-red-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:56:19.688682+00:00",
+    "freePhysicalGiB": 5.723056793212891,
+    "freeCommitGiB": 5.095691680908203,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.906574249267578
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "memory-shape-red",
+  "log": "docs/verification/D19-redemption-replay-20261026/memory-shape-red.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "1d899b088a00e654e3967355a0fbf76f3a31735821fea45bf715c1698539f601",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 28972
+}

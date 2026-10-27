@@ -1,0 +1,157 @@
+{
+  "status": "implemented_for_selected_R1_cases",
+  "run_id_policy": "generate unique UUID per execution; retain exact IDs",
+  "targets": [
+    "authorized disposable empty DB",
+    "authorized disposable production-shaped DB with synthetic data"
+  ],
+  "identity_gate": [
+    "explicit owner authorization",
+    "resolved host/port/proxy/container mapping agrees",
+    "not production or shared target",
+    "client import/setup reviewed before instantiation"
+  ],
+  "workspaces": [
+    "A",
+    "B"
+  ],
+  "creators_per_workspace": 2,
+  "pagination_creator_counts": [
+    26,
+    51,
+    1000,
+    10000
+  ],
+  "staff": [
+    "A active member",
+    "B active member",
+    "active staff without membership",
+    "disabled staff",
+    "nonstaff Creator"
+  ],
+  "proposed_r2_roles": [
+    "workspace_admin",
+    "operator",
+    "reviewer",
+    "finance_viewer"
+  ],
+  "legacy_missions": [
+    "open",
+    "application",
+    "one slot left",
+    "existing invalid evidence"
+  ],
+  "active_scenarios": [
+    "fulfillment required",
+    "no fulfillment",
+    "required and optional deliverables",
+    "stale revision",
+    "proof correction",
+    "missing historical contract",
+    "pending handoff",
+    "cancelled handoff",
+    "SLA null/0/365"
+  ],
+  "external_delivery": "mock/sandbox; no real email, invitation, social publishing or payment",
+  "cleanup": "only exact IDs created by this run, within authorized disposable target; verify counts, no broad name delete",
+  "retention": "redacted IDs, hashes, counts, statuses; no tokens/emails/social handles/proof URLs/authored notes",
+  "originalStatus": "specification_only_not_created",
+  "newResult": {
+    "identities": [
+      "target-empty.json",
+      "target-shaped.json"
+    ],
+    "created": "two owned targets; current-run UUID ledgers; 51 DB queue actors",
+    "notCreated": [
+      "1000/10000 creator load fixtures",
+      "complete proposed R2 role matrix"
+    ],
+    "cleanup": "immutable workflow histories retained; no broad delete or trigger disabling",
+    "evidence": "workflow-runtime.jsonl; legacy-fixture-ownership.json"
+  },
+  "D08Acceptance": {
+    "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+    "identityGate": "scripts/audit/local-targets.mjs verifiedTarget before client/setup",
+    "fixtureRetention": "exact IDs retained for inspection; no cleanup/reset",
+    "evidence": "D08-delivery.json"
+  },
+  "D09Acceptance": {
+    "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+    "identityGate": "verifiedTarget before client/setup; exact owned project/container/image/network/loopback",
+    "fixtureRetention": "exact IDs retained; no cleanup/reset",
+    "evidence": "D09-delivery.json",
+    "baseline": "existing successful legacy join grants 10 XP before measured reads/denials"
+  },
+  "D12Acceptance": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "identityGate": "verifiedTarget before client/setup; owned target resumed only after exact metadata checks",
+    "retention": "D12-fixture-retention.json; exact IDs retained; no cleanup/reset",
+    "evidence": "D12-delivery.json",
+    "neutrality": "authoring pre/post XP=0; Creator review baseline after existing join XP=10; no normalization"
+  },
+  "D13Acceptance": {
+    "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+    "identityGate": "verified before SDK/client/setup; Auth same project/network and local SMTP observed",
+    "retention": "D13-fixture-retention.json; all exact IDs/objects retained; no cleanup",
+    "welcome": "existing +100 once, explicit separate baseline",
+    "evidence": "D13-delivery.json"
+  },
+  "D14Acceptance": {
+    "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+    "identityGate": "verified target before SDK/client/setup; exact existing project/container/image/network/proxy",
+    "retention": "D14-fixture-retention.json; 4 runs / exact IDs retained; no cleanup",
+    "neutrality": "raw balances/XP/ledgers/budgets/inventory unchanged, including null budget baseline",
+    "evidence": "D14-delivery.json"
+  },
+  "D15Acceptance": {
+    "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+    "identityGate": "Verified host/port/container/image/project/network/proxy before credentials/client/setup; same two owned targets",
+    "retention": "D15-fixture-retention.json; all exact IDs retained, including failures; no cleanup",
+    "neutrality": "Raw XP, point/cash/budget ledgers, balances, redemptions and inventory unchanged for both Creators",
+    "content": "Two synthetic units only; no real curriculum or owner approval claimed",
+    "evidence": "D15-delivery.json"
+  },
+  "D17Acceptance": {
+    "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+    "identityGate": "Same exact owned project/container/image/network/loopback verified before credentials/client/setup; no project/test-name assumption",
+    "retention": "D17-fixture-retention.json; D17-scale-ids.json; 4 base Auth actors +9998 scale Auth/profile IDs; all retained",
+    "observed": "1000 then10000 total creators; historical five ledger rows only before baseline; no memberships for scale profiles",
+    "neutrality": "Two raw actor snapshots including ledger counts, XP, budget and inventory match before/after API and browser",
+    "evidence": "D17-delivery.json",
+    "historicalContractNote": "Earlier newResult.notCreated values are prior-checkpoint history; current 1k/10k creation is recorded here."
+  },
+  "D18Acceptance": {
+    "runIds": [
+      "732ba2b7-2407-4c4f-9030-67599e427b5e",
+      "9ec04ee5-669d-4abb-861e-74eeac107fad",
+      "9e0691dd-e541-4cdc-ad0e-77898325ddc6"
+    ],
+    "identityGate": "Exact project/container/image/network/loopback checked before credentials/client/setup; both targets retain identity",
+    "retention": "33 new Auth actors across 3 owned runs, 6 workspaces; exact IDs/grants/audits/pending rewards retained including failed afterAll run; no cleanup",
+    "evidence": "D18-fixture-retention.json; D18-fixtures.jsonl",
+    "neutrality": "Existing successful join +10 XP separately asserted; roles/editorial/delivery/proof/completion/browser keep all other snapshots and post-join XP identical",
+    "realStaffChanged": false,
+    "productionQueried": false
+  },
+  "D19Acceptance": {
+    "runIds": [
+      "282a722d-7fce-4d15-a5ac-e6ce12bde8f0",
+      "250003b8-1d13-4db7-b737-67b301974771",
+      "fcc23a83-3275-4bea-a921-1bfb8462c299",
+      "d1e64852-4467-4658-816c-47489c3e3de2",
+      "016ab00e-520d-442e-bed7-81907d9407e8",
+      "8c52f505-2e6a-43a1-97b4-9cb47b3a90ca",
+      "62899a09-f7b4-4910-8941-324aa041f076",
+      "517b70fc-37a6-455d-b86d-f91ef09ca24b",
+      "58053210-ac7e-4485-8c85-898f20814f44",
+      "e8c95f0e-cf11-4409-9a5e-1bf589a740ce",
+      "0c8f6163-20ed-4f18-8c12-e5944aaad76b",
+      "853739e4-93e4-4559-b3ef-fb7836b1de7c"
+    ],
+    "identityGate": "Exact project/container/image/network/loopback verified before SDK/client/credentials/setup; owned Auth phone transport only, no external SMS",
+    "retention": "D19-fixture-retention.json; 380 empty Auth IDs in 12 retained runs, including failed/incomplete; shaped cleanup only exact current captured IDs; all 4 original public row contents unchanged",
+    "neutrality": "Funded 9000/enforced and inventory3 fixture; existing legacy payout leaves8875, measured pending keeps all values/issued anchors equal. Cancellation/reapproval raw snapshots equal; no ledger/withdrawable/payment additions.",
+    "D15": "BLOCKED_CONTENT_NOT_PROVIDED; historical parent DML fixtures do not constitute approved lessons",
+    "productionOrRealStaffChanged": false
+  }
+}

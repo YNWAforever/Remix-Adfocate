@@ -1,0 +1,187 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+R2 exact-owned fixture ready; no cleanup, real content or providers.
+[WebServer] (node:4880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 7 tests using 1 worker
+
+(node:23724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/7] e2e\r2-support-ui.spec.ts:19:1 › UC-C15 real empty redemption history, return entrance and recovery
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] (!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: The following dependencies are imported but could not be resolved:
+[WebServer] 
+[WebServer]   @/lib/i18n (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/active-mission/DraftEditor (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/admin/ActiveMissionReview (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/assistant/MissionAssistPanel (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer] 
+[WebServer] Are they installed?
+[WebServer]     at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:31983:33
+[WebServer]     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]     at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:34191:15
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+  1) e2e\r2-support-ui.spec.ts:19:1 › UC-C15 real empty redemption history, return entrance and recovery 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('link', { name: 'Back to rewards' })
+    Expected: "/redemption"
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('link', { name: 'Back to rewards' }) with timeout 15000ms
+      - waiting for getByRole('link', { name: 'Back to rewards' })
+
+
+      20 |   const ctx = await context(browser), page = await ctx.newPage();
+      21 |   await page.goto("/redemption/history"); await expect(page.getByText("No redemptions yet", { exact: true })).toBeVisible();
+    > 22 |   await expect(page.getByRole("link", { name: "Back to rewards" })).toHaveAttribute("href", "/redemption");
+         |                                                                     ^
+      23 |   await page.route("**/api/redemption/history", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
+      24 |   await page.reload(); await expect(page.getByRole("alert")).toBeVisible();
+      25 |   await expect(page.getByText("No redemptions yet", { exact: true })).toHaveCount(0);
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\r2-support-ui.spec.ts:22:69
+
+    Error Context: test-results\r2-support-ui-UC-C15-real--3f402-eturn-entrance-and-recovery\error-context.md
+
+
+(node:41644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/7] e2e\r2-support-ui.spec.ts:31:1 › UC-C16 real no-active-challenge state and failed-read retry
+[3/7] e2e\r2-support-ui.spec.ts:41:1 › UC-C17 real Academy readable/preparing and locked eligibility; empty and fault UI
+[4/7] e2e\r2-support-ui.spec.ts:56:1 › UC-A45 real empty applications, recoverable failure and reload
+[5/7] e2e\r2-support-ui.spec.ts:65:1 › UC-A49 challenge/content empty entrances, preserved filter and retry
+  2) e2e\r2-support-ui.spec.ts:65:1 › UC-A49 challenge/content empty entrances, preserved filter and retry 
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.click: Test ended.
+    Call log:
+      - waiting for getByRole('button', { name: /Retry/ })
+        - locator resolved to <button type="button" class="font-bold underline">重試 / Retry</button>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+        - element is not stable
+      - retrying click action
+        - waiting for element to be visible, enabled and stable
+      - element was detached from the DOM, retrying
+
+
+      75 |   await page.getByRole("combobox", { name: /Content status/ }).selectOption("draft"); await expect(page.getByRole("alert")).toBeVisible();
+      76 |   await expect(page.getByRole("combobox", { name: /Content status/ })).toHaveValue("draft");
+    > 77 |   await page.unroute("**/api/admin/content?*"); await page.getByRole("button", { name: /Retry/ }).click();
+         |                                                                                                   ^
+      78 |   await expect(page.getByRole("alert")).toHaveCount(0); await expect(page.getByRole("combobox", { name: /Content status/ })).toHaveValue("draft");
+      79 |   record("UC-A49", { actualChallengeRows: fx.emptyReadCounts.adminCampaigns, actualGlobalContentRows: fx.emptyReadCounts.content, contentEmptyTransportMock: emptyMock, selectedStatusRetained: "draft", recovery: "real API read", noPublishOrSettlement: true }); await ctx.close();
+      80 | });
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\r2-support-ui.spec.ts:77:99
+
+    Error Context: test-results\r2-support-ui-UC-A49-chall-9ba10--preserved-filter-and-retry\error-context.md
+
+
+
+(node:37528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[6/7] e2e\r2-support-ui.spec.ts:81:1 › F27 parent metadata saves with explicit retry and survives hard reload
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[7/7] e2e\r2-support-ui.spec.ts:102:1 › F27 real 409 compares latest and preserves both authored and concurrent metadata
+  2 failed
+    e2e\r2-support-ui.spec.ts:19:1 › UC-C15 real empty redemption history, return entrance and recovery 
+    e2e\r2-support-ui.spec.ts:65:1 › UC-A49 challenge/content empty entrances, preserved filter and retry 
+  5 passed (2.6m)

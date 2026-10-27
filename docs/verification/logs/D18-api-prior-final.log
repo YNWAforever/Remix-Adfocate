@@ -1,0 +1,14 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-staff-capabilities.test.ts (8 tests) 12174ms
+   ✓ D18 exact-owned staff roles/API/RLS > keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings 607ms
+   ✓ D18 exact-owned staff roles/API/RLS > persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant 479ms
+   ✓ D18 exact-owned staff roles/API/RLS > revokes active staff, membership or role immediately using the same signed-in session 332ms
+   ✓ D18 exact-owned staff roles/API/RLS > hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances 2649ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  21:24:49
+   Duration  12.70s (transform 653ms, setup 192ms, collect 81ms, tests 12.17s, environment 0ms, prepare 81ms)
+

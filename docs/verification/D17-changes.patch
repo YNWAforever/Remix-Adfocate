@@ -1,0 +1,1197 @@
+--- /dev/null
++++ b/e2e/accessibility.spec.ts
+@@ -0,0 +1,123 @@
++import { expect,test,type Browser,type Page } from "@playwright/test";
++import {readFileSync,writeFileSync} from "node:fs";
++import process from "node:process";
++import {createRequire} from "node:module";
++const require=createRequire(import.meta.url);
++const fx=process.env.ADFOCATE_BROWSER_SCOPE==="D17"?JSON.parse(readFileSync(".codex-tmp/D17-fixture.private.json","utf8")):{};
++test.beforeEach(()=>test.skip(process.env.ADFOCATE_BROWSER_SCOPE!=="D17","Use the identity-gated D17 runner."));
++const record=(name:string,data:unknown)=>writeFileSync(`docs/verification/D17-${name}.json`,JSON.stringify({runId:fx.runId,data},null,2)+"\n");
++async function context(browser:Browser,operator=false,width=390,zoom=false){
++ const ctx=await browser.newContext({viewport:{width:zoom?width/2:width,height:zoom?450:900},deviceScaleFactor:zoom?2:1});
++ await ctx.addInitScript(session=>{localStorage.setItem("lang","en");localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},(operator?fx.operator:fx.creator).session);
++ await ctx.route("**/*",route=>{const u=new URL(route.request().url());return u.hostname==="127.0.0.1"&&["56400","56421"].includes(u.port)?route.continue():route.abort();});
++ return ctx;
++}
++async function settled(page:Page){await expect(page.locator("main")).toBeVisible();await expect(page.locator("main").getByRole("heading").first()).toBeVisible();await page.waitForLoadState("networkidle");}
++
++test("D17 core Creator and operator pages reflow at 360/390/768 and 200 percent desktop reflow",async({browser})=>{
++ const cells=[];
++ for(const width of [360,390,768])for(const operator of [false,true]){
++  const ctx=await context(browser,operator,width),page=await ctx.newPage();
++  for(const path of operator?["/admin/creators","/admin/insights"]:["/home","/my","/wallet"]){
++   await page.goto(path);await settled(page);
++   const size=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
++   expect.soft(size.scroll,`${path} width ${width}`).toBeLessThanOrEqual(size.viewport+1);cells.push({width,operator,path,...size});
++  }
++  await ctx.close();
++ }
++ for(const operator of [false,true]){
++  const ctx=await context(browser,operator,1280,true),page=await ctx.newPage();await page.goto(operator?"/admin/creators":"/home");await settled(page);
++  const size=await page.evaluate(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth}));expect.soft(size.scroll).toBeLessThanOrEqual(size.viewport+1);
++  cells.push({operator,zoom:"200% desktop reflow simulation: 1280x900 physical => 640x450 CSS at DPR2; not native browser zoom",...size});await ctx.close();
++ }
++ record("responsive",cells);
++});
++
++test("D17 assistant keyboard dialog restores focus, offers usable targets and retains input on announced failure",async({browser})=>{
++ const ctx=await context(browser),page=await ctx.newPage();await page.goto("/home");await settled(page);
++ const launch=page.getByRole("button",{name:"Open AI Assistant",exact:true});await launch.focus();await page.keyboard.press("Enter");
++ const dialog=page.getByRole("dialog");await expect(dialog).toBeVisible();
++ const close=dialog.getByRole("button",{name:/close/i});const box=await close.boundingBox();expect.soft(box!.width).toBeGreaterThanOrEqual(44);expect.soft(box!.height).toBeGreaterThanOrEqual(44);
++ const input=dialog.getByRole("textbox");await expect(input).toBeFocused();
++ const last=dialog.getByRole("button",{name:"Send",exact:true});await last.focus();await page.keyboard.press("Tab");await expect(close).toBeFocused();await page.keyboard.press("Shift+Tab");await expect(last).toBeFocused();
++ let mocked=0;await page.route("**/api/assistant/chat",route=>{mocked++;return route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"Explicit mocked unavailable provider; no real AI request."})});});
++ await input.fill("Retained accessibility draft "+"https://example.invalid/"+"x".repeat(250));
++ await input.press("Enter");await expect(dialog.getByRole("alert").first()).toBeVisible();await expect(input).toHaveValue(/Retained accessibility draft/);
++ expect(mocked).toBe(1);
++ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);expect.soft(overflow).toBe(false);
++ await page.keyboard.press("Escape");await expect(dialog).toHaveCount(0);await expect(launch).toBeFocused();
++ record("dialog",{focusRestored:true,failureTransportMock:true,mocked503Responses:mocked,inputPreserved:true,closeTarget:box});await ctx.close();
++});
++
++test("D17 Insights announces an unavailable read, retries and labels ledger credits without payout claims",async({browser})=>{
++ const ctx=await context(browser,true),page=await ctx.newPage(),pattern="**/api/admin/insights?*";
++ await page.route(pattern,route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({code:"metrics_unavailable",error:"Explicit unavailable-read fixture"})}));
++ await page.goto("/admin/insights");await expect(page.getByRole("alert").first()).toBeVisible();
++ await page.unroute(pattern);await page.getByRole("button",{name:/Retry/}).last().click();
++ await expect(page.getByText(/Cash ledger credits/)).toBeVisible();await expect(page.getByText("Cash paid",{exact:true})).toHaveCount(0);
++ await expect(page.getByText(/Asia\/Hong_Kong/)).toBeVisible();await expect(page.getByText(/112\.50/)).toBeVisible();
++ record("insights-ui",{retry:true,currency:"HKD",cashCredits:112.5,payoutClaim:false});await ctx.close();
++});
++
++test("D17 selected core pages satisfy the automated WCAG A/AA checks; manual and device limits remain explicit",async({browser})=>{
++ const scans=[];
++ for(const operator of [false,true]){
++  const ctx=await context(browser,operator),page=await ctx.newPage();
++  for(const path of operator?["/admin/creators","/admin/insights"]:["/home","/my","/wallet"]){
++   await page.goto(path);await settled(page);await page.addScriptTag({path:require.resolve("axe-core/axe.min.js")});
++   const result=await page.evaluate(async()=>{
++    const axe=(window as unknown as {axe:{run:(node:Document,options:unknown)=>Promise<{violations:Array<{id:string;impact:string;help:string;helpUrl:string;nodes:Array<{target:string[]}>}>}>}}).axe;
++    const r=await axe.run(document,{runOnly:{type:"tag",values:["wcag2a","wcag2aa","wcag21aa"]}});
++    return r.violations.map(v=>({id:v.id,impact:v.impact,help:v.help,helpUrl:v.helpUrl,targets:v.nodes.map(n=>n.target)}));
++   });
++   scans.push({operator,path,violations:result});expect.soft(result,`${path} WCAG automated checks`).toEqual([]);
++  }
++  await ctx.close();
++ }
++ record("accessibility-scans",{axeVersion:require("axe-core/package.json").version,scans,limitations:["Selected pages and automated rules only; not full accessibility certification.","Keyboard and ARIA live regions tested separately; no physical screen-reader or Safari session."]});
++});
++
++test("D17 records production-asset lab vitals, 100 HTTP API reads and 24 real queue interactions",async({browser})=>{
++ const ctx=await context(browser,true,1280),page=await ctx.newPage();
++ await page.addInitScript(()=>{
++  const state={lcp:[] as number[],shifts:[] as {at:number;value:number}[],events:[] as {id:number;duration:number;at:number}[]};
++  (window as unknown as {d17Vitals:typeof state}).d17Vitals=state;
++  for(const type of ["largest-contentful-paint","layout-shift","event"]){
++   if(!PerformanceObserver.supportedEntryTypes.includes(type))continue;
++   new PerformanceObserver(list=>{for(const entry of list.getEntries()){
++    if(type==="largest-contentful-paint")state.lcp.push(entry.startTime);
++    if(type==="layout-shift"){const e=entry as PerformanceEntry&{value:number;hadRecentInput:boolean};if(!e.hadRecentInput)state.shifts.push({at:e.startTime,value:e.value});}
++    if(type==="event"){const e=entry as PerformanceEntry&{interactionId:number;duration:number};if(e.interactionId)state.events.push({id:e.interactionId,duration:e.duration,at:e.startTime});}
++   }}).observe({type,buffered:true,...(type==="event"?{durationThreshold:16}:{})});
++  }
++ });
++ const pages=[];
++ for(const path of ["/admin/creators","/admin/insights"]){
++  await page.goto(path);await settled(page);
++  pages.push({path,cache:"HTTP cache disabled by request routing; first navigation",...await page.evaluate(()=>({vitals:(window as unknown as {d17Vitals:unknown}).d17Vitals,resources:performance.getEntriesByType("resource").filter(r=>r.name.includes("/assets/")).map(r=>({name:new URL(r.name).pathname,transferBytes:(r as PerformanceResourceTiming).transferSize,encodedBytes:(r as PerformanceResourceTiming).encodedBodySize}))}))});
++ }
++ const requests=[];
++ for(let i=0;i<100;i++){
++  const started=performance.now();const response=await page.request.get(`/api/admin/creators/review?page=${i%2+1}`,{headers:{Authorization:`Bearer ${fx.operator.jwt}`,"X-Workspace-Slug":fx.slug}});const body=await response.json();
++  requests.push({ms:performance.now()-started,status:response.status(),total:body.total,rows:body.creators?.length});
++  expect(response.status()).toBe(200);expect(body.total).toBe(10000);expect(body.creators).toHaveLength(25);
++ }
++ await page.goto("/admin/creators");await settled(page);
++ const interactions=[];
++ for(let i=0;i<24;i++){
++  const started=performance.now();
++  const response=page.waitForResponse(r=>new URL(r.url()).pathname==="/api/admin/creators/review"&&r.status()===200);
++  await page.getByRole("button",{name:"下一頁 / Next",exact:true}).click();await response;
++  await expect(page.getByRole("navigation",{name:"Creator queue pages"})).toContainText(`${i+2} / 400`);
++  await expect(page.getByRole("button",{name:"下一頁 / Next",exact:true})).toBeEnabled();
++  interactions.push({action:"next",page:i+2,toReadyMs:performance.now()-started});
++ }
++ await page.waitForTimeout(300);
++ const vitals=await page.evaluate(()=>(window as unknown as {d17Vitals:{lcp:number[];shifts:{at:number;value:number}[];events:{id:number;duration:number;at:number}[]}}).d17Vitals);
++ const groups=new Map<number,number>();for(const event of vitals.events)groups.set(event.id,Math.max(groups.get(event.id)??0,event.duration));
++ const summary=(values:number[])=>{const sorted=[...values].sort((a,b)=>a-b);return{samples:values.length,p50:sorted[Math.ceil(values.length*.5)-1]??null,p95:sorted[Math.ceil(values.length*.95)-1]??null,max:sorted.at(-1)??null};};
++ let start=0,last=0,sum=0,cls=0;for(const shift of vitals.shifts){if(shift.at-last>1000||shift.at-start>5000){start=shift.at;sum=0;}sum+=shift.value;last=shift.at;cls=Math.max(cls,sum);}
++ const inp=[...groups.values()].sort((a,b)=>b-a)[Math.floor(groups.size/50)]??null;
++ record("runtime-performance",{browser:browser.version(),viewport:"1280x900",network:"loopback, no throttling, external requests aborted; fonts use local fallback",cache:"HTTP cache disabled due network routing; DB and server warmed, not reset",pages,requests,httpApi:summary(requests.map(r=>r.ms)),interactions,uiToReady:summary(interactions.map(r=>r.toReadyMs)),eventTiming:vitals.events,observedInteractions:groups.size,labInpCandidateMs:inp,cls,thresholds:{apiP95:800,lcpMs:2500,inpMs:200,cls:.1},limitations:["Lab visit INP candidate, not field p75 across real users.","Browser warm-cache, physical mobile, CPU-throttled network and production not measured."]});
++ await page.screenshot({path:"docs/verification/D17-queue-desktop.png"});await ctx.close();
++});
+--- /dev/null
++++ b/playwright.quality.config.ts
+@@ -0,0 +1,7 @@
++import { defineConfig } from "@playwright/test";
++import process from "node:process";
++export default defineConfig({testDir:"./e2e",fullyParallel:false,workers:1,retries:0,timeout:180000,expect:{timeout:20000},
++ reporter:[["line"],["json",{outputFile:".codex-tmp/D17-browser-results.private.json"}]],
++ use:{baseURL:"http://127.0.0.1:56400",channel:"msedge",viewport:{width:1280,height:900},locale:"en-HK",timezoneId:"Asia/Hong_Kong",trace:"off",screenshot:"off",video:"off"},
++ webServer:{command:`"${process.execPath}" node_modules/vite-node/vite-node.mjs scripts/audit/serve-quality.ts`,url:"http://127.0.0.1:56400/api/health",reuseExistingServer:false,timeout:60000,stdout:"ignore",stderr:"pipe"},
++});
+--- /dev/null
++++ b/scripts/audit/build-quality.ts
+@@ -0,0 +1,16 @@
++import { build, type Plugin } from "vite";
++import { readFileSync, writeFileSync } from "node:fs";
++import { gzipSync } from "node:zlib";
++import { resolve } from "node:path";
++import { verifiedTarget } from "./local-targets.mjs";
++const t=process.env.D17_OFFLINE_BUILD==="1"?null:verifiedTarget("empty");
++Object.assign(process.env,{VITE_SUPABASE_URL:t?.env.SUPABASE_URL??"http://127.0.0.1:56421",VITE_SUPABASE_ANON_KEY:t?.env.SUPABASE_ANON_KEY??"offline-build-only-no-client",VITE_DEFAULT_WORKSPACE:t?JSON.parse((await import("node:fs")).readFileSync(".codex-tmp/D17-fixture.private.json","utf8")).slug:"d17-placeholder",VITE_ENABLE_WHATSAPP:"false",VITE_ENABLE_GOOGLE:"false"});
++const label=process.argv[2]??"before";
++process.env.NODE_ENV="production";
++const analysis:Plugin={name:"d17-bundle-evidence",writeBundle(_options,bundle){
++ const chunks=Object.values(bundle).filter(c=>c.type==="chunk").map(c=>({file:c.fileName,entry:c.isEntry,bytes:readFileSync(resolve("dist",c.fileName)).length,gzipBytes:gzipSync(readFileSync(resolve("dist",c.fileName))).length,imports:c.imports,dynamicImports:c.dynamicImports,
++  modules:Object.entries(c.modules).map(([id,m])=>({id:id.replaceAll(resolve(".").replaceAll("\\","/"),".").replaceAll("\\","/"),renderedBytes:m.renderedLength})).sort((a,b)=>b.renderedBytes-a.renderedBytes)}));
++ writeFileSync(`docs/verification/D17-bundle-${label}.json`,JSON.stringify({target:t?.identity??null,scope:t?"identity-bound asset build":"offline asset graph only; no SDK/runtime setup",productionAssets:true,chunks},null,2)+"\n");
++ console.log("D17 entry modules",JSON.stringify(chunks.filter(c=>c.entry).map(c=>({file:c.file,bytes:c.bytes,modules:c.modules.slice(0,12)}))));
++}};
++await build({mode:"production",plugins:[analysis],build:{manifest:true,...(process.env.D17_UNSPLIT==="1"?{rollupOptions:{output:{manualChunks:()=>undefined}}}:{})}});
+--- /dev/null
++++ b/scripts/audit/measure-quality.ts
+@@ -0,0 +1,44 @@
++import {readFileSync,writeFileSync,existsSync} from "node:fs";
++import {randomUUID} from "node:crypto";
++import {performance} from "node:perf_hooks";
++import {verifiedTarget} from "./local-targets.mjs";
++const target=verifiedTarget("empty");
++Object.assign(process.env,target.env,{OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:""});
++const fx=JSON.parse(readFileSync(".codex-tmp/D17-fixture.private.json","utf8"));
++if(JSON.stringify(target.identity)!==JSON.stringify(fx.target)||!/^[a-f0-9-]{36}$/.test(fx.workspaceId))throw new Error("quality target mismatch");
++const {app}=(await import("../../server/app.js")).createApp();
++const path=".codex-tmp/D17-scale-ids.private.json";
++const planned=existsSync(path)?JSON.parse(readFileSync(path,"utf8")):{runId:fx.runId,workspaceId:fx.workspaceId,stages:{}};
++if(planned.runId!==fx.runId||planned.workspaceId!==fx.workspaceId)throw new Error("stale scale fixture");
++const measurements=[];
++for(const total of [1000,10000]){
++ const current=Number(target.sql(`select count(*) from public.creators where workspace_id='${fx.workspaceId}';`));
++ if(current>total&&total===1000)continue;
++ if(!planned.stages[total]){
++  if(current>total)throw new Error("unexpected creator count");
++  planned.stages[total]=Array.from({length:total-current},()=>randomUUID());
++  writeFileSync(path,JSON.stringify(planned));
++ }
++ const ids=planned.stages[total];if(!ids.every((id:string)=>/^[a-f0-9-]{36}$/.test(id)))throw new Error("invalid exact fixture IDs");
++ for(let offset=0;offset<ids.length;offset+=500){
++  const chunk=ids.slice(offset,offset+500);
++  target.sql(`begin;
++   insert into auth.users(id,email) values ${chunk.map((id:string)=>`('${id}','${id}@example.invalid')`).join(",")} on conflict(id) do nothing;
++   insert into public.creators(id,workspace_id,display_name,onboarding_completed) values ${chunk.map((id:string,index:number)=>`('${id}','${fx.workspaceId}','Synthetic D17 ${total} ${offset+index}',true)`).join(",")} on conflict(id) do nothing;
++   commit;`);
++ }
++ if(Number(target.sql(`select count(*) from public.creators where workspace_id='${fx.workspaceId}';`))!==total)throw new Error("scale count mismatch");
++ const raw=[];
++ for(let i=0;i<100;i++){
++  const started=performance.now();
++  const r=await app.request(`/api/admin/creators/review?page=${i%2+1}&sort=last_activity`,{headers:{Authorization:`Bearer ${fx.operator.jwt}`,"X-Workspace-Slug":fx.slug}});
++  const body=await r.json();raw.push(performance.now()-started);
++  if(r.status!==200||body.total!==total||body.creators.length!==25)throw new Error(`queue contract ${r.status}, expected ${total}, observed ${body.total}`);
++ }
++ const sorted=[...raw].sort((a,b)=>a-b),p=(v:number)=>sorted[Math.ceil(raw.length*v)-1];
++ const plan=JSON.parse(target.sql(`explain (analyze,buffers,format json) select public.list_creator_review_queue_page('${fx.workspaceId}','${fx.operator.id}',null,'',null,null,'last_activity',1);`));
++ measurements.push({creators:total,requests:raw.length,rawMs:raw,p50Ms:p(.5),p95Ms:p(.95),maxMs:sorted.at(-1),plan,thresholdMs:800,belowSuggestedP95:p(.95)<800});
++ writeFileSync("docs/verification/D17-api-performance.json",JSON.stringify({runId:fx.runId,target:target.identity,transport:"in-process Hono API + real HTTP Auth/PostgREST/database; no client network latency added",cache:"DB buffers not reset; first request and subsequent requests retained raw",network:"local loopback; no CPU/network throttling",measurements},null,2)+"\n");
++ console.log(JSON.stringify({creators:total,requests:100,p50Ms:p(.5),p95Ms:p(.95)}));
++}
++writeFileSync("docs/verification/D17-scale-ids.json",JSON.stringify({...planned,note:"Exact synthetic Auth/profile IDs retained. No membership grants, cleanup, broad delete or reset."},null,2)+"\n");
+--- /dev/null
++++ b/scripts/audit/prepare-quality.ts
+@@ -0,0 +1,38 @@
++import { readFileSync,writeFileSync,existsSync } from "node:fs";
++import { randomUUID } from "node:crypto";
++import { verifiedTarget } from "./local-targets.mjs";
++const target=verifiedTarget("empty");
++for(const kind of ["empty","shaped"]){
++ const t=verifiedTarget(kind),old=JSON.parse(readFileSync("docs/verification/D15-schema-after.json","utf8"));
++ const observed=JSON.parse(t.sql(old.query));
++ const path=`docs/verification/D17-schema-before-${kind}.json`;
++ if(!existsSync(path))writeFileSync(path,JSON.stringify({identity:t.identity,observed,productionQueried:false},null,2)+"\n");
++}
++Object.assign(process.env,target.env,{RUN_INTEGRATION:"0",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:""});
++if(existsSync(".codex-tmp/D17-fixture.private.json"))throw new Error("D17 fixture already exists; refusing duplicate setup");
++const {createAuditFixture}=await import("../../server/test/auditWorkflowFixture");
++const fx=await createAuditFixture();
++const fixture={runId:fx.runId,target:target.identity,workspaceId:fx.workspaceId,otherWorkspaceId:fx.otherWorkspaceId,slug:fx.slug,creator:fx.creators[0],other:fx.creators[1],operator:fx.operator,noMembership:fx.noMembership};
++writeFileSync(".codex-tmp/D17-fixture.private.json",JSON.stringify(fixture,(k,v)=>k==="client"?undefined:v));
++fx.must(await fx.service.from("creators").update({display_name:"D17 "+"香港長姓名".repeat(45)}).eq("id",fx.creators[0].id).eq("workspace_id",fx.workspaceId));
++const pointIds=[randomUUID(),randomUUID(),randomUUID()],cashIds=[randomUUID(),randomUUID()];
++fx.must(await fx.service.from("point_transactions").insert([
++ {id:pointIds[0],creator_id:fx.creators[1].id,workspace_id:fx.workspaceId,type:"earn",delta:25,balance_after:75,created_at:"2026-10-20T00:00:00Z"},
++ {id:pointIds[1],creator_id:fx.creators[1].id,workspace_id:fx.workspaceId,type:"adjust",delta:-8,balance_after:67,created_at:"2026-10-20T00:10:00Z"},
++ {id:pointIds[2],creator_id:fx.creators[1].id,workspace_id:fx.workspaceId,type:"redeem",delta:-4,balance_after:63,created_at:"2026-10-20T00:20:00Z"},
++]));
++fx.must(await fx.service.from("earnings_transactions").insert([
++ {id:cashIds[0],creator_id:fx.creators[1].id,workspace_id:fx.workspaceId,type:"earn",amount:125,balance_after:125,created_at:"2026-10-20T00:00:00Z"},
++ {id:cashIds[1],creator_id:fx.creators[1].id,workspace_id:fx.workspaceId,type:"adjust",amount:-12.5,balance_after:112.5,created_at:"2026-10-20T00:10:00Z"},
++]));
++fx.must(await fx.service.from("point_balances").update({balance:63}).eq("creator_id",fx.creators[1].id).eq("workspace_id",fx.workspaceId));
++fx.must(await fx.service.from("earnings_balances").update({available:112.5}).eq("creator_id",fx.creators[1].id).eq("workspace_id",fx.workspaceId));
++const active=await fx.mission("active_workspace",false,10);
++const {app}= (await import("../../server/app.js")).createApp();
++const join=await app.request(`/api/missions/${active.slug}/join`,{method:"POST",headers:{Authorization:`Bearer ${fx.creators[0].jwt}`,"X-Workspace-Slug":fx.slug,"Content-Type":"application/json"},body:"{}"});
++if(join.status!==200&&join.status!==201)throw new Error(`owned join fixture failed ${join.status}`);
++const before=await Promise.all(fx.creators.map(c=>fx.neutrality(c.id)));
++writeFileSync(".codex-tmp/D17-fixture.private.json",JSON.stringify({...fixture,active},(k,v)=>k==="client"?undefined:v));
++writeFileSync("docs/verification/D17-fixture-setup.json",JSON.stringify({runId:fx.runId,target:target.identity,workspaceIds:[fx.workspaceId,fx.otherWorkspaceId],authIds:[...fx.creators.map(c=>c.id),fx.operator.id,fx.noMembership.id],missionIds:[active.id],pointIds,cashIds,before,
++ note:"Explicit historical accounting fixtures only, seeded before the measured neutrality baseline. No real credit, payout, payment or notification. All exact IDs retained."},null,2)+"\n");
++console.log(JSON.stringify({runId:fx.runId,workspaceId:fx.workspaceId,fixturePrepared:true}));
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && !["mission-list","authoring","identity","public-claims","academy"].includes(selected))throw new Error("unsupported audit integration scope");
+-const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring","identity","public-claims","academy","quality"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- /dev/null
++++ b/scripts/audit/run-quality.mjs
+@@ -0,0 +1,23 @@
++import process from "node:process";
++import {spawnSync} from "node:child_process";
++import {readFileSync,writeFileSync} from "node:fs";
++import {isDeepStrictEqual} from "node:util";
++import {resolve} from "node:path";
++import {pathToFileURL} from "node:url";
++import {verifiedTarget} from "./local-targets.mjs";
++import {neutralitySnapshot} from "./neutrality-snapshot.mjs";
++const target=verifiedTarget("empty"),fx=JSON.parse(readFileSync(".codex-tmp/D17-fixture.private.json","utf8"));
++if(!isDeepStrictEqual(fx.target,target.identity))throw new Error("D17 fixture identity drift");
++const before=[fx.creator,fx.other].map(c=>neutralitySnapshot(target,c.id,fx.workspaceId));
++const phase=process.argv[2]??"final";
++if(!["red","final"].includes(phase))throw new Error("unknown quality scope");
++const env={...process.env,...target.env,D17_OFFLINE_BUILD:"0",NODE_ENV:"production",ADFOCATE_BROWSER_SCOPE:"D17",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`};
++const build=spawnSync(process.execPath,["node_modules/vite-node/vite-node.mjs","scripts/audit/build-quality.ts",phase==="red"?"before-runtime":"after"],{env,stdio:"inherit"});
++if(build.status!==0)process.exit(build.status??1);
++const run=spawnSync(process.execPath,["node_modules/@playwright/test/cli.js","test","e2e/accessibility.spec.ts","--config=playwright.quality.config.ts"],{env,stdio:"inherit"});
++const checked=verifiedTarget("empty"),after=[fx.creator,fx.other].map(c=>neutralitySnapshot(checked,c.id,fx.workspaceId));
++writeFileSync(`docs/verification/D17-neutrality-${phase}.json`,JSON.stringify({runId:fx.runId,before,after,allEqual:isDeepStrictEqual(before,after),fixtureSetup:"Historical ledger fixtures were seeded before this raw baseline; no measured action issues rewards or payments."},null,2)+"\n");
++const raw=JSON.parse(readFileSync(".codex-tmp/D17-browser-results.private.json","utf8")),tests=[];
++function visit(suites){for(const s of suites??[]){for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});visit(s.suites);}}
++visit(raw.suites);writeFileSync(`docs/verification/D17-browser-${phase}.json`,JSON.stringify({target:target.identity,runId:fx.runId,tests,stats:raw.stats,browser:"Installed Edge; local production assets plus real local Auth/API/RLS/database. Explicit 503 error-path mocks; no paid AI or external messages.",limitations:["Viewport/device-scale reflow simulation, not physical mobile or native browser zoom.","No hosted or production measurements."]},null,2)+"\n");
++process.exit(run.status===0&&isDeepStrictEqual(before,after)?0:run.status||1);
+--- /dev/null
++++ b/scripts/audit/serve-quality.ts
+@@ -0,0 +1,20 @@
++import { createServer } from "node:http";
++import { readFileSync,statSync } from "node:fs";
++import { resolve,extname,sep } from "node:path";
++import { gzipSync } from "node:zlib";
++import { verifiedTarget } from "./local-targets.mjs";
++const target=verifiedTarget("empty");
++Object.assign(process.env,target.env,{OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:""});
++const [{createApp},{createViteApiMiddleware}]=await Promise.all([import("../../server/app.js"),import("../../server/devApi.js")]);
++const api=createViteApiMiddleware(createApp().app),root=resolve("dist");
++const mime:Record<string,string>={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".woff2":"font/woff2",".json":"application/json"};
++createServer((req,res)=>api(req,res,()=>{
++ let file=resolve(root,"."+decodeURIComponent(new URL(req.url??"/","http://127.0.0.1").pathname));
++ if(file!==root&&!file.startsWith(root+sep)){res.writeHead(403);res.end();return;}
++ try{if(!statSync(file).isFile())file=resolve(root,"index.html");}catch{file=resolve(root,"index.html");}
++ const body=readFileSync(file),gzip=req.headers["accept-encoding"]?.includes("gzip")&&[".js",".css",".html"].includes(extname(file));
++ res.setHeader("Content-Type",mime[extname(file)]??"application/octet-stream");
++ res.setHeader("Cache-Control",extname(file)===".html"?"no-cache":"public,max-age=3600");
++ if(gzip){res.setHeader("Content-Encoding","gzip");res.setHeader("Vary","Accept-Encoding");}
++ res.end(gzip?gzipSync(body):body);
++})).listen(56400,"127.0.0.1",()=>console.log("D17 production assets + local API listening on loopback"));
+--- a/server/lib/activeMission/metrics.ts
++++ b/server/lib/activeMission/metrics.ts
+@@ -47,6 +47,36 @@
+ };
+ 
+ export type RateMetric = { numerator: number; denominator: number; rate: number };
++
++export type PilotOutcomeRow = {
++  id: string; joinedAt: string; firstSubmittedAt: string | null;
++  firstReviewDecision: string | null; revisionCount: number;
++  required: boolean; deadline: string | null; approvedAt: string | null; cancelled: boolean;
++  reviewDurationsMs?: readonly number[];
++};
++
++/** Saved versions and decisions supply these observations; missing data is not a zero. */
++export function calculatePilotOutcomeMetrics(rows: readonly PilotOutcomeRow[], now: Date) {
++  const active = rows.filter(row => !row.cancelled);
++  const submissionTimes = active.flatMap(row => {
++    const joined = validTimestamp(row.joinedAt), submitted = validTimestamp(row.firstSubmittedAt);
++    return joined !== null && submitted !== null && submitted >= joined ? [submitted - joined] : [];
++  });
++  const reviewed = active.filter(row => ["approved", "approved_to_publish", "revision_requested"].includes(row.firstReviewDecision ?? ""));
++  const due = active.filter(row => row.required && validTimestamp(row.deadline) !== null && validTimestamp(row.deadline)! < now.getTime());
++  const reviewTimes = active.flatMap(row => row.reviewDurationsMs ?? []).filter(ms => Number.isFinite(ms) && ms >= 0);
++  const submitted = active.filter(row => validTimestamp(row.firstSubmittedAt) !== null);
++  const revisions = submitted.reduce((sum, row) => sum + (Number.isInteger(row.revisionCount) && row.revisionCount >= 0 ? row.revisionCount : 0), 0);
++  return {
++    timeToFirstSubmissionMs: { samples: submissionTimes.length, median: median(submissionTimes) },
++    firstReviewAcceptance: rateMetric(reviewed.filter(row => ["approved", "approved_to_publish"].includes(row.firstReviewDecision!)).length, reviewed.length),
++    revisionRounds: { samples: submitted.length, total: revisions, mean: submitted.length ? revisions / submitted.length : null },
++    overdue: rateMetric(due.filter(row => validTimestamp(row.approvedAt) === null || validTimestamp(row.approvedAt)! > validTimestamp(row.deadline)!).length, due.length),
++    operatorHandlingMs: reviewTimes.length ? { samples: reviewTimes.length, median: median(reviewTimes) } : null,
++    unclearStateHelpCount: null,
++    limitations: ["Help selections have no durable support-request source; count is unavailable.", "Review duration requires both saved start and decision timestamps."],
++  };
++}
+ 
+ export type PublicationProofOperationalMetrics = {
+   submissionConversion: RateMetric;
+--- /dev/null
++++ b/server/lib/insights-quality.test.ts
+@@ -0,0 +1,52 @@
++import { expect, it } from "vitest";
++import { shapeInsights } from "./insights";
++const at = "2026-10-20T01:00:00Z";
++const base = { to: "2026-10-23T10:00:00Z", days: 7 as const, submissions: [], earnings: [], creators: [], missions: [] };
++
++it("D17 closes the window at Hong Kong midnight and counts posted credits, reversals and boundaries rather than promised rewards", () => {
++  const input = { ...base,
++    submissions: [{ creator_id: "a", status: "approved", points_awarded: 99999, created_at: at, submitted_at: at, reviewed_at: at }],
++    points: [
++      { type: "earn", delta: 25, created_at: "2026-10-15T16:00:00Z" },
++      { type: "adjust", delta: -8, created_at: at },
++      { type: "redeem", delta: -4, created_at: at },
++      { type: "earn", delta: 90, created_at: "2026-10-22T16:00:00Z" },
++      { type: "earn", delta: 5, created_at: "2026-10-15T15:59:59Z" },
++    ],
++    earnings: [{ type: "earn", amount: "125.00", created_at: at }, { type: "adjust", amount: "-12.50", created_at: at },
++      { type: "earn", amount: "999", created_at: "2026-10-22T16:00:00Z" }],
++  };
++  const r = shapeInsights(input);
++  expect(r.window).toMatchObject({ from: "2026-10-15T16:00:00.000Z", to: "2026-10-22T16:00:00.000Z", timezone: "Asia/Hong_Kong" });
++  expect(r.kpis.pointsIssued).toMatchObject({ value: 17, prev: 5 });
++  expect(r.kpis.cashPaid.value).toBe(112.5);
++  expect(r.trend[0].bucket).toBe("2026-10-16");
++});
++
++it("D17 approval throughput cannot inflate a submitted-cohort conversion rate and cancelled work does not enter its denominator", () => {
++  const row = (id: string, status: string, submitted: string) => ({ creator_id: id, status, points_awarded: 0, created_at: submitted, submitted_at: submitted, reviewed_at: status === "approved" ? at : null });
++  const r = shapeInsights({ ...base, submissions: [row("a", "approved", at), row("b", "submitted", at), row("c", "cancelled", at), row("old", "approved", "2026-10-01T00:00:00Z")] });
++  expect(r.funnel.approved).toBe(2);
++  expect(r.funnel.submitted).toBe(2);
++  expect(r.kpis.submitToApprove.value).toBe(50);
++  expect(r).toMatchObject({ denominators: { submitToApprove: { numerator: 1, denominator: 2 }, joinToSubmit: { numerator: 2, denominator: 2 } } });
++});
++
++it("D17 reports durable work outcomes with explicit missing measurements rather than fabricated zero operator/help data", () => {
++  const r = shapeInsights({ ...base, outcomes: [
++    { id: "one", joinedAt: "2026-10-20T00:00:00Z", firstSubmittedAt: "2026-10-20T00:10:00Z", firstReviewDecision: "approved", revisionCount: 0, required: true, deadline: "2026-10-20T01:00:00Z", approvedAt: "2026-10-20T00:30:00Z", cancelled: false },
++    { id: "two", joinedAt: "2026-10-20T00:00:00Z", firstSubmittedAt: "2026-10-20T00:30:00Z", firstReviewDecision: "revision_requested", revisionCount: 2, required: true, deadline: "2026-10-20T01:00:00Z", approvedAt: null, cancelled: false },
++    { id: "cancelled", joinedAt: at, firstSubmittedAt: null, firstReviewDecision: null, revisionCount: 0, required: true, deadline: at, approvedAt: null, cancelled: true },
++  ] });
++  expect(r).toMatchObject({ outcomes: {
++    timeToFirstSubmissionMs: { samples: 2, median: 1200000 }, firstReviewAcceptance: { numerator: 1, denominator: 2, rate: 0.5 },
++    revisionRounds: { samples: 2, total: 2, mean: 1 }, overdue: { numerator: 1, denominator: 2, rate: 0.5 },
++    operatorHandlingMs: null, unclearStateHelpCount: null,
++  } });
++});
++
++it("D17 does not dilute revision rounds with work that has no persisted first submission", () => {
++  const row = { id: "pending", joinedAt: at, firstSubmittedAt: null, firstReviewDecision: null, revisionCount: 0, required: true, deadline: null, approvedAt: null, cancelled: false };
++  expect(shapeInsights({ ...base, outcomes: [row] }).outcomes.revisionRounds).toEqual({ samples: 0, total: 0, mean: null });
++  expect(shapeInsights({ ...base, outcomes: [row, { ...row, id: "saved", firstSubmittedAt: at, revisionCount: 2 }] }).outcomes.revisionRounds).toEqual({ samples: 1, total: 2, mean: 2 });
++});
+--- a/server/lib/insights.test.ts
++++ b/server/lib/insights.test.ts
+@@ -6,6 +6,7 @@
+   type InsightsEarningRow,
+   type InsightsCreatorRow,
+   type InsightsMissionRow,
++  type InsightsPointRow,
+ } from "./insights";
+ 
+ const TO = "2026-06-30T00:00:00.000Z"; // "now" for the window
+@@ -29,6 +30,7 @@
+   earnings?: InsightsEarningRow[];
+   creators?: InsightsCreatorRow[];
+   missions?: InsightsMissionRow[];
++  points?: InsightsPointRow[];
+ }) {
+   return shapeInsights({
+     to: TO,
+@@ -37,6 +39,7 @@
+     earnings: over.earnings ?? [],
+     creators: over.creators ?? [],
+     missions: over.missions ?? [],
++    points: over.points ?? [],
+   });
+ }
+ 
+@@ -66,6 +69,7 @@
+ 
+   it("computes the funnel and its conversion percentages", () => {
+     const r = base({
++      points: [{ type: "earn", delta: 100, created_at: inWin }, { type: "earn", delta: 50, created_at: inWin }],
+       submissions: [
+         sub({ creator_id: "a", status: "joined", created_at: inWin }),
+         sub({ creator_id: "b", status: "submitted", created_at: inWin, submitted_at: inWin }),
+@@ -84,6 +88,7 @@
+ 
+   it("computes deltaPct vs the prior equal-length window", () => {
+     const r = base({
++      points: [{ type: "earn", delta: 200, created_at: inWin }, { type: "earn", delta: 100, created_at: inPrior }],
+       submissions: [
+         sub({ creator_id: "a", status: "approved", created_at: inWin, submitted_at: inWin, reviewed_at: inWin, points_awarded: 200 }),
+         sub({ creator_id: "b", status: "approved", created_at: inPrior, submitted_at: inPrior, reviewed_at: inPrior, points_awarded: 100 }),
+--- a/server/lib/insights.ts
++++ b/server/lib/insights.ts
+@@ -4,7 +4,9 @@
+ // produces KPIs, an engagement funnel, a level histogram, and a time-series trend.
+ // No DB / no async — fully unit-tested. Mirrors engagedRoster.ts / missionActivity.ts.
+ 
++import { calculatePilotOutcomeMetrics, type PilotOutcomeRow } from "./activeMission/metrics.js";
+ export type InsightsWindowDays = 7 | 30 | 90;
++export type InsightsPointRow = { type: string; delta: number; created_at: string };
+ 
+ export type InsightsSubmissionRow = {
+   creator_id: string;
+@@ -16,6 +18,7 @@
+ };
+ 
+ export type InsightsEarningRow = {
++  type?: string;
+   amount: number | string | null; // numeric(10,2) may arrive from PostgREST as a string
+   created_at: string;
+ };
+@@ -27,7 +30,9 @@
+ export type Metric = { value: number; prev: number; deltaPct: number | null };
+ 
+ export type Insights = {
+-  window: { days: InsightsWindowDays; from: string; to: string };
++  window: { days: InsightsWindowDays; from: string; to: string; timezone: "Asia/Hong_Kong" };
++  denominators: { joinToSubmit: { numerator: number; denominator: number }; submitToApprove: { numerator: number; denominator: number } };
++  outcomes: ReturnType<typeof calculatePilotOutcomeMetrics>;
+   kpis: {
+     activeCreators: Metric;
+     submitToApprove: Metric;
+@@ -48,6 +53,8 @@
+   earnings: InsightsEarningRow[];
+   creators: InsightsCreatorRow[];
+   missions: InsightsMissionRow[];
++  points?: InsightsPointRow[];
++  outcomes?: PilotOutcomeRow[];
+ };
+ 
+ const ACTIVE_STATUSES: ReadonlySet<string> = new Set(["joined", "submitted", "under_review"]);
+@@ -106,6 +113,7 @@
+   let submitted = 0;
+   let approved = 0;
+   for (const r of subs) {
++    if (["cancelled", "withdrawn", "abandoned"].includes(r.status)) continue;
+     if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, fromMs, toMs)) joined += 1;
+     // Status-agnostic on purpose: a row that later expired still genuinely reached the
+     // submitted stage, so it counts toward funnel.submitted.
+@@ -115,10 +123,10 @@
+   return { joined, submitted, approved };
+ }
+ 
+-function pointsIssued(subs: InsightsSubmissionRow[], fromMs: number, toMs: number): number {
++function pointsIssued(rows: InsightsPointRow[], fromMs: number, toMs: number): number {
+   let sum = 0;
+-  for (const r of subs) {
+-    if (r.status === "approved" && inRange(r.reviewed_at, fromMs, toMs)) sum += r.points_awarded ?? 0;
++  for (const r of rows) {
++    if (["earn", "adjust", "bonus", "referral", "multiplier"].includes(r.type) && inRange(r.created_at, fromMs, toMs)) sum += num(r.delta);
+   }
+   return sum;
+ }
+@@ -126,7 +134,7 @@
+ function cashPaid(earnings: InsightsEarningRow[], fromMs: number, toMs: number): number {
+   let sum = 0;
+   for (const e of earnings) {
+-    if (inRange(e.created_at, fromMs, toMs)) sum += num(e.amount);
++    if ((!e.type || ["earn", "adjust"].includes(e.type)) && inRange(e.created_at, fromMs, toMs)) sum += num(e.amount);
+   }
+   return round2(sum);
+ }
+@@ -144,11 +152,12 @@
+   const buckets: Array<{ bucket: string; start: number; end: number; joined: number; submitted: number; approved: number }> = [];
+   for (let start = fromMs; start < toMs; start += stepMs) {
+     const end = Math.min(start + stepMs, toMs);
+-    buckets.push({ bucket: new Date(start).toISOString().slice(0, 10), start, end, joined: 0, submitted: 0, approved: 0 });
++    buckets.push({ bucket: new Date(start + 8 * 3_600_000).toISOString().slice(0, 10), start, end, joined: 0, submitted: 0, approved: 0 });
+   }
+   // O(rows × buckets) — fine at MVP scale (hundreds of rows × ≤30 buckets). If submissions
+   // ever exceed ~5k, switch to a single pass with a date→bucket-index map.
+   for (const r of subs) {
++    if (["cancelled", "withdrawn", "abandoned"].includes(r.status)) continue;
+     for (const b of buckets) {
+       if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, b.start, b.end)) b.joined += 1;
+       if (inRange(r.submitted_at, b.start, b.end)) b.submitted += 1;
+@@ -158,17 +167,29 @@
+   return buckets.map((b) => ({ bucket: b.bucket, joined: b.joined, submitted: b.submitted, approved: b.approved }));
+ }
+ 
++export function getInsightsWindow(to: string, days: InsightsWindowDays) {
++  const toMs = Math.floor((Date.parse(to) + 8 * 3_600_000) / DAY_MS) * DAY_MS - 8 * 3_600_000;
++  return { toMs, fromMs: toMs - days * DAY_MS, priorFromMs: toMs - 2 * days * DAY_MS };
++}
++
+ export function shapeInsights(input: ShapeInsightsInput): Insights {
+   const { to, days, submissions, earnings, creators, missions } = input;
+-  const toMs = Date.parse(to);
+-  const fromMs = toMs - days * DAY_MS;
+-  const priorFromMs = fromMs - days * DAY_MS;
++  // Complete Hong Kong calendar days, [from,to), with an equal previous period.
++  const { toMs, fromMs, priorFromMs } = getInsightsWindow(to, days);
+   const priorToMs = fromMs;
+ 
+   const cur = funnelCounts(submissions, fromMs, toMs);
+   const prev = funnelCounts(submissions, priorFromMs, priorToMs);
+-  const curS2A = pct(cur.approved, cur.submitted);
+-  const prevS2A = pct(prev.approved, prev.submitted);
++  const cohorts = (from: number, until: number) => {
++    const eligible = submissions.filter(r => !["cancelled", "withdrawn", "abandoned"].includes(r.status));
++    const joined = eligible.filter(r => LOOP_STATUSES.has(r.status) && inRange(r.created_at, from, until));
++    const submitted = eligible.filter(r => inRange(r.submitted_at, from, until));
++    return { joinToSubmit: { numerator: joined.filter(r => r.submitted_at && Date.parse(r.submitted_at) >= Date.parse(r.created_at) && Date.parse(r.submitted_at) < until).length, denominator: joined.length },
++      submitToApprove: { numerator: submitted.filter(r => r.status === "approved" && r.reviewed_at && Date.parse(r.reviewed_at) >= Date.parse(r.submitted_at!) && Date.parse(r.reviewed_at) < until).length, denominator: submitted.length } };
++  };
++  const denominators = cohorts(fromMs, toMs), previous = cohorts(priorFromMs, priorToMs);
++  const curS2A = pct(denominators.submitToApprove.numerator, denominators.submitToApprove.denominator);
++  const prevS2A = pct(previous.submitToApprove.numerator, previous.submitToApprove.denominator);
+ 
+   let activeQuota = 0;
+   let activeFilled = 0;
+@@ -186,14 +207,16 @@
+   }
+ 
+   return {
+-    window: { days, from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString() },
++    window: { days, from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString(), timezone: "Asia/Hong_Kong" },
++    denominators,
++    outcomes: calculatePilotOutcomeMetrics((input.outcomes ?? []).filter(r => inRange(r.joinedAt, fromMs, toMs)), new Date(toMs)),
+     kpis: {
+       activeCreators: metric(
+         activeCreatorCount(submissions, fromMs, toMs),
+         activeCreatorCount(submissions, priorFromMs, priorToMs),
+       ),
+       submitToApprove: { value: curS2A, prev: prevS2A, deltaPct: deltaPct(curS2A, prevS2A) },
+-      pointsIssued: metric(pointsIssued(submissions, fromMs, toMs), pointsIssued(submissions, priorFromMs, priorToMs)),
++      pointsIssued: metric(pointsIssued(input.points ?? [], fromMs, toMs), pointsIssued(input.points ?? [], priorFromMs, priorToMs)),
+       cashPaid: metric(cashPaid(earnings, fromMs, toMs), cashPaid(earnings, priorFromMs, priorToMs)),
+       missionFillRate: { value: fillRate, prev: 0, deltaPct: null }, // current snapshot, no prior comparison
+       completions: metric(cur.approved, prev.approved),
+@@ -202,7 +225,7 @@
+       joined: cur.joined,
+       submitted: cur.submitted,
+       approved: cur.approved,
+-      joinToSubmit: pct(cur.submitted, cur.joined),
++      joinToSubmit: pct(denominators.joinToSubmit.numerator, denominators.joinToSubmit.denominator),
+       submitToApprove: curS2A,
+     },
+     levels: LEVELS.map((level) => ({ level, count: levelCounts.get(level) ?? 0 })),
+--- a/server/routes/adminInsights.ts
++++ b/server/routes/adminInsights.ts
+@@ -1,66 +1,54 @@
+-// server/routes/adminInsights.ts
+ import { Hono } from "hono";
+ import { serviceClient } from "../lib/supabase.js";
+-import { shapeInsights, type InsightsWindowDays } from "../lib/insights.js";
++import { getInsightsWindow, shapeInsights, type InsightsWindowDays } from "../lib/insights.js";
+ import type { AdminEnv } from "../lib/staffAuth.js";
+ 
+ const VALID_WINDOWS: InsightsWindowDays[] = [7, 30, 90];
+-const DAY_MS = 86_400_000;
+-
+ export const adminInsightsRoutes = new Hono<AdminEnv>();
+ 
+-// GET /admin/insights?workspace=<uuid?>&window=<7|30|90>
+-// Inherits the staff-auth middleware from adminRoutes — no extra guard.
+-adminInsightsRoutes.get("/insights", async (c) => {
+-  const raw = c.req.query("window");
+-  const days = (raw ? Number(raw) : 30) as InsightsWindowDays;
+-  if (!VALID_WINDOWS.includes(days)) {
+-    return c.json({ error: "window must be 7, 30 or 90", code: "validation" }, 422);
++// Stable pages prevent the Data API row cap from silently changing denominators.
++async function allRows<T>(page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>): Promise<T[]> {
++  const rows: T[] = [];
++  for (let offset = 0; offset < 100_000; offset += 1000) {
++    const result = await page(offset, offset + 999);
++    if (result.error || !result.data) throw new Error("metrics_unavailable");
++    rows.push(...result.data);
++    if (result.data.length < 1000) return rows;
+   }
+-  const ws = c.req.query("workspace") || "";
++  throw new Error("metrics_window_too_large");
++}
+ 
+-  const to = new Date().toISOString();
+-  const priorFromIso = new Date(Date.parse(to) - 2 * days * DAY_MS).toISOString();
++adminInsightsRoutes.get("/insights", async c => {
++  const days = Number(c.req.query("window") || 30) as InsightsWindowDays;
++  if (!VALID_WINDOWS.includes(days)) return c.json({ error: "window must be 7, 30 or 90", code: "validation" }, 422);
++  const ws = c.get("authorizedWorkspace")?.workspaceId;
++  if (!ws) return c.json({ error: "Workspace access is required.", code: "workspace_required" }, 403);
++  const to = new Date().toISOString(), window = getInsightsWindow(to, days);
++  const priorFrom = new Date(window.priorFromMs).toISOString(), from = new Date(window.fromMs).toISOString(), until = new Date(window.toMs).toISOString();
+   const svc = serviceClient();
+-
+-  // 1) submissions touching the current OR prior window (any of the three timestamps)
+-  let subsQ = svc
+-    .from("mission_submissions")
+-    .select("creator_id, status, points_awarded, created_at, submitted_at, reviewed_at")
+-    .or(`created_at.gte.${priorFromIso},submitted_at.gte.${priorFromIso},reviewed_at.gte.${priorFromIso}`);
+-  if (ws) subsQ = subsQ.eq("workspace_id", ws);
+-  const subs = await subsQ;
+-  if (subs.error) return c.json({ error: subs.error.message, code: "db_error" }, 500);
+-
+-  // 2) cash credits in the current + prior window
+-  let earnQ = svc
+-    .from("earnings_transactions")
+-    .select("amount, created_at")
+-    .eq("type", "earn")
+-    .gte("created_at", priorFromIso);
+-  if (ws) earnQ = earnQ.eq("workspace_id", ws);
+-  const earn = await earnQ;
+-  if (earn.error) return c.json({ error: earn.error.message, code: "db_error" }, 500);
+-
+-  // 3) level histogram — current creators snapshot
+-  let creatorsQ = svc.from("creators").select("level");
+-  if (ws) creatorsQ = creatorsQ.eq("workspace_id", ws);
+-  const creators = await creatorsQ;
+-  if (creators.error) return c.json({ error: creators.error.message, code: "db_error" }, 500);
+-
+-  // 4) fill rate — active missions snapshot
+-  let missionsQ = svc.from("missions").select("status, quota, filled").eq("status", "active");
+-  if (ws) missionsQ = missionsQ.eq("workspace_id", ws);
+-  const missions = await missionsQ;
+-  if (missions.error) return c.json({ error: missions.error.message, code: "db_error" }, 500);
+-
+-  const insights = shapeInsights({
+-    to,
+-    days,
+-    submissions: subs.data ?? [],
+-    earnings: earn.data ?? [],
+-    creators: creators.data ?? [],
+-    missions: missions.data ?? [],
+-  });
+-  return c.json({ insights });
++  try {
++    const [submissions, earnings, points, creators, missions, workItems, versions, reviews] = await Promise.all([
++      allRows((a,b) => svc.from("mission_submissions").select("id,creator_id,status,points_awarded,created_at,submitted_at,reviewed_at").eq("workspace_id",ws).or(`created_at.gte.${priorFrom},submitted_at.gte.${priorFrom},reviewed_at.gte.${priorFrom}`).order("id").range(a,b)),
++      allRows((a,b) => svc.from("earnings_transactions").select("id,type,amount,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)),
++      allRows((a,b) => svc.from("point_transactions").select("id,type,delta,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)),
++      allRows((a,b) => svc.from("creators").select("id,level").eq("workspace_id",ws).order("id").range(a,b)),
++      allRows((a,b) => svc.from("missions").select("id,status,quota,filled").eq("workspace_id",ws).eq("status","active").order("id").range(a,b)),
++      allRows((a,b) => svc.from("mission_work_items").select("id,state,required,deadline,created_at,workflow:mission_workflows!mission_work_items_workflow_workspace_fk!inner(created_at)").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).order("id").range(a,b)),
++      allRows((a,b) => svc.from("mission_draft_versions").select("id,mission_work_item_id,submitted_at,version_number").eq("workspace_id",ws).gte("submitted_at",from).lt("submitted_at",until).order("id").range(a,b)),
++      allRows((a,b) => svc.from("mission_review_rounds").select("id,mission_work_item_id,state,review_started_at,decision_at,round_number").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).order("id").range(a,b)),
++    ]);
++    const outcomes = workItems.map(item => {
++      const submitted = versions.filter(v => v.mission_work_item_id === item.id).sort((a,b) => a.version_number - b.version_number);
++      const decided = reviews.filter(r => r.mission_work_item_id === item.id && r.decision_at).sort((a,b) => a.round_number - b.round_number);
++      const workflow = item.workflow as unknown as { created_at: string };
++      return { id:item.id, joinedAt:workflow.created_at, firstSubmittedAt:submitted[0]?.submitted_at ?? null,
++        firstReviewDecision:decided[0]?.state ?? null, revisionCount:decided.filter(r=>r.state==="revision_requested").length,
++        required:item.required, deadline:item.deadline, approvedAt:decided.find(r=>r.state==="approved_to_publish")?.decision_at ?? null,
++        cancelled:item.state==="cancelled", reviewDurationsMs:decided.flatMap(r=>r.review_started_at ? [Date.parse(r.decision_at!) - Date.parse(r.review_started_at)] : []),
++      };
++    });
++    return c.json({ insights: shapeInsights({ to, days, submissions, earnings, points, creators, missions, outcomes }) });
++  } catch {
++    return c.json({ code:"metrics_unavailable", error:"Insights could not be refreshed. Please retry; saved records are unchanged." },503);
++  }
+ });
+--- /dev/null
++++ b/server/test/audit-quality.test.ts
+@@ -0,0 +1,62 @@
++import { readFileSync, writeFileSync } from "node:fs";
++import { isDeepStrictEqual } from "node:util";
++import { afterAll, beforeAll, describe, expect, it } from "vitest";
++
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION !== "1")("D17 exact-owned durable Insights and role scope", () => {
++  type Fixture = { runId: string; target: unknown; workspaceId: string; slug: string; creator: { id: string; jwt: string }; other: { id: string }; operator: { jwt: string }; noMembership: { jwt: string } };
++  let fx: Fixture;
++  let app: ReturnType<(typeof import("../app"))["createApp"]>["app"];
++  let readSnapshot: () => unknown;
++  let before: unknown;
++  const results: { name: string; status: number; code?: string }[] = [];
++  async function request(name: string, actor?: { jwt: string }, slug?: string) {
++    const response = await app.request("/api/admin/insights?window=7", { headers: {
++      ...(actor ? { Authorization: `Bearer ${actor.jwt}` } : {}), "X-Workspace-Slug": slug ?? fx.slug,
++    } });
++    const envelope = await response.json(); const body = envelope.insights ?? envelope; results.push({ name, status: response.status, code: body.code });
++    return { response, body };
++  }
++  beforeAll(async () => {
++    // Identity must precede fixture credentials and application/client creation. No setup/seed is performed here.
++    // @ts-expect-error Native ESM verifier has no declaration file.
++    const { verifiedTarget } = await import("../../scripts/audit/local-targets.mjs");
++    const target = verifiedTarget("empty");
++    fx = JSON.parse(readFileSync(".codex-tmp/D17-fixture.private.json", "utf8"));
++    expect(isDeepStrictEqual(target.identity, fx.target)).toBe(true);
++    Object.assign(process.env, target.env);
++    // @ts-expect-error Native ESM snapshot helper has no declaration file.
++    const { neutralitySnapshot } = await import("../../scripts/audit/neutrality-snapshot.mjs");
++    readSnapshot = () => [fx.creator, fx.other].map(actor => neutralitySnapshot(target, actor.id, fx.workspaceId));
++    before = readSnapshot(); app = (await import("../app")).createApp().app;
++  });
++  afterAll(() => {
++    if (!readSnapshot) return;
++    const after = readSnapshot(); expect(after).toEqual(before);
++    writeFileSync("docs/verification/D17-api-contract.json", JSON.stringify({ runId: fx.runId, target: fx.target, results,
++      neutrality: { before, after, allEqual: isDeepStrictEqual(before, after) }, writes: false, providers: "external HTTP blocked" }, null, 2) + "\n");
++  });
++  it("reloads net posted credits and all 10000 creators in complete HK calendar days", async () => {
++    const { response, body } = await request("posted-ledger-and-total", fx.operator);
++    expect(response.status).toBe(200); expect(body.window.timezone).toBe("Asia/Hong_Kong");
++    expect(body.window.from).toContain("T16:00:00.000Z"); expect(body.window.to).toContain("T16:00:00.000Z");
++    expect(body.kpis.pointsIssued.value).toBe(17); expect(body.kpis.cashPaid.value).toBe(112.5);
++    expect(body.levels.reduce((sum: number, row: { count: number }) => sum + row.count, 0)).toBe(10000);
++    expect(body.outcomes.operatorHandlingMs).toBeNull(); expect(body.outcomes.unclearStateHelpCount).toBeNull();
++  });
++  it("denies signed-in staff with no membership as a scope failure", async () => {
++    const { response, body } = await request("staff-without-membership", fx.noMembership);
++    expect(response.status).toBe(403); expect(body.code).toBe("WORKSPACE_MEMBERSHIP_REQUIRED");
++  });
++  it("denies a foreign workspace without returning its metrics", async () => {
++    const { response, body } = await request("foreign-workspace", fx.operator, fx.slug + "-b");
++    expect(response.status).toBe(404); expect(body.kpis).toBeUndefined();
++  });
++  it("denies a Creator as operator", async () => {
++    const { response, body } = await request("creator-as-operator", fx.creator);
++    expect(response.status).toBe(403); expect(body.kpis).toBeUndefined();
++  });
++  it("denies an anonymous read", async () => {
++    const { response, body } = await request("anonymous");
++    expect(response.status).toBe(401); expect(body.kpis).toBeUndefined();
++  });
++});
+--- /dev/null
++++ b/server/test/insights-window-contract.test.ts
+@@ -0,0 +1,20 @@
++import { Hono } from "hono";
++import { beforeEach, expect, it, vi } from "vitest";
++import type { AdminEnv } from "../lib/staffAuth";
++const h=vi.hoisted(()=>({fail:false,tables:[] as string[]}));
++vi.mock("../lib/supabase",()=>({serviceClient:()=>({from:(table:string)=>{
++  h.tables.push(table);let start=0,end=999;
++  const rows=table==="creators"?Array.from({length:1201},(_,i)=>({id:String(i),level:"L0"})):table==="point_transactions"?[{id:"p",type:"earn",delta:17,created_at:"2026-10-20T00:00:00Z"}]:[];
++  const q={select:()=>q,eq:()=>q,or:()=>q,gte:()=>q,lt:()=>q,order:()=>q,range:(a:number,b:number)=>{start=a;end=b;return q;},then:(resolve:(x:unknown)=>unknown)=>Promise.resolve({data:h.fail?null:rows.slice(start,end+1),error:h.fail?{message:"sensitive-provider-detail"}:null}).then(resolve)};
++  return q;
++}})}));
++import { adminInsightsRoutes } from "../routes/adminInsights";
++beforeEach(()=>{h.fail=false;h.tables=[];vi.useFakeTimers({toFake:["Date"]});vi.setSystemTime(new Date("2026-10-23T10:00:00Z"));});
++const app=new Hono<AdminEnv>().use("*",async(c,next)=>{c.set("authorizedWorkspace",{workspaceId:"owned"} as never);await next();}).route("/admin",adminInsightsRoutes);
++it("D17 Insights pages past the Data API cap and derives credits from the ledger",async()=>{
++ const response=await app.request("/admin/insights?window=7&workspace=owned");expect(response.status).toBe(200);const {insights}=await response.json();
++ expect(insights.levels[0].count).toBe(1201);expect(insights.kpis.pointsIssued.value).toBe(17);expect(h.tables).toContain("point_transactions");vi.useRealTimers();
++});
++it("D17 an unavailable metrics read is recoverable and does not expose provider internals",async()=>{
++ h.fail=true;const response=await app.request("/admin/insights?window=7&workspace=owned");expect(response.status).toBe(503);expect(await response.text()).not.toContain("sensitive-provider-detail");vi.useRealTimers();
++});
+--- a/src/components/RequestFeedback.tsx
++++ b/src/components/RequestFeedback.tsx
+@@ -8,7 +8,7 @@
+   const message = status === 409 ? "資料已更新。原有輸入已保留，請重新載入後核對。 / This record changed. Your input is retained; reload and compare."
+     : status === 403 ? "目前權限不足，請聯絡工作空間負責人。 / Workspace access is required. Contact the owner."
+     : "暫時未能完成要求。請重試；原有輸入已保留。 / The request could not be completed. Your input is retained; please retry.";
+-  return <div role="alert" className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-peach)] p-3 text-sm">
++  return <div role="alert" className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-lemon)] p-3 text-sm">
+     {summary && <p className="font-bold">{summary}</p>}
+     <p>{message}</p>
+     {stale && <p>下列為上次載入的資料，尚未更新。 / Showing the previous saved data; refresh failed.</p>}
+--- a/src/components/admin/AdminTopBar.tsx
++++ b/src/components/admin/AdminTopBar.tsx
+@@ -17,27 +17,27 @@
+   }
+ 
+   return (
+-    <header className="sticky top-0 z-30 flex items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3">
++    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 lg:flex-nowrap">
+       <button
+         type="button"
+         onClick={onMenu}
+         aria-label={navOpen ? t("app.admin.closeNav") : t("app.admin.openNav")}
+         aria-expanded={navOpen}
+         aria-controls="admin-mobile-nav"
+-        className="lg:hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-2"
++        className="grid h-11 w-11 shrink-0 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white lg:hidden"
+       >
+         <Menu size={18} aria-hidden />
+       </button>
+-      <h1 className="font-display text-lg font-bold">{t(adminPageTitleKey(pathname))}</h1>
+-      <div className="ml-auto flex items-center gap-3">
++      <h1 className="min-w-0 flex-1 truncate font-display text-lg font-bold">{t(adminPageTitleKey(pathname))}</h1>
++      <div className="ml-auto flex min-w-0 basis-full flex-wrap items-center gap-3 sm:basis-auto lg:flex-nowrap">
+         <WorkspaceSwitcher />
+         {staff?.email ? (
+-          <span className="hidden text-xs text-[var(--color-soft-ink)] sm:inline">{staff.email}</span>
++          <span className="hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline">{staff.email}</span>
+         ) : null}
+         <button
+           type="button"
+           onClick={handleSignOut}
+-          className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold"
++          className="min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold"
+         >
+           {t("app.admin.signOut")}
+         </button>
+--- a/src/components/admin/WorkspaceSwitcher.tsx
++++ b/src/components/admin/WorkspaceSwitcher.tsx
+@@ -40,7 +40,7 @@
+   return (
+     <select
+       aria-label="workspace"
+-      className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 py-1 text-sm"
++      className="min-h-11 max-w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 py-1 text-sm"
+       value={workspace}
+       onChange={(e) => {
+         const id = e.target.value;
+--- a/src/components/assistant/AssistantMessage.tsx
++++ b/src/components/assistant/AssistantMessage.tsx
+@@ -4,8 +4,8 @@
+   const mine = side === "user";
+   return (
+     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+-      <div className={`max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm ${mine ? "bg-[var(--color-acid)]" : "bg-white"}`}>
+-        <p className="whitespace-pre-wrap">{text}</p>
++      <div className={`min-w-0 max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm ${mine ? "bg-[var(--color-acid)]" : "bg-white"}`}>
++        <p className="whitespace-pre-wrap [overflow-wrap:anywhere]">{text}</p>
+         {citations && citations.length > 0 && (
+           <ul className="mt-2 flex flex-wrap gap-1">
+             {citations.map((c) => (
+--- a/src/components/assistant/AssistantPanel.tsx
++++ b/src/components/assistant/AssistantPanel.tsx
+@@ -87,7 +87,7 @@
+     >
+       <header className="flex items-center justify-between border-b-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-2">
+         <span id="assistant-panel-title" className="font-heading font-bold">{t("app.assistant.title")}</span>
+-        <button type="button" aria-label={t("app.assistant.closeAria")} onClick={onClose}><X size={18} /></button>
++        <button type="button" aria-label={t("app.assistant.closeAria")} onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center"><X size={18} /></button>
+       </header>
+ 
+       <div className="flex-1 space-y-2 overflow-y-auto p-3">
+@@ -95,7 +95,7 @@
+           <div className="space-y-2">
+             <p className="text-sm text-[var(--color-soft-ink)]">{t("app.assistant.welcome")}</p>
+             {starters.map((s) => (
+-              <button key={s} type="button" onClick={() => send(s)} className="block w-full rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] px-3 py-1.5 text-left text-sm">{s}</button>
++              <button key={s} type="button" onClick={() => send(s)} className="block min-h-11 w-full rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] px-3 py-1.5 text-left text-sm">{s}</button>
+             ))}
+           </div>
+         )}
+@@ -115,8 +115,8 @@
+       </div>
+ 
+       <form className="flex gap-2 border-t-2 border-[var(--color-ink)] p-2" onSubmit={(e) => { e.preventDefault(); send(input); }}>
+-        <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("app.assistant.inputPlaceholder")} aria-label={t("app.assistant.inputAria")} className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm" />
+-        <button type="submit" disabled={chat.isPending} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50">{t("app.assistant.sendBtn")}</button>
++        <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("app.assistant.inputPlaceholder")} aria-label={t("app.assistant.inputAria")} className="min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm" />
++        <button type="submit" disabled={chat.isPending} className="min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50">{t("app.assistant.sendBtn")}</button>
+       </form>
+     </div>
+   );
+--- a/src/lib/activationAnalytics.ts
++++ b/src/lib/activationAnalytics.ts
+@@ -92,6 +92,10 @@
+  * Do not add direct creator identifiers or creator-authored content here.
+  */
+ export type ActivationEventMap = {
++  product_action_result: {
++    entityId: string; action: "join" | "draft_submit" | "review" | "proof_submit" | "complete";
++    revision: number; result: "saved" | "conflict" | "failed"; persisted: boolean;
++  };
+   landing_page_viewed: { locale: string; deviceCategory: DeviceCategory };
+   signup_started: {
+     locale: string;
+@@ -255,6 +259,7 @@
+ };
+ 
+ const ACTIVATION_PROPERTY_KEYS = {
++  product_action_result: ["entityId", "action", "revision", "result"],
+   landing_page_viewed: ["locale", "deviceCategory"],
+   signup_started: ["locale", "deviceCategory", "source"],
+   signup_completed: ["locale", "deviceCategory", "method"],
+@@ -419,6 +424,13 @@
+   name: K,
+   properties: ActivationEventMap[K],
+ ): boolean {
++  if (name === "product_action_result") {
++    const p = properties as ActivationEventMap["product_action_result"];
++    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.entityId)
++      || !["join", "draft_submit", "review", "proof_submit", "complete"].includes(p.action)
++      || !Number.isSafeInteger(p.revision) || p.revision < 0 || !["saved", "conflict", "failed"].includes(p.result)
++      || (p.result === "saved" && p.persisted !== true)) return false;
++  }
+   const allowed = new Set<string>(ACTIVATION_PROPERTY_KEYS[name]);
+   const safeProperties = Object.fromEntries(
+     Object.entries(properties).filter(([key, value]) =>
+--- a/src/lib/admin.ts
++++ b/src/lib/admin.ts
+@@ -1004,7 +1004,9 @@
+ export type InsightsMetric = { value: number; prev: number; deltaPct: number | null };
+ 
+ export type Insights = {
+-  window: { days: 7 | 30 | 90; from: string; to: string };
++  window: { days: 7 | 30 | 90; from: string; to: string; timezone?: string };
++  denominators?: import("../../server/lib/insights.js").Insights["denominators"];
++  outcomes?: import("../../server/lib/insights.js").Insights["outcomes"];
+   kpis: {
+     activeCreators: InsightsMetric;
+     submitToApprove: InsightsMetric;
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -1231,8 +1231,8 @@
+     "app.insights.window90": "90 days",
+     "app.insights.kpiActiveCreators": "Active creators",
+     "app.insights.kpiSubmitToApprove": "Submit → approve",
+-    "app.insights.kpiPointsIssued": "Points issued",
+-    "app.insights.kpiCashPaid": "Cash paid",
++    "app.insights.kpiPointsIssued": "Points ledger credits (net)",
++    "app.insights.kpiCashPaid": "Cash ledger credits (net)",
+     "app.insights.kpiMissionFillRate": "Mission fill rate",
+     "app.insights.kpiCompletions": "Completions",
+     "app.insights.funnelTitle": "Engagement funnel",
+@@ -2734,8 +2734,8 @@
+     "app.insights.window90": "90 天",
+     "app.insights.kpiActiveCreators": "活躍創作者",
+     "app.insights.kpiSubmitToApprove": "提交 → 批准",
+-    "app.insights.kpiPointsIssued": "已發放積分",
+-    "app.insights.kpiCashPaid": "已發放現金",
++    "app.insights.kpiPointsIssued": "積分入帳（淨額）",
++    "app.insights.kpiCashPaid": "現金入帳（淨額）",
+     "app.insights.kpiMissionFillRate": "任務填充率",
+     "app.insights.kpiCompletions": "完成次數",
+     "app.insights.funnelTitle": "互動漏斗",
+--- /dev/null
++++ b/src/lib/productOutcomeAnalytics.test.ts
+@@ -0,0 +1,21 @@
++import { afterEach, expect, it } from "vitest";
++import { setActivationAnalyticsSink, trackActivationEvent, type ActivationEventMap } from "./activationAnalytics";
++const name = "product_action_result" as keyof ActivationEventMap;
++const id = "123e4567-e89b-42d3-a456-426614174000";
++afterEach(() => setActivationAnalyticsSink(null));
++it("D17 outcome events retain only opaque work identity, action, revision and persisted result", () => {
++  const events: unknown[] = []; setActivationAnalyticsSink(e => { events.push(e); return true; });
++  const properties = { entityId: id, action: "draft_submit", revision: 3, result: "saved", persisted: true, caption: "Private body", email: "private@example.invalid", url: "https://example.invalid/private" };
++  expect(trackActivationEvent(name, properties as never)).toBe(true);
++  expect(events).toEqual([{ name: "product_action_result", properties: { entityId: id, action: "draft_submit", revision: 3, result: "saved" } }]);
++});
++it("D17 a render or unconfirmed success never becomes a successful business outcome", () => {
++  const events: unknown[] = []; setActivationAnalyticsSink(e => { events.push(e); return true; });
++  for (const properties of [
++    { entityId: id, action: "draft_submit", revision: 1, result: "saved", persisted: false },
++    { entityId: "private@example.invalid", action: "draft_submit", revision: 1, result: "saved", persisted: true },
++    { entityId: id, action: "render", revision: 1, result: "saved", persisted: true },
++    { entityId: id, action: "draft_submit", revision: -1, result: "saved", persisted: true },
++  ]) expect(trackActivationEvent(name, properties as never)).toBe(false);
++  expect(events).toEqual([]);
++});
+--- a/src/lib/queries/activeMission.ts
++++ b/src/lib/queries/activeMission.ts
+@@ -1,6 +1,7 @@
+ import { useCallback, useEffect, useRef, useState } from "react";
+ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+ import { ApiError, apiFetch } from "@/lib/api";
++import { trackActivationEvent } from "@/lib/activationAnalytics";
+ import {
+   AdminAuthError,
+   AdminRequestError,
+@@ -429,7 +430,14 @@
+         headers: { "Idempotency-Key": idempotencyKey },
+         body: JSON.stringify(body),
+       }),
+-    onSuccess: () => invalidateMissionCollections(queryClient, submissionId),
++    onSuccess: (data, input) => {
++      const version = data.version as { mission_work_item_id?: string; version_number?: number } | null;
++      const item = data.workItem as { id?: string } | null;
++      if (version?.mission_work_item_id === input.workItemId && item?.id === input.workItemId && Number.isSafeInteger(version.version_number) && version.version_number! > 0) {
++        trackActivationEvent("product_action_result", { entityId: input.workItemId, action: "draft_submit", revision: version.version_number!, result: "saved", persisted: true });
++      }
++      return invalidateMissionCollections(queryClient, submissionId);
++    },
+   });
+ }
+ export function useProofEvidenceUpload(submissionId: string) {
+--- /dev/null
++++ b/src/lib/queries/productOutcome.test.tsx
+@@ -0,0 +1,28 @@
++import {act,renderHook,waitFor} from "@testing-library/react";
++import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
++import type {ReactNode} from "react";
++import {afterEach,expect,it,vi} from "vitest";
++const h=vi.hoisted(()=>({api:vi.fn()}));
++vi.mock("@/lib/api",async original=>({...await original<object>(),apiFetch:h.api}));
++import {useSubmitMissionWorkItem} from "./activeMission";
++import {setActivationAnalyticsSink} from "../activationAnalytics";
++const id="123e4567-e89b-42d3-a456-426614174000";
++afterEach(()=>{setActivationAnalyticsSink(null);vi.clearAllMocks();});
++function hook(){const client=new QueryClient({defaultOptions:{mutations:{retry:false}}});return renderHook(()=>useSubmitMissionWorkItem("submission"),{wrapper:({children}:{children:ReactNode})=><QueryClientProvider client={client}>{children}</QueryClientProvider>});}
++it("D17 draft submission emits a business outcome only after the returned saved version identifies the work item",async()=>{
++ const events:unknown[]=[];setActivationAnalyticsSink(e=>{events.push(e);return true;});
++ let finish!:(value:unknown)=>void;h.api.mockReturnValue(new Promise(resolve=>{finish=resolve;}));
++ const {result,rerender}=hook();rerender();expect(events).toEqual([]);
++ act(()=>result.current.mutate({workItemId:id,expectedRevision:0,idempotencyKey:"owned-request"}));expect(events).toEqual([]);
++ await act(async()=>finish({version:{id:"saved-version",mission_work_item_id:id,version_number:3},workItem:{id}}));
++ await waitFor(()=>expect(result.current.isSuccess).toBe(true));
++ expect(events).toEqual([{name:"product_action_result",properties:{entityId:id,action:"draft_submit",revision:3,result:"saved"}}]);
++});
++it("D17 an HTTP success without a saved version never counts as completed work",async()=>{
++ const events:unknown[]=[];setActivationAnalyticsSink(e=>{events.push(e);return true;});h.api.mockResolvedValue({version:null,workItem:null});const {result}=hook();
++ await act(async()=>{await result.current.mutateAsync({workItemId:id,expectedRevision:0,idempotencyKey:"owned-request"});});expect(events).toEqual([]);
++});
++it("D17 a zero version is not a persisted draft outcome",async()=>{
++ const events:unknown[]=[];setActivationAnalyticsSink(e=>{events.push(e);return true;});h.api.mockResolvedValue({version:{mission_work_item_id:id,version_number:0},workItem:{id}});const {result}=hook();
++ await act(async()=>{await result.current.mutateAsync({workItemId:id,expectedRevision:0,idempotencyKey:"owned-request"});});expect(events).toEqual([]);
++});
+--- a/src/routes/admin.creators.tsx
++++ b/src/routes/admin.creators.tsx
+@@ -22,7 +22,7 @@
+ });
+ 
+ function CreatorsTab() {
+-  const { t } = useI18n();
++  const { t, lang } = useI18n();
+   const { authed, reportAuthError } = useAdminAuth();
+   const { workspace } = useAdminWorkspace();
+   const initial = parseCreatorQueueSearch({ ...Object.fromEntries(new URLSearchParams(window.location.search)), ...Route.useSearch() });
+@@ -81,6 +81,7 @@
+ 
+   return (
+     <div className="space-y-4">
++      <h1 className="font-heading text-2xl font-bold">{lang === "en" ? "Creator queue" : "作者審核列表"}</h1>
+       <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+         {missionId ? (
+           <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-2 py-0.5 text-xs font-bold">mission_id: {missionId}</span>
+@@ -92,7 +93,7 @@
+           </label>
+           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
+             <span>Status</span>
+-            <select aria-label="Status filter" value={status} onChange={(e) => { setStatus(e.target.value as AdminReviewStatus | "all"); setPage(1); }} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
++            <select aria-label="Status filter" value={status} onChange={(e) => { setStatus(e.target.value as AdminReviewStatus | "all"); setPage(1); }} className="h-11 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
+               <option value="all">all</option>
+               <option value="needs_review">Needs review</option>
+               <option value="approved">Approved</option>
+@@ -101,7 +102,7 @@
+           </label>
+           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
+             <span>Risk</span>
+-            <select aria-label="Risk filter" value={risk} onChange={(e) => { setRisk(e.target.value as AdminRiskLevel | "all"); setPage(1); }} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
++            <select aria-label="Risk filter" value={risk} onChange={(e) => { setRisk(e.target.value as AdminRiskLevel | "all"); setPage(1); }} className="h-11 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
+               <option value="all">all</option>
+               <option value="unknown">unknown</option>
+               <option value="low">low</option>
+@@ -111,7 +112,7 @@
+           </label>
+           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
+             <span>Sort</span>
+-            <select aria-label="Sort creators" value={sort} onChange={(e) => { setSort(e.target.value as CreatorReviewQueueFilters["sort"]); setPage(1); }} className="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
++            <select aria-label="Sort creators" value={sort} onChange={(e) => { setSort(e.target.value as CreatorReviewQueueFilters["sort"]); setPage(1); }} className="h-11 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]">
+               <option value="last_activity">last_activity</option>
+               <option value="trust_score">trust_score</option>
+               <option value="level">level</option>
+@@ -132,9 +133,9 @@
+       )}
+ 
+       <nav aria-label="Creator queue pages" className="flex items-center gap-3">
+-        <button type="button" disabled={page <= 1 || creators.isFetching} onClick={() => setPage((value) => value - 1)}>上一頁 / Previous</button>
++        <button type="button" disabled={page <= 1 || creators.isFetching} className="min-h-11 px-2" onClick={() => setPage((value) => value - 1)}>上一頁 / Previous</button>
+         <span aria-live="polite">{page} / {Math.max(1, Math.ceil((visibleCreators?.total ?? 0) / 25))}</span>
+-        <button type="button" disabled={!visibleCreators || page * 25 >= visibleCreators.total || creators.isFetching} onClick={() => setPage((value) => value + 1)}>下一頁 / Next</button>
++        <button type="button" disabled={!visibleCreators || page * 25 >= visibleCreators.total || creators.isFetching} className="min-h-11 px-2" onClick={() => setPage((value) => value + 1)}>下一頁 / Next</button>
+       </nav>
+       <div className="space-y-3">
+         {visibleCreators?.creators.map((creator) => (
+--- a/src/routes/admin.insights.tsx
++++ b/src/routes/admin.insights.tsx
+@@ -7,6 +7,7 @@
+ import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+ import { TrendChart } from "@/components/admin/TrendChart";
+ import { useI18n } from "@/lib/i18n";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ 
+ export const Route = createFileRoute("/admin/insights")({ component: InsightsPage });
+ 
+@@ -19,7 +20,7 @@
+   return `${n}%`;
+ }
+ function fmtCash(n: number): string {
+-  return `HK$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
++  return `HKD ${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+ }
+ 
+ function DeltaBadge({ metric }: { metric: InsightsMetric }) {
+@@ -150,7 +151,7 @@
+ }
+ 
+ function InsightsPage() {
+-  const { t } = useI18n();
++  const { t, lang } = useI18n();
+   const { authed, reportAuthError } = useAdminAuth();
+   const { workspace } = useAdminWorkspace();
+   const [win, setWin] = useState<Win>(30);
+@@ -166,7 +167,7 @@
+     if (q.error instanceof AdminAuthError) reportAuthError(q.error);
+   }, [q.error, reportAuthError]);
+ 
+-  const data = q.data?.insights;
++  const data = canShowPreviousData(q.error) ? q.data?.insights : undefined;
+ 
+   return (
+     <div className="space-y-4">
+@@ -175,14 +176,17 @@
+         <WindowSelector value={win} onChange={setWin} />
+       </div>
+ 
++      <RequestFeedback error={q.error} retry={() => void q.refetch()} stale={Boolean(data)} />
+       {!data ? (
+         q.isError && !(q.error instanceof AdminAuthError) ? (
+-          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.insights.loadError")}</p>
++          null
+         ) : (
+           <InsightsSkeleton />
+         )
+       ) : (
+         <>
++          {data.window.timezone && <p className="text-sm [overflow-wrap:anywhere]">Asia/Hong_Kong · {new Intl.DateTimeFormat(lang === "en" ? "en-HK" : "zh-HK", {timeZone:"Asia/Hong_Kong",dateStyle:"medium"}).format(new Date(data.window.from))} ≤ day &lt; {new Intl.DateTimeFormat(lang === "en" ? "en-HK" : "zh-HK", {timeZone:"Asia/Hong_Kong",dateStyle:"medium"}).format(new Date(data.window.to))} · Complete calendar days / 完整香港曆日</p>}
++          <p className="text-sm">Net posted ledger credits, including corrections. Pending reward is not credited cash or a payout. / 淨入帳含沖銷；待發獎勵不等於現金入帳或付款。</p>
+           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+             <KpiCard label={t("app.insights.kpiActiveCreators")} metric={data.kpis.activeCreators} format={fmtNumber} primary />
+             <KpiCard label={t("app.insights.kpiCompletions")} metric={data.kpis.completions} format={fmtNumber} />
+@@ -206,6 +210,18 @@
+             <FunnelView funnel={data.funnel} />
+             <LevelBars levels={data.levels} />
+           </div>
++          {data.denominators && <p className="text-sm">Submitted-cohort approvals: {data.denominators.submitToApprove.numerator} / {data.denominators.submitToApprove.denominator}; joined-cohort submissions: {data.denominators.joinToSubmit.numerator} / {data.denominators.joinToSubmit.denominator}. Cancelled work is excluded. / 分母按同一批次，排除取消記錄。</p>}
++          {data.outcomes && <section aria-label="Pilot outcomes" className="pastel-card space-y-3 p-5">
++            <h2 className="font-heading text-lg font-bold">Pilot outcomes / 試行結果</h2>
++            <dl className="grid gap-3 sm:grid-cols-2">
++              <div><dt>Join → first valid submission / 首次有效交稿</dt><dd>{data.outcomes.timeToFirstSubmissionMs.median === null ? "Not measured" : `${data.outcomes.timeToFirstSubmissionMs.median / 60000} min`} · n={data.outcomes.timeToFirstSubmissionMs.samples}</dd></div>
++              <div><dt>First review accepted / 首次審稿接受</dt><dd>{data.outcomes.firstReviewAcceptance.numerator} / {data.outcomes.firstReviewAcceptance.denominator}</dd></div>
++              <div><dt>Revision rounds / 修稿輪數</dt><dd>{data.outcomes.revisionRounds.mean ?? "Not measured"} · n={data.outcomes.revisionRounds.samples}</dd></div>
++              <div><dt>Overdue required work / 必要交付逾期</dt><dd>{data.outcomes.overdue.numerator} / {data.outcomes.overdue.denominator}</dd></div>
++              <div><dt>Operator handling / 營運處理時間</dt><dd>{data.outcomes.operatorHandlingMs === null ? "Not measured" : `${data.outcomes.operatorHandlingMs.median! / 60000} min · n=${data.outcomes.operatorHandlingMs.samples}`}</dd></div>
++              <div><dt>Help due to unclear state / 狀態不明求助</dt><dd>Not measured: no saved support-request source / 尚無已保存的求助來源</dd></div>
++            </dl>
++          </section>}
+         </>
+       )}
+     </div>
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -5,6 +5,17 @@
+ import { tanstackRouter } from "@tanstack/router-plugin/vite";
+ 
+ export default defineConfig({
++  build: {
++    manifest: true,
++    rollupOptions: { output: { manualChunks(moduleId) {
++      const id = moduleId.replaceAll("\\", "/");
++      if (!id.includes("/node_modules/")) return;
++      // D17 module analysis identified these shared dependencies in the entry chunk.
++      if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) return "vendor-react";
++      if (id.includes("/node_modules/@supabase/")) return "vendor-supabase";
++      if (id.includes("/node_modules/@tanstack/")) return "vendor-router";
++    } } },
++  },
+   plugins: [
+     {
+       name: "local-hono-api",

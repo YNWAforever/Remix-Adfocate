@@ -1,0 +1,51 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/publication-proof-asset-grant-live.test.ts (3 tests | 3 failed) 555ms
+   × publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path 463ms
+     → Publication proof fixture is partial; run `supabase db reset` before reseeding.
+   × publication proof asset grant live path > uploads and finalizes GIF evidence 40ms
+     → Publication proof fixture is partial; run `supabase db reset` before reseeding.
+   × publication proof asset grant live path > uploads and finalizes MP4 evidence 51ms
+     → Publication proof fixture is partial; run `supabase db reset` before reseeding.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path
+Error: Publication proof fixture is partial; run `supabase db reset` before reseeding.
+ ❯ resetFixture server/test/fixtures/publicationProofRelease.ts:158:9
+    156| 
+    157| function resetFixture(): never {
+    158|   throw new Error(PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC);
+       |         ^
+    159| }
+    160| 
+ ❯ assertPublicationProofReleaseInvariant server/test/fixtures/publicationProofRelease.ts:233:5
+ ❯ assembleExistingFixture server/test/fixtures/publicationProofRelease.ts:685:25
+ ❯ Module.seedPublicationProofReleaseFixture server/test/fixtures/publicationProofRelease.ts:721:20
+ ❯ server/test/publication-proof-asset-grant-live.test.ts:146:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes GIF evidence
+ FAIL  server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes MP4 evidence
+Error: Publication proof fixture is partial; run `supabase db reset` before reseeding.
+ ❯ resetFixture server/test/fixtures/publicationProofRelease.ts:158:9
+    156| 
+    157| function resetFixture(): never {
+    158|   throw new Error(PUBLICATION_PROOF_RELEASE_RESET_DIAGNOSTIC);
+       |         ^
+    159| }
+    160| 
+ ❯ assertPublicationProofReleaseInvariant server/test/fixtures/publicationProofRelease.ts:233:5
+ ❯ assembleExistingFixture server/test/fixtures/publicationProofRelease.ts:685:25
+ ❯ Module.seedPublicationProofReleaseFixture server/test/fixtures/publicationProofRelease.ts:721:20
+ ❯ server/test/publication-proof-asset-grant-live.test.ts:203:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  03:03:38
+   Duration  2.38s (transform 565ms, setup 173ms, collect 887ms, tests 555ms, environment 509ms, prepare 90ms)
+

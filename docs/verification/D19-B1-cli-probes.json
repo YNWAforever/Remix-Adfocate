@@ -1,0 +1,80 @@
+{
+  "type": "OFFLINE_NEGATIVE_ENTRYPOINT_PROBES_NOT_INTEGRATION",
+  "actualDockerApiSqlCalls": 0,
+  "clientOrFixtureSetupReached": false,
+  "results": [
+    {
+      "label": "generic-launcher",
+      "command": [
+        "node",
+        "--import",
+        "./.codex-tmp/D19-B1-probe-preload.mjs",
+        "scripts/run-integration-tests.mjs"
+      ],
+      "exit": 1,
+      "expectedRefusal": true,
+      "passed": true,
+      "attempts": [],
+      "subprocessesOrFetchExecuted": 0
+    },
+    {
+      "label": "support-launcher",
+      "command": [
+        "node",
+        "--import",
+        "./.codex-tmp/D19-B1-probe-preload.mjs",
+        "scripts/audit/run-pilot-support.mjs"
+      ],
+      "exit": 1,
+      "expectedRefusal": true,
+      "passed": true,
+      "attempts": [],
+      "subprocessesOrFetchExecuted": 0
+    },
+    {
+      "label": "support-fresh-mode",
+      "command": [
+        "node",
+        "--import",
+        "./.codex-tmp/D19-B1-probe-preload.mjs",
+        "scripts/audit/run-pilot-support.mjs",
+        "--fresh"
+      ],
+      "exit": 1,
+      "expectedRefusal": true,
+      "passed": true,
+      "attempts": [],
+      "subprocessesOrFetchExecuted": 0
+    },
+    {
+      "label": "fresh-setup-entry",
+      "command": [
+        "node",
+        "--import",
+        "./.codex-tmp/D19-B1-probe-preload.mjs",
+        "scripts/audit/fresh-support.mjs"
+      ],
+      "exit": 1,
+      "expectedRefusal": true,
+      "passed": true,
+      "attempts": [],
+      "subprocessesOrFetchExecuted": 0
+    },
+    {
+      "label": "shared-target-helper",
+      "command": [
+        "node",
+        "--import",
+        "./.codex-tmp/D19-B1-probe-preload.mjs",
+        "--input-type=module",
+        "-e",
+        "import {verifiedTarget} from './scripts/audit/local-targets.mjs';verifiedTarget('shaped');"
+      ],
+      "exit": 1,
+      "expectedRefusal": true,
+      "passed": true,
+      "attempts": [],
+      "subprocessesOrFetchExecuted": 0
+    }
+  ]
+}

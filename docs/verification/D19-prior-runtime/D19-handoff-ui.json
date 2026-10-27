@@ -1,0 +1,12 @@
+{
+  "runId": "d1e64852-4467-4658-816c-47489c3e3de2",
+  "data": {
+    "pendingRewardId": "8e325c1b-2686-42fd-b007-6a61c18e5646",
+    "readbacks": 4,
+    "operatorReadbacks": 2,
+    "creatorInternalIdHidden": true,
+    "allVisibleFieldsSame": true,
+    "oneSavedWorkflowReward": true,
+    "historyRetained": true
+  }
+}

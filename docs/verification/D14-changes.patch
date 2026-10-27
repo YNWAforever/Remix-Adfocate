@@ -1,0 +1,1437 @@
+--- /dev/null
++++ b/e2e/public-claims.spec.ts
+@@ -0,0 +1,129 @@
++import { expect, test, type Browser } from "@playwright/test";
++import { readFileSync, writeFileSync } from "node:fs";
++import process from "node:process";
++const fixture = process.env.ADFOCATE_BROWSER_SCOPE === "D14" ? JSON.parse(readFileSync(".codex-tmp/D14-fixture.private.json", "utf8")) : {};
++test.beforeEach(() => test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "D14", "Use the identity-gated D14 runner."));
++const record = (name: string, value: Record<string, unknown>) => writeFileSync(`docs/verification/D14-${name}.json`, JSON.stringify({ runId: fixture.runId, ...value }, null, 2) + "\n");
++async function context(browser: Browser, lang = "en", actor?: { session: unknown }, mobile = true) {
++  const ctx = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
++  await ctx.addInitScript(({ lang, session }) => { localStorage.setItem("lang", lang); if (session) localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, { lang, session: actor?.session });
++  await ctx.route("**/*", route => { const url = new URL(route.request().url()); return url.hostname === "127.0.0.1" && ["56400", "56421"].includes(url.port) ? route.continue() : route.abort(); });
++  return ctx;
++}
++async function api(path: string, actor = fixture.creator) {
++  const response = await fetch(`http://127.0.0.1:56400/api${path}`, { headers: { Authorization: `Bearer ${actor.jwt}`, "X-Workspace-Slug": fixture.slug } });
++  expect(response.status).toBe(200); return response.json();
++}
++
++test("D14 public pages identify illustrative claims and use canonical XP in both languages and viewports", async ({ browser }) => {
++  const coverage: Record<string, unknown>[] = [];
++  for (const lang of ["en", "zh"]) for (const mobile of [true, false]) {
++    const ctx = await context(browser, lang, undefined, mobile), page = await ctx.newPage();
++    for (const path of ["/", "/creators"]) {
++      await page.goto(path);
++      await expect(page.getByRole("note", { name: lang === "en" ? "Product preview" : "產品預覽" })).toBeVisible();
++      await expect(page.getByText(lang === "en" ? "Illustrative profile · fictional data" : "示範履歷 · 虛構資料", { exact: true }).first()).toBeVisible();
++      await expect(page.getByText(lang === "en" ? "L2 Trusted KOC" : "L2 信譽 KOC", { exact: true }).first()).toBeVisible();
++      await expect(page.locator(".xp-bar-fill").first()).toHaveAttribute("style", "width: 46%;");
++      await expect(page.locator("body")).not.toContainText(/5,200\+|120\+|Lifetime withdrawable earnings|可提取累計收入/);
++      if (path === "/creators") {
++        await expect(page.getByText(lang === "en" ? "Course topics preview · content in preparation" : "課程主題預覽 · 內容準備中", { exact: true })).toBeVisible();
++        await page.locator("section").filter({ has: page.getByText(lang === "en" ? "Illustrative profile · fictional data" : "示範履歷 · 虛構資料", { exact: true }) }).screenshot({ path: `docs/verification/D14-creators-${lang}-${mobile ? "mobile" : "desktop"}.png` });
++      }
++      coverage.push({ lang, viewport: mobile ? "390x844" : "1280x900", path, level: "L2", next: "L3", xp: 3840, nextXP: 6000, progressPercent: 46 });
++    }
++    await ctx.close();
++  }
++  record("public-ui", { coverage, data: "fictional samples; no production performance claim" });
++});
++
++test("D14 five contact previews retain drafts, send no data and show no receipt after refresh", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage();
++  const writes: string[] = [];
++  page.on("request", request => { if (["POST", "PATCH", "PUT", "DELETE"].includes(request.method())) writes.push(new URL(request.url()).pathname); });
++  await page.goto("/contact");
++  for (const tab of ["Brand Enquiry", "Creator Signup", "Adfoplace Offer", "Capital Waitlist", "Partner Enquiry"]) {
++    await page.getByRole("tab", { name: tab, exact: true }).click();
++    const form = page.locator("form:visible");
++    for (const input of await form.locator("input[required]").all()) {
++      const type = await input.getAttribute("type");
++      if (type === "checkbox") await input.check();
++      else await input.fill(type === "email" ? "d14-preview@example.invalid" : type === "number" ? "5000" : "Retained preview draft");
++    }
++    await form.getByRole("button", { name: "Preview form", exact: true }).click();
++    await expect(page.getByText("Preview only. Nothing was sent or saved.", { exact: true }).last()).toBeVisible();
++    await expect(form.locator('input[name="name"]')).toHaveValue("Retained preview draft");
++    await expect(page.getByRole("heading", { name: /Thanks|Received/ })).toHaveCount(0);
++  }
++  await page.getByRole("tab", { name: "Brand Enquiry", exact: true }).click();
++  await expect(page.locator('form:visible input[name="name"]')).toHaveValue("Retained preview draft");
++  expect(writes).toEqual([]);
++  const stored = await page.evaluate(() => JSON.stringify(localStorage));
++  expect(stored).not.toContain("Retained preview draft"); expect(stored).not.toContain("d14-preview@example.invalid");
++  await page.reload();
++  await expect(page.locator('form:visible input[name="name"]')).toHaveValue("");
++  await expect(page.getByRole("heading", { name: /Thanks|Received/ })).toHaveCount(0);
++  record("contact-ui", { tabs: 5, retainedAcrossPreviewAndTabs: true, writes, storedDraft: false, receiptAfterRefresh: false });
++  await ctx.close();
++});
++
++test("D14 operator creates a resource body, reloads it, publishes and filters tracks separately", async ({ browser }) => {
++  const ctx = await context(browser, "en", fixture.operator, false), page = await ctx.newPage();
++  await page.goto("/admin/academy/new");
++  await page.getByRole("combobox", { name: "Kind", exact: true }).selectOption("resource");
++  const title = `D14 browser resource ${fixture.runId}`;
++  await page.getByRole("textbox", { name: "Title (中文)", exact: true }).fill(title);
++  await page.getByRole("textbox", { name: "Excerpt (中文)", exact: true }).fill("Owned browser resource overview");
++  await page.getByRole("textbox", { name: "Body (中文)", exact: true }).fill("## Browser resource body\n\nOwned, readable acceptance content.");
++  await page.getByRole("textbox", { name: "Slug", exact: true }).fill(`d14-browser-${fixture.runId}`);
++  await expect(page.getByRole("heading", { name: "Browser resource body", exact: true })).toBeVisible();
++  const created = page.waitForResponse(response => new URL(response.url()).pathname === "/api/admin/academy" && response.request().method() === "POST" && response.status() === 201);
++  await page.getByRole("button", { name: "Save", exact: true }).click();
++  const { item } = await (await created).json();
++  await expect(page).toHaveURL(new RegExp(`/admin/academy/${item.id}`));
++  await page.reload();
++  await expect(page.getByRole("textbox", { name: "Title (中文)", exact: true })).toHaveValue(title);
++  await expect(page.getByRole("textbox", { name: "Body (中文)", exact: true })).toHaveValue(item.body_zh);
++  const published = page.waitForResponse(response => new URL(response.url()).pathname === `/api/admin/academy/${item.id}/publish` && response.status() === 200);
++  await page.getByRole("button", { name: "Publish", exact: true }).click(); await published;
++  const reloaded = (await api(`/admin/academy/${item.id}`, fixture.operator)).item;
++  expect(reloaded.status).toBe("published"); expect(reloaded.body_zh).toBe(item.body_zh);
++  const bundle = await api("/academy");
++  expect(bundle.resources.some((row: { id: string }) => row.id === item.id)).toBe(true);
++  expect(bundle.tracks.some((row: { id: string }) => row.id === item.id)).toBe(false);
++  await page.goto("/admin/academy");
++  await page.getByRole("combobox", { name: "Content kind", exact: true }).selectOption("track");
++  await expect(page.getByRole("cell", { name: title, exact: true })).toHaveCount(0);
++  await expect(page.getByRole("cell", { name: fixture.rows.ready.title_zh, exact: true })).toBeVisible();
++  record("author-ui", { ownedContentId: item.id, slug: item.slug, created: true, bodyPersistedAfterReload: true, status: reloaded.status, resourceExcludedFromTrackFilter: true });
++  await ctx.close();
++});
++
++test("D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry", async ({ browser }) => {
++  const ctx = await context(browser, "en", fixture.untrusted), page = await ctx.newPage();
++  await page.goto(`/guide/track/${fixture.rows.empty.slug}`);
++  await expect(page.getByRole("heading", { name: "Content preparing", exact: true })).toBeVisible();
++  await expect(page.getByRole("heading", { name: "Introduction", exact: true })).toBeVisible();
++  const seen = page.waitForResponse(response => new URL(response.url()).pathname === "/api/me/level-seen" && response.status() === 200);
++  await page.getByRole("dialog", { name: "You levelled up!", exact: true }).getByRole("button", { name: "Awesome!", exact: true }).click();
++  await seen;
++  await expect(page.locator("body")).not.toContainText(/4 lessons|4堂課|Start course/);
++  await page.goto(`/guide/track/${fixture.rows.ready.slug}`);
++  await expect(page.getByRole("heading", { name: "合成課程正文", exact: true })).toBeVisible();
++  await page.reload(); await expect(page.getByText("Revision two.", { exact: true })).toBeVisible();
++  await page.goto(`/guide/track/${fixture.rows.gated.slug}`);
++  await expect(page.getByRole("link", { name: "Verify now", exact: true })).toHaveAttribute("href", "/profile");
++  await expect(page.getByRole("heading", { name: "Gated reading body", exact: true })).toHaveCount(0);
++  let transientResponses = 0;
++  const pattern = `**/api/academy/track/${fixture.rows.ready.slug}?*`;
++  await page.route(pattern, route => { transientResponses++; return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "temporary offline fixture" }) }); });
++  await page.goto(`/guide/track/${fixture.rows.ready.slug}`);
++  await expect(page.getByRole("alert")).toContainText("Content could not be loaded");
++  await page.unroute(pattern);
++  await page.getByRole("button", { name: "Retry", exact: true }).click();
++  await expect(page.getByRole("heading", { name: "合成課程正文", exact: true })).toBeVisible();
++  await page.screenshot({ path: "docs/verification/D14-creator-reading.png" });
++  record("creator-ui", { bodyPersistedAfterRefresh: true, introductionSeparated: true, noInventedLessons: true, trustGateRetained: true,
++    retry: { status: 503, explicitlyMockedResponses: transientResponses, recovery: "retry reads real persisted local API data" } });
++  await ctx.close();
++});
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && !["mission-list","authoring","identity"].includes(selected))throw new Error("unsupported audit integration scope");
+-const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring","identity","public-claims"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- /dev/null
++++ b/scripts/audit/run-public-claims.mjs
+@@ -0,0 +1,51 @@
++import process from "node:process";
++import { spawnSync } from "node:child_process";
++import { readFileSync, writeFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
++import { createHash } from "node:crypto";
++import { verifiedTarget } from "./local-targets.mjs";
++import { neutralitySnapshot } from "./neutrality-snapshot.mjs";
++
++const target = verifiedTarget("empty");
++const env = { ...process.env, ...target.env, RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0", OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "", RAPIDAPI_KEY: "",
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}` };
++const api = spawnSync(process.execPath, ["scripts/audit/run-integration.mjs", "public-claims"], { env, stdio: "inherit" });
++if (api.status !== 0) process.exit(api.status ?? 1);
++const fixture = JSON.parse(readFileSync(".codex-tmp/D14-fixture.private.json", "utf8"));
++if (!isDeepStrictEqual(fixture.target, target.identity)) throw new Error("D14 target identity drift");
++const before = Object.fromEntries(["creator", "untrusted"].map(key => [key, neutralitySnapshot(target, fixture[key].id, fixture.workspaceId)]));
++Object.assign(env, { VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY, VITE_DEFAULT_WORKSPACE: fixture.slug,
++  BOOTSTRAP_WORKSPACE_SLUGS: fixture.slug, VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false", ADFOCATE_BROWSER_SCOPE: "D14" });
++const browser = spawnSync(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "e2e/public-claims.spec.ts"], { env, stdio: "inherit" });
++const raw = JSON.parse(readFileSync(".codex-tmp/browser-results.private.json", "utf8")), tests = [];
++function visit(suites) {
++  for (const suite of suites ?? []) {
++    for (const spec of suite.specs ?? []) tests.push({ title: spec.title, ok: spec.ok, results: spec.tests.flatMap(test => test.results.map(run => ({ status: run.status, duration: run.duration }))) });
++    visit(suite.suites);
++  }
++}
++visit(raw.suites);
++const checked = verifiedTarget("empty");
++const after = Object.fromEntries(["creator", "untrusted"].map(key => [key, neutralitySnapshot(checked, fixture[key].id, fixture.workspaceId)]));
++const allEqual = isDeepStrictEqual(before, after);
++writeFileSync("docs/verification/D14-browser-neutrality.json", JSON.stringify({ runId: fixture.runId, before, after, allEqual,
++  note: "All raw XP, points, ledgers, withdrawable, budgets, redemptions and gift inventory remain unchanged." }, null, 2) + "\n");
++writeFileSync("docs/verification/D14-browser-summary.json", JSON.stringify({ runId: fixture.runId, target: checked.identity, tests, stats: raw.stats,
++  browser: "installed Edge; 390x844 emulated and 1280x900 desktop; English and Traditional Chinese public pages",
++  auth: "real local Auth sessions created by owned fixture and reused in browser; real Auth/RLS/API/storage database; no external login or real notifications",
++  mocks: "explicit transient 503 transport responses only; all successful data reads/writes use the owned local database",
++  providers: "external HTTP blocked; no paid AI, social provider, payment, publication or messaging", deployment: "not-deployed" }, null, 2) + "\n");
++const observed = JSON.parse(checked.sql(`select jsonb_build_object(
++  'columns',(select jsonb_agg(jsonb_build_object('name',column_name,'type',data_type,'nullable',is_nullable) order by ordinal_position) from information_schema.columns where table_schema='public' and table_name='academy_content'),
++  'rls',(select relrowsecurity from pg_class where oid='public.academy_content'::regclass),
++  'grants',(select relacl::text from pg_class where oid='public.academy_content'::regclass),
++  'policies',(select jsonb_agg(jsonb_build_object('name',policyname,'command',cmd,'roles',roles,'using',qual,'check',with_check) order by policyname) from pg_policies where schemaname='public' and tablename='academy_content'),
++  'history',(select jsonb_agg(version order by version) from supabase_migrations.schema_migrations),
++  'membershipPrimaryKey',(select pg_get_constraintdef(oid) from pg_constraint where conrelid='public.brand_users'::regclass and contype='p'));`));
++writeFileSync("docs/verification/D14-schema-observation.json", JSON.stringify({ observedAt: new Date().toISOString(), target: checked.identity, readOnly: true,
++  productionQueried: false, schemaChanged: false, newMigrations: 0, historyCount: observed.history.length,
++  manifestSHA256: createHash("sha256").update(readFileSync("supabase/release-manifest.json")).digest("hex"), observed }, null, 2) + "\n");
++if (!allEqual) throw new Error("D14 reward neutrality mismatch");
++process.exit(browser.status ?? 1);
+--- a/server/routes/academy.ts
++++ b/server/routes/academy.ts
+@@ -48,6 +48,7 @@
+     title: pick(r.title_en, r.title_zh, lang),
+     excerpt: pick(r.excerpt_en, r.excerpt_zh, lang) || null,
+     ...(withBody ? { body: pick(r.body_en, r.body_zh, lang) } : {}),
++    ...(r.kind === "track" ? { contentStatus: pick(r.body_en, r.body_zh, lang).trim() ? "available" : "preparing" } : {}),
+     category: r.category, requiredLevel: r.required_level,
+     emoji: r.emoji, color: r.color, sort: r.sort,
+     meta: localizeMeta(r.metadata, lang),
+@@ -58,7 +59,8 @@
+ academyRoutes.get("/", async (c) => {
+   const supabase = makeUserClient(c.get("jwt"));
+   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
+-  const { data, error } = await supabase.from("academy_content").select(LIST_COLS)
++  // Read the body to determine availability, but keep full text out of the list DTO.
++  const { data, error } = await supabase.from("academy_content").select(FULL_COLS)
+     .eq("status", "published").order("kind").order("sort");
+   if (error) return c.json({ docs: [], tracks: [], playbooks: [], resources: [] });
+   const rows = (data as unknown as Row[]).map((r) => shape(r, lang, false));
+--- /dev/null
++++ b/server/test/academy-availability.test.ts
+@@ -0,0 +1,35 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { Hono } from "hono";
++import type { Env } from "../app";
++const h = vi.hoisted(() => ({ rows: [] as Record<string, unknown>[] }));
++vi.mock("../lib/supabase.js", () => ({
++  makeUserClient: () => ({ from: () => {
++    const q = { select: () => q, eq: () => q, order: () => q,
++      then: (resolve: (v: unknown) => unknown) => Promise.resolve({ data: h.rows, error: null }).then(resolve) };
++    return q;
++  } }),
++}));
++import { academyRoutes } from "../routes/academy";
++const app = new Hono<Env>();
++app.use("*", async (c, next) => { c.set("jwt", "offline-fixture"); await next(); });
++app.route("/academy", academyRoutes);
++const row = (id: string, body_zh: string, body_en: string | null) => ({
++  id, slug: id, kind: "track", title_zh: "課程", title_en: "Track", excerpt_zh: "簡介", excerpt_en: "Introduction",
++  body_zh, body_en, required_level: "L0", emoji: "🌱", color: "pink", sort: 0, metadata: { duration: { en: "4 lessons", zh: "4堂課" } },
++});
++describe("D14 Academy availability DTO", () => {
++  beforeEach(() => { h.rows = []; });
++  it("derives availability from the localized body, never from duration metadata or the excerpt", async () => {
++    h.rows = [row("empty", "   ", null), row("ready", "## 真實正文", "## Real body")];
++    const res = await app.request("/academy?lang=en");
++    expect(res.status).toBe(200);
++    const bundle = await res.json();
++    expect(bundle.tracks.map((t: Record<string, unknown>) => [t.slug, t.contentStatus])).toEqual([["empty", "preparing"], ["ready", "available"]]);
++    expect(bundle.tracks.every((t: Record<string, unknown>) => !("body" in t))).toBe(true);
++  });
++  it("uses the same language fallback for availability and the displayed body", async () => {
++    h.rows = [row("zh-only", "## 中文正文", "")];
++    const { tracks } = await (await app.request("/academy?lang=en")).json();
++    expect(tracks[0].contentStatus).toBe("available");
++  });
++});
+--- /dev/null
++++ b/server/test/audit-public-claims-contract.test.ts
+@@ -0,0 +1,91 @@
++import { writeFileSync } from "node:fs";
++import { afterAll, beforeAll, describe, expect, it } from "vitest";
++import type { createAuditFixture } from "./auditWorkflowFixture";
++
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION !== "1")("D14 owned Academy authoring and availability", () => {
++  let fx: Awaited<ReturnType<typeof createAuditFixture>>;
++  let app: ReturnType<(typeof import("../app"))["createApp"]>["app"];
++  let before: Awaited<ReturnType<Awaited<ReturnType<typeof createAuditFixture>>["neutrality"]>>;
++  const rows: Record<string, Record<string, unknown>> = {};
++  async function request(path: string, method = "GET", data?: unknown, status = 200, actor?: { jwt: string }) {
++    const response = await app.request(`/api${path}`, { method, headers: {
++      Authorization: `Bearer ${(actor ?? fx.operator).jwt}`, "X-Workspace-Slug": fx.slug, "Content-Type": "application/json",
++    }, ...(data === undefined ? {} : { body: JSON.stringify(data) }) });
++    expect(response.status, `${method} ${path}: ${await response.clone().text()}`).toBe(status);
++    return response.json();
++  }
++  beforeAll(async () => {
++    // The fixture verifies container/project/proxy identity before importing the SDK or creating clients.
++    fx = await (await import("./auditWorkflowFixture")).createAuditFixture();
++    app = (await import("../app")).createApp().app;
++    // Trust is derived by the existing server engine; it is not a writable creator column.
++    fx.must(await fx.service.from("creators").update({ xp: 6000 }).eq("id", fx.creators[1].id).eq("workspace_id", fx.workspaceId));
++    before = await fx.neutrality(fx.creators[0].id);
++    for (const [key, kind, body, required] of [
++      ["resource", "resource", "## 合成資源正文\n\n可閱讀的完整測試內容。", null],
++      ["ready", "track", "## 合成課程正文\n\nThis is owned reading content, not four lesson units.", "L0"],
++      ["empty", "track", "", "L0"], ["gated", "track", "## Gated reading body", "L2"],
++    ] as const) {
++      rows[key] = (await request("/admin/academy", "POST", { kind, slug: `d14-${key}-${fx.runId}`,
++        title_zh: `D14 ${key} ${fx.runId}`, title_en: `D14 ${key} ${fx.runId}`, excerpt_zh: "合成課程簡介，並非四個課堂。",
++        excerpt_en: "Owned introduction, not four lessons.", body_zh: body, body_en: body, required_level: required,
++        metadata: { duration: { en: "4 lessons", zh: "4堂課" }, levelLabel: required ?? "" } }, 201)).item;
++    }
++  }, 60000);
++  afterAll(async () => {
++    if (!fx || !before) return;
++    const after = await fx.neutrality(fx.creators[0].id);
++    expect(after).toEqual(before);
++    writeFileSync(".codex-tmp/D14-fixture.private.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity,
++      workspaceId: fx.workspaceId, slug: fx.slug, creator: fx.creators[0], untrusted: fx.creators[1], operator: fx.operator, rows },
++    (key, value) => key === "client" ? undefined : value));
++    writeFileSync("docs/verification/D14-api-contract.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity,
++      ownedContent: Object.fromEntries(Object.entries(rows).map(([key, value]) => [key, { id: value.id, slug: value.slug }])),
++      neutrality: { before, after, allEqual: JSON.stringify(before) === JSON.stringify(after) },
++      cleanup: "retained exact owned IDs; no delete, reset, seed or production access", providers: "external HTTP blocked" }, null, 2) + "\n");
++    fx.recordEvidence({ caseId: "D14-public-claims", ownedContentIds: Object.values(rows).map(row => row.id), before, after });
++  });
++  it("creates and reloads a resource with title, excerpt and a real body, while its draft remains private", async () => {
++    const item = (await request(`/admin/academy/${rows.resource.id}`)).item;
++    expect(item).toMatchObject({ kind: "resource", body_zh: rows.resource.body_zh, excerpt_zh: rows.resource.excerpt_zh });
++    const bundle = await request("/academy", "GET", undefined, 200, fx.creators[0]);
++    expect(bundle.resources.some((row: { id: string }) => row.id === item.id)).toBe(false);
++  });
++  it("publishes persisted resource content and retains it on a fresh author read", async () => {
++    await request(`/admin/academy/${rows.resource.id}/publish`, "POST", {});
++    const item = (await request(`/admin/academy/${rows.resource.id}`)).item;
++    expect(item).toMatchObject({ status: "published", body_zh: rows.resource.body_zh });
++    expect(item.published_at).toBeTruthy();
++  });
++  it("publishes reading content and derives localized availability without exposing the body in the bundle", async () => {
++    await request(`/admin/academy/${rows.ready.id}/publish`, "POST", {});
++    for (const lang of ["en", "zh-HK"]) {
++      const bundle = await request(`/academy?lang=${lang}`, "GET", undefined, 200, fx.creators[0]);
++      const listed = bundle.tracks.find((row: { id: string }) => row.id === rows.ready.id);
++      expect(listed.contentStatus).toBe("available"); expect(listed.body).toBeUndefined();
++      const { item } = await request(`/academy/track/${rows.ready.slug}?lang=${lang}`, "GET", undefined, 200, fx.creators[0]);
++      expect(item.body).toBe(rows.ready.body_zh); expect(item.contentStatus).toBe("available");
++    }
++  });
++  it("empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented", async () => {
++    for (const key of ["empty", "gated"]) await request(`/admin/academy/${rows[key].id}/publish`, "POST", {});
++    const { item } = await request(`/academy/track/${rows.empty.slug}`, "GET", undefined, 200, fx.creators[0]);
++    expect(item).toMatchObject({ body: "", contentStatus: "preparing" });
++    expect(item.lessons).toBeUndefined(); expect(item.progress).toBeUndefined();
++  });
++  it("filters track author rows independently from resources and creator bundle groups", async () => {
++    const { items } = await request("/admin/academy?kind=track");
++    expect(items.every((row: { kind: string }) => row.kind === "track")).toBe(true);
++    expect(items.some((row: { id: string }) => row.id === rows.resource.id)).toBe(false);
++    const bundle = await request("/academy", "GET", undefined, 200, fx.creators[0]);
++    expect(bundle.resources.some((row: { id: string }) => row.id === rows.resource.id)).toBe(true);
++    expect(bundle.tracks.some((row: { id: string }) => row.id === rows.resource.id)).toBe(false);
++  });
++  it("retains author revisions, rejects stale updates and denies creator authoring", async () => {
++    const item = (await request(`/admin/academy/${rows.ready.id}`)).item;
++    await request(`/admin/academy/${item.id}`, "PATCH", { body_en: `${item.body_en}\n\nRevision two.`, updated_at: item.updated_at });
++    await request(`/admin/academy/${item.id}`, "PATCH", { title_en: "must not persist", updated_at: item.updated_at }, 409);
++    expect((await request(`/admin/academy/${item.id}`)).item.title_en).toBe(item.title_en);
++    await request(`/admin/academy/${item.id}`, "PATCH", { body_en: "forbidden" }, 403, fx.creators[0]);
++  });
++});
+--- a/src/components/AcademyTrackCard.tsx
++++ b/src/components/AcademyTrackCard.tsx
+@@ -25,7 +25,9 @@
+         <span className="text-2xl" aria-hidden>{track.emoji}</span>
+         <div className="min-w-0 flex-1">
+           <h3 className="font-heading font-semibold leading-snug">{track.title}</h3>
+-          <p className="mt-0.5 text-sm text-[var(--color-soft-ink)]">{track.meta.duration}</p>
++          <p className="mt-0.5 text-sm text-[var(--color-soft-ink)]">
++            {t(track.contentStatus === "available" || track.body?.trim() ? "app.guide.readContent" : "app.guide.contentPreparing")}
++          </p>
+         </div>
+       </Link>
+     );
+--- a/src/components/admin/AcademyEditor.test.tsx
++++ b/src/components/admin/AcademyEditor.test.tsx
+@@ -102,3 +102,62 @@
+     await waitFor(() => expect(title().value).toBe("第二篇"));
+   });
+ });
++
++describe("D14 Academy authoring", () => {
++  beforeEach(() => { vi.clearAllMocks(); });
++
++  it("labels title, excerpt and body, including the resource body", () => {
++    r("new");
++    fireEvent.change(screen.getByRole("combobox", { name: "Kind" }), { target: { value: "resource" } });
++    expect(screen.getByRole("textbox", { name: "Title (中文)" })).toBeInTheDocument();
++    expect(screen.getByRole("textbox", { name: "Excerpt (中文)" })).toBeInTheDocument();
++    fireEvent.change(screen.getByRole("textbox", { name: "Body (中文)" }), { target: { value: "## 可閱讀的資源正文" } });
++    expect(screen.getByRole("heading", { name: "可閱讀的資源正文" })).toBeInTheDocument();
++  });
++
++  it("shows save failure, preserves the body and allows a successful retry", async () => {
++    h.getAdminAcademy.mockResolvedValue({ item: row("a1", "課程草稿") });
++    h.updateAcademy.mockRejectedValueOnce(new Error("Service unavailable"))
++      .mockResolvedValueOnce({ item: { ...row("a1", "課程草稿"), body_zh: "保留的正文" } });
++    r("a1");
++    await waitFor(() => expect(title()).toHaveValue("課程草稿"));
++    fireEvent.change(screen.getByPlaceholderText("Markdown…"), { target: { value: "保留的正文" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    expect(await screen.findByRole("alert")).toHaveTextContent(/Service unavailable/);
++    expect(screen.getByPlaceholderText("Markdown…")).toHaveValue("保留的正文");
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.updateAcademy).toHaveBeenCalledTimes(2));
++    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
++  });
++
++  it("a published edit sends changed fields and revision, without resubmitting the locked slug", async () => {
++    const current = { ...row("a1", "課程正文"), status: "published" };
++    h.getAdminAcademy.mockResolvedValue({ item: current });
++    h.updateAcademy.mockResolvedValue({ item: { ...current, body_zh: "已修正文" } });
++    r("a1");
++    await waitFor(() => expect(title()).toHaveValue("課程正文"));
++    fireEvent.change(screen.getByPlaceholderText("Markdown…"), { target: { value: "已修正文" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.updateAcademy).toHaveBeenCalledWith("a1", { body_zh: "已修正文", updated_at: current.updated_at }));
++  });
++
++  it("409 review keeps the draft and rebases only edited fields after explicit acknowledgement", async () => {
++    const initial = row("a1", "原有標題");
++    const latest = { ...initial, title_zh: "其他作者更新", updated_at: "2026-07-02T00:00:00Z" };
++    h.getAdminAcademy.mockResolvedValueOnce({ item: initial }).mockResolvedValue({ item: latest });
++    h.updateAcademy.mockRejectedValueOnce(Object.assign(new Error("stale"), { status: 409 }))
++      .mockResolvedValue({ item: { ...latest, body_zh: "我的正文草稿" } });
++    r("a1");
++    await waitFor(() => expect(title()).toHaveValue(initial.title_zh));
++    fireEvent.change(screen.getByPlaceholderText("Markdown…"), { target: { value: "我的正文草稿" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
++    expect(await screen.findByText(/其他作者更新/)).toBeInTheDocument();
++    expect(screen.getByPlaceholderText("Markdown…")).toHaveValue("我的正文草稿");
++    fireEvent.click(screen.getByRole("button", { name: "Keep my edits on this revision" }));
++    expect(title()).toHaveValue("其他作者更新");
++    expect(screen.getByPlaceholderText("Markdown…")).toHaveValue("我的正文草稿");
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.updateAcademy).toHaveBeenLastCalledWith("a1", { body_zh: "我的正文草稿", updated_at: latest.updated_at }));
++  });
++});
+--- a/src/components/admin/AcademyEditor.tsx
++++ b/src/components/admin/AcademyEditor.tsx
+@@ -12,6 +12,14 @@
+   excerpt_zh: "", excerpt_en: "", category: null, required_level: null, emoji: "", color: "", sort: 0, metadata: {},
+ };
+ const KINDS: AcademyKind[] = ["guide_doc", "track", "playbook", "resource"];
++const EDIT_FIELDS: (keyof AdminAcademyRow)[] = ["kind", "slug", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "body_zh", "body_en", "category", "required_level", "emoji", "color", "sort", "metadata"];
++function editedFields(form: Partial<AdminAcademyRow>, baseline: Partial<AdminAcademyRow>) {
++  const patch: Partial<AdminAcademyRow> = {};
++  for (const key of EDIT_FIELDS) {
++    if (JSON.stringify(form[key]) !== JSON.stringify(baseline[key])) Object.assign(patch, { [key]: form[key] });
++  }
++  return patch;
++}
+ 
+ export function AcademyEditor({ id }: { id: string }) {
+   const isNew = id === "new";
+@@ -21,6 +29,7 @@
+   const [form, setForm] = useState<Partial<AdminAcademyRow>>(EMPTY);
+   const [metaText, setMetaText] = useState("{}");
+   const [metaErr, setMetaErr] = useState<string | null>(null);
++  const baseline = useRef<Partial<AdminAcademyRow>>(EMPTY);
+ 
+   const existing = useQuery({
+     queryKey: academyKeys.adminItem(id), enabled: !isNew,
+@@ -34,6 +43,7 @@
+     const row = existing.data;
+     if (!row || seeded.current === row.id) return;
+     seeded.current = row.id;
++    baseline.current = row;
+     setForm(row);
+     setMetaText(JSON.stringify(row.metadata ?? {}, null, 2));
+   }, [existing.data]);
+@@ -41,7 +51,7 @@
+   const set = (patch: Partial<AdminAcademyRow>) => setForm((f) => ({ ...f, ...patch }));
+   const titleField = lang === "zh" ? "title_zh" : "title_en";
+   const bodyField = lang === "zh" ? "body_zh" : "body_en";
+-  const showBody = form.kind === "guide_doc" || form.kind === "track";
++  const showBody = KINDS.includes(form.kind as AcademyKind);
+ 
+   function parsedMeta(): Record<string, unknown> | null {
+     try { const v = JSON.parse(metaText || "{}"); setMetaErr(null); return v; } catch { setMetaErr("Invalid JSON"); return null; }
+@@ -53,9 +63,10 @@
+       if (metadata === null) throw new Error("metadata");
+       const payload = { ...form, metadata };
+       if (isNew) return (await createAcademy(payload)).item;
+-      return (await updateAcademy(id, { ...payload, updated_at: form.updated_at })).item;
++      return (await updateAcademy(id, { ...editedFields(payload, baseline.current), updated_at: baseline.current.updated_at })).item;
+     },
+     onSuccess: (item) => {
++      baseline.current = item;
+       qc.invalidateQueries({ queryKey: ["admin", "academy"] });
+       if (isNew) navigate({ to: "/admin/academy/$id", params: { id: item.id } });
+       else { setForm(item); setMetaText(JSON.stringify(item.metadata ?? {}, null, 2)); }
+@@ -63,25 +74,65 @@
+   });
+   const act = useMutation({
+     mutationFn: (a: "publish" | "unpublish" | "archive") => academyAction(id, a),
+-    onSuccess: ({ item }) => { setForm(item); qc.invalidateQueries({ queryKey: ["admin", "academy"] }); },
++    onSuccess: ({ item }) => { baseline.current = item; setForm(item); qc.invalidateQueries({ queryKey: ["admin", "academy"] }); },
+   });
++  const comparison = useMutation({ mutationFn: () => getAdminAcademy(id) });
++  const busy = save.isPending || act.isPending || comparison.isPending;
++  const mutationError = save.error ?? act.error;
++  const conflict = save.error && "status" in save.error && save.error.status === 409;
++  const unsaved = JSON.stringify(form) !== JSON.stringify(baseline.current)
++    || metaText !== JSON.stringify(baseline.current.metadata ?? {}, null, 2);
++
++  function keepDraftOnLatest() {
++    const latest = comparison.data?.item;
++    const metadata = parsedMeta();
++    if (!latest || metadata === null) return;
++    const rebased = { ...latest, ...editedFields({ ...form, metadata }, baseline.current) };
++    baseline.current = latest;
++    setForm(rebased);
++    setMetaText(JSON.stringify(rebased.metadata ?? {}, null, 2));
++    save.reset(); comparison.reset();
++  }
++
++  if (!isNew && !existing.data) return (
++    <div role={existing.isError ? "alert" : "status"}>
++      {existing.isError ? <><p>內容載入失敗，請重試。 Failed to load content.</p><button onClick={() => existing.refetch()}>Retry</button></> : "載入中… Loading…"}
++    </div>
++  );
+ 
+   return (
+-    <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
++    <fieldset disabled={busy} className="grid gap-4 lg:grid-cols-[1fr_240px]">
+       <div className="space-y-3">
++        {mutationError && <p role="alert" className="text-sm text-[var(--color-magenta)]">儲存或發布失敗，輸入仍保留，可重試。 Save or publish failed; your draft is preserved. {mutationError.message}</p>}
++        {conflict && <div className="space-y-2 border-2 border-[var(--color-ink)] p-3">
++          <p>版本有更新。請比較最新內容，確認後再儲存你的改動。 Another version exists; compare it before retrying.</p>
++          <button type="button" onClick={() => comparison.mutate()}>Compare latest</button>
++          {comparison.error && <p role="alert">載入失敗，可重試。 {comparison.error.message}</p>}
++          {comparison.data && <>
++            <pre className="max-h-64 overflow-auto whitespace-pre-wrap text-xs">{JSON.stringify(comparison.data.item, null, 2)}</pre>
++            <p>確認後會保留你修改的欄位；未修改欄位沿用最新版本。 Only your edited fields will be carried forward.</p>
++            <button type="button" onClick={keepDraftOnLatest}>Keep my edits on this revision</button>
++          </>}
++        </div>}
+         <div className="flex items-center gap-2">
+           <button onClick={() => setLang("zh")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "zh" ? "bg-[var(--color-ink)] text-white" : ""}`}>中文</button>
+           <button onClick={() => setLang("en")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "en" ? "bg-[var(--color-ink)] text-white" : ""}`}>EN</button>
+           {!isNew && <span className="ml-auto text-xs">{form.status}</span>}
+         </div>
+-        <input value={(form[titleField] as string) ?? ""} onChange={(e) => set({ [titleField]: e.target.value })}
+-          placeholder="Title" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-lg font-bold" />
+-        <input value={(form[lang === "zh" ? "excerpt_zh" : "excerpt_en"] as string) ?? ""} onChange={(e) => set({ [lang === "zh" ? "excerpt_zh" : "excerpt_en"]: e.target.value })}
+-          placeholder="Excerpt / short description" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
++        <label className="block text-sm">Title ({lang === "zh" ? "中文" : "EN"})
++          <input value={(form[titleField] as string) ?? ""} onChange={(e) => set({ [titleField]: e.target.value })} disabled={busy}
++            placeholder="Title" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-lg font-bold" />
++        </label>
++        <label className="block text-sm">Excerpt ({lang === "zh" ? "中文" : "EN"})
++          <input value={(form[lang === "zh" ? "excerpt_zh" : "excerpt_en"] as string) ?? ""} onChange={(e) => set({ [lang === "zh" ? "excerpt_zh" : "excerpt_en"]: e.target.value })} disabled={busy}
++            placeholder="Excerpt / short description" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
++        </label>
+         {showBody && (
+           <>
+-            <textarea value={(form[bodyField] as string) ?? ""} onChange={(e) => set({ [bodyField]: e.target.value })}
+-              placeholder="Markdown…" rows={12} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-mono text-sm" />
++            <label className="block text-sm">Body ({lang === "zh" ? "中文" : "EN"})
++              <textarea value={(form[bodyField] as string) ?? ""} onChange={(e) => set({ [bodyField]: e.target.value })} disabled={busy}
++                placeholder="Markdown…" rows={12} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-mono text-sm" />
++            </label>
+             <div className="rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
+               <p className="mb-1 text-xs uppercase">Preview</p>
+               <Markdown source={(form[bodyField] as string) ?? ""} />
+@@ -121,10 +172,11 @@
+         <label className="block text-xs uppercase">Emoji<input value={form.emoji ?? ""} onChange={(e) => set({ emoji: e.target.value })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
+         <label className="block text-xs uppercase">Color<input value={form.color ?? ""} onChange={(e) => set({ color: e.target.value })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
+         <label className="block text-xs uppercase">Sort<input type="number" value={form.sort ?? 0} onChange={(e) => set({ sort: Number(e.target.value) })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
+-        <button onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
+-        {!isNew && form.status !== "published" && <button onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
+-        {!isNew && form.status === "published" && <button onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
++        <button disabled={busy} onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
++        {!isNew && unsaved && <p className="text-sm">請先儲存改動。 Save changes before publishing or archiving.</p>}
++        {!isNew && form.status !== "published" && <button disabled={busy || unsaved} onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
++        {!isNew && form.status === "published" && <button disabled={busy || unsaved} onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
+       </aside>
+-    </div>
++    </fieldset>
+   );
+ }
+--- a/src/data/mockData.ts
++++ b/src/data/mockData.ts
+@@ -1,3 +1,5 @@
++import { progressToNext } from "@/lib/levels";
++
+ import type { ReactNode } from "react";
+ 
+ // ─── MISSIONS ───
+@@ -102,7 +104,6 @@
+ export type CreatorPassport = {
+   name: string;
+   level: string;
+-  levelLabel: string;
+   xp: number;
+   xpNext: number;
+   avatar: string;
+@@ -128,12 +129,14 @@
+   financeReadiness: number;
+ };
+ 
++const passportXP = 3840;
++const passportProgress = progressToNext(passportXP);
++
+ export const mockCreatorPassport: CreatorPassport = {
+   name: "Chloe Chan",
+-  level: "L3",
+-  levelLabel: "Nano Creator",
+-  xp: 3840,
+-  xpNext: 5000,
++  level: passportProgress.current.id,
++  xp: passportXP,
++  xpNext: passportProgress.next!.xpRequired,
+   avatar: "CC",
+   categories: ["Beauty", "Lifestyle", "Food"],
+   bio: "Beauty and lifestyle content creator based in Hong Kong. Love sharing honest reviews and daily finds.",
+--- a/src/lib/academy.ts
++++ b/src/lib/academy.ts
+@@ -14,6 +14,8 @@
+   id: string; kind: AcademyKind; slug: string; title: string; excerpt: string | null; body?: string;
+   requiredLevel: string | null; emoji: string | null; color: string | null; sort: number;
+   meta: { duration?: string; levelLabel?: string; teaser_zh?: string; teaser_en?: string };
++  /** Body availability only; does not imply lessons or completion tracking. */
++  contentStatus?: "available" | "preparing";
+ };
+ export type AcademyPlaybook = {
+   id: string; kind: AcademyKind; slug: string; title: string; emoji: string | null; color: string | null; sort: number;
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -1304,6 +1304,12 @@
+     "app.guide.cat.rewards": "Rewards",
+     "app.guide.cat.account": "Account",
+     "app.guide.docNotFound": "Guide not found.",
++    "app.guide.loadFailed": "Content could not be loaded. Please retry.",
++    "app.guide.staleContent": "The latest content could not be loaded. You are viewing the previous version.",
++    "app.guide.contentPreparing": "Content preparing",
++    "app.guide.readContent": "Read content",
++    "app.guide.lessonsPreparing": "Lesson units and saved learning progress are not yet available.",
++    "app.guide.introduction": "Introduction",
+     "app.guide.trackNotFound": "Track not found.",
+ 
+     // ── app: onboarding primer ────────────────────────────────
+@@ -2801,6 +2807,12 @@
+     "app.guide.cat.rewards": "獎勵",
+     "app.guide.cat.account": "帳戶",
+     "app.guide.docNotFound": "找不到指南。",
++    "app.guide.loadFailed": "暫時無法載入內容，請重試。",
++    "app.guide.staleContent": "暫時無法載入最新內容，以下是上次載入的版本。",
++    "app.guide.contentPreparing": "內容準備中",
++    "app.guide.readContent": "閱讀內容",
++    "app.guide.lessonsPreparing": "課堂單元及學習進度儲存尚未提供。",
++    "app.guide.introduction": "課程簡介",
+     "app.guide.trackNotFound": "找不到課程。",
+ 
+     // ── app: onboarding primer ────────────────────────────────
+--- a/src/routes/-_app.guide.track.$trackId.test.tsx
++++ b/src/routes/-_app.guide.track.$trackId.test.tsx
+@@ -2,6 +2,7 @@
+ import { render, screen, waitFor } from "@testing-library/react";
+ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+ import type { AcademyTrack } from "@/lib/academy";
++import { ApiError } from "@/lib/api";
+ 
+ vi.mock("@tanstack/react-router", async (importOriginal) => {
+   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
+@@ -124,7 +125,7 @@
+   it("shows a fallback for an unknown trackId (fetch error)", async () => {
+     hoisted.me = { data: { id: "u1", level: "L3", is_trusted: true } };
+     hoisted.trackId = "nonexistent";
+-    hoisted.fetchAcademyTrack.mockRejectedValue(new Error("not found"));
++    hoisted.fetchAcademyTrack.mockRejectedValue(new ApiError(404, "not_found", "not found"));
+     renderTrack();
+ 
+     await waitFor(() => expect(screen.getByText("找不到課程。")).toBeInTheDocument());
+--- /dev/null
++++ b/src/routes/-public-claims.test.tsx
+@@ -0,0 +1,142 @@
++import type { ComponentType, ReactNode } from "react";
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { fireEvent, render, screen, waitFor } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++import { I18nProvider } from "@/lib/i18n";
++import { progressToNext } from "@/lib/levels";
++import { mockCreatorPassport } from "@/data/mockData";
++import type { AcademyTrack } from "@/lib/academy";
++
++const h = vi.hoisted(() => ({
++  info: vi.fn(), success: vi.fn(), fetchTrack: vi.fn(),
++  me: { level: "L0", is_trusted: false },
++}));
++vi.mock("sonner", () => ({ toast: { info: h.info, success: h.success } }));
++vi.mock("@/lib/activationAnalytics", () => ({ getDeviceCategory: () => "desktop", trackActivationEvent: vi.fn() }));
++vi.mock("@/lib/supabase", () => ({ supabase: { auth: { getSession: async () => ({ data: { session: null } }) } } }));
++vi.mock("@tanstack/react-router", () => ({
++  createFileRoute: () => (options: unknown) => ({ options }),
++  Link: ({ to, params, children, ...props }: { to: string; params?: Record<string, string>; children: ReactNode }) =>
++    <a href={to.replace(/\$(\w+)/g, (_, key) => params?.[key] ?? key)} {...props}>{children}</a>,
++  Outlet: () => <p>Page content</p>,
++  redirect: (o: unknown) => o,
++  useParams: () => ({ trackId: "owned-track" }),
++}));
++vi.mock("@/components/marketing/MarketingHeader", () => ({ MarketingHeader: () => null }));
++vi.mock("@/components/marketing/Footer", () => ({ Footer: () => null }));
++vi.mock("@/lib/queries/kocmax", () => ({ useMe: () => ({ data: h.me }) }));
++vi.mock("@/lib/academy", async (original) => ({ ...(await original<object>()), fetchAcademyTrack: h.fetchTrack }));
++
++import { Route as Home } from "./_site.index";
++import { Route as Creators } from "./_site.creators";
++import { Route as Contact } from "./_site.contact";
++import { Route as Site } from "./_site";
++import { Route as Track } from "./_app.guide.track.$trackId";
++import { AcademyTrackCard } from "@/components/AcademyTrackCard";
++
++function page(route: { options: { component?: unknown } }) {
++  const Component = route.options.component as ComponentType;
++  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
++  return render(<QueryClientProvider client={qc}><I18nProvider><Component /></I18nProvider></QueryClientProvider>);
++}
++const track: AcademyTrack = {
++  id: "owned", kind: "track", slug: "owned-track", title: "課程示範", excerpt: "課程簡介，並非課堂正文。",
++  body: "", requiredLevel: "L0", emoji: "🌱", color: "pink", sort: 0,
++  meta: { duration: "4堂課", levelLabel: "L0–L1", teaser_zh: "解鎖內容" },
++};
++beforeEach(() => { vi.clearAllMocks(); localStorage.setItem("lang", "en"); h.me = { level: "L0", is_trusted: false }; });
++
++describe("D14 public promises", () => {
++  it("derives the 3,840 XP demonstration from the canonical thresholds", () => {
++    const p = progressToNext(mockCreatorPassport.xp);
++    expect(mockCreatorPassport.level).toBe(p.current.id);
++    expect(mockCreatorPassport.xpNext).toBe(p.next!.xpRequired);
++    expect([p.current.id, p.next!.id, p.pct]).toEqual(["L2", "L3", 46]);
++  });
++  for (const [name, route] of [["home", Home], ["creators", Creators]] as const) {
++    it(`${name}: labels fictional data and shows the canonical localized level and progress`, async () => {
++      const { container } = page(route);
++      expect(await screen.findAllByText(/Illustrative profile · fictional data/)).not.toHaveLength(0);
++      expect(screen.getAllByText(/L2 Trusted KOC/).length).toBeGreaterThan(0);
++      expect(container.textContent).toMatch(/3,840\s*\/\s*6,000/);
++      const bars = container.querySelectorAll(".xp-bar-fill");
++      expect(bars.length).toBeGreaterThan(0);
++      for (const bar of bars) expect(bar).toHaveStyle({ width: "46%" });
++      expect(container.textContent).not.toMatch(/77%|5,200\+|120\+|Lifetime withdrawable earnings|withdraw real HK\$/);
++    });
++  }
++  it("marks the public experience as a preview and states pending reward is not payment", async () => {
++    page(Site);
++    expect(await screen.findByRole("note", { name: "Product preview" })).toHaveTextContent(/Pending reward is not payment/);
++  });
++  it("previews earning concepts in Chinese without offering real withdrawals", async () => {
++    localStorage.setItem("lang", "zh"); const { container } = page(Home);
++    await waitFor(() => expect(container.textContent).not.toContain("提取真實港幣"));
++    expect(container.textContent).toContain("待處理獎勵，並不等於付款");
++  });
++  for (const lang of ["en", "zh"] as const) it(`previews earning resources with a clear preparation label (${lang})`, async () => {
++    localStorage.setItem("lang", lang); page(Creators);
++    expect(await screen.findByText(lang === "en" ? "Course topics preview · content in preparation" : "課程主題預覽 · 內容準備中")).toBeInTheDocument();
++  });
++  for (const lang of ["en", "zh"] as const) {
++    it(`contact ${lang}: preview submission preserves inputs, sends nothing and never claims receipt or storage`, async () => {
++      localStorage.setItem("lang", lang);
++      const { container, unmount } = page(Contact);
++      const button = await screen.findByRole("button", { name: lang === "en" ? "Preview form" : "預覽表格" });
++      fireEvent.change(container.querySelector('input[name="name"]')!, { target: { value: "Retained draft" } });
++      fireEvent.change(container.querySelector('input[name="email"]')!, { target: { value: "preview@example.invalid" } });
++      const fetch = vi.spyOn(globalThis, "fetch");
++      const persist = vi.spyOn(Storage.prototype, "setItem");
++      fireEvent.submit(button.closest("form")!);
++      expect(h.info).toHaveBeenCalledWith(lang === "en" ? "Preview only. Nothing was sent or saved." : "僅供預覽，沒有發送或儲存任何資料。");
++      expect(h.success).not.toHaveBeenCalled();
++      expect(fetch).not.toHaveBeenCalled();
++      expect(persist).not.toHaveBeenCalled();
++      expect(container.querySelector('input[name="name"]')).toHaveValue("Retained draft");
++      expect(container.textContent).not.toMatch(/Received|we got it|recorded your interest|已收到|收到喇|本機記低|24h|真人回覆/);
++      fetch.mockRestore(); persist.mockRestore(); unmount();
++      const fresh = page(Contact);
++      expect(fresh.container.querySelector('input[name="name"]')).toHaveValue("");
++      expect(fresh.container.textContent).not.toMatch(/Received|we got it|已收到|收到喇/);
++    });
++  }
++});
++
++describe("D14 Academy availability is separate from eligibility", () => {
++  it("empty body: preserves the labelled introduction, shows preparing and ignores the four-lesson metadata", async () => {
++    localStorage.setItem("lang", "zh"); h.fetchTrack.mockResolvedValue({ item: track });
++    page(Track);
++    expect(await screen.findByText("內容準備中")).toBeInTheDocument();
++    expect(screen.getByText(track.excerpt!)).toBeInTheDocument();
++    expect(screen.queryByText(/4堂課|開始課程/)).not.toBeInTheDocument();
++  });
++  it("available body is readable Markdown, without inventing lesson counts or progress", async () => {
++    h.fetchTrack.mockResolvedValue({ item: { ...track, body: "## Actual reading\n\nOwner-approved fixture content." } });
++    page(Track);
++    expect(await screen.findByRole("heading", { name: "Actual reading" })).toBeInTheDocument();
++    expect(screen.queryByText(/4堂課|100%|Start course/)).not.toBeInTheDocument();
++  });
++  it("keeps the social trust gate for an eligible level", async () => {
++    localStorage.setItem("lang", "zh"); h.me = { level: "L3", is_trusted: false };
++    h.fetchTrack.mockResolvedValue({ item: { ...track, requiredLevel: "L2", body: "Private lesson body" } });
++    page(Track);
++    expect(await screen.findByRole("link", { name: /立即驗證/ })).toHaveAttribute("href", "/profile");
++    expect(screen.queryByText("Private lesson body")).not.toBeInTheDocument();
++  });
++  it("offers an introduction link for an unfinished track without promising four lessons", () => {
++    render(<I18nProvider><AcademyTrackCard track={track} creatorLevel="L0" isTrusted={false} /></I18nProvider>);
++    expect(screen.getByRole("link")).toHaveAttribute("href", "/guide/track/owned-track");
++    expect(screen.getByText(/Content preparing/)).toBeInTheDocument();
++    expect(screen.queryByText(/4堂課/)).not.toBeInTheDocument();
++  });
++  it("recovers from a transient read error without mislabelling it as a missing course", async () => {
++    localStorage.setItem("lang", "zh");
++    h.fetchTrack.mockRejectedValueOnce(new Error("Temporary service failure"))
++      .mockResolvedValueOnce({ item: { ...track, body: "Recovered reading content" } });
++    page(Track);
++    const retry = await screen.findByRole("button", { name: "重試" });
++    expect(screen.queryByText("找不到課程。")).not.toBeInTheDocument();
++    fireEvent.click(retry);
++    expect(await screen.findByText("Recovered reading content")).toBeInTheDocument();
++  });
++});
+--- a/src/routes/_app.guide.track.$trackId.tsx
++++ b/src/routes/_app.guide.track.$trackId.tsx
+@@ -5,6 +5,8 @@
+ import { academyKeys, fetchAcademyTrack } from "@/lib/academy";
+ import { eligibility } from "@/lib/missionMeta";
+ import { useI18n } from "@/lib/i18n";
++import { Markdown } from "@/components/Markdown";
++import { ApiError } from "@/lib/api";
+ 
+ export const Route = createFileRoute("/_app/guide/track/$trackId")({ component: TrackDetailPage });
+ 
+@@ -18,10 +20,11 @@
+ 
+   // apiFetch throws on a 404 → error state; gate not-found on q.isError, never on pending.
+   if (q.isLoading) return <div className="p-4 text-sm">…</div>;
+-  if (q.isError) {
++  if (q.isError && !track) {
+     return (
+       <div className="flex flex-col items-center gap-4 p-8 text-center">
+-        <p className="text-sm text-[var(--color-magenta)]">{t("app.guide.trackNotFound")}</p>
++        <p role="alert" className="text-sm text-[var(--color-magenta)]">{t(q.error instanceof ApiError && q.error.status === 404 ? "app.guide.trackNotFound" : "app.guide.loadFailed")}</p>
++        <button onClick={() => q.refetch()} className="text-sm underline">{t("common.retry")}</button>
+         <Link to="/guide" className="text-sm underline">{t("common.back")}</Link>
+       </div>
+     );
+@@ -32,7 +35,7 @@
+   const unlocked = elig.qualified;
+   const needsVerification = elig.labelKey === "app.eligibility.verifyToUnlock";
+   const levelLabel = track.meta.levelLabel ?? track.requiredLevel ?? "";
+-  const bodyText = track.body && track.body.trim() ? track.body : track.excerpt;
++  const hasBody = Boolean(track.body?.trim());
+ 
+   return (
+     <div className="mx-auto max-w-lg pb-6 lg:max-w-5xl">
+@@ -45,11 +48,18 @@
+       </header>
+ 
+       <div className="p-4 space-y-4">
++        {q.isError && <div role="alert"><p>{t("app.guide.staleContent")}</p><button onClick={() => q.refetch()} className="underline">{t("common.retry")}</button></div>}
+         <div className="flex gap-2 text-sm text-[var(--color-ink-muted)]">
+-          <span>{track.meta.duration}</span><span>·</span><span>{levelLabel}</span>
++          <span>{levelLabel}</span>
+         </div>
+         {unlocked ? (
+-          <p className="text-sm leading-relaxed">{bodyText}</p>
++          hasBody ? <Markdown source={track.body!} /> : (
++            <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-4">
++              <h2 className="font-heading font-bold">{t("app.guide.contentPreparing")}</h2>
++              <p className="text-sm">{t("app.guide.lessonsPreparing")}</p>
++              {track.excerpt && <div><h3 className="text-sm font-bold">{t("app.guide.introduction")}</h3><p className="text-sm leading-relaxed">{track.excerpt}</p></div>}
++            </section>
++          )
+         ) : (
+           <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-cream)] p-5 space-y-3 text-center">
+             <Lock size={32} className="mx-auto text-[var(--color-ink-muted)]" aria-hidden />
+--- a/src/routes/_site.contact.tsx
++++ b/src/routes/_site.contact.tsx
+@@ -4,16 +4,12 @@
+ import {
+   Sparkles,
+   Send,
+-  CheckCircle2,
+   Building2,
+   User,
+   Wallet,
+   Store,
+   Users,
+-  Mail,
+-  ArrowUpRight,
+ } from "lucide-react";
+-import { legacyContact } from "@/data/legacyAdfocateContent";
+ import { useI18n } from "@/lib/i18n";
+ import { cn } from "@/lib/utils";
+ 
+@@ -92,24 +88,20 @@
+   "Other",
+ ];
+ 
+-const submitToastMessage = `Thanks! This preview form has recorded your interest locally. For live enquiries, email ${legacyContact.email}.`;
+ 
+ function ContactPage() {
+   const { lang } = useI18n();
+   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+ 
+   const [activeTab, setActiveTab] = useState<TabId>("brand");
+-  const [submitted, setSubmitted] = useState(false);
+ 
+   const handleSubmit = (e: React.FormEvent) => {
+     e.preventDefault();
+-    setSubmitted(true);
+-    toast.success(submitToastMessage);
++    toast.info(tx("Preview only. Nothing was sent or saved.", "僅供預覽，沒有發送或儲存任何資料。"));
+   };
+ 
+   const switchTab = (tab: TabId) => {
+     setActiveTab(tab);
+-    setSubmitted(false);
+   };
+ 
+   return (
+@@ -118,9 +110,7 @@
+         tx={tx}
+         activeTab={activeTab}
+         switchTab={switchTab}
+-        submitted={submitted}
+         handleSubmit={handleSubmit}
+-        setSubmitted={setSubmitted}
+       />
+     </div>
+   );
+@@ -130,16 +120,12 @@
+   tx,
+   activeTab,
+   switchTab,
+-  submitted,
+   handleSubmit,
+-  setSubmitted,
+ }: {
+   tx: (en: string, zh: string) => string;
+   activeTab: TabId;
+   switchTab: (tab: TabId) => void;
+-  submitted: boolean;
+   handleSubmit: (e: React.FormEvent) => void;
+-  setSubmitted: (v: boolean) => void;
+ }) {
+   const isCreatorPath = creatorTabs.includes(activeTab);
+ 
+@@ -175,24 +161,12 @@
+             </h1>
+             <p className="font-body text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl leading-relaxed">
+               {tx(
+-                "Brands, creators, partners — pick a path below and we'll route you to the right team. Hong Kong-based, fast to reply.",
+-                "品牌、創作者、合作夥伴 —— 揀返條啱嘅路，我哋會幫你搵啱負責嘅團隊。香港團隊，回覆快。",
++                "Preview the enquiry fields below. This form does not send or save information; a receiving destination has not been enabled.",
++                "以下查詢欄位僅供預覽，不會發送或儲存資料；收件渠道尚未啟用。",
+               )}
+             </p>
+ 
+-            <a
+-              href={`mailto:${legacyContact.email}`}
+-              className="group inline-flex items-center gap-2 mt-6 font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-ink)] font-bold"
+-            >
+-              <Mail className="h-4 w-4 text-[var(--color-magenta)]" aria-hidden="true" />
+-              <span className="border-b-2 border-[var(--color-ink)] pb-0.5">
+-                {legacyContact.email}
+-              </span>
+-              <ArrowUpRight
+-                className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+-                aria-hidden="true"
+-              />
+-            </a>
++
+           </div>
+ 
+           {/* artifact: a small "routing card" mock built from primitives */}
+@@ -233,28 +207,24 @@
+           <p className="mt-3 font-body text-sm text-[var(--color-soft-ink)] max-w-xl">
+             {isCreatorPath
+               ? tx(
+-                  "Creator path — goes to the Creator Success team for onboarding and earnings.",
+-                  "創作者路線 —— 交由創作者成長團隊跟進報名同收入安排。",
++                  "Creator enquiry preview — no message is sent.",
++                  "創作者查詢預覽 —— 不會發送訊息。",
+                 )
+               : tx(
+-                  "Brand & partner path — goes to the Campaigns team for planning and scoping.",
+-                  "品牌及合作路線 —— 交由活動策劃團隊跟進方案同報價。",
++                  "Brand and partner enquiry preview — no message is sent.",
++                  "品牌及合作查詢預覽 —— 不會發送訊息。",
+                 )}
+           </p>
+         </div>
+ 
+         {/* ── Form / Success card ── */}
+-        {submitted ? (
+-          <SuccessState tx={tx} setSubmitted={setSubmitted} />
+-        ) : (
+-          <div className="pastel-card p-6 sm:p-8 lg:p-10 bg-[var(--color-card)]">
+-            {activeTab === "brand" && <BrandForm tx={tx} onSubmit={handleSubmit} />}
+-            {activeTab === "creator" && <CreatorForm tx={tx} onSubmit={handleSubmit} />}
+-            {activeTab === "adfoplace" && <AdfoplaceForm tx={tx} onSubmit={handleSubmit} />}
+-            {activeTab === "capital" && <CapitalForm tx={tx} onSubmit={handleSubmit} />}
+-            {activeTab === "partner" && <PartnerForm tx={tx} onSubmit={handleSubmit} />}
+-          </div>
+-        )}
++        <div className="pastel-card p-6 sm:p-8 lg:p-10 bg-[var(--color-card)]">
++          <div hidden={activeTab !== "brand"}><BrandForm tx={tx} onSubmit={handleSubmit} /></div>
++          <div hidden={activeTab !== "creator"}><CreatorForm tx={tx} onSubmit={handleSubmit} /></div>
++          <div hidden={activeTab !== "adfoplace"}><AdfoplaceForm tx={tx} onSubmit={handleSubmit} /></div>
++          <div hidden={activeTab !== "capital"}><CapitalForm tx={tx} onSubmit={handleSubmit} /></div>
++          <div hidden={activeTab !== "partner"}><PartnerForm tx={tx} onSubmit={handleSubmit} /></div>
++        </div>
+       </div>
+     </section>
+   );
+@@ -273,7 +243,7 @@
+       <div className="flex items-center justify-between mb-4">
+         <span className="tag-mono">{tx("Routing", "分流")}</span>
+         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
+-          HK · 24h
++          {tx("Preview only", "僅供預覽")}
+         </span>
+       </div>
+ 
+@@ -301,52 +271,13 @@
+           <Sparkles className="h-4 w-4 text-[var(--color-ink)]" aria-hidden="true" />
+         </div>
+         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] font-bold leading-tight">
+-          {tx("Real humans, fast", "真人回覆，夠快")}
++          {tx("No message is routed", "不會轉交訊息")}
+         </p>
+       </div>
+     </div>
+   );
+ }
+ 
+-/* ── Success state: centered confirmation (second-read = oversized stroked check echo) ── */
+-function SuccessState({
+-  tx,
+-  setSubmitted,
+-}: {
+-  tx: (en: string, zh: string) => string;
+-  setSubmitted: (v: boolean) => void;
+-}) {
+-  return (
+-    <div className="pastel-card bg-[var(--color-ink)] p-10 sm:p-14 text-center relative overflow-hidden">
+-      <span
+-        aria-hidden="true"
+-        className="pointer-events-none select-none absolute -right-6 -bottom-10 font-display text-[12rem] leading-none text-outline-yellow opacity-30"
+-      >
+-        ✓
+-      </span>
+-      <div className="relative">
+-        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-acid)] border-2 border-[var(--color-acid)]">
+-          <CheckCircle2 className="h-9 w-9 text-[var(--color-ink)]" aria-hidden="true" />
+-        </div>
+-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-acid)] font-bold mb-3">
+-          {tx("Received", "已收到")}
+-        </p>
+-        <h2 className="font-display text-3xl sm:text-4xl text-[var(--color-paper)] mb-3">
+-          {tx("Thanks — we got it.", "多謝你！收到喇。")}
+-        </h2>
+-        <p className="font-body text-sm text-[var(--color-paper)]/75 max-w-md mx-auto leading-relaxed mb-7">
+-          {tx(
+-            `This preview form recorded your interest locally. Live submissions connect in the next phase. For live enquiries, email ${legacyContact.email}.`,
+-            `呢個預覽表格已經喺本機記低你嘅查詢。正式提交功能會喺下一階段接通。如要即時查詢，可電郵 ${legacyContact.email}。`,
+-          )}
+-        </p>
+-        <button type="button" onClick={() => setSubmitted(false)} className="btn-primary">
+-          {tx("Send another enquiry", "再發一個查詢")}
+-        </button>
+-      </div>
+-    </div>
+-  );
+-}
+ 
+ function FormHeader({
+   icon: Icon,
+@@ -479,7 +410,7 @@
+         />
+       </Field>
+ 
+-      <SubmitButton icon={Send} label={tx("Send Brand Enquiry", "提交品牌查詢")} />
++      <SubmitButton icon={Send} label={tx("Preview form", "預覽表格")} />
+       <PreviewNote tx={tx} />
+     </form>
+   );
+@@ -606,7 +537,7 @@
+         </div>
+       </Field>
+ 
+-      <SubmitButton icon={Sparkles} label={tx("Join as Creator", "成為創作者")} />
++      <SubmitButton icon={Sparkles} label={tx("Preview form", "預覽表格")} />
+       <PreviewNote tx={tx} />
+     </form>
+   );
+@@ -696,7 +627,7 @@
+         />
+       </Field>
+ 
+-      <SubmitButton icon={Store} label={tx("Submit Offer Request", "提交優惠申請")} />
++      <SubmitButton icon={Store} label={tx("Preview form", "預覽表格")} />
+       <PreviewNote tx={tx} />
+     </form>
+   );
+@@ -809,7 +740,7 @@
+         </span>
+       </label>
+ 
+-      <SubmitButton icon={Wallet} label={tx("Join Capital Waitlist", "加入資金候補")} />
++      <SubmitButton icon={Wallet} label={tx("Preview form", "預覽表格")} />
+       <PreviewNote tx={tx} />
+     </form>
+   );
+@@ -891,7 +822,7 @@
+         />
+       </Field>
+ 
+-      <SubmitButton icon={Send} label={tx("Send Partner Enquiry", "提交合作查詢")} />
++      <SubmitButton icon={Send} label={tx("Preview form", "預覽表格")} />
+       <PreviewNote tx={tx} />
+     </form>
+   );
+@@ -909,8 +840,8 @@
+   return (
+     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-soft-ink)]/70 text-center">
+       {tx(
+-        `Preview form — for live enquiries, email ${legacyContact.email}.`,
+-        `預覽表格 —— 如要即時查詢，請電郵 ${legacyContact.email}。`,
++        "Preview only. Nothing is sent or saved. Avoid entering sensitive information.",
++        "僅供預覽，不會發送或儲存資料，請勿輸入敏感資料。",
+       )}
+     </p>
+   );
+--- a/src/routes/_site.creators.tsx
++++ b/src/routes/_site.creators.tsx
+@@ -21,7 +21,7 @@
+   academyTracks,
+   resources,
+ } from "@/data/mockData";
+-import { LEVELS } from "@/lib/levels";
++import { LEVELS, progressToNext } from "@/lib/levels";
+ import { legacyAffiliateSteps, localized } from "@/data/legacyAdfocateContent";
+ import { useI18n } from "@/lib/i18n";
+ import {
+@@ -367,8 +367,8 @@
+             <p className="mt-3 text-sm leading-relaxed text-[var(--color-soft-ink)]">
+               {localized(
+                 {
+-                  en: "The original Adfocate affiliate flow now connects to creator levels, mission validation, Adfoplace offers, and verified earning history.",
+-                  zh: "Adfocate 原有 Affiliate 流程現已連接創作者等級、任務驗證、Adfoplace Offer 及已驗證收益紀錄。",
++                  en: "An illustrative affiliate journey. Automatic commissions and payouts are not available in this pilot.",
++                  zh: "聯盟行銷流程示範；此試行版尚未提供自動佣金及付款。",
+                 },
+                 lang,
+               )}
+@@ -419,8 +419,8 @@
+             </h2>
+             <p className="mt-3 text-[var(--color-soft-ink)]">
+               {tx(
+-                "From product sampler to creator entrepreneur — each level unlocks new earning opportunities.",
+-                "由產品試用者到創作者企業家 — 每升一級，解鎖全新賺錢機會。",
++                "XP thresholds follow the current level rules. Opportunity and income examples below are illustrative; availability and rewards depend on each mission.",
++                "XP 門檻依照現行等級規則。以下機會及收入僅供示範，實際資格及獎勵以各任務為準。",
+               )}
+             </p>
+           </div>
+@@ -510,7 +510,8 @@
+   const { t, lang } = useI18n();
+   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+   const passport = mockCreatorPassport;
+-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
++  const progress = progressToNext(passport.xp);
++  const xpPct = progress.pct;
+ 
+   const scoreRings = [
+     { key: "influence", label: "Influence", color: "#FF3D7F" },
+@@ -531,12 +532,13 @@
+           </h2>
+           <p className="mt-2 max-w-lg text-[var(--color-paper)]/70">
+             {tx(
+-              "Your profile grows with every mission. Prove your value to brands with verified data.",
+-              "你的履歷會隨每個任務成長。用已驗證數據，向品牌證明你的價值。",
++              "Your profile brings together mission history and account data. Ownership verification is shown separately for each social account.",
++              "履歷整合任務歷史及帳號資料，各社交帳號會分別顯示擁有權驗證狀態。",
+             )}
+           </p>
+         </div>
+ 
++        <p className="mb-3 text-sm text-[var(--color-acid)]">{tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}</p>
+         <div className="rounded-[var(--radius)] border-2 border-[var(--color-acid)] bg-[var(--color-ink)] p-6 shadow-[6px_6px_0_var(--color-acid)] sm:p-8">
+           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+             <div className="space-y-6">
+@@ -552,7 +554,7 @@
+                     <span
+                       className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}
+                     >
+-                      {passport.level} {passport.levelLabel}
++                      {progress.current.id} {t(progress.current.labelKey)}
+                     </span>
+                     <span className="font-mono text-[11px] text-[var(--color-paper)]/60">
+                       {passport.completedMissions}{" "}
+@@ -579,7 +581,7 @@
+                   <div className="xp-bar-fill h-3" style={{ width: `${xpPct}%` }} />
+                 </div>
+                 <p className="mt-1.5 font-mono text-[10px] text-[var(--color-paper)]/55">
+-                  {xpPct}% to L4 Micro-Influencer ·{" "}
++                  {xpPct}% · {progress.next?.id} {progress.next && t(progress.next.labelKey)} ·{" "}
+                   {tx("Complete", "尚餘")}{" "}
+                   {(passport.xpNext - passport.xp).toLocaleString()}{" "}
+                   {tx("more XP", "XP")}
+@@ -731,8 +733,8 @@
+       title: tx("Academy Courses", "創作者學院課程"),
+       icon: GraduationCap,
+       desc: tx(
+-        "Structured learning tracks from KOC Starter to live commerce and creator finance.",
+-        "由 KOC 入門到直播帶貨同創作者財務的系統化學習路線。",
++        "Course topics preview · content in preparation",
++        "課程主題預覽 · 內容準備中",
+       ),
+       items: academyTracks.slice(0, 4),
+       variant: "game-card-mint",
+@@ -787,8 +789,8 @@
+         </h2>
+         <p className="mt-3 text-[var(--color-soft-ink)]">
+           {tx(
+-            "Access Academy, Copilot, templates, and studio resources to accelerate your creator journey.",
+-            "用 Academy、Copilot、範本同工作室資源，加速你的創作者旅程。",
++            "Resource concepts preview. Course units, AI services, mentoring and studio booking are not enabled by this page.",
++            "資源概念預覽。本頁不提供課堂單元、AI 服務、導師預約或工作室預約。",
+           )}
+         </p>
+       </div>
+--- a/src/routes/_site.index.tsx
++++ b/src/routes/_site.index.tsx
+@@ -20,7 +20,7 @@
+   Check,
+ } from "lucide-react";
+ import { mockCreatorPassport } from "@/data/mockData";
+-import { LEVELS } from "@/lib/levels";
++import { LEVELS, progressToNext } from "@/lib/levels";
+ import { legacyActivationServices, localized } from "@/data/legacyAdfocateContent";
+ import { useI18n } from "@/lib/i18n";
+ import { cn } from "@/lib/utils";
+@@ -124,10 +124,11 @@
+ 
+ /* ───────────────────────── 1. HERO — off-grid editorial ───────────────────────── */
+ function HeroSection() {
+-  const { lang } = useI18n();
++  const { t, lang } = useI18n();
+   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+   const passport = mockCreatorPassport;
+-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
++  const progress = progressToNext(passport.xp);
++  const xpPct = progress.pct;
+ 
+   return (
+     <section className="relative overflow-hidden bg-[var(--color-paper)]">
+@@ -144,8 +145,8 @@
+             </h1>
+             <p className="text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl mb-8 leading-relaxed">
+               {tx(
+-                "Grow, get matched to missions, and turn verified performance into real income — on one calmly-gamified platform built for Hong Kong creators and brands.",
+-                "成長、配對任務、把經過驗證嘅表現變成真實收入 —— 一個為香港創作者同品牌而設、輕度遊戲化嘅平台。",
++                "Explore the mission workflow: join, deliver, revise and submit proof. Reviewed completion creates a pending reward; payment is separate and unavailable in this pilot.",
++                "了解任務流程：加入、交付、修稿及提交證明。完成審核後會有待處理獎勵；付款是另一流程，尚未開通。",
+               )}
+             </p>
+             <div className="flex flex-wrap gap-3">
+@@ -177,9 +178,8 @@
+           <div className="relative lg:justify-self-end">
+             <span
+               className="absolute -top-4 -left-3 z-10 tag-mono rotate-[-4deg] bg-[var(--color-acid)]"
+-              aria-hidden="true"
+             >
+-              Live Passport
++              {tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}
+             </span>
+             <div className="pastel-card animate-float w-full max-w-sm p-6">
+               <div className="flex items-center gap-3">
+@@ -189,7 +189,7 @@
+                 <div>
+                   <p className="font-heading text-base font-bold text-[var(--color-ink)]">{passport.name}</p>
+                   <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
+-                    {passport.level} {passport.levelLabel}
++                    {progress.current.id} {t(progress.current.labelKey)}
+                   </span>
+                 </div>
+               </div>
+@@ -211,7 +211,7 @@
+               <div className="mt-5 flex items-center justify-between">
+                 <div>
+                   <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
+-                    {tx("Pending earnings", "待結算收入")}
++                    {tx("Illustrative pending reward · not payment", "示範待處理獎勵 · 並非付款")}
+                   </p>
+                   <p className="font-display text-xl text-[var(--color-ink)]">HK$8,450</p>
+                 </div>
+@@ -230,10 +230,10 @@
+   const { lang } = useI18n();
+   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
+   const stats = [
+-    { value: "5,200+", label: tx("Creators", "創作者") },
+-    { value: "120+", label: tx("Brand campaigns", "品牌活動") },
+-    { value: "8", label: tx("Income streams", "收入來源") },
+-    { value: "98%", label: tx("Brand-safe rating", "品牌安全評分") },
++    { value: tx("Preview", "預覽"), label: tx("Illustrative profiles", "示範履歷") },
++    { value: tx("Pending", "待處理"), label: tx("Reward handoff", "獎勵交接") },
++    { value: tx("Separate", "獨立核實"), label: tx("Account ownership", "帳號擁有權") },
++    { value: tx("Unavailable", "未開通"), label: tx("Payments and withdrawals", "付款及提現") },
+   ];
+   return (
+     <section className="mx-auto max-w-6xl px-4 -mt-6 mb-4">
+@@ -268,7 +268,7 @@
+       icon: Target,
+       tag: "01 · Earn Loop",
+       title: tx("The Earn Loop", "賺取循環"),
+-      desc: tx("Daily missions turn into points, rewards and real payouts.", "每日任務變成積分、獎勵同真實收入。"),
++      desc: tx("Approved mission completion can create a pending reward, not a payment.", "任務完成審核後可建立待處理獎勵，並不等於付款。"),
+       variant: "game-card-mint",
+     },
+     {
+@@ -276,7 +276,7 @@
+       icon: TrendingUp,
+       tag: "02 · Leveling",
+       title: tx("Leveling Engine", "升級引擎"),
+-      desc: tx("Every post earns XP that levels up your creator profile.", "每篇貼文賺取 XP，升級你嘅創作者檔案。"),
++      desc: tx("XP follows the applicable mission approval rules.", "XP 按各任務適用的審核規則計算。"),
+       variant: "game-card-yellow",
+     },
+     {
+@@ -284,7 +284,7 @@
+       icon: Gem,
+       tag: "03 · Passport",
+       title: tx("Creator Passport", "創作者履歷"),
+-      desc: tx("Verified scores brands can trust — beyond follower counts.", "品牌可信嘅驗證評分 —— 唔止係粉絲數。"),
++      desc: tx("Scores use mission and account data; ownership status is shown separately.", "評分採用任務及帳號資料，擁有權狀態會獨立顯示。"),
+       variant: "game-card-blue",
+     },
+     {
+@@ -411,7 +411,8 @@
+   const nextLevel = LEVELS.find(
+     (l) => parseInt(l.id.slice(1)) === parseInt(passport.level.slice(1)) + 1,
+   );
+-  const xpPct = Math.round((passport.xp / passport.xpNext) * 100);
++  const progress = progressToNext(passport.xp);
++  const xpPct = progress.pct;
+ 
+   const rings = [
+     { key: "reliability", color: "#D4FF00", label: tx("Reliability", "可靠度") },
+@@ -458,6 +459,7 @@
+ 
+           {/* Passport artifact card on dark */}
+           <div className="rounded-[1.5rem] border-2 border-[var(--color-acid)]/30 bg-[var(--color-ink)]/60 p-6 backdrop-blur-sm sm:p-8">
++            <p className="mb-3 text-sm text-[var(--color-acid)]">{tx("Illustrative profile · fictional data", "示範履歷 · 虛構資料")}</p>
+             <div className="flex items-center gap-4">
+               <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--color-acid)] bg-[var(--color-acid)] font-display text-xl font-bold text-[var(--color-ink)]">
+                 {passport.avatar}
+@@ -465,7 +467,7 @@
+               <div>
+                 <h3 className="font-heading text-lg font-bold text-[var(--color-paper)]">{passport.name}</h3>
+                 <span className={cn("level-pill", levelPillClass[passport.level] ?? "level-pill-l3")}>
+-                  {passport.level} {passport.levelLabel}
++                  {progress.current.id} {t(progress.current.labelKey)}
+                 </span>
+               </div>
+             </div>
+@@ -535,8 +537,8 @@
+           <h2 className="mt-4 font-display text-[var(--color-ink)]">{t("home.monetization.heading")}</h2>
+           <p className="mt-3 text-[var(--color-soft-ink)]">
+             {tx(
+-              "Three layers of income, stacked. Spend points in the store, earn affiliate commission on your links, then withdraw real HK$ from your cash wallet.",
+-              "三層收入疊加。喺商店使用積分，靠你嘅連結賺取聯盟佣金，再從現金錢包提取真實港幣。",
++              "Illustrative reward concepts. The pilot records pending rewards after review; pending reward is not payment. Payments, withdrawals and automatic affiliate commissions are unavailable.",
++              "獎勵概念示範。試行版在審核後記錄待處理獎勵，並不等於付款；付款、提現及自動佣金尚未開通。",
+             )}
+           </p>
+         </div>
+@@ -586,7 +588,7 @@
+                 </p>
+                 <h3 className="mt-1 font-display text-3xl text-[var(--color-paper)]">HK$28,450</h3>
+                 <p className="mt-1 font-mono text-xs text-[var(--color-paper)]/60">
+-                  {tx("Lifetime withdrawable earnings", "可提取累計收入")}
++                  {tx("Illustrative amount · no withdrawals", "示範金額 · 不可提現")}
+                 </p>
+               </div>
+               <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl border-2 border-[var(--color-acid)] bg-[var(--color-acid)]/15">
+@@ -681,7 +683,8 @@
+         </div>
+       </div>
+ 
+-      {/* Folded-in legacy proof: verified metrics brands see */}
++      <p className="mt-8 text-center text-sm">{tx("Illustrative metrics · not platform results", "示範數據 · 並非平台實績")}</p>
++      {/* Illustrative metrics; no production performance evidence. */}
+       <div className="mt-8 flex flex-wrap justify-center gap-3">
+         {[
+           { label: tx("92% Audience Fit", "92% 受眾匹配") },
+@@ -713,7 +716,7 @@
+           <h2 className="mt-5 font-display text-[var(--color-ink)]">{t("home.final.heading")}</h2>
+           <p className="mx-auto mt-4 max-w-md text-[var(--color-ink)]/80">
+             {tx(
+-              "Join thousands of Hong Kong creators turning KOC missions into real creator businesses — or work with verified creators on your next campaign.",
++              "Explore the creator workflow preview, from joining a mission to a reviewed pending reward.",
+               "加入數以千計嘅香港創作者，把 KOC 任務變成真正嘅創作者事業 —— 或者同經驗證嘅創作者合作你下一個活動。",
+             )}
+           </p>
+--- a/src/routes/_site.tsx
++++ b/src/routes/_site.tsx
+@@ -9,10 +9,17 @@
+ });
+ 
+ function SiteLayout() {
++  const { lang } = useI18n();
+   return (
+     <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
+       <MarketingHeader />
+       <main id="main">
++        <p role="note" aria-label={lang === "en" ? "Product preview" : "產品預覽"}
++          className="border-b-2 border-[var(--color-ink)] bg-[var(--color-cream)] px-4 py-3 text-center text-sm">
++          {lang === "en"
++            ? "Product preview. Profiles, statistics and earning examples are illustrative. Pending reward is not payment. Withdrawals, financing and automatic affiliate payouts are unavailable. Contact forms do not send or save information."
++            : "產品預覽：履歷、統計及收入例子僅供示範。待處理獎勵不等於付款；提現、融資及自動佣金尚未開通。聯絡表格不會發送或儲存資料。"}
++        </p>
+         <Outlet />
+       </main>
+       <Footer />
+--- a/src/routes/admin.academy.$id.tsx
++++ b/src/routes/admin.academy.$id.tsx
+@@ -5,5 +5,5 @@
+ 
+ function EditorPage() {
+   const { id } = useParams({ from: "/admin/academy/$id" });
+-  return <AcademyEditor id={id} />;
++  return <AcademyEditor key={id} id={id} />;
+ }
+--- a/src/routes/admin.academy.index.tsx
++++ b/src/routes/admin.academy.index.tsx
+@@ -19,7 +19,7 @@
+           {t("app.admin.academy.new")}
+         </Link>
+       </div>
+-      <select value={kind} onChange={(e) => setKind(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
++      <select aria-label="Content kind" value={kind} onChange={(e) => setKind(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
+         <option value="">All</option><option value="guide_doc">Guide docs</option><option value="track">Tracks</option><option value="playbook">Playbooks</option><option value="resource">Resources</option>
+       </select>
+       {isLoading ? <p className="text-sm text-[var(--color-soft-ink)]">…</p>

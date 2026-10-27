@@ -1,0 +1,21 @@
+{
+  "status": "PASS_LOCAL_FAIL_CLOSED_PROBES_NOT_RUNTIME_ACCEPTANCE",
+  "results": [
+    {
+      "case": "current-partial-target-refused",
+      "passed": true,
+      "reason": "B2 target/bootstrap receipt mismatch"
+    },
+    {
+      "case": "unapproved-recovery-refused",
+      "passed": true,
+      "reason": "B2 runtime authorization must bind the reviewed manifest and source"
+    }
+  ],
+  "counts": {
+    "subprocess": 0,
+    "privateKeyReads": 0,
+    "fetch": 0
+  },
+  "applicationIntegrationOrBrowserRuns": 0
+}

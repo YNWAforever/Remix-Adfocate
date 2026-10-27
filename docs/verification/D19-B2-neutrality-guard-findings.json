@@ -1,0 +1,23 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "items": [
+    {
+      "id": "NG-01",
+      "status": "FIXED_LOCAL_MOCK_VERIFIED_RUNTIME_NOT_RUN",
+      "problem": "Browser runner saved pending financial readback but did not compare it; a passing UI phase could conceal a changed funded budget.",
+      "reproduction": "Valid RED actual original runner under fakes: UI subprocess0 plus budget+1 still returned0.",
+      "repair": "Same runner compares complete source/target/fixture-framed snapshots and legacy anchors; missing/changed evidence forces status1 before phase-result.",
+      "evidence": [
+        "D19-B2-neutrality-guard-test-history.json",
+        "D19-B2-neutrality-guard-full-results.json"
+      ],
+      "actualFinancialEqualityProven": false
+    },
+    {
+      "id": "NG-02",
+      "status": "CORRECTED_LOCAL_DOCUMENT",
+      "problem": "D19 plan heading presented historical R1 verification as current.",
+      "repair": "Current source-bound status is B2 runtime unapproved/not run, incident OPEN and release HOLD; historical checked items explicitly retained as historical."
+    }
+  ]
+}

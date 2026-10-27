@@ -1,0 +1,9 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": true,
+  "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "ownerReference": "2026-10-25 direct user approval reply call_70fd0be5fefd4269b44c021c56d56c10; C1 recovery manifest 257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "approvalText": "批准 C1：新增 recovery target，保留目前 B2",
+  "scope": "Only the exact reviewed manifest; incident OPEN, release HOLD, provider disabled; no production/old-target mutations/commit/push/merge/deploy"
+}

@@ -1,0 +1,34 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx (9 tests | 1 failed) 538ms
+   × D19 actual asset UI/API boundary with explicit offline adapters > shows a failed evidence row and retained inputs when finalize returns an actual route409 62ms
+     → expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > shows a failed evidence row and retained inputs when finalize returns an actual route409
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:211:82
+    209|     fault = "stale"; await openProof(); choose(image());
+    210|     expect(await screen.findByRole("alert")).toHaveTextContent("Couldn…
+    211|     expect(requests.some(r => r.path.endsWith("/finalize") && r.status…
+       |                                                                                  ^
+    212|     expect(ready()).toBeUndefined(); expect(rows[1].upload_state).toBe…
+    213|     expect(screen.getByLabelText("Primary public URL")).toHaveValue("h…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  05:04:17
+   Duration  2.63s (transform 349ms, setup 174ms, collect 934ms, tests 538ms, environment 727ms, prepare 87ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-asset-offline-20261026/boundary-initial-native.json

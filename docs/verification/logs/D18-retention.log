@@ -1,0 +1,39 @@
+ERROR:  column "mission_workflow_id" does not exist
+LINE 1: ...m public.mission_publication_proof_attempts where mission_wo...
+                                                             ^
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: docker exec -i e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d psql -X -q -A -t -v ON_ERROR_STOP=1 -U postgres -d postgres
+ERROR:  column "mission_workflow_id" does not exist
+LINE 1: ...m public.mission_publication_proof_attempts where mission_wo...
+                                                             ^
+
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:925:11)
+    at execFileSync (node:child_process:961:15)
+    at docker (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/local-targets.mjs:14:10)
+    at Object.sql (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/local-targets.mjs:40:26)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-retention.mjs:12:30
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async node:internal/modules/esm/loader:643:26 {
+  status: 3,
+  signal: null,
+  output: [
+    null,
+    '',
+    'ERROR:  column "mission_workflow_id" does not exist\n' +
+      'LINE 1: ...m public.mission_publication_proof_attempts where mission_wo...\n' +
+      '                                                             ^\n'
+  ],
+  pid: 24756,
+  stdout: '',
+  stderr: 'ERROR:  column "mission_workflow_id" does not exist\n' +
+    'LINE 1: ...m public.mission_publication_proof_attempts where mission_wo...\n' +
+    '                                                             ^\n'
+}
+
+Node.js v24.18.0

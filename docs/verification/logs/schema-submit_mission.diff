@@ -1,0 +1,20 @@
+--- observed-production/submit_mission
+
++++ local-candidate/submit_mission
+
+@@ -6,10 +6,14 @@
+
+ AS $function$
+ declare
+   v_creator uuid := auth.uid();
++  v_mode text;
+   v_sub public.mission_submissions;
+ begin
+   if v_creator is null then raise exception 'not_authenticated'; end if;
+   if p_urls is null or array_length(p_urls, 1) is null then raise exception 'empty_urls'; end if;
++
++  select creator_workflow_mode into v_mode from public.missions where id = p_mission;
++  if v_mode = 'active_workspace' then raise exception 'workflow_mode_mismatch'; end if;
+ 
+   select * into v_sub from public.mission_submissions
+     where mission_id = p_mission and creator_id = v_creator for update;

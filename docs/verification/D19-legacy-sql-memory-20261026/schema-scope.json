@@ -1,0 +1,25 @@
+{
+  "sourceMigrations": 73,
+  "sourceMigrationChanges": 0,
+  "physicalSchemaCalls": 0,
+  "physicalTargetState": "NOT_READ_THIS_TURN; historical C1 schema72 retained only",
+  "memoryProfile": {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.json",
+    "sha256": "2852e42c75bb13c771fecf19970db57887ec76def336b21c12c5b0e8dc6df2e5"
+  },
+  "originalSqlFiles": 7,
+  "selectedOriginalStatements": 23,
+  "comparedTableFamilies": 9,
+  "fullMigrationOrTriggerReplay": false,
+  "newDatabaseFeatureOrPersistentLedger": false,
+  "excluded": [
+    "Full73 migration trigger stack",
+    "GoTrue/PostgREST/Hono",
+    "Real Auth/membership/RLS",
+    "Campaign bonus,notification and level hooks",
+    "persistScores API behavior",
+    "Independent-connection concurrency",
+    "Active pending reward flow"
+  ],
+  "invalidFixture": "Invented, in-process row inserted before the actual evidence guard; never an incident before-image. No live trigger disabled or data restored."
+}

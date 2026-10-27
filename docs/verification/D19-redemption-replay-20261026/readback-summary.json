@@ -1,0 +1,58 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "memory": {
+    "passed": 10,
+    "source": {
+      "path": "docs/verification/D19-redemption-replay-20261026/memory-final-readback.json",
+      "sha256": "494a4718b98362d1e7ed945a06e723a0118829c718f0e6ab4196537cd6aafbd5"
+    },
+    "tests": [
+      "UC-C33 current actual redemption SQL/route intent replay > same intent after a lost response returns the same saved code and debits only once",
+      "UC-C33 current actual redemption SQL/route intent replay > a deliberate second new intent still receives a DISTINCT code and its own debit",
+      "UC-C33 current actual redemption SQL/route intent replay > retry recovers the original saved result even when that first action exhausted stock",
+      "UC-C33 current actual redemption SQL/route intent replay > the same intent cannot be changed to another gift and debit a second time",
+      "UC-C33 current actual redemption SQL/route intent replay > a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes",
+      "UC-C33 current actual redemption SQL/route intent replay > another recipient using the same client UUID never receives the first person's code",
+      "UC-C33 current actual redemption SQL/route intent replay > a late receipt-update failure rolls back the original financial operation before an exact retry",
+      "UC-C33 current actual redemption SQL/route intent replay > legacy callers without a client ID retain two deliberately distinct redemption results",
+      "UC-C33 current actual redemption SQL/route intent replay > the wrapper denies anon, the pool stays private and SQL history RLS hides the other recipient",
+      "UC-C33 current actual redemption SQL/route intent replay > malformed or null request bodies fail before the SQL command"
+    ],
+    "actualSqlFunctions": true,
+    "freshMemoryPerCase": true,
+    "notPhysicalSupabase": true,
+    "independentSessionConcurrencyProven": false
+  },
+  "ui": {
+    "passed": 11,
+    "source": {
+      "path": "docs/verification/D19-redemption-replay-20261026/client-final-readback.json",
+      "sha256": "04a1a6357be615c107a57004b8a51c3bb2c7d224397e601d2f5204a98fc876bf"
+    },
+    "tests": [
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > manual retry after a lost response keeps the exact UUID and gift input",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > closing and reopening an unknown result preserves the request",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a page/component reload keeps the same tab/owner/workspace/gift intent until acknowledged",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > acknowledging a confirmed code allows a deliberate new intent",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > an account switch does not reuse another recipient's pending intent",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > unavailable intent storage fails before a POST and offers history while retaining the gift",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a request conflict retains the same intent and exposes a safe history recovery path",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a corrupt unconfirmed intent cannot silently become a new debit request",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a failed acknowledgement keeps the known code visible until storage recovers",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > pins the authorized owner and workspace snapshot despite a subsequent session/navigation change",
+      "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > after reload with exhausted stock the existing history entry recovers the saved code without another POST"
+    ],
+    "actualComponentsQueriesAndFetch": true,
+    "scriptedHttpAndSessionStorage": true,
+    "realBrowser": false
+  },
+  "walletImpact": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact-readback.json",
+    "sha256": "68d37ff59328a6d027b76e9e14037c04af0b701088f67760f3bf7adc61c06844"
+  },
+  "realSdkClients": 0,
+  "physicalSqlCalls": 0,
+  "actualProviderCalls": 0,
+  "pendingRewardNeutralityMeasured": false,
+  "redemptionOneDebitIsExistingBehavior": "Only local memory redemptions intentionally debit existing points; no real redemption/payment/new ledger. Pending reward workflow remains neutral at its own historical source."
+}

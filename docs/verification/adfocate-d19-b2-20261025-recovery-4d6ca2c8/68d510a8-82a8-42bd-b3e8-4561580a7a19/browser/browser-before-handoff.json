@@ -1,0 +1,122 @@
+{
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796",
+    "executionNamespace": "68d510a8-82a8-42bd-b3e8-4561580a7a19"
+  },
+  "runId": "ebf1f615-be72-4072-ad97-ee98b150a796",
+  "target": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_4715f74b8ded413ea520b4491078088f: approved same existing C1 fixture continuation; manifest 696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d; zero additional physical resources/subjects/domain setup fixtures; no legacy replay; bounded six existing actor sessions plus one Creator UI login; retain incidentOPEN/releaseHOLD/providerdisabled.",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "creatorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+  "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+  "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c",
+  "workflowId": "acc556fa-af8e-45fc-b324-13b111dc2125",
+  "phase": "immediately-before-completion",
+  "snapshot": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "financialRows": {
+      "creatorsXp": [
+        {
+          "id": "2f9769c9-49f7-4838-877d-26c7e421f15d",
+          "xp": 0
+        },
+        {
+          "id": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+          "xp": 145
+        }
+      ],
+      "redemptions": [],
+      "point_balances": [
+        {
+          "id": "4d58ee25-f383-407b-81a2-f88330353e45",
+          "hash": "147e8e9a5ed1d4aae551b990245864b1"
+        },
+        {
+          "id": "b4904d7e-2ff7-49bc-ab52-715cc94cfeac",
+          "hash": "71f22bf6d23928c10de09a6f06512a2c"
+        }
+      ],
+      "redemption_codes": [],
+      "redemption_gifts": [
+        {
+          "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+          "hash": "6e21fa1f79863068f5f0fa0ad48e72b8"
+        }
+      ],
+      "earnings_balances": [
+        {
+          "id": "04e47339-c280-418f-8cca-4a78b1fa0c83",
+          "hash": "179ca5fed8b85cea22165ee1bbb66941"
+        },
+        {
+          "id": "527f2517-d1aa-47e3-a1a3-8cf8f0eab7bd",
+          "hash": "093c284e0b3777a7f2830cf096f01220"
+        }
+      ],
+      "workspace_budgets": [
+        {
+          "id": "81f29f21-eb9b-4eda-a81c-0237b712bc64",
+          "hash": "144db36f35e3a7939b245e2e6d32e577"
+        }
+      ],
+      "point_transactions": [
+        {
+          "id": "f1e0afa3-b9df-4116-9f9b-32ece0147bfb",
+          "hash": "f2d94b90bd41b72329a8f075f7af16c2"
+        }
+      ],
+      "earnings_transactions": [
+        {
+          "id": "69ca7cbe-e085-4385-b3f7-998f81803f2b",
+          "hash": "574613bd1deca575807361b18bfbdeb6"
+        }
+      ],
+      "workspace_budget_transactions": [
+        {
+          "id": "8ba521dd-0a11-4f36-82df-2ebde72d0de6",
+          "hash": "6802bf33ca55eb68e60b815268615926"
+        }
+      ]
+    },
+    "rewardInventory": [
+      {
+        "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "legacyAnchors": [
+    {
+      "id": "b4f961da-62e3-4d6e-b091-23a72d813535",
+      "status": "approved",
+      "creatorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+      "missionId": "615d857a-78fc-4e32-8468-0288201e2ead",
+      "xpAwarded": 135,
+      "reviewedAt": "2026-10-25T07:40:26.680441+00:00",
+      "pointsAwarded": 500
+    }
+  ]
+}

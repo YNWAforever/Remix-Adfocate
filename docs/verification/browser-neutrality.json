@@ -1,0 +1,38 @@
+{
+  "runId": "cfa21c51-e2e8-4114-8735-0bdb5b5a806e",
+  "before": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  },
+  "after": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  },
+  "allEqual": true,
+  "initialSeedSnapshot": {
+    "xp": 0,
+    "points": 50,
+    "withdrawable": 0,
+    "budget": null,
+    "pointLedger": 0,
+    "cashLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "rewardInventory": []
+  },
+  "note": "Existing welcome XP occurs at sign-in, before the measured handoff; XP is compared without normalization."
+}

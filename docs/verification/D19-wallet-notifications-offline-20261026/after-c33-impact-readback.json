@@ -1,0 +1,1798 @@
+{
+  "scope": "Actual UI/query/apiFetch/Hono/workspace middleware with scripted Auth/DB/Realtime only; no physical persistence, Auth/RLS, real browser, payment/provider or D19 pending reward E2E neutrality",
+  "observations": [
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C13 shows owned points/history and available cash separately from pending estimates",
+      "requests": [
+        {
+          "path": "/api/me",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "display_name": "Offline Creator",
+            "avatar_url": null,
+            "level": "L1",
+            "level_seen": "L1",
+            "xp": 0,
+            "phone": null,
+            "categories": [],
+            "social_handles": [],
+            "social_accounts": [],
+            "onboarding_step": 4,
+            "onboarding_completed": true,
+            "referral_code": "OFFLINE",
+            "is_trusted": false,
+            "effective_level": "L1"
+          }
+        },
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 400,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        },
+        {
+          "path": "/api/wallet/points/history",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "transactions": [
+              {
+                "id": "p2",
+                "type": "redeem",
+                "delta": -50,
+                "balance_after": 400,
+                "description": "Owned debit witness",
+                "created_at": "2026-10-25T02:00:00Z"
+              },
+              {
+                "id": "p1",
+                "type": "earn",
+                "delta": 250,
+                "balance_after": 450,
+                "description": "Owned points witness",
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/wallet/earnings/history",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "transactions": [
+              {
+                "id": "e1",
+                "type": "earn",
+                "amount": 47.25,
+                "balance_after": 47.25,
+                "description": "Owned cash witness",
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/wallet/earnings",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "available": 47.25,
+            "pending": 15
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "earnings_balances",
+          "op": "select",
+          "columns": "available",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_transactions",
+          "op": "select",
+          "columns": "id, type, delta, balance_after, description, created_at",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "earnings_transactions",
+          "op": "select",
+          "columns": "id, type, amount, balance_after, description, created_at",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "mission_submissions",
+          "op": "select",
+          "columns": "missions!inner(cash_reward)",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "status",
+              "op": "in",
+              "value": [
+                "submitted",
+                "under_review"
+              ]
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C13 exposes a failed points read and recovers on an explicit query refresh",
+      "requests": [
+        {
+          "path": "/api/me",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "display_name": "Offline Creator",
+            "avatar_url": null,
+            "level": "L1",
+            "level_seen": "L1",
+            "xp": 0,
+            "phone": null,
+            "categories": [],
+            "social_handles": [],
+            "social_accounts": [],
+            "onboarding_step": 4,
+            "onboarding_completed": true,
+            "referral_code": "OFFLINE",
+            "is_trusted": false,
+            "effective_level": "L1"
+          }
+        },
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 500,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "error": "Scripted offline failure",
+            "code": "db_error"
+          }
+        },
+        {
+          "path": "/api/wallet/points/history",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "transactions": [
+              {
+                "id": "p2",
+                "type": "redeem",
+                "delta": -50,
+                "balance_after": 400,
+                "description": "Owned debit witness",
+                "created_at": "2026-10-25T02:00:00Z"
+              },
+              {
+                "id": "p1",
+                "type": "earn",
+                "delta": 250,
+                "balance_after": 450,
+                "description": "Owned points witness",
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/wallet/earnings/history",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "transactions": [
+              {
+                "id": "e1",
+                "type": "earn",
+                "amount": 47.25,
+                "balance_after": 47.25,
+                "description": "Owned cash witness",
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/wallet/earnings",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "available": 47.25,
+            "pending": 15
+          }
+        },
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 400,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": true
+        },
+        {
+          "table": "earnings_balances",
+          "op": "select",
+          "columns": "available",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_transactions",
+          "op": "select",
+          "columns": "id, type, delta, balance_after, description, created_at",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "earnings_transactions",
+          "op": "select",
+          "columns": "id, type, amount, balance_after, description, created_at",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "mission_submissions",
+          "op": "select",
+          "columns": "missions!inner(cash_reward)",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "status",
+              "op": "in",
+              "value": [
+                "submitted",
+                "under_review"
+              ]
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C14 disables a one-point shortfall with an associated exact shortfall explanation",
+      "requests": [
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 49,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        },
+        {
+          "path": "/api/redemption/gifts",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "gifts": [
+              {
+                "id": "gift-a",
+                "name": "Offline gift",
+                "description": "No redemption permitted",
+                "category": "test",
+                "points_cost": 50,
+                "stock_remaining": 2,
+                "gift_type": "code",
+                "image_url": null,
+                "status": "active"
+              }
+            ]
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "redemption_gifts",
+          "op": "select",
+          "columns": "id, name, description, category, points_cost, stock_remaining, gift_type, image_url, status",
+          "filters": [
+            {
+              "key": "workspace_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000003"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [
+        {
+          "table": "point_balances",
+          "balance": 49
+        }
+      ],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C14 disables out-of-stock stock even with enough points and cannot open a redemption",
+      "requests": [
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 400,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        },
+        {
+          "path": "/api/redemption/gifts",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "gifts": [
+              {
+                "id": "gift-a",
+                "name": "Offline gift",
+                "description": "No redemption permitted",
+                "category": "test",
+                "points_cost": 50,
+                "stock_remaining": 0,
+                "gift_type": "code",
+                "image_url": null,
+                "status": "active"
+              }
+            ]
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "redemption_gifts",
+          "op": "select",
+          "columns": "id, name, description, category, points_cost, stock_remaining, gift_type, image_url, status",
+          "filters": [
+            {
+              "key": "workspace_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000003"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C14 re-evaluates availability from fresh balance/stock queries without redeeming",
+      "requests": [
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 49,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        },
+        {
+          "path": "/api/redemption/gifts",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "gifts": [
+              {
+                "id": "gift-a",
+                "name": "Offline gift",
+                "description": "No redemption permitted",
+                "category": "test",
+                "points_cost": 50,
+                "stock_remaining": 2,
+                "gift_type": "code",
+                "image_url": null,
+                "status": "active"
+              }
+            ]
+          }
+        },
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "balance": 50,
+            "available_to": "2099-01-01T00:00:00Z"
+          }
+        },
+        {
+          "path": "/api/redemption/gifts",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "gifts": [
+              {
+                "id": "gift-a",
+                "name": "Offline gift",
+                "description": "No redemption permitted",
+                "category": "test",
+                "points_cost": 50,
+                "stock_remaining": 0,
+                "gift_type": "code",
+                "image_url": null,
+                "status": "active"
+              }
+            ]
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "redemption_gifts",
+          "op": "select",
+          "columns": "id, name, description, category, points_cost, stock_remaining, gift_type, image_url, status",
+          "filters": [
+            {
+              "key": "workspace_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000003"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "point_balances",
+          "op": "select",
+          "columns": "balance, available_to",
+          "filters": [
+            {
+              "key": "creator_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "redemption_gifts",
+          "op": "select",
+          "columns": "id, name, description, category, points_cost, stock_remaining, gift_type, image_url, status",
+          "filters": [
+            {
+              "key": "workspace_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000003"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [
+        {
+          "table": "point_balances",
+          "balance": 49
+        },
+        {
+          "table": "point_balances",
+          "balance": 50
+        }
+      ],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C36 renders exact saved-submission links and reconciles the badge to the actual owned read update",
+      "requests": [
+        {
+          "path": "/api/notifications/unread-count",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "count": 2
+          }
+        },
+        {
+          "path": "/api/notifications",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "items": [
+              {
+                "id": "00000000-0000-4000-8000-000000000011",
+                "type": "mission_revision_requested",
+                "data": {
+                  "submission_id": "00000000-0000-4000-8000-000000000004",
+                  "mission_title": "Owned revision"
+                },
+                "entity_type": "mission_workflow",
+                "entity_id": "00000000-0000-4000-8000-000000000004",
+                "read_at": null,
+                "created_at": "2026-10-25T02:00:00Z"
+              },
+              {
+                "id": "00000000-0000-4000-8000-000000000012",
+                "type": "mission_reward_pending",
+                "data": {
+                  "submission_id": "00000000-0000-4000-8000-000000000004",
+                  "mission_title": "Owned reward"
+                },
+                "entity_type": "reward_handoff",
+                "entity_id": "pending-fixture",
+                "read_at": null,
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ],
+            "unread_count": 2
+          }
+        },
+        {
+          "path": "/api/notifications/read",
+          "method": "POST",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": {
+            "ids": [
+              "00000000-0000-4000-8000-000000000011",
+              "00000000-0000-4000-8000-000000000012"
+            ]
+          },
+          "result": {
+            "updated": 2
+          }
+        },
+        {
+          "path": "/api/notifications/unread-count",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "count": 0
+          }
+        },
+        {
+          "path": "/api/notifications",
+          "method": "GET",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "items": [
+              {
+                "id": "00000000-0000-4000-8000-000000000011",
+                "type": "mission_revision_requested",
+                "data": {
+                  "submission_id": "00000000-0000-4000-8000-000000000004",
+                  "mission_title": "Owned revision"
+                },
+                "entity_type": "mission_workflow",
+                "entity_id": "00000000-0000-4000-8000-000000000004",
+                "read_at": "2026-10-25T20:47:31.208Z",
+                "created_at": "2026-10-25T02:00:00Z"
+              },
+              {
+                "id": "00000000-0000-4000-8000-000000000012",
+                "type": "mission_reward_pending",
+                "data": {
+                  "submission_id": "00000000-0000-4000-8000-000000000004",
+                  "mission_title": "Owned reward"
+                },
+                "entity_type": "reward_handoff",
+                "entity_id": "pending-fixture",
+                "read_at": "2026-10-25T20:47:31.208Z",
+                "created_at": "2026-10-25T01:00:00Z"
+              }
+            ],
+            "unread_count": 0
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id, type, data, entity_type, entity_id, read_at, created_at",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "update",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "id",
+              "op": "in",
+              "value": [
+                "00000000-0000-4000-8000-000000000011",
+                "00000000-0000-4000-8000-000000000012"
+              ]
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id, type, data, entity_type, entity_id, read_at, created_at",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "rows": 2,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 0,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "select",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 0,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": "2026-10-25T20:47:31.208Z",
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": "2026-10-25T20:47:31.208Z",
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C36 repeated owned/foreign/duplicate mark-read IDs cannot alter the other recipient",
+      "requests": [
+        {
+          "path": "/api/notifications/read",
+          "method": "POST",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": {
+            "ids": [
+              "00000000-0000-4000-8000-000000000011",
+              "00000000-0000-4000-8000-000000000011",
+              "00000000-0000-4000-8000-000000000013"
+            ]
+          },
+          "result": {
+            "updated": 1
+          }
+        },
+        {
+          "path": "/api/notifications/read",
+          "method": "POST",
+          "status": 200,
+          "workspace": "offline-facets",
+          "bearerPresent": true,
+          "body": {
+            "ids": [
+              "00000000-0000-4000-8000-000000000011",
+              "00000000-0000-4000-8000-000000000011",
+              "00000000-0000-4000-8000-000000000013"
+            ]
+          },
+          "result": {
+            "updated": 0
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "update",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "id",
+              "op": "in",
+              "value": [
+                "00000000-0000-4000-8000-000000000011",
+                "00000000-0000-4000-8000-000000000011",
+                "00000000-0000-4000-8000-000000000013"
+              ]
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "offline-facets"
+            }
+          ],
+          "rows": 1,
+          "failed": false
+        },
+        {
+          "table": "notifications",
+          "op": "update",
+          "columns": "id",
+          "filters": [
+            {
+              "key": "user_id",
+              "op": "eq",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "key": "id",
+              "op": "in",
+              "value": [
+                "00000000-0000-4000-8000-000000000011",
+                "00000000-0000-4000-8000-000000000011",
+                "00000000-0000-4000-8000-000000000013"
+              ]
+            },
+            {
+              "key": "read_at",
+              "op": "is",
+              "value": null
+            }
+          ],
+          "rows": 0,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": "2026-10-25T20:47:31.241Z",
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "GATE14 independent offline wallet and notification acceptance facets > UC-C13 actual workspace middleware rejects missing token and wrong workspace before wallet reads",
+      "requests": [
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 401,
+          "workspace": null,
+          "bearerPresent": false,
+          "body": null,
+          "result": {
+            "error": "Missing bearer token",
+            "code": "no_auth"
+          }
+        },
+        {
+          "path": "/api/wallet/points",
+          "method": "GET",
+          "status": 403,
+          "workspace": "wrong-workspace",
+          "bearerPresent": true,
+          "body": null,
+          "result": {
+            "error": "Creator not in workspace",
+            "code": "forbidden"
+          }
+        }
+      ],
+      "queries": [
+        {
+          "table": "creators",
+          "op": "select",
+          "columns": "id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)",
+          "filters": [
+            {
+              "key": "workspaces.slug",
+              "op": "eq",
+              "value": "wrong-workspace"
+            }
+          ],
+          "rows": 0,
+          "failed": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_revision_requested",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned revision"
+          },
+          "entity_type": "mission_workflow",
+          "entity_id": "00000000-0000-4000-8000-000000000004",
+          "read_at": null,
+          "created_at": "2026-10-25T02:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000012",
+          "user_id": "00000000-0000-4000-8000-000000000001",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "00000000-0000-4000-8000-000000000004",
+            "mission_title": "Owned reward"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "pending-fixture",
+          "read_at": null,
+          "created_at": "2026-10-25T01:00:00Z"
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "user_id": "00000000-0000-4000-8000-000000000002",
+          "type": "mission_reward_pending",
+          "data": {
+            "submission_id": "foreign-submission",
+            "mission_title": "Foreign notification hidden"
+          },
+          "entity_type": "reward_handoff",
+          "entity_id": "foreign-pending",
+          "read_at": null,
+          "created_at": "2026-10-25T03:00:00Z"
+        }
+      ],
+      "scriptedFinancialRowsUnchangedSinceLatestFixtureReadback": true,
+      "fixtureReadUpdates": [],
+      "sdkCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    }
+  ]
+}

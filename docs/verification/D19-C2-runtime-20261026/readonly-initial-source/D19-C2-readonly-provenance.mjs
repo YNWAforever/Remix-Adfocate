@@ -1,0 +1,41 @@
+// Diagnostic of the already approved C2 target only. No SDK, Auth, fixture,
+// migration, notification, lifecycle or provider action; no writer restart.
+import assert from "node:assert/strict";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { resolve } from "node:path";
+import process from "node:process";
+import { verifiedTarget } from "../scripts/audit/local-targets.mjs";
+import { fixtureInventorySql } from "../scripts/audit/b2-fixture-inventory.mjs";
+const root=process.cwd(), out=resolve(root,"docs/verification/D19-C2-runtime-20261026/read-only-provenance.json");
+const read=p=>JSON.parse(readFileSync(resolve(root,p),"utf8"));
+const hash=p=>createHash("sha256").update(readFileSync(resolve(root,p))).digest("hex");
+const bound=ref=>{assert.equal(hash(ref.path),ref.sha256);return read(ref.path);};
+let stage="file-authority";
+try {
+  const manifest=read("docs/verification/D19-C2-application-runtime-manifest.json");
+  assert.equal(hash("docs/verification/D19-C2-application-runtime-manifest.json"),"eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a");
+  assert.equal(read("docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json").approved,true);
+  const plan=manifest.supplement, final=bound(plan.originFinalReadback), catalog=bound(plan.originCatalog), immutable=bound(plan.originImmutableBaseline);
+  stage="full-five-service-identity";
+  const target=verifiedTarget(); assert.equal(target.identity.projectId,manifest.target.projectId);
+  const jsonSql=q=>{assert(/^begin\s+read\s+only\s*;/i.test(q.trim()));return JSON.parse(target.sql(q));};
+  stage="readonly-provenance";
+  const observed=jsonSql(catalog.query);assert.deepEqual(observed,catalog.observed);
+  for(const seed of immutable.seeds){const current=jsonSql(seed.query);for(const[id,digest]of Object.entries(seed.rowHashes))assert.equal(current.rowHashes[id],digest);}
+  const service=immutable.serviceMigrationHistory;assert.deepEqual(jsonSql(service.query),{authHistory:service.authHistory,storageHistory:service.storageHistory});
+  const oldOwned=Object.fromEntries(["workspaces","auth_users","academy_content"].map(family=>[family,[...new Set(final.phaseInventories.flatMap(p=>p.inventory[family].ids))].sort()]));
+  const inventory=jsonSql(fixtureInventorySql(manifest.fixture.rowScopes,oldOwned));
+  for(const phase of final.phaseInventories)for(const[family,previous]of Object.entries(phase.inventory))for(const[id,digest]of Object.entries(previous.rowHashes))assert.equal(inventory[family].rowHashes[id],digest);
+  const state=jsonSql(`begin read only;select jsonb_build_object('authSubjects',(select count(*)from auth.users),'workspaces',(select count(*)from public.workspaces),'missions',(select count(*)from public.missions),'history',(select count(*)from supabase_migrations.schema_migrations),'newHistory',(select count(*)from supabase_migrations.schema_migrations where version='20261025120934'),'newFunction',(select count(*)from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'and p.proname='decide_mission_application'),'newWorkspace',(select count(*)from public.workspaces where id='${manifest.fixture.phases[0].plannedPrimaryWorkspaceId}'));commit;`);
+  assert.deepEqual(state,{authSubjects:84,workspaces:6,missions:6,history:72,newHistory:0,newFunction:0,newWorkspace:0});
+  const tables=["point_balances","point_transactions","earnings_balances","earnings_transactions","workspace_budgets","workspace_budget_transactions","redemptions","redemption_gifts","redemption_codes"];
+  const financial=jsonSql(`begin read only;select jsonb_build_object(${tables.map(t=>`'${t}',(select coalesce(jsonb_agg(jsonb_build_object('id',t.id,'hash',md5(to_jsonb(t)::text))order by t.id),'[]'::jsonb)from public.${t} t)`).join(",")});commit;`);
+  const claim=existsSync(target.context.privatePath("supplement-claim.json")), journal=existsSync(target.context.privatePath("owned-journal.jsonl"));
+  assert.equal(claim,false);assert.equal(journal,false);
+  writeFileSync(out,JSON.stringify({at:new Date().toISOString(),status:"PASS_READONLY_C2_IDENTITY_AND_PROVENANCE_NOT_RUNTIME_ACCEPTANCE",lineage:target.context.lineage,identity:target.identity,fullFiveServiceIdentityPassed:true,beforeApplicationClient:true,catalogEightSectionsEqual:true,immutableSeedsUnchanged:true,serviceHistoryUnchanged:true,original70FamilyRowsMatch:true,inventory,financial,state,claimExists:false,ownedJournalExists:false,sdkOrAuthSubjectsCreated:0,migrationOrFixtureWrites:0,dockerLifecycleActions:0,originalFailedRunRetained:true},null,2)+"\n");
+  process.stdout.write(JSON.stringify({status:"PASS_READONLY_C2_IDENTITY_AND_PROVENANCE",state,fullFiveServiceIdentityPassed:true,original70FamilyRowsMatch:true,claimExists:false,ownedJournalExists:false,migrationOrFixtureWrites:0})+"\n");
+}catch(error){
+  writeFileSync(out,JSON.stringify({at:new Date().toISOString(),status:"STOP_READONLY_DIAGNOSTIC",failedStage:stage,errorType:error.name,migrationOrFixtureWrites:0,noAutomaticContinuation:true},null,2)+"\n");
+  process.stderr.write(`Readonly C2 diagnostic failed at ${stage}: ${error.name}\n`);process.exitCode=1;
+}

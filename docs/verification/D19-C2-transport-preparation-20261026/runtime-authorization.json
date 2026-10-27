@@ -1,0 +1,9 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "ownerReference": null,
+  "manifestSha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "scope": "Unapproved transport-only source revision on the same existing C1; all fixture/schema/API/browser caps and invariants unchanged. Original approved e8 receipt remains true and untouched.",
+  "approvalEvidence": null
+}

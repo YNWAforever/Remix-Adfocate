@@ -1,0 +1,97 @@
+{
+  "runId": "d1e64852-4467-4658-816c-47489c3e3de2",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "summaries": [
+    {
+      "phase": "journey",
+      "tests": [
+        {
+          "title": "real roles reload one durable pending reward and its revision/proof history",
+          "ok": true,
+          "results": [
+            {
+              "status": "passed",
+              "duration": 27887
+            }
+          ]
+        }
+      ],
+      "stats": {
+        "startTime": "2026-10-23T18:49:20.915Z",
+        "duration": 36637.719,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "phase": "roles",
+      "tests": [
+        {
+          "title": "D18 finance reloads the same saved handoff with read-only controls and scoped navigation",
+          "ok": true,
+          "results": [
+            {
+              "status": "passed",
+              "duration": 1644
+            }
+          ]
+        },
+        {
+          "title": "D18 reviewer retains authored input after a real forbidden mission save",
+          "ok": true,
+          "results": [
+            {
+              "status": "passed",
+              "duration": 1344
+            }
+          ]
+        },
+        {
+          "title": "D18 platform-only content editor recovers access discovery without a workspace or another login",
+          "ok": true,
+          "results": [
+            {
+              "status": "passed",
+              "duration": 886
+            }
+          ]
+        },
+        {
+          "title": "D18 Creator and operator refresh agree with finance on one pending reward and history",
+          "ok": true,
+          "results": [
+            {
+              "status": "passed",
+              "duration": 3693
+            }
+          ]
+        }
+      ],
+      "stats": {
+        "startTime": "2026-10-23T18:49:58.459Z",
+        "duration": 15104.205,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    }
+  ],
+  "passed": 5,
+  "status": 0,
+  "scope": "Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider."
+}

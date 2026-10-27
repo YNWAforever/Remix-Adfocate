@@ -1,0 +1,45 @@
+{
+  "baselineEvidenceRecords": 1380,
+  "files": [
+    {
+      "path": "docs/verification/D19-B2-runtime-before/adfocate-delivery.json",
+      "sha256": "719d345eca5b24ced88139c545618133a653d59dd48d962d2259f7f12123402c",
+      "bytes": 544422
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/adfocate-task-ledger.md",
+      "sha256": "eaf9ce928a75bd5309e041fd0158ba77d48d0edc93bc91af6e0dc727412b6d44",
+      "bytes": 25723
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/audit_case_coverage.csv",
+      "sha256": "dd89e54e8e437519b5e2e7cd5445d17a6ea37927dfe90fb3718bdebad700a77d",
+      "bytes": 152380
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/code-fingerprint.json",
+      "sha256": "156781ec3fdde3c09903bc0bfd8f3250cf10a63394504c0565e2841a3209af2b",
+      "bytes": 118659
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/evidence-integrity.json",
+      "sha256": "3987296f434db07d1f4b75afc73a5e047b7d63c1c7210069c0e1e866a68334ae",
+      "bytes": 255325
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/finding_traceability.csv",
+      "sha256": "21880878a5c76e00d964c858131d07f22ccd96dd2c194d74d0338040bea1c7f4",
+      "bytes": 9803
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/implementation-plan.md",
+      "sha256": "99f4f33faaecdb084b731504c354b86cb25586e65d7b3890c118ea69cf01f4d6",
+      "bytes": 60781
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-before/implementation_backlog.csv",
+      "sha256": "5fbe684f63c4b5c927be0487652dca7dee6b7d2763adbb6aef24738c31360329",
+      "bytes": 17635
+    }
+  ]
+}

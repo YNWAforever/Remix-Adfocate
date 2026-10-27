@@ -1,0 +1,16 @@
+{
+  "payload": {
+    "dataDirectory": "/var/lib/postgresql/data",
+    "replicationSlots": [],
+    "serverFileMetadata": "UNKNOWN_PERMISSION_DENIED_pg_stat_file; no alternate filesystem path or role used",
+    "queryRoleIsSuperuser": false,
+    "campaignReplicaIdentity": "d"
+  },
+  "observedAt": "2026-10-24T14:12:26.344806+00:00",
+  "transactionReadOnly": "on",
+  "label": "q1-recovery-catalog",
+  "query": "select jsonb_build_object(\n 'dataDirectory',current_setting('data_directory'),\n 'queryRoleIsSuperuser',(select rolsuper from pg_roles where rolname=current_user),\n 'replicationSlots',(select coalesce(jsonb_agg(jsonb_build_object('name',slot_name,'plugin',plugin,'type',slot_type,'database',database,'active',active,'restartLsn',restart_lsn,'confirmedFlushLsn',confirmed_flush_lsn,'walStatus',wal_status)order by slot_name),'[]')from pg_replication_slots where database is null or database=current_database()),\n 'campaignReplicaIdentity',(select relreplident from pg_class where oid='public.campaigns'::regclass),\n 'serverFileMetadata','UNKNOWN_PERMISSION_DENIED_pg_stat_file; no alternate filesystem path or role used')",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

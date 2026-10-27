@@ -1,0 +1,16 @@
+{
+  "command": "node node_modules/vitest/vitest.mjs run server/test/b2-runtime-manifest.test.ts --no-file-parallelism --reporter=json --outputFile=.codex-tmp/B2-neutrality-post-full-metadata.json",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "sourceRecords": 779,
+  "sourceUnchangedAfter": true,
+  "exit": 0,
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "startedAt": "2026-10-25T01:39:13.523Z",
+  "finishedAt": "2026-10-25T01:39:25.477Z",
+  "logSha256": "ea39ae56bc258eeb329bb74d6ee884c2e936077e126633238b041d5b01ae5f95",
+  "runtimeApproved": false,
+  "actualTargetOrBrowserExecuted": false,
+  "publicLog": "logs/D19-B2-neutrality-guard-post-full-metadata.log"
+}

@@ -1,0 +1,31 @@
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+node:internal/errors:985
+  const err = new Error(message);
+              ^
+
+Error: Command failed: docker inspect --format {"id":{{json .Id}},"image":{{json .Image}},"network":{{json .NetworkSettings.Networks}}} supabase_kong_adfocate-r1-empty-20261023
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:925:11)
+    at execFileSync (node:child_process:961:15)
+    at docker (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/local-targets.mjs:14:10)
+    at metadata (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/local-targets.mjs:20:44)
+    at verifiedTarget (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/local-targets.mjs:23:15)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/scripts/audit/run-authoring.mjs:8:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '\n',
+    'failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n'
+  ],
+  pid: 25340,
+  stdout: '\n',
+  stderr: 'failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n'
+}
+
+Node.js v24.18.0

@@ -1,0 +1,101 @@
+{
+  "unitHistory": [
+    {
+      "file": "R2-ui-red.json",
+      "passed": 1,
+      "failed": 14,
+      "failures": [
+        "R2 original empty/list UI acceptance UC-C15 distinguishes a successful empty history and keeps the return entrance",
+        "R2 original empty/list UI acceptance UC-C15 failed history offers retry without claiming an empty history",
+        "R2 original empty/list UI acceptance UC-C15 revoked permission hides a previously cached redemption code",
+        "R2 original empty/list UI acceptance UC-C16 shows no active challenge only after a successful read",
+        "R2 original empty/list UI acceptance UC-C16 failure is recoverable and is not an empty challenge result",
+        "R2 original empty/list UI acceptance UC-C17 names an empty Academy instead of rendering a blank course section",
+        "R2 original empty/list UI acceptance UC-C17 a failed bundle can retry without inventing courses",
+        "R2 original empty/list UI acceptance UC-A45 empty applications are explicit; a failed read can retry",
+        "R2 original empty/list UI acceptance UC-A45 stale applications remain visible with a warning but cannot be decided",
+        "R2 original empty/list UI acceptance UC-A49 empty challenges retain the create entrance, and read failure has retry",
+        "R2 original empty/list UI acceptance UC-A49 content failure is not empty and retry preserves the selected status",
+        "F27 parent metadata business form edits localized learning time with no raw JSON editor and preserves unknown metadata",
+        "F27 parent metadata business form retains authored parent metadata after failure and saves it on explicit retry",
+        "F27 parent metadata business form 409 comparison rebases only the edited language and retains concurrent unknown keys"
+      ]
+    },
+    {
+      "file": "R2-ui-red-confirmed.json",
+      "passed": 4,
+      "failed": 11,
+      "failures": [
+        "R2 original empty/list UI acceptance UC-C15 failed history offers retry without claiming an empty history",
+        "R2 original empty/list UI acceptance UC-C15 revoked permission hides a previously cached redemption code",
+        "R2 original empty/list UI acceptance UC-C16 failure is recoverable and is not an empty challenge result",
+        "R2 original empty/list UI acceptance UC-C17 names an empty Academy instead of rendering a blank course section",
+        "R2 original empty/list UI acceptance UC-C17 a failed bundle can retry without inventing courses",
+        "R2 original empty/list UI acceptance UC-A45 stale applications remain visible with a warning but cannot be decided",
+        "R2 original empty/list UI acceptance UC-A49 empty challenges retain the create entrance, and read failure has retry",
+        "R2 original empty/list UI acceptance UC-A49 content failure is not empty and retry preserves the selected status",
+        "F27 parent metadata business form edits localized learning time with no raw JSON editor and preserves unknown metadata",
+        "F27 parent metadata business form retains authored parent metadata after failure and saves it on explicit retry",
+        "F27 parent metadata business form 409 comparison rebases only the edited language and retains concurrent unknown keys"
+      ]
+    },
+    {
+      "file": "R2-ui-green-attempt1.json",
+      "passed": 32,
+      "failed": 3,
+      "failures": [
+        "R2 original empty/list UI acceptance UC-C15 revoked permission hides a previously cached redemption code",
+        "AcademyEditor — form seeding seeds the form and the metadata textarea from the loaded record",
+        "AcademyEditor — form seeding keeps in-progress edits when a background refetch returns the same record"
+      ]
+    },
+    {
+      "file": "R2-ui-targeted-final.json",
+      "passed": 35,
+      "failed": 0,
+      "failures": []
+    }
+  ],
+  "confirmedBehaviorRed": {
+    "passed": 4,
+    "failed": 11
+  },
+  "initialHarnessCorrections": [
+    "Use existing translated copy, not guessed text.",
+    "Await cache render/error notifications.",
+    "Replace superseded raw-JSON editor tests with seeded-body and unedited-key preservation assertions.",
+    "Remove unsupported Testing Library exact option; keep Playwright exact matching."
+  ],
+  "browserAttempt1": {
+    "passed": 5,
+    "failed": 2,
+    "reason": "Incorrect Back to Redeem selector; content retry locator detached after a focus/background recovery. Keyboard recovery avoids stale-locator click; no force or product assertion removal."
+  },
+  "browserFinal": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "currentFull": {
+    "passed": 1950,
+    "skipped": 363,
+    "failed": 0,
+    "files": 274,
+    "newR2Assertions": 19
+  },
+  "allFailuresRetained": true,
+  "postSealLegacyRegression": {
+    "reason": "Normalize legacy plain strings to their displayed zh/en baseline before three-way metadata rebase; preserves a concurrent update to the other language.",
+    "red": {
+      "passed": 6,
+      "failed": 1
+    },
+    "greenMetadataForm": {
+      "passed": 7,
+      "failed": 0
+    },
+    "realLegacy409": "R2-ui-F27-legacy-conflict.json",
+    "initialFingerprint": "00946052ddb2f89512ce8d5aaa4b0131f21c48f0935a27382747720235081197",
+    "finalFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0"
+  }
+}

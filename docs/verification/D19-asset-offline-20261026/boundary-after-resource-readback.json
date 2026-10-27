@@ -1,0 +1,592 @@
+{
+  "scope": "Actual Creator route/query/apiFetch/Hono/asset helpers; scripted Auth, repository reads, RPC and Storage only. No real DB, RLS, bytes access, browser or neutrality acceptance.",
+  "observations": [
+    {
+      "test": "uploads actual file bytes through the owner workflow path and finalizes with their SHA256",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "rejects MIME and over-limit files before any grant while retaining URL inputs",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "preserves fields after signing failure, calls exact owned cleanup and allows explicit file reselection",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "retains the signing error and mock pending receipt if best-effort cleanup also fails",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/61791a9b-dcad-4513-8c31-5b120b6f3440.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "61791a9b-dcad-4513-8c31-5b120b6f3440"
+          }
+        },
+        {
+          "name": "abandon_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "6f37f030-2bbc-44b5-b61e-cc445592b5f3",
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/61791a9b-dcad-4513-8c31-5b120b6f3440.png"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 500,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "6f37f030-2bbc-44b5-b61e-cc445592b5f3",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/61791a9b-dcad-4513-8c31-5b120b6f3440.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 8,
+          "upload_grant_expires_at": "2026-10-25T21:19:23.784Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "retains the URL after a Storage failure without claiming a finalize or cleanup that did not run",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "shows a failed evidence row and retained inputs when finalize returns an actual route409",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "derives Creator, workspace and workflow from trusted route context despite extra spoofed body IDs",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/19aa3b40-c929-4181-b206-8f100ab1e9c8.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "19aa3b40-c929-4181-b206-8f100ab1e9c8"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "creatorId": "10000000-0000-4000-8000-000000000002",
+            "workspaceId": "foreign",
+            "workflowId": "foreign"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "feda5cd7-057c-4a34-a5e5-12967f584c29",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/19aa3b40-c929-4181-b206-8f100ab1e9c8.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 8,
+          "upload_grant_expires_at": "2026-10-25T21:19:23.876Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "keeps backend MIME and size limits when a caller bypasses the UI",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 400,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 20971521,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 400,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "application/octet-stream",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "preserves inputs on the canonical expiry error and recovers only with a newly selected grant",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "does not enumerate an A submission or reach asset RPCs for scripted same-workspace Creator B",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 404,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000002"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/foreign-asset/finalize",
+          "method": "POST",
+          "status": 404,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "hash"
+          },
+          "actor": "10000000-0000-4000-8000-000000000002"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "calls exact draft-asset abandonment after signing failure without touching existing mock rows",
+      "commands": [
+        {
+          "name": "create_active_mission_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_extension": "png",
+            "p_grant_seconds": 600
+          }
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "e9bd6344-5d10-4c3a-9dfa-c41bfe3b1d1a",
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/assets/e9bd6344-5d10-4c3a-9dfa-c41bfe3b1d1a.png"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/work-items/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 500,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    }
+  ]
+}

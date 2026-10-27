@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-24T05:28:14.513253+00:00",
+  "harnessPythonSyntaxPassed": 3,
+  "harnessNode22SyntaxPassed": 3,
+  "rawPrivateReportSha256": "4dd647799a30347870abca5b66cf9ed3cfb488f8a9042f51cada289dff104f5b",
+  "publicToRawFileCountMatch": 275,
+  "publicToRawAssertionStatusesAndTitlesVerified": 2317,
+  "fixtureEmailDisplayTitleRedacted": 1,
+  "originalTitleHashPreserved": true,
+  "testSourceOrAcceptanceAssertionsChanged": false,
+  "reportFormattingChangeAfterTestsOnly": true,
+  "applicationSourceChangeAfterTests": false
+}

@@ -1,0 +1,4164 @@
+{
+  "target": {
+    "kind": "in-process-postgres-wasm",
+    "locator": "memory://",
+    "persistent": false,
+    "externalNetwork": false
+  },
+  "enginesCreated": 7,
+  "enginesClosed": 7,
+  "networkAttempts": 0,
+  "caseEvidence": [
+    {
+      "name": "committed-exact-and-changed-payload-retry",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "firstSavedSubmission": {
+          "id": "00000000-0000-4000-8000-000000000104",
+          "status": "approved",
+          "created_at": "2026-10-26T00:17:15.301+08:00",
+          "creator_id": "00000000-0000-4000-8000-000000000102",
+          "mission_id": "00000000-0000-4000-8000-000000000103",
+          "xp_awarded": 185,
+          "reviewed_at": "2026-10-26T00:17:15.315+08:00",
+          "content_urls": [
+            "https://example.test/memory-only-proof"
+          ],
+          "submitted_at": null,
+          "workspace_id": "00000000-0000-4000-8000-000000000101",
+          "points_awarded": 250,
+          "quality_rating": 5,
+          "reviewer_notes": "Synthetic saved legacy operator note",
+          "review_deadline": null,
+          "submission_data": {},
+          "evidence_revision": 1
+        },
+        "concurrentConnectionsTested": false
+      },
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "ccb26972-5376-4614-9484-eb2f7f41edf8",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.301+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:15.301+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "750906e3-24ca-4991-8b06-d5de879a391a",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.301+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "cec7a9a6-99b5-4ef3-934b-1fd84c2e199c",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "updated_at": "2026-10-26T00:17:15.301+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFirst": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "ccb26972-5376-4614-9484-eb2f7f41edf8",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:15.301+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "750906e3-24ca-4991-8b06-d5de879a391a",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "cec7a9a6-99b5-4ef3-934b-1fd84c2e199c",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "3f612faa-d945-469f-99f8-e39bd1d47e16",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:15.315+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "6db2db18-d942-4655-ac18-5457eb71797b",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "a77f97c1-6056-424f-936b-4cc98ab8684f",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        },
+        "afterRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "ccb26972-5376-4614-9484-eb2f7f41edf8",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:15.301+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "750906e3-24ca-4991-8b06-d5de879a391a",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "cec7a9a6-99b5-4ef3-934b-1fd84c2e199c",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "3f612faa-d945-469f-99f8-e39bd1d47e16",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:15.315+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "6db2db18-d942-4655-ac18-5457eb71797b",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "a77f97c1-6056-424f-936b-4cc98ab8684f",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        },
+        "afterChangedRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "ccb26972-5376-4614-9484-eb2f7f41edf8",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:15.301+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "750906e3-24ca-4991-8b06-d5de879a391a",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "cec7a9a6-99b5-4ef3-934b-1fd84c2e199c",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "updated_at": "2026-10-26T00:17:15.315+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "3f612faa-d945-469f-99f8-e39bd1d47e16",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:15.315+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:15.301+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "6db2db18-d942-4655-ac18-5457eb71797b",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "a77f97c1-6056-424f-936b-4cc98ab8684f",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:15.315+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        }
+      },
+      "stateSha256": {
+        "before": "b7f199f38b01e144e7e110e4c6df04e23006e19399e17be50b104dc281bf7ef4",
+        "afterFirst": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410",
+        "afterRetry": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410",
+        "afterChangedRetry": "616d5399191f5555d2c132d033a9309822e019da277e6888b563e1a27bfdf410"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFirst": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterChangedRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "insufficient-budget-atomicity-and-recovery",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "fixtureBalanceChangedSeparatelyFrom20To500": true,
+        "productionFundingWorkflowTested": false
+      },
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "0a8b05da-55a5-4988-8f13-f346c9f89999",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:16.297+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "11946799-b148-4990-aa0b-d109c38cd6dc",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "75bad3a4-6deb-4d37-831d-d988e0ea39f8",
+              "balance": 20,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFailure": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "0a8b05da-55a5-4988-8f13-f346c9f89999",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:16.297+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "11946799-b148-4990-aa0b-d109c38cd6dc",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "75bad3a4-6deb-4d37-831d-d988e0ea39f8",
+              "balance": 20,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "updated_at": "2026-10-26T00:17:16.297+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterRecovery": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "0a8b05da-55a5-4988-8f13-f346c9f89999",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:16.297+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "11946799-b148-4990-aa0b-d109c38cd6dc",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "75bad3a4-6deb-4d37-831d-d988e0ea39f8",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "8702f4c2-6454-401a-883e-66fa84a12cf6",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:16.311+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "e1ad3e6d-6056-4333-82e9-2869d835a74c",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "1bcf0aad-d4f0-4c52-876c-ac0f4c64a4db",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        },
+        "afterRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "0a8b05da-55a5-4988-8f13-f346c9f89999",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:16.297+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "11946799-b148-4990-aa0b-d109c38cd6dc",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "75bad3a4-6deb-4d37-831d-d988e0ea39f8",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "updated_at": "2026-10-26T00:17:16.311+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "8702f4c2-6454-401a-883e-66fa84a12cf6",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:16.311+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:16.297+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "e1ad3e6d-6056-4333-82e9-2869d835a74c",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "1bcf0aad-d4f0-4c52-876c-ac0f4c64a4db",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:16.311+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        }
+      },
+      "stateSha256": {
+        "before": "fdd009cee23233bdd3e7561d209e51543cf4cf8e3c86cbd69744ba3726c517fa",
+        "afterFailure": "fdd009cee23233bdd3e7561d209e51543cf4cf8e3c86cbd69744ba3726c517fa",
+        "afterRecovery": "930cdd935ab1cc51f7793d1c71731b84dc16365df71299a97fe8edd65272d131",
+        "afterRetry": "930cdd935ab1cc51f7793d1c71731b84dc16365df71299a97fe8edd65272d131"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 20,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 20,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "late-cash-ledger-fault-rollback",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "695f99c0-a358-4eb8-ba52-e84c9909b3d6",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:17.293+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6fcb347d-4067-4cab-a508-99354a12c56b",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "7d2745d6-8dfb-44ef-82bb-4bbacaabd236",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFailure": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "695f99c0-a358-4eb8-ba52-e84c9909b3d6",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:17.293+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6fcb347d-4067-4cab-a508-99354a12c56b",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "7d2745d6-8dfb-44ef-82bb-4bbacaabd236",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "updated_at": "2026-10-26T00:17:17.293+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterRecovery": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "695f99c0-a358-4eb8-ba52-e84c9909b3d6",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:17.293+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6fcb347d-4067-4cab-a508-99354a12c56b",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "7d2745d6-8dfb-44ef-82bb-4bbacaabd236",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "340ae8ef-99db-44f2-bd71-3bc220dbe001",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:17.312+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "bb6e196b-8d1d-4e7e-9483-a1677bacd1bf",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "f16d05c4-b358-4051-9e29-07833a3177c2",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        },
+        "afterRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "695f99c0-a358-4eb8-ba52-e84c9909b3d6",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:17.293+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6fcb347d-4067-4cab-a508-99354a12c56b",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "7d2745d6-8dfb-44ef-82bb-4bbacaabd236",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "updated_at": "2026-10-26T00:17:17.312+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "340ae8ef-99db-44f2-bd71-3bc220dbe001",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:17.312+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:17.293+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "bb6e196b-8d1d-4e7e-9483-a1677bacd1bf",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "f16d05c4-b358-4051-9e29-07833a3177c2",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:17.312+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        }
+      },
+      "stateSha256": {
+        "before": "d97ee359317c8ff88a7cb4fd92c77737d33d654c5914e9d04000e2305f508b28",
+        "afterFailure": "d97ee359317c8ff88a7cb4fd92c77737d33d654c5914e9d04000e2305f508b28",
+        "afterRecovery": "85d0e9b5eb02c484387e3badd70ae9eb5f35251b549dba0d694833df5a78e84b",
+        "afterRetry": "85d0e9b5eb02c484387e3badd70ae9eb5f35251b549dba0d694833df5a78e84b"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "final-xp-fault-rollback",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "c835210a-4671-480d-8025-b389e0990470",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:18.413+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "0cbc771b-dab4-4d3a-826f-428faa575bca",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "53067ccd-1731-42da-96eb-41be9757a347",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFailure": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "c835210a-4671-480d-8025-b389e0990470",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:18.413+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "0cbc771b-dab4-4d3a-826f-428faa575bca",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "53067ccd-1731-42da-96eb-41be9757a347",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "updated_at": "2026-10-26T00:17:18.413+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterRecovery": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "c835210a-4671-480d-8025-b389e0990470",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:18.413+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "0cbc771b-dab4-4d3a-826f-428faa575bca",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "53067ccd-1731-42da-96eb-41be9757a347",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "227126b3-108b-4b1f-a6ef-d478c8ba92cc",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:18.439+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "7a8f221f-331d-4899-9205-ae2f0ea0f857",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "e7f63e53-17b6-4273-83dd-290d604d6fad",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        },
+        "afterRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "c835210a-4671-480d-8025-b389e0990470",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:18.413+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "0cbc771b-dab4-4d3a-826f-428faa575bca",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "53067ccd-1731-42da-96eb-41be9757a347",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "updated_at": "2026-10-26T00:17:18.439+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "227126b3-108b-4b1f-a6ef-d478c8ba92cc",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:18.439+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:18.413+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "7a8f221f-331d-4899-9205-ae2f0ea0f857",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "e7f63e53-17b6-4273-83dd-290d604d6fad",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:18.439+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        }
+      },
+      "stateSha256": {
+        "before": "e6d9e5e3dc73fb4ee230341ad6fa1c48f3ceb1178bef7560ce0c34f3645c2274",
+        "afterFailure": "e6d9e5e3dc73fb4ee230341ad6fa1c48f3ceb1178bef7560ce0c34f3645c2274",
+        "afterRecovery": "65d36f78bc5456fd4ac6db06b45be30fa977f1d8291ceb5a7391e0a11104255b",
+        "afterRetry": "65d36f78bc5456fd4ac6db06b45be30fa977f1d8291ceb5a7391e0a11104255b"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRecovery": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        },
+        "afterRetry": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    },
+    {
+      "name": "synthetic-pre-guard-invalid-evidence-denied",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "notAnIncidentBeforeImage": true,
+        "originalDataRestored": false
+      },
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "6ea5cb6a-18e4-4e38-b4b7-6d46e6acd9a6",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:19.696+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "b8fa8bb7-0e74-4221-a9c2-27fd02fc307c",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "09fb4d2e-fdfd-4934-a205-384e9500027b",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFailure": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "6ea5cb6a-18e4-4e38-b4b7-6d46e6acd9a6",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:19.696+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "b8fa8bb7-0e74-4221-a9c2-27fd02fc307c",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "09fb4d2e-fdfd-4934-a205-384e9500027b",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "updated_at": "2026-10-26T00:17:19.696+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:19.696+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        }
+      },
+      "stateSha256": {
+        "before": "2b3726bec7a826dd3c626ff090bedd158594cff2644d12a71a9fc1f0084532e6",
+        "afterFailure": "2b3726bec7a826dd3c626ff090bedd158594cff2644d12a71a9fc1f0084532e6"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFailure": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        }
+      }
+    },
+    {
+      "name": "non-cash-mission-committed-retry",
+      "outcome": "passed-local-memory-only",
+      "detail": {},
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": null,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "130fa1c2-c0a3-4f73-8f20-9882b880d499",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:20.791+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "a413d2d6-7baa-4b1d-acec-9f20daec7057",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "1997d2cf-13d1-41d8-839c-d1a33ae383f7",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterFirst": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 135,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": null,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "130fa1c2-c0a3-4f73-8f20-9882b880d499",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.803+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:20.791+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "a413d2d6-7baa-4b1d-acec-9f20daec7057",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "1997d2cf-13d1-41d8-839c-d1a33ae383f7",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "78b88244-5c29-490b-a443-6d59e50c511d",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:20.803+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 135,
+              "reviewed_at": "2026-10-26T00:17:20.803+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 4,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterRetry": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 135,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": null,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "130fa1c2-c0a3-4f73-8f20-9882b880d499",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.803+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:20.791+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "a413d2d6-7baa-4b1d-acec-9f20daec7057",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "1997d2cf-13d1-41d8-839c-d1a33ae383f7",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "updated_at": "2026-10-26T00:17:20.791+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "78b88244-5c29-490b-a443-6d59e50c511d",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:20.803+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 135,
+              "reviewed_at": "2026-10-26T00:17:20.803+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 4,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:20.791+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        }
+      },
+      "stateSha256": {
+        "before": "a20b35511bad5f31fed1c2969fada118f586bc1bf4026c192575a317e0040fec",
+        "afterFirst": "1c65c04c9ec96527c90269eb5ba81ba3e1710667190da34941a7530e53961adb",
+        "afterRetry": "1c65c04c9ec96527c90269eb5ba81ba3e1710667190da34941a7530e53961adb"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterFirst": {
+          "xp": 135,
+          "points": 250,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterRetry": {
+          "xp": 135,
+          "points": 250,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        }
+      }
+    },
+    {
+      "name": "sql-execute-acl",
+      "outcome": "passed-local-memory-only",
+      "detail": {
+        "deniedRoles": [
+          "anon",
+          "authenticated"
+        ],
+        "permittedRole": "service_role",
+        "realAuthOrMembershipTested": false
+      },
+      "readbacks": {
+        "before": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 35,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "9f3ddf3f-264e-4831-91d9-61bf9712eeff",
+              "balance": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:21.871+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:21.871+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "451fd040-e099-4349-a816-94a8b4e5af4d",
+              "available": 0,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:21.871+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "2ca68dd6-52b6-4714-a6fb-53317b1496ea",
+              "balance": 500,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "updated_at": "2026-10-26T00:17:21.871+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "afterServiceCall": {
+          "creators": [
+            {
+              "id": "00000000-0000-4000-8000-000000000102",
+              "xp": 185,
+              "level": "L0",
+              "scores": {
+                "content": 0,
+                "influence": 0,
+                "brandSafety": 0,
+                "reliability": 0
+              },
+              "status": "active",
+              "avatar_url": null,
+              "categories": [],
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "display_name": "Synthetic memory Creator",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "social_handles": []
+            }
+          ],
+          "missions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000103",
+              "slug": "synthetic-valid",
+              "quota": 10,
+              "title": "Synthetic valid legacy mission",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000105",
+              "slug": "synthetic-pre-guard-invalid",
+              "quota": 10,
+              "title": "Synthetic pre-guard invalid fixture",
+              "filled": 0,
+              "status": "active",
+              "category": null,
+              "cpm_rate": null,
+              "deadline": null,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "access_type": "open",
+              "cash_reward": 47.25,
+              "description": null,
+              "mission_type": "ugc",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_reward": 250,
+              "required_level": "L0",
+              "revision_limit": 2,
+              "cpm_budget_pool": null,
+              "review_sla_hours": 48,
+              "fulfillment_required": false,
+              "creator_workflow_mode": "legacy",
+              "revision_response_hours": 48
+            }
+          ],
+          "point_balances": [
+            {
+              "id": "9f3ddf3f-264e-4831-91d9-61bf9712eeff",
+              "balance": 250,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:21.887+08:00",
+              "available_to": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "available_from": "2026-10-26T00:17:21.871+08:00"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "451fd040-e099-4349-a816-94a8b4e5af4d",
+              "available": 47.25,
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "updated_at": "2026-10-26T00:17:21.887+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "2ca68dd6-52b6-4714-a6fb-53317b1496ea",
+              "balance": 452.75,
+              "enforced": true,
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "updated_at": "2026-10-26T00:17:21.887+08:00",
+              "workspace_id": "00000000-0000-4000-8000-000000000101"
+            }
+          ],
+          "point_transactions": [
+            {
+              "id": "36827e57-5d1b-444b-a21b-13d8c7bc640c",
+              "type": "earn",
+              "delta": 250,
+              "created_at": "2026-10-26T00:17:21.887+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 250
+            }
+          ],
+          "mission_submissions": [
+            {
+              "id": "00000000-0000-4000-8000-000000000104",
+              "status": "approved",
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000103",
+              "xp_awarded": 185,
+              "reviewed_at": "2026-10-26T00:17:21.887+08:00",
+              "content_urls": [
+                "https://example.test/memory-only-proof"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 250,
+              "quality_rating": 5,
+              "reviewer_notes": "Synthetic saved legacy operator note",
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 1
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000106",
+              "status": "submitted",
+              "created_at": "2026-10-26T00:17:21.871+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "mission_id": "00000000-0000-4000-8000-000000000105",
+              "xp_awarded": 35,
+              "reviewed_at": null,
+              "content_urls": [
+                "wwww"
+              ],
+              "submitted_at": null,
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "points_awarded": 0,
+              "quality_rating": null,
+              "reviewer_notes": null,
+              "review_deadline": null,
+              "submission_data": {},
+              "evidence_revision": 0
+            }
+          ],
+          "earnings_transactions": [
+            {
+              "id": "714798cc-f0b7-44dd-9376-fbf31bdadde3",
+              "type": "earn",
+              "amount": 47.25,
+              "created_at": "2026-10-26T00:17:21.887+08:00",
+              "creator_id": "00000000-0000-4000-8000-000000000102",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 47.25
+            }
+          ],
+          "workspace_budget_transactions": [
+            {
+              "id": "0535f7f2-6c07-4b8d-94a0-5a07c6aa7242",
+              "type": "debit",
+              "delta": -47.25,
+              "created_at": "2026-10-26T00:17:21.887+08:00",
+              "source_ref": "mission_submission:00000000-0000-4000-8000-000000000104",
+              "description": "Synthetic valid legacy mission",
+              "workspace_id": "00000000-0000-4000-8000-000000000101",
+              "balance_after": 452.75
+            }
+          ]
+        }
+      },
+      "stateSha256": {
+        "before": "866d943180075656b13d9d0fbb1ab6879ee570c58b7399456905df9352af1dc8",
+        "afterServiceCall": "d18fed908c2bdc9e2b663c2c71ba0c775d4441ca3881ee510cf4113877c5e8c1"
+      },
+      "values": {
+        "before": {
+          "xp": 35,
+          "points": 0,
+          "cash": 0,
+          "budget": 500,
+          "pointLedgerRows": 0,
+          "cashLedgerRows": 0,
+          "budgetLedgerRows": 0
+        },
+        "afterServiceCall": {
+          "xp": 185,
+          "points": 250,
+          "cash": 47.25,
+          "budget": 452.75,
+          "pointLedgerRows": 1,
+          "cashLedgerRows": 1,
+          "budgetLedgerRows": 1
+        }
+      }
+    }
+  ],
+  "callsUseSeparateAutocommitStatements": true,
+  "profileDigest": "399944c3525bd920ab255b7c377823c4d3ebf566a2ea43acb0ca741bd913570d",
+  "tableFamiliesCompared": 9,
+  "externalClientsOrTargets": 0,
+  "externalAuthSubjectsOrFixtures": 0,
+  "applicationSourceChanges": 0,
+  "realPaymentsOrPendingRewards": 0,
+  "scope": "Core legacy function + real evidence guard on selected original table definitions only; not full migrations/Auth/RLS/campaign/notification/level hooks or independent-connection concurrency."
+}

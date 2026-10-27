@@ -1,0 +1,132 @@
+{
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "namespace": "cb2435c9-119b-4b0b-bc69-a12d0de87b45",
+  "retainedExactIds": {
+    "missions": [
+      "258fa130-feff-4c16-83c8-296000fb2aba"
+    ],
+    "authUsers": [
+      "4b316851-45cb-4b8e-a62d-c510e66c9778"
+    ],
+    "campaigns": [
+      "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+      "1a754e72-d9e2-448d-b227-e925238e6cc1",
+      "801818f7-a357-4d6d-8898-0ffceec8fc46",
+      "ed328a47-1dcf-4bb2-b58b-fa95187b6fe4"
+    ],
+    "snapshotIds": [
+      "312b0611-c2b9-4527-a117-f60076470b3d"
+    ]
+  },
+  "retainedWorkspaceIds": [
+    "dde7faa2-9541-4e9a-a55c-2333f60cc801",
+    "aadb1785-6109-4e8a-8aab-d38eb3b92a92",
+    "1c08dab1-2a03-4e1a-88f0-6382e17dc7bb"
+  ],
+  "ownedJournal": [
+    {
+      "table": "campaigns",
+      "key": "id",
+      "ids": [
+        "801818f7-a357-4d6d-8898-0ffceec8fc46"
+      ]
+    },
+    {
+      "table": "campaigns",
+      "key": "id",
+      "ids": [
+        "1a754e72-d9e2-448d-b227-e925238e6cc1"
+      ]
+    },
+    {
+      "table": "campaigns",
+      "key": "id",
+      "ids": [
+        "0c3f6e04-1c69-4ddc-ab1f-716aa926a351"
+      ]
+    },
+    {
+      "table": "auth_users",
+      "key": "id",
+      "ids": [
+        "4b316851-45cb-4b8e-a62d-c510e66c9778"
+      ]
+    },
+    {
+      "table": "creators",
+      "key": "id",
+      "ids": [
+        "4b316851-45cb-4b8e-a62d-c510e66c9778"
+      ]
+    },
+    {
+      "table": "point_balances",
+      "key": "id",
+      "ids": [
+        "6e4b050c-0bb3-407f-a20c-c813a9a5ac27"
+      ]
+    },
+    {
+      "table": "earnings_balances",
+      "key": "id",
+      "ids": [
+        "438e7d91-48a4-4442-b96e-9a0f2a9971fc"
+      ]
+    },
+    {
+      "table": "missions",
+      "key": "id",
+      "ids": [
+        "258fa130-feff-4c16-83c8-296000fb2aba"
+      ]
+    },
+    {
+      "table": "campaigns",
+      "key": "id",
+      "ids": [
+        "ed328a47-1dcf-4bb2-b58b-fa95187b6fe4"
+      ]
+    },
+    {
+      "table": "campaign_missions",
+      "key": "workspace_id",
+      "ids": [
+        "1c08dab1-2a03-4e1a-88f0-6382e17dc7bb"
+      ]
+    },
+    {
+      "table": "mission_submissions",
+      "key": "id",
+      "ids": [
+        "362208c0-5fa9-44ca-a896-4acbd3958723"
+      ]
+    },
+    {
+      "table": "campaign_rank_snapshots",
+      "key": "creator_id",
+      "ids": [
+        "4b316851-45cb-4b8e-a62d-c510e66c9778"
+      ]
+    }
+  ],
+  "cleanupThisTurn": {
+    "deletedAuthIds": [
+      "d6989fac-5c32-425c-8ea7-af1ea83ca46b"
+    ],
+    "reason": "One failed attempt, exact successfully created Auth ID only; before next attempt zero Auth/campaign/submission/snapshot verified"
+  },
+  "retention": "All final case fixture IDs and three exact current-run workspace IDs retained; no reset or broad delete",
+  "oldIncident": "OPEN, no old target SQL or restoration"
+}

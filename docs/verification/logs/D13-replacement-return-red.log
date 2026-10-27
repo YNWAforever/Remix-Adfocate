@@ -1,0 +1,36 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/AuthFeedback.return.test.tsx (2 tests | 1 failed) 86ms
+   × Auth recovery return > keeps a safe work destination when requesting a replacement link 80ms
+     → expect(element).toHaveAttribute("href", "/login?next=%2Fprofile") // element.getAttribute("href") === "/login?next=%2Fprofile"
+
+Expected the element to have attribute:
+  href="/login?next=%2Fprofile"
+Received:
+  href="/login"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/AuthFeedback.return.test.tsx > Auth recovery return > keeps a safe work destination when requesting a replacement link
+Error: expect(element).toHaveAttribute("href", "/login?next=%2Fprofile") // element.getAttribute("href") === "/login?next=%2Fprofile"
+
+Expected the element to have attribute:
+  href="/login?next=%2Fprofile"
+Received:
+  href="/login"
+ ❯ src/components/AuthFeedback.return.test.tsx:13:38
+     11|     window.history.replaceState({}, "", "/auth/callback?next=%2Fprofil…
+     12|     render(<AuthFeedback feedback={classifyAuthError({ code: "otp_expi…
+     13|     expect(screen.getByRole("link")).toHaveAttribute("href", "/login?n…
+       |                                      ^
+     14|   });
+     15|   it("does not carry an external destination into a replacement link",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  13:21:58
+   Duration  2.39s (transform 267ms, setup 385ms, collect 358ms, tests 86ms, environment 1.12s, prepare 169ms)
+

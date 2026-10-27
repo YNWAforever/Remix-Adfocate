@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-10-25T13:19:10.004983+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+    "run",
+    "build"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 5.821178436279297,
+    "freeCommitGiB": 10.371795654296875,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "6a1e33a4c3413ef57b43eea47542c499c26904bc738dae3285225d0710194e19",
+  "sourceRecords": 785,
+  "pid": 22380
+}

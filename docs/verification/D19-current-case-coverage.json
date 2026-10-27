@@ -1,0 +1,2090 @@
+{
+  "at": "2026-10-24T05:24:13.457213+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "auditCases": 107,
+  "currentSelectedWitnessCases": 16,
+  "cases": [
+    {
+      "caseId": "UC-P01",
+      "title": "首頁可讀與主 CTA",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-P02",
+      "title": "等級示範與引擎一致",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-P03",
+      "title": "聯絡收件能力",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C01",
+      "title": "登入入口清晰",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C02",
+      "title": "Creator session 可進入",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C03",
+      "title": "進行中任務載入",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D08-browser-neutrality.json;D08-browser-roundtrip.json;D08-home-roundtrip.json;D08-navigation.json;logs/D07-browser-full-ui-rerun.log;logs/D08-browser-final.log;logs/D08-full-suite.log;logs/D08-home-followup-red.log;logs/D08-home-green.log;logs/D08-home-red.log;logs/audit-16-final.log;logs/full-suite-candidate.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C04",
+      "title": "首頁收入 CTA",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D08-browser-neutrality.json;D08-browser-roundtrip.json;D08-home-roundtrip.json;D08-navigation.json;logs/D07-browser-full-ui-rerun.log;logs/D08-browser-final.log;logs/D08-full-suite.log;logs/D08-home-followup-red.log;logs/D08-home-green.log;logs/D08-home-red.log;logs/audit-16-final.log;logs/full-suite-candidate.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C05",
+      "title": "讀取失敗不可顯示空清單",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C06",
+      "title": "applied/declined 可追蹤",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C07",
+      "title": "任務決策資訊",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D09-api-contract.json;D09-browser-neutrality.json;D09-browser-roundtrip.json;D09-browser-summary.json;D09-schema-observation.json;logs/D09-browser-final.log;logs/D09-build-node22.log;logs/D09-consumers.log;logs/D09-contract-green.log;logs/D09-diff-check.log;logs/D09-full-suite.log;logs/D09-general-card-green.log;logs/D09-integration-green.log;logs/D09-legacy-integration.log;logs/D09-lint-final.log;logs/D09-manifest-check.log;logs/D09-native-esm-node22.log;logs/D09-typecheck-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C08",
+      "title": "分類覆蓋現有任務",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D09-api-contract.json;D09-browser-neutrality.json;D09-browser-roundtrip.json;D09-browser-summary.json;D09-schema-observation.json;logs/D09-browser-final.log;logs/D09-build-node22.log;logs/D09-consumers.log;logs/D09-contract-green.log;logs/D09-diff-check.log;logs/D09-full-suite.log;logs/D09-general-card-green.log;logs/D09-integration-green.log;logs/D09-legacy-integration.log;logs/D09-lint-final.log;logs/D09-manifest-check.log;logs/D09-native-esm-node22.log;logs/D09-typecheck-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C09",
+      "title": "已加入狀態一致",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D08-browser-neutrality.json;D08-browser-roundtrip.json;D08-home-roundtrip.json;D08-navigation.json;logs/D07-browser-full-ui-rerun.log;logs/D08-browser-final.log;logs/D08-full-suite.log;logs/D08-home-followup-red.log;logs/D08-home-green.log;logs/D08-home-red.log;logs/audit-16-final.log;logs/full-suite-candidate.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C10",
+      "title": "取消 profile 編輯",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C11",
+      "title": "社交帳戶一致",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C12",
+      "title": "護照頁可讀",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C13",
+      "title": "直接錢包讀取",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C14",
+      "title": "不足積分與缺貨",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C15",
+      "title": "空兌換記錄",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;R2-ui-delivery.json;R2-ui-browser-summary.json;R2-ui-UC-C15.json;R2-ui-suite-results.json;R2-ui-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C16",
+      "title": "沒有 active challenge",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;R2-ui-delivery.json;R2-ui-browser-summary.json;R2-ui-UC-C16.json;R2-ui-suite-results.json;R2-ui-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C17",
+      "title": "學院列表與資格",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;R2-ui-delivery.json;R2-ui-browser-summary.json;R2-ui-UC-C17.json;R2-ui-suite-results.json;R2-ui-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C18",
+      "title": "四堂課可開始",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "currentResult": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;D15-api-contract.json;D15-author-ui.json;D15-browser-neutrality.json;D15-browser-summary.json;D15-changes.patch;D15-conflict-ui.json;D15-creator-ui.json;D15-db-lint.json;D15-delivery.json;D15-fixture-retention.json;D15-forward-correction.json;D15-forward-index.json;D15-forward-replay.json;D15-isolation-ui.json;D15-schema-after.json;D15-schema-before.json;D15-schema-diff.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;logs/D15-api-final.log;logs/D15-browser-final.log;logs/D15-build-node22.log;logs/D15-diff-check.log;logs/D15-full-suite.log;logs/D15-lint.log;logs/D15-manifest-check.log;logs/D15-targeted.log;logs/D15-typecheck.log",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C19",
+      "title": "AI 面板開關",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-candidate.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A01",
+      "title": "後台入口保護",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A02",
+      "title": "未授權帳戶拒絕",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A03",
+      "title": "授權管理員進入",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A04",
+      "title": "第26人可達",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Real51-row API pagination25/25/1 and stable replay; visual pagination not renewed"
+      },
+      "freshWitness": "core2",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A05",
+      "title": "清單錯誤回饋",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A06",
+      "title": "接受申請失敗",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-R01",
+      "title": "日期獨立性",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D01-baseline.log;logs/D01-clock-green.log;logs/audit-16-final.log;logs/original-194-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-R02",
+      "title": "靜態 gates",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D01-baseline.log;logs/D01-clock-green.log;logs/audit-16-final.log;logs/original-194-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C20",
+      "title": "密碼正常/錯誤",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C21",
+      "title": "magic-link 過期與重放",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C22",
+      "title": "重設密碼",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C23",
+      "title": "首次啟用與中斷續填",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C24",
+      "title": "公開任務加入與重試",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Join/retry and one-slot race witnesses only; broader join matrix remains contract/historical"
+      },
+      "freshWitness": "core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C25",
+      "title": "申請制任務",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C26",
+      "title": "最後名額競爭",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Two real concurrent joins produce200/409; no broad load claim"
+      },
+      "freshWitness": "core3; role8",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C27",
+      "title": "收貨→草稿",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Shipment→receipt→persisted draft; browser journey has no fulfilment requirement"
+      },
+      "freshWitness": "core3",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C28",
+      "title": "草稿競爭與斷線",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Stale draft409 API and saved draft after reload; current UI conflict comparison/offline upload not exercised"
+      },
+      "freshWitness": "core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C29",
+      "title": "媒體上載失敗",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C30",
+      "title": "交付審閱回圈",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Submit→revision request→resubmit→approve with saved versions"
+      },
+      "freshWitness": "core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C31",
+      "title": "發布證明",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Proof submit→correction→resubmit→verify; metadata unavailable mock/network block; real publication/upload not exercised"
+      },
+      "freshWitness": "core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C32",
+      "title": "等待獎賞中立性",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Funded pending/cancel/reapproval and finance readbacks; no payout"
+      },
+      "freshWitness": "core3/core9; browser5",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-C33",
+      "title": "正常兌換及重試",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C34",
+      "title": "個人資料/媒體儲存",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C35",
+      "title": "公開連結與撤銷",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-C36",
+      "title": "通知與深連結",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A07",
+      "title": "篩選及搜尋",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A08",
+      "title": "個案審核",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "CRM audit fault rollback and concurrent same-request review-with-note; full flag/reason UI not renewed"
+      },
+      "freshWitness": "core5",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D06-targeted.log;logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A09",
+      "title": "短名單",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A10",
+      "title": "接受/拒絕與併發",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A11",
+      "title": "審稿與發分",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A12",
+      "title": "工作佇列及SLA",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A13",
+      "title": "修稿與版本防護",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Revision/version/proof history loop; full SLA boundary matrix not rerun in browser"
+      },
+      "freshWitness": "core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A14",
+      "title": "proof審核",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A15",
+      "title": "完成任務及歷史contract",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A16",
+      "title": "獎賞交接清單",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A17",
+      "title": "作者建檔與校驗",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D09-api-contract.json;D09-browser-neutrality.json;D09-browser-roundtrip.json;D09-browser-summary.json;D09-schema-observation.json;D12-api-contract.json;D12-authoring-roundtrip.json;D12-browser-neutrality.json;D12-browser-summary.json;D12-changes.patch;D12-fixture-retention.json;D12-navigation.json;D12-schema-observation.json;D12-unknown-policy-roundtrip.json;logs/D09-browser-final.log;logs/D09-build-node22.log;logs/D09-consumers.log;logs/D09-contract-green.log;logs/D09-diff-check.log;logs/D09-full-suite.log;logs/D09-general-card-green.log;logs/D09-integration-green.log;logs/D09-legacy-integration.log;logs/D09-lint-final.log;logs/D09-manifest-check.log;logs/D09-native-esm-node22.log;logs/D09-typecheck-final.log;logs/D12-authoring-final.log;logs/D12-browser-final.log;logs/D12-build-node22.log;logs/D12-diff-check.log;logs/D12-full-suite.log;logs/D12-lint.log;logs/D12-manage-consumer-green.log;logs/D12-manifest-check.log;logs/D12-native-esm-node22.log;logs/D12-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A18",
+      "title": "挑戰結算",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A19",
+      "title": "內容作者流程",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A20",
+      "title": "學院作者流程",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A21",
+      "title": "數字與時間區間",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "2026-10-23-adfocate-quality.md;D17-accessibility-scans.json;D17-advisor-catalog.json;D17-advisor-dispositions.csv;D17-advisor-review.json;D17-api-contract.json;D17-api-performance.json;D17-browser-final.json;D17-bundle-after.json;D17-bundle-unsplit.json;D17-changes.patch;D17-delivery.json;D17-dialog.json;D17-environment.json;D17-fixture-retention.json;D17-insights-ui.json;D17-neutrality-final.json;D17-performance-summary.json;D17-responsive.json;D17-runtime-performance.json;D17-scale-ids.json;D17-schema-after.json;D17-schema-diff.json;D17-test-history.json;logs/D17-api-final.log;logs/D17-browser-final.log;logs/D17-build-node22.log;logs/D17-diff-check.log;logs/D17-full-suite.log;logs/D17-lint-final.log;logs/D17-manifest-final.log;logs/D17-targeted-final.log;logs/D17-typecheck-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A22",
+      "title": "優先工作準確性",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D11-audit-green.log;logs/original-194-final.log;logs/audit-16-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A23",
+      "title": "全域與workspace切換",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A24",
+      "title": "權限撤銷與斷線",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;2026-10-23-adfocate-staff-access.md;D18-access-impact-before.json;D18-advisor-dispositions.csv;D18-advisor-review.json;D18-advisors.json;D18-api-contract.json;D18-browser-neutrality.json;D18-browser-summary.json;D18-changes.patch;D18-delivery.json;D18-delivery.md;D18-existing-join-contract.json;D18-finance-ui.json;D18-fixture-retention.json;D18-fixtures.jsonl;D18-forward-replay.json;D18-handoff-ui.json;D18-initial-green-browser-neutrality.json;D18-initial-green-browser-summary.json;D18-platform-ui.json;D18-prior-api-contract.json;D18-prior-code-fingerprint.json;D18-prior-delivery.json;D18-prior-evidence-integrity.json;D18-reviewer-ui.json;D18-schema-after.json;D18-schema-before.json;D18-schema-diff.json;D18-suite-results.json;D18-targeted-results.json;D18-test-history.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-S01",
+      "title": "跨Creator讀寫",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-S02",
+      "title": "角色workspace邊界",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Explicit role/membership/workspace gates, no self elevation, immediate revocation and denial input retention; formal staff untouched"
+      },
+      "freshWitness": "role API8/78HTTP; staff Edge4",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "2026-10-23-adfocate-staff-access.md;D18-access-impact-before.json;D18-advisor-dispositions.csv;D18-advisor-review.json;D18-advisors.json;D18-api-contract.json;D18-browser-neutrality.json;D18-browser-summary.json;D18-changes.patch;D18-delivery.json;D18-delivery.md;D18-existing-join-contract.json;D18-finance-ui.json;D18-fixture-retention.json;D18-fixtures.jsonl;D18-forward-replay.json;D18-handoff-ui.json;D18-initial-green-browser-neutrality.json;D18-initial-green-browser-summary.json;D18-platform-ui.json;D18-prior-api-contract.json;D18-prior-code-fingerprint.json;D18-prior-delivery.json;D18-prior-evidence-integrity.json;D18-reviewer-ui.json;D18-schema-after.json;D18-schema-before.json;D18-schema-diff.json;D18-suite-results.json;D18-targeted-results.json;D18-test-history.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-S03",
+      "title": "公開資料最少化",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D13-api-contract.json;D13-auth-recovery.json;D13-auth-runtime-config.json;D13-browser-neutrality.json;D13-browser-summary.json;D13-changes.patch;D13-delivery.json;D13-eslint-scope.json;D13-fixture-retention.json;D13-onboarding-roundtrip.json;D13-post-runtime-format.json;D13-profile-roundtrip.json;D13-recovery-ui.json;D13-schema-observation.json;logs/D13-browser-verified.log;logs/D13-build-node22.log;logs/D13-diff-check.log;logs/D13-full-suite.log;logs/D13-lint.log;logs/D13-manifest-check.log;logs/D13-native-esm-node22.log;logs/D13-targeted-final.log;logs/D13-typecheck.log;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-S04",
+      "title": "排程保護與重跑",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-support-sentinel-check.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-Q01",
+      "title": "核心流程responsive",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "currentResult": "D17_LOCAL_QUALITY_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "2026-10-23-adfocate-quality.md;D08-browser-neutrality.json;D08-browser-roundtrip.json;D08-home-roundtrip.json;D08-navigation.json;D17-accessibility-scans.json;D17-advisor-catalog.json;D17-advisor-dispositions.csv;D17-advisor-review.json;D17-api-contract.json;D17-api-performance.json;D17-browser-final.json;D17-bundle-after.json;D17-bundle-unsplit.json;D17-changes.patch;D17-delivery.json;D17-dialog.json;D17-environment.json;D17-fixture-retention.json;D17-insights-ui.json;D17-neutrality-final.json;D17-performance-summary.json;D17-responsive.json;D17-runtime-performance.json;D17-scale-ids.json;D17-schema-after.json;D17-schema-diff.json;D17-test-history.json;logs/D08-browser-final.log;logs/D08-full-suite.log;logs/D08-home-followup-red.log;logs/D08-home-green.log;logs/D08-home-red.log;logs/D17-api-final.log;logs/D17-browser-final.log;logs/D17-build-node22.log;logs/D17-diff-check.log;logs/D17-full-suite.log;logs/D17-lint-final.log;logs/D17-manifest-final.log;logs/D17-targeted-final.log;logs/D17-typecheck-final.log;D19-test-results.json;D17-R2-delivery.json;D17-R2-browser-final.json;D17-R2-performance-profile-final-post-gates.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-Q02",
+      "title": "鍵盤/焦點/對比",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "currentResult": "D17_LOCAL_QUALITY_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "2026-10-23-adfocate-quality.md;D17-accessibility-scans.json;D17-advisor-catalog.json;D17-advisor-dispositions.csv;D17-advisor-review.json;D17-api-contract.json;D17-api-performance.json;D17-browser-final.json;D17-bundle-after.json;D17-bundle-unsplit.json;D17-changes.patch;D17-delivery.json;D17-dialog.json;D17-environment.json;D17-fixture-retention.json;D17-insights-ui.json;D17-neutrality-final.json;D17-performance-summary.json;D17-responsive.json;D17-runtime-performance.json;D17-scale-ids.json;D17-schema-after.json;D17-schema-diff.json;D17-test-history.json;logs/D17-api-final.log;logs/D17-browser-final.log;logs/D17-build-node22.log;logs/D17-diff-check.log;logs/D17-full-suite.log;logs/D17-lint-final.log;logs/D17-manifest-final.log;logs/D17-targeted-final.log;logs/D17-typecheck-final.log;D19-test-results.json;D17-R2-delivery.json;D17-R2-browser-final.json;D17-R2-performance-profile-final-post-gates.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-Q03",
+      "title": "代表性頁效能",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "currentResult": "D17_LOCAL_QUALITY_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "2026-10-23-adfocate-quality.md;D17-accessibility-scans.json;D17-advisor-catalog.json;D17-advisor-dispositions.csv;D17-advisor-review.json;D17-api-contract.json;D17-api-performance.json;D17-browser-final.json;D17-bundle-after.json;D17-bundle-unsplit.json;D17-changes.patch;D17-delivery.json;D17-dialog.json;D17-environment.json;D17-fixture-retention.json;D17-insights-ui.json;D17-neutrality-final.json;D17-performance-summary.json;D17-responsive.json;D17-runtime-performance.json;D17-scale-ids.json;D17-schema-after.json;D17-schema-diff.json;D17-test-history.json;logs/D17-api-final.log;logs/D17-browser-final.log;logs/D17-build-node22.log;logs/D17-diff-check.log;logs/D17-full-suite.log;logs/D17-lint-final.log;logs/D17-manifest-final.log;logs/D17-targeted-final.log;logs/D17-typecheck-final.log;D19-test-results.json;D17-R2-delivery.json;D17-R2-browser-final.json;D17-R2-performance-profile-final-post-gates.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-Q04",
+      "title": "AI來源及幻覺",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-candidate.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-Q05",
+      "title": "AI故障/限流/保存",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-candidate.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-R03",
+      "title": "部署版本與schema一致",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "blocked-production",
+      "currentResult": "BLOCKED_PRODUCTION_RELEASE_BINDING",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "schema-diff.json;empty-replay.json;shaped-replay.json;pending-forward-replay.json;disposable-capabilities.json;logs/D02-capability-lifecycle-red.log;logs/release-check-complete.log",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-R04",
+      "title": "有資料時回退",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "schema-diff.json;empty-replay.json;shaped-replay.json;pending-forward-replay.json;disposable-capabilities.json;logs/D02-capability-lifecycle-red.log;logs/release-check-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A25",
+      "title": "review儲存錯誤可見",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A26",
+      "title": "Flag先收集具體理由",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D06-targeted.log;logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A27",
+      "title": "workspace讀取失敗",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A28",
+      "title": "香港同日跨UTC午夜",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D11-audit-green.log;logs/original-194-final.log;logs/audit-16-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A29",
+      "title": "香港明日但同UTC日",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D11-audit-green.log;logs/original-194-final.log;logs/audit-16-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A30",
+      "title": "503與未登入分開",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A31",
+      "title": "review及audit原子性",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Real temporary audit trigger failure rolls back all review/note/receipt/audit rows; exact trigger/function removed"
+      },
+      "freshWitness": "core5",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D06-targeted.log;logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A32",
+      "title": "備註重試去重",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Concurrent review-with-note RPC replay yields one logical note; separate note UI not renewed"
+      },
+      "freshWitness": "core5",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D06-targeted.log;logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A33",
+      "title": "清單條件/位置保留",
+      "originalAuditResult": "not-tested",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A34",
+      "title": "staff資格及停用邊界",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A35",
+      "title": "workspace初始化及slug",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A36",
+      "title": "審稿及proof既有契約",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Protected proof/review contracts plus selected real loop; not every publication scenario in browser"
+      },
+      "freshWitness": "full original194; core3; browser journey",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A37",
+      "title": "完成/交接/權限既有契約",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Protected completion/handoff/access contracts and selected real role reloads"
+      },
+      "freshWitness": "full original194; role8/core3/core9/browser5",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/R1-disposable-complete.log;logs/proof-review-real-final.log;logs/proof-assets-ownership-final.log;logs/legacy-owned-integration-complete.log;browser-summary.json;browser-roundtrip.json;browser-neutrality.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A38",
+      "title": "Workspace切換",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A39",
+      "title": "搜尋與Approved篩選",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A40",
+      "title": "Creator個案可讀",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A41",
+      "title": "返回保留篩選",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/R1-disposable-complete.log;workflow-runtime.jsonl;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A42",
+      "title": "主動任務佇列讀取",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A43",
+      "title": "獎勵交接讀取",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "PASS_SELECTED_CURRENT_LOCAL_WITNESSES_REMAINDER_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "Finance read-only queue, denied settings mutation, same saved pending reward"
+      },
+      "freshWitness": "role API; finance/handoff Edge",
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D03-scope-red.log;logs/D03-scope-green.log;logs/D03-session-race-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;logs/legacy-owned-integration-complete.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json",
+        "D19-current-role-results.json",
+        "D19-current-core-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ]
+    },
+    {
+      "caseId": "UC-A44",
+      "title": "既有無效作品證據",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D05-evidence-red.log;logs/D05-evidence-green.log;logs/D05-correction-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A45",
+      "title": "申請空白狀態",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;R2-ui-delivery.json;R2-ui-browser-summary.json;R2-ui-UC-A45.json;R2-ui-suite-results.json;R2-ui-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A46",
+      "title": "既有參與紀錄",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A47",
+      "title": "任務管理載入狀態",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A48",
+      "title": "條件式交付表單",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D12-api-contract.json;D12-authoring-roundtrip.json;D12-browser-neutrality.json;D12-browser-summary.json;D12-changes.patch;D12-fixture-retention.json;D12-navigation.json;D12-schema-observation.json;D12-unknown-policy-roundtrip.json;logs/D12-authoring-final.log;logs/D12-browser-final.log;logs/D12-build-node22.log;logs/D12-diff-check.log;logs/D12-full-suite.log;logs/D12-lint.log;logs/D12-manage-consumer-green.log;logs/D12-manifest-check.log;logs/D12-native-esm-node22.log;logs/D12-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A49",
+      "title": "挑戰及內容空白狀態",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/full-suite-node22-complete.log;logs/full-suite-candidate.log;logs/legacy-owned-integration-complete.log;logs/release-check-complete.log;browser-summary.json;D19-test-results.json;R2-ui-delivery.json;R2-ui-browser-summary.json;R2-ui-UC-A49.json;R2-ui-suite-results.json;R2-ui-neutrality.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A50",
+      "title": "學院列表及類型篩選",
+      "originalAuditResult": "pass",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A51",
+      "title": "課程承諾與正文",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "currentResult": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D14-api-contract.json;D14-author-ui.json;D14-browser-neutrality.json;D14-browser-summary.json;D14-changes.patch;D14-contact-ui.json;D14-creator-ui.json;D14-delivery.json;D14-fixture-retention.json;D14-public-ui.json;D14-schema-diff.json;D14-schema-observation.json;D15-api-contract.json;D15-author-ui.json;D15-browser-neutrality.json;D15-browser-summary.json;D15-changes.patch;D15-conflict-ui.json;D15-creator-ui.json;D15-db-lint.json;D15-delivery.json;D15-fixture-retention.json;D15-forward-correction.json;D15-forward-index.json;D15-forward-replay.json;D15-isolation-ui.json;D15-schema-after.json;D15-schema-before.json;D15-schema-diff.json;logs/D14-build-node22.log;logs/D14-diff-check.log;logs/D14-full-suite.log;logs/D14-lint.log;logs/D14-manifest-check.log;logs/D14-runtime-verified.log;logs/D14-targeted.log;logs/D14-typecheck.log;logs/D15-api-final.log;logs/D15-browser-final.log;logs/D15-build-node22.log;logs/D15-diff-check.log;logs/D15-full-suite.log;logs/D15-lint.log;logs/D15-manifest-check.log;logs/D15-targeted.log;logs/D15-typecheck.log",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A52",
+      "title": "逾期待辦可直接處理",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D11-audit-green.log;logs/original-194-final.log;logs/audit-16-final.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A53",
+      "title": "錯誤不是無訊息空白",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/audit-16-final.log;logs/full-suite-candidate.log;logs/D07-browser-full-ui-rerun.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A54",
+      "title": "無效證據不可普通批准",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "logs/D05-evidence-red.log;logs/D05-evidence-green.log;logs/D05-correction-red.log;logs/D05-real-schema-green.log;logs/R1-disposable-complete.log;D19-test-results.json;D19-api-contract.json;D19-browser-summary.json;D19-browser-neutrality.json;workflow-runtime.jsonl",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    },
+    {
+      "caseId": "UC-A55",
+      "title": "營運規則可理解性",
+      "originalAuditResult": "fail",
+      "recordedNewResultPreserved": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "currentResult": "FRESH_CONTRACT_GATE_PRIOR_RUNTIME_RETAINED",
+      "newResult": {
+        "code": "No application/SQL/test source change",
+        "test": "Fresh same-source full1954/363; no full-case PASS inferred from this aggregate",
+        "deployment": "not-deployed",
+        "runtime": "No fresh runtime assertion for this case; prior evidence and blockers retained"
+      },
+      "freshWitness": null,
+      "currentSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "priorEvidence": "D12-api-contract.json;D12-authoring-roundtrip.json;D12-browser-neutrality.json;D12-browser-summary.json;D12-changes.patch;D12-fixture-retention.json;D12-navigation.json;D12-schema-observation.json;D12-unknown-policy-roundtrip.json;logs/D12-authoring-final.log;logs/D12-browser-final.log;logs/D12-build-node22.log;logs/D12-diff-check.log;logs/D12-full-suite.log;logs/D12-lint.log;logs/D12-manage-consumer-green.log;logs/D12-manifest-check.log;logs/D12-native-esm-node22.log;logs/D12-typecheck.log;D19-test-results.json",
+      "evidence": [
+        "D19-current-full-results.json"
+      ]
+    }
+  ],
+  "scope": "Per-case bounded witnesses only; canonical audit CSV and all original results unchanged; aggregate test pass is not107-browser acceptance"
+}

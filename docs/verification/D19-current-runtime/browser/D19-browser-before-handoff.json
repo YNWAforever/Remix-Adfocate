@@ -1,0 +1,29 @@
+{
+  "runId": "a6cb60d6-37ca-4f96-9379-4a332469ab81",
+  "phase": "immediately-before-completion",
+  "snapshot": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "rewardInventory": [
+      {
+        "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "legacyAnchors": [
+    {
+      "id": "8bf1bf1b-2558-4ffa-983a-00f68a822dd1",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ]
+}

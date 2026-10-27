@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python",
+    "docs\\verification\\D19-R1-facet-review-20261025\\verify-facets.py"
+  ],
+  "exit": 1,
+  "failure": "Current delivery reference stale: remaining",
+  "reason": "Model observation added a remaining-acceptance field after its first raw-byte reference was created; detected by explicit current-reference assertions. No application/runtime changes.",
+  "classification": "DOCUMENT_REFERENCE_RED_NOT_PRODUCT_TEST_FAILURE"
+}

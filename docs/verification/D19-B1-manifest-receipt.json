@@ -1,0 +1,20 @@
+{
+  "gate": "manifest",
+  "command": "npm run release:manifest:check",
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "sourceRecords": 354,
+  "sourceUnchangedAfter": true,
+  "startedAt": "2026-10-24T15:47:24.458Z",
+  "finishedAt": "2026-10-24T15:47:34.215Z",
+  "exit": 0,
+  "error": null,
+  "logSha256": "c6f9d250de02dbc9b00054d013c36bfb0da02d91d2f97914ab3c73d75cf41050",
+  "freeGiBAfter": 3.1959075927734375,
+  "offline": true,
+  "integrationEnabled": false,
+  "providerKeysSupplied": false,
+  "publicLog": "logs/D19-B1-manifest.log",
+  "publicLogSha256": "3e12505c54989be403aee4d55df815b3f8cb0363a07cc01573521520dcb49b62",
+  "logSha256Basis": "Raw private stdout/stderr; public log normalizes workspace paths and labels mock output",
+  "executionContext": "Workspace sandbox"
+}

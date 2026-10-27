@@ -1,0 +1,14 @@
+{
+  "attempts": [
+    {
+      "phase": "read-only before catalog and row hashes",
+      "exit": 1,
+      "error": "ENOBUFS: existing 1k/10k fixture row-hash JSON exceeded shared helper default 1MiB stdout buffer",
+      "identityPassed": true,
+      "clientsCreated": false,
+      "fixturesCreated": false,
+      "sql": "read-only only",
+      "resolution": "Bound private inspection reads to262144 characters; leave shared helper and application source unchanged"
+    }
+  ]
+}

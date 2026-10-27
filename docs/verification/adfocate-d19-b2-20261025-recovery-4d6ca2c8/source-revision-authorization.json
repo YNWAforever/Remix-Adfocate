@@ -1,0 +1,11 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": true,
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "ownerReference": "2026-10-25 direct human reply call_2aaf171f8fd44d8a9eeb263ae8067e30; approved same existing C1 guarded source continuation, manifest a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989; ZERO additional resources/lifecycle; preserve old targets/OPEN/HOLD/provider disabled",
+  "approvedAt": "2026-10-25T07:01:26.169015+00:00",
+  "additionalResources": 0,
+  "resourceLifecycleAllowed": false,
+  "originalC1AllocationManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07"
+}

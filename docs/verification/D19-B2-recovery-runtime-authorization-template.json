@@ -1,0 +1,8 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "ownerReference": null,
+  "warning": "Proposed additional clean target only. Existing approved B2 remains halted and retained; no resource creation or lifecycle authorized by this template."
+}

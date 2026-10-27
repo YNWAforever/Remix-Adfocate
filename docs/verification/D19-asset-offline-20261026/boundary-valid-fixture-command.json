@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-25T21:10:08.117743+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-asset-offline-20261026/vitest.offline.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T21:10:08.019263+00:00",
+    "freePhysicalGiB": 4.256069183349609,
+    "freeCommitGiB": 3.117137908935547,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.847766876220703
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "boundary-valid-fixture",
+  "log": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 33408,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T21:10:11.821173+00:00",
+  "exit": 0
+}

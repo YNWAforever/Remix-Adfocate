@@ -1,0 +1,958 @@
+diff --git a/e2e/r2-support-ui.spec.ts b/e2e/r2-support-ui.spec.ts
+new file mode 100644
+--- /dev/null
++++ b/e2e/r2-support-ui.spec.ts
+@@ -0,0 +1,142 @@
++import { expect, test, type Browser } from "@playwright/test";
++import { readFileSync, writeFileSync } from "node:fs";
++import process from "node:process";
++const fx = process.env.ADFOCATE_BROWSER_SCOPE === "R2_UI" ? JSON.parse(readFileSync(".codex-tmp/R2-ui-fixture.private.json", "utf8")) : {};
++test.beforeEach(() => test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "R2_UI", "Use the identity-gated R2 runner."));
++const record = (name: string, value: unknown) => writeFileSync(`docs/verification/R2-ui-${name}.json`, JSON.stringify({ runId: fx.runId, value }, null, 2) + "\n");
++async function context(browser: Browser, staff = false) {
++  const actor = staff ? fx.operator : fx.creator;
++  const ctx = await browser.newContext({ viewport: staff ? { width: 1280, height: 900 } : { width: 390, height: 844 } });
++  await ctx.addInitScript(session => { localStorage.setItem("lang", "en"); localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, actor.session);
++  await ctx.route("**/*", route => { const url = new URL(route.request().url()); return url.hostname === "127.0.0.1" && ["56400","56421"].includes(url.port) ? route.continue() : route.abort(); });
++  return ctx;
++}
++async function api(path: string, method = "GET", body?: unknown) {
++  const response = await fetch(`http://127.0.0.1:56400/api${path}`, { method, headers: { Authorization: `Bearer ${fx.operator.jwt}`, "X-Workspace-Slug": fx.slug, "Content-Type": "application/json" },
++    ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
++  expect(response.status).toBe(200); return response.json();
++}
++test("UC-C15 real empty redemption history, return entrance and recovery", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage();
++  await page.goto("/redemption/history"); await expect(page.getByText("No redemptions yet", { exact: true })).toBeVisible();
++  await expect(page.getByRole("link", { name: "Back to Redeem" })).toHaveAttribute("href", "/redemption");
++  await page.route("**/api/redemption/history", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
++  await page.reload(); await expect(page.getByRole("alert")).toBeVisible();
++  await expect(page.getByText("No redemptions yet", { exact: true })).toHaveCount(0);
++  await page.unroute("**/api/redemption/history"); await page.getByRole("button", { name: /Retry/ }).click();
++  await expect(page.getByText("No redemptions yet", { exact: true })).toBeVisible();
++  record("UC-C15", { actualEmptyRows: fx.emptyReadCounts.history, returnPath: "/redemption", fault: "explicit 503 transport mock", recovery: "real Auth/API/DB read" });
++  await ctx.close();
++});
++test("UC-C16 real no-active-challenge state and failed-read retry", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage();
++  await page.goto("/campaigns"); await expect(page.getByText("No challenges right now — check back soon.", { exact: true })).toBeVisible();
++  await page.route("**/api/campaigns", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
++  await page.reload(); await expect(page.getByRole("alert")).toBeVisible();
++  await expect(page.getByText("No challenges right now — check back soon.", { exact: true })).toHaveCount(0);
++  await page.unroute("**/api/campaigns"); await page.getByRole("button", { name: /Retry/ }).click();
++  await expect(page.getByText("No challenges right now — check back soon.", { exact: true })).toBeVisible();
++  record("UC-C16", { actualEmptyRows: fx.emptyReadCounts.campaigns, fault: "explicit 503 transport mock", recovery: "real read" }); await ctx.close();
++});
++test("UC-C17 real Academy readable/preparing and locked eligibility; empty and fault UI", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage(); await page.goto("/guide");
++  await expect(page.getByRole("link", { name: /Synthetic R2 parent 1/ })).toHaveAttribute("href", `/guide/track/${fx.tracks[1].slug}`);
++  await expect(page.getByText("Synthetic R2 parent 2", { exact: true })).toBeVisible();
++  await expect(page.locator(`a[href="/guide/track/${fx.tracks[2].slug}"]`)).toHaveCount(0);
++  await page.screenshot({ path: "docs/verification/R2-ui-academy.png" });
++  await page.route("**/api/academy?*", r => r.fulfill({ status: 200, contentType: "application/json", body: '{"docs":[],"tracks":[],"playbooks":[],"resources":[]}' }));
++  await page.reload(); await expect(page.getByText(/No courses available/)).toBeVisible();
++  await page.unroute("**/api/academy?*");
++  await page.route("**/api/academy?*", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
++  await page.reload(); await expect(page.getByRole("alert")).toBeVisible(); await expect(page.getByText(/No courses available/)).toHaveCount(0);
++  await page.unroute("**/api/academy?*"); await page.getByRole("button", { name: /Retry/ }).click();
++  await expect(page.getByText("Synthetic R2 parent 2", { exact: true })).toBeVisible();
++  record("UC-C17", { actualPublishedParentIds: fx.tracks.slice(1).map((t: { id: string }) => t.id), qualification: "real API/me data and existing eligibility gate", emptyBundle: "explicit transport mock; global retained Academy rows were not deleted", fault: "explicit 503", lessonsCreated: 0, curriculumApproval: false }); await ctx.close();
++});
++test("UC-A45 real empty applications, recoverable failure and reload", async ({ browser }) => {
++  const ctx = await context(browser, true), page = await ctx.newPage(); await page.goto("/admin/applications");
++  await expect(page.getByText("No pending applications", { exact: true })).toBeVisible();
++  await page.route("**/api/admin/applications*", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
++  await page.reload(); await expect(page.getByRole("alert")).toBeVisible(); await expect(page.getByText("No pending applications", { exact: true })).toHaveCount(0);
++  await page.unroute("**/api/admin/applications*"); await page.getByRole("button", { name: /Retry/ }).click();
++  await expect(page.getByText("No pending applications", { exact: true })).toBeVisible();
++  record("UC-A45", { actualEmptyRows: fx.emptyReadCounts.applications, fault: "explicit 503", recovery: "real scoped read", noApplicationDecision: true }); await ctx.close();
++});
++test("UC-A49 challenge/content empty entrances, preserved filter and retry", async ({ browser }) => {
++  const ctx = await context(browser, true), page = await ctx.newPage(); await page.goto("/admin/campaigns");
++  await expect(page.getByText("此品牌尚未有挑戰。", { exact: true })).toBeVisible();
++  await expect(page.getByRole("link", { name: /新挑戰/ })).toHaveAttribute("href", "/admin/campaigns/new");
++  let emptyMock = false;
++  if (fx.emptyReadCounts.content !== 0) { emptyMock = true; await page.route("**/api/admin/content?*", r => r.fulfill({ status: 200, contentType: "application/json", body: '{"items":[],"total":0,"page":1,"pageSize":20}' })); }
++  await page.goto("/admin/content"); await expect(page.getByText("No content yet.", { exact: true })).toBeVisible();
++  await expect(page.getByRole("link", { name: "New content", exact: true })).toHaveAttribute("href", "/admin/content/new");
++  await page.unroute("**/api/admin/content?*");
++  await page.route("**/api/admin/content?*", r => r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }));
++  await page.getByRole("combobox", { name: /Content status/ }).selectOption("draft"); await expect(page.getByRole("alert")).toBeVisible();
++  await expect(page.getByRole("combobox", { name: /Content status/ })).toHaveValue("draft");
++  await page.getByRole("button", { name: /Retry/ }).focus();
++  await page.unroute("**/api/admin/content?*"); await page.keyboard.press("Enter");
++  await expect(page.getByRole("alert")).toHaveCount(0); await expect(page.getByRole("combobox", { name: /Content status/ })).toHaveValue("draft");
++  record("UC-A49", { actualChallengeRows: fx.emptyReadCounts.adminCampaigns, actualGlobalContentRows: fx.emptyReadCounts.content, contentEmptyTransportMock: emptyMock, selectedStatusRetained: "draft", recovery: "real API read", noPublishOrSettlement: true }); await ctx.close();
++});
++test("F27 parent metadata saves with explicit retry and survives hard reload", async ({ browser }) => {
++  const ctx = await context(browser, true), page = await ctx.newPage(), parent = fx.tracks[0];
++  await page.goto(`/admin/academy/${parent.id}`);
++  const zh = page.getByRole("textbox", { name: "Learning time (中文)", exact: true });
++  const { item: original } = await api(`/admin/academy/${parent.id}`);
++  await expect(zh).toHaveValue(original.metadata.duration.zh); await expect(page.getByRole("textbox", { name: /Metadata/ })).toHaveCount(0);
++  await zh.fill("15 分鐘"); await page.getByRole("button", { name: "EN", exact: true }).click();
++  await page.getByRole("textbox", { name: "Learning time (EN)", exact: true }).fill("15 minutes");
++  const pattern = `**/api/admin/academy/${parent.id}`;
++  await page.route(pattern, r => r.request().method() === "PATCH" ? r.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit synthetic fault"}' }) : r.continue());
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await expect(page.getByRole("alert")).toBeVisible();
++  await expect(page.getByRole("textbox", { name: "Learning time (EN)", exact: true })).toHaveValue("15 minutes");
++  await page.unroute(pattern); const saved = page.waitForResponse(r => new URL(r.url()).pathname.endsWith(parent.id) && r.request().method() === "PATCH" && r.status() === 200);
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await saved; await page.reload();
++  await expect(zh).toHaveValue("15 分鐘"); await page.getByRole("button", { name: "EN", exact: true }).click();
++  await expect(page.getByRole("textbox", { name: "Learning time (EN)", exact: true })).toHaveValue("15 minutes");
++  const { item } = await api(`/admin/academy/${parent.id}`);
++  expect(item.metadata.futureExtension).toEqual(parent.metadata.futureExtension); expect(item.metadata.learningEnabled).toBe(false);
++  expect(item.metadata.duration).toEqual({ zh: "15 分鐘", en: "15 minutes" });
++  record("F27-roundtrip", { parentId: parent.id, metadata: item.metadata, fault: "explicit PATCH503 mock", successfulSaveAndReload: "real API/Auth/RLS/DB", noLessonOrRewardWrite: true });
++  await page.screenshot({ path: "docs/verification/R2-ui-parent-form.png" }); await ctx.close();
++});
++test("F27 real 409 compares latest and preserves both authored and concurrent metadata", async ({ browser }) => {
++  const ctx = await context(browser, true), page = await ctx.newPage(), parent = fx.tracks[0];
++  await page.goto(`/admin/academy/${parent.id}`); const field = page.getByRole("textbox", { name: "Learning time (中文)", exact: true });
++  await expect(field).toHaveValue("15 分鐘"); await field.fill("保留的中文時間");
++  const { item: before } = await api(`/admin/academy/${parent.id}`);
++  const { item: concurrent } = await api(`/admin/academy/${parent.id}`, "PATCH", { updated_at: before.updated_at,
++    metadata: { ...before.metadata, duration: { ...before.metadata.duration, en: "Concurrent 20 minutes" }, concurrentUnknown: { retain: true } } });
++  const conflict = page.waitForResponse(r => r.request().method() === "PATCH" && r.status() === 409);
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await conflict;
++  await expect(field).toHaveValue("保留的中文時間"); await page.getByRole("button", { name: "Compare latest", exact: true }).click();
++  await page.getByRole("button", { name: "Keep my edits on this revision", exact: true }).click();
++  const saved = page.waitForResponse(r => r.request().method() === "PATCH" && r.status() === 200);
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await saved;
++  const { item: after } = await api(`/admin/academy/${parent.id}`);
++  expect(after.metadata).toEqual({ ...concurrent.metadata, duration: { zh: "保留的中文時間", en: "Concurrent 20 minutes" } });
++  await page.reload(); await expect(field).toHaveValue("保留的中文時間");
++  record("F27-conflict", { parentId: parent.id, real409: true, explicitAcknowledgement: true, metadata: after.metadata, reloadEqual: true }); await ctx.close();
++});
++test("F27 legacy plain-string metadata preserves a concurrent language through real409", async ({ browser }) => {
++  const parent = fx.tracks[0], path = `/admin/academy/${parent.id}`;
++  const { item: before } = await api(path);
++  await api(path, "PATCH", { updated_at: before.updated_at, metadata: { ...before.metadata, duration: "Legacy timing" } });
++  const ctx = await context(browser, true), page = await ctx.newPage(); await page.goto(`/admin/academy/${parent.id}`);
++  const field = page.getByRole("textbox", { name: "Learning time (中文)", exact: true });
++  await expect(field).toHaveValue("Legacy timing"); await field.fill("Legacy authored ZH");
++  const { item: baseline } = await api(path);
++  const { item: concurrent } = await api(path, "PATCH", { updated_at: baseline.updated_at,
++    metadata: { ...baseline.metadata, duration: { zh: "Legacy timing", en: "Concurrent legacy EN" }, legacyConcurrentUnknown: true } });
++  const rejected = page.waitForResponse(r => r.request().method() === "PATCH" && r.status() === 409);
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await rejected;
++  await page.getByRole("button", { name: "Compare latest", exact: true }).click();
++  await page.getByRole("button", { name: "Keep my edits on this revision", exact: true }).click();
++  const saved = page.waitForResponse(r => r.request().method() === "PATCH" && r.status() === 200);
++  await page.getByRole("button", { name: "Save", exact: true }).click(); await saved;
++  const { item: after } = await api(path);
++  expect(after.metadata).toEqual({ ...concurrent.metadata, duration: { zh: "Legacy authored ZH", en: "Concurrent legacy EN" } });
++  await page.reload(); await expect(field).toHaveValue("Legacy authored ZH");
++  record("F27-legacy-conflict", { parentId: parent.id, actual409: true, legacyBaseline: "plain string", metadata: after.metadata, reloadEqual: true }); await ctx.close();
++});
+diff --git a/playwright.r2-support.config.ts b/playwright.r2-support.config.ts
+new file mode 100644
+--- /dev/null
++++ b/playwright.r2-support.config.ts
+@@ -0,0 +1,10 @@
++import { defineConfig } from "@playwright/test";
++import process from "node:process";
++export default defineConfig({
++  testDir: "./e2e", testMatch: "r2-support-ui.spec.ts", fullyParallel: false, workers: 1, retries: 0,
++  timeout: 90000, expect: { timeout: 15000 },
++  reporter: [["line"], ["json", { outputFile: ".codex-tmp/R2-ui-browser-results.private.json" }]],
++  use: { baseURL: "http://127.0.0.1:56400", channel: "msedge", locale: "en-HK", timezoneId: "Asia/Hong_Kong", actionTimeout: 15000, trace: "off", screenshot: "off", video: "off" },
++  webServer: { command: `"${process.execPath}" node_modules/vite/bin/vite.js --host 127.0.0.1 --port 56400 --strictPort`,
++    url: "http://127.0.0.1:56400/api/health", reuseExistingServer: false, timeout: 90000, stdout: "ignore", stderr: "pipe" },
++});
+diff --git a/scripts/audit/prepare-r2-support-browser.ts b/scripts/audit/prepare-r2-support-browser.ts
+new file mode 100644
+--- /dev/null
++++ b/scripts/audit/prepare-r2-support-browser.ts
+@@ -0,0 +1,51 @@
++import { writeFileSync } from "node:fs";
++import { randomUUID } from "node:crypto";
++import { createAuditFixture } from "../../server/test/auditWorkflowFixture.js";
++
++// Existing factory verifies exact container/project/network identity before SDK or setup.
++const fx = await createAuditFixture();
++const ownedTrackIds: string[] = [];
++const evidence = () => writeFileSync("docs/verification/R2-ui-fixture.json", JSON.stringify({
++  runId: fx.runId, target: fx.target.identity, workspaceIds: [fx.workspaceId, fx.otherWorkspaceId],
++  authIds: [...fx.creators.map(c => c.id), fx.operator.id, fx.noMembership.id], ownedTrackIds,
++  cleanup: "none; exact new IDs retained, including incomplete attempts", content: "Synthetic parent metadata/eligibility fixtures only; no lesson units or approved curriculum",
++}, null, 2) + "\n");
++evidence();
++for (const [workspace, role] of [[fx.workspaceId, "workspace_admin"], [null, "content_editor"]] as const) {
++  if (![fx.operator.id, ...(workspace ? [workspace] : [])].every(id => /^[a-f0-9-]{36}$/.test(id))) throw new Error("Invalid exact owned grant IDs");
++  fx.target.sql(`select private.bootstrap_staff_access('${fx.operator.id}',${workspace ? `'${workspace}'` : "null"},'${fx.operator.id}','${role}',true,0,'${randomUUID()}','Synthetic R2 owned fixture setup','Existing local disposable authorization / R2-${fx.runId}');`);
++}
++const { createApp } = await import("../../server/app.js");
++const app = createApp().app;
++async function request(path: string, actor = fx.operator, method = "GET", body?: unknown) {
++  const response = await app.request(`/api${path}`, { method, headers: { Authorization: `Bearer ${actor.jwt}`, "X-Workspace-Slug": fx.slug, "Content-Type": "application/json" },
++    ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
++  if (!response.ok) throw new Error(`Owned R2 setup ${method} ${path}: ${response.status}`);
++  return response.json();
++}
++const metadata = { duration: { zh: "10 分鐘", en: "10 minutes" }, levelLabel: { zh: "合成入門", en: "Synthetic introduction" },
++  futureExtension: { nested: ["retain", { version: 1 }] }, learningEnabled: false };
++const tracks = [];
++for (const [index, requiredLevel] of ["L0", "L0", "L3"].entries()) {
++  const { item } = await request("/admin/academy", fx.operator, "POST", {
++    kind: "track", slug: `r2-${fx.runId}-${index}`, title_zh: `合成 R2 課程資料 ${index}`, title_en: `Synthetic R2 parent ${index}`,
++    body_zh: "", body_en: "", required_level: requiredLevel, metadata,
++  });
++  ownedTrackIds.push(item.id); evidence();
++  tracks.push(index === 0 ? item : (await request(`/admin/academy/${item.id}/publish`, fx.operator, "POST", {})).item);
++}
++const reads = {
++  history: await request("/redemption/history", fx.creators[0]),
++  campaigns: await request("/campaigns", fx.creators[0]),
++  applications: await request("/admin/applications"),
++  adminCampaigns: await request("/admin/campaigns"),
++  content: await request("/admin/content"),
++};
++const before = await Promise.all(fx.creators.map(c => fx.neutrality(c.id)));
++writeFileSync(".codex-tmp/R2-ui-fixture.private.json", JSON.stringify({
++  runId: fx.runId, target: fx.target.identity, workspaceId: fx.workspaceId, slug: fx.slug,
++  creator: fx.creators[0], other: fx.creators[1], operator: fx.operator, tracks, before,
++  emptyReadCounts: { history: reads.history.redemptions.length, campaigns: reads.campaigns.campaigns.length,
++    applications: reads.applications.applications.length, adminCampaigns: reads.adminCampaigns.campaigns.length, content: reads.content.items.length },
++}, (key,value) => key === "client" ? undefined : value));
++console.log("R2 exact-owned fixture ready; no cleanup, real content or providers.");
+diff --git a/scripts/audit/run-r2-support-browser.mjs b/scripts/audit/run-r2-support-browser.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/audit/run-r2-support-browser.mjs
+@@ -0,0 +1,38 @@
++import { readFileSync, writeFileSync } from "node:fs";
++import { spawnSync } from "node:child_process";
++import { resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
++import process from "node:process";
++import { verifiedTarget } from "./local-targets.mjs";
++import { neutralitySnapshot } from "./neutrality-snapshot.mjs";
++const target = verifiedTarget("empty");
++const env = { ...process.env, ...target.env, RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0", ADFOCATE_BROWSER_SCOPE: "R2_UI",
++  OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "",
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}` };
++const run = args => spawnSync(process.execPath, args, { env, stdio: "inherit" }).status ?? 1;
++if (!process.argv.includes("--resume")) {
++  const prepared = run(["node_modules/vite-node/vite-node.mjs", "scripts/audit/prepare-r2-support-browser.ts"]);
++  if (prepared) process.exit(prepared);
++}
++const fx = JSON.parse(readFileSync(".codex-tmp/R2-ui-fixture.private.json", "utf8"));
++if (!isDeepStrictEqual(fx.target, target.identity)) throw new Error("R2 fixture identity drift");
++Object.assign(env, { VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY,
++  VITE_DEFAULT_WORKSPACE: fx.slug, VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false" });
++const actors = [fx.creator.id, fx.other.id];
++const before = actors.map(id => neutralitySnapshot(target, id, fx.workspaceId));
++const exit = run(["node_modules/@playwright/test/cli.js", "test", "--config=playwright.r2-support.config.ts"]);
++const checked = verifiedTarget("empty"), after = actors.map(id => neutralitySnapshot(checked, id, fx.workspaceId));
++writeFileSync("docs/verification/R2-ui-neutrality.json", JSON.stringify({ runId: fx.runId, target: checked.identity, before, after,
++  allEqual: isDeepStrictEqual(before, after), scope: "Only this R2 UI/metadata fixture; historical D19 funded pending/cancel/reapproval remains separate." }, null, 2) + "\n");
++if (exit === 0) {
++  const raw = JSON.parse(readFileSync(".codex-tmp/R2-ui-browser-results.private.json", "utf8")), tests = [];
++  const visit = s => { for (const spec of s.specs ?? []) tests.push({ title: spec.title, ok: spec.ok,
++    results: spec.tests.flatMap(t => t.results.map(r => ({ status: r.status, duration: r.duration }))) }); for (const c of s.suites ?? []) visit(c); };
++  for (const s of raw.suites) visit(s);
++  writeFileSync("docs/verification/R2-ui-browser-summary.json", JSON.stringify({ runId: fx.runId, target: checked.identity, tests, stats: raw.stats,
++    passed: tests.filter(t => t.ok).length, emptyReadCounts: fx.emptyReadCounts,
++    browser: "Installed desktop Edge; 390x844 and 1280x900 CSS viewports; not physical mobile/Safari",
++    scope: "Real local Auth/API/RLS/DB successful reads and metadata writes; explicit fault/empty mocks labelled in each UI record; no curriculum, external provider or formal staff cutover." }, null, 2) + "\n");
++}
++process.exit(exit || (isDeepStrictEqual(before, after) ? 0 : 1));
+diff --git a/src/components/admin/AcademyEditor.test.tsx b/src/components/admin/AcademyEditor.test.tsx
+--- a/src/components/admin/AcademyEditor.test.tsx
++++ b/src/components/admin/AcademyEditor.test.tsx
+@@ -57,13 +57,16 @@
+     vi.clearAllMocks();
+   });
+ 
+-  it("seeds the form and the metadata textarea from the loaded record", async () => {
++  it("seeds the form and preserves unknown metadata by omitting unedited fields from the patch", async () => {
+     h.getAdminAcademy.mockResolvedValue({ item: row("a1", "新手指南") });
+     r("a1");
+ 
+     await waitFor(() => expect(title().value).toBe("新手指南"));
+-    expect((screen.getByRole("textbox", { name: /Metadata/ }) as HTMLTextAreaElement).value)
+-      .toBe(JSON.stringify({ steps: 3 }, null, 2));
++    expect(screen.queryByRole("textbox", { name: /Metadata/ })).not.toBeInTheDocument();
++    h.updateAcademy.mockResolvedValueOnce({ item: { ...row("a1", "改動標題") } });
++    fireEvent.change(title(), { target: { value: "改動標題" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.updateAcademy).toHaveBeenCalledWith("a1", { title_zh: "改動標題", updated_at: "2026-07-01T00:00:00Z" }));
+   });
+ 
+   it("keeps in-progress edits when a background refetch returns the same record", async () => {
+@@ -72,14 +75,14 @@
+     await waitFor(() => expect(title().value).toBe("新手指南"));
+ 
+     fireEvent.change(title(), { target: { value: "未儲存的草稿" } });
+-    const meta = screen.getByRole("textbox", { name: /Metadata/ }) as HTMLTextAreaElement;
+-    fireEvent.change(meta, { target: { value: '{"steps": 9}' } });
++    const body = screen.getByRole("textbox", { name: "Body (中文)" });
++    fireEvent.change(body, { target: { value: "未儲存的正文" } });
+ 
+     await act(async () => { await qc.refetchQueries({ queryKey: ["admin", "academy", "a1"] }); });
+ 
+     expect(h.getAdminAcademy).toHaveBeenCalledTimes(2);
+     expect(title().value).toBe("未儲存的草稿");
+-    expect((screen.getByRole("textbox", { name: /Metadata/ }) as HTMLTextAreaElement).value).toBe('{"steps": 9}');
++    expect(body).toHaveValue("未儲存的正文");
+   });
+ 
+   it("seeds from cached data when the query does not re-run on mount", async () => {
+diff --git a/src/components/admin/AcademyEditor.tsx b/src/components/admin/AcademyEditor.tsx
+--- a/src/components/admin/AcademyEditor.tsx
++++ b/src/components/admin/AcademyEditor.tsx
+@@ -3,6 +3,7 @@
+ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+ import { Markdown } from "@/components/Markdown";
+ import { AcademyLessonsEditor } from "./AcademyLessonsEditor";
++import { AcademyMetadataFields, rebaseAcademyMetadata } from "./AcademyMetadataFields";
+ import {
+   getAdminAcademy, createAcademy, updateAcademy, academyAction, academyKeys,
+   type AdminAcademyRow, type AcademyKind,
+@@ -28,8 +29,6 @@
+   const qc = useQueryClient();
+   const [lang, setLang] = useState<"zh" | "en">("zh");
+   const [form, setForm] = useState<Partial<AdminAcademyRow>>(EMPTY);
+-  const [metaText, setMetaText] = useState("{}");
+-  const [metaErr, setMetaErr] = useState<string | null>(null);
+   const baseline = useRef<Partial<AdminAcademyRow>>(EMPTY);
+ 
+   const existing = useQuery({
+@@ -46,7 +45,6 @@
+     seeded.current = row.id;
+     baseline.current = row;
+     setForm(row);
+-    setMetaText(JSON.stringify(row.metadata ?? {}, null, 2));
+   }, [existing.data]);
+ 
+   const set = (patch: Partial<AdminAcademyRow>) => setForm((f) => ({ ...f, ...patch }));
+@@ -54,15 +52,9 @@
+   const bodyField = lang === "zh" ? "body_zh" : "body_en";
+   const showBody = KINDS.includes(form.kind as AcademyKind);
+ 
+-  function parsedMeta(): Record<string, unknown> | null {
+-    try { const v = JSON.parse(metaText || "{}"); setMetaErr(null); return v; } catch { setMetaErr("Invalid JSON"); return null; }
+-  }
+-
+   const save = useMutation({
+     mutationFn: async () => {
+-      const metadata = parsedMeta();
+-      if (metadata === null) throw new Error("metadata");
+-      const payload = { ...form, metadata };
++      const payload = { ...form, metadata: form.metadata ?? {} };
+       if (isNew) return (await createAcademy(payload)).item;
+       return (await updateAcademy(id, { ...editedFields(payload, baseline.current), updated_at: baseline.current.updated_at })).item;
+     },
+@@ -70,7 +62,7 @@
+       baseline.current = item;
+       qc.invalidateQueries({ queryKey: ["admin", "academy"] });
+       if (isNew) navigate({ to: "/admin/academy/$id", params: { id: item.id } });
+-      else { setForm(item); setMetaText(JSON.stringify(item.metadata ?? {}, null, 2)); }
++      else setForm(item);
+     },
+   });
+   const act = useMutation({
+@@ -81,17 +73,15 @@
+   const busy = save.isPending || act.isPending || comparison.isPending;
+   const mutationError = save.error ?? act.error;
+   const conflict = save.error && "status" in save.error && save.error.status === 409;
+-  const unsaved = JSON.stringify(form) !== JSON.stringify(baseline.current)
+-    || metaText !== JSON.stringify(baseline.current.metadata ?? {}, null, 2);
++  const unsaved = JSON.stringify(form) !== JSON.stringify(baseline.current);
+ 
+   function keepDraftOnLatest() {
+     const latest = comparison.data?.item;
+-    const metadata = parsedMeta();
+-    if (!latest || metadata === null) return;
+-    const rebased = { ...latest, ...editedFields({ ...form, metadata }, baseline.current) };
++    if (!latest) return;
++    const rebased = { ...latest, ...editedFields(form, baseline.current),
++      metadata: rebaseAcademyMetadata(form.metadata ?? {}, baseline.current.metadata ?? {}, latest.metadata ?? {}) };
+     baseline.current = latest;
+     setForm(rebased);
+-    setMetaText(JSON.stringify(rebased.metadata ?? {}, null, 2));
+     save.reset(); comparison.reset();
+   }
+ 
+@@ -110,7 +100,11 @@
+           <button type="button" onClick={() => comparison.mutate()}>Compare latest</button>
+           {comparison.error && <p role="alert">載入失敗，可重試。 {comparison.error.message}</p>}
+           {comparison.data && <>
+-            <pre className="max-h-64 overflow-auto whitespace-pre-wrap text-xs">{JSON.stringify(comparison.data.item, null, 2)}</pre>
++            <dl className="space-y-2 break-words text-sm">
++              <dt>Latest title / 最新標題</dt><dd>{comparison.data.item[lang === "zh" ? "title_zh" : "title_en"]}</dd>
++              <dt>Latest body / 最新正文</dt><dd className="whitespace-pre-wrap">{comparison.data.item[lang === "zh" ? "body_zh" : "body_en"]}</dd>
++              <dt>Latest learning time / 最新學習時間</dt><dd>{typeof comparison.data.item.metadata.duration === "string" ? comparison.data.item.metadata.duration : String((comparison.data.item.metadata.duration as Record<string, unknown> | undefined)?.[lang] ?? "")}</dd>
++            </dl>
+             <p>確認後會保留你修改的欄位；未修改欄位沿用最新版本。 Only your edited fields will be carried forward.</p>
+             <button type="button" onClick={keepDraftOnLatest}>Keep my edits on this revision</button>
+           </>}
+@@ -140,11 +134,7 @@
+             </div>
+           </>
+         )}
+-        <label className="block text-xs uppercase">Metadata (JSON)
+-          <textarea value={metaText} onChange={(e) => setMetaText(e.target.value)} rows={8}
+-            className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-2 font-mono text-xs" />
+-          {metaErr && <span className="text-xs text-[var(--color-magenta)]">{metaErr}</span>}
+-        </label>
++        <AcademyMetadataFields kind={form.kind ?? "guide_doc"} lang={lang} metadata={form.metadata ?? {}} onChange={metadata => set({ metadata })} />
+         {!isNew && form.kind === "track" && <AcademyLessonsEditor key={id} trackId={id} lang={lang} />}
+       </div>
+       <aside className="space-y-3">
+diff --git a/src/components/admin/AcademyMetadataFields.tsx b/src/components/admin/AcademyMetadataFields.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/admin/AcademyMetadataFields.tsx
+@@ -0,0 +1,70 @@
++import type { AcademyKind } from "@/lib/academy";
++
++type Metadata = Record<string, unknown>;
++function object(value: unknown): Metadata {
++  return value !== null && typeof value === "object" && !Array.isArray(value) ? value as Metadata : {};
++}
++function localized(value: unknown, lang: "zh" | "en"): string {
++  return typeof value === "string" ? value : typeof object(value)[lang] === "string" ? object(value)[lang] as string : "";
++}
++function withLanguage(value: unknown, lang: "zh" | "en", text: string) {
++  return { ...(typeof value === "string" ? { zh: value, en: value } : object(value)), [lang]: text };
++}
++
++/** Carry forward only authored changes, including individual translated metadata fields. */
++export function rebaseAcademyMetadata(draft: Metadata, baseline: Metadata, latest: Metadata): Metadata {
++  const merged = { ...latest };
++  for (const [key, value] of Object.entries(draft)) {
++    if (JSON.stringify(value) === JSON.stringify(baseline[key])) continue;
++    const nested = value !== null && typeof value === "object" && !Array.isArray(value);
++    // A legacy plain string was displayed in both languages. Compare against that
++    // same baseline so converting it to localized fields does not author the other language.
++    const translated = nested && ("zh" in object(value) || "en" in object(value));
++    const original = translated && typeof baseline[key] === "string" ? { zh: baseline[key], en: baseline[key] } : object(baseline[key]);
++    const current = translated && typeof latest[key] === "string" ? { zh: latest[key], en: latest[key] } : object(latest[key]);
++    merged[key] = nested ? rebaseAcademyMetadata(object(value), original, current) : value;
++  }
++  return merged;
++}
++
++export function AcademyMetadataFields({ kind, lang, metadata, onChange }: {
++  kind: AcademyKind; lang: "zh" | "en"; metadata: Metadata; onChange: (metadata: Metadata) => void;
++}) {
++  const suffix = lang === "zh" ? "中文" : "EN";
++  const inputClass = "mt-1 w-full rounded border-2 border-[var(--color-ink)] p-2 text-sm";
++  const translated = (key: string, label: string) => <label className="block text-sm" key={key}>{label} ({suffix})
++    <input className={inputClass} value={localized(metadata[key], lang)} maxLength={400}
++      onChange={e => onChange({ ...metadata, [key]: withLanguage(metadata[key], lang, e.target.value) })} />
++  </label>;
++  if (kind === "track") return <section aria-label="Course details / 課程資料" className="space-y-3">
++    {translated("duration", "Learning time")}
++    {translated("levelLabel", "Level label")}
++    <label className="block text-sm">Course preview ({suffix})
++      <textarea className={inputClass} rows={3} maxLength={2000} value={typeof metadata[`teaser_${lang}`] === "string" ? metadata[`teaser_${lang}`] as string : ""}
++        onChange={e => onChange({ ...metadata, [`teaser_${lang}`]: e.target.value })} />
++    </label>
++  </section>;
++  if (kind === "resource") return <section aria-label="Resource details / 資源資料" className="space-y-3">
++    {([['type', 'Resource format / 資源格式'], ['fileUrl', 'Download link / 下載連結']] as const).map(([key,label]) => <label className="block text-sm" key={key}>{label}
++      <input className={inputClass} value={typeof metadata[key] === "string" ? metadata[key] as string : ""}
++        onChange={e => onChange({ ...metadata, [key]: e.target.value })} />
++    </label>)}
++  </section>;
++  if (kind === "playbook") return <section aria-label="Playbook details / 創作指南資料" className="space-y-3">
++    {translated("creatorAngle", "Creator approach")}
++    {translated("measurementFocus", "Measurement focus")}
++    <fieldset className="space-y-2"><legend>Suitable levels / 適用等級</legend>
++      {["L0","L1","L2","L3","L4","L5","L6"].map(level => <label className="mr-3 inline-flex items-center gap-1" key={level}>
++        <input type="checkbox" checked={Array.isArray(metadata.levels) && metadata.levels.includes(level)} onChange={e => {
++          const levels = Array.isArray(metadata.levels) ? metadata.levels : [];
++          onChange({ ...metadata, levels: e.target.checked ? [...levels, level] : levels.filter(v => v !== level) });
++        }} />{level}
++      </label>)}
++    </fieldset>
++    <label className="block text-sm">Content ideas ({suffix})
++      <textarea className={inputClass} rows={5} value={Array.isArray(metadata.ideas) ? metadata.ideas.map(v => localized(v, lang)).join("\n") : ""}
++        onChange={e => onChange({ ...metadata, ideas: e.target.value.split("\n").map((line,index) => withLanguage(Array.isArray(metadata.ideas) ? metadata.ideas[index] : undefined, lang, line)) })} />
++    </label>
++  </section>;
++  return null;
++}
+diff --git a/src/components/admin/AcademyMetadataForm.test.tsx b/src/components/admin/AcademyMetadataForm.test.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/components/admin/AcademyMetadataForm.test.tsx
+@@ -0,0 +1,78 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++import { afterEach } from "vitest";
++const h = vi.hoisted(() => ({ get: vi.fn(), update: vi.fn() }));
++vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()), useNavigate: () => vi.fn() }));
++vi.mock("@/lib/academy", async original => ({ ...(await original<object>()), getAdminAcademy: h.get, updateAcademy: h.update }));
++vi.mock("./AcademyLessonsEditor", () => ({ AcademyLessonsEditor: () => null }));
++import { AcademyEditor } from "./AcademyEditor";
++const metadata = { duration: { zh: "10 分鐘", en: "10 minutes" }, levelLabel: { zh: "新手", en: "Starter" }, future: { retain: [1,2] }, learningEnabled: false };
++const initial = { id: "owned-track", kind: "track", slug: "owned-track", status: "draft", title_zh: "合成 parent", body_zh: "", metadata, required_level: "L0", updated_at: "2026-10-23T00:00:00Z" };
++function show() { const client = new QueryClient({ defaultOptions: { queries: { retry: false } } }); render(<QueryClientProvider client={client}><AcademyEditor id="owned-track" /></QueryClientProvider>); return client; }
++beforeEach(() => { vi.clearAllMocks(); h.get.mockResolvedValue({ item: initial }); h.update.mockImplementation(async (_id, patch) => ({ item: { ...initial, ...patch } })); });
++afterEach(cleanup);
++describe("F27 parent metadata business form", () => {
++  it("edits localized learning time with no raw JSON editor and preserves unknown metadata", async () => {
++    show(); const field = await screen.findByRole("textbox", { name: "Learning time (中文)" });
++    expect(field).toHaveValue("10 分鐘"); expect(screen.queryByRole("textbox", { name: /Metadata/ })).not.toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "EN" }));
++    fireEvent.change(screen.getByRole("textbox", { name: "Learning time (EN)" }), { target: { value: "15 minutes" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.update).toHaveBeenCalledWith("owned-track", { metadata: { ...metadata, duration: { zh: "10 分鐘", en: "15 minutes" } }, updated_at: initial.updated_at }));
++  });
++  it("retains authored parent metadata after failure and saves it on explicit retry", async () => {
++    h.update.mockRejectedValueOnce(new Error("Unavailable")); show();
++    const field = await screen.findByRole("textbox", { name: "Learning time (中文)" });
++    fireEvent.change(field, { target: { value: "保留的時間" } }); fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await screen.findByRole("alert"); expect(field).toHaveValue("保留的時間");
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument()); expect(field).toHaveValue("保留的時間");
++  });
++  it("409 comparison rebases only the edited language and retains concurrent unknown keys", async () => {
++    const latest = { ...initial, metadata: { ...metadata, duration: { zh: "10 分鐘", en: "20 minutes" }, future: { retain: [3] }, serverAdded: true }, updated_at: "2026-10-24T00:00:00Z" };
++    h.get.mockResolvedValueOnce({ item: initial }).mockResolvedValue({ item: latest });
++    h.update.mockRejectedValueOnce(Object.assign(new Error("Changed"), { status: 409 })); show();
++    fireEvent.change(await screen.findByRole("textbox", { name: "Learning time (中文)" }), { target: { value: "我的時間" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Keep my edits on this revision" }));
++    expect(screen.getByRole("textbox", { name: "Learning time (中文)" })).toHaveValue("我的時間");
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.update).toHaveBeenLastCalledWith("owned-track", { metadata: { ...latest.metadata, duration: { zh: "我的時間", en: "20 minutes" } }, updated_at: latest.updated_at }));
++  });
++  it("background refresh preserves authored metadata until the operator decides to save", async () => {
++    const client = show(); const field = await screen.findByRole("textbox", { name: "Learning time (中文)" });
++    fireEvent.change(field, { target: { value: "未儲存時間" } });
++    h.get.mockResolvedValue({ item: { ...initial, metadata: { ...metadata, duration: { zh: "伺服器更新", en: "Server" } } } });
++    await act(async () => { await client.refetchQueries(); }); expect(field).toHaveValue("未儲存時間");
++  });
++  it("409 normalizes legacy plain-string translations before merging another language's update", async () => {
++    const legacy = { ...initial, metadata: { ...metadata, duration: "Legacy time" } };
++    const latest = { ...legacy, metadata: { ...legacy.metadata, duration: { zh: "Legacy time", en: "Concurrent EN" }, futureAdded: true }, updated_at: "2026-10-24T01:00:00Z" };
++    h.get.mockResolvedValueOnce({ item: legacy }).mockResolvedValue({ item: latest });
++    h.update.mockRejectedValueOnce(Object.assign(new Error("Changed"), { status: 409 })); show();
++    fireEvent.change(await screen.findByRole("textbox", { name: "Learning time (中文)" }), { target: { value: "我的時間" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Keep my edits on this revision" }));
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.update).toHaveBeenLastCalledWith("owned-track", { metadata: { ...latest.metadata, duration: { zh: "我的時間", en: "Concurrent EN" } }, updated_at: latest.updated_at }));
++  });
++  it("resource format edits preserve its download link and unknown fields without JSON", async () => {
++    const row = { ...initial, kind: "resource", metadata: { type: "PDF", fileUrl: "https://example.invalid/owned.pdf", future: { retain: true } } };
++    h.get.mockResolvedValue({ item: row }); h.update.mockImplementation(async (_id, patch) => ({ item: { ...row, ...patch } })); show();
++    fireEvent.change(await screen.findByRole("textbox", { name: "Resource format / 資源格式" }), { target: { value: "Guide" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.update).toHaveBeenCalledWith("owned-track", { metadata: { ...row.metadata, type: "Guide" }, updated_at: initial.updated_at }));
++    expect(screen.queryByRole("textbox", { name: /Metadata/ })).not.toBeInTheDocument();
++  });
++  it("playbook idea editing preserves the other language and nested future fields", async () => {
++    const row = { ...initial, kind: "playbook", metadata: { ideas: [{ zh: "原中文", en: "Original", future: true }], levels: ["L0"], extension: 9 } };
++    h.get.mockResolvedValue({ item: row }); h.update.mockImplementation(async (_id, patch) => ({ item: { ...row, ...patch } })); show();
++    await screen.findByRole("textbox", { name: "Content ideas (中文)" }); fireEvent.click(screen.getByRole("button", { name: "EN" }));
++    fireEvent.change(screen.getByRole("textbox", { name: "Content ideas (EN)" }), { target: { value: "Authored idea" } });
++    fireEvent.click(screen.getByRole("button", { name: "Save" }));
++    await waitFor(() => expect(h.update).toHaveBeenCalledWith("owned-track", { metadata: { ...row.metadata, ideas: [{ zh: "原中文", en: "Authored idea", future: true }] }, updated_at: initial.updated_at }));
++  });
++});
+diff --git a/src/routes/-r2-support-ui.test.tsx b/src/routes/-r2-support-ui.test.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/routes/-r2-support-ui.test.tsx
+@@ -0,0 +1,124 @@
++import type { ComponentType, ReactNode } from "react";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++
++const h = vi.hoisted(() => ({ creator: vi.fn(), admin: vi.fn(), applications: vi.fn(), campaigns: vi.fn() }));
++vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()),
++  createFileRoute: () => (options: object) => ({ options }), useNavigate: () => vi.fn(),
++  Link: ({ to, children }: { to: string; children: ReactNode }) => <a href={to}>{children}</a>,
++}));
++vi.mock("@/lib/api", async original => ({ ...(await original<object>()), apiFetch: h.creator }));
++vi.mock("@/lib/admin", async original => ({ ...(await original<object>()), adminFetch: h.admin,
++  fetchApplications: h.applications, fetchCampaigns: h.campaigns,
++}));
++vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, reportAuthError: vi.fn() }) }));
++vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "owned" }) }));
++import { Route as History } from "./_app.redemption.history";
++import { Route as Campaigns } from "./_app.campaigns.index";
++import { Route as Guide } from "./_app.guide.index";
++import { Route as Applications } from "./admin.applications";
++import { Route as AdminCampaigns } from "./admin.campaigns.index";
++import { Route as Content } from "./admin.content.index";
++import { ApiError } from "@/lib/api";
++import { adminKeys } from "@/lib/admin";
++
++const emptyBundle = { docs: [], tracks: [], playbooks: [], resources: [] };
++const unavailable = () => new ApiError(503, "unavailable", "Unavailable");
++function show(route: { options: unknown }, client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })) {
++  const C = (route.options as { component: ComponentType }).component;
++  return { client, ...render(<QueryClientProvider client={client}><C /></QueryClientProvider>) };
++}
++beforeEach(() => {
++  vi.clearAllMocks();
++  h.creator.mockImplementation(async (path: string) => path === "/me" ? { id: "owned", level: "L0", is_trusted: true }
++    : path.startsWith("/academy") ? emptyBundle : path === "/campaigns" ? { campaigns: [] } : { redemptions: [] });
++  h.admin.mockResolvedValue({ items: [], total: 0 });
++  h.applications.mockResolvedValue({ applications: [] }); h.campaigns.mockResolvedValue({ campaigns: [] });
++});
++afterEach(cleanup);
++
++describe("R2 original empty/list UI acceptance", () => {
++  it("UC-C15 distinguishes a successful empty history and keeps the return entrance", async () => {
++    show(History); expect(await screen.findByText("暫無兌換記錄" )).toBeInTheDocument();
++    expect(screen.getByRole("link")).toHaveAttribute("href", "/redemption");
++  });
++  it("UC-C15 failed history offers retry without claiming an empty history", async () => {
++    h.creator.mockRejectedValueOnce(unavailable()); show(History);
++    expect(await screen.findByRole("alert")).toBeInTheDocument();
++    expect(screen.queryByText("暫無兌換記錄")).not.toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText("暫無兌換記錄")).toBeInTheDocument();
++  });
++  it("UC-C15 revoked permission hides a previously cached redemption code", async () => {
++    const { client } = show(History); await screen.findByText("暫無兌換記錄");
++    act(() => client.setQueryData(["redemptions"], [{ id: "old", points_spent: 1, code: "PRIVATE-CODE", created_at: "2026-10-01", redemption_gifts: { name: "Old gift" } }]));
++    await screen.findByText(/PRIVATE-CODE/);
++    h.creator.mockRejectedValueOnce(new ApiError(403, "forbidden", "Denied"));
++    await act(async () => { await client.refetchQueries({ queryKey: ["redemptions"] }); });
++    expect(await screen.findByRole("alert")).toHaveTextContent(/Workspace access/);
++    expect(screen.queryByText(/PRIVATE-CODE/)).not.toBeInTheDocument();
++  });
++  it("UC-C16 shows no active challenge only after a successful read", async () => {
++    show(Campaigns); expect(await screen.findByText("暫時未有進行中嘅挑戰，遲啲再嚟睇睇。" )).toBeInTheDocument();
++  });
++  it("UC-C16 failure is recoverable and is not an empty challenge result", async () => {
++    h.creator.mockRejectedValueOnce(unavailable()); show(Campaigns);
++    expect(await screen.findByRole("alert")).toBeInTheDocument();
++    expect(screen.queryByText("暫時未有進行中嘅挑戰，遲啲再嚟睇睇。")).not.toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText("暫時未有進行中嘅挑戰，遲啲再嚟睇睇。")).toBeInTheDocument();
++  });
++  it("UC-C17 names an empty Academy instead of rendering a blank course section", async () => {
++    show(Guide); expect(await screen.findByText(/No courses available/)).toBeInTheDocument();
++  });
++  it("UC-C17 a failed bundle can retry without inventing courses", async () => {
++    h.creator.mockImplementation(async path => { if (path.startsWith("/academy")) throw unavailable(); return { id: "owned", level: "L0", is_trusted: true }; });
++    show(Guide); expect(await screen.findByRole("alert")).toBeInTheDocument();
++    expect(screen.queryByText(/No courses available/)).not.toBeInTheDocument();
++    h.creator.mockImplementation(async path => path.startsWith("/academy") ? emptyBundle : { id: "owned", level: "L0" });
++    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText(/No courses available/)).toBeInTheDocument();
++  });
++  it("UC-C17 lists readable and locked requirements without promising lesson completion", async () => {
++    h.creator.mockImplementation(async path => path.startsWith("/academy") ? { ...emptyBundle, tracks: [
++      { id: "one", slug: "one", title: "Readable owned introduction", requiredLevel: "L0", meta: {}, contentStatus: "preparing" },
++      { id: "locked", slug: "locked", title: "Advanced owned introduction", requiredLevel: "L3", meta: {} },
++    ] } : { id: "owned", level: "L0", is_trusted: true });
++    show(Guide); await screen.findByText("Advanced owned introduction");
++    expect(screen.getByRole("link", { name: /Readable owned introduction/ })).toBeInTheDocument();
++    expect(screen.queryByRole("link", { name: /Advanced owned introduction/ })).not.toBeInTheDocument();
++    expect(screen.getByText(/L3/)).toBeInTheDocument();
++  });
++  it("UC-A45 empty applications are explicit; a failed read can retry", async () => {
++    h.applications.mockRejectedValueOnce(unavailable()); show(Applications);
++    await screen.findByRole("alert"); fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText("暫無待審批申請")).toBeInTheDocument();
++  });
++  it("UC-A45 stale applications remain visible with a warning but cannot be decided", async () => {
++    h.applications.mockResolvedValue({ applications: [{ id: "a", creators: { display_name: "Owned applicant" }, missions: { title: "Owned mission" } }] });
++    const { client } = show(Applications); await screen.findByText("Owned applicant");
++    h.applications.mockRejectedValueOnce(unavailable());
++    await act(async () => { await client.refetchQueries({ queryKey: adminKeys.applications("owned") }); });
++    expect(await screen.findByRole("alert")).toHaveTextContent(/previous saved data/);
++    expect(screen.getByRole("button", { name: "接受" })).toBeDisabled();
++    expect(screen.getByRole("button", { name: "拒絕" })).toBeDisabled();
++  });
++  it("UC-A49 empty challenges retain the create entrance, and read failure has retry", async () => {
++    h.campaigns.mockRejectedValueOnce(unavailable()); show(AdminCampaigns);
++    await screen.findByRole("alert"); expect(screen.getByRole("link", { name: /新挑戰/ })).toHaveAttribute("href", "/admin/campaigns/new");
++    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText("此品牌尚未有挑戰。")).toBeInTheDocument();
++  });
++  it("UC-A49 content failure is not empty and retry preserves the selected status", async () => {
++    show(Content); await screen.findByText("尚未有內容。");
++    h.admin.mockRejectedValueOnce(unavailable());
++    fireEvent.change(screen.getByRole("combobox"), { target: { value: "draft" } });
++    expect(await screen.findByRole("alert")).toBeInTheDocument();
++    expect(screen.queryByText("尚未有內容。")).not.toBeInTheDocument();
++    expect(screen.getByRole("combobox")).toHaveValue("draft");
++    expect(screen.getByRole("link", { name: /新增/ })).toHaveAttribute("href", "/admin/content/$id");
++    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
++    expect(await screen.findByText("尚未有內容。")).toBeInTheDocument();
++  });
++});
+diff --git a/src/routes/_app.campaigns.index.tsx b/src/routes/_app.campaigns.index.tsx
+--- a/src/routes/_app.campaigns.index.tsx
++++ b/src/routes/_app.campaigns.index.tsx
+@@ -1,22 +1,26 @@
+ import { createFileRoute, Link } from "@tanstack/react-router";
+ import { useCampaigns, type Campaign } from "@/lib/queries/kocmax";
+ import { useI18n } from "@/lib/i18n";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ 
+ export const Route = createFileRoute("/_app/campaigns/")({ component: CampaignsList });
+ 
+ function CampaignsList() {
+   const { t } = useI18n();
+-  const { data: campaigns = [], isLoading } = useCampaigns();
++  const q = useCampaigns();
++  const campaigns = (canShowPreviousData(q.error) ? q.data : undefined) ?? [];
++  const { isLoading } = q;
+   const now = new Date().toISOString();
+   const active = campaigns.filter((c) => c.status === "active" && c.starts_at <= now);
+   const upcoming = campaigns.filter((c) => c.status === "active" && c.starts_at > now);
+-  const empty = !isLoading && active.length === 0 && upcoming.length === 0;
++  const empty = !isLoading && !q.isError && active.length === 0 && upcoming.length === 0;
+ 
+   if (isLoading) return <div className="p-4 text-muted-foreground">…</div>;
+ 
+   return (
+     <div className="mx-auto max-w-3xl p-4 space-y-6">
+       <h1 className="text-2xl font-bold">{t("app.campaigns.title")}</h1>
++      <RequestFeedback error={q.error} stale={Boolean(q.data && canShowPreviousData(q.error))} retry={() => void q.refetch()} />
+       {empty ? (
+         <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+           {t("app.campaigns.empty")}
+diff --git a/src/routes/_app.guide.index.tsx b/src/routes/_app.guide.index.tsx
+--- a/src/routes/_app.guide.index.tsx
++++ b/src/routes/_app.guide.index.tsx
+@@ -7,6 +7,7 @@
+ import { PlaybookCard } from "@/components/PlaybookCard";
+ import { AcademyTrackCard } from "@/components/AcademyTrackCard";
+ import { getRead } from "@/lib/guideProgress";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ 
+ export const Route = createFileRoute("/_app/guide/")({ component: GuideHub });
+ 
+@@ -14,22 +15,25 @@
+   const me = useMe();
+   const { t, lang } = useI18n();
+   const uiLang = lang === "en" ? "en" : "zh-HK";
+-  const q = useQuery({ queryKey: academyKeys.bundle(uiLang), queryFn: () => fetchAcademy(uiLang) });
++  const q = useQuery({ queryKey: academyKeys.bundle(uiLang), queryFn: () => fetchAcademy(uiLang), retry: false });
++  const bundle = canShowPreviousData(q.error) ? q.data : undefined;
+ 
+   const creatorLevel = me.data?.level;
+   const isTrusted = me.data?.is_trusted ?? false;
+   const creatorId = me.data?.id;
+   const readIds = creatorId ? getRead(creatorId) : new Set<string>();
+-  const docs = q.data?.docs ?? [];
++  const docs = bundle?.docs ?? [];
+   const readCount = docs.filter((d) => readIds.has(d.slug)).length;
+ 
+   return (
+     <div className="mx-auto max-w-lg p-4 lg:max-w-5xl space-y-6">
+       <h1 className="font-display text-xl font-bold">{t("app.guide.title")}</h1>
++      <RequestFeedback error={q.error} stale={Boolean(bundle)} retry={() => void q.refetch()} />
++      <RequestFeedback error={me.error} retry={() => void me.refetch()} />
+ 
+       {q.isLoading ? (
+         <p className="text-sm text-[var(--color-soft-ink)]">…</p>
+-      ) : (
++      ) : bundle ? (
+         <>
+           <section className="space-y-2">
+             <h2 className="font-heading font-bold">{t("app.guide.sectionGuides")}</h2>
+@@ -39,8 +43,8 @@
+           <section className="space-y-2">
+             <h2 className="font-heading font-bold">{t("app.guide.sectionPlaybooks")}</h2>
+             <div className="grid grid-cols-2 gap-3">
+-              {(q.data?.playbooks ?? []).map((p) => <PlaybookCard key={p.slug} item={p} />)}
+-              {(q.data?.resources ?? []).map((r) => <PlaybookCard key={r.slug} item={r} />)}
++              {bundle.playbooks.map((p) => <PlaybookCard key={p.slug} item={p} />)}
++              {bundle.resources.map((r) => <PlaybookCard key={r.slug} item={r} />)}
+             </div>
+           </section>
+ 
+@@ -53,14 +57,15 @@
+                 </span>
+               )}
+             </div>
+-            <div className="grid grid-cols-2 gap-3">
+-              {(q.data?.tracks ?? []).map((tr) => (
++            {!q.isError && bundle.tracks.length === 0 && <p role="status" className="text-sm text-[var(--color-soft-ink)]">目前沒有可顯示的課程。 / No courses available.</p>}
++            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
++              {!me.error && !me.isLoading && bundle.tracks.map((tr) => (
+                 <AcademyTrackCard key={tr.slug} track={tr} creatorLevel={creatorLevel} isTrusted={isTrusted} />
+               ))}
+             </div>
+           </section>
+         </>
+-      )}
++      ) : null}
+     </div>
+   );
+ }
+diff --git a/src/routes/_app.redemption.history.tsx b/src/routes/_app.redemption.history.tsx
+--- a/src/routes/_app.redemption.history.tsx
++++ b/src/routes/_app.redemption.history.tsx
+@@ -2,12 +2,14 @@
+ import { useRedemptions } from "@/lib/queries/kocmax";
+ import { SkeletonCard } from "@/components/SkeletonCard";
+ import { useI18n } from "@/lib/i18n";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ 
+ export const Route = createFileRoute("/_app/redemption/history")({ component: RedemptionHistory });
+ 
+ function RedemptionHistory() {
+   const { t } = useI18n();
+   const q = useRedemptions();
++  const records = canShowPreviousData(q.error) ? q.data : undefined;
+   return (
+     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-3xl">
+       <div className="flex items-center justify-between">
+@@ -15,9 +17,9 @@
+         <Link to="/redemption" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.backToRedeem")}</Link>
+       </div>
+       {q.isLoading && <SkeletonCard className="h-24" />}
+-      {q.isError && <p className="text-sm text-[var(--color-magenta)]">{t("app.redemption.historyError")}</p>}
++      <RequestFeedback error={q.error} summary={t("app.redemption.historyError")} stale={Boolean(records)} retry={() => void q.refetch()} />
+       <ul className="space-y-2">
+-        {q.data?.map((r) => (
++        {records?.map((r) => (
+           <li key={r.id} className="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+             <div className="flex items-center justify-between">
+               <p className="font-heading font-semibold">{r.redemption_gifts?.name ?? t("app.redemption.rewardFallback")}</p>
+@@ -27,7 +29,7 @@
+             <p className="text-xs text-[var(--color-soft-ink)]">{r.created_at.slice(0, 10)}</p>
+           </li>
+         ))}
+-        {!q.isLoading && !q.isError && q.data?.length === 0 && (
++        {!q.isLoading && !q.isError && records?.length === 0 && (
+           <li className="text-sm text-[var(--color-soft-ink)]">{t("app.redemption.historyEmpty")}</li>
+         )}
+       </ul>
+diff --git a/src/routes/admin.applications.tsx b/src/routes/admin.applications.tsx
+--- a/src/routes/admin.applications.tsx
++++ b/src/routes/admin.applications.tsx
+@@ -40,12 +40,12 @@
+   });
+ 
+   if (apps.isLoading) return <p className="text-sm">{t("common.loading")}</p>;
+-  if (!apps.isError && visibleApps?.applications.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.applicationsEmpty")}</p>;
+ 
+   return (
+     <div className="space-y-3">
+       <RequestFeedback error={apps.error} stale={Boolean(visibleApps)} retry={() => void apps.refetch()} />
+       <RequestFeedback error={decide.error} />
++      {!apps.isError && visibleApps?.applications.length === 0 && <p role="status" className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.applicationsEmpty")}</p>}
+       {visibleApps?.applications.map((a: Application) => (
+         <div
+           key={a.id}
+@@ -67,8 +67,8 @@
+             ) : null}
+           </div>
+           <div className="flex shrink-0 gap-2">
+-            <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
+-            <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, action: "decline" })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
++            <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "accept" })} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
++            <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "decline" })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
+           </div>
+         </div>
+       ))}
+diff --git a/src/routes/admin.campaigns.index.tsx b/src/routes/admin.campaigns.index.tsx
+--- a/src/routes/admin.campaigns.index.tsx
++++ b/src/routes/admin.campaigns.index.tsx
+@@ -6,6 +6,7 @@
+   AdminAuthError, AdminRequestError, adminKeys, closeCampaign, fetchCampaigns,
+   publishCampaign, settleCampaign, type AdminCampaign,
+ } from "@/lib/admin";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+ import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+ 
+@@ -29,6 +30,7 @@
+     enabled: authed,
+     retry: false,
+   });
++  const visible = canShowPreviousData(list.error) ? list.data : undefined;
+   useEffect(() => {
+     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
+   }, [list.error, reportAuthError]);
+@@ -55,11 +57,12 @@
+         <Link to="/admin/campaigns/new" className="ml-auto rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">+ 新挑戰</Link>
+       </div>
+ 
++      <RequestFeedback error={list.error} stale={Boolean(visible)} retry={() => void list.refetch()} />
+       {list.isLoading ? <p className="text-sm">載入中…</p> : null}
+-      {list.data?.campaigns.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有挑戰。</p> : null}
++      {!list.isError && visible?.campaigns.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有挑戰。</p> : null}
+ 
+       <div className="space-y-3">
+-        {list.data?.campaigns.map((c: AdminCampaign) => (
++        {visible?.campaigns.map((c: AdminCampaign) => (
+           <div key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+             <div className="min-w-0 space-y-1">
+               <div className="flex flex-wrap items-center gap-2">
+@@ -70,9 +73,9 @@
+             </div>
+             <div className="flex shrink-0 flex-wrap gap-2">
+               <button onClick={() => navigate({ to: "/admin/campaigns/$id", params: { id: c.id } })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">編輯</button>
+-              {c.status === "draft" ? <button disabled={publish.isPending} onClick={() => publish.mutate(c.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
+-              {c.status === "active" ? <button disabled={close.isPending} onClick={() => { if (window.confirm("關閉此挑戰？將停止新參與。")) close.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
+-              {c.status === "closed" ? <button disabled={settle.isPending} onClick={() => { if (window.confirm("結算此挑戰？將派發獎勵與獎品。")) settle.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">結算</button> : null}
++              {c.status === "draft" ? <button disabled={publish.isPending || list.isError || list.isFetching} onClick={() => publish.mutate(c.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
++              {c.status === "active" ? <button disabled={close.isPending || list.isError || list.isFetching} onClick={() => { if (window.confirm("關閉此挑戰？將停止新參與。")) close.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
++              {c.status === "closed" ? <button disabled={settle.isPending || list.isError || list.isFetching} onClick={() => { if (window.confirm("結算此挑戰？將派發獎勵與獎品。")) settle.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">結算</button> : null}
+             </div>
+           </div>
+         ))}
+diff --git a/src/routes/admin.content.index.tsx b/src/routes/admin.content.index.tsx
+--- a/src/routes/admin.content.index.tsx
++++ b/src/routes/admin.content.index.tsx
+@@ -2,6 +2,7 @@
+ import { useQuery } from "@tanstack/react-query";
+ import { useState } from "react";
+ import { listAdminContent, contentKeys, type ContentStatus } from "@/lib/content";
++import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+ import { useI18n } from "@/lib/i18n";
+ 
+ export const Route = createFileRoute("/admin/content/")({ component: ContentList });
+@@ -14,7 +15,8 @@
+   const { t } = useI18n();
+   const [status, setStatus] = useState("");
+   const filters: Record<string, string> = status ? { status } : {};
+-  const { data, isLoading } = useQuery({ queryKey: contentKeys.adminList(filters), queryFn: () => listAdminContent(filters) });
++  const q = useQuery({ queryKey: contentKeys.adminList(filters), queryFn: () => listAdminContent(filters), retry: false });
++  const data = canShowPreviousData(q.error) ? q.data : undefined;
+ 
+   return (
+     <div className="space-y-3">
+@@ -24,15 +26,16 @@
+           {t("app.admin.content.new")}
+         </Link>
+       </div>
+-      <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
++      <select aria-label="Content status / 內容狀態" value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
+         <option value="">All</option><option value="draft">Draft</option><option value="scheduled">Scheduled</option>
+         <option value="published">Published</option><option value="archived">Archived</option>
+       </select>
+-      {isLoading ? (
++      <RequestFeedback error={q.error} stale={Boolean(data)} retry={() => void q.refetch()} />
++      {q.isLoading ? (
+         <p className="text-sm text-[var(--color-soft-ink)]">…</p>
+-      ) : !data?.items.length ? (
++      ) : !q.isError && data?.items.length === 0 ? (
+         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.content.empty")}</p>
+-      ) : (
++      ) : data?.items.length ? (
+         <table className="w-full border-collapse text-sm">
+           <thead><tr className="border-b-2 border-[var(--color-ink)] text-left text-xs uppercase">
+             <th className="p-2">Title</th><th className="p-2">Kind</th><th className="p-2">Status</th><th className="p-2">Views</th><th />
+@@ -49,7 +52,7 @@
+             ))}
+           </tbody>
+         </table>
+-      )}
++      ) : null}
+     </div>
+   );
+ }

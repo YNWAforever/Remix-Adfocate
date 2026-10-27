@@ -1,0 +1,15 @@
+{
+  "originalCsvFieldsPreserved": true,
+  "originalAuditResultPreserved": true,
+  "priorD08D09D12D13D14D15Preserved": true,
+  "D15ContentCasesUnchanged": true,
+  "sourceFilesVerified": 285,
+  "unclassifiedCredentialMatches": 0,
+  "knownHistoricalFixtures": 1,
+  "taskOnlyReversePatchCheck": "pass",
+  "schemaHistoryUnchanged": true,
+  "canDeploy": false,
+  "canEnablePilot": false,
+  "content": "BLOCKED_CONTENT_NOT_PROVIDED",
+  "nextTask": "D18"
+}

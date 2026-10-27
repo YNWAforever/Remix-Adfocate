@@ -1,0 +1,14 @@
+{
+  "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+  "snapshot": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  }
+}

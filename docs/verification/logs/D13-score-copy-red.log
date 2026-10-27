@@ -1,0 +1,898 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.passport.test.tsx (9 tests | 1 failed | 8 skipped) 52ms
+   × Passport page > shows the provisional notes on influence ownership and proxy scores 51ms
+     → Unable to find an element with the text: 影響力包含自填或 API 同步數據，擁有權狀態請參閱各帳戶. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+    >
+      <section
+        class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+      >
+        <div
+          class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+        >
+          <div
+            class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+          >
+            阿
+          </div>
+          <div
+            class="min-w-0 flex-1 space-y-1"
+          >
+            <h1
+              class="truncate font-display text-2xl font-bold"
+            >
+              阿明
+            </h1>
+            <div
+              class="space-y-2"
+            >
+              <div
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🌱
+                </span>
+                <span
+                  class="font-heading font-bold"
+                >
+                  KOC 新手
+                </span>
+                <span
+                  class="ml-auto text-sm text-[var(--color-soft-ink)]"
+                >
+                  600
+                   XP
+                </span>
+              </div>
+              <div
+                class="h-3 overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white"
+              >
+                <div
+                  class="h-full bg-[var(--color-acid)]"
+                  style="width: 7%;"
+                />
+              </div>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+              >
+                還需 1400 XP 升至 信譽 KOC
+              </p>
+              <p
+                class="text-xs text-[var(--color-soft-ink)]"
+              >
+                解鎖：UGC 有薪工作、CPM 軌道、工作室
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div
+        class="grid gap-6 lg:grid-cols-[1.4fr_1fr]"
+      >
+        <div
+          class="space-y-6"
+        >
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              創作者評分
+            </h2>
+            <div
+              class="grid grid-cols-2 gap-4 lg:grid-cols-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-acid)"
+                      stroke-dasharray="100.53096491487338 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    影響力
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    50
+                  </span>
+                </div>
+                <p
+                  class="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]"
+                >
+                  影響力包含自填或 API 同步數據，帳號擁有權未驗證
+                </p>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-dasharray="160.8495438637974 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    內容
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    80
+                  </span>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-magenta)"
+                      stroke-dasharray="140.74335088082273 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    可靠度
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    70
+                  </span>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-dasharray="180.95573684677208 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    品牌安全
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    90
+                  </span>
+                </div>
+                <p
+                  class="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]"
+                >
+                  品牌安全為暫定代理指標
+                </p>
+              </div>
+            </div>
+          </section>
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              徽章
+            </h2>
+            <div
+              class="grid grid-cols-2 gap-3"
+            >
+              <div
+                class="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🌟
+                </span>
+                <div
+                  class="min-w-0"
+                >
+                  <p
+                    class="font-heading text-sm font-bold"
+                  >
+                    升級者
+                  </p>
+                  <p
+                    class="truncate text-xs text-[var(--color-soft-ink)]"
+                  >
+                    達到 L1 等級
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🎯
+                </span>
+                <div
+                  class="min-w-0"
+                >
+                  <p
+                    class="font-heading text-sm font-bold"
+                  >
+                    內容達人
+                  </p>
+                  <p
+                    class="truncate text-xs text-[var(--color-soft-ink)]"
+                  >
+                    3+ 個評分任務，內容分 ≥ 80
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div
+          class="space-y-6"
+        >
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              Social trust
+            </h2>
+            <div
+              class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="space-y-2 border-b-2 border-[var(--color-ink)] pb-3 last:border-b-0 last:pb-0"
+              >
+                <div
+                  class="flex items-center justify-between gap-3"
+                >
+                  <span
+                    class="font-heading font-bold capitalize"
+                  >
+                    instagram
+                  </span>
+                  <span
+                    class="text-sm text-[var(--color-soft-ink)]"
+                  >
+                    @
+                    ming
+                  </span>
+                </div>
+                <div
+                  class="grid grid-cols-2 gap-2 text-sm"
+                >
+                  <span>
+                    12,000
+                     followers
+                  </span>
+                  <span>
+                    4.5%
+                     engagement
+                  </span>
+                  <span>
+                    500
+                     avg likes
+                  </span>
+                  <span>
+                    40
+                     avg comments
+                  </span>
+                </div>
+                <div
+                  class="flex flex-wrap gap-2"
+                >
+                  <span
+                    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+                  >
+                    API-synced
+                  </span>
+                  <span
+                    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+                  >
+                    Ownership not verified
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section
+            class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              公開護照
+            </h2>
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 text-sm font-bold"
+                type="button"
+              >
+                建立連結
+              </button>
+              <button
+                class="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-sm font-bold"
+                type="button"
+              >
+                撤銷連結
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.passport.test.tsx > Passport page > shows the provisional notes on influence ownership and proxy scores
+TestingLibraryElementError: Unable to find an element with the text: 影響力包含自填或 API 同步數據，擁有權狀態請參閱各帳戶. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+    >
+      <section
+        class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+      >
+        <div
+          class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+        >
+          <div
+            class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+          >
+            阿
+          </div>
+          <div
+            class="min-w-0 flex-1 space-y-1"
+          >
+            <h1
+              class="truncate font-display text-2xl font-bold"
+            >
+              阿明
+            </h1>
+            <div
+              class="space-y-2"
+            >
+              <div
+                class="flex items-center gap-2"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🌱
+                </span>
+                <span
+                  class="font-heading font-bold"
+                >
+                  KOC 新手
+                </span>
+                <span
+                  class="ml-auto text-sm text-[var(--color-soft-ink)]"
+                >
+                  600
+                   XP
+                </span>
+              </div>
+              <div
+                class="h-3 overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white"
+              >
+                <div
+                  class="h-full bg-[var(--color-acid)]"
+                  style="width: 7%;"
+                />
+              </div>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+              >
+                還需 1400 XP 升至 信譽 KOC
+              </p>
+              <p
+                class="text-xs text-[var(--color-soft-ink)]"
+              >
+                解鎖：UGC 有薪工作、CPM 軌道、工作室
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div
+        class="grid gap-6 lg:grid-cols-[1.4fr_1fr]"
+      >
+        <div
+          class="space-y-6"
+        >
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              創作者評分
+            </h2>
+            <div
+              class="grid grid-cols-2 gap-4 lg:grid-cols-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-acid)"
+                      stroke-dasharray="100.53096491487338 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    影響力
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    50
+                  </span>
+                </div>
+                <p
+                  class="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]"
+                >
+                  影響力包含自填或 API 同步數據，帳號擁有權未驗證
+                </p>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-dasharray="160.8495438637974 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    內容
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    80
+                  </span>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-magenta)"
+                      stroke-dasharray="140.74335088082273 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    可靠度
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    70
+                  </span>
+                </div>
+              </div>
+              <div
+                class="flex flex-col items-center gap-1"
+              >
+                <div
+                  class="flex flex-col items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="h-20 w-20 -rotate-90"
+                    viewBox="0 0 80 80"
+                  >
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      opacity="0.12"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      fill="none"
+                      r="32"
+                      stroke="var(--color-ink)"
+                      stroke-dasharray="180.95573684677208 201.06192982974676"
+                      stroke-linecap="round"
+                      stroke-width="6"
+                    />
+                  </svg>
+                  <span
+                    class="font-heading text-sm font-bold"
+                  >
+                    品牌安全
+                  </span>
+                  <span
+                    class="text-xs text-[var(--color-soft-ink)]"
+                  >
+                    90
+                  </span>
+                </div>
+                <p
+                  class="text-center text-[10px] leading-tight text-[var(--color-soft-ink)]"
+                >
+                  品牌安全為暫定代理指標
+                </p>
+              </div>
+            </div>
+          </section>
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              徽章
+            </h2>
+            <div
+              class="grid grid-cols-2 gap-3"
+            >
+              <div
+                class="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🌟
+                </span>
+                <div
+                  class="min-w-0"
+                >
+                  <p
+                    class="font-heading text-sm font-bold"
+                  >
+                    升級者
+                  </p>
+                  <p
+                    class="truncate text-xs text-[var(--color-soft-ink)]"
+                  >
+                    達到 L1 等級
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4"
+              >
+                <span
+                  aria-hidden="true"
+                  class="text-2xl"
+                >
+                  🎯
+                </span>
+                <div
+                  class="min-w-0"
+                >
+                  <p
+                    class="font-heading text-sm font-bold"
+                  >
+                    內容達人
+                  </p>
+                  <p
+                    class="truncate text-xs text-[var(--color-soft-ink)]"
+                  >
+                    3+ 個評分任務，內容分 ≥ 80
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div
+          class="space-y-6"
+        >
+          <section
+            class="space-y-3"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              Social trust
+            </h2>
+            <div
+              class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="space-y-2 border-b-2 border-[var(--color-ink)] pb-3 last:border-b-0 last:pb-0"
+              >
+                <div
+                  class="flex items-center justify-between gap-3"
+                >
+                  <span
+                    class="font-heading font-bold capitalize"
+                  >
+                    instagram
+                  </span>
+                  <span
+                    class="text-sm text-[var(--color-soft-ink)]"
+                  >
+                    @
+                    ming
+                  </span>
+                </div>
+                <div
+                  class="grid grid-cols-2 gap-2 text-sm"
+                >
+                  <span>
+                    12,000
+                     followers
+                  </span>
+                  <span>
+                    4.5%
+                     engagement
+                  </span>
+                  <span>
+                    500
+                     avg likes
+                  </span>
+                  <span>
+                    40
+                     avg comments
+                  </span>
+                </div>
+                <div
+                  class="flex flex-wrap gap-2"
+                >
+                  <span
+                    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+                  >
+                    API-synced
+                  </span>
+                  <span
+                    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+                  >
+                    Ownership not verified
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section
+            class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+          >
+            <h2
+              class="font-heading font-bold"
+            >
+              公開護照
+            </h2>
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 text-sm font-bold"
+                type="button"
+              >
+                建立連結
+              </button>
+              <button
+                class="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-sm font-bold"
+                type="button"
+              >
+                撤銷連結
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.passport.test.tsx:98:19
+     96|     renderPassport();
+ Test Files  1 failed (1)
+     97|     expect(screen.getByText("品牌安全為暫定代理指標")).toBeInTheDocume…
+     98|     expect(screen.getByText("影響力包含自填或 API 同步數據，擁有權狀態…
+       |                   ^
+     99|   });
+    100| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+      Tests  1 failed | 8 skipped (9)
+   Start at  13:41:51
+   Duration  2.21s (transform 173ms, setup 241ms, collect 392ms, tests 52ms, environment 1.23s, prepare 113ms)
+

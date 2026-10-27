@@ -1,0 +1,198 @@
+{
+  "logs/proof-assets-ownership-final.log": {
+    "reference": {
+      "path": "docs/verification/logs/proof-assets-ownership-final.log",
+      "sha256": "b9f63ab23e8ba626731927ee3b7ba23d2fa1e322e28c0d4f1c858e84bbc03a76"
+    },
+    "reportedPassLines": [
+      {
+        "line": 43,
+        "text": "\u2713 server/test/publication-proof-asset-grant-live.test.ts (3 tests) 3047ms"
+      },
+      {
+        "line": 44,
+        "text": "\u2713 publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path 1924ms"
+      },
+      {
+        "line": 45,
+        "text": "\u2713 publication proof asset grant live path > uploads and finalizes GIF evidence 639ms"
+      },
+      {
+        "line": 46,
+        "text": "\u2713 publication proof asset grant live path > uploads and finalizes MP4 evidence 483ms"
+      }
+    ],
+    "hasExactSourceDigestInLog": false,
+    "scope": "Historical console pass report. A title alone is not an exact current-source/target/Auth/Storage/data preservation receipt."
+  },
+  "logs/proof-review-real-final.log": {
+    "reference": {
+      "path": "docs/verification/logs/proof-review-real-final.log",
+      "sha256": "4cba738d068b0fb22463e074ea7c2f06e5976b79dae211d9ffd1c6cd23408218"
+    },
+    "reportedPassLines": [
+      {
+        "line": 4,
+        "text": "\u2713 server/test/publication-proof-review-live.test.ts (2 tests) 2842ms"
+      },
+      {
+        "line": 5,
+        "text": "\u2713 publication proof operator review live integration > enforces tenant, concurrent claim, ownership, correction deadline, retry, and reward neutrality 1784ms"
+      },
+      {
+        "line": 6,
+        "text": "\u2713 publication proof operator review live integration > verifies only the exact claimed attempt and completes the required aggregate without rewards 1033ms"
+      }
+    ],
+    "hasExactSourceDigestInLog": false,
+    "scope": "Historical console pass report. A title alone is not an exact current-source/target/Auth/Storage/data preservation receipt."
+  },
+  "logs/legacy-owned-integration-complete.log": {
+    "reference": {
+      "path": "docs/verification/logs/legacy-owned-integration-complete.log",
+      "sha256": "86e9211dbf7298413412bb6d5a2ac1965f6e06019e4323608b77416c3b57fb8b"
+    },
+    "reportedPassLines": [
+      {
+        "line": 36,
+        "text": "\u2713 server/test/publication-proof-asset-grant-live.test.ts (3 tests) 2762ms"
+      },
+      {
+        "line": 37,
+        "text": "\u2713 publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path 1719ms"
+      },
+      {
+        "line": 38,
+        "text": "\u2713 publication proof asset grant live path > uploads and finalizes GIF evidence 549ms"
+      },
+      {
+        "line": 39,
+        "text": "\u2713 publication proof asset grant live path > uploads and finalizes MP4 evidence 492ms"
+      },
+      {
+        "line": 50,
+        "text": "\u2713 active mission workflow schema > creates one idempotent active workflow without changing the reward anchor 775ms"
+      },
+      {
+        "line": 53,
+        "text": "\u2713 active mission workflow schema > preserves terminal state and rejects cross-owner create 656ms"
+      },
+      {
+        "line": 55,
+        "text": "\u2713 active mission workflow schema > rejects cross-workspace relationships, access, and asset scopes 1014ms"
+      },
+      {
+        "line": 56,
+        "text": "\u2713 active mission workflow schema > enforces publication proof tenant ownership, immutability, privacy, and relationships 1533ms"
+      },
+      {
+        "line": 58,
+        "text": "\u2713 active mission workflow schema > sets up one existing approved item with exact replay, private audit, and neutral rewards 1806ms"
+      },
+      {
+        "line": 96,
+        "text": "\u2713 active mission API live integration > preserves legacy final approval and its existing points and XP rewards 539ms"
+      },
+      {
+        "line": 101,
+        "text": "\u2713 active-mission notification live integration > commits a proof correction after notification failure and permits semantic retry 332ms"
+      },
+      {
+        "line": 256,
+        "text": "\u2713 campaigns \u2014 settlement > ranks, pays the top tier in cash, and is idempotent on re-settle 379ms"
+      },
+      {
+        "line": 257,
+        "text": "\u2713 campaigns \u2014 operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner \u2192 402 405ms"
+      },
+      {
+        "line": 259,
+        "text": "\u2713 reward handoff transitions > approves only when every required item is proof_verified and ignores optional items 1093ms"
+      },
+      {
+        "line": 266,
+        "text": "\u2713 reward handoff transitions > serializes concurrent approvals to one decision and one pending reward 872ms"
+      },
+      {
+        "line": 267,
+        "text": "\u2713 reward handoff transitions > cancels append-only, retries exactly, and returns to proof_verified 749ms"
+      },
+      {
+        "line": 268,
+        "text": "\u2713 reward handoff transitions > replays immutable approval and cancellation cycle snapshots after later cycles 734ms"
+      },
+      {
+        "line": 270,
+        "text": "\u2713 reward handoff transitions > returns a bounded creator projection without operator or proof secrets 996ms"
+      },
+      {
+        "line": 271,
+        "text": "\u2713 reward handoff transitions > ignores a newer handoff row whose tenant chain is internally mismatched 1268ms"
+      },
+      {
+        "line": 644,
+        "text": "\u2713 admin submission review > approves once: awards 250 points + 100 XP, and is idempotent 690ms"
+      },
+      {
+        "line": 646,
+        "text": "\u2713 admin submission review > approves with a 5\u2605 rating: stores the rating, awards +50 bonus XP, snapshots scores 697ms"
+      },
+      {
+        "line": 647,
+        "text": "\u2713 admin submission review > rejects an out-of-range rating with 400 bad_rating 682ms"
+      },
+      {
+        "line": 987,
+        "text": "\u2713 operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert 544ms"
+      },
+      {
+        "line": 994,
+        "text": "\u2713 operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort 760ms"
+      },
+      {
+        "line": 1137,
+        "text": "\u2713 close_due_campaigns > closes past-deadline active only, idempotent 428ms"
+      },
+      {
+        "line": 1522,
+        "text": "\u2713 creator passport > computes content from quality ratings (unrated approvals excluded) 429ms"
+      },
+      {
+        "line": 1526,
+        "text": "\u2713 creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator 704ms"
+      },
+      {
+        "line": 1995,
+        "text": "\u2713 earnings wallet > moves cash to available on approval + records an earnings transaction 697ms"
+      },
+      {
+        "line": 1996,
+        "text": "\u2713 earnings wallet > a non-cash mission credits no earnings 952ms"
+      },
+      {
+        "line": 2105,
+        "text": "\u2713 onboarding endpoints > complete awards 100 points once and is idempotent 314ms"
+      },
+      {
+        "line": 2312,
+        "text": "\u2713 leveling engine > activates the mission level-gate once xp crosses the threshold 435ms"
+      }
+    ],
+    "hasExactSourceDigestInLog": false,
+    "scope": "Historical console pass report. A title alone is not an exact current-source/target/Auth/Storage/data preservation receipt."
+  },
+  "logs/R1-disposable-complete.log": {
+    "reference": {
+      "path": "docs/verification/logs/R1-disposable-complete.log",
+      "sha256": "67470b7018aeae8e11403cb11da190e4fa9e73b7e6f2ea884e42b23379c3f6c1"
+    },
+    "reportedPassLines": [
+      {
+        "line": 10,
+        "text": "\u2713 D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 5346ms"
+      }
+    ],
+    "hasExactSourceDigestInLog": false,
+    "scope": "Historical console pass report. A title alone is not an exact current-source/target/Auth/Storage/data preservation receipt."
+  }
+}

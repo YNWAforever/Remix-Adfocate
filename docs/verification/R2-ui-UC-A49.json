@@ -1,0 +1,11 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "value": {
+    "actualChallengeRows": 0,
+    "actualGlobalContentRows": 9,
+    "contentEmptyTransportMock": true,
+    "selectedStatusRetained": "draft",
+    "recovery": "real API read",
+    "noPublishOrSettlement": true
+  }
+}

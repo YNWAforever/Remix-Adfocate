@@ -1,0 +1,1122 @@
+{
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+    "phase": "role",
+    "namespace": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6"
+  },
+  "runId": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6",
+  "target": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_2aaf171f8fd44d8a9eeb263ae8067e30; approved same existing C1 guarded source continuation, manifest a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989; ZERO additional resources/lifecycle; preserve old targets/OPEN/HOLD/provider disabled",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "results": [
+    {
+      "path": "/admin/access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/:id/notes",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/:id/notes",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/active-missions/queue",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/:id/review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 409
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 409
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 404
+    },
+    {
+      "path": "/admin/staff-access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/academy",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/admin/academy/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/academy/:id",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/content",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/fulfillment/shipped",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/fulfillment/received",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 409
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/start-review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/request-revision",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/start-review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/approve-to-publish",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id/proofs",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/start",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/corrections",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id/proofs",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/start",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/verify",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/reward-handoff/cancel",
+      "method": "POST",
+      "status": 403
+    }
+  ],
+  "roles": {
+    "admin": {
+      "id": "8a4ca6cb-26d6-4b0b-b136-e9054502174b"
+    },
+    "operator": {
+      "id": "2712cc1f-2d48-429a-be55-6e240c37248a"
+    },
+    "reviewer": {
+      "id": "e9564343-1408-4a35-a8ee-e79744e1385b"
+    },
+    "finance_viewer": {
+      "id": "f37ce91c-0c07-4329-b612-1f544ed7cce1"
+    },
+    "content_editor": {
+      "id": "908693a8-7414-42e0-96ea-f437de6f4812"
+    },
+    "revocable": {
+      "id": "31ecc20a-df20-4fc1-b848-0d1331ad2e65"
+    },
+    "noRole": {
+      "id": "4ad22f41-3de2-4364-8514-3ba59ea19e79"
+    },
+    "foreign": {
+      "id": "081d1a3a-3ef7-49fe-953c-d748e54456c4"
+    }
+  },
+  "neutrality": {
+    "initialBefore": [
+      {
+        "xp": 0,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 0
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 0
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "joinBaseline": {
+      "before": [
+        {
+          "xp": 0,
+          "budget": 9000,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "financialRows": {
+            "creatorsXp": [
+              {
+                "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+                "xp": 0
+              },
+              {
+                "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+                "xp": 0
+              }
+            ],
+            "redemptions": [],
+            "point_balances": [
+              {
+                "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+                "hash": "2056aa0c27122b76cccca745eef6ac83"
+              },
+              {
+                "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+                "hash": "155e6787cc501990221290808dd20990"
+              }
+            ],
+            "redemption_codes": [],
+            "redemption_gifts": [
+              {
+                "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+                "hash": "2c47126f93450d503e5a4d05430d73e0"
+              }
+            ],
+            "earnings_balances": [
+              {
+                "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+                "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+              },
+              {
+                "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+                "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+              }
+            ],
+            "workspace_budgets": [
+              {
+                "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+                "hash": "7b6ace8045424b2fd8a1139b327647ba"
+              }
+            ],
+            "point_transactions": [],
+            "earnings_transactions": [],
+            "workspace_budget_transactions": []
+          },
+          "rewardInventory": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "budget": 9000,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "financialRows": {
+            "creatorsXp": [
+              {
+                "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+                "xp": 0
+              },
+              {
+                "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+                "xp": 0
+              }
+            ],
+            "redemptions": [],
+            "point_balances": [
+              {
+                "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+                "hash": "2056aa0c27122b76cccca745eef6ac83"
+              },
+              {
+                "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+                "hash": "155e6787cc501990221290808dd20990"
+              }
+            ],
+            "redemption_codes": [],
+            "redemption_gifts": [
+              {
+                "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+                "hash": "2c47126f93450d503e5a4d05430d73e0"
+              }
+            ],
+            "earnings_balances": [
+              {
+                "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+                "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+              },
+              {
+                "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+                "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+              }
+            ],
+            "workspace_budgets": [
+              {
+                "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+                "hash": "7b6ace8045424b2fd8a1139b327647ba"
+              }
+            ],
+            "point_transactions": [],
+            "earnings_transactions": [],
+            "workspace_budget_transactions": []
+          },
+          "rewardInventory": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "after": [
+        {
+          "xp": 10,
+          "budget": 9000,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "financialRows": {
+            "creatorsXp": [
+              {
+                "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+                "xp": 0
+              },
+              {
+                "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+                "xp": 10
+              }
+            ],
+            "redemptions": [],
+            "point_balances": [
+              {
+                "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+                "hash": "2056aa0c27122b76cccca745eef6ac83"
+              },
+              {
+                "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+                "hash": "155e6787cc501990221290808dd20990"
+              }
+            ],
+            "redemption_codes": [],
+            "redemption_gifts": [
+              {
+                "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+                "hash": "2c47126f93450d503e5a4d05430d73e0"
+              }
+            ],
+            "earnings_balances": [
+              {
+                "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+                "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+              },
+              {
+                "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+                "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+              }
+            ],
+            "workspace_budgets": [
+              {
+                "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+                "hash": "7b6ace8045424b2fd8a1139b327647ba"
+              }
+            ],
+            "point_transactions": [],
+            "earnings_transactions": [],
+            "workspace_budget_transactions": []
+          },
+          "rewardInventory": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        },
+        {
+          "xp": 0,
+          "budget": 9000,
+          "points": 50,
+          "cashLedger": 0,
+          "pointLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "withdrawable": 0,
+          "financialRows": {
+            "creatorsXp": [
+              {
+                "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+                "xp": 0
+              },
+              {
+                "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+                "xp": 10
+              }
+            ],
+            "redemptions": [],
+            "point_balances": [
+              {
+                "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+                "hash": "2056aa0c27122b76cccca745eef6ac83"
+              },
+              {
+                "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+                "hash": "155e6787cc501990221290808dd20990"
+              }
+            ],
+            "redemption_codes": [],
+            "redemption_gifts": [
+              {
+                "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+                "hash": "2c47126f93450d503e5a4d05430d73e0"
+              }
+            ],
+            "earnings_balances": [
+              {
+                "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+                "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+              },
+              {
+                "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+                "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+              }
+            ],
+            "workspace_budgets": [
+              {
+                "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+                "hash": "7b6ace8045424b2fd8a1139b327647ba"
+              }
+            ],
+            "point_transactions": [],
+            "earnings_transactions": [],
+            "workspace_budget_transactions": []
+          },
+          "rewardInventory": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "stock_qty": 3,
+              "stock_remaining": 3
+            }
+          ]
+        }
+      ],
+      "creatorId": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+      "existingJoinXpDelta": 10,
+      "contract": "D18-existing-join-contract.json"
+    },
+    "before": [
+      {
+        "xp": 10,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 10
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 10
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "xp": 10,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 10
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "budget": 9000,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "financialRows": {
+          "creatorsXp": [
+            {
+              "id": "339d23a0-af76-4494-a24a-6004f0318fdf",
+              "xp": 0
+            },
+            {
+              "id": "90d20259-a4f0-4347-951d-bd2ebb263b07",
+              "xp": 10
+            }
+          ],
+          "redemptions": [],
+          "point_balances": [
+            {
+              "id": "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+              "hash": "2056aa0c27122b76cccca745eef6ac83"
+            },
+            {
+              "id": "7d57a237-b707-480e-a8f3-8609f7c9f634",
+              "hash": "155e6787cc501990221290808dd20990"
+            }
+          ],
+          "redemption_codes": [],
+          "redemption_gifts": [
+            {
+              "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+              "hash": "2c47126f93450d503e5a4d05430d73e0"
+            }
+          ],
+          "earnings_balances": [
+            {
+              "id": "6a0b47af-0664-4ef3-92be-947a7c015341",
+              "hash": "bbd0bcf6a10303b1dc6c8e5767a1f2aa"
+            },
+            {
+              "id": "7fb1e8e6-a473-426b-8096-7211b5b76823",
+              "hash": "ecf618e0b1830b0d2161b9cda6953f56"
+            }
+          ],
+          "workspace_budgets": [
+            {
+              "id": "f358485a-5966-45cd-888b-4523b2b068bc",
+              "hash": "7b6ace8045424b2fd8a1139b327647ba"
+            }
+          ],
+          "point_transactions": [],
+          "earnings_transactions": [],
+          "workspace_budget_transactions": []
+        },
+        "rewardInventory": [
+          {
+            "id": "59bb5d24-6e19-46a7-bcb2-24a1a538084e",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "allEqual": true
+  },
+  "provider": "proof metadata mocked unavailable; no real messages/payments/paid AI",
+  "scope": "Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"
+}

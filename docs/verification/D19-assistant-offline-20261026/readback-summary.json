@@ -1,0 +1,330 @@
+{
+  "at": "2026-10-25T17:17:36.931533+00:00",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "verificationArtifactFingerprint": "c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119",
+  "cases": [
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > opens, traps keyboard focus, closes with Escape and reopens without a provider request",
+      "httpMethods": [],
+      "httpStatuses": [],
+      "requests": [],
+      "mockProviderChatCalls": 0,
+      "rpcDispatchNames": [],
+      "historyQueries": [],
+      "scriptedRequestEntries": 0,
+      "scriptedMessages": 0,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > uses the saved conversation and chronological scoped history for a second question",
+      "httpMethods": [
+        "POST",
+        "POST"
+      ],
+      "httpStatuses": [
+        200,
+        200
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "98fd6589-cf9b-4b69-a6e1-e7560b190557",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "0b8b72ca-e013-445f-b07c-8ca72e85dfe6",
+          "status": 200
+        }
+      ],
+      "mockProviderChatCalls": 2,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn",
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn"
+      ],
+      "historyQueries": [
+        {
+          "projection": "role, content",
+          "filters": [
+            [
+              "conversation_id",
+              "00000000-0000-4000-8000-000000000703"
+            ]
+          ],
+          "order": [
+            [
+              "created_at",
+              false
+            ],
+            [
+              "turn_order",
+              false
+            ]
+          ],
+          "limit": 20
+        }
+      ],
+      "scriptedRequestEntries": 2,
+      "scriptedMessages": 4,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > retains a429 input and UUID, then generates once after an explicit successful retry",
+      "httpMethods": [
+        "POST",
+        "POST"
+      ],
+      "httpStatuses": [
+        429,
+        200
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "146ed977-bf76-494f-8e40-f4f269e12539",
+          "status": 429
+        },
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "146ed977-bf76-494f-8e40-f4f269e12539",
+          "status": 200
+        }
+      ],
+      "mockProviderChatCalls": 1,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn"
+      ],
+      "historyQueries": [],
+      "scriptedRequestEntries": 1,
+      "scriptedMessages": 2,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > shows history503, keeps the input and avoids regeneration on same-request pending retry",
+      "httpMethods": [
+        "POST",
+        "POST",
+        "POST"
+      ],
+      "httpStatuses": [
+        200,
+        503,
+        202
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "f016d16f-f1da-4da0-9ba8-53b43565ae68",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "ac543fb9-c026-48bb-ab59-a34d2f719e50",
+          "status": 503
+        },
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "ac543fb9-c026-48bb-ab59-a34d2f719e50",
+          "status": 202
+        }
+      ],
+      "mockProviderChatCalls": 1,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn",
+        "reserve_assistant_request",
+        "reserve_assistant_request"
+      ],
+      "historyQueries": [
+        {
+          "projection": "role, content",
+          "filters": [
+            [
+              "conversation_id",
+              "00000000-0000-4000-8000-000000000703"
+            ]
+          ],
+          "order": [
+            [
+              "created_at",
+              false
+            ],
+            [
+              "turn_order",
+              false
+            ]
+          ],
+          "limit": 20
+        }
+      ],
+      "scriptedRequestEntries": 2,
+      "scriptedMessages": 2,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > checks an unknown generation outcome without automatically posting or generating again",
+      "httpMethods": [
+        "POST",
+        "GET"
+      ],
+      "httpStatuses": [
+        503,
+        200
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "65992792-6014-46c3-84c7-5518dcc5d37a",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/api/assistant/requests/65992792-6014-46c3-84c7-5518dcc5d37a",
+          "status": 200
+        }
+      ],
+      "mockProviderChatCalls": 1,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "mark_assistant_request_unknown",
+        "get_assistant_request"
+      ],
+      "historyQueries": [],
+      "scriptedRequestEntries": 1,
+      "scriptedMessages": 0,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > labels a lost save response unconfirmed then replaces it from status without a second generation",
+      "httpMethods": [
+        "POST",
+        "GET"
+      ],
+      "httpStatuses": [
+        200,
+        200
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "b951154b-b885-4eb4-a581-1e32dc496dc7",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/assistant/requests/b951154b-b885-4eb4-a581-1e32dc496dc7",
+          "status": 200
+        }
+      ],
+      "mockProviderChatCalls": 1,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn",
+        "mark_assistant_request_unknown",
+        "get_assistant_request"
+      ],
+      "historyQueries": [],
+      "scriptedRequestEntries": 1,
+      "scriptedMessages": 2,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > dispatches an unsupported reward/role tool to a denial without a financial or access RPC",
+      "httpMethods": [
+        "POST"
+      ],
+      "httpStatuses": [
+        200
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/api/assistant/chat",
+          "requestId": "abde7e82-e685-4e55-a59f-8208787f4435",
+          "status": 200
+        }
+      ],
+      "mockProviderChatCalls": 2,
+      "rpcDispatchNames": [
+        "reserve_assistant_request",
+        "claim_assistant_request",
+        "match_kb_chunks",
+        "save_assistant_turn"
+      ],
+      "historyQueries": [],
+      "scriptedRequestEntries": 1,
+      "scriptedMessages": 2,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > keeps the mission assistance default disabled before any scripted DB or provider call",
+      "httpMethods": [
+        "POST"
+      ],
+      "httpStatuses": [
+        503
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/assistant/mission-assist",
+          "requestId": "00000000-0000-4000-8000-000000000704",
+          "status": 503
+        }
+      ],
+      "mockProviderChatCalls": 0,
+      "rpcDispatchNames": [],
+      "historyQueries": [],
+      "scriptedRequestEntries": 0,
+      "scriptedMessages": 0,
+      "actualProviderCalls": 0,
+      "deniedExternalFetchAttempts": 0
+    }
+  ],
+  "fullTrace": {
+    "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-readback.json",
+    "sha256": "73e91a48794ffa7aa763dbfb43048f09a2c61743581c149e0f28426a062b4962"
+  },
+  "persistenceScope": "Scripted process-memory store only; never physical/SQL persisted-state evidence or pending reward neutrality.",
+  "identity": {
+    "transport": "in-process-Hono-and-JSDOM",
+    "database": "scripted-memory-fake",
+    "provider": "dependency-injected-mock",
+    "actualAuth": false,
+    "persistent": false,
+    "externalNetwork": false
+  },
+  "systemPromptOmittedFromPublicTrace": true
+}

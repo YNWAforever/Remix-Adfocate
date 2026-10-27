@@ -1,0 +1,14 @@
+{
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\7960735060baecd3\\node_modules\\@supabase\\cli-windows-x64\\bin\\supabase.exe",
+    "migration",
+    "new",
+    "application_decisions"
+  ],
+  "version": "2.110.0",
+  "exit": 0,
+  "created": [
+    "supabase/migrations/20261025120934_application_decisions.sql"
+  ],
+  "noRuntimeCommand": true
+}

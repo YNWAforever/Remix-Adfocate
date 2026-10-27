@@ -1,0 +1,2224 @@
+{
+  "at": "2026-10-23T20:13:11.983895+00:00",
+  "cases": [
+    {
+      "caseId": "UC-P01",
+      "title": "首頁可讀與主 CTA",
+      "owner": "D14",
+      "releaseScope": "R2 D14 local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+    },
+    {
+      "caseId": "UC-P02",
+      "title": "等級示範與引擎一致",
+      "owner": "D14",
+      "releaseScope": "R2 D14 local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+    },
+    {
+      "caseId": "UC-P03",
+      "title": "聯絡收件能力",
+      "owner": "D14",
+      "releaseScope": "R2 D14 local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+    },
+    {
+      "caseId": "UC-C01",
+      "title": "登入入口清晰",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C02",
+      "title": "Creator session 可進入",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C03",
+      "title": "進行中任務載入",
+      "owner": "D04",
+      "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+    },
+    {
+      "caseId": "UC-C04",
+      "title": "首頁收入 CTA",
+      "owner": "D04",
+      "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+    },
+    {
+      "caseId": "UC-C05",
+      "title": "讀取失敗不可顯示空清單",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C06",
+      "title": "applied/declined 可追蹤",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C07",
+      "title": "任務決策資訊",
+      "owner": "D09",
+      "releaseScope": "R2 D09 verified local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D09 decision projection, category and eligibility implemented",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No production audit outcome overwritten. No deployment, real provider, Safari/WebKit, physical-device or performance acceptance."
+    },
+    {
+      "caseId": "UC-C08",
+      "title": "分類覆蓋現有任務",
+      "owner": "D09",
+      "releaseScope": "R2 D09 verified local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D09 decision projection, category and eligibility implemented",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No production audit outcome overwritten. No deployment, real provider, Safari/WebKit, physical-device or performance acceptance."
+    },
+    {
+      "caseId": "UC-C09",
+      "title": "已加入狀態一致",
+      "owner": "D04",
+      "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+    },
+    {
+      "caseId": "UC-C10",
+      "title": "取消 profile 編輯",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C11",
+      "title": "社交帳戶一致",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C12",
+      "title": "護照頁可讀",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C13",
+      "title": "直接錢包讀取",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C14",
+      "title": "不足積分與缺貨",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C15",
+      "title": "空兌換記錄",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Applicable supporting API/DB and local contracts green; original broader empty/application/content/campaign UI acceptance remains partial."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C16",
+      "title": "沒有 active challenge",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Applicable supporting API/DB and local contracts green; original broader empty/application/content/campaign UI acceptance remains partial."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C17",
+      "title": "學院列表與資格",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Applicable supporting API/DB and local contracts green; original broader empty/application/content/campaign UI acceptance remains partial."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C18",
+      "title": "四堂課可開始",
+      "owner": "D14",
+      "releaseScope": "D15 synthetic functional verification only; original four-lesson semantics retained; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "currentD19Status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "newResult": {
+        "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+        "test": "BLOCKED_CONTENT_NOT_PROVIDED",
+        "deployment": "not-deployed",
+        "runtime": "Original four approved real lessons remain open; draft/合成 acceptance does not clear content."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "BLOCKED_CONTENT_NOT_PROVIDED: user confirmed no approved real curriculum. UC-C18/UC-A51 still require the original four real lesson units; neither is PASS. Two-unit synthetic N03 is functional evidence only.; Not deployed. No commit, push, merge, CI, hosted/production access, real membership changes, external messages/invites/publication, payments or paid AI/providers.; One completion 503 is an explicit browser transport mock. Successful reads/writes and the version-conflict 409 use real local Auth/RLS/API/database; sessions reused from the owned fixture. Manual approval references are recorded staff attestations, not independently verified content approvals.; Prior R0/R1 and D08/D09/D12/D13/D14 runtime remain historical at their preserved fingerprints. Full suite freshly protects 16 audit tests and 194 contracts; the entire legacy/active proof/reward handoff was not rerun for this D15 candidate.; Skipped broad integration is not PASS; legacy shared seeds and broad delete/reset remain excluded. Scoped owned Academy integration supplies the necessary D15 runtime evidence.; No Safari/WebKit, physical-device, full accessibility, load/performance, hosted advisors or production schema acceptance. Four prior app lint warnings and existing route/bundle build warnings remain. F27 remains partial: lesson fields use a labelled business form, while the existing parent track Metadata(JSON) editor is still exposed.; Original supplied CSV fields and originalAuditResult preserved. Original audit ZIP was not reopened this turn; expected audit SHA and prior evidence retained."
+    },
+    {
+      "caseId": "UC-C19",
+      "title": "AI 面板開關",
+      "owner": "D16",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-mock-and-isolated",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+    },
+    {
+      "caseId": "UC-A01",
+      "title": "後台入口保護",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A02",
+      "title": "未授權帳戶拒絕",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A03",
+      "title": "授權管理員進入",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A04",
+      "title": "第26人可達",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A05",
+      "title": "清單錯誤回饋",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A06",
+      "title": "接受申請失敗",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-R01",
+      "title": "日期獨立性",
+      "owner": "D01",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-R02",
+      "title": "靜態 gates",
+      "owner": "D01",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C20",
+      "title": "密碼正常/錯誤",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C21",
+      "title": "magic-link 過期與重放",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-disposable; PKCE UI transport mocked",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C22",
+      "title": "重設密碼",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-disposable; PKCE UI transport mocked",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C23",
+      "title": "首次啟用與中斷續填",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C24",
+      "title": "公開任務加入與重試",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C25",
+      "title": "申請制任務",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C26",
+      "title": "最後名額競爭",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C27",
+      "title": "收貨→草稿",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C28",
+      "title": "草稿競爭與斷線",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C29",
+      "title": "媒體上載失敗",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "PNG grant and GIF/MP4 upload/finalization passed with synthetic bytes; browser media chooser and physical-device acceptance not run."
+    },
+    {
+      "caseId": "UC-C30",
+      "title": "交付審閱回圈",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C31",
+      "title": "發布證明",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C32",
+      "title": "等待獎賞中立性",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C33",
+      "title": "正常兌換及重試",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-C34",
+      "title": "個人資料/媒體儲存",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C35",
+      "title": "公開連結與撤銷",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-C36",
+      "title": "通知與深連結",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A07",
+      "title": "篩選及搜尋",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A08",
+      "title": "個案審核",
+      "owner": "D06",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A09",
+      "title": "短名單",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A10",
+      "title": "接受/拒絕與併發",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A11",
+      "title": "審稿與發分",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A12",
+      "title": "工作佇列及SLA",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A13",
+      "title": "修稿與版本防護",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A14",
+      "title": "proof審核",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "Tenant/claim/attempt ownership and correction tested live; the older operator-read fixture restorer was not run because it disables user triggers."
+    },
+    {
+      "caseId": "UC-A15",
+      "title": "完成任務及歷史contract",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A16",
+      "title": "獎賞交接清單",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A17",
+      "title": "作者建檔與校驗",
+      "owner": "D12",
+      "releaseScope": "R2 D12 verified local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+    },
+    {
+      "caseId": "UC-A18",
+      "title": "挑戰結算",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A19",
+      "title": "內容作者流程",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A20",
+      "title": "學院作者流程",
+      "owner": "D14",
+      "releaseScope": "R2 D14 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+    },
+    {
+      "caseId": "UC-A21",
+      "title": "數字與時間區間",
+      "owner": "D17",
+      "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS-known-fixture-local; not-deployed",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "HK calendar-day [from,to), HKD net ledger credits, cohort denominators and cancelled exclusions",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+    },
+    {
+      "caseId": "UC-A22",
+      "title": "優先工作準確性",
+      "owner": "D11",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A23",
+      "title": "全域與workspace切換",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A24",
+      "title": "權限撤銷與斷線",
+      "owner": "D03",
+      "releaseScope": "D18 selected local role scope; hosted/real-staff transition remains-open",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable; real-staff-transition-open",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "existing gates extended with explicit capabilities",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No production/real staff changes. First administrator/platform bootstrap needs separate exact owner approval. Broad shared-seed integration not run; D15 content blocker unchanged."
+    },
+    {
+      "caseId": "UC-S01",
+      "title": "跨Creator讀寫",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-S02",
+      "title": "角色workspace邊界",
+      "owner": "D18",
+      "releaseScope": "D18 selected local role scope; hosted/real-staff transition remains-open",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable; real-staff-transition-open",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "existing gates extended with explicit capabilities",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No production/real staff changes. First administrator/platform bootstrap needs separate exact owner approval. Broad shared-seed integration not run; D15 content blocker unchanged."
+    },
+    {
+      "caseId": "UC-S03",
+      "title": "公開資料最少化",
+      "owner": "D13",
+      "releaseScope": "R2 D13 local/disposable; not deployed",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+    },
+    {
+      "caseId": "UC-S04",
+      "title": "排程保護與重跑",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json",
+        "D19-support-sentinel-check.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-Q01",
+      "title": "核心流程responsive",
+      "owner": "D17",
+      "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS-selected-reflow-local; native-device-open",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; D17_manual_hosted_limits_OPEN",
+      "newResult": {
+        "code": "Responsive header/controls, long text/URL wrapping, larger dialog targets",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "D17 selected measured runtime retained; no new physical-device/Safari/manual-AT/hosted performance claim."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+    },
+    {
+      "caseId": "UC-Q02",
+      "title": "鍵盤/焦點/對比",
+      "owner": "D17",
+      "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS-selected-keyboard-axe-local; manual-AT-open",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; D17_manual_hosted_limits_OPEN",
+      "newResult": {
+        "code": "Existing focus trap restored trigger; 44px close target; announced recoverable errors and AA-compatible error contrast",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "D17 selected measured runtime retained; no new physical-device/Safari/manual-AT/hosted performance claim."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+    },
+    {
+      "caseId": "UC-Q03",
+      "title": "代表性頁效能",
+      "owner": "D17",
+      "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS-local-suggested-budgets; production-open",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; D17_manual_hosted_limits_OPEN",
+      "newResult": {
+        "code": "Measured Vite vendor partition and preserved paged queue; no speculative index",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "D17 selected measured runtime retained; no new physical-device/Safari/manual-AT/hosted performance claim."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+    },
+    {
+      "caseId": "UC-Q04",
+      "title": "AI來源及幻覺",
+      "owner": "D16",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-mock-and-isolated",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+    },
+    {
+      "caseId": "UC-Q05",
+      "title": "AI故障/限流/保存",
+      "owner": "D16",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-mock-and-isolated",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+    },
+    {
+      "caseId": "UC-R03",
+      "title": "部署版本與schema一致",
+      "owner": "D02",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "blocked-production",
+      "currentD19Status": "BLOCKED_HOSTED_RELEASE_NOT_AUTHORIZED",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "BLOCKED_HOSTED_RELEASE_NOT_AUTHORIZED",
+        "deployment": "not-deployed",
+        "runtime": "No hosted release/deployment/version reconciliation run or authorized."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "25 tables absent in production catalog. No production migration or deployment was authorized."
+    },
+    {
+      "caseId": "UC-R04",
+      "title": "有資料時回退",
+      "owner": "D02",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-isolated-preservation",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Production rollback is prepared, not executed; no down/reset operation."
+    },
+    {
+      "caseId": "UC-A25",
+      "title": "review儲存錯誤可見",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A26",
+      "title": "Flag先收集具體理由",
+      "owner": "D06",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A27",
+      "title": "workspace讀取失敗",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A28",
+      "title": "香港同日跨UTC午夜",
+      "owner": "D11",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A29",
+      "title": "香港明日但同UTC日",
+      "owner": "D11",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A30",
+      "title": "503與未登入分開",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A31",
+      "title": "review及audit原子性",
+      "owner": "D06",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A32",
+      "title": "備註重試去重",
+      "owner": "D06",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A33",
+      "title": "清單條件/位置保留",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A34",
+      "title": "staff資格及停用邊界",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A35",
+      "title": "workspace初始化及slug",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A36",
+      "title": "審稿及proof既有契約",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A37",
+      "title": "完成/交接/權限既有契約",
+      "owner": "D07",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A38",
+      "title": "Workspace切換",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A39",
+      "title": "搜尋與Approved篩選",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A40",
+      "title": "Creator個案可讀",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A41",
+      "title": "返回保留篩選",
+      "owner": "D10",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-and-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A42",
+      "title": "主動任務佇列讀取",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A43",
+      "title": "獎勵交接讀取",
+      "owner": "D03",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A44",
+      "title": "既有無效作品證據",
+      "owner": "D05",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A45",
+      "title": "申請空白狀態",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Applicable supporting API/DB and local contracts green; original broader empty/application/content/campaign UI acceptance remains partial."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A46",
+      "title": "既有參與紀錄",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-isolated-support",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A47",
+      "title": "任務管理載入狀態",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A48",
+      "title": "條件式交付表單",
+      "owner": "D12",
+      "releaseScope": "R2 D12 verified local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable-ui",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+    },
+    {
+      "caseId": "UC-A49",
+      "title": "挑戰及內容空白狀態",
+      "owner": "D19",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "pass",
+      "priorNewResult": "partial-local-support",
+      "currentD19Status": "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Applicable supporting API/DB and local contracts green; original broader empty/application/content/campaign UI acceptance remains partial."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A50",
+      "title": "學院列表及類型篩選",
+      "owner": "D14",
+      "releaseScope": "R2 D14 local/disposable; not deployed",
+      "originalAuditResult": "pass",
+      "priorNewResult": "pass-local-and-disposable",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+    },
+    {
+      "caseId": "UC-A51",
+      "title": "課程承諾與正文",
+      "owner": "D14",
+      "releaseScope": "D15 synthetic functional verification only; original four-lesson semantics retained; not deployed",
+      "originalAuditResult": "fail",
+      "priorNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "currentD19Status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "newResult": {
+        "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+        "test": "BLOCKED_CONTENT_NOT_PROVIDED",
+        "deployment": "not-deployed",
+        "runtime": "Original four approved real lessons remain open; draft/合成 acceptance does not clear content."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "BLOCKED_CONTENT_NOT_PROVIDED: user confirmed no approved real curriculum. UC-C18/UC-A51 still require the original four real lesson units; neither is PASS. Two-unit synthetic N03 is functional evidence only.; Not deployed. No commit, push, merge, CI, hosted/production access, real membership changes, external messages/invites/publication, payments or paid AI/providers.; One completion 503 is an explicit browser transport mock. Successful reads/writes and the version-conflict 409 use real local Auth/RLS/API/database; sessions reused from the owned fixture. Manual approval references are recorded staff attestations, not independently verified content approvals.; Prior R0/R1 and D08/D09/D12/D13/D14 runtime remain historical at their preserved fingerprints. Full suite freshly protects 16 audit tests and 194 contracts; the entire legacy/active proof/reward handoff was not rerun for this D15 candidate.; Skipped broad integration is not PASS; legacy shared seeds and broad delete/reset remain excluded. Scoped owned Academy integration supplies the necessary D15 runtime evidence.; No Safari/WebKit, physical-device, full accessibility, load/performance, hosted advisors or production schema acceptance. Four prior app lint warnings and existing route/bundle build warnings remain. F27 remains partial: lesson fields use a labelled business form, while the existing parent track Metadata(JSON) editor is still exposed.; Original supplied CSV fields and originalAuditResult preserved. Original audit ZIP was not reopened this turn; expected audit SHA and prior evidence retained."
+    },
+    {
+      "caseId": "UC-A52",
+      "title": "逾期待辦可直接處理",
+      "owner": "D11",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A53",
+      "title": "錯誤不是無訊息空白",
+      "owner": "D04",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-local-contract",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A54",
+      "title": "無效證據不可普通批准",
+      "owner": "D05",
+      "releaseScope": "R1 single-workspace internal pilot",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-isolated",
+      "currentD19Status": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "evidence": [
+        "D19-test-results.json",
+        "D19-api-contract.json",
+        "D19-browser-summary.json",
+        "D19-browser-neutrality.json",
+        "workflow-runtime.jsonl"
+      ],
+      "limitations": "No claim that the production observation has changed."
+    },
+    {
+      "caseId": "UC-A55",
+      "title": "營運規則可理解性",
+      "owner": "D12",
+      "releaseScope": "D12 mission authoring verified; D15 other operations forms open",
+      "originalAuditResult": "fail",
+      "priorNewResult": "pass-D12-authoring-scope; D15 remains-open",
+      "currentD19Status": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "evidence": [
+        "D19-test-results.json"
+      ],
+      "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+    }
+  ],
+  "count": 107,
+  "summary": {
+    "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained": 49,
+    "PASS_FRESH_OWNED_CORE_OR_ROLE": 38,
+    "PASS_FRESH_OWNED_SUPPORT_API_DB": 9,
+    "PARTIAL_FRESH_SUPPORT_API; broader_UI_OPEN": 5,
+    "BLOCKED_CONTENT_NOT_PROVIDED": 2,
+    "PASS_FRESH_LOCAL_CONTRACT; D17_manual_hosted_limits_OPEN": 3,
+    "BLOCKED_HOSTED_RELEASE_NOT_AUTHORIZED": 1
+  },
+  "rule": "107 mapped owner/scope/status records are not 107 browser passes. Original audit observations and D15 content cases preserved. No hosted/production inference."
+}

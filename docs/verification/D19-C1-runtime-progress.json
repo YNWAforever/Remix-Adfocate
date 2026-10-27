@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-25T08:23:51.976876+00:00",
+  "task": "D19 C1 approved runtime",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceRevisionRuntimeApproved": true,
+  "authority": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/source-revision-authorization.json",
+  "additionalResources": 0,
+  "bootstrapVerified": true,
+  "migrationsApplied": 72,
+  "knownReferencedProviderProfileMatchedAndAligned": true,
+  "conditionalCompatibilityApplied": 9,
+  "protectedCapabilitiesPassed": 584,
+  "fixtureShapeRelations": 70,
+  "checkpointRowsCreated": 5,
+  "immutableBaseline": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/immutable-bootstrap-baseline.json",
+  "role": {
+    "passed": 8,
+    "failed": 0,
+    "phaseExit": 0,
+    "baselineAndJournalsVerified": true
+  },
+  "core": {
+    "passed": 9,
+    "failed": 0,
+    "phaseExit": 0,
+    "baselineAndJournalsVerified": true
+  },
+  "browser": {
+    "passed": 2,
+    "failed": 1,
+    "notRun": 2,
+    "phaseExit": 1,
+    "firstJourneyFailure": "Retry save not visible after network abort",
+    "independentRoleCases": "reviewer403 and platform503 pass; original journey failure retained"
+  },
+  "wholeR1Verified": false,
+  "financialNeutrality": {
+    "coreWindows": "PASS nine financial families/all workspace XP/inventory; issued legacy anchor retained",
+    "browserPendingWindow": "NOT_MEASURED",
+    "allowedLegacyAggregate": {
+      "xp": 300,
+      "points": 1300,
+      "budgets": 26750,
+      "workflows": [
+        {
+          "id": "2a142015-5fc0-4712-93b3-cea4eb615637",
+          "state": "reward_pending",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "114082af-c5d5-4603-83d9-af62ff786335"
+        },
+        {
+          "id": "412aec48-c3eb-44da-bb9f-3addde82c541",
+          "state": "drafting",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "2293cfaa-ab9b-42cd-9303-4b24c5127a03"
+        },
+        {
+          "id": "67e4aee7-a26c-442a-955a-3aa9fedb005c",
+          "state": "reward_pending",
+          "workspaceId": "2177f882-9f30-4ad6-b5e2-c546b6709d61",
+          "submissionId": "415ac2d6-03a4-4ed6-adaf-702020760841"
+        },
+        {
+          "id": "acc556fa-af8e-45fc-b324-13b111dc2125",
+          "state": "drafting",
+          "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+          "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c"
+        }
+      ],
+      "cashLedger": 2,
+      "pointLedger": 2,
+      "redemptions": 0,
+      "budgetLedger": 2,
+      "historyCount": 72,
+      "withdrawable": 250,
+      "faultTriggers": 0,
+      "faultFunctions": 0,
+      "inventoryRemaining": 9
+    }
+  },
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "productionDataOrMembershipWrites": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "sourceUnchangedSinceFull2058": false,
+  "currentFrozenRuntimeSource": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "newLocalAutosaveFix": {
+    "regressionRed": {
+      "passed": 3,
+      "failed": 2
+    },
+    "regressionGreen": {
+      "passed": 6,
+      "failed": 0
+    },
+    "fullSuite": {
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--no-file-parallelism",
+        "--reporter=json",
+        "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-final-full.json"
+      ],
+      "exit": 0,
+      "passed": 2082,
+      "failed": 0,
+      "gatedSkip": 363,
+      "files": 289,
+      "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+      "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full-command.json"
+    },
+    "runtime": "NOT_RUN_NEW_SOURCE",
+    "currentSource": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd"
+  },
+  "noFurtherRuntimeSinceLocalSourceChanged": true
+}

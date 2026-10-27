@@ -1,0 +1,20 @@
+{
+  "model": {
+    "requestedLabel": "Codex GPT-6.1 Sol",
+    "status": "UNKNOWN_NOT_REVERIFIED_APP_APPROVAL_TIMED_OUT",
+    "actualModelId": null,
+    "evidence": "Read-thread metadata did not expose selected model. Read-only Computer Use exact Codex window selection approval timed out; no screenshot/model state was returned.",
+    "historicalVerification": "Historical root executionModel record preserved without reattributing it to this turn.",
+    "modelSwitchPerformed": false,
+    "alternatePathAfterTimeout": false
+  },
+  "toolchain": {
+    "actualNode": "v24.18.0",
+    "node22CurrentCandidate": "NOT_RUN",
+    "probeCommand": "npm exec --offline --yes --package=node@22 -- node -e <version-only>",
+    "probeResult": "ENOTCACHED",
+    "probeEvidence": "Observed tool response; raw npm log not copied into delivery. No package download/install.",
+    "existingNode22ExecutableAvailability": "UNKNOWN; no usable path in the bounded existing project Node22/toolchain records examined",
+    "historicalNode22Evidence": "Preserved only at its original source; not rebound"
+  }
+}

@@ -1,0 +1,78 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T19:02:31.645Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T19:02:31.646Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T19:02:32.350Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T19:02:32.400Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T19:02:32.401Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes GIF evidence
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T19:02:32.606Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes GIF evidence
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T19:02:32.669Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T19:02:32.670Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes GIF evidence
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T19:02:33.161Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes GIF evidence
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T19:02:33.228Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T19:02:33.228Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes MP4 evidence
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-23T19:02:33.730Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes MP4 evidence
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-23T19:02:33.796Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-23T19:02:33.796Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes MP4 evidence
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-23T19:02:33.896Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > uploads and finalizes MP4 evidence
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-23T19:02:33.956Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-23T19:02:33.957Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/publication-proof-asset-grant-live.test.ts (3 tests | 1 failed) 4155ms
+   × publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path 2542ms
+     → expected { code: 'FIXTURE_NOT_OWNED', …(1) } to be null
+   ✓ publication proof asset grant live path > uploads and finalizes GIF evidence 1014ms
+   ✓ publication proof asset grant live path > uploads and finalizes MP4 evidence 597ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/publication-proof-asset-grant-live.test.ts > publication proof asset grant live path > creates a grant for the browser fixture's valid PNG evidence path
+AssertionError: expected { code: 'FIXTURE_NOT_OWNED', …(1) } to be null
+
+- Expected: 
+null
+
++ Received: 
+Object {
+  "code": "FIXTURE_NOT_OWNED",
+  "message": "Only exact IDs captured in this fixture run may be changed",
+}
+
+ ❯ server/test/publication-proof-asset-grant-live.test.ts:206:31
+    204|           .delete()
+    205|           .eq("id", body.asset.id);
+    206|         expect(removed.error).toBeNull();
+       |                               ^
+    207|       }
+    208|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  03:02:25
+   Duration  8.19s (transform 734ms, setup 246ms, collect 2.38s, tests 4.15s, environment 1.09s, prepare 107ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-support-preflight-results.private.json

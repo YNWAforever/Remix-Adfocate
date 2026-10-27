@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-24T09:13:38.063472+00:00",
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "containerIds": {
+    "db": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "auth": "f17c40dc58d2743ab0d2d926bd05cbf2cf6cec4cc38c94a3ba30280903c26eda",
+    "rest": "a705ab958489220a0ae006095b55d02a1db79f64120192ec458994691012501d",
+    "kong": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "storage": "e98a4217bc70a77763ad5320fa1f2493bca7fc29e853d6ff9a725cca1c7c3429"
+  },
+  "images": {
+    "db": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "auth": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+    "rest": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+    "kong": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "storage": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95"
+  },
+  "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88",
+  "internal": false,
+  "masquerading": false,
+  "exclusiveMembers": true,
+  "volumeName": "adfocate-d19-pristine-20261024-5e2fa581-db-data",
+  "volumeCreatedAt": "2026-10-24T08:59:14Z",
+  "freshVolumeOnly": true,
+  "apiBindings": {
+    "8000/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "56631"
+      }
+    ]
+  },
+  "dbBindings": {
+    "5432/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "56632"
+      }
+    ]
+  },
+  "normalIdentityVerifierPassed": true,
+  "clientsCreated": false,
+  "applicationSetupStarted": false
+}

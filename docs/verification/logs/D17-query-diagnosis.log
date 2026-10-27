@@ -1,0 +1,17 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"table":"mission_submissions","rows":1}
+{"table":"earnings_transactions","rows":1}
+{"table":"point_transactions","rows":1}
+{"table":"creators","rows":1}
+{"table":"missions","rows":1}
+{"table":"mission_work_items","code":"PGRST201","message":"Could not embed because more than one relationship was found for 'mission_work_items' and 'mission_workflows'","hint":"Try changing 'mission_workflows' to one of the following: 'mission_workflows!mission_work_items_mission_workflow_id_fkey', 'mission_workflows!mission_work_items_workflow_workspace_fk'. Find the desired relationship in the 'details' key.","details":[{"cardinality":"many-to-one","embedding":"mission_work_items with mission_workflows","relationship":"mission_work_items_mission_workflow_id_fkey using mission_work_items(mission_workflow_id) and mission_workflows(id)"},{"cardinality":"many-to-one","embedding":"mission_work_items with mission_workflows","relationship":"mission_work_items_workflow_workspace_fk using mission_work_items(mission_workflow_id, workspace_id) and mission_workflows(id, workspace_id)"}]}
+{"table":"mission_draft_versions","rows":0}
+{"table":"mission_review_rounds","rows":0}

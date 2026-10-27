@@ -1,0 +1,21 @@
+{
+  "gate": "environment",
+  "command": "npm test -- --no-file-parallelism server/devApi.test.ts server/devApi.transport.test.ts scripts/release/manifest.test.ts --reporter=json --outputFile=.codex-tmp/D19-B1-environment.json",
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "sourceRecords": 354,
+  "sourceUnchangedAfter": true,
+  "startedAt": "2026-10-24T16:15:37.300Z",
+  "finishedAt": "2026-10-24T16:15:45.238Z",
+  "exit": 0,
+  "error": null,
+  "logSha256": "f1e4b46d4cc382850762d996bdeaa625d901bbb6edb36a244d71bec784ab480f",
+  "freeGiBBefore": 3.1658401489257812,
+  "freeGiBAfter": 3.5557212829589844,
+  "offline": true,
+  "integrationEnabled": false,
+  "providerKeysSupplied": false,
+  "publicLog": "logs/D19-B1-environment.log",
+  "publicLogSha256": "7fa89f3e986250e129d4883fd5464578cb04dac0b9eab6a60b1dbb6dd2c5aacc",
+  "logSha256Basis": "Raw private stdout/stderr; public log normalizes workspace paths and labels mock output",
+  "executionContext": "Formally approved local unsandboxed test/build execution"
+}

@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-25T12:40:12.268788+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "src/routes/-_app.mission.$missionSlug.test.tsx",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\creator-reason-red.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.42159652709961,
+    "freeCommitGiB": 11.577064514160156,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "87e199cce232c4f440bf6f67b8cd657b2a12ed17497f1ff4d9f5828562d6340b",
+  "sourceRecords": 785,
+  "pid": 33448
+}

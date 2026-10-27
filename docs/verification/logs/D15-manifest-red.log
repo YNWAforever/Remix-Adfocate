@@ -1,0 +1,27 @@
+
+> release:manifest:check
+> vite-node --script scripts/release/manifest-cli.ts check
+
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:43
+  if (errors.length) throw new Error(errors.join("\n"));
+                           ^
+
+Error: unclassified migration: 20261023091050_academy_learning.sql
+    at checkManifest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:43:28)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:53:27
+    at ViteNodeRunner.runModule (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite-node/dist/client.mjs:399:5)
+    at ViteNodeRunner.directRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite-node/dist/client.mjs:381:5)
+    at ViteNodeRunner.cachedRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite-node/dist/client.mjs:206:14)
+    at ViteNodeRunner.executeFile (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite-node/dist/client.mjs:169:12)
+    at CAC.run (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite-node/dist/cli.mjs:99:5)
+
+Node.js v24.18.0

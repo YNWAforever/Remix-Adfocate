@@ -1,0 +1,15 @@
+{
+  "textFilesScanned": 680,
+  "unclassifiedPatternMatches": 0,
+  "rawCredentialsDetected": false,
+  "knownHistoricalStaticFixtures": [
+    {
+      "path": "docs/verification/logs/diff-check.log",
+      "line": 163222,
+      "matchSha256": "5f7a91dd0f99f3c4b66a17671de4de9947b107918dffe1b3a3e45940101523a7"
+    }
+  ],
+  "exactOwnedCredentialValuesChecked": 511,
+  "exactOwnedCredentialMatches": 0,
+  "privateArtifacts": "Raw logs/reports, keys, sessions and screenshots stay ignored/private. Only sanitized logs, IDs, counts, schema evidence and neutrality exported."
+}

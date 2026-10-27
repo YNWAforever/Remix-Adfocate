@@ -1,0 +1,2313 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "data": {
+    "browser": "155.0.4283.62",
+    "pages": [
+      {
+        "path": "/home",
+        "toNetworkIdleMs": 1540.8773999999999,
+        "lcpMs": 912,
+        "cls": 0.27616292538113063,
+        "shifts": [
+          {
+            "at": 707.7000000029802,
+            "value": 0.0000628662109375,
+            "sources": [
+              {
+                "tag": "A",
+                "className": "rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold",
+                "previous": {
+                  "x": 1117.515625,
+                  "y": 22,
+                  "width": 90.484375,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1117.515625
+                },
+                "current": {
+                  "x": 1107.515625,
+                  "y": 22,
+                  "width": 100.484375,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1107.515625
+                }
+              },
+              {
+                "tag": "svg",
+                "className": {},
+                "previous": {
+                  "x": 692,
+                  "y": 772.5,
+                  "width": 20,
+                  "height": 20,
+                  "top": 772.5,
+                  "right": 712,
+                  "bottom": 792.5,
+                  "left": 692
+                },
+                "current": {
+                  "x": 666.25,
+                  "y": 772.5,
+                  "width": 20,
+                  "height": 20,
+                  "top": 772.5,
+                  "right": 686.25,
+                  "bottom": 792.5,
+                  "left": 666.25
+                }
+              }
+            ]
+          },
+          {
+            "at": 725,
+            "value": 0.000006082322862413195,
+            "sources": [
+              {
+                "tag": "A",
+                "className": "rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold",
+                "previous": {
+                  "x": 1107.515625,
+                  "y": 22,
+                  "width": 100.484375,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1107.515625
+                },
+                "current": {
+                  "x": 1110.71875,
+                  "y": 22,
+                  "width": 97.28125,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1110.71875
+                }
+              }
+            ]
+          },
+          {
+            "at": 866.7999999970198,
+            "value": 0.14019263076782226,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "grid grid-cols-2 gap-3",
+                "previous": {
+                  "x": 264,
+                  "y": 576.90625,
+                  "width": 996,
+                  "height": 153.59375,
+                  "top": 576.90625,
+                  "right": 1260,
+                  "bottom": 730.5,
+                  "left": 264
+                },
+                "current": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                }
+              },
+              {
+                "tag": "A",
+                "className": "flex items-center justify-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] p-4 font-heading text-lg font-bold text-white shadow-[4px_4px_0_0_var(--color-ink)]",
+                "previous": {
+                  "x": 264,
+                  "y": 750.5,
+                  "width": 996,
+                  "height": 68,
+                  "top": 750.5,
+                  "right": 1260,
+                  "bottom": 818.5,
+                  "left": 264
+                },
+                "current": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                }
+              }
+            ]
+          },
+          {
+            "at": 895.7999999970198,
+            "value": 0.038012606302897135,
+            "sources": [
+              {
+                "tag": "SECTION",
+                "className": "pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5",
+                "previous": {
+                  "x": 264,
+                  "y": 445.8125,
+                  "width": 996,
+                  "height": 454.1875,
+                  "top": 445.8125,
+                  "right": 1260,
+                  "bottom": 900,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 554.71875,
+                  "width": 996,
+                  "height": 345.28125,
+                  "top": 554.71875,
+                  "right": 1260,
+                  "bottom": 900,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "SECTION",
+                "className": "space-y-3",
+                "previous": {
+                  "x": 264,
+                  "y": 358.71875,
+                  "width": 992,
+                  "height": 63.09375,
+                  "top": 358.71875,
+                  "right": 1256,
+                  "bottom": 421.8125,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 467.625,
+                  "width": 992,
+                  "height": 63.09375,
+                  "top": 467.625,
+                  "right": 1256,
+                  "bottom": 530.71875,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "A",
+                "className": "mt-2 inline-flex min-h-11 items-center rounded-lg px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                "previous": {
+                  "x": 299,
+                  "y": 828.375,
+                  "width": 93.75,
+                  "height": 44,
+                  "top": 828.375,
+                  "right": 392.75,
+                  "bottom": 872.375,
+                  "left": 299
+                },
+                "current": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                }
+              }
+            ]
+          },
+          {
+            "at": 913.5,
+            "value": 0.09788873977661133,
+            "sources": [
+              {
+                "tag": "DIV",
+                "className": "grid gap-6 lg:grid-cols-2",
+                "previous": {
+                  "x": 264,
+                  "y": 227.625,
+                  "width": 992,
+                  "height": 220,
+                  "top": 227.625,
+                  "right": 1256,
+                  "bottom": 447.625,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 443.3125,
+                  "width": 992,
+                  "height": 220,
+                  "top": 443.3125,
+                  "right": 1256,
+                  "bottom": 663.3125,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "SECTION",
+                "className": "pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5",
+                "previous": {
+                  "x": 264,
+                  "y": 554.71875,
+                  "width": 996,
+                  "height": 345.28125,
+                  "top": 554.71875,
+                  "right": 1260,
+                  "bottom": 900,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 770.40625,
+                  "width": 996,
+                  "height": 129.59375,
+                  "top": 770.40625,
+                  "right": 1260,
+                  "bottom": 900,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "SECTION",
+                "className": "space-y-3",
+                "previous": {
+                  "x": 264,
+                  "y": 467.625,
+                  "width": 992,
+                  "height": 63.09375,
+                  "top": 467.625,
+                  "right": 1256,
+                  "bottom": 530.71875,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 683.3125,
+                  "width": 992,
+                  "height": 63.09375,
+                  "top": 683.3125,
+                  "right": 1256,
+                  "bottom": 746.40625,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "SECTION",
+                "className": "wallet-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] p-6 text-[var(--color-paper)]",
+                "previous": {
+                  "x": 772,
+                  "y": 227.625,
+                  "width": 490,
+                  "height": 101.796875,
+                  "top": 227.625,
+                  "right": 1262,
+                  "bottom": 329.421875,
+                  "left": 772
+                },
+                "current": {
+                  "x": 772,
+                  "y": 443.3125,
+                  "width": 490,
+                  "height": 101.796875,
+                  "top": 443.3125,
+                  "right": 1262,
+                  "bottom": 545.109375,
+                  "left": 772
+                }
+              },
+              {
+                "tag": "::before",
+                "className": "",
+                "previous": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0,
+                  "top": 0,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0
+                },
+                "current": {
+                  "x": 774,
+                  "y": 445.3125,
+                  "width": 480,
+                  "height": 91.796875,
+                  "top": 445.3125,
+                  "right": 1254,
+                  "bottom": 537.109375,
+                  "left": 774
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/my",
+        "toNetworkIdleMs": 820.3752,
+        "lcpMs": 328,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/wallet",
+        "toNetworkIdleMs": 846.2269000000001,
+        "lcpMs": 256,
+        "cls": 0.0014318156666225858,
+        "shifts": [
+          {
+            "at": 322.3999999910593,
+            "value": 0.0014318156666225858,
+            "sources": [
+              {
+                "tag": "H2",
+                "className": "font-heading font-bold",
+                "previous": {
+                  "x": 264,
+                  "y": 164.796875,
+                  "width": 403.328125,
+                  "height": 74,
+                  "top": 164.796875,
+                  "right": 667.328125,
+                  "bottom": 238.796875,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 204.1875,
+                  "width": 403.328125,
+                  "height": 74,
+                  "top": 204.1875,
+                  "right": 667.328125,
+                  "bottom": 278.1875,
+                  "left": 264
+                }
+              },
+              {
+                "tag": "UL",
+                "className": "space-y-2",
+                "previous": {
+                  "x": 264,
+                  "y": 245.546875,
+                  "width": 403.328125,
+                  "height": 20,
+                  "top": 245.546875,
+                  "right": 667.328125,
+                  "bottom": 265.546875,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 284.9375,
+                  "width": 403.328125,
+                  "height": 20,
+                  "top": 284.9375,
+                  "right": 667.328125,
+                  "bottom": 304.9375,
+                  "left": 264
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/redemption/history",
+        "toNetworkIdleMs": 816.6301000000003,
+        "lcpMs": 260,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/campaigns",
+        "toNetworkIdleMs": 800.8193000000001,
+        "lcpMs": 312,
+        "cls": 0.012834114583333334,
+        "shifts": [
+          {
+            "at": 292.30000001192093,
+            "value": 0.012834114583333334,
+            "sources": [
+              {
+                "tag": "DIV",
+                "className": "mx-auto max-w-3xl p-4 space-y-6",
+                "previous": {
+                  "x": 240,
+                  "y": 0,
+                  "width": 1040,
+                  "height": 56.796875,
+                  "top": 0,
+                  "right": 1280,
+                  "bottom": 56.796875,
+                  "left": 240
+                },
+                "current": {
+                  "x": 376,
+                  "y": 0,
+                  "width": 768,
+                  "height": 161.09375,
+                  "top": 0,
+                  "right": 1144,
+                  "bottom": 161.09375,
+                  "left": 376
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/guide",
+        "toNetworkIdleMs": 850.7645999999995,
+        "lcpMs": 376,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/creators",
+        "toNetworkIdleMs": 1280.3612999999996,
+        "lcpMs": 556,
+        "cls": 0.3439092556847467,
+        "shifts": [
+          {
+            "at": 533.2000000029802,
+            "value": 0.12449129687415228,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 283.09375,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 393.09375,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 283.09375,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 437.09375,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 557.8000000119209,
+            "value": 0.0022181121826171874,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "flex items-center gap-3",
+                "previous": {
+                  "x": 256,
+                  "y": 361.09375,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 361.09375,
+                  "right": 1264,
+                  "bottom": 405.09375,
+                  "left": 256
+                },
+                "current": {
+                  "x": 256,
+                  "y": 322,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 322,
+                  "right": 1264,
+                  "bottom": 366,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 617.5,
+            "value": 0.2105015541712443,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 518.96875,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 672.96875,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 283.09375,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 393.09375,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                }
+              }
+            ]
+          },
+          {
+            "at": 688.2000000029802,
+            "value": 0.004480180274115669,
+            "sources": [
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          },
+          {
+            "at": 705.5,
+            "value": 0.0022181121826171874,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "flex items-center gap-3",
+                "previous": {
+                  "x": 256,
+                  "y": 317.09375,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 317.09375,
+                  "right": 1264,
+                  "bottom": 361.09375,
+                  "left": 256
+                },
+                "current": {
+                  "x": 256,
+                  "y": 278,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 278,
+                  "right": 1264,
+                  "bottom": 322,
+                  "left": 256
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/insights",
+        "toNetworkIdleMs": 836.1990000000005,
+        "lcpMs": 312,
+        "cls": 0.8105900214089288,
+        "shifts": [
+          {
+            "at": 279.6000000089407,
+            "value": 0.2932317592832777,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 356.140625,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 466.140625,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 746,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 309.40000000596046,
+            "value": 0.5173582621256511,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 746,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 790,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "max-w-xs text-xs [overflow-wrap:anywhere]",
+                "previous": {
+                  "x": 545.5625,
+                  "y": 51,
+                  "width": 320,
+                  "height": 33,
+                  "top": 51,
+                  "right": 865.5625,
+                  "bottom": 84,
+                  "left": 545.5625
+                },
+                "current": {
+                  "x": 493,
+                  "y": 57,
+                  "width": 320,
+                  "height": 33,
+                  "top": 57,
+                  "right": 813,
+                  "bottom": 90,
+                  "left": 493
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/applications",
+        "toNetworkIdleMs": 830.8820000000014,
+        "lcpMs": 276,
+        "cls": 0.1196444978290134,
+        "shifts": [
+          {
+            "at": 257.79999999701977,
+            "value": 0.04139664151933458,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 55.09375,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 165.09375,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 55.09375,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 209.09375,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 306.5,
+            "value": 0.07824785630967881,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 55.09375,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 209.09375,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 55.09375,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 165.09375,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "max-w-xs text-xs [overflow-wrap:anywhere]",
+                "previous": {
+                  "x": 545.5625,
+                  "y": 51,
+                  "width": 320,
+                  "height": 33,
+                  "top": 51,
+                  "right": 865.5625,
+                  "bottom": 84,
+                  "left": 545.5625
+                },
+                "current": {
+                  "x": 493,
+                  "y": 57,
+                  "width": 320,
+                  "height": 33,
+                  "top": 57,
+                  "right": 813,
+                  "bottom": 90,
+                  "left": 493
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/campaigns",
+        "toNetworkIdleMs": 852.5173999999988,
+        "lcpMs": 276,
+        "cls": 0.18863905807071263,
+        "shifts": [
+          {
+            "at": 255.20000000298023,
+            "value": 0.06654370827145047,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 123.890625,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 233.890625,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 123.890625,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 277.890625,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 334.1000000089407,
+            "value": 0.12209534979926215,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 123.890625,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 277.890625,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 123.890625,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 233.890625,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "max-w-xs text-xs [overflow-wrap:anywhere]",
+                "previous": {
+                  "x": 545.5625,
+                  "y": 51,
+                  "width": 320,
+                  "height": 33,
+                  "top": 51,
+                  "right": 865.5625,
+                  "bottom": 84,
+                  "left": 545.5625
+                },
+                "current": {
+                  "x": 493,
+                  "y": 57,
+                  "width": 320,
+                  "height": 33,
+                  "top": 57,
+                  "right": 813,
+                  "bottom": 90,
+                  "left": 493
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/content",
+        "toNetworkIdleMs": 945.9460999999992,
+        "lcpMs": 356,
+        "cls": 0.5576099671893648,
+        "shifts": [
+          {
+            "at": 341.90000000596046,
+            "value": 0.2010258478588528,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 493,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 603,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 493,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 647,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 414.29999999701977,
+            "value": 0.3565841193305121,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 493,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 647,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 493,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 603,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "max-w-xs text-xs [overflow-wrap:anywhere]",
+                "previous": {
+                  "x": 545.5625,
+                  "y": 51,
+                  "width": 320,
+                  "height": 33,
+                  "top": 51,
+                  "right": 865.5625,
+                  "bottom": 84,
+                  "left": 545.5625
+                },
+                "current": {
+                  "x": 493,
+                  "y": 57,
+                  "width": 320,
+                  "height": 33,
+                  "top": 57,
+                  "right": 813,
+                  "bottom": 90,
+                  "left": 493
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "toNetworkIdleMs": 1072.0548,
+        "lcpMs": 524,
+        "cls": 0.8105900214089288,
+        "shifts": [
+          {
+            "at": 407.70000000298023,
+            "value": 0.2932317592832777,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 790,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 746,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 440.734375,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 760.734375,
+                  "bottom": 82,
+                  "left": 440.734375
+                },
+                "current": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 772.734375,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 857.8125,
+                  "bottom": 96,
+                  "left": 772.734375
+                },
+                "current": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 543.2000000029802,
+            "value": 0.5173582621256511,
+            "sources": [
+              {
+                "tag": "MAIN",
+                "className": "mx-auto max-w-6xl space-y-4 p-4",
+                "previous": {
+                  "x": 240,
+                  "y": 154,
+                  "width": 1040,
+                  "height": 746,
+                  "top": 154,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                },
+                "current": {
+                  "x": 240,
+                  "y": 110,
+                  "width": 1040,
+                  "height": 790,
+                  "top": 110,
+                  "right": 1280,
+                  "bottom": 900,
+                  "left": 240
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "max-w-xs text-xs [overflow-wrap:anywhere]",
+                "previous": {
+                  "x": 545.5625,
+                  "y": 51,
+                  "width": 320,
+                  "height": 33,
+                  "top": 51,
+                  "right": 865.5625,
+                  "bottom": 84,
+                  "left": 545.5625
+                },
+                "current": {
+                  "x": 493,
+                  "y": 57,
+                  "width": 320,
+                  "height": 33,
+                  "top": 57,
+                  "right": 813,
+                  "bottom": 90,
+                  "left": 493
+                }
+              },
+              {
+                "tag": "SPAN",
+                "className": "hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline",
+                "previous": {
+                  "x": 877.5625,
+                  "y": 60,
+                  "width": 320,
+                  "height": 16,
+                  "top": 60,
+                  "right": 1197.5625,
+                  "bottom": 76,
+                  "left": 877.5625
+                },
+                "current": {
+                  "x": 825,
+                  "y": 66,
+                  "width": 320,
+                  "height": 16,
+                  "top": 66,
+                  "right": 1145,
+                  "bottom": 82,
+                  "left": 825
+                }
+              },
+              {
+                "tag": "BUTTON",
+                "className": "min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold",
+                "previous": {
+                  "x": 256,
+                  "y": 96,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 96,
+                  "right": 341.078125,
+                  "bottom": 140,
+                  "left": 256
+                },
+                "current": {
+                  "x": 1157,
+                  "y": 52,
+                  "width": 85.078125,
+                  "height": 44,
+                  "top": 52,
+                  "right": 1242.078125,
+                  "bottom": 96,
+                  "left": 1157
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "ms": 69.81890000000021,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.322000000000116,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.40550000000076,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.55189999999857,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.13559999999961,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.20459999999912,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 60.83879999999954,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.26800000000003,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 64.16009999999915,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.73699999999917,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.334100000000035,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 72.20399999999972,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 61.22980000000098,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 67.23559999999998,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 76.26509999999871,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 70.91810000000078,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 67.98140000000058,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 70.95269999999982,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 67.81259999999929,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.86539999999877,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 71.58569999999963,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.657100000000355,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.54830000000038,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.86650000000009,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.218800000000556,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.58569999999963,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.3117000000002,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.15410000000156,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.751899999999296,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.944900000000416,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.307199999999284,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.395300000000134,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.330299999999625,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.40809999999874,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.216599999999744,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.23990000000049,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.67569999999978,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.14079999999922,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.96429999999964,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.384399999999005,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.8734000000004,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.49119999999857,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.94060000000172,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.92610000000059,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.493900000001304,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.20299999999952,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.90779999999904,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.048899999999776,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.4330000000009,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.96169999999984,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.40309999999954,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.96600000000035,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.85579999999936,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.905800000000454,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.91660000000047,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.8786999999993,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.50429999999869,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.74040000000059,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.32639999999992,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.595400000000154,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.556399999999485,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.8661000000011,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.988900000000285,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.01059999999961,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.90690000000177,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.092100000001665,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.762299999998504,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.211200000001554,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.82099999999991,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.08770000000004,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.72730000000229,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.741399999998976,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.40380000000005,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.861799999998766,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.63440000000264,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.602499999997235,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.18289999999979,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.117199999996956,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.58469999999943,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.538000000000466,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.85740000000078,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.36189999999988,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.37359999999899,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.628600000000006,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.88969999999972,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.68960000000152,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.75470000000132,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.74340000000302,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.17959999999948,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.240200000000186,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.22699999999895,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.24859999999899,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.3592000000026,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.863900000000285,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.44550000000163,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.88549999999668,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.34400000000096,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.871500000001106,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.79609999999957,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.99939999999697,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      }
+    ],
+    "api": {
+      "samples": 100,
+      "p50": 52.8734000000004,
+      "p95": 69.81890000000021,
+      "max": 76.26509999999871
+    },
+    "environment": "1280x900 desktop Edge, loopback, no CPU/network throttling; external requests aborted, fallback fonts; HTTP cache disabled by routing, warm DB/server; sequential navigation.",
+    "scope": "Current 12 pages and a real two-Creator owned queue. Earlier 1k/10k, 24 interaction and INP samples remain historical; no new scale, native-device, field p75 or hosted claim. toNetworkIdle includes the idle wait and is distinct from LCP/INP.",
+    "thresholds": {
+      "lcpMs": 2500,
+      "cls": 0.1,
+      "apiP95Ms": 800
+    },
+    "inp": "NOT_MEASURED_THIS_RUN"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-25T06:35:51.888564+00:00",
+  "finishedAt": "2026-10-25T06:43:38.144636+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--no-file-parallelism",
+    "--reporter=json",
+    "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\full-suite.json"
+  ],
+  "exit": 1,
+  "sourceFingerprint": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+  "applicationIntegrationCredentialsAvailable": false,
+  "log": "full-suite.log",
+  "report": "full-suite.json"
+}

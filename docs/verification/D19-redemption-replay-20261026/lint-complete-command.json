@@ -1,0 +1,28 @@
+{
+  "startedAt": "2026-10-25T20:47:31.650285+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "."
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:47:31.527126+00:00",
+    "freePhysicalGiB": 6.018520355224609,
+    "freeCommitGiB": 5.131259918212891,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.850852966308594
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "lint-complete",
+  "log": "docs/verification/D19-redemption-replay-20261026/lint-complete.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 34348,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:47:53.130468+00:00",
+  "exit": 0
+}

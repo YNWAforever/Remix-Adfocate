@@ -1,0 +1,14 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceMigrationFiles": 74,
+  "all74SourceSqlUnchanged": true,
+  "physicalTargetIdentityThisTask": "NOT_READ",
+  "physicalSchemaWrites": 0,
+  "sourceManifest": {
+    "path": "docs/verification/D19-redemption-replay-20261026/schema-manifest-final.json",
+    "sha256": "2c681ccbcb180c8cffe894f7c275fe19456e7e4a08166cff4641180816b3620b"
+  },
+  "formalExpiryChanged": false,
+  "membershipCardinalityChanged": false,
+  "financialEngineChanged": false
+}

@@ -1,0 +1,15 @@
+{
+  "artifactFingerprint": "a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526",
+  "files": [
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/legacy-reward-core.node.mjs",
+      "sha256": "5a70175b076411d985e540f66790541df7c00c49d06b3ab3ff9ffafc7f80b8c4"
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df"
+    }
+  ],
+  "applicationFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "includedInNativeFullOrC2Runtime": false
+}

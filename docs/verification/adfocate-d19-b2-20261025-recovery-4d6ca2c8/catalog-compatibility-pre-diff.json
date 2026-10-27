@@ -1,0 +1,11 @@
+{
+  "at": "offline comparison after live C1 capture",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "currentCatalog": "application-catalog-before-compatibility.json",
+  "reference": "D19-pristine-rpc-catalog-diff-resolution.json postAlignmentSchema",
+  "normalizedDifferentSections": [
+    "columns",
+    "functions"
+  ],
+  "noRuntimeMutation": true
+}

@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-26T02:58:45.832698+00:00",
+  "actualGoalStatusReturned": "blocked",
+  "consecutiveResumedBlockingTurns": 3,
+  "objectivePreserved": true,
+  "before": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "before": "docs/verification/D19-resumed-audit-20261026/before-resumed-block/docs/verification/adfocate-delivery.json",
+      "sha256": "bb453856144876b584085d8c0353a0376aa0055c836fa707167edcf0c32738ef"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "before": "docs/verification/D19-resumed-audit-20261026/before-resumed-block/docs/verification/evidence-integrity.json",
+      "sha256": "de940b5a0e5bff689f877adfc10624bab074e6d9b80ce5247a60d97ee8a98de5"
+    }
+  ],
+  "priorEvidenceRecords": 2809,
+  "sourceUnchanged": 793,
+  "caseRowsUnchanged": 107,
+  "runtimeApproved": false,
+  "newTests": 0,
+  "actualTargetCalls": 0,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

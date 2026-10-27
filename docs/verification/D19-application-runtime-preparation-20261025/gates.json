@@ -1,0 +1,214 @@
+{
+  "supplement-focused-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "server/test/application-supplement.test.ts",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-runtime-preparation-20261025\\supplement-focused-final.json"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final-command.json",
+      "sha256": "977cc52fce0f5b6eaf8aa416c21e6ae7da710709429271a27a99f879ff6c3179"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-focused-final.log",
+      "sha256": "a95c5541052fdc5dbf37cc9742098e17b6a922f89f7ecdc5fe3138a3aee50873"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-full-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-runtime-preparation-20261025\\supplement-full-final.json"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final-command.json",
+      "sha256": "71ab68ccdd5bf345bfb42d506020941da73fa7effc3c7fe3792d57b6be9462e4"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.log",
+      "sha256": "bf7cfa509fa3ca1b114e67480228dca3d0270f929bc14780bb17f1981c61c319"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-type-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final-command.json",
+      "sha256": "5aabe406bb02df54e37cce7fe082bca87824b891bd90986bc21174624ebc3fb3"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-type-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-lint-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/eslint/bin/eslint.js",
+      "."
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final-command.json",
+      "sha256": "83932e41b6d489a50700f547f45eda615fe781da7e699bcfbd8eb1835a627e80"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-lint-final.log",
+      "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-build-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+      "run",
+      "build"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final-command.json",
+      "sha256": "c6ce4c385d57032f0027858df1a827004bbf440dfb2d465c83e917ed2f916be4"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-build-final.log",
+      "sha256": "d1d44d7f85c8b0ccdb58f4e0ce6c98b6806cc051b39c019cf24052304a260706"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-esm-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "scripts/check-esm-extensions.mjs"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final-command.json",
+      "sha256": "c0677d34b3e30ee56dc17ca9e129bf154e994925353e16c95e06071c4d21531b"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-esm-final.log",
+      "sha256": "b654fb9381ed836f5045e91ed2cde87f4f7cede86cd34768fd9f7f53922430de"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-schema-manifest-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/vite-node/vite-node.mjs",
+      "--script",
+      "scripts/release/manifest-cli.ts",
+      "check"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final-command.json",
+      "sha256": "c245a79c1e2ef876fdfbef0615fe25b549cd62582270f0cc5a16e800b8c2a642"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-schema-manifest-final.log",
+      "sha256": "0c307f70f5aa6f9cb7ac767ef86b9fe5bca27bb11fbb2d9481d5ce1470fab6b9"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-offline-review-final": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "scripts/audit/execute-application-supplement.mjs",
+      "docs/verification/D19-C2-application-runtime-manifest.json",
+      "--offline-check"
+    ],
+    "exit": 0,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final-command.json",
+      "sha256": "0d0a0b847b2860bbd15f1b3e2e7b07629a820b8724ca931b8487467223aa119f"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-offline-review-final.log",
+      "sha256": "9803a21254f0ae6163a662533894c61011b9e238eb285ff566d57376f07e6b36"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "supplement-authority-denied": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "scripts/audit/execute-application-supplement.mjs",
+      "docs/verification/D19-C2-application-runtime-manifest.json",
+      "--execute"
+    ],
+    "exit": 1,
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "receipt": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied-command.json",
+      "sha256": "4854ecbdb9a3ff175cf1cc25afe96cad39070a65e0382a2f3d859cf82f219a30"
+    },
+    "log": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-authority-denied.log",
+      "sha256": "b5d5312ae57a81b4f35f6ecdc9874a22d93686f59fe9d8dedcc90ace7bbb05b8"
+    },
+    "scope": "Pure local/no actual target/client/setup"
+  },
+  "full": {
+    "passed": 2129,
+    "failed": 0,
+    "skipped": 363,
+    "files": 292
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "protectedPaths": [
+    "server/test/active-missions-publication-operator.test.ts",
+    "server/test/admin-reward-handoffs.test.ts",
+    "server/test/staffAuth.test.ts",
+    "src/components/admin/ActiveMissionReview.test.tsx",
+    "src/components/admin/MissionCompletionReview.test.tsx",
+    "src/components/admin/RewardHandoffQueue.test.tsx",
+    "src/components/admin/StaffAuthGate.test.tsx",
+    "src/components/admin/WorkspaceSwitcher.test.tsx",
+    "src/routes/-admin.active-missions.test.tsx",
+    "src/routes/-admin.reward-handoffs.test.tsx"
+  ],
+  "supplement26": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "total": 26
+  },
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "Node24CurrentFull": "NOT_RUN; original e839 Node24 record retained only at its source",
+  "lintExistingWarnings": 4
+}

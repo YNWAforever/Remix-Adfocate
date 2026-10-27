@@ -1,0 +1,77 @@
+{
+  "purpose": "Exact pre-finalization records, historical statuses retained; true only where exact digest matches original source6285 pre-runtime1500-file seal.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-delivery.json",
+      "sha256": "d96a47e47251a3b284132423607db7c9fdd583b2dc5b733b910a94ba2429579c",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-delivery.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-delivery.md",
+      "sha256": "16a7f0844a2f416126023c0ffd6402f68c1184c6a744761bc3cc1dccfbab11f0",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-delivery.md"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-gates.json",
+      "sha256": "dc71ed79846f2d936f5d478722b59d5305fa0a557d03684a903e1a0a06fd852f",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-gates.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-schema-diff.json",
+      "sha256": "cfbebd891d971270d2c07610fbcd91e81f2fe4e027c6df1f84d3d013c9ed9c44",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-schema-diff.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-case-coverage.json",
+      "sha256": "2db623e08ed0b4307092fcad79dddcbbfafebd97884059f676b59b3233e5c997",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-case-coverage.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-remaining-acceptance.json",
+      "sha256": "e6c165d6eaee3e33e1d02eb2034c66ec122e654b1e283f8b4d3e4cfe6078e98a",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-remaining-acceptance.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-rollback.json",
+      "sha256": "b1afc7e0c847c6c86f3fee26dbfc885d424f55538f6586b8f0cc35d9bd581869",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-rollback.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-changed-files.json",
+      "sha256": "09c82094abc8e9a6d762351467e6c463314a0cecf0c2453d43bec11e0b2ab279",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-changed-files.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-verification-summary.json",
+      "sha256": "3fdbcb772b26b56de18a1c940fb694d67fde57547c093c9ae8102fa5dc227250",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-verification-summary.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-check-records.py",
+      "sha256": "cf99cd01997cc5ac1fb91a9b9e5be37d2c85e3d878ca4ea9d3bbf58f4d38545a",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-check-records.py"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-integrity.json",
+      "sha256": "652692cf34b08fff5bdda9fcba8dd20fd109e517f6ab9eed4a62a9783f7c2728",
+      "matchesApprovedPreRuntimeSeal": true,
+      "originalPath": "docs/verification/D19-C1-integrity.json"
+    },
+    {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-before-finalization/D19-C1-runtime-progress.json",
+      "sha256": "a4e1bea2cd3e13533b8f468fa06f7d1f1bdd14e0b5660a2ae7225202379d27e1",
+      "matchesApprovedPreRuntimeSeal": false,
+      "originalPath": "docs/verification/D19-C1-runtime-progress.json"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.onboarding.test.tsx (18 tests | 1 failed | 17 skipped) 79ms
+   × Onboarding wizard > locks editable categories while a step is being saved 78ms
+     → expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-pressed="false"
+  class="filter-pill shrink-0 "
+  type="button"
+/>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.onboarding.test.tsx > Onboarding wizard > locks editable categories while a step is being saved
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <button
+  aria-pressed="false"
+  class="filter-pill shrink-0 "
+  type="button"
+/>
+ ❯ src/routes/-_app.onboarding.test.tsx:90:69
+     88|     hoisted.saveProfile.mockReturnValueOnce(new Promise(() => {}));
+     89|     renderWizard(); fireEvent.click(screen.getByText("下一步"));
+     90|     expect(screen.getByRole("button", { name: "美容", exact: true })).…
+       |                                                                     ^
+     91|   });
+     92| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 skipped (18)
+   Start at  13:36:55
+   Duration  2.04s (transform 207ms, setup 242ms, collect 574ms, tests 79ms, environment 805ms, prepare 132ms)
+

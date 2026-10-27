@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests) 97ms
+ ✓ src/audit-tests/operator-continuation.audit.test.tsx (5 tests) 164ms
+ ✓ src/audit-tests/crm-atomicity.audit.test.ts (2 tests) 4ms
+ ✓ src/audit-tests/admin-creators.audit.test.tsx (2 tests) 171ms
+ ✓ src/audit-tests/admin-decisions.audit.test.tsx (1 test) 99ms
+ ✓ src/audit-tests/my-missions.audit.test.tsx (3 tests) 64ms
+ ✓ src/audit-tests/staff-unavailable.audit.test.tsx (1 test) 52ms
+ ✓ src/lib/workspaceCalendar.test.ts (6 tests) 17ms
+
+ Test Files  8 passed (8)
+      Tests  22 passed (22)
+   Start at  01:14:46
+   Duration  7.81s (transform 256ms, setup 2.02s, collect 1.07s, tests 669ms, environment 7.05s, prepare 982ms)
+

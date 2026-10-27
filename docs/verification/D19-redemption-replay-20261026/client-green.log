@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/components/RedeemGiftCard.intent.test.tsx (7 tests) 603ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  03:51:29
+   Duration  3.35s (transform 273ms, setup 335ms, collect 611ms, tests 603ms, environment 1.44s, prepare 146ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/client-green-native.json

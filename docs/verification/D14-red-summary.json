@@ -1,0 +1,51 @@
+{
+  "passed": 9,
+  "failed": 11,
+  "skipped": 0,
+  "failures": [
+    {
+      "test": "derives the 3,840 XP demonstration from the canonical thresholds",
+      "message": "AssertionError: expected 'L3' to be 'L2' // Object.is equality"
+    },
+    {
+      "test": "home: labels fictional data and shows the canonical localized level and progress",
+      "message": "Error: Unable to find an element with the text: /Illustrative profile · fictional data/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexib"
+    },
+    {
+      "test": "creators: labels fictional data and shows the canonical localized level and progress",
+      "message": "Error: Unable to find an element with the text: /Illustrative profile · fictional data/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexib"
+    },
+    {
+      "test": "marks the public experience as a preview and states pending reward is not payment",
+      "message": "Error: Unable to find role=\"note\" and name \"Product preview\""
+    },
+    {
+      "test": "contact en: preview submission preserves inputs, sends nothing and never claims receipt or storage",
+      "message": "Error: Unable to find role=\"button\" and name \"Preview form\""
+    },
+    {
+      "test": "contact zh: preview submission preserves inputs, sends nothing and never claims receipt or storage",
+      "message": "Error: Unable to find role=\"button\" and name \"預覽表格\""
+    },
+    {
+      "test": "empty body: preserves the labelled introduction, shows preparing and ignores the four-lesson metadata",
+      "message": "Error: Unable to find an element with the text: 內容準備中. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    },
+    {
+      "test": "available body is readable Markdown, without inventing lesson counts or progress",
+      "message": "Error: Unable to find role=\"heading\" and name \"Actual reading\""
+    },
+    {
+      "test": "offers an introduction link for an unfinished track without promising four lessons",
+      "message": "TestingLibraryElementError: Unable to find an element with the text: /Content preparing/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexi"
+    },
+    {
+      "test": "labels title, excerpt and body, including the resource body",
+      "message": "TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"Title (中文)\""
+    },
+    {
+      "test": "shows save failure, preserves the body and allows a successful retry",
+      "message": "Error: Unable to find role=\"alert\""
+    }
+  ]
+}

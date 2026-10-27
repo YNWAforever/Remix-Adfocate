@@ -1,0 +1,9 @@
+{
+  "runId": "d1e64852-4467-4658-816c-47489c3e3de2",
+  "submissionId": "75dc2f01-ed51-42a8-a9bf-5aa9e55ef165",
+  "creatorId": "fe2b1225-5627-41e1-abf2-4d77096853e8",
+  "missionId": "ad9e8814-6a9f-4ce6-b4fe-be7508425753",
+  "ui": "Creator login/join/invalid-input retention/submit → reviewer approve → Creator reload",
+  "result": "passed",
+  "financialMeaning": "Existing legacy issuance measured before active pending baseline; no new payment feature"
+}

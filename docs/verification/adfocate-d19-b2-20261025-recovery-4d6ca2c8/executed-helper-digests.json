@@ -1,0 +1,36 @@
+{
+  "helpers": [
+    {
+      "path": ".codex-tmp/C1-runtime-db-start.py",
+      "sha256": "f6a868a3b99a33c0c6cf4c6c6a14d438bda5006f03d98ce781a0520370a3d7fc",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    },
+    {
+      "path": ".codex-tmp/C1-runtime-metadata-readback.py",
+      "sha256": "73690df3fa066c03c81e9411e093d7eaa4da4ead020c2aed5dc9ca3d2f011f02",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    },
+    {
+      "path": ".codex-tmp/C1-runtime-preflight.py",
+      "sha256": "30be893a3d42a5911cc159ad0d2b3a16010ca3d983b28e3177510b063bd7d13f",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    },
+    {
+      "path": ".codex-tmp/C1-runtime-provision.py",
+      "sha256": "684bdb7ed50335a132d00e158978141755784e59fab37391a9a290787d6e7a47",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    },
+    {
+      "path": ".codex-tmp/C1-runtime-start-services.py",
+      "sha256": "d5ff0addbaec0df0b68d08f3d848aaf17d7ed7e8049bf519d3f22fc232dac56f",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    },
+    {
+      "path": ".codex-tmp/C1-runtime-observe.mjs",
+      "sha256": "90996afe62c5b97eafa7740d6098db150713416a398994d343f91a196f243e64",
+      "scope": "C1 infrastructure only; helper bytes are not additional runtime authority; never rerun create/start helpers"
+    }
+  ],
+  "repeatProvisionStartAllowed": false,
+  "existingC1ResourcesRetained": true
+}

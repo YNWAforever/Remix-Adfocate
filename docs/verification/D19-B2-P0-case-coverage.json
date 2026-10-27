@@ -1,0 +1,37 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "originalAuditRowsPreserved": 107,
+  "originalFindingRowsPreserved": 28,
+  "audit16Passed": 16,
+  "original194Passed": 194,
+  "fullPassed": 2027,
+  "fullGatedSkipped": 363,
+  "newLocalTests": 34,
+  "directLocalUiRecovery": [
+    "UC-C28"
+  ],
+  "existingGuardAndPreparedRuntimeNegative": [
+    "UC-A44",
+    "UC-A54"
+  ],
+  "localIdentityFixtureScopeOnly": [
+    "UC-S02"
+  ],
+  "runtimeBaseCases": {
+    "role": 8,
+    "core": 9,
+    "browser": 5
+  },
+  "extraRuntimeObligations": [
+    "Real stale409 comparison and explicit retained-input recovery before completion",
+    "Owned denial-workspace empty/reload and explicit mocked network save failure/retry",
+    "Persisted invalid historical legacy row ordinary approval400; same saved row and finances"
+  ],
+  "runtimeExecutedCases": 0,
+  "originalCaseResultsReplaced": false,
+  "D15UcC18UcA51": "BLOCKED_APPROVED_CONTENT_NOT_PROVIDED",
+  "notReboundToCurrentRuntime": [
+    "all prior role/core/browser/R2 support evidence",
+    "retained original two pristine global RPC cases"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-10-25T07:33:06.903220+00:00",
+  "memoryLoadPercent": 93,
+  "totalPhysicalGiB": 31.696025848388672,
+  "availablePhysicalGiB": 2.040496826171875,
+  "availableCommitGiB": 1.2666511535644531,
+  "freeDiskGiB": 20.99822235107422,
+  "executionMode": "One Vite build then one browser worker; no parallel heavy checks; no resource stop/cleanup."
+}

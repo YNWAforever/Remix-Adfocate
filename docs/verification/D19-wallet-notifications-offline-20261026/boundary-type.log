@@ -1,0 +1,3 @@
+src/routes/_app.notifications.tsx(9,38): error TS2345: Argument of type '"/_app/notifications"' is not assignable to parameter of type 'undefined'.
+src/routes/_app.redemption.index.tsx(11,38): error TS2345: Argument of type '"/_app/redemption/"' is not assignable to parameter of type 'undefined'.
+src/routes/_app.wallet.tsx(8,38): error TS2345: Argument of type '"/_app/wallet"' is not assignable to parameter of type 'undefined'.

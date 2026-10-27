@@ -1,0 +1,19 @@
+{
+  "gate": "full",
+  "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full.json",
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "sourceRecords": 354,
+  "sourceUnchangedAfter": true,
+  "startedAt": "2026-10-24T15:47:35.744Z",
+  "finishedAt": "2026-10-24T15:57:36.103Z",
+  "exit": null,
+  "error": "ETIMEDOUT",
+  "logSha256": "b9eb55e3d9de506af218f9abe3cf0a34818161cc89ba2bf7fda5fc5004595760",
+  "freeGiBAfter": 1.1491928100585938,
+  "offline": true,
+  "integrationEnabled": false,
+  "providerKeysSupplied": false,
+  "publicLog": "logs/D19-B1-full-watchdog.log",
+  "publicLogSha256": "1e575207f9f97b376bdcfc45bbc68e00de48e1c590e14982a5afa11e7f557984",
+  "logSha256Basis": "Raw private stdout/stderr; public workspace paths normalized and mock-output header added"
+}

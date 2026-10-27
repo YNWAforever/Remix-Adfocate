@@ -1,0 +1,12 @@
+{"event":"templatemailer_reloader_template_update","level":"info","mail_type":"email_change","msg":"mailer: reloaded template type: email_change","time":"2026-10-24T09:05:17Z"}
+{"component":"apiworker","config_conn_max_idle_time":"0s","config_conn_max_lifetime":"0s","config_conn_percentage":0,"config_max_idle_pool_size":0,"config_max_pool_size":0,"level":"info","limit_conn_max_idle_time":"0s","limit_conn_max_lifetime":"0s","limit_max_idle_conns":0,"limit_max_open_conns":0,"limit_strategy":"fixed","msg":"applying connection limits to db using the \"fixed\" strategy","server_max_conns":100,"time":"2026-10-24T09:05:17Z","worker_type":"apiworker_db_worker"}
+{"component":"apiworker","level":"info","msg":"apiworker: config notifier exited","time":"2026-10-24T09:11:45Z","worker_type":"apiworker_config_notifier"}
+{"component":"apiworker","level":"info","msg":"apiworker: db worker exited","time":"2026-10-24T09:11:45Z","worker_type":"apiworker_db_worker"}
+{"level":"info","msg":"received graceful shutdown signal","time":"2026-10-24T09:11:45Z"}
+{"component":"apiworker","level":"info","msg":"apiworker: index worker exited","time":"2026-10-24T09:11:45Z","worker_type":"apiworker_index_worker"}
+{"component":"apiworker","level":"info","msg":"apiworker: template cache worker exited","time":"2026-10-24T09:11:45Z","worker_type":"apiworker_template_cache"}
+{"component":"api","level":"info","msg":"http server closed","time":"2026-10-24T09:11:45Z"}
+{"component":"apiworker","level":"info","msg":"background apiworker is exiting","time":"2026-10-24T09:11:45Z"}
+{"level":"info","msg":"Go runtime metrics collection started","time":"2026-10-24T09:12:09Z"}
+{"args":[0.005872331],"component":"pop","level":"info","msg":"%.4f seconds","time":"2026-10-24T09:12:09Z"}
+{"level":"fatal","msg":"running db migrations: Migrator: problem creating schema migrations: couldn't start a new transaction: could not create new transaction: failed to connect to `host=supabase_db_adfocate-d19-pristine-20261024-5e2fa581 user=supabase_auth_admin database=postgres`: server error (FATAL: the database system is starting up (SQLSTATE 57P03))","time":"2026-10-24T09:12:09Z"}

@@ -1,0 +1,71 @@
+{
+  "attempts": [
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-red.json",
+      "sha256": "926757e2c2aaf1155c94ae5f00047d8847c4c7ba2760b6e99015f1139643f485",
+      "passed": 10,
+      "failed": 8,
+      "interpretation": "INVALID_PARTIAL_RED_ERROR_PATTERN_TOO_BROAD",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-red-exact-errors.json",
+      "sha256": "616b33a6e91198d382d44712f4c3f3eb00d1ba4e05074adf3d486bbce5dd0105",
+      "passed": 0,
+      "failed": 18,
+      "interpretation": "VALID_RED_MISSING_ASSERTION_AND_COMPLETE_READONLY_QUERY",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green.json",
+      "sha256": "868ffba1b54434e81ee5100042967b6793a992ac42f3a17a4708891e4c1ca8ce",
+      "passed": 18,
+      "failed": 0,
+      "interpretation": "GREEN_HELPER",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-runner-red.json",
+      "sha256": "2f99996f1df9a0bdef127c2ade395952d458c81ab2bb32ab521b5fe8ba22f153",
+      "passed": 0,
+      "failed": 2,
+      "interpretation": "HARNESS_ERROR_MISSING_DEFAULT_MOCK_EXPORT",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green-wired.json",
+      "sha256": "b1833427df2044d251e277ba2208f7553e193e874b0523b7dc388f2d0eae0d4e",
+      "passed": 18,
+      "failed": 2,
+      "interpretation": "HARNESS_ERROR_MISSING_DEFAULT_MOCK_EXPORT",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-runner-red-behavior.json",
+      "sha256": "3e8f4a19b9c9b4619f34a6826fdefc758bcfc104c2d549918b6139b71a035d47",
+      "passed": 0,
+      "failed": 2,
+      "interpretation": "VALID_RED_ORIGINAL_RUNNER_EXITS_ZERO_ON_BUDGET_MUTATION",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green-wired2.json",
+      "sha256": "75d6ca57b89e69a263eb1ef96d23313598743339c31e719b6806a9054eed276f",
+      "passed": 20,
+      "failed": 0,
+      "interpretation": "GREEN_HELPER_AND_ACTUAL_RUNNER_UNDER_FAKES",
+      "actualTargetOrBrowser": false
+    },
+    {
+      "path": "D19-B2-neutrality-guard-test-history/B2-neutrality-guard-targeted.json",
+      "sha256": "1e812286944bc5a1992c6974bb7ab2d6b71791a33aeab849bcf0d45906809c5f",
+      "passed": 23,
+      "failed": 0,
+      "interpretation": "GREEN_INTERMEDIATE_SOURCE_TARGETED_PLUS_MANIFEST",
+      "actualTargetOrBrowser": false
+    }
+  ],
+  "typeFailure": "Attempt1 had two TS unknown financialRows errors; fixed only local casts and verified attempt2/full/type/build. Original failing receipt/log retained.",
+  "redBehaviorProcedure": "Temporarily use byte-preserved original runner under process/target/fs mocks; restore fixed runner in finally. No actual browser/target invocation.",
+  "finalSourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893"
+}

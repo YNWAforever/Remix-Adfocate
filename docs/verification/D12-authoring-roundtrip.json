@@ -1,0 +1,37 @@
+{
+  "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+  "missionId": "c079f289-4519-4631-bb75-fd13dd44f451",
+  "submissionId": "66a17b28-b070-4fce-aea5-938272468f3f",
+  "workflowId": "97997eef-d395-4b89-bac7-20402cefe1f1",
+  "workItemId": "873dda8c-e1d9-48c1-b227-3393f1f9b42c",
+  "templateIds": [
+    "76548c02-286c-40a4-9c8e-224b13e6e4a7"
+  ],
+  "noJsonRequired": true,
+  "previewDidNotSave": true,
+  "save503RetainedInput": true,
+  "savedAndReloaded": true,
+  "creatorWorkspaceAndPublicationGuidanceMatch": true,
+  "publicationInstructions": {
+    "publicationInstructions": "發布已批准的短片及清楚披露合作",
+    "requiredDisclosures": [
+      "#廣告",
+      "品牌合作"
+    ],
+    "expectedAccount": "@synthetic_creator",
+    "proofEvidencePolicy": {
+      "required": true
+    },
+    "publishDueAt": "2026-10-25T04:23:50.698864+00:00",
+    "frozenAt": "2026-10-23T04:23:50.698864+00:00"
+  },
+  "creatorViewport": {
+    "width": 390,
+    "height": 844
+  },
+  "noHorizontalOverflow": true,
+  "unexpectedSaveDialogs": 0,
+  "isolatedMissionStatus": "active",
+  "externalSocialPublication": "not performed",
+  "review": "existing real operator API; not a new proof/completion handoff"
+}

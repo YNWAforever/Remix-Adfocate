@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "patch": "D12-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: src/lib/i18n.dict.ts:896\nerror: src/lib/i18n.dict.ts: patch does not apply\nerror: patch failed: src/components/admin/MissionEditor.tsx:235\nerror: src/components/admin/MissionEditor.tsx: patch does not apply\nerror: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D13-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D14-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: src/routes/_app.guide.track.$trackId.tsx:5\nerror: src/routes/_app.guide.track.$trackId.tsx: patch does not apply\nerror: patch failed: src/lib/academy.ts:14\nerror: src/lib/academy.ts: patch does not apply\nerror: patch failed: src/components/admin/AcademyEditor.tsx:29\nerror: src/components/admin/AcademyEditor.tsx: patch does not apply\nerror: patch failed: server/routes/academy.ts:48\nerror: server/routes/academy.ts: patch does not apply\nerror: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D15-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: supabase/release-manifest.json:1043\nerror: supabase/release-manifest.json: patch does not apply\nerror: patch failed: src/components/admin/AcademyEditor.tsx:2\nerror: src/components/admin/AcademyEditor.tsx: patch does not apply\nerror: patch failed: scripts/release/preflight.test.ts:38\nerror: scripts/release/preflight.test.ts: patch does not apply\nerror: patch failed: scripts/release/manifest.ts:867\nerror: scripts/release/manifest.ts: patch does not apply\nerror: patch failed: scripts/release/manifest.test.ts:59\nerror: scripts/release/manifest.test.ts: patch does not apply\nerror: patch failed: scripts/release/contracts.ts:4\nerror: scripts/release/contracts.ts: patch does not apply\nerror: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D17-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: src/components/admin/AdminTopBar.tsx:17\nerror: src/components/admin/AdminTopBar.tsx: patch does not apply\nerror: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D18-changes.patch",
+      "exit": 1,
+      "canMechanicallyReverse": false,
+      "diagnostic": "error: patch failed: supabase/release-manifest.json:1121\nerror: supabase/release-manifest.json: patch does not apply\nerror: patch failed: src/components/admin/AdminTopBar.tsx:34\nerror: src/components/admin/AdminTopBar.tsx: patch does not apply\nerror: patch failed: server/test/staffCapabilityFixture.ts:1\nerror: server/test/staffCapabilityFixture.ts: patch does not apply\nerror: patch failed: server/test/audit-staff-capabilities.test.ts:1\nerror: server/test/audit-staff-capabilities.test.ts: patch does not apply\nerror: patch failed: server/routes/admin.ts:18\nerror: server/routes/admin.ts: patch does not apply\nerror: patch failed: server/lib/staffCapabilities.ts:1\nerror: server/lib/staffCapabilities.ts: patch does not apply\nerror: patch failed: scripts/release/preflight.test.ts:38\nerror: scripts/release/preflight.test.ts: patch does not apply\nerror: patch failed: scripts/release/manifest.ts:899\nerror: scripts/release/manifest.ts: patch does not apply\nerror: patch failed: scripts/release/manifest.test.ts:62\nerror: scripts/release/manifest.test.ts: patch does not apply\nerror: patch failed: scripts/audit/run-integration.mjs:5\nerror: scripts/audit/run-integration.mjs: patch does not apply\nerror: patch failed: e2e/staff-access.spec.ts:1\nerror: e2e/staff-access.spec.ts: patch does not apply",
+      "applied": false
+    },
+    {
+      "patch": "D19-changes.patch",
+      "exit": 0,
+      "canMechanicallyReverse": true,
+      "diagnostic": "",
+      "applied": false
+    },
+    {
+      "patch": "D20-changes.patch",
+      "exit": 0,
+      "canMechanicallyReverse": true,
+      "diagnostic": "",
+      "applied": false
+    },
+    {
+      "patch": "R2-ui-changes.patch",
+      "exit": 0,
+      "canMechanicallyReverse": true,
+      "diagnostic": "",
+      "applied": false
+    },
+    {
+      "patch": "D17-R2-changes.patch",
+      "exit": 0,
+      "canMechanicallyReverse": true,
+      "diagnostic": "",
+      "applied": false
+    }
+  ],
+  "checkOnly": true,
+  "applied": false,
+  "interpretation": "Four mechanical passes are not approval or runtime compatibility proof. Six older overlap failures are explicit dependency/hunk-review constraints, not product regression failures.",
+  "security": "Preserve D18 membership/capability and D19 legacy ACL denial; blind old-server rollback may restore broad staff access. Prefer compatible fail-closed forward repair.",
+  "schema": "Retain every forward migration/history/checksum, fixture, audit/proof/reward/ledger row. No down/reset/db push/delete.",
+  "D01ToD11": "No standalone source task patches are present; review exact shared changes/dependencies and available before-images. No bulk reversal verified.",
+  "hostedRollback": "NOT_RUN; compatible live SHA and named rollback owner unbound",
+  "sourceAfterAnyRepair": "Regenerate fingerprint and rerun affected gates/runtime; do not extend protected evidence expiry"
+}

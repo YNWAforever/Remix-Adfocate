@@ -1,0 +1,167 @@
+{
+  "kind": "ORIGINAL_SQL_CORE_SUBSET_MEMORY_ONLY",
+  "root": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\",
+  "sources": [
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "sha256": "32f4e8cc63137b4432d9fc4a8f4091f774301c9c510545be87e6212aab00d9ce"
+    },
+    {
+      "path": "supabase/migrations/0005_mission_submissions.sql",
+      "sha256": "56008d6eab5f21ae508eccd427be6482ee310630049ac1b4fc458e24da89426f"
+    },
+    {
+      "path": "supabase/migrations/0007_earnings.sql",
+      "sha256": "28bd8c4770a7a12ea9f4cdb189c6bd799ed69b21ca46d96e6414a1df1aafd2b2"
+    },
+    {
+      "path": "supabase/migrations/0009_passport_scores.sql",
+      "sha256": "d4a4515456c358bf481894b7b7bf33393e3e58d5a8fd7848a7ba68d8fb112dd2"
+    },
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "sha256": "7e84755bcacf066809e3201ce51eada0b51673e27841b9d44da70442730f560a"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "sha256": "e34f15e38c593c3102b199ab07cf104372020273d89fbfa9e471ebeda780683f"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "sha256": "ce35baaaa13b900964a830e9460b7269e7643bfc3ca9f9b56355c3649081c2ec"
+    }
+  ],
+  "statements": [
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "purpose": "actual workspace,Creator,mission and points table definitions",
+      "statementSha256": "949ac34c706445f17c3ec440aab2ed7114877a007c4944baeca43de77bea4381"
+    },
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "purpose": "actual workspace,Creator,mission and points table definitions",
+      "statementSha256": "c73fc2c941f4cdc1d315164c8b3b5a23c6adea6279e99f95069900485793eada"
+    },
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "purpose": "actual workspace,Creator,mission and points table definitions",
+      "statementSha256": "21f7be73f731795afe0db04741d7f04c8a69d8fae4d0ec403bd6e45e18528b82"
+    },
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "purpose": "actual workspace,Creator,mission and points table definitions",
+      "statementSha256": "90d063171a9974e01011eb706798292d5410bf97cf6a58e72b4562603fb2f6ad"
+    },
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "purpose": "actual workspace,Creator,mission and points table definitions",
+      "statementSha256": "7c77a48c98aaa151021841fa1ba2b61943b7b0da8fe5c5add6fc07ba959ef116"
+    },
+    {
+      "path": "supabase/migrations/0005_mission_submissions.sql",
+      "purpose": "actual submission table",
+      "statementSha256": "1cbd1d93105f072e4dc641bd9616b9532a3a2852a49f4ad764c719bdce6a9841"
+    },
+    {
+      "path": "supabase/migrations/0007_earnings.sql",
+      "purpose": "actual earnings tables",
+      "statementSha256": "27113d7d36d897681fb34ed06b4889a25aa0c09121187c8889d509b539b4ae8f"
+    },
+    {
+      "path": "supabase/migrations/0007_earnings.sql",
+      "purpose": "actual earnings tables",
+      "statementSha256": "b7cf81225f1fd8b9f5dadd2cebebfbcff3a9c64f99e071a134c77865075f97fa"
+    },
+    {
+      "path": "supabase/migrations/0009_passport_scores.sql",
+      "purpose": "actual quality-rating column",
+      "statementSha256": "0d733bff7b903450002ff79efee5e6456e7a6da130f61a25b43f59424f51c40c"
+    },
+    {
+      "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+      "purpose": "actual legacy/active mission policy columns",
+      "statementSha256": "a98222134ad63ecf28fbd6966da148fbe09671f54013f354743dc5df7bbe443c"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "purpose": "actual budget tables",
+      "statementSha256": "097c1c82670ff136c13c9da6a996543c36f10dc6a4904ca202344cb331eedaea"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "purpose": "actual budget tables",
+      "statementSha256": "7367d748ce5c78d6244beec0afe17145d92f61b4af0d9766e768ff7603510a14"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "purpose": "actual final legacy approval core",
+      "statementSha256": "5d826e06fd82da949c6bda810ed9def7808e0f560e185295bef56e318bd3cdba"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "purpose": "actual legacy approval execute ACL",
+      "statementSha256": "e41f24f908d036f9664e32fef8209397f06df1251a7b370a4d6bde47ea1d39f7"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "purpose": "actual legacy approval execute ACL",
+      "statementSha256": "6649768a84f73001440dbfe1382f27d32d445f70cabc0fd8b25ae789a61b8bf0"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence revision column",
+      "statementSha256": "776b1e4669bc57d3fd7f7ddd9420da54ee24e9ae11f1a1ce84de33a30eda90a9"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence validator and trigger function",
+      "statementSha256": "f610d318544353a38d42b702fccbb7019527cb2cd4d5a08d1cfc80e0e040c384"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence validator and trigger function",
+      "statementSha256": "633fb0391e88b36d4acd8aa0036246fd178ff4b54c1603754bc2c0f59cf93210"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence execute ACL",
+      "statementSha256": "6bb14d64c0d61f2a9d29ac2ffd7bf0a3883053b7e9820df06f30f5a560272608"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence execute ACL",
+      "statementSha256": "112d51d8c80dd1445645a97203ddbdac486725b35c1e3e2f991cab93b955432c"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence execute ACL",
+      "statementSha256": "ffb4f75332a3a9f27fb53db291aa371b1839c0cc9fcc478d92ab0e149823d426"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence execute ACL",
+      "statementSha256": "df9862bbd2a17726bd1f5cac26f30b1c8d4eee97c7fa771a81d1aedc32e1be35"
+    },
+    {
+      "path": "supabase/migrations/20261022170454_audit_legacy_evidence.sql",
+      "purpose": "actual evidence trigger",
+      "statementSha256": "b07294adec247f7470d7ea11061a0a8f5333956e0bccf84b829c5b359b149d2c"
+    }
+  ],
+  "testBootstrap": "In-process roles/schemas plus auth.users PK only; not real Auth or a replacement application schema.",
+  "bootstrapSha256": "efa2cd0755f0d934b39f4ed0322a72700ace13e6a2b905c15563c6200873df65",
+  "beforeFixtureSha256": "6490ebd1bb7463b201725c67de7e891fc593d82d9e3f907d6a7f87bfaace824a",
+  "afterFixtureSha256": "6b65e1acf2b71194833df8ca5958ff6035d0b6eeebf28a7ecc7332f174ebe0bf",
+  "includesFullMigrationReplay": false,
+  "includesAuthRlsOrIndependentConnectionConcurrency": false,
+  "excluded": [
+    "Full73 migration trigger stack",
+    "GoTrue/PostgREST/Hono",
+    "Real Auth/membership/RLS",
+    "Campaign bonus,notification and level hooks",
+    "persistScores API behavior",
+    "Independent-connection concurrency",
+    "Active pending reward flow"
+  ],
+  "profileDigest": "399944c3525bd920ab255b7c377823c4d3ebf566a2ea43acb0ca741bd913570d"
+}

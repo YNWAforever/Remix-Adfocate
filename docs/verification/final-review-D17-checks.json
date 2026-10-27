@@ -1,0 +1,40 @@
+{
+  "manifest": {
+    "command": "npm exec --offline --yes --package=node@22 -- node <verified-npm-cli> run release:manifest:check",
+    "exit": 0,
+    "digest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "log": "logs/final-review-D17-manifest.log"
+  },
+  "sourceHashes": 348,
+  "priorEvidenceHashes": 940,
+  "directEvidenceReferences": 345,
+  "missingReferences": 0,
+  "immutableCsvFields": 1645,
+  "fixtureContract": {
+    "originalCanonicalBytesEqual": false,
+    "unchangedOriginalFieldsExceptStatus": true,
+    "originalStatusPreserved": true,
+    "historicalAcceptanceAdditions": [
+      "D08Acceptance",
+      "D09Acceptance",
+      "D12Acceptance",
+      "D13Acceptance",
+      "D14Acceptance",
+      "D15Acceptance",
+      "D17Acceptance",
+      "D18Acceptance",
+      "D19Acceptance",
+      "newResult",
+      "originalStatus"
+    ]
+  },
+  "rollbackCheckOnly": {
+    "commands": 10,
+    "mechanicallyPass": 4,
+    "olderLayeredNeedReview": 6,
+    "applied": false
+  },
+  "productTestsRerun": false,
+  "newRuntimeExecuted": false,
+  "productionQueried": false
+}

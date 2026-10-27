@@ -1,0 +1,41 @@
+{
+  "readOnly": true,
+  "productionQueried": false,
+  "baselineCampaignCount": 87,
+  "scope": "Rows older than initial observation clock; initial raw field values were not captured so no exact before-hash-to-ID reconstruction or automatic restoration is claimed",
+  "olderCampaignRowCount": 87,
+  "affectedCandidatesByClosureWindow": [
+    {
+      "id": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "status": "closed",
+      "closedAt": "2026-10-24T07:12:04.875188+00:00",
+      "createdAt": "2026-10-23T19:31:11.416523+00:00",
+      "settledAt": null,
+      "updatedAt": "2026-10-24T07:12:04.875188+00:00",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa"
+    },
+    {
+      "id": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "status": "closed",
+      "closedAt": "2026-10-24T07:12:04.875188+00:00",
+      "createdAt": "2026-10-23T19:31:12.02423+00:00",
+      "settledAt": null,
+      "updatedAt": "2026-10-24T07:12:04.875188+00:00",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa"
+    },
+    {
+      "id": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "status": "closed",
+      "closedAt": "2026-10-24T07:12:04.875188+00:00",
+      "createdAt": "2026-10-23T19:31:11.562767+00:00",
+      "settledAt": null,
+      "updatedAt": "2026-10-24T07:12:04.875188+00:00",
+      "workspaceId": "00000000-0000-0000-0000-0000000000aa"
+    }
+  ],
+  "initialWindow": {
+    "start": "2026-10-24T07:03:47.529Z",
+    "end": "2026-10-24T07:14:09.495878+00:00"
+  },
+  "interpretation": "Three pre-existing campaign rows closed during the first support run, consistent with the global RPC and three missing initial row hashes. Exact prior closed_at/updated_at bytes were not captured; no restoration claimed. All other initial public/Auth user row hashes remain present, including financial rows."
+}

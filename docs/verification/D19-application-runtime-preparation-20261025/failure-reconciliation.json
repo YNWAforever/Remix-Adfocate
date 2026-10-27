@@ -1,0 +1,28 @@
+{
+  "orchestration-red": "Expected module-not-yet-created collection failure:0 tests, not a runtime failure.",
+  "manifest-boundaries-red": {
+    "passed": 25,
+    "failed": 1,
+    "reason": "Plan validator missing; implemented then26 pass."
+  },
+  "supplement-lint-initial": {
+    "exit": 1,
+    "reason": "Three explicit-global lint errors in new harness; fixed; four existing warnings retained."
+  },
+  "supplement-authority-denied": {
+    "exit": 1,
+    "classification": "EXPECTED_GUARD_DENIAL",
+    "stage": "authorize before identity/provenance/claim/client/setup",
+    "actualTargetCalls": 0
+  },
+  "preparationCorrections": [
+    "Missing root CSV path stopped initial read-only checkpoint; corrected exact docs/verification paths and verified first4 byte copies unchanged.",
+    "Private shell helper generation quoting failure produced no helper; corrected with file-based generator before any source run.",
+    "One multi-file patch validation failed atomically; inspected no changes, applied exact hunks sequentially."
+  ],
+  "runtimeFailuresThisTurn": 0,
+  "initialCheckerBeforeSealCompletion": {
+    "exit": 1,
+    "reason": "Checker was started before seal process49504 finished; root index was still at prior source. Seal finished exit0, then checker passed. No application, test assertion or data change required."
+  }
+}

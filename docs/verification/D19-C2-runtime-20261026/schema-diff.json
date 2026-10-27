@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-25T18:38:34.391510+00:00",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceMigrationFiles": 73,
+  "sqlSourcesChanged": [],
+  "all73ExistingLfHashesPreserved": true,
+  "sourceReleaseManifest": {
+    "path": "supabase/release-manifest.json",
+    "sha256": "4659eda99773b5b1c8cd5e3b569de2e2240b1626d135f4843d0a8dded67e5997"
+  },
+  "currentPhysicalEvidence": {
+    "path": "docs/verification/D19-C2-runtime-20261026/post-provenance-failure.json",
+    "sha256": "5d2bb8bcca26478cacdbbf0c5ebd9274f0d40ebea98e3a9bbb1089d3b0e2cea6"
+  },
+  "targetHistoryObserved": 72,
+  "newRpcFunctionObserved": 0,
+  "newMigration73HistoryObserved": 0,
+  "migrationAppliedThisTurn": false,
+  "proposedForwardMigration": {
+    "file": "supabase/migrations/20261025120934_application_decisions.sql",
+    "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+    "baselineMigrationCount": 72,
+    "forwardOnly": true,
+    "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+    "allowedWrites": [
+      "One new function with explicit ACL",
+      "One new history row in same transaction",
+      "Local PostgREST schema reload notification"
+    ]
+  },
+  "completeRawC2CatalogBeforeAfter": "NOT_RUN_SUCCESSFULLY; initial full-catalog stdout exceeded default1MiB before claim/migrate",
+  "existingEightSectionCatalogComparison": "PASS_READONLY_UNCHANGED",
+  "existing70FamilyRows": "PASS_READONLY_UNCHANGED",
+  "newRpcLiveGrants": "NOT_VERIFIED_FUNCTION_ABSENT",
+  "schemaMembershipDistinction": "Target schema remains72; this is unrelated to formal staff active brand_users membership0. No formal membership or access model change.",
+  "noResetDbPushOldChecksumRewrite": true
+}

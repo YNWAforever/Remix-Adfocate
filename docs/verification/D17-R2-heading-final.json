@@ -1,0 +1,29 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "data": [
+    {
+      "viewportWidth": 1024,
+      "width": 752,
+      "contentWidth": 752,
+      "text": "Applications"
+    },
+    {
+      "viewportWidth": 1280,
+      "width": 1008,
+      "contentWidth": 1008,
+      "text": "Applications"
+    },
+    {
+      "viewportWidth": 1440,
+      "width": 1168,
+      "contentWidth": 1168,
+      "text": "Applications"
+    },
+    {
+      "viewportWidth": 360,
+      "width": 272,
+      "contentWidth": 272,
+      "text": "Applications"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/admin.test.ts (27 tests | 16 skipped) 13ms
+ ✓ src/components/admin/ProofPolicyFields.test.tsx (10 tests) 759ms
+ ✓ server/test/audit-mission-authoring.test.ts (4 tests) 35ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed | 16 skipped (41)
+   Start at  11:35:47
+   Duration  4.49s (transform 837ms, setup 853ms, collect 1.71s, tests 807ms, environment 2.80s, prepare 382ms)
+

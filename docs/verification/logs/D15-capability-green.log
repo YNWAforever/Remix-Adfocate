@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/preflight.test.ts (12 tests) 128ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  18:02:26
+   Duration  1.50s (transform 94ms, setup 203ms, collect 121ms, tests 128ms, environment 743ms, prepare 97ms)
+

@@ -1,0 +1,147 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "gates": [
+    {
+      "gate": "type",
+      "command": "npm run type-check",
+      "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+      "sourceRecords": 777,
+      "sourceUnchangedAfter": true,
+      "startedAt": "2026-10-24T19:23:05.769Z",
+      "finishedAt": "2026-10-24T19:23:27.684Z",
+      "exit": 0,
+      "error": null,
+      "logSha256": "f9cd4162a52e3b46a12213ada4e322e4ea5f89cfbd6e52e2936b18bc31bba657",
+      "freeGiBBefore": 7.483478546142578,
+      "freeGiBAfter": 7.540752410888672,
+      "offline": true,
+      "realTargetIntegrationEnabled": false,
+      "providerKeysSupplied": false,
+      "publicLog": "logs/D19-B2-P0-type.log",
+      "publicLogSha256": "3b36aff0abfe93f04f7ee8ae404e108097b80d1eed1c22c142c4b3573ca1d778",
+      "executionContext": "Approved local offline test/build; full suite uses the existing granted local loopback/temp-file capability"
+    },
+    {
+      "gate": "lint",
+      "command": "npm run lint",
+      "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+      "sourceRecords": 777,
+      "sourceUnchangedAfter": true,
+      "startedAt": "2026-10-24T19:23:05.804Z",
+      "finishedAt": "2026-10-24T19:23:21.782Z",
+      "exit": 0,
+      "error": null,
+      "logSha256": "e685f068ca0868cf9d7e1a4fef1f8d5baa9c95d04d1dcbd6cd4db81c419658af",
+      "freeGiBBefore": 7.457939147949219,
+      "freeGiBAfter": 6.458427429199219,
+      "offline": true,
+      "realTargetIntegrationEnabled": false,
+      "providerKeysSupplied": false,
+      "publicLog": "logs/D19-B2-P0-lint.log",
+      "publicLogSha256": "90a8dd0428988c232b28a5720e3205cdf1a58d6745b536c858eada6a4e3a1b8a",
+      "executionContext": "Approved local offline test/build; full suite uses the existing granted local loopback/temp-file capability"
+    },
+    {
+      "gate": "manifest",
+      "command": "npm run release:manifest:check",
+      "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+      "sourceRecords": 777,
+      "sourceUnchangedAfter": true,
+      "startedAt": "2026-10-24T19:26:20.563Z",
+      "finishedAt": "2026-10-24T19:26:24.274Z",
+      "exit": 0,
+      "error": null,
+      "logSha256": "c6f9d250de02dbc9b00054d013c36bfb0da02d91d2f97914ab3c73d75cf41050",
+      "freeGiBBefore": 6.893451690673828,
+      "freeGiBAfter": 6.900142669677734,
+      "offline": true,
+      "realTargetIntegrationEnabled": false,
+      "providerKeysSupplied": false,
+      "publicLog": "logs/D19-B2-P0-manifest.log",
+      "publicLogSha256": "779585276ba6c9641048523ba2da4d8fb63fa595885cbec0e2874d9b0106445d",
+      "executionContext": "Approved local offline test/build; full suite uses the existing granted local loopback/temp-file capability"
+    },
+    {
+      "gate": "full",
+      "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/B2-P0-full-attempt2.json",
+      "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+      "sourceRecords": 777,
+      "sourceUnchangedAfter": true,
+      "startedAt": "2026-10-24T19:18:17.950Z",
+      "finishedAt": "2026-10-24T19:24:10.372Z",
+      "exit": 0,
+      "error": null,
+      "logSha256": "b57693a23d5b7dea111550e26900493a4a3095c85b685a3052cceb422042e7bd",
+      "freeGiBBefore": 7.365650177001953,
+      "freeGiBAfter": 7.8699951171875,
+      "offline": true,
+      "realTargetIntegrationEnabled": false,
+      "providerKeysSupplied": false,
+      "publicLog": "logs/D19-B2-P0-full.log",
+      "publicLogSha256": "6c3ba57477547edae4eb2a1f9f36c5c9b8d7105937ce097949f12d4406e05171",
+      "executionContext": "Approved local offline test/build; full suite uses the existing granted local loopback/temp-file capability"
+    },
+    {
+      "gate": "build",
+      "command": "npm run build",
+      "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+      "sourceRecords": 777,
+      "sourceUnchangedAfter": true,
+      "startedAt": "2026-10-24T19:18:28.774Z",
+      "finishedAt": "2026-10-24T19:19:05.826Z",
+      "exit": 0,
+      "error": null,
+      "logSha256": "fbfd7bc504111d6392fb235998fb449d301b44b04beeb2b9ea66027a3b610424",
+      "freeGiBBefore": 6.873146057128906,
+      "freeGiBAfter": 6.960639953613281,
+      "offline": true,
+      "realTargetIntegrationEnabled": false,
+      "providerKeysSupplied": false,
+      "publicLog": "logs/D19-B2-P0-build.log",
+      "publicLogSha256": "f61afd697bd87760fbf50e06b37c7d7a720e7d9e7f4e8be526c9694fa56d3d28",
+      "executionContext": "Approved local offline test/build; full suite uses the existing granted local loopback/temp-file capability"
+    }
+  ],
+  "audit16": 16,
+  "original194": 194,
+  "newLocalTests": 34,
+  "syntax": {
+    "executedRuntime": false,
+    "results": [
+      {
+        "path": "e2e/creator-operator-mission.spec.ts",
+        "diagnostics": []
+      },
+      {
+        "path": "e2e/staff-access.spec.ts",
+        "diagnostics": []
+      },
+      {
+        "path": "scripts/audit/prepare-pilot-browser.ts",
+        "diagnostics": []
+      },
+      {
+        "path": "scripts/audit/serve-quality.ts",
+        "diagnostics": []
+      },
+      {
+        "path": "playwright.quality.config.ts",
+        "diagnostics": []
+      },
+      {
+        "path": "playwright.pilot.config.ts",
+        "diagnostics": []
+      }
+    ]
+  },
+  "postFullSuiteMetadataCheck": {
+    "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+    "runtimeManifestSha256": "71421cbe72f671a242a8bdc6031654c61b634d7d2aabf7ebd4b85325f95691f1",
+    "command": "node node_modules/vitest/vitest.mjs run --no-file-parallelism server/test/b2-runtime-manifest.test.ts --reporter=json --outputFile=.codex-tmp/B2-P0-final-metadata-contract.json",
+    "passed": 3,
+    "failed": 0,
+    "sourceChangedAfterFullSuite": false,
+    "metadataOnlyChangesAfterFull": "Spec id/preparedAt/top-level sourceRecords and digest template made current; executable source, resource/write scopes, commands and acceptance semantics unchanged.",
+    "privateRawSha256": "a0c8e06a00c63063bc0a3019580a0e76e51a61caf31b1a39c862b288fb390b88"
+  }
+}

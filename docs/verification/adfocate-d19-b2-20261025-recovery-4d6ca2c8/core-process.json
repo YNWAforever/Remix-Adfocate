@@ -1,0 +1,17 @@
+{
+  "phase": "core",
+  "command": [
+    "node",
+    "scripts/audit/run-integration.mjs",
+    "pilot"
+  ],
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "startedAt": "2026-10-25T07:28:42.267506+00:00",
+  "noAutomaticRetry": true,
+  "providerEnabled": false,
+  "state": "completed",
+  "pid": 1704,
+  "finishedAt": "2026-10-25T07:29:14.351301+00:00",
+  "exitCode": 0
+}

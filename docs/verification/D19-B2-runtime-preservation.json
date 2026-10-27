@@ -1,0 +1,16 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "priorEvidenceRecords": 1380,
+  "priorEvidenceByteUnchanged": 1376,
+  "changedPriorPaths": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv"
+  ],
+  "originalAuditRows": 107,
+  "originalFindingRows": 28,
+  "approvedManifestBytePreserved": true,
+  "allPriorIncidentAndPristineEvidenceBytePreserved": true,
+  "originalProductSourceUnchanged": true
+}

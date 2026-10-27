@@ -1,0 +1,35 @@
+{
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "identity": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_2aaf171f8fd44d8a9eeb263ae8067e30; approved same existing C1 guarded source continuation, manifest a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989; ZERO additional resources/lifecycle; preserve old targets/OPEN/HOLD/provider disabled",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "containerIds": {
+    "db": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "auth": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+    "rest": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+    "kong": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "storage": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+  },
+  "createdThisRun": true,
+  "volumeWasAbsent": true,
+  "networkWasAbsent": true,
+  "volumeName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+  "databaseCreatedAt": "2026-10-25T06:02:04.446021199Z",
+  "volumeCreatedAt": "2026-10-25T06:02:04Z",
+  "bootstrap": {
+    "verified": false
+  },
+  "originalC1AllocationManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "originalC1AllocationSourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893"
+}

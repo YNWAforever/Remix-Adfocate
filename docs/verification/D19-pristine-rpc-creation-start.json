@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-24T08:59:14.821807+00:00",
+  "authorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+  "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+  "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+  "networkId": "e25f9235fbb3985f45fee8bc767561158678c209b3cbd27dcb36afaa936af088",
+  "volumeName": "adfocate-d19-pristine-20261024-5e2fa581-db-data",
+  "volumeWasAbsent": true,
+  "networkWasAbsent": true,
+  "newCredentialsGenerated": true,
+  "oldVolumesMounted": false,
+  "proxy": "none",
+  "containers": {},
+  "stage": "NEW_RESOURCES_CREATED_BEFORE_CLIENTS_OR_APPLICATION_SETUP"
+}

@@ -1,0 +1,7 @@
+{
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "path": "scripts/audit/local-targets.mjs",
+  "sha256": "f1b41b4e419814a8bfa04cba743a0325e17ab17b490d7be24bf996df09b55be8",
+  "before": "docs/verification/D19-C2-runtime-20261026/before-source/scripts/audit/local-targets.mjs",
+  "runtimeStatus": "Approved C2 stopped in provenance before claim/migration/SDK/Auth/fixture; no third writer invocation"
+}

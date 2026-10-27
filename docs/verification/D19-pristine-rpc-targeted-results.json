@@ -1,0 +1,194 @@
+{
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "command": "Cached Node22 vitest run --no-file-parallelism --maxWorkers=1 --minWorkers=1 server/test/support-rpc-ownership.test.ts server/test/run-integration-tests.test.ts server/test/support-fresh-scope.test.ts",
+  "passed": 34,
+  "failed": 0,
+  "files": [
+    {
+      "file": "server/test/run-integration-tests.test.ts",
+      "assertions": [
+        {
+          "title": "integration test launcher fails closed before preflight for an unusable integration environment",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "integration test launcher fails closed before preflight for an unusable integration environment",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "integration test launcher keeps the complete ordered integration file list unique",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "integration test launcher spawns local Vitest with the exact environment and preserves numeric exit codes",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "integration test launcher forwards and re-emits SIGINT without orphaning the child",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "integration test launcher forwards and re-emits SIGTERM without orphaning the child",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity accepts the exact newly-created volume, exclusive internal network and owned campaign inventory",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects old-project evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects baseline-data evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects volume-reused evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects network-shared evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects external-network evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects wrong-volume evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects wrong-owner evidence before any SQL or client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects a campaign not captured by this run before the global mutation",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity refuses nonlocal Docker engine endpoints",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity accepts a dedicated loopback bridge with masquerading disabled when Docker cannot publish an internal-network port",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "new pristine global campaign job identity rejects a bridge claim whose actual masquerading remains enabled",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "server/test/support-fresh-scope.test.ts",
+      "assertions": [
+        {
+          "title": "retains the existing default workspace when fresh support scope is absent",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "uses the exact newly-created support workspace and slug before any client setup",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"workspaceId\":\"invalid\"}",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"createdThisRun\":false}",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"namespace\":\"33333333-3333-4333-8333-333333333333\"}",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects malformed or historical fresh scope before creating a client: {\"slug\":\"demo\"}",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects a workspace outside the exact attested current scope",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects a fresh workspace without mutation ownership enabled",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "rejects stale target attestation or malformed JSON before any client setup",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    },
+    {
+      "file": "server/test/support-rpc-ownership.test.ts",
+      "assertions": [
+        {
+          "title": "blocks the database-wide close_due_campaigns RPC before it can mutate prior fixtures",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "blocks the database-wide snapshot_campaign_leaderboards RPC before it can mutate prior fixtures",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "cannot make a global RPC safe merely by passing an owned campaign ID",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "keeps the existing exact campaign RPC transport intact",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "permits close_due_campaigns only after the pristine target guard accepts the exact current campaign IDs",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "permits snapshot_campaign_leaderboards only after the pristine target guard accepts the exact current campaign IDs",
+          "status": "passed",
+          "failure": null
+        },
+        {
+          "title": "fails closed before delegation when the pristine target or campaign inventory drifts",
+          "status": "passed",
+          "failure": null
+        }
+      ]
+    }
+  ],
+  "note": "One initial command also named absent helpers-cleanup.test.ts; Vitest matched only these3 actual files. No fourth-file pass claimed; full suite later covers all applicable tests."
+}

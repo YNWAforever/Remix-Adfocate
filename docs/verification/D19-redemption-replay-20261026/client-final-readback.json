@@ -1,0 +1,294 @@
+{
+  "scope": "Actual component/hook/apiFetch with scripted sessions/HTTP/sessionStorage; no SDK/SQL/target/provider/browser",
+  "observations": [
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > manual retry after a lost response keeps the exact UUID and gift input",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "918d5890-c4b0-4f14-ad10-0d6712b82428"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "918d5890-c4b0-4f14-ad10-0d6712b82428"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"918d5890-c4b0-4f14-ad10-0d6712b82428\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > closing and reopening an unknown result preserves the request",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "72580f04-52a4-4b55-b719-d929be861ad9"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "72580f04-52a4-4b55-b719-d929be861ad9"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"72580f04-52a4-4b55-b719-d929be861ad9\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a page/component reload keeps the same tab/owner/workspace/gift intent until acknowledged",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "ee2748bc-713d-4dda-b04b-cd007102affb"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "ee2748bc-713d-4dda-b04b-cd007102affb"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"ee2748bc-713d-4dda-b04b-cd007102affb\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > acknowledging a confirmed code allows a deliberate new intent",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "4de3be3f-e2c2-44e4-96e5-8ad8166bcc8e"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "8c864e28-a2f5-4594-8af2-6a0a5fd75500"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"8c864e28-a2f5-4594-8af2-6a0a5fd75500\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > an account switch does not reuse another recipient's pending intent",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "a2ee40d9-ba6d-4259-8cf0-1f3a60d5d277"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "d5dee6dd-bd98-4266-8ac5-5cfb4177cd1f"
+          },
+          "authorization": "Bearer offline-creator-b",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "a2ee40d9-ba6d-4259-8cf0-1f3a60d5d277"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"a2ee40d9-ba6d-4259-8cf0-1f3a60d5d277\"}"
+        ],
+        [
+          "adfocate:redemption-intent:v1:[\"creator-b\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"d5dee6dd-bd98-4266-8ac5-5cfb4177cd1f\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > unavailable intent storage fails before a POST and offers history while retaining the gift",
+      "requests": [],
+      "reads": [],
+      "storedIntents": [],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a request conflict retains the same intent and exposes a safe history recovery path",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "a2788ec8-2a0d-46a2-b96d-8dfc814941dc"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "a2788ec8-2a0d-46a2-b96d-8dfc814941dc"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"a2788ec8-2a0d-46a2-b96d-8dfc814941dc\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a corrupt unconfirmed intent cannot silently become a new debit request",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "0f7cd916-214e-4e04-9208-d4f4170d53d6"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{corrupt"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > a failed acknowledgement keeps the known code visible until storage recovers",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "2a7b4afb-8dba-46b4-ad0f-c699c93ef332"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        },
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "2c44b78f-12ac-4a4e-b5dc-37a0de3d59b7"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"2c44b78f-12ac-4a4e-b5dc-37a0de3d59b7\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > pins the authorized owner and workspace snapshot despite a subsequent session/navigation change",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "5fb91733-9f7f-4871-95f2-e1943c218205"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"5fb91733-9f7f-4871-95f2-e1943c218205\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > after reload with exhausted stock the existing history entry recovers the saved code without another POST",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "66f4d295-a29f-4584-bb30-a829f976e428"
+          },
+          "authorization": "Bearer offline-creator-a",
+          "workspace": "offline-c33"
+        }
+      ],
+      "reads": [
+        "/api/wallet/points",
+        "/api/redemption/gifts",
+        "/api/redemption/history"
+      ],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"offline-c33\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"66f4d295-a29f-4584-bb30-a829f976e428\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    }
+  ]
+}

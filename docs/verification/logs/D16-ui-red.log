@@ -1,0 +1,364 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/assistant/AssistantPanel.test.tsx (4 tests | 2 failed) 114ms
+   × AssistantPanel > retains input and request identity after a failed response 17ms
+     → expect(element).toHaveValue(保留這份輸入)
+
+Expected the element to have value:
+  保留這份輸入
+Received:
+
+   × AssistantPanel > shows generated but unsaved text as an actionable persistence error 29ms
+     → Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "AI 助手 🤖":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"assistant-panel-title"[39m
+    [33maria-modal[39m=[32m"true"[39m
+    [33mclass[39m=[32m"fixed inset-x-3 bottom-20 z-50 flex h-[70vh] max-h-[28rem] flex-col rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] shadow-[4px_4px_0_0_var(--color-ink)] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:h-[28rem] lg:w-[24rem]"[39m
+    [33mrole[39m=[32m"dialog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"flex items-center justify-between border-b-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-2"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "關閉":
+  [36m<button[39m
+    [33maria-label[39m=[32m"關閉"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "傳送":
+  [36m<button[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50"[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"whitespace-pre-wrap"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"whitespace-pre-wrap"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "訊息":
+  [36m<input[39m
+    [33maria-label[39m=[32m"訊息"[39m
+    [33mclass[39m=[32m"flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm"[39m
+    [33mplaceholder[39m=[32m"輸入訊息…"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-labelledby[39m=[32m"assistant-panel-title"[39m
+      [33maria-modal[39m=[32m"true"[39m
+      [33mclass[39m=[32m"fixed inset-x-3 bottom-20 z-50 flex h-[70vh] max-h-[28rem] flex-col rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] shadow-[4px_4px_0_0_var(--color-ink)] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:h-[28rem] lg:w-[24rem]"[39m
+      [33mrole[39m=[32m"dialog"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"flex items-center justify-between border-b-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-2"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+          [33mid[39m=[32m"assistant-panel-title"[39m
+        [36m>[39m
+          [0mAI 助手 🤖[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"關閉"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-x"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"18"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"18"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M18 6 6 18"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"m6 6 12 12"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+        [36m</button>[39m
+      [36m</header>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 space-y-2 overflow-y-auto p-3"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-end"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm bg-[var(--color-acid)]"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"whitespace-pre-wrap"[39m
+            [36m>[39m
+              [0m保存測試[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-start"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm bg-white"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"whitespace-pre-wrap"[39m
+            [36m>[39m
+              [0m未保存答案[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"flex gap-2 border-t-2 border-[var(--color-ink)] p-2"[39m
+      [36m>[39m
+        [36m<input[39m
+          [33maria-label[39m=[32m"訊息"[39m
+          [33mclass[39m=[32m"flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm"[39m
+          [33mplaceholder[39m=[32m"輸入訊息…"[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0m傳送[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/assistant/AssistantPanel.test.tsx > AssistantPanel > retains input and request identity after a failed response
+Error: expect(element).toHaveValue(保留這份輸入)
+
+Expected the element to have value:
+  保留這份輸入
+Received:
+
+ ❯ src/components/assistant/AssistantPanel.test.tsx:36:19
+     34|     fireEvent.change(input, { target: { value: "保留這份輸入" } });
+     35|     fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送…
+     36|     expect(input).toHaveValue("保留這份輸入");
+       |                   ^
+     37|     fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送…
+     38|     expect(mutate).toHaveBeenCalledTimes(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/assistant/AssistantPanel.test.tsx > AssistantPanel > shows generated but unsaved text as an actionable persistence error
+TestingLibraryElementError: Unable to find an accessible element with the role "alert"
+
+Here are the accessible roles:
+
+  dialog:
+
+  Name "AI 助手 🤖":
+  <div
+    aria-labelledby="assistant-panel-title"
+    aria-modal="true"
+    class="fixed inset-x-3 bottom-20 z-50 flex h-[70vh] max-h-[28rem] flex-col rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] shadow-[4px_4px_0_0_var(--color-ink)] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:h-[28rem] lg:w-[24rem]"
+    role="dialog"
+  />
+
+  --------------------------------------------------
+  banner:
+
+  Name "":
+  <header
+    class="flex items-center justify-between border-b-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-2"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "關閉":
+  <button
+    aria-label="關閉"
+    type="button"
+  />
+
+  Name "傳送":
+  <button
+    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50"
+    type="submit"
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="whitespace-pre-wrap"
+  />
+
+  Name "":
+  <p
+    class="whitespace-pre-wrap"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "訊息":
+  <input
+    aria-label="訊息"
+    class="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm"
+    placeholder="輸入訊息…"
+    value=""
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      aria-labelledby="assistant-panel-title"
+      aria-modal="true"
+      class="fixed inset-x-3 bottom-20 z-50 flex h-[70vh] max-h-[28rem] flex-col rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] shadow-[4px_4px_0_0_var(--color-ink)] lg:inset-x-auto lg:bottom-6 lg:right-6 lg:h-[28rem] lg:w-[24rem]"
+      role="dialog"
+    >
+      <header
+        class="flex items-center justify-between border-b-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-2"
+      >
+        <span
+          class="font-heading font-bold"
+          id="assistant-panel-title"
+        >
+          AI 助手 🤖
+        </span>
+        <button
+          aria-label="關閉"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-x"
+            fill="none"
+            height="18"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="18"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6 6 18"
+            />
+            <path
+              d="m6 6 12 12"
+            />
+          </svg>
+        </button>
+      </header>
+      <div
+        class="flex-1 space-y-2 overflow-y-auto p-3"
+      >
+        <div
+          class="flex justify-end"
+        >
+          <div
+            class="max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm bg-[var(--color-acid)]"
+          >
+            <p
+              class="whitespace-pre-wrap"
+            >
+              保存測試
+            </p>
+          </div>
+        </div>
+        <div
+          class="flex justify-start"
+        >
+          <div
+            class="max-w-[80%] rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 text-sm bg-white"
+          >
+            <p
+              class="whitespace-pre-wrap"
+            >
+              未保存答案
+            </p>
+          </div>
+        </div>
+      </div>
+      <form
+        class="flex gap-2 border-t-2 border-[var(--color-ink)] p-2"
+      >
+        <input
+          aria-label="訊息"
+          class="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1.5 text-sm"
+          placeholder="輸入訊息…"
+          value=""
+        />
+        <button
+          class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-3 py-1.5 text-sm font-heading font-bold text-white disabled:opacity-50"
+          type="submit"
+        >
+          傳送
+        </button>
+      </form>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError ../creator-activation-spine/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../creator-activation-spine/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../creator-activation-spine/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../creator-activation-spine/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/assistant/AssistantPanel.test.tsx:47:19
+     45|     fireEvent.change(screen.getByPlaceholderText(/輸入/), { target: { …
+     46|     fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送…
+     47|     expect(screen.getByRole("alert")).toBeInTheDocument();
+       |                   ^
+     48|     expect(screen.getByPlaceholderText(/輸入/)).toHaveValue("保存測試"…
+     49|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  01:23:12
+   Duration  1.59s (transform 127ms, setup 213ms, collect 235ms, tests 114ms, environment 718ms, prepare 109ms)
+

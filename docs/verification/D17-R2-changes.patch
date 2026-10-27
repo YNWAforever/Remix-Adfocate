@@ -1,0 +1,400 @@
+diff --git a/e2e/d17-r2-quality.spec.ts b/e2e/d17-r2-quality.spec.ts
+new file mode 100644
+--- /dev/null
++++ b/e2e/d17-r2-quality.spec.ts
+@@ -0,0 +1,147 @@
++import { expect, test, type Browser } from "@playwright/test";
++import { readFileSync, writeFileSync } from "node:fs";
++import { createRequire } from "node:module";
++import process from "node:process";
++
++const require = createRequire(import.meta.url);
++const enabled = process.env.ADFOCATE_BROWSER_SCOPE === "D17_R2";
++const fx = enabled ? JSON.parse(readFileSync(".codex-tmp/R2-ui-fixture.private.json", "utf8")) : {};
++test.beforeEach(() => test.skip(!enabled, "Use the identity-gated D17 R2 runner."));
++const record = (name: string, data: unknown) => writeFileSync(`docs/verification/D17-R2-${name}-${process.env.D17_R2_PHASE}.json`, JSON.stringify({ runId: fx.runId, data }, null, 2) + "\n");
++const creatorPaths = ["/home", "/my", "/wallet", "/redemption/history", "/campaigns", "/guide"];
++const staffPaths = ["/admin/creators", "/admin/insights", "/admin/applications", "/admin/campaigns", "/admin/content"];
++
++async function context(browser: Browser, staff = false, width = 390) {
++  const ctx = await browser.newContext({ viewport: { width, height: 900 } });
++  await ctx.addInitScript(session => {
++    localStorage.setItem("lang", "en");
++    localStorage.setItem("sb-127-auth-token", JSON.stringify(session));
++  }, (staff ? fx.operator : fx.creator).session);
++  await ctx.route("**/*", route => {
++    const url = new URL(route.request().url());
++    return url.hostname === "127.0.0.1" && ["56400", "56421"].includes(url.port) ? route.continue() : route.abort();
++  });
++  return ctx;
++}
++
++test("D17 R2 admin heading remains fully readable beside workspace, role and account", async ({ browser }) => {
++  const ctx = await context(browser, true, 1280), page = await ctx.newPage(), cells = [];
++  await page.goto("/admin/applications");
++  await expect(page.getByText("No pending applications", { exact: true })).toBeVisible();
++  await expect(page.getByLabel("Staff role")).toBeVisible();
++  for (const width of [1024, 1280, 1440, 360]) {
++    await page.setViewportSize({ width, height: 900 });
++    const header = page.locator("header"), heading = header.getByRole("heading", { level: 1 });
++    const dimensions = await heading.evaluate(el => ({ width: el.clientWidth, contentWidth: el.scrollWidth, text: el.textContent }));
++    cells.push({ viewportWidth: width, ...dimensions });
++    expect.soft(dimensions.width, `heading has readable space at ${width}`).toBeGreaterThan(0);
++    expect.soft(dimensions.contentWidth, `full heading at ${width}`).toBeLessThanOrEqual(dimensions.width + 1);
++    await expect(header.getByRole("button", { name: /Sign out/i })).toBeVisible();
++    await expect(header.getByRole("combobox", { name: "workspace", exact: true })).toBeVisible();
++    if (width === 1280) await header.screenshot({ path: `docs/verification/D17-R2-heading-${process.env.D17_R2_PHASE}.png`, mask: [header.locator("span").filter({ hasText: "@" })] });
++  }
++  record("heading", cells); await ctx.close();
++});
++
++test("D17 R2 current core and supporting pages reflow at 360, 390, 768 and 320 CSS pixels", async ({ browser }) => {
++  const cells = [];
++  for (const staff of [false, true]) {
++    const ctx = await context(browser, staff), page = await ctx.newPage();
++    for (const path of staff ? [...staffPaths, `/admin/academy/${fx.tracks[0].id}`] : creatorPaths) {
++      await page.goto(path); await expect(page.getByRole("heading").first()).toBeVisible();
++      await page.waitForLoadState("networkidle");
++      for (const width of [360, 390, 768, 320]) {
++        await page.setViewportSize({ width, height: 900 });
++        const dimensions = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
++        const overflow = dimensions.scroll > dimensions.viewport + 1 ? await page.evaluate(() => [...document.querySelectorAll("main *")].filter(el => el.getBoundingClientRect().right > innerWidth + 1).map(el => ({ tag: el.tagName, className: el.className, right: el.getBoundingClientRect().right })).slice(0, 15)) : [];
++        cells.push({ path, width, ...dimensions, overflow });
++        record("responsive", { cells, partial: true });
++        expect.soft(dimensions.scroll, `${path} width ${width}`).toBeLessThanOrEqual(dimensions.viewport + 1);
++      }
++    }
++    await ctx.close();
++  }
++  record("responsive", { cells, nativeZoom: false, physicalDevice: false, note: "320 CSS px is reflow coverage; no native browser zoom claim." });
++});
++
++test("D17 R2 current core, supporting pages and parent form pass selected automated A and AA checks", async ({ browser }) => {
++  const scans = [];
++  for (const staff of [false, true]) {
++    const ctx = await context(browser, staff), page = await ctx.newPage();
++    for (const path of staff ? [...staffPaths, `/admin/academy/${fx.tracks[0].id}`] : creatorPaths) {
++      await page.goto(path); await expect(page.getByRole("heading").first()).toBeVisible();
++      await page.waitForLoadState("networkidle"); await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
++      const result = await page.evaluate(async () => {
++        const axe = (window as unknown as { axe: { run: (node: Document, options: unknown) => Promise<{ violations: Array<{ id: string; impact: string; nodes: Array<{ target: string[] }> }> }> } }).axe;
++        return (await axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] } })).violations.map(v => ({ id: v.id, impact: v.impact, targets: v.nodes.map(n => n.target) }));
++      });
++      scans.push({ path, violations: result }); expect.soft(result, path).toEqual([]);
++    }
++    await ctx.close();
++  }
++  record("axe", { version: require("axe-core/package.json").version, scans, manualAT: false });
++});
++
++test("D17 R2 keyboard retry preserves parent input and mobile navigation remains usable", async ({ browser }) => {
++  const ctx = await context(browser, true), page = await ctx.newPage();
++  await page.goto(`/admin/academy/${fx.tracks[0].id}`);
++  const field = page.getByRole("textbox", { name: "Learning time (中文)", exact: true });
++  await expect(field).toBeVisible(); await field.fill("Unsaved keyboard review");
++  await field.focus(); await expect(field).toBeFocused(); await page.keyboard.press("Tab");
++  await expect(page.getByRole("textbox", { name: "Level label (中文)", exact: true })).toBeFocused();
++  const menu = page.locator('button[aria-controls="admin-mobile-nav"]');
++  await menu.focus(); await page.keyboard.press("Enter"); await expect(menu).toHaveAttribute("aria-expanded", "true");
++  await expect(menu).toHaveAccessibleName("Close navigation");
++  await menu.focus(); await page.keyboard.press("Enter"); await expect(menu).toHaveAttribute("aria-expanded", "false");
++  await expect(field).toHaveValue("Unsaved keyboard review");
++  await page.route("**/api/admin/content?*", route => route.fulfill({ status: 503, contentType: "application/json", body: '{"error":"explicit local quality fault"}' }));
++  await page.goto("/admin/content"); await expect(page.getByRole("alert")).toBeVisible();
++  await page.getByRole("combobox", { name: /Content status/ }).selectOption("draft");
++  const retry = page.getByRole("button", { name: /Retry/ }); await retry.focus();
++  await page.unroute("**/api/admin/content?*"); await page.keyboard.press("Enter");
++  await expect(page.getByRole("alert")).toHaveCount(0);
++  await expect(page.getByRole("combobox", { name: /Content status/ })).toHaveValue("draft");
++  record("keyboard", { parentInputPreserved: true, parentSaved: false, nativeTab: true, menuKeyboardToggle: true, error503: "explicit transport mock", recovery: "real local read", filterRetained: true });
++  await ctx.close();
++});
++
++test("D17 R2 records current production-asset lab page timings and 100 real scoped queue reads", async ({ browser }) => {
++  test.skip(process.env.D17_R2_PHASE !== "final" && !process.env.D17_R2_PHASE?.startsWith("profile-"), "Performance requires a production asset build.");
++  const pages = [];
++  for (const staff of [false, true]) {
++    const ctx = await context(browser, staff, 1280), page = await ctx.newPage();
++    await page.addInitScript(() => {
++      const values = { lcp: 0, shifts: [] as { at: number; value: number; sources: unknown[] }[] };
++      (window as unknown as { qualityVitals: typeof values }).qualityVitals = values;
++      new PerformanceObserver(list => { for (const entry of list.getEntries()) values.lcp = entry.startTime; }).observe({ type: "largest-contentful-paint", buffered: true });
++      new PerformanceObserver(list => { for (const entry of list.getEntries()) {
++        const shift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean; sources: { node: Element | null; previousRect: DOMRectReadOnly; currentRect: DOMRectReadOnly }[] };
++        if (!shift.hadRecentInput) values.shifts.push({ at: shift.startTime, value: shift.value, sources: shift.sources.map(source => ({ tag: source.node?.tagName, className: source.node?.className, previous: source.previousRect.toJSON(), current: source.currentRect.toJSON() })) });
++      } }).observe({ type: "layout-shift", buffered: true });
++    });
++    for (const path of staff ? [...staffPaths, `/admin/academy/${fx.tracks[0].id}`] : creatorPaths) {
++      const start = performance.now(); await page.goto(path); await expect(page.getByRole("heading").first()).toBeVisible(); await page.waitForLoadState("networkidle");
++      const values = await page.evaluate(() => (window as unknown as { qualityVitals: { lcp: number; shifts: { at: number; value: number }[] } }).qualityVitals);
++      let startWindow = 0, last = 0, sum = 0, cls = 0;
++      for (const shift of values.shifts) { if (shift.at - last > 1000 || shift.at - startWindow > 5000) { startWindow = shift.at; sum = 0; } sum += shift.value; last = shift.at; cls = Math.max(cls, sum); }
++      pages.push({ path, toNetworkIdleMs: performance.now() - start, lcpMs: values.lcp || null, cls, shifts: values.shifts });
++    }
++    if (staff) {
++      const token = await page.evaluate(() => JSON.parse(localStorage.getItem("sb-127-auth-token") ?? "{}").access_token as string);
++      const requests = [];
++      for (let i = 0; i < 100; i++) {
++        const start = performance.now();
++        const response = await page.request.get("/api/admin/creators/review?page=1", { headers: { Authorization: `Bearer ${token}`, "X-Workspace-Slug": fx.slug } });
++        const body = await response.json(); expect(response.status()).toBe(200); expect(body.total).toBe(2); expect(body.creators.map((row: { id: string }) => row.id).sort()).toEqual([fx.creator.id, fx.other.id].sort());
++        requests.push({ ms: performance.now() - start, status: response.status(), total: body.total, rows: body.creators.length });
++      }
++      const sorted = requests.map(r => r.ms).sort((a, b) => a - b);
++      record("performance", { browser: browser.version(), pages, requests, api: { samples: sorted.length, p50: sorted[49], p95: sorted[94], max: sorted[99] },
++        environment: "1280x900 desktop Edge, loopback, no CPU/network throttling; external requests aborted, fallback fonts; HTTP cache disabled by routing, warm DB/server; sequential navigation.",
++        scope: "Current 12 pages and a real two-Creator owned queue. Earlier 1k/10k, 24 interaction and INP samples remain historical; no new scale, native-device, field p75 or hosted claim. toNetworkIdle includes the idle wait and is distinct from LCP/INP.",
++        thresholds: { lcpMs: 2500, cls: 0.1, apiP95Ms: 800 }, inp: "NOT_MEASURED_THIS_RUN" });
++    }
++    await ctx.close();
++  }
++  for (const sample of pages) expect.soft(sample.cls, `${sample.path} CLS budget`).toBeLessThanOrEqual(0.1);
++});
+diff --git a/playwright.d17-r2.config.ts b/playwright.d17-r2.config.ts
+new file mode 100644
+--- /dev/null
++++ b/playwright.d17-r2.config.ts
+@@ -0,0 +1,12 @@
++import { defineConfig } from "@playwright/test";
++import process from "node:process";
++export default defineConfig({
++  testDir: "./e2e", testMatch: "d17-r2-quality.spec.ts", fullyParallel: false, workers: 1, retries: 0,
++  timeout: 180000, expect: { timeout: 15000 },
++  reporter: [["line"], ["json", { outputFile: `.codex-tmp/D17-R2-browser-${process.env.D17_R2_PHASE}.private.json` }]],
++  use: { baseURL: "http://127.0.0.1:56400", channel: "msedge", locale: "en-HK", timezoneId: "Asia/Hong_Kong", actionTimeout: 15000, trace: "off", screenshot: "off", video: "off" },
++  webServer: { command: process.env.D17_R2_PHASE === "final" || process.env.D17_R2_PHASE?.startsWith("profile-")
++    ? `"${process.execPath}" node_modules/vite-node/vite-node.mjs scripts/audit/serve-quality.ts`
++    : `"${process.execPath}" node_modules/vite/bin/vite.js --host 127.0.0.1 --port 56400 --strictPort`,
++    url: "http://127.0.0.1:56400/api/health", reuseExistingServer: false, timeout: 90000, stdout: "ignore", stderr: "pipe" },
++});
+diff --git a/scripts/audit/inspect-d17-r2-advisors.mjs b/scripts/audit/inspect-d17-r2-advisors.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/audit/inspect-d17-r2-advisors.mjs
+@@ -0,0 +1,43 @@
++import { verifiedTarget } from "./local-targets.mjs";
++import { readFileSync, writeFileSync } from "node:fs";
++import { execFileSync, spawnSync } from "node:child_process";
++import { createHash } from "node:crypto";
++import { isDeepStrictEqual } from "node:util";
++import process from "node:process";
++import { URL } from "node:url";
++import { log } from "node:console";
++
++// Read-only local inspection. This does not assign owners or grant release approval.
++const output = "docs/verification/D17-R2-advisors.json";
++const prior = JSON.parse(readFileSync("docs/verification/D19-schema-after.json", "utf8"));
++const advisorCatalog = JSON.parse(readFileSync("docs/verification/D17-advisor-catalog.json", "utf8"));
++const results = [];
++for (const kind of ["empty", "shaped"]) {
++  const target = verifiedTarget(kind); // Before reading credentials or opening a DB connection.
++  const lines = readFileSync(`.codex-tmp/${kind}-start.private.log`, "utf8").split(/\r?\n/);
++  const keys = JSON.parse(lines.filter(line => line.startsWith('{"DB_URL"')).at(-1));
++  const db = new URL(keys.DB_URL);
++  if (db.hostname !== "127.0.0.1" || db.port !== (kind === "empty" ? "56422" : "56522") || keys.API_URL !== target.env.SUPABASE_URL) throw new Error("Local advisor target binding mismatch");
++  const ports = JSON.parse(execFileSync("docker", ["inspect", "--format", "{{json .NetworkSettings.Ports}}", target.identity.databaseContainerId], { encoding: "utf8", timeout: 10000 }));
++  if (!(ports?.["5432/tcp"] ?? []).some(binding => binding.HostIp === "127.0.0.1" && binding.HostPort === db.port)) throw new Error("Local database host/port/container mapping mismatch");
++  db.searchParams.set("sslmode", "disable");
++  const schemaBefore = JSON.parse(target.sql(`begin read only; ${prior.query} commit;`));
++  const catalog = JSON.parse(target.sql(`begin read only; ${advisorCatalog.query} commit;`));
++  const run = spawnSync(process.execPath, ["node_modules/supabase/dist/supabase.js", "db", "advisors", "--db-url", db.href, "--type", "all", "--level", "info", "--fail-on", "none", "--output-format", "json"], { encoding: "utf8", timeout: 60000 });
++  const stdout = (run.stdout ?? "").replaceAll(db.href, "[owned-local-db-url]").replaceAll(keys.DB_URL, "[owned-local-db-url]");
++  const stderr = (run.stderr ?? "").replaceAll(db.href, "[owned-local-db-url]").replaceAll(keys.DB_URL, "[owned-local-db-url]");
++  writeFileSync(`.codex-tmp/D17-R2-advisors-${kind}.private.log`, stdout + "\n" + stderr);
++  if (run.status !== 0) throw new Error(`Local advisors failed for ${kind}; private log retained`);
++  const notices = JSON.parse(stdout.trim()).results;
++  if (!Array.isArray(notices)) throw new Error("Unexpected local advisor response");
++  const checked = verifiedTarget(kind);
++  if (!isDeepStrictEqual(target.identity, checked.identity)) throw new Error("Local target drift");
++  const schemaAfter = JSON.parse(checked.sql(`begin read only; ${prior.query} commit;`));
++  if (!isDeepStrictEqual(schemaBefore, schemaAfter)) throw new Error("Schema/history changed during read-only advisors");
++  results.push({ target: kind, identity: checked.identity, databasePortBinding: { containerId: target.identity.databaseContainerId, hostIp: "127.0.0.1", hostPort: db.port, containerPort: 5432 }, status: run.status, notices, catalog, schemaBefore, schemaAfter,
++    catalogHistoryUnchangedDuringInspection: true, schemaMatchesD19: isDeepStrictEqual(schemaAfter, prior.targets[kind].observed),
++    historyRows: schemaAfter.history.length, snapshotSha256: createHash("sha256").update(JSON.stringify(notices)).digest("hex") });
++  log(JSON.stringify({ target: kind, notices: notices.length, schemaMatchesD19: results.at(-1).schemaMatchesD19 }));
++}
++writeFileSync(output, JSON.stringify({ at: new Date().toISOString(), productionQueried: false, hostedAdvisors: "NOT_RUN", ownerAcceptance: "BLOCKED_NAMED_OWNER_NOT_PROVIDED", changesApplied: false,
++  priorCatalog: "D19-schema-after.json", results, limitations: "Local statistics are workload dependent. Notice disappearance is not remediation. No index/policy/function/grant/membership change or owner attestation is implied." }, null, 2) + "\n");
+diff --git a/scripts/audit/inspect-d17-r2-advisors.test.ts b/scripts/audit/inspect-d17-r2-advisors.test.ts
+new file mode 100644
+--- /dev/null
++++ b/scripts/audit/inspect-d17-r2-advisors.test.ts
+@@ -0,0 +1,41 @@
++import { beforeEach, expect, it, vi } from "vitest";
++
++const h = vi.hoisted(() => ({ ports: undefined as unknown, cli: vi.fn(), docker: vi.fn(), sql: vi.fn(), write: vi.fn(), read: vi.fn() }));
++vi.mock("node:child_process", () => ({ spawnSync: h.cli, execFileSync: h.docker, default: { spawnSync: h.cli, execFileSync: h.docker } }));
++vi.mock("node:fs", () => ({ readFileSync: h.read, writeFileSync: h.write, default: { readFileSync: h.read, writeFileSync: h.write } }));
++vi.mock("./local-targets.mjs", () => ({ verifiedTarget: (kind: string) => ({
++  identity: { projectId: `owned-${kind}`, databaseContainerId: kind === "empty" ? "e".repeat(64) : "d".repeat(64) },
++  env: { SUPABASE_URL: `http://127.0.0.1:${kind === "empty" ? "56421" : "56521"}` }, sql: h.sql,
++}) }));
++
++beforeEach(() => {
++  vi.resetModules(); vi.clearAllMocks();
++  h.ports = { "5432/tcp": [{ HostIp: "127.0.0.1", HostPort: "56422" }] };
++  h.docker.mockImplementation((_command: string, args: string[]) => JSON.stringify(args.at(-1) === "d".repeat(64)
++    ? { "5432/tcp": [{ HostIp: "127.0.0.1", HostPort: "56522" }] } : h.ports));
++  h.cli.mockReturnValue({ status: 0, stdout: '{"results":[]}', stderr: "" });
++  h.sql.mockReturnValue('{"history":[]}');
++  h.read.mockImplementation((path: string) => {
++    if (path.includes("start.private.log")) {
++      const port = path.includes("empty") ? 56421 : 56521;
++      return JSON.stringify({ DB_URL: `postgresql://synthetic:fixture@127.0.0.1:${port + 1}/postgres`, API_URL: `http://127.0.0.1:${port}` });
++    }
++    return JSON.stringify({ query: "select 'read-only fixture'", targets: { empty: { observed: { history: [] } }, shaped: { observed: { history: [] } } } });
++  });
++});
++
++it.each([
++  ["missing published DB port", {}],
++  ["different host port", { "5432/tcp": [{ HostIp: "127.0.0.1", HostPort: "59999" }] }],
++  ["non-loopback host binding", { "5432/tcp": [{ HostIp: "0.0.0.0", HostPort: "56422" }] }],
++])("rejects %s before any SQL or CLI connection despite a matching local URL", async (_name, ports) => {
++  h.ports = ports;
++  await expect(import("./inspect-d17-r2-advisors.mjs")).rejects.toThrow("Local database host/port/container mapping mismatch");
++  expect(h.sql).not.toHaveBeenCalled(); expect(h.cli).not.toHaveBeenCalled(); expect(h.write).not.toHaveBeenCalled();
++});
++
++it("opens the mocked read-only inspections only after both exact container DB port mappings agree", async () => {
++  await import("./inspect-d17-r2-advisors.mjs");
++  expect(h.cli).toHaveBeenCalledTimes(2);
++  expect(h.sql).toHaveBeenCalledTimes(6);
++});
+diff --git a/scripts/audit/run-d17-r2-quality.mjs b/scripts/audit/run-d17-r2-quality.mjs
+new file mode 100644
+--- /dev/null
++++ b/scripts/audit/run-d17-r2-quality.mjs
+@@ -0,0 +1,39 @@
++import { readFileSync, writeFileSync } from "node:fs";
++import { spawnSync } from "node:child_process";
++import { resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
++import process from "node:process";
++import { verifiedTarget } from "./local-targets.mjs";
++import { neutralitySnapshot } from "./neutrality-snapshot.mjs";
++
++const phase = process.argv[2];
++if (!/^(red|interim|profile-[a-z0-9-]+|final)$/.test(phase ?? "")) throw new Error("Explicit D17 R2 phase required");
++const production = phase === "final" || phase.startsWith("profile-");
++const target = verifiedTarget("empty");
++const fx = JSON.parse(readFileSync(".codex-tmp/R2-ui-fixture.private.json", "utf8"));
++if (!isDeepStrictEqual(fx.target, target.identity)) throw new Error("Reused owned fixture identity drift");
++const env = { ...process.env, ...target.env, RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0", ADFOCATE_BROWSER_SCOPE: "D17_R2", D17_R2_PHASE: phase,
++  VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY, VITE_DEFAULT_WORKSPACE: fx.slug,
++  VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false", OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "",
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}` };
++if (production) {
++  env.NODE_ENV = "production";
++  const build = spawnSync(process.execPath, ["node_modules/vite/bin/vite.js", "build", "--mode", "production"], { env, stdio: "inherit" });
++  if (build.status !== 0) process.exit(build.status ?? 1);
++}
++const before = [fx.creator.id, fx.other.id].map(id => neutralitySnapshot(target, id, fx.workspaceId));
++const run = spawnSync(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "--config=playwright.d17-r2.config.ts", ...(phase.startsWith("profile-") ? ["--grep", "records current production-asset"] : [])], { env, stdio: "inherit" });
++const checked = verifiedTarget("empty"), after = [fx.creator.id, fx.other.id].map(id => neutralitySnapshot(checked, id, fx.workspaceId));
++writeFileSync(`docs/verification/D17-R2-neutrality-${phase}.json`, JSON.stringify({ runId: fx.runId, target: checked.identity, before, after, allEqual: isDeepStrictEqual(before, after),
++  scope: "Read-only quality review of prior R2 owned fixtures; no new fixture, content save, membership, reward or financial action. D19 funded neutrality remains historical." }, null, 2) + "\n");
++const raw = JSON.parse(readFileSync(`.codex-tmp/D17-R2-browser-${phase}.private.json`, "utf8")), tests = [];
++const visit = suite => {
++  for (const spec of suite.specs ?? []) tests.push({ title: spec.title, ok: spec.ok, results: spec.tests.flatMap(t => t.results.map(r => ({ status: r.status, duration: r.duration }))) });
++  for (const child of suite.suites ?? []) visit(child);
++};
++for (const suite of raw.suites ?? []) visit(suite);
++writeFileSync(`docs/verification/D17-R2-browser-${phase}.json`, JSON.stringify({ target: checked.identity, runId: fx.runId, tests, stats: raw.stats,
++  productionAssets: production,
++  browser: "Installed desktop Edge; real owned Auth/API/RLS reads; explicit 503 recovery mock. No native browser zoom, physical device, Safari, manual AT, hosted or field-performance acceptance." }, null, 2) + "\n");
++process.exit(run.status || (isDeepStrictEqual(before, after) ? 0 : 1));
+diff --git a/src/components/AcademyTrackCard.tsx b/src/components/AcademyTrackCard.tsx
+--- a/src/components/AcademyTrackCard.tsx
++++ b/src/components/AcademyTrackCard.tsx
+@@ -47,10 +47,10 @@
+ 
+   if (needsVerification) {
+     return (
+-      <Link to="/profile" className="flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] p-3 no-underline opacity-70 hover:opacity-90 transition-opacity">
++      <Link to="/profile" className="flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] p-3 no-underline hover:underline">
+         {body}
+       </Link>
+     );
+   }
+-  return <div className="flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] p-3 opacity-60">{body}</div>;
++  return <div className="flex items-center gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] p-3">{body}</div>;
+ }
+diff --git a/src/components/PlaybookCard.tsx b/src/components/PlaybookCard.tsx
+--- a/src/components/PlaybookCard.tsx
++++ b/src/components/PlaybookCard.tsx
+@@ -11,10 +11,10 @@
+   if (isPlaybook(item)) {
+     const levels = item.meta.levels ?? [];
+     return (
+-      <div className="pastel-card flex flex-col gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
++      <div className="pastel-card flex min-w-0 flex-col gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 [overflow-wrap:anywhere]">
+         <div className="flex items-center gap-2">
+           <span className="text-2xl" aria-hidden>{item.emoji}</span>
+-          <h3 className="font-heading font-semibold">{item.title}</h3>
++          <h3 className="min-w-0 font-heading font-semibold">{item.title}</h3>
+         </div>
+         {item.meta.creatorAngle && (
+           <p className="text-sm text-[var(--color-soft-ink)]">{item.meta.creatorAngle}</p>
+@@ -30,7 +30,7 @@
+     );
+   }
+   return (
+-    <div className="flex items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
++    <div className="flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 [overflow-wrap:anywhere]">
+       <span className="text-2xl" aria-hidden>{item.emoji}</span>
+       <div className="min-w-0 flex-1">
+         <h3 className="font-heading font-semibold leading-snug">{item.title}</h3>
+diff --git a/src/components/admin/AdminTopBar.tsx b/src/components/admin/AdminTopBar.tsx
+--- a/src/components/admin/AdminTopBar.tsx
++++ b/src/components/admin/AdminTopBar.tsx
+@@ -20,7 +20,7 @@
+   }
+ 
+   return (
+-    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3 lg:flex-nowrap">
++    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3">
+       <button
+         type="button"
+         onClick={onMenu}
+@@ -31,11 +31,13 @@
+       >
+         <Menu size={18} aria-hidden />
+       </button>
+-      <h1 className="min-w-0 flex-1 truncate font-display text-lg font-bold">{t(adminPageTitleKey(pathname))}</h1>
+-      <div className="ml-auto flex min-w-0 basis-full flex-wrap items-center gap-3 sm:basis-auto lg:flex-nowrap">
+-        <WorkspaceSwitcher />
++      <h1 className="min-w-0 flex-1 basis-[calc(100%-3.5rem)] font-display text-lg font-bold [overflow-wrap:anywhere] lg:basis-full">{t(adminPageTitleKey(pathname))}</h1>
++      <div className="ml-auto flex w-full min-w-0 flex-wrap items-center gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1.2fr)_auto]">
++        <div className="min-w-0 lg:flex lg:min-h-16 lg:items-center"><WorkspaceSwitcher /></div>
++        <div className="min-w-0 lg:flex lg:min-h-16 lg:items-center">
+         {access?.loading&&<span role="status" className="text-xs">Checking access / 核實職責中…</span>}
+         {access?.error?<div role="alert" className="max-w-sm text-sm"><p>Access unavailable / 暫時無法核實職責</p><button type="button" className="min-h-11 underline" onClick={()=>void access.refresh()}>Retry access / 重試職責</button></div>:access?.access&&<span aria-label="Staff role" className="max-w-xs text-xs [overflow-wrap:anywhere]">{access.access.workspace?.role?roles[access.access.workspace.role]:"No assigned workspace role / 未獲派營運職責"}{access.can("content.manage")?" · Content editor / 內容編輯":""}</span>}
++        </div>
+         {staff?.email ? (
+           <span className="hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline">{staff.email}</span>
+         ) : null}
+diff --git a/src/routes/_app.home.tsx b/src/routes/_app.home.tsx
+--- a/src/routes/_app.home.tsx
++++ b/src/routes/_app.home.tsx
+@@ -115,6 +115,7 @@
+         </div>
+       </header>
+ 
++      <div className="min-h-72 space-y-6">
+       <CreatorWorkHome
+         missions={activation.activeMissions}
+         fallbackAction={activation.snapshot.nextAction}
+@@ -126,8 +127,9 @@
+           })
+         }
+       />
+-
+-      <div className="grid gap-6 lg:grid-cols-2">
++      </div>
++
++      <div className="grid min-h-64 gap-6 lg:grid-cols-2">
+         <EarningsSummaryCard
+           earnings={activation.earnings.data}
+           locale={lang}

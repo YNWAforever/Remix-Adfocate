@@ -1,0 +1,484 @@
+{
+  "identity": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "query": "select jsonb_build_object('tables',(select jsonb_agg(jsonb_build_object('name',relname,'acl',relacl,'rls',relrowsecurity) order by relname) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname in ('creator_social_accounts','creator_social_scan_snapshots','creator_public_passports','creator_review_statuses','creator_review_notes','mission_shortlists','operator_audit_events')),'columns',(select jsonb_agg(jsonb_build_object('table',c.relname,'column',a.attname,'acl',a.attacl) order by c.relname,a.attname) from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname in ('creator_social_accounts','creator_social_scan_snapshots','creator_public_passports','creator_review_statuses','creator_review_notes','mission_shortlists','operator_audit_events') and a.attacl is not null));",
+  "observed": {
+    "tables": [
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=rdDxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "creator_public_passports"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=Dxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "creator_review_notes"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=Dxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "creator_review_statuses"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=rdDxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "creator_social_accounts"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=rDxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "creator_social_scan_snapshots"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=Dxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "mission_shortlists"
+      },
+      {
+        "acl": [
+          "postgres=arwdDxtm/postgres",
+          "anon=Dxtm/postgres",
+          "authenticated=Dxtm/postgres",
+          "service_role=arwdDxtm/postgres"
+        ],
+        "rls": true,
+        "name": "operator_audit_events"
+      }
+    ],
+    "columns": [
+      {
+        "acl": [
+          "authenticated=a/postgres"
+        ],
+        "table": "creator_social_accounts",
+        "column": "creator_id"
+      },
+      {
+        "acl": [
+          "authenticated=aw/postgres"
+        ],
+        "table": "creator_social_accounts",
+        "column": "handle"
+      },
+      {
+        "acl": [
+          "authenticated=a/postgres"
+        ],
+        "table": "creator_social_accounts",
+        "column": "platform"
+      },
+      {
+        "acl": [
+          "authenticated=aw/postgres"
+        ],
+        "table": "creator_social_accounts",
+        "column": "profile_url"
+      },
+      {
+        "acl": [
+          "authenticated=a/postgres"
+        ],
+        "table": "creator_social_accounts",
+        "column": "workspace_id"
+      }
+    ]
+  },
+  "history": [
+    {
+      "name": "init",
+      "version": "0001",
+      "statements": null
+    },
+    {
+      "name": "harden_rls",
+      "version": "0002",
+      "statements": null
+    },
+    {
+      "name": "onboarding",
+      "version": "0003",
+      "statements": null
+    },
+    {
+      "name": "grants",
+      "version": "0004",
+      "statements": null
+    },
+    {
+      "name": "mission_submissions",
+      "version": "0005",
+      "statements": null
+    },
+    {
+      "name": "redemption",
+      "version": "0006",
+      "statements": null
+    },
+    {
+      "name": "earnings",
+      "version": "0007",
+      "statements": null
+    },
+    {
+      "name": "leveling",
+      "version": "0008",
+      "statements": null
+    },
+    {
+      "name": "passport_scores",
+      "version": "0009",
+      "statements": null
+    },
+    {
+      "name": "applications",
+      "version": "0010",
+      "statements": null
+    },
+    {
+      "name": "mission_brief",
+      "version": "0011",
+      "statements": null
+    },
+    {
+      "name": "trust_profile_bundle",
+      "version": "0012",
+      "statements": null
+    },
+    {
+      "name": "operator_creator_selection_crm",
+      "version": "0013",
+      "statements": null
+    },
+    {
+      "name": "operator_crm_workspace_guard",
+      "version": "0014",
+      "statements": null
+    },
+    {
+      "name": "creator_profile_media",
+      "version": "0015",
+      "statements": null
+    },
+    {
+      "name": "assistant",
+      "version": "0016",
+      "statements": null
+    },
+    {
+      "name": "social_verification",
+      "version": "0017",
+      "statements": null
+    },
+    {
+      "name": "mission_authoring",
+      "version": "0018",
+      "statements": null
+    },
+    {
+      "name": "mission_brief_rich",
+      "version": "0019",
+      "statements": null
+    },
+    {
+      "name": "staff_auth",
+      "version": "0020",
+      "statements": null
+    },
+    {
+      "name": "content_hub",
+      "version": "0021",
+      "statements": null
+    },
+    {
+      "name": "notifications",
+      "version": "0022",
+      "statements": null
+    },
+    {
+      "name": "brand_access",
+      "version": "0023",
+      "statements": null
+    },
+    {
+      "name": "brand_budget",
+      "version": "0024",
+      "statements": null
+    },
+    {
+      "name": "campaigns",
+      "version": "0025",
+      "statements": null
+    },
+    {
+      "name": "campaigns_s2",
+      "version": "0026",
+      "statements": null
+    },
+    {
+      "name": "brand_resources",
+      "version": "0027",
+      "statements": null
+    },
+    {
+      "name": "academy_content",
+      "version": "0028",
+      "statements": null
+    },
+    {
+      "name": "profile_media_private_grants",
+      "version": "20260618135028",
+      "statements": null
+    },
+    {
+      "name": "profile_media_url_validation",
+      "version": "20260619013000",
+      "statements": null
+    },
+    {
+      "name": "active_mission_workspace",
+      "version": "20260715163350",
+      "statements": null
+    },
+    {
+      "name": "receive_mission_fulfillment",
+      "version": "20260717190420",
+      "statements": null
+    },
+    {
+      "name": "active_mission_operator_lifecycle",
+      "version": "20260718134500",
+      "statements": null
+    },
+    {
+      "name": "harden_active_mission_operator_lifecycle",
+      "version": "20260718193000",
+      "statements": null
+    },
+    {
+      "name": "author_active_mission_workflow_policies",
+      "version": "20260718210000",
+      "statements": null
+    },
+    {
+      "name": "guard_mission_authoring_snapshot_race",
+      "version": "20260718213000",
+      "statements": null
+    },
+    {
+      "name": "submit_active_mission_draft",
+      "version": "20260719133000",
+      "statements": null
+    },
+    {
+      "name": "abandon_active_mission_asset",
+      "version": "20260719160000",
+      "statements": null
+    },
+    {
+      "name": "active_mission_workflow_notifications",
+      "version": "20260719200000",
+      "statements": null
+    },
+    {
+      "name": "migrate_pristine_joined_active_mission",
+      "version": "20260719220000",
+      "statements": null
+    },
+    {
+      "name": "final_review_active_mission_contracts",
+      "version": "20260720033542",
+      "statements": null
+    },
+    {
+      "name": "grant_service_role_budget_read",
+      "version": "20260720175319",
+      "statements": null
+    },
+    {
+      "name": "resolve_mission_submission_relationships",
+      "version": "20260720193637",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_validation",
+      "version": "20260723090000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_rollout",
+      "version": "20260723170000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_rollout_compat",
+      "version": "20260725090000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_asset_policy",
+      "version": "20260725110000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_asset_mutation_guards",
+      "version": "20260725130000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_asset_guards",
+      "version": "20260725140000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_public_guards",
+      "version": "20260725143000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_public_rpc_final",
+      "version": "20260725150000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_instrumentation",
+      "version": "20260727120000",
+      "statements": null
+    },
+    {
+      "name": "publication_proof_existing_setup",
+      "version": "20260727130000",
+      "statements": null
+    },
+    {
+      "name": "fix_publication_proof_asset_path_regex",
+      "version": "20260728135000",
+      "statements": null
+    },
+    {
+      "name": "align_publication_proof_asset_mime_contract",
+      "version": "20260729010000",
+      "statements": null
+    },
+    {
+      "name": "reward_handoff_schema",
+      "version": "20260731100000",
+      "statements": null
+    },
+    {
+      "name": "reward_contract_capture",
+      "version": "20260731110000",
+      "statements": null
+    },
+    {
+      "name": "reward_handoff_transitions",
+      "version": "20260731120000",
+      "statements": null
+    },
+    {
+      "name": "reward_handoff_notifications",
+      "version": "20260731130000",
+      "statements": null
+    },
+    {
+      "name": "reward_handoff_release_hardening",
+      "version": "20260731140000",
+      "statements": null
+    },
+    {
+      "name": "enable_pilot_if_empty",
+      "version": "20260731150000",
+      "statements": null
+    },
+    {
+      "name": "review_hardening",
+      "version": "20260805120000",
+      "statements": null
+    },
+    {
+      "name": "audit_legacy_evidence",
+      "version": "20261022170454",
+      "statements": null
+    },
+    {
+      "name": "audit_crm_commands",
+      "version": "20261022170751",
+      "statements": null
+    },
+    {
+      "name": "audit_creator_queue",
+      "version": "20261022171111",
+      "statements": null
+    },
+    {
+      "name": "audit_assistant_requests",
+      "version": "20261022171843",
+      "statements": null
+    },
+    {
+      "name": "audit_legacy_review_notes",
+      "version": "20261022182544",
+      "statements": null
+    },
+    {
+      "name": "academy_learning",
+      "version": "20261023091050",
+      "statements": null
+    },
+    {
+      "name": "academy_learning_conflicts",
+      "version": "20261023093445",
+      "statements": null
+    },
+    {
+      "name": "academy_approval_index",
+      "version": "20261023095521",
+      "statements": null
+    },
+    {
+      "name": "staff_access_capabilities",
+      "version": "20261023124149",
+      "statements": null
+    }
+  ]
+}

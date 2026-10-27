@@ -1,0 +1,13 @@
+import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import process from 'node:process';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+const path='docs/verification/D19-C1-browser-continuation-runtime-manifest.json',m=JSON.parse(readFileSync(path,'utf8'));
+for(const key of Object.keys(process.env))if(key.startsWith('DOCKER_')||/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
+Object.assign(process.env,m.execution.environment,{DOCKER_CONTEXT:'desktop-linux',ADFOCATE_B2_PHASE:'role',NODE_OPTIONS:''});
+const target=verifiedTarget();
+// Intentionally do not call target.sql: the reviewed adopter must own the first namespace journal.
+const namespace='.codex-tmp/'+m.target.projectId+'/'+m.execution.artifactNamespace;
+if(existsSync(namespace))throw Error('Unexpected adoption namespace before identity-only observation');
+const record={at:new Date().toISOString(),identity:target.identity,lineage:target.context.lineage,manifestSha256:target.context.manifestSha256,allFiveServiceIdentityGuardsPassed:true,keysLoadedOnlyAfterIdentity:true,sdkClientCreated:false,sqlCalls:0,authCalls:0,namespaceCreated:false,newResources:0,resourceLifecycleActions:0,providerEnabled:false};
+writeFileSync('docs/verification/'+m.target.projectId+'/browser-continuation-live-identity.json',JSON.stringify(record,null,2)+'\n');
+process.stdout.write(JSON.stringify({status:'PASS_LIVE_FIVE_SERVICE_IDENTITY_ONLY',projectId:target.identity.projectId,sourceFingerprint:target.context.lineage.sourceFingerprint,manifestSha256:target.context.manifestSha256,sdkSqlAuthCalls:0,adoptionNamespaceCreated:false})+'\n');

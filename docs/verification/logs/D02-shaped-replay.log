@@ -1,0 +1,10 @@
+NOTICE:  schema "private" already exists, skipping
+NOTICE:  trigger "mission_work_items_source_template_guard" for relation "public.mission_work_items" does not exist, skipping
+NOTICE:  constraint "notifications_workflow_payload_size_check" of relation "notifications" does not exist, skipping
+NOTICE:  trigger "mission_fulfillment_workflow_notifications" for relation "public.mission_fulfillments" does not exist, skipping
+NOTICE:  trigger "mission_work_item_workflow_notifications" for relation "public.mission_work_items" does not exist, skipping
+NOTICE:  trigger "mission_workflow_state_notifications" for relation "public.mission_workflows" does not exist, skipping
+NOTICE:  extension "pgcrypto" already exists, skipping
+NOTICE:  trigger "publication_proof_workflow_event_notifications" for relation "public.mission_workflow_events" does not exist, skipping
+NOTICE:  trigger "reward_handoff_workflow_event_notifications" for relation "public.mission_workflow_events" does not exist, skipping
+NOTICE:  trigger "creator_social_accounts_clear_verification" for relation "public.creator_social_accounts" does not exist, skipping

@@ -1,0 +1,35 @@
+{
+  "startedAt": "2026-10-25T16:15:22.031564+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-legacy-sql-memory-20261026\\legacy-reward-core.node.mjs",
+    "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-legacy-sql-memory-20261026\\sql-profile.mjs"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFilesUnchanged": 788,
+  "verificationArtifactSources": [
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/legacy-reward-core.node.mjs",
+      "sha256": "464579087e0b75675a63b60083ad621918f41d61a59161855b00b0f8b13d4e26"
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df"
+    }
+  ],
+  "verificationArtifactFingerprint": "4e3a7504ab4021888f27f974a24448481ef4a20f7a4659554948bb4d5d03a7f0",
+  "nodeVersion": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T16:15:21.908363+00:00",
+    "freePhysicalGiB": 7.098644256591797,
+    "freeCommitGiB": 11.619865417480469,
+    "minimumGiB": 3
+  },
+  "scope": "Standalone in-process memory SQL, no full-suite/runtime claim",
+  "physicalTargetsOrClients": 0,
+  "realAuthSubjectsOrFixtures": 0,
+  "packageInstallOrNetworkProvider": false,
+  "nodePreloadsAndCredentialsStripped": true,
+  "pid": 43332
+}

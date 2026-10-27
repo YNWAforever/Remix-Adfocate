@@ -1,0 +1,61 @@
+{
+  "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "ownedContent": {
+    "resource": {
+      "id": "601fedce-4981-4e0b-aee6-4f219d82f7eb",
+      "slug": "d14-resource-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+    },
+    "ready": {
+      "id": "b50b6f0a-0887-42ab-9a99-1df2d5d067ab",
+      "slug": "d14-ready-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+    },
+    "empty": {
+      "id": "37090ff2-e695-469f-8ea0-88afaf1cf2af",
+      "slug": "d14-empty-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+    },
+    "gated": {
+      "id": "c2a72cbf-ea74-41d8-9a25-5f730368c4e2",
+      "slug": "d14-gated-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+    }
+  },
+  "neutrality": {
+    "before": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true
+  },
+  "cleanup": "retained exact owned IDs; no delete, reset, seed or production access",
+  "providers": "external HTTP blocked"
+}

@@ -1,0 +1,134 @@
+{
+  "atUtc": "2026-10-25T05:59:21.440343+00:00",
+  "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "ownerReference": "2026-10-25 direct user approval reply call_70fd0be5fefd4269b44c021c56d56c10; C1 recovery manifest 257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "engine": {
+    "id": "c91a86a3-aa74-4e72-854c-cc86d36124ca",
+    "name": "docker-desktop",
+    "version": "29.8.1",
+    "os": "linux",
+    "memoryBytes": 16608010240
+  },
+  "endpoint": "npipe:////./pipe/dockerDesktopLinuxEngine",
+  "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+  "proposedContainerNames": {
+    "db": "supabase_db_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "auth": "supabase_auth_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "rest": "supabase_rest_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "kong": "supabase_kong_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "storage": "supabase_storage_adfocate-d19-b2-20261025-recovery-4d6ca2c8"
+  },
+  "projectWasAbsent": true,
+  "volumeWasAbsent": true,
+  "networkWasAbsent": true,
+  "images": {
+    "db": {
+      "id": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "tags": [
+        "public.ecr.aws/supabase/postgres:17.6.1.143"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "cmd": [
+        "postgres",
+        "-D",
+        "/etc/postgresql"
+      ],
+      "volumes": null,
+      "user": null
+    },
+    "auth": {
+      "id": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "tags": [
+        "public.ecr.aws/supabase/gotrue:v2.193.0"
+      ],
+      "entrypoint": null,
+      "cmd": [
+        "auth"
+      ],
+      "volumes": null,
+      "user": "supabase"
+    },
+    "rest": {
+      "id": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "tags": [
+        "public.ecr.aws/supabase/postgrest:v14.15"
+      ],
+      "entrypoint": null,
+      "cmd": [
+        "/bin/postgrest"
+      ],
+      "volumes": null,
+      "user": "1000"
+    },
+    "kong": {
+      "id": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "tags": [
+        "public.ecr.aws/supabase/kong:2.8.1"
+      ],
+      "entrypoint": [
+        "/docker-entrypoint.sh"
+      ],
+      "cmd": [
+        "kong",
+        "docker-start"
+      ],
+      "volumes": null,
+      "user": "kong"
+    },
+    "storage": {
+      "id": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95",
+      "tags": [
+        "public.ecr.aws/supabase/storage-api:v1.66.4"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "cmd": [
+        "node",
+        "dist/start/server.js"
+      ],
+      "volumes": null,
+      "user": null
+    }
+  },
+  "ports": {
+    "web": {
+      "host": "127.0.0.1",
+      "port": 56900,
+      "exclusiveBindAvailableAtPreflight": true
+    },
+    "api": {
+      "host": "127.0.0.1",
+      "port": 56921,
+      "exclusiveBindAvailableAtPreflight": true
+    },
+    "database": {
+      "host": "127.0.0.1",
+      "port": 56922,
+      "exclusiveBindAvailableAtPreflight": true
+    }
+  },
+  "portProxyRulesForProposedPorts": 0,
+  "actualResourcesCreated": 0,
+  "applicationClientsCreated": 0,
+  "SQLExecuted": false,
+  "credentialsReadFromOldTargets": false,
+  "pristineRpcRerun": false,
+  "approvedIpam": {
+    "subnet": "10.251.220.0/28",
+    "gateway": "10.251.220.1",
+    "status": "PROPOSED_NOT_CHECKED; recheck Docker IPAM and host routes after approval; do not change existing routes/networks"
+  },
+  "ipamOverlapCount": 0,
+  "existingIpv4SubnetsObserved": 35,
+  "hostNonDefaultRoutesObserved": 22,
+  "resourceObservation": {
+    "freeGiB": 8.13187026977539,
+    "totalGiB": 31.696025848388672,
+    "node": "v24.18.0",
+    "diskFreeGiB": 20.96689224243164
+  }
+}

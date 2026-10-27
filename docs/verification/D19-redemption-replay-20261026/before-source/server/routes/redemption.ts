@@ -1,0 +1,54 @@
+import { Hono } from "hono";
+import type { Context } from "hono";
+import type { Env } from "../app.js";
+import { makeUserClient } from "../lib/supabase.js";
+import type { PostgrestError } from "@supabase/supabase-js";
+
+export const redemptionRoutes = new Hono<Env>();
+
+// RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
+const RPC_409 = new Set([
+  "insufficient_points", "out_of_stock", "closed", "not_authenticated",
+]);
+function rpcError(c: Context<Env>, error: PostgrestError) {
+  const msg = error.message ?? "";
+  if (msg === "not_found") return c.json({ error: msg, code: msg }, 404);
+  if (RPC_409.has(msg)) return c.json({ error: msg, code: msg }, 409);
+  return c.json({ error: msg || "rpc error", code: "db_error" }, 500);
+}
+
+redemptionRoutes.get("/gifts", async (c) => {
+  const category = c.req.query("category");
+  const supabase = makeUserClient(c.get("jwt"));
+  let q = supabase
+    .from("redemption_gifts")
+    .select("id, name, description, category, points_cost, stock_remaining, gift_type, image_url, status")
+    .eq("workspace_id", c.get("workspaceId"))
+    .order("points_cost", { ascending: true });
+  if (category && category !== "全部") q = q.eq("category", category);
+  const { data, error } = await q;
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ gifts: data });
+});
+
+/** Redeem a gift → atomic point deduction + code claim. Returns the redemption (incl. code). */
+redemptionRoutes.post("/redeem", async (c) => {
+  const { gift_id } = await c.req.json<{ gift_id?: string }>().catch(() => ({ gift_id: undefined }));
+  if (!gift_id) return c.json({ error: "gift_id required", code: "bad_request" }, 400);
+  const supabase = makeUserClient(c.get("jwt"));
+  const { data, error } = await supabase.rpc("redeem_gift", { p_gift: gift_id });
+  if (error) return rpcError(c, error);
+  return c.json(data);
+});
+
+/** The caller's redemption history (joined to the gift name). */
+redemptionRoutes.get("/history", async (c) => {
+  const supabase = makeUserClient(c.get("jwt"));
+  const { data, error } = await supabase
+    .from("redemptions")
+    .select("id, code, points_spent, status, created_at, redemption_gifts(name)")
+    .eq("creator_id", c.get("userId"))
+    .order("created_at", { ascending: false });
+  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  return c.json({ redemptions: data ?? [] });
+});

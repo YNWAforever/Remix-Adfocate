@@ -1,0 +1,17 @@
+{
+  "priorEvidenceRecords": 1321,
+  "priorEvidenceChanged": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/implementation_backlog.csv"
+  ],
+  "priorEvidenceByteUnchanged": 1317,
+  "originalP0ArtifactsBytePreserved": true,
+  "oldRuntimeManifestBytePreserved": true,
+  "originalAuditCases": 107,
+  "originalFindings": 28,
+  "originalBacklogRows": 20,
+  "originalFieldsPreserved": true,
+  "preservationBaseline": "D19-B2-neutrality-guard-before/docs/verification/evidence-integrity.json"
+}

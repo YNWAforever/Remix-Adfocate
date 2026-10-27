@@ -1,0 +1,326 @@
+{
+  "at": "2026-10-25T11:18:19.187353+00:00",
+  "atHongKong": "2026-10-25T19:18:19.187353+08:00",
+  "task": "D19 C1 approved696e same-existing-fixture continuation",
+  "newResult": "APPROVED696E_EXISTING_FIXTURE_COMPOSITE_BROWSER5_AND_NEUTRALITY_PASS_NODE22_24_LOCAL_PASS_R1_APPLICABILITY_OPEN",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "sourceRecords": 782,
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "candidateCodeChangedThisTurn": false,
+  "manifest": {
+    "path": "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+    "sha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d"
+  },
+  "actualAuthority": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-authorization.json",
+    "sha256": "1326b236ec3c622bd63f2eb3931f1799e6989141c6ea318c2a398cf80a74c655"
+  },
+  "scopeApproved": true,
+  "scopeVerified": true,
+  "additionalPhysicalResources": 0,
+  "resourceLifecycleActions": 0,
+  "authSubjects": 84,
+  "workspaces": 6,
+  "missions": 6,
+  "noNewRootIds": true,
+  "newDomainSetupFixtures": 0,
+  "newLegacyIssuance": 0,
+  "actorSessionsRenewed": 6,
+  "creatorUiLogins": 1,
+  "authActionCounts": {
+    "login": 7,
+    "token_refreshed": 1,
+    "token_revoked": 1
+  },
+  "authActionsWithinOriginalRowCaps": true,
+  "carriedApiEvidence": {
+    "roleCases": 8,
+    "coreCases": 9,
+    "apiCasesRerun": 0,
+    "dependencyRevalidation": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/browser-recovery-preparation.json",
+      "sha256": "9aeddd083e366993d2fd411ce1a1a492e938c11d3aeca903dca511bf58e1bdc5"
+    }
+  },
+  "browser": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "extraObligations": 2,
+    "compositeJourney": true,
+    "freshColdJourney": false,
+    "originalColdEvidence": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser/browser-legacy.json",
+      "sha256": "f8ea20ac4b24b8b1513a3bf741ecb4d21e43f872870d6ec6ae9c769ebf4b6afe"
+    },
+    "originalFailedJourneyPreserved": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser/browser-summary.json",
+      "sha256": "7a9bddea07fb5a7151dbe752dacb4ad5df60122a4ef2775ac1eab8484cdb481e"
+    },
+    "currentSummary": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/browser/browser-summary.json",
+      "sha256": "029bb8f8255a09ed276807216183b15c8b5a792e6cfe758fc3caa2c41cf065b3"
+    },
+    "mode": "Retained original empty/legacy join-submit-review/active join evidence; fresh current login and approved legacy readback, exact draft continuation through network/real409/revision/proof/operator completion and role/finance reloads."
+  },
+  "collectionSupplement": {
+    "successfulReadbacks": 1,
+    "initialObserverAssumptionFailure": 1,
+    "originalRoleCoreTestsRerun": 0,
+    "newLoginsOrFixtures": 0,
+    "proof": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/browser/creator-collection-after-handoff.json",
+      "sha256": "ce4882ba8d1191bd9c7a9aafa56ef3289bc8e557c551186b6e8f1fba70ae4c69"
+    }
+  },
+  "pending": {
+    "id": "00fdedff-d39c-4a51-b434-e2842aaac808",
+    "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+    "creatorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+    "workflowId": "acc556fa-af8e-45fc-b324-13b111dc2125",
+    "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c",
+    "status": "pending",
+    "onePendingRow": true
+  },
+  "financialNeutrality": {
+    "pendingOnlyWindow": {
+      "passed": true,
+      "financialRowsCompared": true,
+      "financialTableFamiliesCompared": 9,
+      "legacyAnchorsEqual": true
+    },
+    "wholeContinuationTotalsEqual": true,
+    "currentTotals": {
+      "xp": 300,
+      "points": 1300,
+      "budgets": 26750,
+      "workflows": [
+        {
+          "id": "2a142015-5fc0-4712-93b3-cea4eb615637",
+          "state": "reward_pending",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "114082af-c5d5-4603-83d9-af62ff786335"
+        },
+        {
+          "id": "412aec48-c3eb-44da-bb9f-3addde82c541",
+          "state": "drafting",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "2293cfaa-ab9b-42cd-9303-4b24c5127a03"
+        },
+        {
+          "id": "67e4aee7-a26c-442a-955a-3aa9fedb005c",
+          "state": "reward_pending",
+          "workspaceId": "2177f882-9f30-4ad6-b5e2-c546b6709d61",
+          "submissionId": "415ac2d6-03a4-4ed6-adaf-702020760841"
+        },
+        {
+          "id": "acc556fa-af8e-45fc-b324-13b111dc2125",
+          "state": "reward_pending",
+          "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+          "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c"
+        }
+      ],
+      "cashLedger": 2,
+      "pointLedger": 2,
+      "redemptions": 0,
+      "budgetLedger": 2,
+      "historyCount": 72,
+      "withdrawable": 250,
+      "faultTriggers": 0,
+      "faultFunctions": 0,
+      "inventoryRemaining": 9
+    },
+    "legacyRowHashesUnchanged": true,
+    "historicalInvalidLegacyRowHashUnchanged": true,
+    "meaning": "The pre-existing two synthetic legacy credits remain: budgets26750,points1300,withdrawable250,XP300,ledger counts2 each. This continuation added no ledger/balance/budget/XP/inventory change. Pending reward is a promise, not payment."
+  },
+  "schema": {
+    "catalogSectionsUnchanged": 8,
+    "migrationHistoryRows": 72,
+    "sourceMigrationChecksumsUnchanged": true,
+    "schemaWritesThisContinuation": 0,
+    "seedRowsAndServiceHistoryUnchanged": true,
+    "bootstrapRepeated": false
+  },
+  "allThreePhaseFamilies": 70,
+  "allJournalsResolved": true,
+  "finalReadback": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+    "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+  },
+  "gates": "D19-C1-gates.json",
+  "caseCoverage": "D19-C1-continuation-case-coverage.json",
+  "schemaDiff": "D19-C1-continuation-schema.json",
+  "rollback": "D19-C1-rollback.json",
+  "report": "D19-C1-continuation-delivery.md",
+  "node22": {
+    "status": "PASS_LOCAL_CURRENT_SOURCE",
+    "version": "v22.23.4",
+    "executable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "packageDownloadOrInstall": false,
+    "npmCli": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+    "npmExecpathExplicit": true,
+    "full": {
+      "passed": 2082,
+      "failed": 0,
+      "gatedSkip": 363,
+      "files": 289,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-full.json",
+        "sha256": "c6ff847474596c718dbe0eb6a9b8da9c30205295ec0a016b49fa7e7b7fa4b70f"
+      },
+      "commandReceipt": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-full-command.json",
+        "sha256": "1d9dc289010eceacfa13889855c2ed6c70243e17e4956d4f0e8e62f5600e1f6c"
+      }
+    },
+    "originalAudit16": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    "protected194": {
+      "passed": 194,
+      "failed": 0,
+      "skipped": 0,
+      "total": 194
+    },
+    "static": {
+      "type": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-type-command.json",
+          "sha256": "6c7c27804cc0af56c91c6dbe2ab09d640195f90b6d8f8740109488d0b3615402"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-type.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "lint": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/eslint/bin/eslint.js",
+          "."
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-lint-command.json",
+          "sha256": "8f0e766729da634816bb33e57140ef90623c7b64b1a49e1a44d544c4c044c2a6"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-lint.log",
+          "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+        }
+      },
+      "build": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "build"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-build-command.json",
+          "sha256": "be5806839f1d1f1664d9af6c2bb62bbee9c3ce6a41adec960ac77d6bcd010f4f"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-build.log",
+          "sha256": "6ca1f207fa49a6700da1f81b0942f1c3adf16146409acf7713bad5992d23ce99"
+        }
+      },
+      "esm": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "scripts/check-esm-extensions.mjs"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-esm-command.json",
+          "sha256": "37f7de59897c371a68bbd40cc33f227e8390f6e8764c4324473bc45990f0a3b8"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-esm.log",
+          "sha256": "b654fb9381ed836f5045e91ed2cde87f4f7cede86cd34768fd9f7f53922430de"
+        }
+      },
+      "manifest": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/vite-node/vite-node.mjs",
+          "--script",
+          "scripts/release/manifest-cli.ts",
+          "check"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-manifest-command.json",
+          "sha256": "370f263c3dbb0a06be32653b029ee4be5bb0417e1099df3a2473fe5964f76963"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-manifest.log",
+          "sha256": "a960201611f548456f8a7b53fff8a4e5fecd1b5edd538856140bebf756b9afb3"
+        }
+      }
+    },
+    "lintExistingWarnings": 4,
+    "initialStandaloneFull": {
+      "passed": 2080,
+      "failed": 2,
+      "gatedSkip": 363,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-full.json",
+        "sha256": "3de73135dccf4d61018bf0ae960159d0a7e41a7a782b24258c469c7c4bc2d2cc"
+      },
+      "meaning": "Two release npm entrypoint tests failed in the standalone launcher; its bundled npm fallback path is absent. Supplying existing npm_execpath preserves both fail-closed assertions. Source is unchanged."
+    },
+    "npmCliRecheck": {
+      "passed": 7,
+      "failed": 0,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-cli.json",
+        "sha256": "ce9764de83a04a1c4e71ad1126b4b834de9f0ec111428eb68ae2c527124d95be"
+      }
+    },
+    "initialResourceStopsRetained": true,
+    "runtimeC1Toolchain": "Real C1 browser/API used Node24.18.0; Node22 proof is local full/static/build, not hosted/runtime deployment."
+  },
+  "node24Full": {
+    "passed": 2082,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 289,
+    "report": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+      "sha256": "7500f199b5c6db74fe71e71b5fad83041f82ec922593c855e29e37425dcc0c6e"
+    }
+  },
+  "observerCorrections": {
+    "refreshBounds": "Supplemental observer incorrectly equated refresh-row growth with maxSessionAdds. Exact live audit proves7 logins and one token rotation; original32/32/40 refresh caps and session-add limits remained mandatory.",
+    "collectionDto": "Initial supplemental observer expected a raw mission_id omitted by the deliberate minimal DTO. Correct assertion binds returned missions.slug and active_workflow_id to the same persisted browser submission. No application source/assertion/cap changed.",
+    "originalFailureReceiptsRetained": true
+  },
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "D15ContentBlocked": true,
+  "advisorOwnerDeviceHostedFormalStaffBlocked": true,
+  "executionModelInterface": "UNKNOWN; kernel assets path initialization failure retained; no model switch/inferred ID",
+  "productionDataOrMembershipWrites": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "nextTask": "D19: finish evidence applicability for remaining original R1/GATE facets (application decisions, binary asset/cross-Creator boundaries, legacy approval retry and scoped retained evidence). Prepare bounded local supplements if necessary; additional Auth/fixture/financial writes need their own reviewed scope. Do not repeat696e login/browser/global RPCs."
+}

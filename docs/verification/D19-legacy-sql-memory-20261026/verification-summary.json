@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-25T16:29:28.259959+00:00",
+  "checkerSha256": "35f6c63f4328fd70b71d8855a3990d53119ad32b8168d29f1df9b073dd933a41",
+  "preseal": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-legacy-sql-memory-20261026/verify-memory.py",
+      "--preseal"
+    ],
+    "startedAt": "2026-10-25T16:29:27.568354+00:00",
+    "endedAt": "2026-10-25T16:29:28.259916+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_LOCAL_MEMORY_ASSERTIONS_SEAL_PENDING\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceRecordsUnchanged\": 788, \"sqlSourcesUnchanged\": 73, \"standaloneMemoryTests\": {\"passed\": 7, \"failed\": 0, \"skipped\": 0}, \"enginesCreatedAndClosed\": 7, \"externalNetworkAttempts\": 0, \"comparedDataFamilies\": 9, \"casesWithNewEvidence\": [\"UC-A11\"], \"originalAuditCasesPreserved\": 107, \"D15RowsUnchanged\": [\"UC-C18\", \"UC-A51\"], \"priorEvidenceRecordsPreserved\": 2114, \"currentEvidenceRecords\": null, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"nativeFullRerun\": false, \"nativeFullRetained\": {\"passed\": 2129, \"failed\": 0, \"skipped\": 363}, \"actualTargetCalls\": 0, \"originalIncident\": \"OPEN_UNRESTORED\", \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_LOCAL_MEMORY_ASSERTIONS_SEAL_PENDING",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceRecordsUnchanged": 788,
+      "sqlSourcesUnchanged": 73,
+      "standaloneMemoryTests": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "enginesCreatedAndClosed": 7,
+      "externalNetworkAttempts": 0,
+      "comparedDataFamilies": 9,
+      "casesWithNewEvidence": [
+        "UC-A11"
+      ],
+      "originalAuditCasesPreserved": 107,
+      "D15RowsUnchanged": [
+        "UC-C18",
+        "UC-A51"
+      ],
+      "priorEvidenceRecordsPreserved": 2114,
+      "currentEvidenceRecords": null,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "nativeFullRerun": false,
+      "nativeFullRetained": {
+        "passed": 2129,
+        "failed": 0,
+        "skipped": 363
+      },
+      "actualTargetCalls": 0,
+      "originalIncident": "OPEN_UNRESTORED",
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  },
+  "scope": "File-only evidence checker, not an application/native suite or physical-target runtime. Final sealed verification is recorded separately, then resealed and checked again.",
+  "finalVerification": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-legacy-sql-memory-20261026/verify-memory.py"
+    ],
+    "startedAt": "2026-10-25T16:29:52.969905+00:00",
+    "endedAt": "2026-10-25T16:29:54.258664+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_LEGACY_MEMORY_SQL_EVIDENCE_NOT_REAL_ACCEPTANCE\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceRecordsUnchanged\": 788, \"sqlSourcesUnchanged\": 73, \"standaloneMemoryTests\": {\"passed\": 7, \"failed\": 0, \"skipped\": 0}, \"enginesCreatedAndClosed\": 7, \"externalNetworkAttempts\": 0, \"comparedDataFamilies\": 9, \"casesWithNewEvidence\": [\"UC-A11\"], \"originalAuditCasesPreserved\": 107, \"D15RowsUnchanged\": [\"UC-C18\", \"UC-A51\"], \"priorEvidenceRecordsPreserved\": 2114, \"currentEvidenceRecords\": 2171, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"nativeFullRerun\": false, \"nativeFullRetained\": {\"passed\": 2129, \"failed\": 0, \"skipped\": 363}, \"actualTargetCalls\": 0, \"originalIncident\": \"OPEN_UNRESTORED\", \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_LEGACY_MEMORY_SQL_EVIDENCE_NOT_REAL_ACCEPTANCE",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceRecordsUnchanged": 788,
+      "sqlSourcesUnchanged": 73,
+      "standaloneMemoryTests": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "enginesCreatedAndClosed": 7,
+      "externalNetworkAttempts": 0,
+      "comparedDataFamilies": 9,
+      "casesWithNewEvidence": [
+        "UC-A11"
+      ],
+      "originalAuditCasesPreserved": 107,
+      "D15RowsUnchanged": [
+        "UC-C18",
+        "UC-A51"
+      ],
+      "priorEvidenceRecordsPreserved": 2114,
+      "currentEvidenceRecords": 2171,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "nativeFullRerun": false,
+      "nativeFullRetained": {
+        "passed": 2129,
+        "failed": 0,
+        "skipped": 363
+      },
+      "actualTargetCalls": 0,
+      "originalIncident": "OPEN_UNRESTORED",
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-25T21:16:31.619709+00:00",
+  "scope": "Standalone offline evidence and current delivery metadata only; all793 application/test/SQL source records and current C2 proposal/authorizations unchanged. No physical data action to reverse.",
+  "before": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "8c22c6e0b73ea55f85162dd8d93dc2a15c08bc04c25197ac2141a7c7d9ad8950"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "57f127bcc1d2360cf593646fb1f5e21b91cbc4023d6fa939f234c2b0472d88aa"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "f23481227988a6292ea26181889303d48f257e84487d0879731051b74d57f29c"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "88b8bd31fc521a9570740a28e60b03d236dd3a7487715c32fafada5c2acdceb9"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "f2a452c0c9f8b729e8cbbadf26a86913fc01a07ebfd829fb0a405ea5684a8b66"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/code-fingerprint.json",
+      "sha256": "e67a1fa981883c2cf8341e9f2823b3dea9360c28ffe6e4c0f16bce89a50f4684"
+    },
+    {
+      "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/D19-C2-current-source-runtime-manifest.json",
+      "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+    },
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/runtime-authorization.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/D19-redemption-replay-20261026/runtime-authorization.json",
+      "sha256": "6ba3a4ba2d58ac36049e8ad478ae7ee7acf314beabb18faf66f5123a763dcb7d"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "before": "docs/verification/D19-asset-offline-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+    }
+  ],
+  "instructions": [
+    "Verify after hashes and preserve later/user work before selective metadata restoration from exact snapshots. Never reset/clean the dirty worktree.",
+    "Retain all failed test sources/logs and exact resource stop readings; never relabel prechild rejection as a test result.",
+    "Source/C2 manifest and both old/current authorization files did not change; do not overwrite them during rollback.",
+    "No target cleanup, role repair, data/schema rollback, container lifecycle, incident closure or release/pilot activation."
+  ],
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false
+}

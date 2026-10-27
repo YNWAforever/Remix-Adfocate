@@ -1,0 +1,494 @@
+{
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "query": "select jsonb_build_object('finance',jsonb_build_object('point_transactions',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.point_transactions t),'earnings_transactions',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.earnings_transactions t),'point_balances',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.point_balances t),'earnings_balances',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.earnings_balances t),'workspace_budgets',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.workspace_budgets t),'workspace_budget_transactions',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.workspace_budget_transactions t),'redemptions',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.redemptions t),'redemption_gifts',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.redemption_gifts t),'mission_pending_rewards',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.mission_pending_rewards t),'mission_reward_contracts',(select jsonb_build_object('count',count(*),'rowHashes',coalesce(jsonb_agg(md5(to_jsonb(t)::text)order by md5(to_jsonb(t)::text)),'[]'))from public.mission_reward_contracts t),'creatorXp',(select coalesce(jsonb_agg(jsonb_build_object('id',id,'xp',xp)order by id),'[]')from public.creators)),'campaigns',(select coalesce(jsonb_agg(jsonb_build_object('id',id,'status',status,'ends_at',ends_at,'closed_at',closed_at)order by id),'[]')from public.campaigns),'rankSnapshots',(select coalesce(jsonb_agg(jsonb_build_object('id',id,'campaign_id',campaign_id,'creator_id',creator_id,'rank',rank,'approved',approved)order by id),'[]')from public.campaign_rank_snapshots));",
+  "financialTables": [
+    "point_transactions",
+    "earnings_transactions",
+    "point_balances",
+    "earnings_balances",
+    "workspace_budgets",
+    "workspace_budget_transactions",
+    "redemptions",
+    "redemption_gifts",
+    "mission_pending_rewards",
+    "mission_reward_contracts"
+  ],
+  "extraSnapshot": "Creator XP, full exact target before/after each RPC; finance hashes include balances, ledgers, budgets, pending rewards and immutable contracts",
+  "calls": [
+    {
+      "at": "2026-10-24T09:28:58.005Z",
+      "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+      "rpc": "close_due_campaigns",
+      "status": 200,
+      "result": 1,
+      "before": {
+        "finance": {
+          "creatorXp": [],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "active",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          }
+        ],
+        "rankSnapshots": []
+      },
+      "after": {
+        "finance": {
+          "creatorXp": [],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "closed",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": "2026-10-24T09:28:57.813838+00:00"
+          }
+        ],
+        "rankSnapshots": []
+      },
+      "financialNeutrality": true
+    },
+    {
+      "at": "2026-10-24T09:28:59.306Z",
+      "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+      "rpc": "close_due_campaigns",
+      "status": 200,
+      "result": 0,
+      "before": {
+        "finance": {
+          "creatorXp": [],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "closed",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": "2026-10-24T09:28:57.813838+00:00"
+          }
+        ],
+        "rankSnapshots": []
+      },
+      "after": {
+        "finance": {
+          "creatorXp": [],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "closed",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": "2026-10-24T09:28:57.813838+00:00"
+          }
+        ],
+        "rankSnapshots": []
+      },
+      "financialNeutrality": true
+    },
+    {
+      "at": "2026-10-24T09:29:00.929Z",
+      "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+      "rpc": "snapshot_campaign_leaderboards",
+      "status": 200,
+      "result": 1,
+      "before": {
+        "finance": {
+          "creatorXp": [
+            {
+              "id": "4b316851-45cb-4b8e-a62d-c510e66c9778",
+              "xp": 0
+            }
+          ],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 1,
+            "rowHashes": [
+              "13464cce5f6068c4112c4563f7ca2196"
+            ]
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 1,
+            "rowHashes": [
+              "8f0f69bb49c78070cfca82ddac2a0f8a"
+            ]
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "closed",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": "2026-10-24T09:28:57.813838+00:00"
+          },
+          {
+            "id": "ed328a47-1dcf-4bb2-b58b-fa95187b6fe4",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          }
+        ],
+        "rankSnapshots": []
+      },
+      "after": {
+        "finance": {
+          "creatorXp": [
+            {
+              "id": "4b316851-45cb-4b8e-a62d-c510e66c9778",
+              "xp": 0
+            }
+          ],
+          "redemptions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_balances": {
+            "count": 1,
+            "rowHashes": [
+              "13464cce5f6068c4112c4563f7ca2196"
+            ]
+          },
+          "redemption_gifts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_balances": {
+            "count": 1,
+            "rowHashes": [
+              "8f0f69bb49c78070cfca82ddac2a0f8a"
+            ]
+          },
+          "workspace_budgets": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "point_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "earnings_transactions": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_pending_rewards": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "mission_reward_contracts": {
+            "count": 0,
+            "rowHashes": []
+          },
+          "workspace_budget_transactions": {
+            "count": 0,
+            "rowHashes": []
+          }
+        },
+        "campaigns": [
+          {
+            "id": "0c3f6e04-1c69-4ddc-ab1f-716aa926a351",
+            "status": "draft",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "1a754e72-d9e2-448d-b227-e925238e6cc1",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          },
+          {
+            "id": "801818f7-a357-4d6d-8898-0ffceec8fc46",
+            "status": "closed",
+            "ends_at": "2000-01-01T00:00:00+00:00",
+            "closed_at": "2026-10-24T09:28:57.813838+00:00"
+          },
+          {
+            "id": "ed328a47-1dcf-4bb2-b58b-fa95187b6fe4",
+            "status": "active",
+            "ends_at": "2999-01-01T00:00:00+00:00",
+            "closed_at": null
+          }
+        ],
+        "rankSnapshots": [
+          {
+            "id": "312b0611-c2b9-4527-a117-f60076470b3d",
+            "rank": 1,
+            "approved": 1,
+            "creator_id": "4b316851-45cb-4b8e-a62d-c510e66c9778",
+            "campaign_id": "ed328a47-1dcf-4bb2-b58b-fa95187b6fe4"
+          }
+        ]
+      },
+      "financialNeutrality": true
+    }
+  ],
+  "globalCallCount": 3,
+  "financialNeutrality": true,
+  "claimScope": "These two global campaign jobs only. This does not re-run the prior full legacy/active/proof/pending-reward role journey or clear its incident.",
+  "providerEnabled": false,
+  "metadataCorrection": "Final readback removed an overbroad reservations label: this query did not observe a separate reservations table or field. Exact SQL, call responses and all before/after hashes are unchanged."
+}

@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-24T01:45:14.489892+00:00",
+  "reason": "Normalize legacy plain strings to their displayed zh/en baseline before three-way metadata rebase; preserves a concurrent update to the other language.",
+  "red": {
+    "passed": 6,
+    "failed": 1
+  },
+  "greenMetadataForm": {
+    "passed": 7,
+    "failed": 0
+  },
+  "realLegacy409": "R2-ui-F27-legacy-conflict.json",
+  "initialFingerprint": "00946052ddb2f89512ce8d5aaa4b0131f21c48f0935a27382747720235081197",
+  "finalFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+  "counts": {
+    "passed": 1950,
+    "skipped": 363,
+    "failed": 0,
+    "files": 274,
+    "newR2Assertions": 19
+  },
+  "browserPassed": 8,
+  "sourceAfterFinalGatesUnchanged": true,
+  "deployed": false
+}

@@ -1,0 +1,12 @@
+{
+  "phase": "browser",
+  "runtimeChildStarted": false,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "resource": {
+    "observedAt": "2026-10-25T10:26:16.134443+00:00",
+    "physicalFreeGiB": 7.2967529296875,
+    "commitHeadroomGiB": 11.242198944091797,
+    "requiredGiB": 3,
+    "gatePassed": true
+  }
+}

@@ -1,0 +1,24 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-workflow-roundtrip.test.ts (9 tests | 1 failed) 12952ms
+   ✓ D07 exact-ID disposable workflow roundtrip > pages 51 real database creators once with stable ties and a scoped total 502ms
+   ✓ D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 2762ms
+   ✓ D07 exact-ID disposable workflow roundtrip > rolls back a real audit fault and serializes concurrent CRM retries 1650ms
+   × D07 exact-ID disposable workflow roundtrip > D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance 221ms
+     → actual value must be number or bigint, received "object"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance
+TypeError: actual value must be number or bigint, received "object"
+ ❯ server/test/audit-workflow-roundtrip.test.ts:190:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  03:38:42
+   Duration  13.57s (transform 550ms, setup 231ms, collect 89ms, tests 12.95s, environment 0ms, prepare 98ms)
+

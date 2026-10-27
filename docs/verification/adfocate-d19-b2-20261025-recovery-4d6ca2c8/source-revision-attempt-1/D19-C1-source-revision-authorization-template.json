@@ -1,0 +1,8 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "manifestSha256": "1ceced8e9366df12f92a1ed288d0a2a85633c5b249d9b8fea1ef964882773ec2",
+  "sourceFingerprint": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+  "ownerReference": null,
+  "warning": "SOURCE-REVISION REVIEW TEMPLATE ONLY. Existing C1 allocation already approved. No new resource/lifecycle authority. Do not fabricate owner approval or relabel original authority."
+}

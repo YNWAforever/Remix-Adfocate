@@ -1,0 +1,9 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": true,
+  "manifestSha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "ownerReference": "2026-10-25 direct user approval reply call_adfe83a16c4341c9afca1939641ce508; B2 manifest 96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+  "approvalText": "批准這份 manifest 的 B2 runtime 範圍",
+  "scope": "Only the exact reviewed manifest; incident OPEN, release HOLD, provider disabled; no production/old-target mutations/commit/push/merge/deploy"
+}

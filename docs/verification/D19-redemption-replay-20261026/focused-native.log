@@ -1,0 +1,25 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/redemption-intent-memory.test.ts (10 tests) 11105ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > same intent after a lost response returns the same saved code and debits only once 1253ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a deliberate second new intent still receives a DISTINCT code and its own debit 931ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > retry recovers the original saved result even when that first action exhausted stock 1043ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > the same intent cannot be changed to another gift and debit a second time 1166ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes 1308ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > another recipient using the same client UUID never receives the first person's code 1166ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a late receipt-update failure rolls back the original financial operation before an exact retry 1101ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > legacy callers without a client ID retain two deliberately distinct redemption results 1129ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > the wrapper denies anon, the pool stays private and SQL history RLS hides the other recipient 1007ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > malformed or null request bodies fail before the SQL command 999ms
+ ✓ server/test/application-supplement.test.ts (26 tests) 25ms
+ ✓ src/components/RedeemGiftCard.intent.test.tsx (10 tests) 786ms
+ ✓ server/test/b2-runtime-manifest.test.ts (3 tests) 23ms
+ ✓ src/components/RedeemGiftCard.test.tsx (2 tests) 81ms
+
+ Test Files  5 passed (5)
+      Tests  51 passed (51)
+   Start at  04:04:52
+   Duration  20.17s (transform 341ms, setup 1.61s, collect 915ms, tests 12.02s, environment 4.12s, prepare 664ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/focused-native.json

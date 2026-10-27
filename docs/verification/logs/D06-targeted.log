@@ -1,0 +1,59 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/audit-tests/crm-atomicity.audit.test.ts (2 tests) 3ms
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx (5 tests | 2 failed) 174ms
+   × Operator continuation acceptance > UC-A28: later today in Hong Kong remains today across UTC midnight 31ms
+     → expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+   × Operator continuation acceptance > UC-A29: tomorrow in Hong Kong is not labelled today because UTC date matches 10ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <span
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold"
+>
+  app.admin.activeMission.queue.dueToday
+</span> instead
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A28: later today in Hong Kong remains today across UTC midnight
+Error: expect(received).toBeInTheDocument()
+
+received value must be an HTMLElement or an SVGElement.
+
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:47:72
+     45|  it('UC-A28: later today in Hong Kong remains today across UTC midnigh…
+     46|   queue('2026-10-23T03:00:00Z','2026-10-22T23:30:00Z');
+     47|   expect(screen.queryByText('app.admin.activeMission.queue.dueToday'))…
+       |                                                                        ^
+     48|  });
+     49|  it('UC-A29: tomorrow in Hong Kong is not labelled today because UTC d…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/audit-tests/operator-continuation.audit.test.tsx > Operator continuation acceptance > UC-A29: tomorrow in Hong Kong is not labelled today because UTC date matches
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <span
+  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-1 text-xs font-bold"
+>
+  app.admin.activeMission.queue.dueToday
+</span> instead
+ ❯ src/audit-tests/operator-continuation.audit.test.tsx:51:76
+     49|  it('UC-A29: tomorrow in Hong Kong is not labelled today because UTC d…
+     50|   queue('2026-10-22T17:00:00Z','2026-10-22T15:30:00Z');
+     51|   expect(screen.queryByText('app.admin.activeMission.queue.dueToday'))…
+       |                                                                            ^
+     52|  });
+     53| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 5 passed (7)
+   Start at  01:10:17
+   Duration  1.94s (transform 168ms, setup 459ms, collect 374ms, tests 177ms, environment 1.70s, prepare 239ms)
+
