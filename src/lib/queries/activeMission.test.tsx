@@ -400,7 +400,12 @@ describe("operator publication proof hooks", () => {
     ]).toSatisfy((hooks: unknown[]) => hooks.every((hook) => typeof hook === "function"));
   });
 
-  it("invalidates the exact slug-scoped proof detail and queue keys", async () => {
+  it.each([
+    ["claim", useStartProofReview],
+    ["correction", useRequestProofCorrection],
+    ["verify", useVerifyProof],
+    ["metadata refresh", useRefreshProofMetadata],
+  ] as const)("%s invalidates proof detail, queue and creator cases after success", async (_action, useProofMutation) => {
     vi.spyOn(supabase.auth, "getSession").mockResolvedValue({
       data: { session: null }, error: null,
     } as never);
@@ -409,7 +414,7 @@ describe("operator publication proof hooks", () => {
     }));
     const { queryClient, wrapper } = setup();
     const invalidate = vi.spyOn(queryClient, "invalidateQueries");
-    const { result } = renderHook(() => useRequestProofCorrection(), { wrapper });
+    const { result } = renderHook(() => useProofMutation(), { wrapper });
 
     await act(async () => {
       await result.current.mutateAsync({
@@ -436,6 +441,7 @@ describe("operator publication proof hooks", () => {
     expect(invalidate.mock.calls.map(([filter]) => filter?.queryKey)).toEqual([
       ["admin-active-mission", "demo", "workflow-1"],
       ["admin-active-missions", "demo"],
+      ["admin-creator-proofs"],
     ]);
   });
 });

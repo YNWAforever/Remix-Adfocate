@@ -591,6 +591,8 @@ function useInvalidateOperatorProof() {
     void queryClient.invalidateQueries({
       queryKey: ["admin-active-missions", input.workspace],
     });
+    // Mutations carry no creator ID; invalidate cached case proof projections too.
+    void queryClient.invalidateQueries({ queryKey: ["admin-creator-proofs"] });
   };
 }
 
