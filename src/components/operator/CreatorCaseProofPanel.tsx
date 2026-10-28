@@ -42,7 +42,7 @@ function ProofRow({ proof }: { proof: CreatorCaseProofItem }) {
       </div>
 
       <p className="text-xs text-[var(--color-soft-ink)]">
-        {proof.workItemTitle} · {proof.platform} · attempt {proof.attemptNumber}
+        {proof.workItemTitle} · {proof.platform} · attempt {proof.attemptNumber}{proof.isCurrentAttempt ? "" : " · historical attempt"}
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -81,7 +81,7 @@ function ProofRow({ proof }: { proof: CreatorCaseProofItem }) {
         <Link
           to="/admin/active-missions/$workflowId"
           params={{ workflowId: proof.workflowId }}
-          search={{ workItemId: proof.workItemId }}
+          search={{ workItemId: proof.workItemId, ws: proof.workspaceId }}
           className="inline-flex h-8 items-center rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-xs font-heading font-bold"
         >
           Review proof
@@ -98,7 +98,7 @@ export type CreatorCaseProofPanelProps = {
 
 export function CreatorCaseProofPanel({ proofs, isLoading }: CreatorCaseProofPanelProps) {
   const pendingCount =
-    proofs?.status === "available" ? proofs.value.filter((p) => PENDING_STATES.includes(p.reviewState)).length : 0;
+    proofs?.status === "available" ? proofs.value.filter((p) => p.isCurrentAttempt && PENDING_STATES.includes(p.reviewState)).length : 0;
 
   return (
     <section

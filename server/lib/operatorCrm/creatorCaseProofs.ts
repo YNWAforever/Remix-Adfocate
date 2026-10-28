@@ -18,6 +18,8 @@ export type CreatorCaseProofReviewState =
 
 export type CreatorCaseProofItem = {
   attemptId: string;
+  workspaceId: string;
+  isCurrentAttempt: boolean;
   workflowId: string;
   workItemId: string;
   workItemTitle: string;
@@ -47,10 +49,10 @@ export type CreatorCaseProofItem = {
  * `adminActiveMissions` does it.
  */
 const PROOF_PROJECTION =
-  "id, attempt_number, primary_url, submitted_at, submitted_late, metadata_status, " +
-  "mission_work_items!mission_publication_proof_attempts_work_item_workspace_fk!inner(id, title, platform, mission_workflow_id, " +
+  "id, workspace_id, attempt_number, primary_url, submitted_at, submitted_late, metadata_status, " +
+  "mission_work_items!mission_publication_proof_attempts_work_item_workspace_fk!inner(id, title, platform, mission_workflow_id, current_proof_attempt_id, " +
   "mission_workflows!mission_work_items_workflow_workspace_fk!inner(id, mission_submission_id)), " +
-  "mission_publication_proof_reviews(review_number, state, summary, reviewed_at)";
+  "mission_publication_proof_reviews(review_number, state, reviewer_id, claimed_at, summary, reviewed_at)";
 
 /**
  * `mission_submissions_mission_id_fkey` was dropped by the same migration, so the mission
@@ -107,8 +109,11 @@ function deriveReviewState(reviews: Record<string, unknown>[]): {
   );
 
   const raw = readString(latest, "state");
+  // Submission creates an unclaimed open round; claiming leaves its state open.
+  const claimed = !!readString(latest, "reviewer_id") && !!readString(latest, "claimed_at");
   const state: CreatorCaseProofReviewState =
-    raw === "verified" ? "verified" : raw === "correction_requested" ? "correction_requested" : "in_review";
+    raw === "verified" ? "verified" : raw === "correction_requested" ? "correction_requested"
+      : claimed ? "in_review" : "awaiting_review";
 
   return { state, summary: readString(latest, "summary"), reviewedAt: readString(latest, "reviewed_at") };
 }
@@ -135,19 +140,22 @@ export function projectCreatorCaseProofs(
     const mission = submissionId ? missionsBySubmissionId.get(submissionId) : undefined;
 
     const attemptId = readString(row, "id");
+    const workspaceId = readString(row, "workspace_id");
     const workItemId = readString(workItem, "id");
     const workflowId = readString(workflow, "id") ?? readString(workItem, "mission_workflow_id");
     const primaryUrl = readString(row, "primary_url");
     const submittedAt = readString(row, "submitted_at");
 
-    // A proof with no work item, workflow, or URL cannot be actioned by the operator,
+    // A proof with no workspace, work item, workflow, or URL cannot be actioned by the operator,
     // so drop it rather than render a dead row.
-    if (!attemptId || !workItemId || !workflowId || !primaryUrl || !submittedAt) continue;
+    if (!attemptId || !workspaceId || !workItemId || !workflowId || !primaryUrl || !submittedAt) continue;
 
     const review = deriveReviewState(asArray(row.mission_publication_proof_reviews));
 
     items.push({
       attemptId,
+      workspaceId,
+      isCurrentAttempt: readString(workItem, "current_proof_attempt_id") === attemptId,
       workflowId,
       workItemId,
       workItemTitle: readString(workItem, "title") ?? "Untitled deliverable",
@@ -166,7 +174,9 @@ export function projectCreatorCaseProofs(
   }
 
   return items.sort((a, b) => {
-    const rank = STATE_RANK[a.reviewState] - STATE_RANK[b.reviewState];
+    // Historical attempts keep their review outcome but never take queue priority.
+    const rank = (a.isCurrentAttempt ? STATE_RANK[a.reviewState] : 4)
+      - (b.isCurrentAttempt ? STATE_RANK[b.reviewState] : 4);
     if (rank !== 0) return rank;
     return a.submittedAt.localeCompare(b.submittedAt);
   });

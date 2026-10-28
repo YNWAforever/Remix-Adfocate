@@ -677,6 +677,8 @@ export type CreatorCaseProofReviewState =
 
 export type CreatorCaseProofItem = {
   attemptId: string;
+  workspaceId: string;
+  isCurrentAttempt: boolean;
   workflowId: string;
   workItemId: string;
   workItemTitle: string;

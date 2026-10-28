@@ -11,6 +11,8 @@ vi.mock("@tanstack/react-router", async () => ({
 function proof(overrides: Partial<CreatorCaseProofItem> = {}): CreatorCaseProofItem {
   return {
     attemptId: "attempt-1",
+    workspaceId: "workspace-1",
+    isCurrentAttempt: true,
     workflowId: "workflow-1",
     workItemId: "work-item-1",
     workItemTitle: "IG Reel",
@@ -43,6 +45,21 @@ describe("CreatorCaseProofPanel", () => {
     expect(screen.getByText("awaiting review")).toBeInTheDocument();
     expect(screen.getByText("verified")).toBeInTheDocument();
     expect(screen.getByText("1 pending")).toBeInTheDocument();
+  });
+
+  it.each([
+    { reviewState: "verified" as const, pendingCount: 0 },
+    { reviewState: "awaiting_review" as const, pendingCount: 1 },
+  ])("counts only the current $reviewState replacement and retains correction history", ({ reviewState, pendingCount }) => {
+    render(<CreatorCaseProofPanel proofs={{ status: "available", value: [
+      proof({ isCurrentAttempt: true, attemptId: "replacement", attemptNumber: 2, reviewState }),
+      proof({ isCurrentAttempt: false, reviewState: "correction_requested", reviewSummary: "Add disclosure" }),
+    ] }} />);
+    if (pendingCount) expect(screen.getByText(`${pendingCount} pending`)).toBeInTheDocument();
+    else expect(screen.queryByText(/pending/)).not.toBeInTheDocument();
+    expect(screen.getByText("correction requested")).toBeInTheDocument();
+    expect(screen.getByText("Add disclosure")).toBeInTheDocument();
+    expect(screen.getByText(/historical attempt/)).toBeInTheDocument();
   });
 
   it("links the published post and the review surface", () => {
