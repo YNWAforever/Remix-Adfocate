@@ -20,7 +20,7 @@ vi.mock("@/components/HookPanel", () => ({ HookPanel: () => <div>HOOK_PANEL</div
 
 const hoisted = vi.hoisted(() => ({
   mission: { data: { id: "mission-1", slug: "m1", title: "美容試用", description: "d", category: "美容", access_type: "open", points_reward: 300, mission_type: "ugc", quota: 5, filled: 1, status: "active", deliverables: [] as string[], requirements: [] as string[], platforms: [] as string[] }, isLoading: false, isError: false },
-  my: { data: [] as unknown[], isLoading: false },
+  my: { data: [] as unknown[] | undefined, isLoading: false, isError: false, isFetching: false, error: null as Error | null, refetch: vi.fn() },
   me: { data: { level: "L0", is_trusted: true, onboarding_completed: false } },
   matches: { data: [] as unknown[], isLoading: false, isError: false },
   join: vi.fn(),
@@ -46,17 +46,25 @@ vi.mock("@/lib/queries/kocmax", () => ({
 vi.mock("@/lib/activationAnalytics", () => ({ trackActivationEvent: hoisted.track }));
 
 import { Route } from "./_app.mission.$missionSlug";
-vi.spyOn(Route, "useParams").mockReturnValue({ slug: "demo", missionSlug: "m1" } as never);
+const params = vi.spyOn(Route, "useParams");
 
 function renderDetail() {
   const C = Route.options.component as React.ComponentType;
-  return render(<QueryClientProvider client={new QueryClient()}><C /></QueryClientProvider>);
+  const client = new QueryClient();
+  const view = () => <QueryClientProvider client={client}><C /></QueryClientProvider>;
+  const result = render(view());
+  return { ...result, refresh: () => result.rerender(view()) };
 }
 
 describe("Mission detail writes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    params.mockReturnValue({ slug: "demo", missionSlug: "m1" } as never);
     hoisted.my.data = [];
+    hoisted.my.isLoading = false;
+    hoisted.my.isError = false;
+    hoisted.my.isFetching = false;
+    hoisted.my.error = null;
     hoisted.mission.data.access_type = "open";
     hoisted.mission.data.deliverables = [];
     hoisted.mission.data.requirements = [];
@@ -109,6 +117,73 @@ describe("Mission detail writes", () => {
     fireEvent.change(screen.getByPlaceholderText(/貼上你的內容連結/), { target: { value: "https://ig.com/p/a" } });
     fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
     await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/a"] }));
+  });
+
+  it("retains edited correction URLs through a failed background read and recovery", async () => {
+    hoisted.my.data = [{ id: "s1", status: "joined", content_urls: ["invalid historical URL"], missions: { slug: "m1", title: "Mission one" } }];
+    const page = renderDetail();
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "https://ig.com/p/corrected" } });
+    hoisted.my.isError = true;
+    hoisted.my.error = new ApiError(503, "unavailable", "Unavailable");
+    page.refresh();
+    expect(screen.getByRole("textbox")).toHaveValue("https://ig.com/p/corrected");
+    expect(screen.getByRole("button", { name: "提交內容" })).toBeDisabled();
+    expect(screen.getByRole("alert")).toHaveTextContent(/previous saved data/);
+    fireEvent.click(screen.getByRole("button", { name: /Retry/ }));
+    expect(hoisted.my.refetch).toHaveBeenCalledOnce();
+    hoisted.my.isError = false;
+    hoisted.my.error = null;
+    page.refresh();
+    fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
+    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/corrected"] }));
+  });
+
+  it("binds prefilled correction evidence to its submission when the mission changes", async () => {
+    hoisted.my.data = [
+      { id: "s1", status: "joined", content_urls: ["https://ig.com/p/mission-one"], missions: { slug: "m1", title: "Mission one" } },
+      { id: "s2", status: "joined", content_urls: ["https://ig.com/p/mission-two"], missions: { slug: "m2", title: "Mission two" } },
+    ];
+    const page = renderDetail();
+    expect(screen.getByRole("textbox")).toHaveValue("https://ig.com/p/mission-one");
+    params.mockReturnValue({ missionSlug: "m2" } as never);
+    page.refresh();
+    expect(screen.getByRole("textbox")).toHaveValue("https://ig.com/p/mission-two");
+    fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
+    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/mission-two"] }));
+    expect(hoisted.useSubmitMission).toHaveBeenLastCalledWith("m2");
+  });
+
+  it.each([401, 403, 404])("hides saved evidence after a %s and a subsequent outage", (status) => {
+    hoisted.my.data = [{ id: "s1", status: "joined", content_urls: ["https://ig.com/p/private"], missions: { slug: "m1", title: "Mission one" } }];
+    const page = renderDetail();
+    expect(screen.getByRole("textbox")).toHaveValue("https://ig.com/p/private");
+    hoisted.my.isError = true;
+    hoisted.my.error = new ApiError(status, "denied", "Denied");
+    page.refresh();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    hoisted.my.error = new ApiError(503, "unavailable", "Unavailable");
+    page.refresh();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "加入任務" })).not.toBeInTheDocument();
+  });
+
+  it("blocks mission actions when the first submission read fails", () => {
+    hoisted.my.data = undefined;
+    hoisted.my.isError = true;
+    hoisted.my.error = new ApiError(503, "unavailable", "Unavailable");
+    renderDetail();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "加入任務" })).not.toBeInTheDocument();
+  });
+
+  it.each(["open", "application"])("blocks %s participation using an outdated empty submission list", (accessType) => {
+    hoisted.mission.data.access_type = accessType;
+    hoisted.my.isError = true;
+    hoisted.my.error = new ApiError(503, "unavailable", "Unavailable");
+    renderDetail();
+    expect(screen.getByRole("button", { name: accessType === "open" ? "加入任務" : "申請任務" })).toBeDisabled();
+    expect(hoisted.join).not.toHaveBeenCalled();
+    expect(hoisted.apply).not.toHaveBeenCalled();
   });
 
   it("shows the apply CTA for an application mission and applies", async () => {
