@@ -3,7 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { submitMissionForMode } from "../routes/missions";
 
 describe("legacy evidence format at the server boundary (offline)", () => {
-  it.each([[], ["wwww"], ["/relative"], ["javascript:alert(1)"], ["https://name:secret@example.test/a"], ["https://example.test/a", "bad"]])(
+  it.each([[], ["wwww"], ["/relative"], ["javascript:alert(1)"], ["https://name:secret@example.test/a"], ["https://example.test/a", "bad"],
+    ["https://example.test:/work"], ["https://example.test:000080/work"], ["https://@example.test/work"]])(
     "rejects invalid or mixed evidence before the RPC: %j", async (...values) => {
       const urls = values as unknown as string[];
       const rpc = vi.fn(async () => ({ data: {}, error: null }));

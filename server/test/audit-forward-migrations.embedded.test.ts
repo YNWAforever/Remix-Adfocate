@@ -2,6 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { PGlite } from "@electric-sql/pglite";
+import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence";
 // @ts-expect-error Executable SQL statement parser has no declaration file.
 import { topLevelStatements } from "../../scripts/audit/b2-bootstrap-profile.mjs";
 
@@ -157,6 +158,7 @@ describe("forward SQL contracts on an owned memory engine", () => {
   });
   it.each(inverseAuthorityRows)("projects a SQL-only rejection for an authorized correction: $url", async row => {
     expect(() => new URL(row.url)).not.toThrow();
+    expect(validateSubmissionEvidence([row.url]).ok).toBe(false);
     await db.exec("set local role service_role");
     expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [A, row.submission])).toEqual({ content_urls: [row.url], evidence_revision: 0, sql_valid: false });
     expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [B, row.submission])).toBeNull();
@@ -180,6 +182,7 @@ describe("forward SQL contracts on an owned memory engine", () => {
     "https://0x/work", "https://0xg/work", "https://１２７．０．０．１/work",
   ])("retains accepted ordinary HTTP evidence: %s", async url => {
     expect(() => new URL(url)).not.toThrow();
+    expect(validateSubmissionEvidence([url]).ok).toBe(true);
     expect(await value("select private.valid_legacy_evidence($1) as value", [[url]])).toBe(true);
   });
   it("rolls back review, note and receipt when the audit insert fails", async () => {
