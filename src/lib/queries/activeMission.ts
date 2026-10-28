@@ -584,13 +584,16 @@ type OperatorProofMutationBase = {
 
 function useInvalidateOperatorProof() {
   const queryClient = useQueryClient();
-  return (input: OperatorProofMutationBase) => {
+  return async (input: OperatorProofMutationBase) => {
     void queryClient.invalidateQueries({
       queryKey: ["admin-active-mission", input.workspace, input.workflowId],
     });
     void queryClient.invalidateQueries({
       queryKey: ["admin-active-missions", input.workspace],
     });
+    // Stop pre-mutation reads, including inactive cases, before invalidating: a
+    // late response would otherwise mark the old projection fresh again.
+    await queryClient.cancelQueries({ queryKey: ["admin-creator-proofs"] });
     // Mutations carry no creator ID; invalidate cached case proof projections too.
     void queryClient.invalidateQueries({ queryKey: ["admin-creator-proofs"] });
   };

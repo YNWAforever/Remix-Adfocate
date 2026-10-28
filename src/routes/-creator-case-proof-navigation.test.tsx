@@ -88,7 +88,7 @@ let history: ReturnType<typeof createBrowserHistory>;
 let queryClient: QueryClient;
 const requests = vi.fn();
 
-function mount(initialProof = proof) {
+function mount(initialProof = proof, updatedAt = Date.now()) {
   const root = createRootRoute();
   const operator = createRoute({ getParentRoute: () => root, path: "operator", component: OperatorLayout });
   const creator = createRoute({
@@ -104,7 +104,7 @@ function mount(initialProof = proof) {
   const router = createRouter({ routeTree: root.addChildren([operator.addChildren([creator]), admin.addChildren([review])]), history });
   queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 30_000 } } });
   queryClient.setQueryData(["admin-creator-detail", "creator-1"], creatorDetail);
-  queryClient.setQueryData(caseProofKey, { proofs: { status: "available", value: [initialProof] } });
+  queryClient.setQueryData(caseProofKey, { proofs: { status: "available", value: [initialProof] } }, { updatedAt });
   render(
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
@@ -256,6 +256,48 @@ describe("creator case proof navigation", () => {
     expect(requests.mock.calls.filter(([url]) => url === caseProofUrl)).toHaveLength(1);
     expect(Date.now() - seededAt).toBeLessThan(30_000);
     expect(queryClient.getQueryData(caseProofKey)).toEqual({ proofs: { status: "available", value: [nextProof] } });
+  });
+
+  it("discards a pre-review case refetch that finishes after verification", async () => {
+    window.history.replaceState(null, "", "/operator/creators/creator-1");
+    const initialProof = { ...proof, reviewState: "in_review" as const };
+    const nextProof = { ...proof, reviewState: "verified" as const, reviewSummary: "Verification saved" };
+    const oldResponse = deferred<Response>();
+    const detail = structuredClone(workflow);
+    detail.workItems[0].state = "proof_under_review";
+    detail.proofReviews = [{
+      id: "review-1", attemptId: proof.attemptId, reviewNumber: 1, state: "open", reviewerId: "reviewer-1",
+      checklist: {}, summary: null, decision: null, reviewedAt: null, decisionAt: null, creatorResponseDeadline: null, items: [],
+    }];
+    let caseReads = 0;
+    requests.mockImplementation(async (url: string) => {
+      if (url === "/api/admin/workspaces") return Response.json({ workspaces });
+      if (url === `/api/admin/active-missions/${proof.workflowId}`) return Response.json(detail);
+      if (url.endsWith("/proof-review/verify")) return Response.json({ reviewNumber: 1 });
+      if (url === caseProofUrl) {
+        caseReads += 1;
+        return caseReads === 1 ? oldResponse.promise
+          : Response.json({ proofs: { status: "available", value: [nextProof] } });
+      }
+      throw new Error(`Unexpected request: ${url}`);
+    });
+    // A stale cached case starts a background read, while its proof link remains usable.
+    mount(initialProof, Date.now() - 30_001);
+    await waitFor(() => expect(caseReads).toBe(1));
+    fireEvent.click(await screen.findByRole("link", { name: "Review proof" }));
+    await screen.findByRole("heading", { name: "Publication proof attempt 1" });
+    confirmVerification();
+    await waitFor(() => expect(queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "success")).toBe(true));
+
+    // This snapshot predates the successful review and must not clear its invalidation.
+    await act(async () => { oldResponse.resolve(Response.json({ proofs: { status: "available", value: [initialProof] } })); });
+    await waitFor(() => expect(queryClient.getQueryState(caseProofKey)?.fetchStatus).toBe("idle"));
+    expect(queryClient.getQueryState(caseProofKey)?.isInvalidated).toBe(true);
+    await act(async () => { history.back(); });
+    const panel = await screen.findByRole("region", { name: "Publication proofs" });
+    expect(await within(panel).findByText("Verification saved")).toBeVisible();
+    expect(within(panel).queryByText(/pending/)).not.toBeInTheDocument();
+    expect(caseReads).toBe(2);
   });
 
   it("keeps the actual case state and pending count when verification fails", async () => {
