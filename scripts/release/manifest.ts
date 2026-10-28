@@ -1078,6 +1078,18 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029000000", name: "assistant_reservation_claim", phase: "assistant_requests",
+    dependsOn: ["20261022171843"],
+    capabilities: [
+      "function:public.claim_assistant_request",
+      "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:authenticated.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:anon.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:public.public.claim_assistant_request(uuid,uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

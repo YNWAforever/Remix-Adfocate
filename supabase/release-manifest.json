@@ -1343,6 +1343,25 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029000000",
+      "name": "assistant_reservation_claim",
+      "path": "supabase/migrations/20261029000000_assistant_reservation_claim.sql",
+      "sha256": "8fae8aa9145bd56208f637eb55fd1c148b3e1c4ef8daaa76af8ba8e6d769afd6",
+      "phase": "assistant_requests",
+      "dependsOn": [
+        "20261022171843"
+      ],
+      "capabilities": [
+        "function:public.claim_assistant_request",
+        "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+        "grant-removed:authenticated.public.claim_assistant_request(uuid,uuid,uuid)",
+        "grant-removed:anon.public.claim_assistant_request(uuid,uuid,uuid)",
+        "grant-removed:public.public.claim_assistant_request(uuid,uuid,uuid)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

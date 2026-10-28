@@ -98,6 +98,7 @@ beforeAll(async () => {
   await db.exec(await readFile("supabase/migrations/20261028140231_legacy_submission_xp_once.sql", "utf8"));
   await db.exec(await readFile("supabase/migrations/20261028140709_legacy_evidence_url_authority.sql", "utf8"));
   await db.exec(await readFile("supabase/migrations/20261028155000_legacy_evidence_review_validity.sql", "utf8"));
+  await db.exec(await readFile("supabase/migrations/20261029000000_assistant_reservation_claim.sql", "utf8"));
 }, 60000);
 beforeEach(async () => { await db.exec("begin"); });
 afterEach(async () => { await db?.exec("rollback"); });
@@ -237,6 +238,28 @@ describe("forward SQL contracts on an owned memory engine", () => {
     const first = await value(save, [A,creator,request]); expect(await value(save, [A,creator,request])).toEqual(first);
     expect(await count("assistant_messages")).toBe(2); expect(await count("assistant_conversations")).toBe(1);
     expect(await value<{ action: string }>(reserveSql,reserveArgs)).toMatchObject({action:"replay"});
+  });
+  it("can retry an expired reservation when generation never started", async () => {
+    await value(reserveSql, reserveArgs);
+    // A history-read outage can return before the route claims the reservation.
+    await db.query("update public.assistant_requests set lease_until=clock_timestamp()-interval '1 second' where request_id=$1", [request]);
+    expect(await value(reserveSql, reserveArgs)).toMatchObject({ action: "reserved" });
+    expect(await value("select public.claim_assistant_request($1,$2,$3) as value", [A, creator, request])).toBe(true);
+    expect(await value("select public.claim_assistant_request($1,$2,$3) as value", [A, creator, request])).toBe(false);
+  });
+  it("never reclaims an expired generation or a reservation superseded by another request", async () => {
+    const claim = "select public.claim_assistant_request($1,$2,$3) as value";
+    await value(reserveSql, reserveArgs);
+    expect(await value(claim, [A, creator, request])).toBe(true);
+    await db.query("update public.assistant_requests set lease_until=clock_timestamp()-interval '1 second' where request_id=$1", [request]);
+    expect(await value(reserveSql, reserveArgs)).toMatchObject({ action: "wait" });
+    expect(await value(claim, [A, creator, request])).toBe(false);
+
+    await value(reserveSql, [A, creator, secondRequest, "Replacement question"]);
+    await db.query("update public.assistant_requests set lease_until=clock_timestamp()-interval '1 second' where request_id=$1", [secondRequest]);
+    await value(reserveSql, [A, creator, "00000000-0000-4000-8000-000000000043", "Another question"]);
+    expect(await value(claim, [A, creator, secondRequest])).toBe(false);
+    expect(await value("select state as value from public.assistant_requests where request_id=$1", [secondRequest])).toBe("unknown");
   });
   it("rolls back both messages and a new conversation on a persistence fault", async () => {
     await db.query("select set_config('request.jwt.claim.sub',$1,true)", [creator]);

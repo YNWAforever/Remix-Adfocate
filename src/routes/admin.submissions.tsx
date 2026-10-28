@@ -59,9 +59,17 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
   const correctionKey = useRef<string | null>(null);
   const correctionRevision = useRef(submission.evidence_revision ?? 0);
   const correction = useMutation({ mutationFn: () => {
-    correctionKey.current ??= crypto.randomUUID();
+    if (!correctionKey.current) {
+      correctionKey.current = crypto.randomUUID();
+      correctionRevision.current = submission.evidence_revision ?? 0;
+    }
     return requestLegacyEvidenceCorrection(submission.id, { note: notes.trim(), requestId: correctionKey.current, expectedRevision: correctionRevision.current });
-  }, onSuccess: () => { correctionKey.current = null; onDone(); } });
+  }, onSuccess: () => { correctionKey.current = null; onDone(); },
+  onError: (error) => {
+    // SQL confirms that a stale command did not run. A retry after refreshing
+    // starts a new command; unknown outcomes retain the original receipt key.
+    if ("code" in error && error.code === "EVIDENCE_STALE") correctionKey.current = null;
+  } });
   const approve = useMutation({
     mutationFn: () => approveSubmission(submission.id, { notes: notes || undefined, rating: rating ? Number(rating) : undefined }),
     onSuccess: onDone,
@@ -77,7 +85,8 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
         <p className="font-heading font-bold">{submission.creators.display_name}</p>
         <p className="text-sm text-[var(--color-soft-ink)]">{submission.missions.title}</p>
       </div>
-      <RequestFeedback error={approve.error ?? reject.error ?? correction.error} />
+      <RequestFeedback error={approve.error ?? reject.error ?? correction.error}
+        retry={correction.error && "code" in correction.error && correction.error.code === "EVIDENCE_STALE" ? onDone : undefined} />
       {!validEvidence && <p role="alert">作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.</p>}
       {!validEvidence && <button type="button" disabled={busy || !notes.trim()} onClick={() => correction.mutate()} className="font-bold underline">要求修正網址 / Request correction</button>}
       <ul className="space-y-1 text-sm">
