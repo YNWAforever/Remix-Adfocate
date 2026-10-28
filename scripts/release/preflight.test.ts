@@ -38,8 +38,16 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    // Retain all598 prior contracts, plus14 explicit repair/helper contracts.
-    expect(capabilities).toHaveLength(612);
+    // Retain all612 prior contracts, plus5 saved-evidence projection contracts.
+    expect(capabilities).toHaveLength(617);
+    const reviewValidityCapabilities = [
+      "function:public.legacy_evidence_sql_valid",
+      "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:authenticated.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:anon.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:public.public.legacy_evidence_sql_valid(public.mission_submissions)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(reviewValidityCapabilities));
     const applicationCapabilities = ["function:public.decide_mission_application",
       "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
       "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
@@ -72,8 +80,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => !repairCapabilities.includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 
@@ -225,6 +233,7 @@ describe("release preflight", () => {
           "grant:authenticated.public.example_function(uuid,timestamptz)",
           "grant:authenticated.public.named_function(uuid,timestamptz)",
           "grant:service_role.public.submit_mission_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb,uuid[])",
+          "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
           "grant:authenticated.public.example(all)",
           "grant:authenticated.public.example(select)",
         ],
@@ -236,6 +245,7 @@ describe("release preflight", () => {
           "GRANT ALL PRIVILEGES ON FUNCTION public.example_function(pg_catalog.uuid, timestamp with time zone) TO authenticated;",
           "GRANT ALL ON FUNCTION \"public\".\"named_function\"(\"p_id\" \"uuid\", \"p_at\" \"timestamp with time zone\") TO \"authenticated\";",
           "GRANT ALL ON FUNCTION \"public\".\"submit_mission_publication_proof\"(\"p_mission\" \"uuid\", \"p_workspace\" \"uuid\", \"p_creator\" \"uuid\", \"p_submission\" \"uuid\", \"p_url\" \"text\", \"p_revision\" \"integer\", \"p_actor\" \"uuid\", \"p_evidence\" \"jsonb\", \"p_asset_ids\" \"uuid\"[]) TO \"service_role\";",
+          "GRANT EXECUTE ON FUNCTION public.legacy_evidence_sql_valid(\"public\".\"mission_submissions\") TO service_role;",
           "GRANT ALL ON TABLE public.example TO authenticated;",
           "GRANT SELECT ON TABLE public.example TO authenticated;",
         ].join("\n")),
@@ -245,6 +255,21 @@ describe("release preflight", () => {
     );
 
     expect(report.capabilities.every((capability) => capability.status === "present")).toBe(true);
+  });
+
+  it("keeps composite function argument schemas distinct", async () => {
+    const report = await runPreflight({
+      databaseUrl: "postgresql://secret", projectRef: "project-ref", manifestDigest: "a".repeat(64),
+      expectedCapabilities: [
+        "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+        "grant:service_role.public.legacy_evidence_sql_valid(private.mission_submissions)",
+      ], now: new Date(),
+    }, {
+      run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+      readFile: vi.fn().mockResolvedValue("GRANT EXECUTE ON FUNCTION public.legacy_evidence_sql_valid(public.mission_submissions) TO service_role;"),
+      rm: vi.fn().mockResolvedValue(undefined), tempFile: () => "C:/temp/schema.sql",
+    });
+    expect(report.capabilities.map(capability => capability.status)).toEqual(["present", "absent"]);
   });
 
   it("uses only migration list, dry-run, and schema dump without reporting the URL", async () => {

@@ -1066,6 +1066,18 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261028155000", name: "legacy_evidence_review_validity", phase: "legacy_evidence",
+    dependsOn: ["20261028140709"],
+    capabilities: [
+      "function:public.legacy_evidence_sql_valid",
+      "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:authenticated.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:anon.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:public.public.legacy_evidence_sql_valid(public.mission_submissions)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
@@ -1130,7 +1142,7 @@ const MIGRATION_KEYS = [
   "transactionExpectation",
   "replayExpectation",
 ] as const;
-const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant(?:-removed)?:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_,\x5b\x5d]+\))$/;
+const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant(?:-removed)?:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_.,\x5b\x5d]+\))$/;
 
 /** The final schema must satisfy the last explicit requirement for each object.
  * Historical entries stay intact; later removal declarations replace their earlier positives. */

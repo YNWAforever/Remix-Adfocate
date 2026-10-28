@@ -796,6 +796,7 @@ export type Application = {
 
 export type Submission = Application & {
   evidence_revision?: number;
+  legacy_evidence_sql_valid?: boolean;
   status: string;
   content_urls: string[];
   submitted_at: string | null;

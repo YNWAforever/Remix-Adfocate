@@ -27,6 +27,9 @@ const inverseAuthorityRows = [
   { mission: "00000000-0000-4000-8000-000000000026", submission: "00000000-0000-4000-8000-000000000036", url: "https://example.test:/work" },
   { mission: "00000000-0000-4000-8000-000000000027", submission: "00000000-0000-4000-8000-000000000037", url: "https://example.test:000080/work" },
   { mission: "00000000-0000-4000-8000-000000000028", submission: "00000000-0000-4000-8000-000000000038", url: "https://@example.test/work" },
+  { mission: "00000000-0000-4000-8000-000000000029", submission: "00000000-0000-4000-8000-000000000039", url: "\thttps://example.test/work\r\n" },
+  { mission: "00000000-0000-4000-8000-000000000030", submission: "00000000-0000-4000-8000-000000000040", url: "https://example.test/wo\u0085rk" },
+  { mission: "00000000-0000-4000-8000-000000000051", submission: "00000000-0000-4000-8000-000000000061", url: "https://1\u00ad27.1/work" },
 ];
 const request = "00000000-0000-4000-8000-000000000041";
 const secondRequest = "00000000-0000-4000-8000-000000000042";
@@ -94,6 +97,7 @@ beforeAll(async () => {
   await db.exec(submit);
   await db.exec(await readFile("supabase/migrations/20261028140231_legacy_submission_xp_once.sql", "utf8"));
   await db.exec(await readFile("supabase/migrations/20261028140709_legacy_evidence_url_authority.sql", "utf8"));
+  await db.exec(await readFile("supabase/migrations/20261028155000_legacy_evidence_review_validity.sql", "utf8"));
 }, 60000);
 beforeEach(async () => { await db.exec("begin"); });
 afterEach(async () => { await db?.exec("rollback"); });
@@ -158,8 +162,8 @@ describe("forward SQL contracts on an owned memory engine", () => {
   });
   it.each(inverseAuthorityRows)("projects a SQL-only rejection for an authorized correction: $url", async row => {
     expect(() => new URL(row.url)).not.toThrow();
-    expect(validateSubmissionEvidence([row.url]).ok).toBe(false);
     await db.exec("set local role service_role");
+    expect(await value("select public.legacy_evidence_sql_valid(s) as value from public.mission_submissions s where id=$1", [row.submission])).toBe(false);
     expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [A, row.submission])).toEqual({ content_urls: [row.url], evidence_revision: 0, sql_valid: false });
     expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [B, row.submission])).toBeNull();
     const args = [A, staff, row.submission, request];
@@ -172,6 +176,7 @@ describe("forward SQL contracts on an owned memory engine", () => {
   it.each(["anon", "authenticated"])("does not expose the scoped correction projection to %s", async role => {
     await db.exec(`set local role ${role}`);
     await rejected("select public.get_legacy_correction_evidence($1,$2)", [A, submission], "permission denied");
+    await rejected("select public.legacy_evidence_sql_valid(null::public.mission_submissions)", [], "permission denied");
   });
   it.each([
     "https://example.test/work", "HTTP://Example.TEST:80/work?next=one#part", "https://example.test:0/work", "https://example.test:65535/work",
@@ -184,6 +189,7 @@ describe("forward SQL contracts on an owned memory engine", () => {
     expect(() => new URL(url)).not.toThrow();
     expect(validateSubmissionEvidence([url]).ok).toBe(true);
     expect(await value("select private.valid_legacy_evidence($1) as value", [[url]])).toBe(true);
+    expect(await value("select public.legacy_evidence_sql_valid(jsonb_populate_record(null::public.mission_submissions,jsonb_build_object('content_urls',$1::text[]))) as value", [[url]])).toBe(true);
   });
   it("rolls back review, note and receipt when the audit insert fails", async () => {
     await db.exec("create function private.inject_audit_failure() returns trigger language plpgsql as $$begin raise exception 'injected audit outage'; end;$$; create trigger synthetic_audit_fault before insert on public.operator_audit_events for each row execute function private.inject_audit_failure();");

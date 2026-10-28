@@ -69,6 +69,7 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
   const reject = useMutation({ mutationFn: () => rejectSubmission(submission.id, notes || undefined), onSuccess: onDone });
   const busy = approve.isPending || reject.isPending || correction.isPending;
   const evidence = validateSubmissionEvidence(submission.content_urls);
+  const validEvidence = evidence.ok && submission.legacy_evidence_sql_valid !== false;
 
   return (
     <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
@@ -77,8 +78,8 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
         <p className="text-sm text-[var(--color-soft-ink)]">{submission.missions.title}</p>
       </div>
       <RequestFeedback error={approve.error ?? reject.error ?? correction.error} />
-      {!evidence.ok && <p role="alert">作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.</p>}
-      {!evidence.ok && <button type="button" disabled={busy || !notes.trim()} onClick={() => correction.mutate()} className="font-bold underline">要求修正網址 / Request correction</button>}
+      {!validEvidence && <p role="alert">作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.</p>}
+      {!validEvidence && <button type="button" disabled={busy || !notes.trim()} onClick={() => correction.mutate()} className="font-bold underline">要求修正網址 / Request correction</button>}
       <ul className="space-y-1 text-sm">
         {submission.content_urls.map((url) => (
           <li key={url}>
@@ -96,7 +97,7 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
           <option value="5">5★</option>
         </select>
         <input aria-label={t("app.admin.submissionsNotesLabel")} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("app.admin.submissionsNotesPlaceholder")} className="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm" />
-        <button aria-label={t("app.admin.submissionsApprove")} disabled={busy || !evidence.ok} onClick={() => { if (evidence.ok) approve.mutate(); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.submissionsApprove")}</button>
+        <button aria-label={t("app.admin.submissionsApprove")} disabled={busy || !validEvidence} onClick={() => { if (validEvidence) approve.mutate(); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.submissionsApprove")}</button>
         <button aria-label={t("app.admin.submissionsDecline")} disabled={busy} onClick={() => reject.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.submissionsDecline")}</button>
       </div>
     </div>

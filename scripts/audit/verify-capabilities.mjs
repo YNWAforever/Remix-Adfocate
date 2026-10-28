@@ -17,7 +17,7 @@ function predicate(capability){
   if(kind==="function")return `exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname=${quote(schema)} and p.proname=${quote(table)})`;
   if(kind==="grant-removed") return `not coalesce((${predicate(capability.replace("grant-removed:","grant:"))}),false)`;
   if(kind==="grant"){
-    const [role,objectSchema,object]=parts,match=/^([a-z0-9_]+)\((.*)\)$/.exec(object);
+    const [role,objectSchema,...objectParts]=parts,match=/^([a-z0-9_]+)\((.*)\)$/.exec(objectParts.join("."));
     if(!match)throw new Error("unknown grant capability");
     const target=`${objectSchema}.${match[1]}`,privilege=match[2];
     if(["all","select","insert","update","delete","truncate"].includes(privilege)){

@@ -1324,6 +1324,25 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261028155000",
+      "name": "legacy_evidence_review_validity",
+      "path": "supabase/migrations/20261028155000_legacy_evidence_review_validity.sql",
+      "sha256": "9e71f8477ac45a7c392a28948fc089d96050deaf2f79cd63c5b196b5696356d5",
+      "phase": "legacy_evidence",
+      "dependsOn": [
+        "20261028140709"
+      ],
+      "capabilities": [
+        "function:public.legacy_evidence_sql_valid",
+        "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+        "grant-removed:authenticated.public.legacy_evidence_sql_valid(public.mission_submissions)",
+        "grant-removed:anon.public.legacy_evidence_sql_valid(public.mission_submissions)",
+        "grant-removed:public.public.legacy_evidence_sql_valid(public.mission_submissions)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

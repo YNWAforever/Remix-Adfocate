@@ -68,6 +68,7 @@ const REVIEWED_FILES = [
   "20261025194402_redemption_intents.sql",
   "20261028140231_legacy_submission_xp_once.sql",
   "20261028140709_legacy_evidence_url_authority.sql",
+  "20261028155000_legacy_evidence_review_validity.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of

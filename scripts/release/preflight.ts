@@ -81,6 +81,10 @@ function grantValidator(role: string, schemaName: string, object: string, privil
       const escapedBaseType = escapeRegExp(baseType);
       const optionalArgumentName =
         '(?:(?:[a-z][a-z0-9_]*|"[a-z][a-z0-9_]*")\\s+)?';
+      if (baseType.includes(".")) {
+        const [typeSchema, typeName] = baseType.split(".");
+        return `${optionalArgumentName}${qualified(typeSchema!, typeName!)}${arraySuffix}`;
+      }
       const qualifiedType = '(?:(?:pg_catalog|"pg_catalog")\\s*\\.\\s*)?';
       if (baseType === "timestamptz") {
         return `${optionalArgumentName}${qualifiedType}(?:timestamptz|"timestamptz"|timestamp\\s+with\\s+time\\s+zone|"timestamp with time zone")${arraySuffix}`;
@@ -150,7 +154,8 @@ const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> 
     if (!schemaName || !functionName) return undefined;
     return functionValidator(schemaName, functionName);
   },
-  grant: ([role, schemaName, objectAndPrivilege]) => {
+  grant: ([role, schemaName, ...objectParts]) => {
+    const objectAndPrivilege = objectParts.join(".");
     const openingParenthesis = objectAndPrivilege?.indexOf("(") ?? -1;
     if (
       !role ||
@@ -165,7 +170,7 @@ const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> 
     if (
       !/^[a-z][a-z0-9_]*$/.test(object) ||
       !privilege ||
-      [...privilege].some((character) => !"abcdefghijklmnopqrstuvwxyz0123456789_,[]".includes(character))
+      !privilege.split(",").every(argument => /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)?(?:\[\])?$/.test(argument))
     ) {
       return undefined;
     }

@@ -9,6 +9,7 @@ const request = "00000000-0000-4000-8000-000000000004";
 const saved = { submission_id: submission, status: "joined", revision: 4, receipt_id: request };
 const h = vi.hoisted(() => ({ urls: ["https://example.test/work"], revision: 3, receipt: false,
   sqlValid: true, failedRead: "", rpc: vi.fn(), reads: [] as Array<{ table: string; columns: string; filters: Record<string, unknown> }> }));
+vi.mock("../lib/persistScores", () => ({ persistScores: vi.fn() }));
 vi.mock("../lib/supabase", () => ({
   makeUserClient: () => ({ auth: { getUser: async () => ({ data: { user: { id: actor, email: "operator@example.test" } }, error: null }) } }),
   serviceClient: () => ({ rpc: (name: string, args: Record<string, unknown>) => {
@@ -20,6 +21,10 @@ vi.mock("../lib/supabase", () => ({
     const read = { table, columns: "", filters: {} as Record<string, unknown> }; h.reads.push(read);
     const query = { select(columns: string) { read.columns = columns; return query; },
       eq(key: string, value: unknown) { read.filters[key] = value; return query; },
+      order() { return query; }, in() { return query; },
+      then(resolve: (result: unknown) => unknown) {
+        return Promise.resolve({ data: table === "mission_submissions" ? [{ id: submission, mission_id: "mission", creator_id: "creator", content_urls: h.urls, legacy_evidence_sql_valid: h.sqlValid }] : [], error: null }).then(resolve);
+      },
       async maybeSingle() {
         const data = table === "staff_users" ? { user_id: actor, email: "operator@example.test", active: true }
           : table === "brand_users" ? { user_id: actor, workspace_id: workspace, active: true, workspaces: { id: workspace, slug: "owned" } }
@@ -56,11 +61,34 @@ it.each(["https://256.1.1.1/work", "https://a\u200db.test/work"])("allows a fres
   expect(h.reads.find(read => read.table === "legacy_evidence_corrections")?.filters).toEqual({ workspace_id: workspace, operator_id: actor, request_id: request });
   expect(h.reads.find(read => read.table === "get_legacy_correction_evidence")?.filters).toEqual({ p_submission: submission, p_workspace: workspace });
 });
-it.each(["https://example.test:/work", "https://example.test:000080/work", "https://@example.test/work"])("allows correction when canonical parsing accepts but the SQL guard rejects historical evidence: %s", async url => {
+it.each(["https://example.test:/work", "https://example.test:000080/work", "https://@example.test/work", "\thttps://example.test/work\r\n", "https://example.test/work\n", "https://example.test/wo\u0085rk", "https://1\u00ad27.1/work"])("allows correction when canonical parsing accepts but the SQL guard rejects historical evidence: %s", async url => {
   h.urls = [url]; h.sqlValid = false; expect(() => new URL(url)).not.toThrow();
   const response = await send();
   expect(response.status).toBe(200); expect(await response.json()).toEqual(saved);
   expect(h.rpc).toHaveBeenCalledWith("request_legacy_evidence_correction", expect.objectContaining({ p_expected_revision: 3 }));
+});
+it.each(["\thttps://example.test/work\r\n", "https://example.test/wo\u0085rk", "https://1\u00ad27.1/work"])("rejects approval of SQL-invalid evidence before the approval RPC: %s", async url => {
+  h.urls = [url]; h.sqlValid = false;
+  const response = await app.request(`/admin/submissions/${submission}/approve`, {
+    method: "POST", headers: { Authorization: "Bearer offline-transport", "X-Workspace-Slug": "owned", "Content-Type": "application/json" }, body: "{}",
+  });
+  expect(response.status).toBe(400); expect(await response.json()).toMatchObject({ code: "invalid_evidence" });
+  expect(h.rpc).not.toHaveBeenCalled();
+});
+it("includes SQL validity from the same saved submission in the review list", async () => {
+  h.sqlValid = false;
+  const response = await app.request("/admin/submissions", { headers: { Authorization: "Bearer offline-transport", "X-Workspace-Slug": "owned" } });
+  expect(response.status).toBe(200);
+  expect((await response.json()).submissions[0]).toMatchObject({ content_urls: h.urls, legacy_evidence_sql_valid: false });
+  expect(h.reads.find(read => read.table === "mission_submissions")?.columns.split(",").map(column => column.trim())).toContain("legacy_evidence_sql_valid");
+});
+it("still approves evidence accepted by both parsers", async () => {
+  h.rpc.mockResolvedValue({ data: { creator_id: "creator", status: "approved" }, error: null });
+  const response = await app.request(`/admin/submissions/${submission}/approve`, {
+    method: "POST", headers: { Authorization: "Bearer offline-transport", "X-Workspace-Slug": "owned", "Content-Type": "application/json" }, body: "{}",
+  });
+  expect(response.status).toBe(200);
+  expect(h.rpc).toHaveBeenCalledWith("approve_submission", expect.objectContaining({ p_submission: submission }));
 });
 it("replays a saved receipt after valid replacement evidence and a newer revision were stored", async () => {
   h.receipt = true; h.revision = 5;

@@ -153,7 +153,7 @@ adminRoutes.get("/submissions", async (c) => {
   let q = svc
     .from("mission_submissions")
     .select(
-      "id, mission_id, status, content_urls, evidence_revision, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
+      "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
     );
   q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
   if (ws) q = q.eq("missions.workspace_id", ws);
@@ -179,10 +179,11 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
   }
   const rating = raw ?? null;
   const svc = serviceClient();
-  const evidence = await svc.from("mission_submissions").select("content_urls").eq("id", c.req.param("id")).maybeSingle();
+  const evidence = await svc.rpc("get_legacy_correction_evidence", { p_workspace: c.get("authorizedWorkspace").workspaceId, p_submission: c.req.param("id") });
   if (evidence.error) return c.json({ error: "Evidence lookup unavailable", code: "evidence_unavailable" }, 503);
   if (!evidence.data) return c.json({ error: "Not found", code: "not_found" }, 404);
-  if (!validateSubmissionEvidence(evidence.data.content_urls).ok) return c.json({
+  if (typeof evidence.data.sql_valid !== "boolean") return c.json({ error: "Evidence validation unavailable", code: "evidence_unavailable" }, 503);
+  if (!evidence.data.sql_valid || !validateSubmissionEvidence(evidence.data.content_urls).ok) return c.json({
     error: "Stored work URLs are invalid. Request correction before approval.", code: "invalid_evidence",
   }, 400);
   const { data, error } = await svc.rpc("approve_submission", {
