@@ -103,6 +103,19 @@ describe("Creator work home (unit transport fixtures)", () => {
     expect(mocks.api).not.toHaveBeenCalled();
   });
 
+  it.each(["applied", "declined"] as const)("does not load a nonexistent workflow for a %s application or hide started work", async status => {
+    setup([{ ...mission("application"), status, active_workflow_id: null }, mission("current")]);
+    mocks.api.mockImplementation(async (path: string) => {
+      if (path.includes("/application/")) throw new ApiError(404, "WORKFLOW_NOT_FOUND", "Application has no workflow");
+      return workspace("current", "drafting", "drafting");
+    });
+    renderHome();
+    expect(await screen.findByRole("link", { name: "Continue draft" })).toHaveAttribute("href", "/my/current?item=item-current");
+    expect(mocks.api).toHaveBeenCalledTimes(1);
+    expect(mocks.api).toHaveBeenCalledWith("/my-missions/current/workspace");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("does not show a guessed task or empty state while workspace data is loading", async () => {
     setup([mission("loading")]);
     mocks.api.mockReturnValue(new Promise(() => {}));

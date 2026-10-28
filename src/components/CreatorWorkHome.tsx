@@ -14,7 +14,10 @@ const active = (mission: MyMission) => Boolean(mission.active_workflow_id)
   || mission.creator_workflow_mode === "active_workspace"
   || mission.missions.creator_workflow_mode === "active_workspace";
 const denied = (error: Error | null) => error instanceof ApiError && [401, 403, 404].includes(error.status);
-const current = (mission: MyMission) => active(mission) || ["joined", "submitted", "under_review"].includes(mission.status);
+// Applications receive a workflow only after acceptance. Their mission's mode
+// alone must not trigger a workspace read or block other current work on a 404.
+const current = (mission: MyMission) => !["applied", "declined"].includes(mission.status)
+  && (active(mission) || ["joined", "submitted", "under_review"].includes(mission.status));
 const priority = (action: NextBestAction) => {
   if (action.kind === "revise" || action.kind === "revise_publication_proof") return 0;
   if (action.kind === "confirm_receipt") return 1;
