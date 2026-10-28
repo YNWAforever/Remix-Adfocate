@@ -67,7 +67,7 @@ const creatorDetail: Awaited<ReturnType<typeof fetchCreatorDetail>> = {
   notes: [], shortlists: [], audit: [], missionHistory: [],
 };
 
-const caseProofKey = ["admin-creator-proofs", "creator-1"] as const;
+let caseProofKey: readonly string[];
 const caseProofUrl = "/api/admin/creators/creator-1/publication-proofs";
 
 function deferred<T>() {
@@ -103,7 +103,10 @@ function mount(initialProof = proof, updatedAt = Date.now()) {
   history = createBrowserHistory();
   const router = createRouter({ routeTree: root.addChildren([operator.addChildren([creator]), admin.addChildren([review])]), history });
   queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 30_000 } } });
-  queryClient.setQueryData(["admin-creator-detail", "creator-1"], creatorDetail);
+  const workspace = new URLSearchParams(window.location.search).get("ws")
+    ?? sessionStorage.getItem("adfocate_admin_workspace") ?? "";
+  queryClient.setQueryData(["admin-creator-detail", "creator-1", workspace], creatorDetail);
+  caseProofKey = ["admin-creator-proofs", "creator-1", workspace];
   queryClient.setQueryData(caseProofKey, { proofs: { status: "available", value: [initialProof] } }, { updatedAt });
   render(
     <QueryClientProvider client={queryClient}>
@@ -156,7 +159,7 @@ describe("creator case proof navigation", () => {
     });
     mount();
     fireEvent.click(await screen.findByRole("link", { name: "Review proof" }));
-    await screen.findByRole("combobox", { name: "workspace" });
+    expect(await screen.findByRole("status")).toHaveTextContent("Loading workspaces");
     expect(new URLSearchParams(window.location.search).get("ws")).toBe(proof.workspaceId);
     expect(new URLSearchParams(window.location.search).get("workItemId")).toBe(proof.workItemId);
     expect(workflowRequests()).toHaveLength(0);
@@ -205,7 +208,7 @@ describe("creator case proof navigation", () => {
     { action: "corrections", initialState: "in_review", nextState: "correction_requested", label: "correction requested", pending: true },
     { action: "verify", initialState: "in_review", nextState: "verified", label: "verified", pending: false },
   ] as const)("refetches a fresh creator case after a successful $action review", async ({ action, initialState, nextState, label, pending }) => {
-    window.history.replaceState(null, "", "/operator/creators/creator-1");
+    window.history.replaceState(null, "", "/operator/creators/creator-1?ws=workspace-owner");
     const initialProof = { ...proof, reviewState: initialState };
     const nextProof = { ...proof, reviewState: nextState, reviewSummary: `Saved ${action} result` };
     const detail = structuredClone(workflow);
@@ -259,7 +262,7 @@ describe("creator case proof navigation", () => {
   });
 
   it("discards a pre-review case refetch that finishes after verification", async () => {
-    window.history.replaceState(null, "", "/operator/creators/creator-1");
+    window.history.replaceState(null, "", "/operator/creators/creator-1?ws=workspace-owner");
     const initialProof = { ...proof, reviewState: "in_review" as const };
     const nextProof = { ...proof, reviewState: "verified" as const, reviewSummary: "Verification saved" };
     const oldResponse = deferred<Response>();
@@ -301,7 +304,7 @@ describe("creator case proof navigation", () => {
   });
 
   it("keeps the actual case state and pending count when verification fails", async () => {
-    window.history.replaceState(null, "", "/operator/creators/creator-1");
+    window.history.replaceState(null, "", "/operator/creators/creator-1?ws=workspace-owner");
     const initialProof = { ...proof, reviewState: "in_review" as const };
     const detail = structuredClone(workflow);
     detail.workItems[0].state = "proof_under_review";

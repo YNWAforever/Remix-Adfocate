@@ -97,13 +97,14 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
   // Separate query so a proof-source outage never blocks the case file itself; the
   // route already degrades panel-by-panel via the enrichment envelope.
   const proofs = useQuery({
-    queryKey: ["admin-creator-proofs", creatorId],
+    queryKey: ["admin-creator-proofs", creatorId, workspace],
     enabled: authed,
     retry: false,
     queryFn: () => fetchCreatorPublicationProofs(creatorId),
   });
 
   const visibleDetail = useCanShowPreviousData(detail, ["admin-creator-detail", creatorId, workspace]) ? detail.data : undefined;
+  const visibleProofs = useCanShowPreviousData(proofs, ["admin-creator-proofs", creatorId, workspace]) ? proofs.data : undefined;
   const noteMutation = useMutation({
     mutationFn: (body: { category: AdminNoteCategory; body: string }) => {
       noteRequest.current ??= { id: crypto.randomUUID(), revision: noteRevision.current ?? visibleDetail?.review.revision ?? 0, ...body };
@@ -144,7 +145,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
   // A transport failure is presented as the same "unavailable" state the server sends,
   // so the panel has one degraded path instead of two.
   const proofEnrichment =
-    proofs.data?.proofs ?? (proofs.isError ? ({ status: "unavailable", reason: "source_error" } as const) : undefined);
+    visibleProofs?.proofs ?? (proofs.isError ? ({ status: "unavailable", reason: "source_error" } as const) : undefined);
 
   return (
     <>
@@ -447,7 +448,10 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
                   />
                 </section>
 
-                <CreatorCaseProofPanel proofs={proofEnrichment} isLoading={proofs.isLoading} />
+                <div className="space-y-2">
+                  <RequestFeedback error={proofs.error} retry={() => void proofs.refetch()} stale={Boolean(visibleProofs)} />
+                  <CreatorCaseProofPanel proofs={proofEnrichment} isLoading={proofs.isLoading} />
+                </div>
 
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Shortlist memberships</h3>

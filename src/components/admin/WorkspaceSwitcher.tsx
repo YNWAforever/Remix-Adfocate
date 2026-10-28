@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchWorkspaces, adminMissionKeys, AdminAuthError, AdminRequestError } from "@/lib/admin";
 import { useAdminAuth } from "./AdminAuthContext";
@@ -8,6 +8,7 @@ import { useStaffAccess } from "./StaffAccessContext";
 export function WorkspaceSwitcher() {
   const { authed, reportAuthError } = useAdminAuth();
   const { workspace, workspaceSlug, setWorkspace } = useAdminWorkspace();
+  const [rejectedWorkspace, setRejectedWorkspace] = useState<string | null>(null);
   const access=useStaffAccess();
   const ws = useQuery({
     queryKey: adminMissionKeys.workspaces,
@@ -20,17 +21,21 @@ export function WorkspaceSwitcher() {
   }, [ws.error, reportAuthError]);
   useEffect(() => {
     if (!ws.data) return;
-    if (!workspace && ws.data.workspaces.length === 1) {
+    if (!workspace && !rejectedWorkspace && ws.data.workspaces.length === 1) {
       const only = ws.data.workspaces[0]; setWorkspace(only.id, only.slug); return;
     }
     if (!workspace) return;
     const selected = ws.data.workspaces.find((item) => item.id === workspace);
     if (!selected) {
+      // An inaccessible proof deep link must not silently become a read in the
+      // only remaining workspace. Require an explicit selection after rejection.
+      setRejectedWorkspace(workspace);
       setWorkspace("", "");
       return;
     }
+    setRejectedWorkspace(null);
     if (selected.slug !== workspaceSlug) setWorkspace(workspace, selected.slug);
-  }, [setWorkspace, workspace, workspaceSlug, ws.data]);
+  }, [setWorkspace, workspace, workspaceSlug, ws.data, rejectedWorkspace]);
 
   if(access?.access?.workspace===null)return <span className="text-sm">{access.can("content.manage")?"Platform content / 平台內容":"No workspace membership / 未有工作空間membership；請聯絡owner"}</span>;
   if(access&&!access.access)return workspace && access.error instanceof AdminRequestError && access.error.status === 404
@@ -54,7 +59,7 @@ export function WorkspaceSwitcher() {
         setWorkspace(id, selected?.slug ?? "");
       }}
     >
-      {ws.data?.workspaces.length !== 1 && <option value="">全部已授權範圍 / All authorized workspaces</option>}
+      {(ws.data?.workspaces.length !== 1 || rejectedWorkspace) && <option value="">{rejectedWorkspace ? "選擇工作空間 / Select a workspace" : "全部已授權範圍 / All authorized workspaces"}</option>}
       {(ws.data?.workspaces ?? []).map((w) => (
         <option key={w.id} value={w.id}>{w.name}</option>
       ))}

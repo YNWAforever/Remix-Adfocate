@@ -68,7 +68,7 @@ export function staffRouteRequirement(method: string, path: string): Requirement
     ["GET", ["staff-access"], workspace("access.manage")],
     ["PUT", ["staff-access/:userId"], workspace("access.manage")],
     ["POST", ["brand-invites"], workspace("access.manage")],
-    ["GET", ["creators/review", "creators/:id", "missions", "missions/:id", "missions/:id/activity", "missions/:id/shortlist", "campaigns", "campaigns/:id", "campaigns/:id/leaderboard", "engaged", "insights", "radar"], workspace("creator.read")],
+    ["GET", ["creators/review", "creators/:id", "creators/:id/publication-proofs", "missions", "missions/:id", "missions/:id/activity", "missions/:id/shortlist", "campaigns", "campaigns/:id", "campaigns/:id/leaderboard", "engaged", "insights", "radar"], workspace("creator.read")],
     ["POST", ["creators/:id/review", "creators/:id/notes", "missions/:id/shortlist", "social/:id/verify"], workspace("creator.review")],
     ["PATCH", ["missions/:id/shortlist/:creatorId"], workspace("creator.review")],
     ["GET", ["applications"], workspace("application.review")],

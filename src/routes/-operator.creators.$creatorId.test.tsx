@@ -1,6 +1,6 @@
 vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: hoisted.workspace, workspaceSlug: "a", setWorkspace: vi.fn() }) }));
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
@@ -32,13 +32,24 @@ vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ a
 import { Route } from "./operator.creators.$creatorId";
 import { AdminRequestError } from "@/lib/admin";
 
+const savedProof = {
+  attemptId: "attempt-1", workspaceId: "workspace-1", isCurrentAttempt: true,
+  workflowId: "workflow-1", workItemId: "item-1", workItemTitle: "IG Reel",
+  platform: "instagram", missionTitle: "Summer launch", missionSlug: "summer-launch",
+  attemptNumber: 1, primaryUrl: "https://example.com/post", submittedAt: "2026-08-01T00:00:00.000Z",
+  submittedLate: false, metadataStatus: "available", reviewState: "in_review",
+  reviewSummary: "Private proof review", reviewedAt: null,
+};
+
 function renderRoute() {
   const C = Route.options.component as React.ComponentType;
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
+  const queryClient = new QueryClient();
+  const view = render(
+    <QueryClientProvider client={queryClient}>
       <C />
     </QueryClientProvider>,
   );
+  return { ...view, queryClient };
 }
 
 describe("operator creator detail", () => {
@@ -148,6 +159,54 @@ describe("operator creator detail", () => {
       shortlists: [],
       audit: [{ id: "audit-1", event_type: "creator_review.updated", created_at: "2026-06-18T03:00:00.000Z" }],
     });
+  });
+
+  it("keeps denied proofs hidden through outages and remounts until a successful read", async () => {
+    const result = { proofs: { status: "available", value: [savedProof] } };
+    hoisted.fetchCreatorPublicationProofs.mockResolvedValue(result);
+    const view = renderRoute();
+    await screen.findByText(savedProof.reviewSummary);
+    const refetch = async () => {
+      await act(async () => { await view.queryClient.refetchQueries({ queryKey: ["admin-creator-proofs"] }); });
+    };
+    hoisted.fetchCreatorPublicationProofs.mockRejectedValue(new AdminRequestError("Offline", "unavailable", undefined, 503));
+    await refetch();
+    expect(screen.getByText(savedProof.reviewSummary)).toBeInTheDocument();
+    expect(await screen.findByText(/Showing the previous saved data/)).toBeInTheDocument();
+
+    hoisted.fetchCreatorPublicationProofs.mockRejectedValue(new AdminRequestError("Denied", "STAFF_CAPABILITY_REQUIRED", undefined, 403));
+    await refetch();
+    await waitFor(() => expect(screen.queryByText(savedProof.reviewSummary)).not.toBeInTheDocument());
+    expect(screen.queryByRole("link", { name: "Review proof" })).not.toBeInTheDocument();
+    expect(screen.getByText("Amy Chan")).toBeInTheDocument();
+
+    hoisted.fetchCreatorPublicationProofs.mockRejectedValue(new AdminRequestError("Offline", "unavailable", undefined, 503));
+    await refetch();
+    view.unmount();
+    const C = Route.options.component as React.ComponentType;
+    render(<QueryClientProvider client={view.queryClient}><C /></QueryClientProvider>);
+    await screen.findByText("Amy Chan");
+    expect(screen.queryByText(savedProof.reviewSummary)).not.toBeInTheDocument();
+
+    hoisted.fetchCreatorPublicationProofs.mockResolvedValue(result);
+    await refetch();
+    expect(await screen.findByText(savedProof.reviewSummary)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Review proof" })).toBeInTheDocument();
+  });
+
+  it("does not reuse another workspace's cached proofs when the scope changes", async () => {
+    hoisted.fetchCreatorPublicationProofs.mockResolvedValue({ proofs: { status: "available", value: [savedProof] } });
+    const view = renderRoute();
+    await screen.findByText(savedProof.reviewSummary);
+    const initial = await hoisted.fetchCreatorDetail.mock.results[0].value;
+    hoisted.workspace = "workspace-2";
+    hoisted.fetchCreatorDetail.mockResolvedValue({ ...initial, creator: { ...initial.creator, display_name: "Second workspace creator" } });
+    hoisted.fetchCreatorPublicationProofs.mockRejectedValue(new AdminRequestError("Offline", "unavailable", undefined, 503));
+    const C = Route.options.component as React.ComponentType;
+    view.rerender(<QueryClientProvider client={view.queryClient}><C /></QueryClientProvider>);
+    await screen.findByText("Second workspace creator");
+    expect(screen.queryByText(savedProof.reviewSummary)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Review proof" })).not.toBeInTheDocument();
   });
 
   it("renders profile, review metadata, social metrics, notes, mission history, and audit", async () => {
